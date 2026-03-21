@@ -1,0 +1,268 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+html, body { background: #080C18 !important; }
+
+.nk-wrap {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 96px 32px 120px;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.nk-rule { border: none; border-top: 1px solid rgba(232,184,74,0.12); margin: 64px 0; }
+
+.tool {
+  border: 1px solid #0E1330;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.tool input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.tool-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px;
+  background: #FAF8F4;
+  cursor: pointer;
+  user-select: none;
+}
+
+.tool-header:hover { background: #F3F0EA; }
+
+.tool-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #1A1A14;
+  margin-bottom: 3px;
+}
+
+.tool-hook {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 12px;
+  font-style: italic;
+  color: #8C7E6A;
+}
+
+.tool-plus {
+  font-size: 22px;
+  color: #df9600;
+  opacity: 0.7;
+  flex-shrink: 0;
+  margin-left: 16px;
+  transition: transform 0.25s;
+  line-height: 1;
+}
+
+.tool-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+  background: #080C18;
+}
+
+.tool-inner {
+  padding: 24px 22px 28px;
+  border-top: 1px solid #0E1330;
+}
+
+input[type="checkbox"]:checked + .tool-header .tool-plus { transform: rotate(45deg); }
+input[type="checkbox"]:checked + .tool-header + .tool-body { max-height: 600px; }
+
+.tool-label {
+  font-family: 'Cormorant SC', serif;
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  color: #df9600;
+  -webkit-text-stroke: 0.4px rgba(10,15,30,0.10);
+  display: block;
+  margin-bottom: 6px;
+}
+
+.tool-desc {
+  font-size: 15px;
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(255,255,255,0.68);
+  line-height: 1.75;
+  margin-bottom: 16px;
+  max-width: 580px;
+}
+
+.tool-detail {
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.38);
+  line-height: 1.65;
+  margin-bottom: 20px;
+  max-width: 580px;
+}
+
+.tool-meta {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: #E8B84A;
+  margin-bottom: 20px;
+}
+
+.tool-cta {
+  display: inline-block;
+  padding: 13px 28px;
+  border-radius: 10px;
+  background: #E8B84A;
+  border: 1px solid #A8721A;
+  font-family: 'Cormorant SC', serif;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #1A0F00;
+  text-decoration: none;
+  margin-right: 10px;
+  margin-bottom: 8px;
+}
+
+.tool-cta-ghost {
+  display: inline-block;
+  padding: 12px 22px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.09);
+  font-family: 'Cormorant SC', serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: rgba(255,255,255,0.30);
+  text-decoration: none;
+  margin-bottom: 8px;
+}
+
+@media (max-width: 640px) { .nk-wrap { padding: 80px 20px 100px; } }
+</style>
+
+<div class="nk-wrap">
+
+  <span style="font-family:'Cormorant SC',serif;font-size:10px;font-weight:600;letter-spacing:0.2em;color:#F5D080;display:block;margin-bottom:16px;">Life OS</span>
+
+  <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(36px,5.5vw,60px);font-weight:300;color:rgba(255,255,255,0.92);line-height:1.12;letter-spacing:-0.01em;margin-bottom:16px;">
+    See yourself clearly.<br>
+    <em style="font-style:italic;color:rgba(232,184,74,0.82);">Navigate from there.</em>
+  </h1>
+
+  <p style="font-size:clamp(15px,1.8vw,18px);font-weight:300;font-style:italic;color:rgba(255,255,255,0.55);line-height:1.65;margin-bottom:12px;max-width:560px;">Five tools. One ecosystem. Designed to show you where you are across every domain of life — and help you move from that clarity.</p>
+
+  <p style="font-size:14px;font-weight:300;color:rgba(255,255,255,0.30);line-height:1.65;margin-bottom:56px;max-width:520px;">Start where you are. Each tool does its own work — and they build on each other when you're ready.</p>
+
+  <hr class="nk-rule" style="margin-top:0;">
+
+  <!-- FOUNDATION -->
+  <div class="tool" id="foundation">
+    <input type="checkbox" id="t1">
+    <label class="tool-header" for="t1">
+      <div><div class="tool-name">Foundation</div><div class="tool-hook">Settle first. Everything else follows.</div></div>
+      <div class="tool-plus">+</div>
+    </label>
+    <div class="tool-body">
+      <div class="tool-inner">
+        <span class="tool-label">Where to start</span>
+        <p style="font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:18px;font-style:normal;font-weight:300;">You leave with a repeatable practice that restores your capacity to act from choice rather than pressure.</p>
+        <p class="tool-desc">A guided audio practice for nervous system regulation. Three phases. Twenty minutes. The internal floor from which honest self-assessment becomes possible.</p>
+        <p class="tool-detail">If everything feels like too much, or like nothing is landing — Foundation is the place to begin. Not because something is wrong. Because the floor needs to be built before anything else can stand on it.</p>
+        <div class="tool-meta">20 min · guided audio · 3 phases</div>
+        <a href="/work-with-nik" class="tool-cta">Access Foundation →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORIENTEERING -->
+  <div class="tool" id="orienteering">
+    <input type="checkbox" id="t2">
+    <label class="tool-header" for="t2">
+      <div><div class="tool-name">Orienteering</div><div class="tool-hook">Map your whole life. See it clearly.</div></div>
+      <div class="tool-plus">+</div>
+    </label>
+    <div class="tool-body">
+      <div class="tool-inner">
+        <span class="tool-label">The map</span>
+        <p style="font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:18px;font-style:normal;font-weight:300;">You leave with a scored map of all seven domains, your Horizon Goals, and your three focus areas — in ten minutes.</p>
+        <p class="tool-desc">A ten-minute honest assessment across all seven domains of your life. Not where you think you should be — where you actually are.</p>
+        <p class="tool-detail">Path · Spark · Body · Finances · Relationships · Inner Game · Outer Game. One honest score each. The picture that emerges is often surprising — and always useful.</p>
+        <div class="tool-meta">10 minutes · free · no account needed</div>
+        <a href="https://lifeos-olive-six.vercel.app" target="_blank" class="tool-cta">Begin Orienteering →</a>
+        <a href="/work-with-nik" class="tool-cta-ghost">Go deeper with Nik</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PULSE -->
+  <div class="tool" id="pulse">
+    <input type="checkbox" id="t3">
+    <label class="tool-header" for="t3">
+      <div><div class="tool-name">Pulse</div><div class="tool-hook">Your daily awareness practice.</div></div>
+      <div class="tool-plus">+</div>
+    </label>
+    <div class="tool-body">
+      <div class="tool-inner">
+        <span class="tool-label">The practice</span>
+        <p style="font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:18px;font-style:normal;font-weight:300;">You leave with a daily practice that makes your own patterns visible over time — two minutes a day.</p>
+        <p class="tool-desc">A daily check-in across every domain of your life. Two minutes. Honest. No prerequisites — Pulse works at any stage.</p>
+        <p class="tool-detail">Daily check-in. Weekly reflection. Quarterly reset. The pattern that emerges over time is the kind of self-knowledge that almost nothing else provides.</p>
+        <div class="tool-meta">2 min daily · weekly reflection · quarterly reset</div>
+        <a href="https://life-os-pulse.vercel.app" target="_blank" class="tool-cta">Begin Pulse →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PURPOSE PIECE -->
+  <div class="tool" id="purpose-piece">
+    <input type="checkbox" id="t4">
+    <label class="tool-header" for="t4">
+      <div><div class="tool-name">Purpose Piece</div><div class="tool-hook">Discover how you're built to contribute.</div></div>
+      <div class="tool-plus">+</div>
+    </label>
+    <div class="tool-body">
+      <div class="tool-inner">
+        <span class="tool-label">The contribution pattern</span>
+        <p style="font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:18px;font-style:normal;font-weight:300;">You leave knowing your natural contribution archetype and the domain where your effort compounds most.</p>
+        <p class="tool-desc">A behavioural evidence tool that surfaces your natural contribution archetype — the role you're built to play, the domain where your effort compounds most.</p>
+        <p class="tool-detail">Once you know your archetype and domain, everything else in Life OS becomes sharper. Not by limiting you — by showing you where your specific intelligence lands hardest.</p>
+        <div class="tool-meta">20 minutes · self-directed · one-time or annual</div>
+        <a href="https://life-os-purpose-piece-v2.vercel.app" target="_blank" class="tool-cta">Begin Purpose Piece →</a>
+        <a href="/work-with-nik" class="tool-cta-ghost">Debrief with Nik</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- HORIZON LEAP -->
+  <div class="tool" id="horizon-leap">
+    <input type="checkbox" id="t5">
+    <label class="tool-header" for="t5">
+      <div><div class="tool-name">Horizon Leap</div><div class="tool-hook">Full transformation. With Nik.</div></div>
+      <div class="tool-plus">+</div>
+    </label>
+    <div class="tool-body">
+      <div class="tool-inner">
+        <span class="tool-label">The crossing</span>
+        <p style="font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:18px;font-style:normal;font-weight:300;">You leave having made a discontinuous shift — not just knowing who you want to be, but living from it.</p>
+        <p class="tool-desc">For people who have done the work — and keep hitting the same ceiling. Not more tools. A different kind of intervention.</p>
+        <p class="tool-detail">Identity-level work. Reauthoring the biography. Closing the gap between who you've been and who you're becoming. Facilitated directly by Nik. Begin with a conversation.</p>
+        <div class="tool-meta">Facilitated · with Nik · by application</div>
+        <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" class="tool-cta">Book a conversation →</a>
+      </div>
+    </div>
+  </div>
+
+  <hr class="nk-rule">
+
+  <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;">
+    <a href="/work-with-nik" style="display:inline-block;padding:14px 28px;border-radius:12px;background:#E8B84A;border:1px solid #A8721A;font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.16em;color:#1A0F00;text-decoration:none;">Work with Nik →</a>
+    <a href="/" style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.25);text-decoration:none;">← Home</a>
+  </div>
+
+</div>
