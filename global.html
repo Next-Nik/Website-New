@@ -30,9 +30,9 @@
   --card-border: #0E1330;   /* indigo stroke on cards */
 
   /* On-dark text */
-  --d-heading:   rgba(255,255,255,0.92);
-  --d-sub:       rgba(255,255,255,0.68);
-  --d-meta:      rgba(255,255,255,0.30);
+  --d-heading:   rgba(255,255,255,0.95);
+  --d-sub:       rgba(255,255,255,0.80);
+  --d-meta:      rgba(255,255,255,0.55);
 
   /* Typography */
   --serif:       'Cormorant Garamond', Georgia, serif;
@@ -41,8 +41,7 @@
 
 /* ── Base ── */
 html, body {
-  background: var(--dark) !important;
-  color: var(--d-heading);
+  background: #080C18 !important;
   font-family: var(--serif);
   font-size: 18px;
   line-height: 1.7;
@@ -54,6 +53,12 @@ html, body {
   max-width: 820px;
   margin: 0 auto;
   padding: 72px 32px 100px;
+  color: var(--d-heading);
+}
+
+/* ── Wrap container — scopes white text to our content only ── */
+.nk-wrap {
+  color: var(--d-heading);
 }
 
 /* ── Subtle gold glow — add to hero sections ── */
