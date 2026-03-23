@@ -22,39 +22,9 @@
   </div>
 </nav>
 <style>
-.nk-wrap, [class*="nk-"] { padding-top: 64px; }
+.nk-wrap { padding-top: 64px; }
 .nk-hero-section { padding-top: 64px !important; }
 </style>
-
-<style>
-/* ── Desktop font revert (641px+) ── */
-@media (min-width: 641px) {
-  /* Card subtitles */
-  .nk-card-sub, [style*="color:#BFB49E"], [style*="color:#8C7E6A"] { font-size: 13px !important; }
-  /* Card titles */
-  .nk-card-title { font-size: 16px !important; }
-  /* Body text */
-  .nk-body { font-size: 16px !important; }
-  /* Hero subtitle */
-  .nk-hero-sub { font-size: clamp(15px,1.8vw,18px) !important; }
-  /* Hero label */
-  .nk-hero-label { font-size: 10px !important; }
-  /* Section headings */
-  .nk-section-h2 { font-size: clamp(22px,3vw,32px) !important; }
-  /* Eyebrow labels */
-  [style*="letter-spacing:0.2em;color:#F5D080"],
-  [style*="letter-spacing:0.18em"],
-  [style*="letter-spacing:0.22em"] { font-size: 10px !important; }
-  /* General 26px content back to 16px */
-  p[style*="font-size:26px"] { font-size: 16px !important; }
-  div[style*="font-size:26px"] { font-size: 13px !important; }
-  div[style*="font-size:28px"] { font-size: 16px !important; }
-  /* Clamp overrides */
-  h2[style*="clamp(26px"] { font-size: clamp(22px,3vw,32px) !important; }
-  p[style*="clamp(26px"] { font-size: clamp(15px,1.8vw,18px) !important; }
-}
-</style>
-
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
@@ -62,6 +32,7 @@
 <style>
 html, body { background: #080C18 !important; }
 
+/* ── Hero ── */
 .nk-hero-section {
   min-height: 100svh;
   display: flex;
@@ -84,6 +55,15 @@ html, body { background: #080C18 !important; }
   z-index: 0;
 }
 
+/* ── Desktop font sizes (default) ── */
+.nk-hero-h1   { font-size: clamp(38px, 6vw, 68px); line-height: 1.12; }
+.nk-hero-sub  { font-size: clamp(15px, 1.8vw, 18px); }
+.nk-hero-label { font-size: 10px; }
+.nk-section-h2 { font-size: clamp(22px, 3vw, 32px); }
+.nk-card-title { font-size: 16px; }
+.nk-card-sub  { font-size: 13px; }
+
+/* ── Sections ── */
 .nk-section {
   max-width: 820px;
   margin: 0 auto;
@@ -139,30 +119,20 @@ html, body { background: #080C18 !important; }
   background: #FAF8F4; border: 1px solid #0E1330; text-decoration: none;
 }
 
+/* ── Mobile overrides ── */
 @media (max-width: 640px) {
   .nk-hero-section {
-    justify-content: center !important;
-    padding: 80px 24px 40px !important;
-    min-height: 100svh !important;
-    max-width: 100% !important;
+    padding: 80px 24px 40px;
+    max-width: 100%;
   }
   .nk-section { padding: 48px 20px 48px; }
   .nk-icon { width: 36px; height: 36px; min-width: 36px; min-height: 36px; }
-  .nk-hero-h1 { font-size: clamp(48px, 15vw, 72px) !important; line-height: 1.08 !important; }
-  .nk-hero-sub { font-size: clamp(22px, 5.5vw, 28px) !important; }
-  .nk-hero-label { font-size: clamp(14px, 3.5vw, 18px) !important; }
-  .nk-section-h2 { font-size: clamp(32px, 8vw, 44px) !important; }
-  .nk-card-title { font-size: clamp(20px, 5vw, 26px) !important; }
-  .nk-card-sub { font-size: clamp(17px, 4vw, 22px) !important; }
-}
-
-@media (min-width: 641px) {
-  .nk-hero-h1 { font-size: clamp(38px, 6vw, 68px); }
-  .nk-hero-sub { font-size: clamp(15px, 1.8vw, 18px); }
-  .nk-hero-label { font-size: 10px; }
-  .nk-section-h2 { font-size: clamp(22px, 3vw, 32px); }
-  .nk-card-title { font-size: 16px; }
-  .nk-card-sub { font-size: 13px; }
+  .nk-hero-h1    { font-size: clamp(48px, 15vw, 72px); line-height: 1.08; }
+  .nk-hero-sub   { font-size: clamp(22px, 5.5vw, 28px); }
+  .nk-hero-label { font-size: clamp(14px, 3.5vw, 18px); }
+  .nk-section-h2 { font-size: clamp(32px, 8vw, 44px); }
+  .nk-card-title { font-size: clamp(20px, 5vw, 26px); }
+  .nk-card-sub   { font-size: clamp(17px, 4vw, 22px); }
 }
 </style>
 
@@ -171,11 +141,11 @@ html, body { background: #080C18 !important; }
   <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;">
     <img src="/logo_hero.png" alt="NextUs" style="height:120px;width:120px;display:block;object-fit:contain;margin-bottom:28px;">
 
-    <span class="nk-hero-label" style="font-family:'Cormorant SC',serif;font-weight:600;letter-spacing:0.22em;color:#F5D080;display:block;margin-bottom:20px;font-size:26px;">NextUs · Life OS</span>
+    <span class="nk-hero-label" style="font-family:'Cormorant SC',serif;font-weight:600;letter-spacing:0.22em;color:#F5D080;display:block;margin-bottom:20px;">NextUs · Life OS</span>
 
     <h1 class="nk-hero-h1" style="font-family:'Cormorant Garamond',serif;font-weight:300;color:rgba(255,255,255,0.92);line-height:1.12;letter-spacing:-0.01em;margin-bottom:18px;text-align:center;">
       A life worth living.<br>
-      <em style="font-style:italic;color:rgba(255,184,74,0.95);">A future worth building.</em>
+      <em style="font-style:italic;color:rgba(232,184,74,0.82);">A future worth building.</em>
     </h1>
 
     <p class="nk-hero-sub" style="font-family:'Cormorant Garamond',serif;font-weight:300;font-style:italic;color:rgba(255,255,255,0.72);line-height:1.65;margin-bottom:48px;max-width:520px;text-align:center;">For people ready to live fully — and step towards a future worth building.</p>
