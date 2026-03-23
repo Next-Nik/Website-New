@@ -1,11 +1,17 @@
 <!-- ── NAV ── -->
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
+<style>
+@media (max-width: 640px) {
+  .nk-nav-items { gap: 14px !important; }
+  .nk-nav-items a { font-size: 9px !important; letter-spacing: 0.08em !important; }
+}
+</style>
 <nav style="position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(8,12,24,0.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(232,184,74,0.08);">
-  <div style="max-width:1080px;margin:0 auto;padding:0 32px;display:flex;justify-content:space-between;align-items:center;height:64px;">
+  <div style="max-width:1080px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;height:64px;">
     <a href="/index.html" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0;">
       <img src="/logo_nav.png" alt="NextUs" style="height:36px;width:36px;display:block;object-fit:contain;">
     </a>
-    <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+    <div class="nk-nav-items" style="display:flex;align-items:center;gap:24px;flex-wrap:nowrap;">
       <a href="/index.html" style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.60);text-decoration:none;">Home</a>
       <a href="/life-os.html" style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.60);text-decoration:none;">Life OS</a>
       <a href="/podcast.html" style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.60);text-decoration:none;">Podcast</a>
@@ -44,7 +50,7 @@ html, body { background: #080C18 !important; }
     <em style="font-style:italic;color:rgba(232,184,74,0.82);">to building.</em>
   </h1>
 
-  <p style="font-size:clamp(15px,1.8vw,18px);font-weight:300;font-style:italic;color:rgba(255,255,255,0.72);line-height:1.65;margin-bottom:48px;text-align:right;">One-on-one work for people who are done with the loop they're in.</p>
+  <p style="font-size:clamp(17px,1.8vw,18px);font-weight:300;font-style:italic;color:rgba(255,255,255,0.72);line-height:1.65;margin-bottom:48px;text-align:right;">One-on-one work for people who are done with the loop they're in.</p>
 
   <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" style="display:inline-block;padding:15px 36px;border-radius:12px;background:#E8B84A;border:1px solid #A8721A;font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.16em;color:#1A0F00;text-decoration:none;margin-bottom:56px;">Book a discovery call →</a>
 

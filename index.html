@@ -1,11 +1,17 @@
 <!-- ── NAV ── -->
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
+<style>
+@media (max-width: 640px) {
+  .nk-nav-items { gap: 14px !important; }
+  .nk-nav-items a { font-size: 9px !important; letter-spacing: 0.08em !important; }
+}
+</style>
 <nav style="position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(8,12,24,0.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(232,184,74,0.08);">
-  <div style="max-width:1080px;margin:0 auto;padding:0 32px;display:flex;justify-content:space-between;align-items:center;height:64px;">
+  <div style="max-width:1080px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;height:64px;">
     <a href="/index.html" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0;">
       <img src="/logo_nav.png" alt="NextUs" style="height:36px;width:36px;display:block;object-fit:contain;">
     </a>
-    <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+    <div class="nk-nav-items" style="display:flex;align-items:center;gap:24px;flex-wrap:nowrap;">
       <a href="/index.html" style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.60);text-decoration:none;">Home</a>
       <a href="/life-os.html" style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.60);text-decoration:none;">Life OS</a>
       <a href="/podcast.html" style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.60);text-decoration:none;">Podcast</a>
@@ -27,11 +33,11 @@
 html, body { background: #080C18 !important; }
 
 .nk-hero-section {
-  min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 0 32px;
+  padding: 80px 32px 40px;
   max-width: 820px;
   margin: 0 auto;
   position: relative;
@@ -81,10 +87,20 @@ html, body { background: #080C18 !important; }
 }
 
 .nk-icon {
-  width: 36px; height: 36px; border-radius: 50%;
-  background: #FAF8F4; border: 1px solid #A8721A;
-  flex-shrink: 0; display: flex; align-items: center;
-  justify-content: center; font-size: 16px; color: #df9600;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 50%;
+  background: #FAF8F4;
+  border: 1px solid #A8721A;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #df9600;
+  aspect-ratio: 1 / 1;
 }
 
 .nk-list-item {
@@ -94,8 +110,9 @@ html, body { background: #080C18 !important; }
 }
 
 @media (max-width: 640px) {
-  .nk-hero-section { padding: 0 20px; min-height: 100svh; }
+  .nk-hero-section { padding: 80px 20px 40px; }
   .nk-section { padding: 64px 20px 64px; }
+  .nk-icon { width: 36px; height: 36px; min-width: 36px; min-height: 36px; }
 }
 </style>
 
@@ -111,7 +128,7 @@ html, body { background: #080C18 !important; }
       <em style="font-style:italic;color:rgba(232,184,74,0.82);">A future worth building.</em>
     </h1>
 
-    <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(15px,1.8vw,18px);font-weight:300;font-style:italic;color:rgba(255,255,255,0.72);line-height:1.65;margin-bottom:48px;max-width:520px;text-align:center;">For people ready to live fully — and step towards a future worth building.</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(17px,1.8vw,18px);font-weight:300;font-style:italic;color:rgba(255,255,255,0.72);line-height:1.65;margin-bottom:48px;max-width:520px;text-align:center;">For people ready to live fully — and step towards a future worth building.</p>
 
     <a href="#start" style="display:inline-block;padding:14px 32px;border-radius:40px;border:1px solid rgba(232,184,74,0.40);color:rgba(232,184,74,0.88);font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.16em;text-decoration:none;">Where do I start? →</a>
   </div>
@@ -137,7 +154,7 @@ html, body { background: #080C18 !important; }
     <div class="nk-icon">◎</div>
     <div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:#1A1A14;margin-bottom:3px;">Something feels off</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:#BFB49E;">You'll get a 20-minute guided audio practice to settle and reground</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:#BFB49E;">You'll get a 20-minute guided audio practice to settle and reground</div>
     </div>
   </a>
 
@@ -146,7 +163,7 @@ html, body { background: #080C18 !important; }
     <div class="nk-icon">◈</div>
     <div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:#1A1A14;margin-bottom:3px;">I want more clarity</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:#BFB49E;">You'll get an honest map of where you are across every domain — in 10 minutes</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:#BFB49E;">You'll get an honest map of where you are across every domain — in 10 minutes</div>
     </div>
   </a>
 
@@ -155,7 +172,7 @@ html, body { background: #080C18 !important; }
     <div class="nk-icon">◉</div>
     <div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:#1A1A14;margin-bottom:3px;">I want to contribute</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:#BFB49E;">You'll find the civilisational map and where your work belongs in it</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:#BFB49E;">You'll find the civilisational map and where your work belongs in it</div>
     </div>
   </a>
 
@@ -164,11 +181,11 @@ html, body { background: #080C18 !important; }
     <div class="nk-icon">◐</div>
     <div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:#1A1A14;margin-bottom:3px;">I heard Nik's work</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:#BFB49E;">You'll find the coaching offer and a way to book a conversation</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:#BFB49E;">You'll find the coaching offer and a way to book a conversation</div>
     </div>
   </a>
 
-  <a href="/life-os.html" style="display:block;text-align:center;font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:#E8B84A;margin-top:18px;text-decoration:none;">or show me everything →</a>
+  <a href="/life-os.html" style="display:block;text-align:center;font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:#E8B84A;margin-top:18px;text-decoration:none;">or show me everything →</a>
 
 </section>
 
@@ -206,7 +223,7 @@ html, body { background: #080C18 !important; }
   <a href="/work-with-nik.html" style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-radius:12px;margin-bottom:28px;background:#0D1121;border:1px solid rgba(232,184,74,0.18);text-decoration:none;">
     <div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:rgba(255,255,255,0.88);margin-bottom:3px;">Book a discovery call</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:rgba(255,255,255,0.50);">30 minutes · no obligation</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:rgba(255,255,255,0.50);">30 minutes · no obligation</div>
     </div>
     <span style="color:#E8B84A;opacity:0.6;font-size:16px;">→</span>
   </a>
@@ -216,7 +233,7 @@ html, body { background: #080C18 !important; }
   <a href="/life-os.html" class="nk-list-item">
     <div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#1A1A14;margin-bottom:2px;">Life OS</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:#8C7E6A;">Personal navigation — five tools for your life</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:#8C7E6A;">Personal navigation — five tools for your life</div>
     </div>
     <span style="color:#E8B84A;opacity:0.6;">→</span>
   </a>
@@ -224,7 +241,7 @@ html, body { background: #080C18 !important; }
   <a href="/nextus.html" class="nk-list-item">
     <div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#1A1A14;margin-bottom:2px;">NextUs</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:#8C7E6A;">The civilisational project — for the larger work</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:#8C7E6A;">The civilisational project — for the larger work</div>
     </div>
     <span style="color:#E8B84A;opacity:0.6;">→</span>
   </a>
@@ -232,7 +249,7 @@ html, body { background: #080C18 !important; }
   <a href="/podcast.html" class="nk-list-item">
     <div>
       <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#1A1A14;margin-bottom:2px;">The Podcast</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic;color:#8C7E6A;">220+ episodes since 2015</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:#8C7E6A;">220+ episodes since 2015</div>
     </div>
     <span style="color:#E8B84A;opacity:0.6;">→</span>
   </a>
