@@ -148,15 +148,21 @@ html, body { background: #080C18 !important; }
   }
   .nk-section { padding: 48px 20px 48px; }
   .nk-icon { width: 36px; height: 36px; min-width: 36px; min-height: 36px; }
-
-  /* Mobile font scaling — Apple-level presence */
-  .nk-hero-h1 { font-size: clamp(48px, 15vw, 72px) !important; }
+  .nk-hero-h1 { font-size: clamp(48px, 15vw, 72px) !important; line-height: 1.08 !important; }
   .nk-hero-sub { font-size: clamp(22px, 5.5vw, 28px) !important; }
   .nk-hero-label { font-size: clamp(14px, 3.5vw, 18px) !important; }
   .nk-section-h2 { font-size: clamp(32px, 8vw, 44px) !important; }
-  .nk-body { font-size: clamp(20px, 5vw, 26px) !important; }
   .nk-card-title { font-size: clamp(20px, 5vw, 26px) !important; }
   .nk-card-sub { font-size: clamp(17px, 4vw, 22px) !important; }
+}
+
+@media (min-width: 641px) {
+  .nk-hero-h1 { font-size: clamp(38px, 6vw, 68px); }
+  .nk-hero-sub { font-size: clamp(15px, 1.8vw, 18px); }
+  .nk-hero-label { font-size: 10px; }
+  .nk-section-h2 { font-size: clamp(22px, 3vw, 32px); }
+  .nk-card-title { font-size: 16px; }
+  .nk-card-sub { font-size: 13px; }
 }
 </style>
 
@@ -165,14 +171,14 @@ html, body { background: #080C18 !important; }
   <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;">
     <img src="/logo_hero.png" alt="NextUs" style="height:120px;width:120px;display:block;object-fit:contain;margin-bottom:28px;">
 
-    <span class="nk-hero-label" style="font-family:'Cormorant SC',serif;font-size:26px;font-weight:600;letter-spacing:0.22em;color:#F5D080;display:block;margin-bottom:20px;">NextUs · Life OS</span>
+    <span class="nk-hero-label" style="font-family:'Cormorant SC',serif;font-weight:600;letter-spacing:0.22em;color:#F5D080;display:block;margin-bottom:20px;font-size:26px;">NextUs · Life OS</span>
 
-    <h1 class="nk-hero-h1" style="font-family:'Cormorant Garamond',serif;font-size:clamp(42px,10vw,68px);font-weight:300;color:rgba(255,255,255,0.92);line-height:1.12;letter-spacing:-0.01em;margin-bottom:18px;text-align:center;">
+    <h1 class="nk-hero-h1" style="font-family:'Cormorant Garamond',serif;font-weight:300;color:rgba(255,255,255,0.92);line-height:1.12;letter-spacing:-0.01em;margin-bottom:18px;text-align:center;">
       A life worth living.<br>
       <em style="font-style:italic;color:rgba(232,184,74,0.82);">A future worth building.</em>
     </h1>
 
-    <p class="nk-hero-sub" style="font-family:'Cormorant Garamond',serif;font-size:clamp(26px,4vw,32px);font-weight:300;font-style:italic;color:rgba(255,255,255,0.72);line-height:1.65;margin-bottom:48px;max-width:520px;text-align:center;">For people ready to live fully — and step towards a future worth building.</p>
+    <p class="nk-hero-sub" style="font-family:'Cormorant Garamond',serif;font-weight:300;font-style:italic;color:rgba(255,255,255,0.72);line-height:1.65;margin-bottom:48px;max-width:520px;text-align:center;">For people ready to live fully — and step towards a future worth building.</p>
 
     <a href="#start" style="display:inline-block;padding:14px 32px;border-radius:40px;border:1px solid rgba(232,184,74,0.40);color:rgba(232,184,74,0.88);font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.16em;text-decoration:none;">Where do I start? →</a>
   </div>
@@ -189,7 +195,7 @@ html, body { background: #080C18 !important; }
 
   <span style="font-family:'Cormorant SC',serif;font-size:26px;font-weight:600;letter-spacing:0.2em;color:#F5D080;display:block;margin-bottom:14px;">Where you are</span>
 
-  <h2 class="nk-section-h2" style="font-family:'Cormorant Garamond',serif;font-size:clamp(26px,4vw,42px);font-weight:300;color:rgba(255,255,255,0.92);line-height:1.18;margin-bottom:10px;">What brought you here today?</h2>
+  <h2 class="nk-section-h2" style="font-family:'Cormorant Garamond',serif;font-weight:300;color:rgba(255,255,255,0.92);line-height:1.18;margin-bottom:10px;">What brought you here today?</h2>
 
   <p style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;font-style:italic;color:rgba(255,255,255,0.62);margin-bottom:36px;max-width:440px;">No wrong answer. This just points you somewhere useful.</p>
 
@@ -197,8 +203,8 @@ html, body { background: #080C18 !important; }
   <a href="/life-os.html#foundation" class="nk-option">
     <div class="nk-icon">◎</div>
     <div>
-      <div class="nk-card-title" style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:#1A1A14;margin-bottom:3px;">Something feels off</div>
-      <div class="nk-card-sub" style="font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;color:#BFB49E;">You'll get a 20-minute guided audio practice to settle and reground</div>
+      <div class="nk-card-title" style="font-family:'Cormorant Garamond',serif;font-weight:400;color:#1A1A14;margin-bottom:3px;">Something feels off</div>
+      <div class="nk-card-sub" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#BFB49E;">You'll get a 20-minute guided audio practice to settle and reground</div>
     </div>
   </a>
 
@@ -206,8 +212,8 @@ html, body { background: #080C18 !important; }
   <a href="/life-os.html#orienteering" class="nk-option">
     <div class="nk-icon">◈</div>
     <div>
-      <div class="nk-card-title" style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:#1A1A14;margin-bottom:3px;">I want more clarity</div>
-      <div class="nk-card-sub" style="font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;color:#BFB49E;">You'll get an honest map of where you are across every domain — in 10 minutes</div>
+      <div class="nk-card-title" style="font-family:'Cormorant Garamond',serif;font-weight:400;color:#1A1A14;margin-bottom:3px;">I want more clarity</div>
+      <div class="nk-card-sub" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#BFB49E;">You'll get an honest map of where you are across every domain — in 10 minutes</div>
     </div>
   </a>
 
@@ -215,8 +221,8 @@ html, body { background: #080C18 !important; }
   <a href="/nextus.html" class="nk-option">
     <div class="nk-icon">◉</div>
     <div>
-      <div class="nk-card-title" style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:#1A1A14;margin-bottom:3px;">I want to contribute</div>
-      <div class="nk-card-sub" style="font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;color:#BFB49E;">You'll find the civilisational map and where your work belongs in it</div>
+      <div class="nk-card-title" style="font-family:'Cormorant Garamond',serif;font-weight:400;color:#1A1A14;margin-bottom:3px;">I want to contribute</div>
+      <div class="nk-card-sub" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#BFB49E;">You'll find the civilisational map and where your work belongs in it</div>
     </div>
   </a>
 
@@ -224,8 +230,8 @@ html, body { background: #080C18 !important; }
   <a href="/work-with-nik.html" class="nk-option">
     <div class="nk-icon">◐</div>
     <div>
-      <div class="nk-card-title" style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;color:#1A1A14;margin-bottom:3px;">I heard Nik's work</div>
-      <div class="nk-card-sub" style="font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;color:#BFB49E;">You'll find the coaching offer and a way to book a conversation</div>
+      <div class="nk-card-title" style="font-family:'Cormorant Garamond',serif;font-weight:400;color:#1A1A14;margin-bottom:3px;">I heard Nik's work</div>
+      <div class="nk-card-sub" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#BFB49E;">You'll find the coaching offer and a way to book a conversation</div>
     </div>
   </a>
 
