@@ -1,295 +1,501 @@
-<!-- ── NAV ── -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
-<style>
-@media (max-width: 640px) {
-  .nk-nav-items { gap: 14px !important; }
-  .nk-nav-items a { font-size: 9px !important; letter-spacing: 0.08em !important; }
-}
-</style>
-<nav style="position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(8,12,24,0.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(232,184,74,0.08);">
-  <div style="max-width:1080px;margin:0 auto;padding:0 20px;display:flex;justify-content:space-between;align-items:center;height:64px;">
-    <a href="/index.html" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0;">
-      <img src="/logo_nav.png" alt="NextUs" style="height:36px;width:36px;display:block;object-fit:contain;">
-    </a>
-    <div class="nk-nav-items" style="display:flex;align-items:center;gap:24px;flex-wrap:nowrap;">
-      <a href="/index.html" style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.60);text-decoration:none;">Home</a>
-      <a href="/life-os.html" style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.60);text-decoration:none;">Life OS</a>
-      <a href="/podcast.html" style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.60);text-decoration:none;">Podcast</a>
-      <a href="/nextus.html" style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.60);text-decoration:none;">NextUs</a>
-      <a href="/work-with-nik.html" style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.60);text-decoration:none;">Work With Nik</a>
-      <a href="/about.html" style="font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.60);text-decoration:none;">About</a>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NextUs · A life worth living. A future worth building.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --dark:       #080C18;
+      --dark-surf:  #0D1121;
+      --gold:       #E8B84A;
+      --gold-mid:   #df9600;
+      --gold-dark:  #A8721A;
+      --gold-rule:  rgba(232,184,74,0.18);
+      --card-bg:    #FAF8F4;
+      --card-title: #1A1A14;
+      --card-sub:   #8C7E6A;
+      --card-border:#0E1330;
+      --d-head:     rgba(255,255,255,0.92);
+      --d-sub:      rgba(255,255,255,0.58);
+      --d-meta:     rgba(255,255,255,0.30);
+      --serif:      'Cormorant Garamond', Georgia, serif;
+      --serif-sc:   'Cormorant SC', Georgia, serif;
+    }
+
+    html, body {
+      background: var(--dark);
+      color: var(--d-head);
+      font-family: var(--serif);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    .nk-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 40px;
+      max-width: 1040px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 100;
+    }
+
+    .nk-nav-logo img { height: 34px; width: auto; display: block; }
+
+    .nk-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .nk-nav-links a {
+      font-family: var(--serif-sc);
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.45);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nk-nav-links a:hover { color: rgba(255,255,255,0.88); }
+
+    .nk-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+
+    .nk-hamburger span {
+      display: block;
+      width: 22px;
+      height: 1.5px;
+      background: rgba(255,255,255,0.45);
+      border-radius: 1px;
+      transition: all 0.25s;
+    }
+
+    .nk-mobile-menu {
+      display: none;
+      flex-direction: column;
+      gap: 0;
+      background: var(--dark-surf);
+      border-bottom: 1px solid var(--gold-rule);
+      padding: 8px 0;
+    }
+
+    .nk-mobile-menu.open { display: flex; }
+
+    .nk-mobile-menu a {
+      font-family: var(--serif-sc);
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      padding: 14px 32px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .nk-mobile-menu a:last-child { border-bottom: none; }
+
+    /* ── HERO ── */
+    .nk-hero {
+      min-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 40px;
+      max-width: 820px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .nk-hero::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 70% 20%, rgba(232,184,74,0.05) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 60% at 20% 80%, rgba(14,19,48,0.3) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── SECTIONS ── */
+    .nk-section {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 100px 40px;
+      border-top: 1px solid rgba(232,184,74,0.10);
+    }
+
+    .nk-rule { border: none; border-top: 1px solid var(--gold-rule); margin: 72px 0; }
+
+    /* ── ROUTING CARDS ── */
+    .nk-option {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      border-radius: 14px;
+      margin-bottom: 10px;
+      background: #FFFFFF;
+      text-decoration: none;
+      position: relative;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .nk-option:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+
+    .nk-option::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      padding: 1.5px;
+      background: linear-gradient(125deg, rgba(232,184,74,0.25) 0%, rgba(232,184,74,0.9) 35%, rgba(245,208,100,1.0) 50%, rgba(232,184,74,0.9) 65%, rgba(232,184,74,0.25) 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .nk-icon {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      min-height: 40px;
+      aspect-ratio: 1/1;
+      border-radius: 50%;
+      background: #FAF8F4;
+      border: 1px solid #A8721A;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--gold-mid);
+    }
+
+    /* ── LIST ITEMS ── */
+    .nk-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px;
+      border-radius: 14px;
+      margin-bottom: 8px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      text-decoration: none;
+      transition: transform 0.15s;
+    }
+
+    .nk-list-item:hover { transform: translateY(-1px); }
+
+    /* ── FOOTER ── */
+    .nk-footer {
+      border-top: 1px solid var(--gold-rule);
+      margin-top: 80px;
+      padding: 64px 40px 48px;
+    }
+
+    .nk-footer-inner {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .nk-footer-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      gap: 24px;
+    }
+
+    .nk-footer-brand {
+      font-family: var(--serif);
+      font-size: 15px;
+      font-style: italic;
+      font-weight: 300;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.5;
+    }
+
+    .nk-footer-socials {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+
+    .nk-footer-socials a {
+      color: rgba(255,255,255,0.28);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+    }
+
+    .nk-footer-socials a:hover { color: var(--gold); }
+
+    .nk-footer-rule {
+      height: 1px;
+      background: var(--gold-rule);
+      margin-bottom: 28px;
+    }
+
+    .nk-footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .nk-footer-bottom span {
+      font-family: var(--serif-sc);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.20);
+    }
+
+    .nk-footer-legal {
+      display: flex;
+      gap: 20px;
+    }
+
+    .nk-footer-legal a {
+      font-family: var(--serif-sc);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.20);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nk-footer-legal a:hover { color: rgba(255,255,255,0.50); }
+
+    /* ── MOBILE ── */
+    @media (max-width: 640px) {
+      .nk-nav { padding: 20px 24px; }
+      .nk-nav-links { display: none; }
+      .nk-hamburger { display: flex; }
+      .nk-hero { padding: 0 24px; min-height: 100svh; }
+      .nk-section { padding: 72px 24px; }
+      .nk-footer { padding: 48px 24px 40px; }
+      .nk-footer-top { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .nk-footer-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nk-nav">
+  <a href="/index.html" class="nk-nav-logo">
+    <img src="/logo_nav.png" alt="NextUs">
+  </a>
+  <div class="nk-nav-links">
+    <a href="/index.html">Home</a>
+    <a href="/life-os.html">Life OS</a>
+    <a href="/nextus.html">NextUs</a>
+    <a href="/work-with-nik.html">Work with Nik</a>
+    <a href="/about.html">About</a>
+    <a href="/podcast.html">Podcast</a>
   </div>
+  <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob').classList.toggle('open');">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
-<style>
-.nk-wrap { padding-top: 64px; }
-.nk-hero-section { padding-top: 64px !important; }
-</style>
+<div id="nk-mob" class="nk-mobile-menu">
+  <a href="/index.html">Home</a>
+  <a href="/life-os.html">Life OS</a>
+  <a href="/nextus.html">NextUs</a>
+  <a href="/work-with-nik.html">Work with Nik</a>
+  <a href="/about.html">About</a>
+  <a href="/podcast.html">Podcast</a>
+</div>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
+<!-- HERO -->
+<section class="nk-hero">
+  <div style="position:relative;z-index:1;">
 
-<style>
-html, body { background: #080C18 !important; }
+    <!-- Hero logo — centred -->
+    <div style="text-align:center;margin-bottom:56px;">
+      <img src="/logo_hero.png" alt="NextUs" style="height:120px;width:auto;display:inline-block;opacity:0.92;">
+    </div>
 
-/* ── Hero ── */
-.nk-hero-section {
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 80px 32px 40px;
-  max-width: 820px;
-  margin: 0 auto;
-  position: relative;
-}
+    <div style="width:28px;height:1px;background:#E8B84A;opacity:0.45;margin-bottom:36px;"></div>
 
-.nk-hero-section::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 60% 50% at 70% 20%, rgba(232,184,74,0.05) 0%, transparent 65%),
-    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(14,19,48,0.3) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ── Desktop font sizes (default) ── */
-.nk-hero-h1   { font-size: clamp(38px, 6vw, 68px); line-height: 1.12; }
-.nk-hero-sub  { font-size: clamp(15px, 1.8vw, 18px); }
-.nk-hero-label { font-size: 10px; }
-.nk-section-h2 { font-size: clamp(22px, 3vw, 32px); }
-.nk-card-title { font-size: 16px; }
-.nk-card-sub  { font-size: 13px; }
-
-/* ── Sections ── */
-.nk-section {
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 80px 32px 80px;
-  border-top: 1px solid rgba(232,184,74,0.10);
-}
-
-.nk-option {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 18px;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  background: #FFFFFF;
-  text-decoration: none;
-  position: relative;
-}
-
-.nk-option::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 12px;
-  padding: 1.5px;
-  background: linear-gradient(125deg, rgba(232,184,74,0.25) 0%, rgba(232,184,74,0.9) 35%, rgba(245,208,100,1.0) 50%, rgba(232,184,74,0.9) 65%, rgba(232,184,74,0.25) 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-.nk-icon {
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
-  min-height: 36px;
-  border-radius: 50%;
-  background: #FAF8F4;
-  border: 1px solid #A8721A;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  color: #df9600;
-  aspect-ratio: 1 / 1;
-}
-
-.nk-list-item {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 18px; border-radius: 12px; margin-bottom: 8px;
-  background: #FAF8F4; border: 1px solid #0E1330; text-decoration: none;
-}
-
-/* ── Mobile overrides ── */
-@media (max-width: 640px) {
-  .nk-hero-section {
-    padding: 80px 24px 40px;
-    max-width: 100%;
-  }
-  .nk-section { padding: 48px 20px 48px; }
-  .nk-icon { width: 36px; height: 36px; min-width: 36px; min-height: 36px; }
-  .nk-hero-h1    { font-size: clamp(48px, 15vw, 72px); line-height: 1.08; }
-  .nk-hero-sub   { font-size: clamp(22px, 5.5vw, 28px); }
-  .nk-hero-label { font-size: clamp(14px, 3.5vw, 18px); }
-  .nk-section-h2 { font-size: clamp(32px, 8vw, 44px); }
-  .nk-card-title { font-size: clamp(20px, 5vw, 26px); }
-  .nk-card-sub   { font-size: clamp(17px, 4vw, 22px); }
-}
-</style>
-
-<!-- ── HERO ── -->
-<section class="nk-hero-section" style="text-align:center;align-items:center;">
-  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;">
-    <img src="/logo_hero.png" alt="NextUs" style="height:120px;width:120px;display:block;object-fit:contain;margin-bottom:28px;">
-
-    <span class="nk-hero-label" style="font-family:'Cormorant SC',serif;font-weight:600;letter-spacing:0.22em;color:#F5D080;display:block;margin-bottom:20px;">NextUs · Life OS</span>
-
-    <h1 class="nk-hero-h1" style="font-family:'Cormorant Garamond',serif;font-weight:300;color:rgba(255,255,255,0.92);line-height:1.12;letter-spacing:-0.01em;margin-bottom:18px;text-align:center;">
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(42px,6vw,72px);font-weight:300;color:rgba(255,255,255,0.92);line-height:1.1;letter-spacing:-0.01em;margin-bottom:24px;">
       A life worth living.<br>
       <em style="font-style:italic;color:rgba(232,184,74,0.82);">A future worth building.</em>
     </h1>
 
-    <p class="nk-hero-sub" style="font-family:'Cormorant Garamond',serif;font-weight:300;font-style:italic;color:rgba(255,255,255,0.72);line-height:1.65;margin-bottom:48px;max-width:520px;text-align:center;">For people ready to live fully — and step towards a future worth building.</p>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(16px,1.8vw,19px);font-weight:300;font-style:italic;color:rgba(255,255,255,0.50);line-height:1.7;margin-bottom:56px;max-width:460px;">Tools and coaching for people who take their lives seriously.</p>
 
-    <a href="#start" style="display:inline-block;padding:14px 32px;border-radius:40px;border:1px solid rgba(232,184,74,0.40);color:rgba(232,184,74,0.88);font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.16em;text-decoration:none;">Where do I start? →</a>
+    <a href="#start" style="display:inline-block;padding:15px 34px;border-radius:40px;border:1px solid rgba(232,184,74,0.40);color:rgba(232,184,74,0.88);font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.16em;text-decoration:none;transition:border-color 0.2s,color 0.2s;">Where do I start? →</a>
   </div>
 
-  <div style="position:absolute;bottom:32px;left:50%;transform:translateX(-50%);z-index:1;text-align:center;">
-    <p style="font-family:'Cormorant SC',serif;font-size:26px;letter-spacing:0.14em;color:#E8B84A;opacity:0.4;">nextus.world</p>
+  <div style="position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:1;text-align:center;">
+    <p style="font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.14em;color:#E8B84A;opacity:0.35;">nextus.world</p>
   </div>
 </section>
 
-<!-- ── ROUTING ── -->
+<!-- ROUTING -->
 <section id="start" class="nk-section">
+  <div style="width:1px;height:56px;background:rgba(232,184,74,0.15);margin:0 auto 64px;"></div>
 
-  <div style="width:1px;height:48px;background:rgba(232,184,74,0.18);margin:0 auto 56px;"></div>
+  <span style="font-family:'Cormorant SC',serif;font-size:10px;font-weight:600;letter-spacing:0.2em;color:#F5D080;display:block;margin-bottom:16px;">Where you are</span>
 
-  <span style="font-family:'Cormorant SC',serif;font-size:26px;font-weight:600;letter-spacing:0.2em;color:#F5D080;display:block;margin-bottom:14px;">Where you are</span>
+  <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,44px);font-weight:300;color:rgba(255,255,255,0.92);line-height:1.16;margin-bottom:12px;">What brought you here today?</h2>
 
-  <h2 class="nk-section-h2" style="font-family:'Cormorant Garamond',serif;font-weight:300;color:rgba(255,255,255,0.92);line-height:1.18;margin-bottom:10px;">What brought you here today?</h2>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:300;font-style:italic;color:rgba(255,255,255,0.40);margin-bottom:40px;max-width:420px;">No wrong answer. This just points you somewhere useful.</p>
 
-  <p style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;font-style:italic;color:rgba(255,255,255,0.62);margin-bottom:36px;max-width:440px;">No wrong answer. This just points you somewhere useful.</p>
-
-  <!-- Option 1 -->
   <a href="/life-os.html#foundation" class="nk-option">
     <div class="nk-icon">◎</div>
     <div>
-      <div class="nk-card-title" style="font-family:'Cormorant Garamond',serif;font-weight:400;color:#1A1A14;margin-bottom:3px;">Something feels off</div>
-      <div class="nk-card-sub" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#BFB49E;">You'll get a 20-minute guided audio practice to settle and reground</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:#1A1A14;margin-bottom:4px;">Something feels off</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:#BFB49E;">You'll get a 20-minute guided audio practice to settle and reground</div>
     </div>
   </a>
 
-  <!-- Option 2 -->
   <a href="/life-os.html#orienteering" class="nk-option">
     <div class="nk-icon">◈</div>
     <div>
-      <div class="nk-card-title" style="font-family:'Cormorant Garamond',serif;font-weight:400;color:#1A1A14;margin-bottom:3px;">I want more clarity</div>
-      <div class="nk-card-sub" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#BFB49E;">You'll get an honest map of where you are across every domain — in 10 minutes</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:#1A1A14;margin-bottom:4px;">I want more clarity</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:#BFB49E;">You'll get an honest map of where you are across every domain — in 10 minutes</div>
     </div>
   </a>
 
-  <!-- Option 3 -->
   <a href="/nextus.html" class="nk-option">
     <div class="nk-icon">◉</div>
     <div>
-      <div class="nk-card-title" style="font-family:'Cormorant Garamond',serif;font-weight:400;color:#1A1A14;margin-bottom:3px;">I want to contribute</div>
-      <div class="nk-card-sub" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#BFB49E;">You'll find the civilisational map and where your work belongs in it</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:#1A1A14;margin-bottom:4px;">I want to contribute</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:#BFB49E;">You'll find the civilisational map and where your work belongs in it</div>
     </div>
   </a>
 
-  <!-- Option 4 -->
   <a href="/work-with-nik.html" class="nk-option">
     <div class="nk-icon">◐</div>
     <div>
-      <div class="nk-card-title" style="font-family:'Cormorant Garamond',serif;font-weight:400;color:#1A1A14;margin-bottom:3px;">I heard Nik's work</div>
-      <div class="nk-card-sub" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:#BFB49E;">You'll find the coaching offer and a way to book a conversation</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:400;color:#1A1A14;margin-bottom:4px;">I heard Nik's work</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:#BFB49E;">You'll find the coaching offer and a way to book a conversation</div>
     </div>
   </a>
 
-  <a href="/life-os.html" style="display:block;text-align:center;font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;color:#E8B84A;margin-top:18px;text-decoration:none;">or show me everything →</a>
-
+  <a href="/life-os.html" style="display:block;text-align:center;font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:#E8B84A;margin-top:22px;text-decoration:none;">or show me everything →</a>
 </section>
 
-<!-- ── EMAIL CAPTURE ── -->
+<!-- EMAIL CAPTURE -->
 <section class="nk-section" style="text-align:center;">
+  <div style="width:28px;height:1px;background:#E8B84A;opacity:0.35;margin:0 auto 36px;"></div>
 
-  <div style="width:28px;height:1px;background:#E8B84A;opacity:0.35;margin:0 auto 28px;"></div>
+  <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(24px,3vw,34px);font-weight:300;color:rgba(255,255,255,0.88);margin-bottom:12px;">Stay close as this gets built.</h2>
 
-  <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(26px,3vw,36px);font-weight:300;color:rgba(255,255,255,0.88);margin-bottom:8px;">Stay close as this gets built.</h2>
-
-  <p style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;font-style:italic;color:rgba(255,255,255,0.58);margin-bottom:32px;max-width:360px;margin-left:auto;margin-right:auto;">No noise. Just the next useful thing, when it's ready.</p>
+  <p style="font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:300;font-style:italic;color:rgba(255,255,255,0.35);margin-bottom:40px;max-width:340px;margin-left:auto;margin-right:auto;">No noise. Just the next useful thing, when it's ready.</p>
 
   <div style="max-width:380px;margin:0 auto;">
     <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
-    <form action="https://app.kit.com/forms/9215183/subscriptions" class="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5" min-width="400 500 600 700 800">
+    <form action="https://app.kit.com/forms/9215183/subscriptions" class="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
       <div data-style="clean">
         <ul class="formkit-alert formkit-alert-error" data-element="errors" data-group="alert"></ul>
         <div data-element="fields" data-stacked="true" class="seva-fields formkit-fields">
           <div class="formkit-field">
-            <input class="formkit-input" name="email_address" placeholder="your email" required="" type="email" style="width:100%;padding:14px 16px;margin-bottom:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:28px;color:rgba(255,255,255,0.88);">
+            <input class="formkit-input" name="email_address" placeholder="your email" required type="email"
+              style="width:100%;padding:15px 18px;margin-bottom:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10);border-radius:12px;font-family:'Cormorant Garamond',serif;font-size:15px;color:rgba(255,255,255,0.88);outline:none;">
           </div>
-          <button data-element="submit" class="formkit-submit" style="width:100%;padding:15px;background:#E8B84A;border:1px solid #A8721A;border-radius:10px;font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.16em;color:#1A0F00;cursor:pointer;"><span>Join us →</span></button>
+          <button data-element="submit" class="formkit-submit"
+            style="width:100%;padding:16px;background:#E8B84A;border:1px solid #A8721A;border-radius:12px;font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.16em;color:#1A0F00;cursor:pointer;">
+            <span>Join us →</span>
+          </button>
         </div>
       </div>
     </form>
   </div>
-
 </section>
 
-<!-- ── WHERE NEXT — minimal ── -->
-<section class="nk-section" style="padding-bottom:120px;">
+<!-- WHERE NEXT -->
+<section class="nk-section" style="padding-bottom:100px;">
+  <span style="font-family:'Cormorant SC',serif;font-size:10px;font-weight:600;letter-spacing:0.2em;color:#F5D080;display:block;margin-bottom:10px;">Work with Nik</span>
 
-  <span style="font-family:'Cormorant SC',serif;font-size:26px;font-weight:600;letter-spacing:0.2em;color:#F5D080;display:block;margin-bottom:8px;">Work with Nik</span>
-
-  <a href="/work-with-nik.html" style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-radius:12px;margin-bottom:28px;background:#0D1121;border:1px solid rgba(232,184,74,0.18);text-decoration:none;">
+  <a href="/work-with-nik.html" style="display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-radius:14px;margin-bottom:32px;background:#0D1121;border:1px solid rgba(232,184,74,0.18);text-decoration:none;transition:transform 0.15s;">
     <div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:rgba(255,255,255,0.88);margin-bottom:3px;">Book a discovery call</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;color:rgba(255,255,255,0.50);">30 minutes · no obligation</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:rgba(255,255,255,0.88);margin-bottom:4px;">Book a discovery call</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:rgba(255,255,255,0.28);">30 minutes · no obligation</div>
+    </div>
+    <span style="color:#E8B84A;opacity:0.6;font-size:18px;">→</span>
+  </a>
+
+  <span style="font-family:'Cormorant SC',serif;font-size:10px;font-weight:600;letter-spacing:0.2em;color:#F5D080;display:block;margin-bottom:10px;">Explore</span>
+
+  <a href="/life-os.html" class="nk-list-item">
+    <div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#1A1A14;margin-bottom:3px;">Life OS</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:#8C7E6A;">Personal navigation — five tools for your life</div>
     </div>
     <span style="color:#E8B84A;opacity:0.6;font-size:16px;">→</span>
   </a>
 
-  <span style="font-family:'Cormorant SC',serif;font-size:26px;font-weight:600;letter-spacing:0.2em;color:#F5D080;display:block;margin-bottom:8px;">Explore</span>
-
-  <a href="/life-os.html" class="nk-list-item">
-    <div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#1A1A14;margin-bottom:2px;">Life OS</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;color:#8C7E6A;">Personal navigation — five tools for your life</div>
-    </div>
-    <span style="color:#E8B84A;opacity:0.6;">→</span>
-  </a>
-
   <a href="/nextus.html" class="nk-list-item">
     <div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#1A1A14;margin-bottom:2px;">NextUs</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;color:#8C7E6A;">The civilisational project — for the larger work</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#1A1A14;margin-bottom:3px;">NextUs</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:#8C7E6A;">The civilisational project — for the larger work</div>
     </div>
-    <span style="color:#E8B84A;opacity:0.6;">→</span>
+    <span style="color:#E8B84A;opacity:0.6;font-size:16px;">→</span>
   </a>
 
   <a href="/podcast.html" class="nk-list-item">
     <div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:28px;color:#1A1A14;margin-bottom:2px;">The Podcast</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-style:italic;color:#8C7E6A;">220+ episodes since 2015</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:#1A1A14;margin-bottom:3px;">The Podcast</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:13px;font-style:italic;color:#8C7E6A;">220+ episodes since 2015</div>
     </div>
-    <span style="color:#E8B84A;opacity:0.6;">→</span>
+    <span style="color:#E8B84A;opacity:0.6;font-size:16px;">→</span>
   </a>
-
 </section>
 
-<!-- ── FOOTER ── -->
-<footer style="background:#080C18;border-top:1px solid rgba(232,184,74,0.08);padding:48px 32px 40px;margin-top:0;">
-  <div style="max-width:1080px;margin:0 auto;">
-    <a href="/index.html" style="font-family:'Cormorant SC',serif;font-size:16px;letter-spacing:0.14em;color:rgba(255,255,255,0.88);text-decoration:none;display:block;margin-bottom:16px;">NextUs</a>
-    <p style="font-family:'Cormorant Garamond',serif;font-size:16px;color:rgba(255,255,255,0.35);margin-bottom:4px;">©2026. All rights reserved.</p>
-    <p style="font-family:'Cormorant Garamond',serif;font-size:16px;color:rgba(255,255,255,0.35);margin-bottom:24px;">Powered by connection, clarity, and community.</p>
-    <div style="display:flex;flex-wrap:wrap;gap:20px;">
-      <a href="/life-os.html" style="font-family:'Cormorant SC',serif;font-size:26px;letter-spacing:0.14em;color:rgba(255,255,255,0.30);text-decoration:none;">Life OS</a>
-      <a href="/podcast.html" style="font-family:'Cormorant SC',serif;font-size:26px;letter-spacing:0.14em;color:rgba(255,255,255,0.30);text-decoration:none;">Podcast</a>
-      <a href="/nextus.html" style="font-family:'Cormorant SC',serif;font-size:26px;letter-spacing:0.14em;color:rgba(255,255,255,0.30);text-decoration:none;">NextUs</a>
-      <a href="/work-with-nik.html" style="font-family:'Cormorant SC',serif;font-size:26px;letter-spacing:0.14em;color:rgba(255,255,255,0.30);text-decoration:none;">Work With Nik</a>
-      <a href="/about.html" style="font-family:'Cormorant SC',serif;font-size:26px;letter-spacing:0.14em;color:rgba(255,255,255,0.30);text-decoration:none;">About</a>
-      <a href="/appendix.html" style="font-family:'Cormorant SC',serif;font-size:26px;letter-spacing:0.14em;color:rgba(255,255,255,0.30);text-decoration:none;">Appendix</a>
+<!-- FOOTER -->
+<footer class="nk-footer">
+  <div class="nk-footer-inner">
+    <div class="nk-footer-top">
+      <p class="nk-footer-brand">A life worth living. A future worth building.</p>
+      <div class="nk-footer-socials">
+        <a href="https://www.instagram.com/nikwood.world/" target="_blank" aria-label="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="https://www.youtube.com/@NextUs-World" target="_blank" aria-label="YouTube">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="https://substack.com/@nextus" target="_blank" aria-label="Substack">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.65;"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></svg>
+        </a>
+        <a href="https://open.spotify.com/show/65LzAbOCuOZW7mvHTKsIbY" target="_blank" aria-label="Podcast">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 11.8c2.2-.7 5.8-.6 8 1.2"/><path d="M6.5 14.5c3-1.3 7.5-.8 10 1.5"/><path d="M9.5 9c1.5-.4 4.5-.3 6.5.8"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="nk-footer-rule"></div>
+    <div class="nk-footer-bottom">
+      <span>© 2025 NextUs · Nik Wood</span>
+      <div class="nk-footer-legal">
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+      </div>
     </div>
   </div>
 </footer>
+
+</body>
+</html>
