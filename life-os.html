@@ -26,6 +26,36 @@
 .nk-hero-section { padding-top: 64px !important; }
 </style>
 
+<style>
+/* ── Desktop font revert (641px+) ── */
+@media (min-width: 641px) {
+  /* Card subtitles */
+  .nk-card-sub, [style*="color:#BFB49E"], [style*="color:#8C7E6A"] { font-size: 13px !important; }
+  /* Card titles */
+  .nk-card-title { font-size: 16px !important; }
+  /* Body text */
+  .nk-body { font-size: 16px !important; }
+  /* Hero subtitle */
+  .nk-hero-sub { font-size: clamp(15px,1.8vw,18px) !important; }
+  /* Hero label */
+  .nk-hero-label { font-size: 10px !important; }
+  /* Section headings */
+  .nk-section-h2 { font-size: clamp(22px,3vw,32px) !important; }
+  /* Eyebrow labels */
+  [style*="letter-spacing:0.2em;color:#F5D080"],
+  [style*="letter-spacing:0.18em"],
+  [style*="letter-spacing:0.22em"] { font-size: 10px !important; }
+  /* General 26px content back to 16px */
+  p[style*="font-size:26px"] { font-size: 16px !important; }
+  div[style*="font-size:26px"] { font-size: 13px !important; }
+  div[style*="font-size:28px"] { font-size: 16px !important; }
+  /* Clamp overrides */
+  h2[style*="clamp(26px"] { font-size: clamp(22px,3vw,32px) !important; }
+  p[style*="clamp(26px"] { font-size: clamp(15px,1.8vw,18px) !important; }
+}
+</style>
+
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
 
