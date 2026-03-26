@@ -1,165 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NextUs · A future worth building</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --dark:#080C18;--dark-surf:#0D1121;--gold:#E8B84A;--gold-mid:#df9600;--gold-dark:#A8721A;
-      --gold-rule:rgba(232,184,74,0.18);--card-bg:#FAF8F4;--card-title:#1A1A14;--card-border:#0E1330;
-      --d-head:rgba(255,255,255,0.92);--d-sub:rgba(255,255,255,0.58);
-      --serif:'Cormorant Garamond',Georgia,serif;--serif-sc:'Cormorant SC',Georgia,serif;
+      --bg:#FFFFFF; --bg-warm:#F5F2EC; --bg-dark:#0F1523;
+      --gold:#C8922A; --gold-rule:rgba(200,146,42,0.20); --gold-faint:rgba(200,146,42,0.08);
+      --text-head:#0F1523; --text-body:#0F1523; --text-meta:rgba(15,21,35,0.78); --text-ghost:rgba(15,21,35,0.55);
+      --serif:'Cormorant Garamond',Georgia,serif; --serif-sc:'Cormorant SC',Georgia,serif;
+      --btn-border:1.5px solid rgba(200,146,42,0.78); --btn-bg:rgba(200,146,42,0.05);
+      --btn-color:#C8922A; --btn-size:16px; --btn-radius:40px;
     }
-    html, body { background:var(--dark);color:var(--d-head);font-family:var(--serif);-webkit-font-smoothing:antialiased; }
-
-    .nk-nav { display:flex;align-items:center;justify-content:space-between;padding:28px 40px;max-width:1040px;margin:0 auto;position:relative;z-index:100; }
+    html, body { background:var(--bg);color:var(--text-body);font-family:var(--serif);-webkit-font-smoothing:antialiased; }
+    .nk-btn { display:inline-block;padding:16px 36px;border-radius:var(--btn-radius);border:var(--btn-border);background:var(--btn-bg);color:var(--btn-color);font-family:var(--serif-sc);font-size:var(--btn-size);font-weight:600;letter-spacing:0.16em;text-decoration:none;cursor:pointer;transition:all 0.2s; }
+    .nk-btn:hover { transform:translateY(-2px);box-shadow:0 8px 28px rgba(15,21,35,0.08);border-color:rgba(200,146,42,1);background:rgba(200,146,42,0.08); }
+    .nk-nav { position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--gold-rule); }
+    .nk-nav-inner { max-width:1040px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px; }
     .nk-nav-logo img { height:34px;width:auto;display:block; }
     .nk-nav-links { display:flex;align-items:center;gap:40px; }
-    .nk-nav-links a { font-family:var(--serif-sc);font-size:14px;letter-spacing:0.08em;color:rgba(255,255,255,0.78);text-decoration:none;transition:color 0.2s; }
-    .nk-nav-links a:hover { color:rgba(255,255,255,1.0); }
+    .nk-nav-links a { font-family:var(--serif-sc);font-size:13px;letter-spacing:0.10em;color:var(--text-meta);text-decoration:none;transition:color 0.2s; }
+    .nk-nav-links a:hover { color:var(--text-head); }
     .nk-hamburger { display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px; }
-    .nk-hamburger span { display:block;width:22px;height:1.5px;background:rgba(255,255,255,0.45);border-radius:1px; }
-    .nk-mobile-menu { display:none;flex-direction:column;background:var(--dark-surf);border-bottom:1px solid var(--gold-rule);padding:8px 0; }
+    .nk-hamburger span { display:block;width:22px;height:1.5px;background:var(--text-meta);border-radius:1px; }
+    .nk-mobile-menu { display:none;flex-direction:column;background:var(--bg);border-bottom:1px solid var(--gold-rule);padding:8px 0; }
     .nk-mobile-menu.open { display:flex; }
-    .nk-mobile-menu a { font-family:var(--serif-sc);font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.55);text-decoration:none;padding:14px 32px;border-bottom:1px solid rgba(255,255,255,0.04); }
-
-    .nk-wrap { max-width:820px;margin:0 auto;padding:80px 40px 120px; }
+    .nk-mobile-menu a { font-family:var(--serif-sc);font-size:13px;letter-spacing:0.10em;color:var(--text-body);text-decoration:none;padding:14px 32px;border-bottom:1px solid var(--gold-faint); }
+    .nk-wrap { max-width:820px;margin:0 auto;padding:96px 40px 120px; }
+    .nk-section { max-width:820px;margin:0 auto;padding:96px 40px;border-top:1px solid var(--gold-rule); }
     .nk-rule { border:none;border-top:1px solid var(--gold-rule);margin:72px 0; }
-
-    .domain-row { display:flex;gap:28px;padding:16px 0;border-bottom:1px solid rgba(232,184,74,0.07);align-items:baseline; }
-    .domain-row:last-child { border-bottom:none; }
-    .domain-name { font-family:var(--serif-sc);font-size:12px;letter-spacing:0.12em;color:rgba(255,255,255,0.75);min-width:170px;flex-shrink:0; }
-    .domain-desc { font-size:14px;font-style:italic;color:rgba(255,255,255,0.35);line-height:1.6; }
-
-    .nk-footer { border-top:1px solid var(--gold-rule);margin-top:0;padding:64px 40px 48px; }
+    .nk-eyebrow { font-family:var(--serif-sc);font-size:13px;font-weight:600;letter-spacing:0.2em;color:#C8922A;display:block;margin-bottom:16px; }
+    .nk-option { display:flex;align-items:center;gap:18px;padding:20px 22px;border-radius:14px;margin-bottom:10px;background:rgba(200,146,42,0.05);border:1.5px solid rgba(200,146,42,0.78);text-decoration:none;transition:transform 0.15s,box-shadow 0.15s,border-color 0.2s; }
+    .nk-option:hover { transform:translateY(-2px);box-shadow:0 8px 28px rgba(15,21,35,0.08);border-color:rgba(200,146,42,1);background:rgba(200,146,42,0.08); }
+    .nk-option-icon { width:42px;height:42px;min-width:42px;aspect-ratio:1/1;border-radius:50%;background:rgba(200,146,42,0.05);border:1.5px solid rgba(200,146,42,0.78);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;color:#C8922A; }
+    .nk-option-title { font-family:var(--serif);font-size:17px;font-weight:400;color:#C8922A;margin-bottom:4px;line-height:1.2; }
+    .nk-option-sub { font-family:var(--serif);font-size:14px;color:var(--text-meta);line-height:1.4; }
+    .nk-option-arrow { font-size:16px;color:#C8922A;opacity:1;margin-left:auto;flex-shrink:0; }
+    .nk-list-item { display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-radius:14px;margin-bottom:8px;background:rgba(200,146,42,0.05);border:1.5px solid rgba(200,146,42,0.78);text-decoration:none;transition:transform 0.15s,box-shadow 0.15s; }
+    .nk-list-item:hover { transform:translateY(-2px);box-shadow:0 8px 28px rgba(15,21,35,0.08);border-color:rgba(200,146,42,1);background:rgba(200,146,42,0.08); }
+    .nk-list-title { font-family:var(--serif);font-size:16px;color:#C8922A;margin-bottom:3px; }
+    .nk-list-sub { font-family:var(--serif);font-size:14px;color:var(--text-meta); }
+    .nk-list-arrow { color:#C8922A;opacity:1;font-size:16px; }
+    .nk-quote { border-left:2px solid var(--gold-rule);padding:14px 0 14px 28px;margin:0 0 28px;max-width:600px; }
+    .nk-quote p { font-size:16px;font-style:italic;color:var(--text-meta);line-height:1.75;margin-bottom:10px; }
+    .nk-cite { font-family:var(--serif-sc);font-size:13px;letter-spacing:0.12em;color:#C8922A; }
+    .nk-card { background:rgba(200,146,42,0.05);border-radius:14px;padding:26px 28px;margin-bottom:10px;border:1.5px solid rgba(200,146,42,0.78); }
+    .nk-card-label { font-family:var(--serif-sc);font-size:13px;letter-spacing:0.16em;color:#C8922A;display:block;margin-bottom:10px; }
+    .nk-card-body { font-size:16px;color:var(--text-body);line-height:1.7; }
+    .nk-dark { background:var(--bg-dark);border-top:1.5px solid rgba(200,146,42,0.78);padding:96px 40px;text-align:center; }
+    .nk-dark-inner { max-width:820px;margin:0 auto; }
+    .nk-dark input { width:100%;padding:15px 18px;margin-bottom:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(200,146,42,0.25);border-radius:var(--btn-radius);font-family:var(--serif);font-size:16px;color:rgba(255,255,255,0.88);outline:none; }
+    .nk-dark input::placeholder { color:rgba(255,255,255,0.3);font-style:italic; }
+    .nk-dark-btn { width:100%;padding:16px;background:var(--gold);border:1px solid rgba(168,114,26,0.8);border-radius:var(--btn-radius);font-family:var(--serif-sc);font-size:16px;letter-spacing:0.16em;color:#FFFFFF;cursor:pointer;transition:opacity 0.2s; }
+    .nk-dark-btn:hover { opacity:0.88; }
+    .nk-footer { border-top:1px solid var(--gold-rule);padding:64px 40px 48px;background:var(--bg-warm); }
     .nk-footer-inner { max-width:820px;margin:0 auto; }
     .nk-footer-top { display:flex;align-items:center;justify-content:space-between;margin-bottom:40px;gap:24px; }
-    .nk-footer-brand { font-family:var(--serif);font-size:15px;font-style:italic;font-weight:300;color:rgba(255,255,255,0.35); }
+    .nk-footer-brand { font-family:var(--serif);font-size:15px;font-style:italic;font-weight:300;color:var(--text-meta); }
     .nk-footer-socials { display:flex;align-items:center;gap:20px;flex-shrink:0; }
-    .nk-footer-socials a { color:rgba(255,255,255,0.28);text-decoration:none;display:flex;align-items:center;transition:color 0.2s; }
-    .nk-footer-socials a:hover { color:var(--gold); }
+    .nk-footer-socials a { color:var(--text-ghost);text-decoration:none;display:flex;align-items:center;transition:color 0.2s; }
+    .nk-footer-socials a:hover { color:#C8922A; }
     .nk-footer-rule { height:1px;background:var(--gold-rule);margin-bottom:28px; }
     .nk-footer-bottom { display:flex;align-items:center;justify-content:space-between;gap:16px; }
-    .nk-footer-bottom span { font-family:var(--serif-sc);font-size:9px;letter-spacing:0.12em;color:rgba(255,255,255,0.20); }
+    .nk-footer-copy { font-family:var(--serif-sc);font-size:11px;letter-spacing:0.12em;color:var(--text-ghost); }
     .nk-footer-legal { display:flex;gap:20px; }
-    .nk-footer-legal a { font-family:var(--serif-sc);font-size:9px;letter-spacing:0.12em;color:rgba(255,255,255,0.20);text-decoration:none;transition:color 0.2s; }
-    .nk-footer-legal a:hover { color:rgba(255,255,255,0.50); }
-
+    .nk-footer-legal a { font-family:var(--serif-sc);font-size:11px;letter-spacing:0.12em;color:var(--text-ghost);text-decoration:none;transition:color 0.2s; }
+    .nk-footer-legal a:hover { color:var(--text-meta); }
     @media (max-width:640px) {
-      .nk-nav { padding:20px 24px; }
-      .nk-nav-links { display:none; }
-      .nk-hamburger { display:flex; }
-      .nk-wrap { padding:64px 24px 100px; }
-      .domain-row { flex-direction:column;gap:5px; }
-      .domain-name { min-width:auto; }
-      .nk-footer { padding:48px 24px 40px; }
+      .nk-nav-inner { padding:0 24px; } .nk-nav-links { display:none; } .nk-hamburger { display:flex; }
+      .nk-wrap { padding:80px 24px 100px; } .nk-section { padding:72px 24px; }
+      .nk-dark { padding:72px 24px; } .nk-footer { padding:48px 24px 40px; }
       .nk-footer-top { flex-direction:column;align-items:flex-start;gap:20px; }
       .nk-footer-bottom { flex-direction:column;align-items:flex-start;gap:12px; }
     }
   </style>
+  <style>
+    .domain-row { display:flex;gap:28px;padding:18px 0;border-bottom:1px solid var(--gold-faint);align-items:baseline; }
+    .domain-row:last-child { border-bottom:none; }
+    .domain-name { font-family:var(--serif-sc);font-size:13px;letter-spacing:0.12em;color:#C8922A;min-width:170px;flex-shrink:0; }
+    .domain-desc { font-size:16px;color:var(--text-meta);line-height:1.6; }
+    @media (max-width:640px) { .domain-row { flex-direction:column;gap:5px; } .domain-name { min-width:auto; } }
+  </style>
 </head>
 <body>
-
 <nav class="nk-nav">
-  <a href="/index.html" class="nk-nav-logo"><img src="/logo_nav.png" alt="NextUs"></a>
-  <div class="nk-nav-links">
-    <a href="/index.html">Home</a><a href="/life-os.html">Life OS</a><a href="/nextus.html">NextUs</a>
-    <a href="/work-with-nik.html">Work with Nik</a><a href="/about.html">About</a><a href="/podcast.html">Podcast</a>
+  <div class="nk-nav-inner">
+    <a href="/index.html" class="nk-nav-logo"><img src="/logo_nav.png" alt="NextUs"></a>
+    <div class="nk-nav-links">
+      <a href="/index.html">Home</a><a href="/life-os.html">Life OS</a><a href="/nextus.html">NextUs</a>
+      <a href="/work-with-nik.html">Work with Nik</a><a href="/about.html">About</a><a href="/podcast.html">Podcast</a>
+    </div>
+    <a href="/login.html" class="nk-btn" style="padding:10px 22px;font-size:13px;">Sign in</a>
+    <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob').classList.toggle('open');"><span></span><span></span><span></span></button>
   </div>
-  <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob').classList.toggle('open');"><span></span><span></span><span></span></button>
 </nav>
 <div id="nk-mob" class="nk-mobile-menu">
   <a href="/index.html">Home</a><a href="/life-os.html">Life OS</a><a href="/nextus.html">NextUs</a>
   <a href="/work-with-nik.html">Work with Nik</a><a href="/about.html">About</a><a href="/podcast.html">Podcast</a>
+  <a href="/login.html">Sign in →</a>
 </div>
-
 <div class="nk-wrap">
-
-  <span style="font-family:'Cormorant SC',serif;font-size:10px;font-weight:600;letter-spacing:0.2em;color:#F5D080;display:block;margin-bottom:18px;">NextUs</span>
-
-  <h1 style="font-family:'Cormorant Garamond',serif;font-size:clamp(38px,5.5vw,64px);font-weight:300;color:rgba(255,255,255,0.92);line-height:1.1;letter-spacing:-0.01em;margin-bottom:20px;">
-    A future worth<br>
-    <em style="font-style:italic;color:rgba(232,184,74,0.82);">building.</em>
+  <span class="nk-eyebrow">NextUs</span>
+  <h1 style="font-family:var(--serif);font-size:clamp(38px,5.5vw,64px);font-weight:300;color:#0F1523;line-height:1.08;letter-spacing:-0.02em;margin-bottom:20px;">
+    A future worth<br><em style="font-style:italic;color:#C8922A;">building.</em>
   </h1>
-
-  <p style="font-size:clamp(16px,1.8vw,19px);font-weight:300;color:rgba(255,255,255,0.78);line-height:1.7;margin-bottom:56px;max-width:520px;">A frame for the human project. Seven domains. One map of what humanity is working on — and what still needs attention.</p>
-
-  <span style="font-family:'Cormorant SC',serif;font-size:9px;letter-spacing:0.18em;color:#df9600;-webkit-text-stroke:0.4px rgba(10,15,30,0.10);display:block;margin-bottom:14px;">Explore the horizon goals</span>
-
+  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.7;margin-bottom:56px;max-width:520px;">Seven domains. One map of what humanity is working on — and what still needs attention.</p>
+  <span class="nk-eyebrow" style="font-size:11px;margin-bottom:14px;">Explore the horizon goals</span>
 </div>
-
-<!-- DOMAIN EXPLORER — full bleed -->
-<div style="width:96vw;margin-left:50%;transform:translateX(-50%);border-radius:14px;overflow:hidden;border:1px solid #0E1330;margin-bottom:0;">
+<div style="width:96vw;margin-left:50%;transform:translateX(-50%);border-radius:14px;overflow:hidden;border:1.5px solid rgba(200,146,42,0.78);margin-bottom:0;">
   <iframe src="https://next-us-hazel.vercel.app/" width="100%" height="780px" style="border:none;display:block;" title="NextUs Domain Explorer" loading="lazy"></iframe>
 </div>
-
 <div class="nk-wrap" style="padding-top:0;">
-
   <hr class="nk-rule">
-
-  <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(24px,3vw,34px);font-weight:300;color:rgba(255,255,255,0.92);margin-bottom:20px;">The problem is not effort.</h2>
-
-  <p style="font-size:15px;font-weight:300;color:rgba(255,255,255,0.55);line-height:1.8;margin-bottom:20px;max-width:600px;">Brilliant, committed people are working on the most consequential challenges of our time. The intelligence is there. The commitment is there.</p>
-
-  <p style="font-size:15px;font-weight:300;color:rgba(255,255,255,0.55);line-height:1.8;margin-bottom:20px;max-width:600px;">What is missing is a destination. There is no shared picture of what human flourishing actually looks like. You cannot coordinate around a destination that doesn't exist.</p>
-
-  <div style="border-left:2px solid rgba(232,184,74,0.35);padding:16px 0 16px 28px;margin:48px 0;max-width:580px;">
-    <p style="font-size:19px;font-style:italic;color:rgba(255,255,255,0.80);line-height:1.65;margin:0;">NextUs is an attempt to answer the question humanity has never seriously asked at civilisational scale: what would it actually look like if we were thriving?</p>
+  <h2 style="font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:#0F1523;margin-bottom:20px;">The problem is not effort.</h2>
+  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:20px;max-width:600px;">Brilliant, committed people are working on the most consequential challenges of our time. The intelligence is there. The will is there.</p>
+  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:20px;max-width:600px;">What is missing is a destination. No shared picture of what human flourishing actually looks like. You cannot coordinate around a destination that doesn't exist.</p>
+  <div style="border-left:2px solid var(--gold-rule);padding:20px 0 20px 28px;margin:48px 0;max-width:580px;">
+    <p style="font-size:20px;font-style:italic;font-weight:300;color:var(--text-head);line-height:1.65;margin:0;">What would it actually look like if we were thriving?</p>
   </div>
-
+  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:56px;max-width:600px;">NextUs is an attempt to answer that question at civilisational scale — and to make the answer visible enough to coordinate around.</p>
   <hr class="nk-rule">
-
-  <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(24px,3vw,34px);font-weight:300;color:rgba(255,255,255,0.92);margin-bottom:24px;">The seven domains.</h2>
-
+  <h2 style="font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:#0F1523;margin-bottom:24px;">Seven domains.</h2>
   <div style="margin-bottom:48px;">
-    <div class="domain-row"><span class="domain-name">Human Being</span><span class="domain-desc">Personal development, consciousness, inner work.</span></div>
-    <div class="domain-row"><span class="domain-name">Society</span><span class="domain-desc">Governance, culture, community, social structures.</span></div>
-    <div class="domain-row"><span class="domain-name">Nature</span><span class="domain-desc">Environment, ecology, planetary health, regeneration.</span></div>
-    <div class="domain-row"><span class="domain-name">Technology</span><span class="domain-desc">Tools, infrastructure, innovation — and its consequences.</span></div>
-    <div class="domain-row"><span class="domain-name">Finance &amp; Economy</span><span class="domain-desc">Resources, exchange, how we move what matters.</span></div>
-    <div class="domain-row"><span class="domain-name">Legacy</span><span class="domain-desc">Long-term thinking, intergenerational work.</span></div>
-    <div class="domain-row"><span class="domain-name">Vision</span><span class="domain-desc">Future imagination, collective direction.</span></div>
+    <div class="domain-row"><span class="domain-name">Human Being</span><span class="domain-desc">The inner life. Consciousness, development, the examined life.</span></div>
+    <div class="domain-row"><span class="domain-name">Society</span><span class="domain-desc">How we live together. Governance, culture, community.</span></div>
+    <div class="domain-row"><span class="domain-name">Nature</span><span class="domain-desc">The living world. Ecology, regeneration, planetary health.</span></div>
+    <div class="domain-row"><span class="domain-name">Technology</span><span class="domain-desc">The tools we build — and what they build in us.</span></div>
+    <div class="domain-row"><span class="domain-name">Finance &amp; Economy</span><span class="domain-desc">How we move resources. Exchange, value, what gets built.</span></div>
+    <div class="domain-row"><span class="domain-name">Legacy</span><span class="domain-desc">The long game. Intergenerational thinking, what endures.</span></div>
+    <div class="domain-row"><span class="domain-name">Vision</span><span class="domain-desc">Where we're going. Collective imagination, shared direction.</span></div>
   </div>
-
   <hr class="nk-rule">
-
-  <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(24px,3vw,34px);font-weight:300;color:rgba(255,255,255,0.92);margin-bottom:20px;">The fractal principle.</h2>
-
-  <p style="font-size:15px;font-weight:300;color:rgba(255,255,255,0.55);line-height:1.8;margin-bottom:56px;max-width:600px;">The same architecture that maps a single life across seven domains also maps civilisational life. Life OS and NextUs are the same orientation at different scales. The personal work and the civilisational work are not separate projects.</p>
-
-  <div style="border-left:2px solid rgba(232,184,74,0.25);padding:24px 28px;margin-bottom:64px;max-width:580px;background:rgba(232,184,74,0.04);border-radius:0 10px 10px 0;">
-    <p style="font-size:16px;font-weight:300;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:14px;">This is being built now. If something in you recognises the possibility — you are already part of it.</p>
-    <p style="font-size:14px;font-style:italic;color:rgba(232,184,74,0.65);margin:0;">A life worth living. A future worth building.</p>
+  <h2 style="font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:#0F1523;margin-bottom:20px;">The fractal principle.</h2>
+  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:48px;max-width:600px;">The same architecture that maps a single life maps civilisational life. Life OS and NextUs are the same orientation at different scales. The personal work and the civilisational work were never separate.</p>
+  <div style="background:rgba(200,146,42,0.05);border:1.5px solid rgba(200,146,42,0.78);border-radius:14px;padding:32px 36px;margin-bottom:64px;max-width:580px;">
+    <p style="font-size:17px;font-weight:300;color:var(--text-body);line-height:1.75;margin-bottom:14px;">This is being built now. If something in you recognises the possibility — you are already part of it.</p>
+    <p style="font-size:14px;font-style:italic;color:#C8922A;">A life worth living. A future worth building.</p>
   </div>
-
-  <hr class="nk-rule">
-
-  <p style="font-size:14px;font-style:italic;color:rgba(255,255,255,0.32);margin-bottom:24px;">Stay close as this gets built.</p>
-
-  <div style="max-width:400px;margin-bottom:48px;">
-    <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
-    <form action="https://app.kit.com/forms/9215183/subscriptions" class="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
-      <div data-style="clean">
-        <ul class="formkit-alert formkit-alert-error" data-element="errors" data-group="alert"></ul>
-        <div data-element="fields" data-stacked="true" class="seva-fields formkit-fields">
-          <div class="formkit-field"><input class="formkit-input" name="email_address" placeholder="your email" required type="email" style="width:100%;padding:15px 18px;margin-bottom:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10);border-radius:12px;font-family:'Cormorant Garamond',serif;font-size:15px;color:rgba(255,255,255,0.88);outline:none;"></div>
-          <button data-element="submit" class="formkit-submit" style="width:100%;padding:16px;background:#E8B84A;border:1px solid #A8721A;border-radius:12px;font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.16em;color:#1A0F00;cursor:pointer;"><span>Join us →</span></button>
-        </div>
-      </div>
-    </form>
-  </div>
-
   <div style="display:flex;flex-wrap:wrap;gap:12px;">
-    <a href="/life-os.html" style="display:inline-block;padding:14px 28px;border-radius:12px;border:1px solid rgba(255,255,255,0.09);font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.32);text-decoration:none;">Explore Life OS</a>
-    <a href="/work-with-nik.html" style="display:inline-block;padding:14px 28px;border-radius:12px;border:1px solid rgba(255,255,255,0.09);font-family:'Cormorant SC',serif;font-size:11px;letter-spacing:0.14em;color:rgba(255,255,255,0.32);text-decoration:none;">Work with Nik</a>
+    <a href="/life-os.html" class="nk-btn" style="background:transparent;">Explore Life OS</a>
+    <a href="/work-with-nik.html" class="nk-btn" style="background:transparent;">Work with Nik</a>
   </div>
-
 </div>
-
+<section class="nk-dark">
+  <div class="nk-dark-inner">
+    <div style="margin-bottom:24px;"><img src="/logo_nav.png" alt="NextUs" style="height:40px;width:auto;display:inline-block;opacity:0.78;"></div>
+    <div style="width:28px;height:1px;background:#C8922A;opacity:0.4;margin:0 auto 36px;"></div>
+    <h2 style="font-family:var(--serif);font-size:clamp(24px,3vw,34px);font-weight:300;color:rgba(255,255,255,0.92);margin-bottom:12px;">Stay close.</h2>
+    <p style="font-family:var(--serif);font-size:16px;font-weight:300;color:rgba(255,255,255,0.55);margin-bottom:40px;max-width:320px;margin-left:auto;margin-right:auto;">Updates as the world-model gets built.</p>
+    <div style="max-width:380px;margin:0 auto;">
+      <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
+      <form action="https://app.kit.com/forms/9215183/subscriptions" class="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
+        <div data-style="clean"><ul class="formkit-alert formkit-alert-error" data-element="errors" data-group="alert"></ul>
+        <div data-element="fields" data-stacked="true" class="seva-fields formkit-fields">
+          <div class="formkit-field"><input class="formkit-input" name="email_address" placeholder="your email" required type="email"></div>
+          <button data-element="submit" class="formkit-submit nk-dark-btn"><span>Join us →</span></button>
+        </div></div>
+      </form>
+    </div>
+  </div>
+</section>
 <footer class="nk-footer">
   <div class="nk-footer-inner">
     <div class="nk-footer-top">
@@ -167,17 +170,15 @@
       <div class="nk-footer-socials">
         <a href="https://www.instagram.com/nikwood.world/" target="_blank" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg></a>
         <a href="https://www.youtube.com/@NextUs-World" target="_blank" aria-label="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg></a>
-        <a href="https://substack.com/@nextus" target="_blank" aria-label="Substack"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.65;"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></svg></a>
+        <a href="https://substack.com/@nextus" target="_blank" aria-label="Substack"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.55;"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></svg></a>
         <a href="https://open.spotify.com/show/65LzAbOCuOZW7mvHTKsIbY" target="_blank" aria-label="Podcast"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 11.8c2.2-.7 5.8-.6 8 1.2"/><path d="M6.5 14.5c3-1.3 7.5-.8 10 1.5"/><path d="M9.5 9c1.5-.4 4.5-.3 6.5.8"/></svg></a>
       </div>
     </div>
     <div class="nk-footer-rule"></div>
     <div class="nk-footer-bottom">
-      <span>© 2025 NextUs · Nik Wood</span>
+      <span class="nk-footer-copy">© 2026 NextUs · Nik Wood</span>
       <div class="nk-footer-legal"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
     </div>
   </div>
 </footer>
-
-</body>
-</html>
+</body></html>
