@@ -76,6 +76,22 @@
       .nk-footer-top { flex-direction:column;align-items:flex-start;gap:20px; }
       .nk-footer-bottom { flex-direction:column;align-items:flex-start;gap:12px; }
     }
+
+    .nk-profile-dot {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(200,146,42,0.05);
+      border: 1.5px solid rgba(200,146,42,0.78);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif-sc, 'Cormorant SC', Georgia, serif);
+      font-size: 13px; font-weight: 600; color: #C8922A;
+      text-decoration: none; flex-shrink: 0;
+      transition: all 0.2s; cursor: pointer;
+    }
+    .nk-profile-dot:hover {
+      background: rgba(200,146,42,0.08);
+      border-color: rgba(200,146,42,1);
+      transform: translateY(-1px);
+    }
   </style>
   <style>
     .term { padding:20px 0;border-bottom:1px solid var(--gold-faint); }
@@ -94,6 +110,7 @@
       <a href="/work-with-nik.html">Work with Nik</a><a href="/about.html">About</a><a href="/podcast.html">Podcast</a>
     </div>
     <a href="/login.html" class="nk-btn" style="padding:10px 22px;font-size:13px;">Sign in</a>
+    <a href="/login.html" class="nk-profile-dot" id="nk-profile-dot" title="Sign in">→</a>
     <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob').classList.toggle('open');"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -108,12 +125,14 @@
   <p style="font-size:16px;font-weight:300;color:var(--text-meta);line-height:1.7;margin-bottom:64px;max-width:500px;">The vocabulary of this ecosystem — defined plainly.</p>
   <hr class="nk-rule" style="margin-top:0;">
   <span class="nk-eyebrow">The ecosystem</span>
-  <div class="term"><div class="term-name">Life OS</div><div class="term-def">The personal navigation ecosystem. Five tools for seeing where you are across all of life and moving from that clarity. <em>Foundation · The Map · Pulse · Purpose Piece · Horizon Leap.</em></div></div>
+  <div class="term"><div class="term-name">Life OS</div><div class="term-def">The personal navigation ecosystem. Five tools for seeing where you are across all of life and moving from that clarity. <em>Foundation · Orienteering · The Map · Pulse · Purpose Piece · Horizon Leap.</em></div></div>
   <div class="term"><div class="term-name">NextUs</div><div class="term-def">The civilisational coordination platform. A map of what humanity is working on across seven domains — and infrastructure for building toward a shared horizon.</div></div>
   <hr class="nk-rule">
   <span class="nk-eyebrow">The tools</span>
   <div class="term"><div class="term-name">Foundation</div><div class="term-def">The nervous system entry point. A guided audio practice for regulation — the internal floor from which honest self-assessment becomes possible.</div></div>
   <div class="term"><div class="term-name">Orienteering</div><div class="term-def">The conversational front door to Life OS. A short exchange that figures out where you are and points you toward what might genuinely help.</div></div>
+  <div class="term"><div class="term-name">Mirror</div><div class="term-def">Contributes by reflecting what is true — about human experience, the interior life, the living world — in ways others can finally see and receive. Artists, writers, musicians, filmmakers. Makes the invisible visible.</div></div>
+  <div class="term"><div class="term-name">Exemplar</div><div class="term-def">Contributes by being the example. Raises the standard of what is possible by embodying it fully — in public, under pressure, at the edge of human capacity. Athletes, master craftspeople, performers.</div></div>
   <div class="term"><div class="term-name">The Map</div><div class="term-def">The directional navigation tool. A ten-minute honest assessment across all seven Life OS domains. Produces a map of where you actually are.</div></div>
   <div class="term"><div class="term-name">Pulse</div><div class="term-def">The recurring rhythm tool. Daily check-in, weekly reflection, quarterly reset. Works at any stage — no prerequisites.</div></div>
   <div class="term"><div class="term-name">Purpose Piece</div><div class="term-def">The contribution archetype tool. Surfaces the natural role you're built to play — the archetype, the domain, the scale at which your effort compounds most.</div></div>
@@ -148,5 +167,29 @@
     </div>
   </div>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  (async function() {
+    try {
+      const sb = window.supabase.createClient(
+        "https://tphbpwzozkskytoichho.supabase.co",
+        "sb_publishable_M00GF1FWV5tgKHqmyRCZag_kJjgBJn-"
+      );
+      const { data: { session } } = await sb.auth.getSession();
+      const dot = document.getElementById("nk-profile-dot");
+      if (!dot) return;
+      if (session?.user) {
+        const initial = (session.user.email?.split("@")[0]?.charAt(0) || "?").toUpperCase();
+        dot.textContent = initial;
+        dot.href = "/profile.html";
+        dot.title = "Your profile";
+      } else {
+        dot.textContent = "→";
+        dot.href = "/login.html";
+        dot.title = "Sign in";
+      }
+    } catch(e) {}
+  })();
+</script>
 </body></html>
 

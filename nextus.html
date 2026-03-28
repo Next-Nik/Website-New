@@ -76,6 +76,22 @@
       .nk-footer-top { flex-direction:column;align-items:flex-start;gap:20px; }
       .nk-footer-bottom { flex-direction:column;align-items:flex-start;gap:12px; }
     }
+
+    .nk-profile-dot {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(200,146,42,0.05);
+      border: 1.5px solid rgba(200,146,42,0.78);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif-sc, 'Cormorant SC', Georgia, serif);
+      font-size: 13px; font-weight: 600; color: #C8922A;
+      text-decoration: none; flex-shrink: 0;
+      transition: all 0.2s; cursor: pointer;
+    }
+    .nk-profile-dot:hover {
+      background: rgba(200,146,42,0.08);
+      border-color: rgba(200,146,42,1);
+      transform: translateY(-1px);
+    }
   </style>
   <style>
     .domain-row { display:flex;gap:28px;padding:18px 0;border-bottom:1px solid var(--gold-faint);align-items:baseline; }
@@ -94,6 +110,7 @@
       <a href="/work-with-nik.html">Work with Nik</a><a href="/about.html">About</a><a href="/podcast.html">Podcast</a>
     </div>
     <a href="/login.html" class="nk-btn" style="padding:10px 22px;font-size:13px;">Sign in</a>
+    <a href="/login.html" class="nk-profile-dot" id="nk-profile-dot" title="Sign in">→</a>
     <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob').classList.toggle('open');"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -105,9 +122,9 @@
 <div class="nk-wrap">
   <span class="nk-eyebrow">NextUs</span>
   <h1 style="font-family:var(--serif);font-size:clamp(38px,5.5vw,64px);font-weight:300;color:#0F1523;line-height:1.08;letter-spacing:-0.02em;margin-bottom:20px;">
-    A future worth<br><em style="font-style:italic;color:#C8922A;">building.</em>
+    The future is not something<br><em style="font-style:italic;color:#C8922A;">that happens to us.</em>
   </h1>
-  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.7;margin-bottom:56px;max-width:520px;">Seven domains. One map of what humanity is working on — and what still needs attention.</p>
+  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.7;margin-bottom:56px;max-width:520px;">Seven domains. A living map of where we are — and the distance to where we are trying to go.</p>
   <span class="nk-eyebrow" style="font-size:11px;margin-bottom:14px;">Explore the horizon goals</span>
 </div>
 <div style="width:96vw;margin-left:50%;transform:translateX(-50%);border-radius:14px;overflow:hidden;border:1.5px solid rgba(200,146,42,0.78);margin-bottom:0;">
@@ -116,29 +133,34 @@
 <div class="nk-wrap" style="padding-top:0;">
   <hr class="nk-rule">
   <h2 style="font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:#0F1523;margin-bottom:20px;">The problem is not effort.</h2>
-  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:20px;max-width:600px;">Brilliant, committed people are working on the most consequential challenges of our time. The intelligence is there. The will is there.</p>
-  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:20px;max-width:600px;">What is missing is a destination. No shared picture of what human flourishing actually looks like. You cannot coordinate around a destination that doesn't exist.</p>
+  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:20px;max-width:600px;">The farmer in Kenya restoring soil carbon does not know about the financing mechanism in Amsterdam that could fund her work. The AI ethicist in Seoul cannot see the governance framework in Nairobi addressing exactly her problem. The investor in São Paulo has no map showing where the real gaps are.</p>
+  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:20px;max-width:600px;">Progress is happening. But it is fragmented, invisible, and uncoordinated. The cost is duplicated effort, misallocated resources, and builders doing important work in isolation — not knowing who else is carrying the same thing.</p>
   <div style="border-left:2px solid var(--gold-rule);padding:20px 0 20px 28px;margin:48px 0;max-width:580px;">
-    <p style="font-size:20px;font-style:italic;font-weight:300;color:var(--text-head);line-height:1.65;margin:0;">What would it actually look like if we were thriving?</p>
+    <p style="font-size:20px;font-style:italic;font-weight:300;color:var(--text-head);line-height:1.65;margin:0;">What we can see clearly, we can coordinate around. What we can coordinate around, we can change.</p>
   </div>
-  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:56px;max-width:600px;">NextUs is an attempt to answer that question at civilisational scale — and to make the answer visible enough to coordinate around.</p>
+  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:56px;max-width:600px;">NextUs is the perceptual layer. A living map of where humanity is trying to go — across seven domains, at every scale — so that the people already doing the work can find each other, aim at something worth building, and compound their effort rather than scatter it.</p>
   <hr class="nk-rule">
   <h2 style="font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:#0F1523;margin-bottom:24px;">Seven domains.</h2>
   <div style="margin-bottom:48px;">
-    <div class="domain-row"><span class="domain-name">Human Being</span><span class="domain-desc">The inner life. Consciousness, development, the examined life.</span></div>
-    <div class="domain-row"><span class="domain-name">Society</span><span class="domain-desc">How we live together. Governance, culture, community.</span></div>
-    <div class="domain-row"><span class="domain-name">Nature</span><span class="domain-desc">The living world. Ecology, regeneration, planetary health.</span></div>
-    <div class="domain-row"><span class="domain-name">Technology</span><span class="domain-desc">The tools we build — and what they build in us.</span></div>
-    <div class="domain-row"><span class="domain-name">Finance &amp; Economy</span><span class="domain-desc">How we move resources. Exchange, value, what gets built.</span></div>
-    <div class="domain-row"><span class="domain-name">Legacy</span><span class="domain-desc">The long game. Intergenerational thinking, what endures.</span></div>
-    <div class="domain-row"><span class="domain-name">Vision</span><span class="domain-desc">Where we're going. Collective imagination, shared direction.</span></div>
+    <div class="domain-row"><span class="domain-name">Human Being</span><span class="domain-desc">What it means to be fully human. The conditions for knowing yourself, developing fully, and contributing meaningfully.</span></div>
+    <div class="domain-row"><span class="domain-name">Society</span><span class="domain-desc">The architecture of collective life. How communities govern themselves, trust each other, and create shared futures.</span></div>
+    <div class="domain-row"><span class="domain-name">Nature</span><span class="domain-desc">The living systems that make all life possible. Humanity as participant, not owner.</span></div>
+    <div class="domain-row"><span class="domain-name">Technology</span><span class="domain-desc">The tools we build — and whether they extend our wisdom or outpace it.</span></div>
+    <div class="domain-row"><span class="domain-name">Finance &amp; Economy</span><span class="domain-desc">What we reward. How resources flow — and whether they move toward what sustains life or away from it.</span></div>
+    <div class="domain-row"><span class="domain-name">Legacy</span><span class="domain-desc">What we leave behind. Each generation's responsibility to the next seven.</span></div>
+    <div class="domain-row"><span class="domain-name">Vision</span><span class="domain-desc">The orienting capacity of civilisation. A shared picture of where we are going — and the infrastructure to move toward it together.</span></div>
   </div>
   <hr class="nk-rule">
-  <h2 style="font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:#0F1523;margin-bottom:20px;">The fractal principle.</h2>
-  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:48px;max-width:600px;">The same architecture that maps a single life maps civilisational life. Life OS and NextUs are the same orientation at different scales. The personal work and the civilisational work were never separate.</p>
-  <div style="background:rgba(200,146,42,0.05);border:1.5px solid rgba(200,146,42,0.78);border-radius:14px;padding:32px 36px;margin-bottom:64px;max-width:580px;">
-    <p style="font-size:17px;font-weight:300;color:var(--text-body);line-height:1.75;margin-bottom:14px;">This is being built now. If something in you recognises the possibility — you are already part of it.</p>
+  <h2 style="font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:#0F1523;margin-bottom:20px;">The same map at two scales.</h2>
+  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:20px;max-width:600px;">Life OS asks: how am I actually doing across all of life, and where should I focus next? NextUs asks the same question at civilisational scale. Same map. Same methodology. Same commitment to honest assessment over comfortable fiction.</p>
+  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:48px;max-width:600px;">The personal work and the civilisational work were never separate. Every person who finds their place in the map is also finding where their life touches the larger project. That is not a metaphor. It is the structure.</p>
+  <div style="background:rgba(200,146,42,0.05);border:1.5px solid rgba(200,146,42,0.78);border-radius:14px;padding:32px 36px;margin-bottom:32px;max-width:580px;">
+    <p style="font-size:17px;font-weight:300;color:var(--text-body);line-height:1.75;margin-bottom:14px;">Being human is an honour. It is also a responsibility. This is where you find yours.</p>
     <p style="font-size:14px;font-style:italic;color:#C8922A;">A life worth living. A future worth building.</p>
+  </div>
+  <div style="border-left:2px solid var(--gold-rule);padding:20px 0 20px 28px;margin-bottom:64px;max-width:580px;">
+    <p style="font-size:16px;font-style:italic;font-weight:300;color:var(--text-meta);line-height:1.75;margin-bottom:10px;">Standing on the shoulders of Deming, Kimmerer, Fuller, King, Meadows, Ostrom, Carson, Brown, Jacobs, and Havel — and the knowledge traditions that came before all of them.</p>
+    <span style="font-family:var(--serif-sc);font-size:13px;letter-spacing:0.12em;color:#C8922A;">The intellectual lineage</span>
   </div>
   <div style="display:flex;flex-wrap:wrap;gap:12px;">
     <a href="/life-os.html" class="nk-btn" style="background:transparent;">Explore Life OS</a>
@@ -181,4 +203,28 @@
     </div>
   </div>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  (async function() {
+    try {
+      const sb = window.supabase.createClient(
+        "https://tphbpwzozkskytoichho.supabase.co",
+        "sb_publishable_M00GF1FWV5tgKHqmyRCZag_kJjgBJn-"
+      );
+      const { data: { session } } = await sb.auth.getSession();
+      const dot = document.getElementById("nk-profile-dot");
+      if (!dot) return;
+      if (session?.user) {
+        const initial = (session.user.email?.split("@")[0]?.charAt(0) || "?").toUpperCase();
+        dot.textContent = initial;
+        dot.href = "/profile.html";
+        dot.title = "Your profile";
+      } else {
+        dot.textContent = "→";
+        dot.href = "/login.html";
+        dot.title = "Sign in";
+      }
+    } catch(e) {}
+  })();
+</script>
 </body></html>

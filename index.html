@@ -138,6 +138,22 @@
       .nk-footer-top { flex-direction:column;align-items:flex-start;gap:20px; }
       .nk-footer-bottom { flex-direction:column;align-items:flex-start;gap:12px; }
     }
+
+    .nk-profile-dot {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(200,146,42,0.05);
+      border: 1.5px solid rgba(200,146,42,0.78);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif-sc, 'Cormorant SC', Georgia, serif);
+      font-size: 13px; font-weight: 600; color: #C8922A;
+      text-decoration: none; flex-shrink: 0;
+      transition: all 0.2s; cursor: pointer;
+    }
+    .nk-profile-dot:hover {
+      background: rgba(200,146,42,0.08);
+      border-color: rgba(200,146,42,1);
+      transform: translateY(-1px);
+    }
   </style>
 </head>
 <body>
@@ -155,6 +171,7 @@
       <a href="/podcast.html">Podcast</a>
     </div>
     <a href="/login.html" class="nk-btn" style="padding:10px 22px;font-size:13px;">Sign in</a>
+    <a href="/login.html" class="nk-profile-dot" id="nk-profile-dot" title="Sign in">→</a>
     <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob').classList.toggle('open');"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -180,7 +197,7 @@
       <em style="font-style:italic;color:#C8922A;">A future worth building.</em>
     </h1>
     <p style="font-family:var(--serif);font-size:16px;font-weight:300;color:#0F1523;line-height:1.7;margin-bottom:52px;max-width:460px;margin-left:auto;margin-right:auto;">
-      Tools and coaching for people who take their lives seriously.
+      Life asked something of you. This is where you find out what.
     </p>
     <a href="#start" class="nk-btn">Where do I start? →</a>
   </div>
@@ -193,38 +210,38 @@
 <section id="start" class="nk-section">
   <div style="width:1px;height:52px;background:var(--gold-rule);margin:0 auto 64px;"></div>
   <span class="nk-eyebrow">Where you are</span>
-  <h2 style="font-family:var(--serif);font-size:clamp(28px,4vw,44px);font-weight:300;color:#0F1523;line-height:1.14;margin-bottom:12px;">What brought you here?</h2>
-  <p style="font-family:var(--serif);font-size:16px;font-weight:300;color:#0F1523;margin-bottom:32px;max-width:400px;">No wrong answer.</p>
+  <h2 style="font-family:var(--serif);font-size:clamp(28px,4vw,44px);font-weight:300;color:#0F1523;line-height:1.14;margin-bottom:12px;">Where are you right now?</h2>
+  <p style="font-family:var(--serif);font-size:16px;font-weight:300;color:#0F1523;margin-bottom:32px;max-width:400px;">The work starts from where you actually are.</p>
 
   <div style="margin-bottom:40px;">
-    <a href="/orienteering.html" class="nk-btn">Not sure where to start? Let's figure it out →</a>
+    <a href="/orienteering.html" class="nk-btn">Not sure where to start? Let's find out together →</a>
   </div>
 
   <span class="nk-eyebrow" style="margin-bottom:16px;">Or go straight to</span>
 
   <a href="/life-os.html#foundation" class="nk-option">
     <div class="nk-option-icon">◎</div>
-    <div><div class="nk-option-title">Something feels off</div><div class="nk-option-sub">A 20-minute practice to settle and reground</div></div>
+    <div><div class="nk-option-title">Something feels off</div><div class="nk-option-sub">A practice to settle and come back into yourself</div></div>
     <span class="nk-option-arrow">→</span>
   </a>
   <a href="/map.html" class="nk-option">
     <div class="nk-option-icon">◈</div>
-    <div><div class="nk-option-title">I want more clarity</div><div class="nk-option-sub">An honest map of where you are — in 15 minutes</div></div>
+    <div><div class="nk-option-title">I want to see clearly</div><div class="nk-option-sub">An honest picture of where you are across every domain of life</div></div>
     <span class="nk-option-arrow">→</span>
   </a>
   <a href="/nextus.html" class="nk-option">
     <div class="nk-option-icon">◉</div>
-    <div><div class="nk-option-title">I want to contribute</div><div class="nk-option-sub">The civilisational map — and where your work belongs in it</div></div>
+    <div><div class="nk-option-title">I want to find my place in this</div><div class="nk-option-sub">The civilisational map — seven domains, and where your work belongs</div></div>
     <span class="nk-option-arrow">→</span>
   </a>
   <a href="/work-with-nik.html" class="nk-option">
     <div class="nk-option-icon">◐</div>
-    <div><div class="nk-option-title">I want to work with Nik</div><div class="nk-option-sub">The coaching offer and a way to start a conversation</div></div>
+    <div><div class="nk-option-title">I want to work with Nik</div><div class="nk-option-sub">Direct work — for people ready to do something with what they find</div></div>
     <span class="nk-option-arrow">→</span>
   </a>
   <a href="/life-os.html#share" class="nk-option">
     <div class="nk-option-icon">♡</div>
-    <div><div class="nk-option-title">Someone I care about needs this</div><div class="nk-option-sub">Find the right thing for them — and how to offer it well</div></div>
+    <div><div class="nk-option-title">Someone I care about needs this</div><div class="nk-option-sub">Find the right door for them — and how to offer it without prescribing</div></div>
     <span class="nk-option-arrow">→</span>
   </a>
 
@@ -311,5 +328,29 @@
     </div>
   </div>
 </footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  (async function() {
+    try {
+      const sb = window.supabase.createClient(
+        "https://tphbpwzozkskytoichho.supabase.co",
+        "sb_publishable_M00GF1FWV5tgKHqmyRCZag_kJjgBJn-"
+      );
+      const { data: { session } } = await sb.auth.getSession();
+      const dot = document.getElementById("nk-profile-dot");
+      if (!dot) return;
+      if (session?.user) {
+        const initial = (session.user.email?.split("@")[0]?.charAt(0) || "?").toUpperCase();
+        dot.textContent = initial;
+        dot.href = "/profile.html";
+        dot.title = "Your profile";
+      } else {
+        dot.textContent = "→";
+        dot.href = "/login.html";
+        dot.title = "Sign in";
+      }
+    } catch(e) {}
+  })();
+</script>
 </body>
 </html>
