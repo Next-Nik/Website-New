@@ -99,7 +99,34 @@
     .domain-name { font-family:var(--serif-sc);font-size:13px;letter-spacing:0.12em;color:#C8922A;min-width:170px;flex-shrink:0; }
     .domain-desc { font-size:16px;color:var(--text-meta);line-height:1.6; }
     @media (max-width:640px) { .domain-row { flex-direction:column;gap:5px; } .domain-name { min-width:auto; } }
-  </style>
+  
+    /* ── INTERACTIVE GRID ── */
+    .nx-grid { display:flex; align-items:flex-start; gap:0; justify-content:center; flex-wrap:nowrap; margin-bottom:2rem; }
+    .nx-col { display:flex; flex-direction:column; align-items:center; flex:1; min-width:0; }
+    .nx-col-label { font-family:var(--serif-sc); font-size:13px; font-weight:600; letter-spacing:0.16em; color:#C8922A; margin-bottom:16px; cursor:pointer; border-bottom:1px solid transparent; transition:border-color 0.15s; position:relative; padding-bottom:2px; text-align:center; line-height:1.4; min-height:40px; display:flex; align-items:flex-end; justify-content:center; }
+    .nx-col-label:hover { border-bottom-color:#C8922A; }
+    .nx-divider { width:1px; background:rgba(200,146,42,0.18); align-self:stretch; margin-top:40px; flex-shrink:0; }
+    .nx-list { display:flex; flex-direction:column; gap:2px; align-items:center; width:100%; }
+    .nx-item { font-family:var(--serif); font-size:16px; font-weight:300; color:rgba(15,21,35,0.78); padding:7px 8px; border-bottom:1px solid transparent; cursor:pointer; transition:border-color 0.15s, color 0.15s; line-height:1.4; text-align:center; position:relative; width:100%; }
+    .nx-item:hover { border-bottom-color:#C8922A; color:#C8922A; }
+    .nx-tooltip { display:none; position:absolute; bottom:calc(100% + 10px); left:50%; transform:translateX(-50%); background:#FAF8F4; border:1px solid #C8922A; padding:8px 12px; font-family:var(--serif); font-size:14px; font-style:italic; color:rgba(15,21,35,0.78); z-index:20; line-height:1.5; width:180px; text-align:left; pointer-events:none; box-shadow:0 2px 8px rgba(0,0,0,0.10); }
+    .nx-tooltip::after { content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%); border:6px solid transparent; border-top-color:#C8922A; }
+    .nx-item:hover .nx-tooltip, .nx-col-label:hover .nx-tooltip { display:block; }
+    .nx-hint { font-family:var(--serif); font-size:14px; font-style:italic; color:rgba(15,21,35,0.55); text-align:center; margin-bottom:1rem; }
+    /* Modal */
+    .nx-modal-wrap { display:none; }
+    .nx-modal-wrap.open { display:block; }
+    .nx-modal-bg { position:fixed; inset:0; background:rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; padding:1rem; z-index:100; }
+    .nx-modal { background:#FAF8F4; border:1.5px solid rgba(200,146,42,0.78); border-radius:14px; padding:32px; max-width:420px; width:100%; position:relative; font-family:var(--serif); }
+    .nx-modal-close { position:absolute; top:14px; right:18px; font-size:18px; cursor:pointer; color:rgba(15,21,35,0.55); background:none; border:none; line-height:1; transition:color 0.2s; }
+    .nx-modal-close:hover { color:#C8922A; }
+    .nx-modal-cat { font-family:var(--serif-sc); font-size:13px; letter-spacing:0.14em; color:#C8922A; margin-bottom:8px; }
+    .nx-modal-term { font-family:var(--serif); font-size:24px; font-weight:300; color:#0F1523; margin-bottom:6px; line-height:1.1; }
+    .nx-modal-question { font-family:var(--serif); font-size:16px; font-style:italic; color:#C8922A; margin-bottom:12px; }
+    .nx-modal-def { font-family:var(--serif); font-size:16px; font-weight:300; line-height:1.75; color:rgba(15,21,35,0.78); margin-bottom:16px; }
+    .nx-modal-footer { font-family:var(--serif-sc); font-size:11px; letter-spacing:0.12em; color:rgba(15,21,35,0.55); border-top:1px solid rgba(200,146,42,0.20); padding-top:12px; }
+    @media (max-width:640px) { .nx-grid { flex-wrap:wrap; } .nx-col { width:50%; min-width:0; padding:0 8px 28px; } .nx-divider { display:none; } }
+</style>
 </head>
 <body>
 <nav class="nk-nav">
@@ -140,17 +167,47 @@
   </div>
   <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:56px;max-width:600px;">NextUs is the perceptual layer. A living map of where humanity is trying to go — across seven domains, at every scale — so that the people already doing the work can find each other, aim at something worth building, and compound their effort rather than scatter it.</p>
   <hr class="nk-rule">
-  <h2 style="font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:#0F1523;margin-bottom:24px;">Seven domains.</h2>
-  <div style="margin-bottom:48px;">
-    <div class="domain-row"><span class="domain-name">Human Being</span><span class="domain-desc">What it means to be fully human. The conditions for knowing yourself, developing fully, and contributing meaningfully.</span></div>
-    <div class="domain-row"><span class="domain-name">Society</span><span class="domain-desc">The architecture of collective life. How communities govern themselves, trust each other, and create shared futures.</span></div>
-    <div class="domain-row"><span class="domain-name">Nature</span><span class="domain-desc">The living systems that make all life possible. Humanity as participant, not owner.</span></div>
-    <div class="domain-row"><span class="domain-name">Technology</span><span class="domain-desc">The tools we build — and whether they extend our wisdom or outpace it.</span></div>
-    <div class="domain-row"><span class="domain-name">Finance &amp; Economy</span><span class="domain-desc">What we reward. How resources flow — and whether they move toward what sustains life or away from it.</span></div>
-    <div class="domain-row"><span class="domain-name">Legacy</span><span class="domain-desc">What we leave behind. Each generation's responsibility to the next seven.</span></div>
-    <div class="domain-row"><span class="domain-name">Vision</span><span class="domain-desc">The orienting capacity of civilisation. A shared picture of where we are going — and the infrastructure to move toward it together.</span></div>
+  <h2 style="font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:#0F1523;margin-bottom:8px;">Seven domains.</h2>
+  <p style="font-size:16px;font-weight:300;color:var(--meta);line-height:1.75;margin-bottom:32px;max-width:560px;">Hover any term to see what it means. Click to go deeper.</p>
+
+  <div class="nx-grid">
+    <div class="nx-col">
+      <div class="nx-col-label" onclick="nxModal('The Framework','NextUs Domains','The seven areas of collective life that need tending. Every meaningful challenge humanity faces lives in one or more of these domains. Together they describe the full terrain of civilisational health.','')">
+        NextUs Domains<span class="nx-tooltip">The terrain of collective life.</span>
+      </div>
+      <div class="nx-list">
+        <div class="nx-item" onclick="nxModal('NextUs Domain','Human Being','What it means to be fully human. The conditions for knowing yourself, developing fully, and contributing meaningfully to life on earth.','')">Human Being<span class="nx-tooltip">Who we are becoming.</span></div>
+        <div class="nx-item" onclick="nxModal('NextUs Domain','Society','The architecture of collective life. How communities govern themselves, trust each other, and create shared futures.','')">Society<span class="nx-tooltip">How we live together.</span></div>
+        <div class="nx-item" onclick="nxModal('NextUs Domain','Nature','The living systems that make all life possible. Humanity as participant, not owner.','')">Nature<span class="nx-tooltip">The living systems we depend on.</span></div>
+        <div class="nx-item" onclick="nxModal('NextUs Domain','Technology','The tools we build — and whether they extend our wisdom or outpace it.','')">Technology<span class="nx-tooltip">What we build to extend our reach.</span></div>
+        <div class="nx-item" onclick="nxModal('NextUs Domain','Finance &amp; Economy','What we reward. How resources flow — and whether they move toward what sustains life or away from it.','')">Finance &amp; Economy<span class="nx-tooltip">How we move what matters.</span></div>
+        <div class="nx-item" onclick="nxModal('NextUs Domain','Legacy','What we leave behind. Each generation's responsibility to the next seven.','')">Legacy<span class="nx-tooltip">What we leave behind.</span></div>
+        <div class="nx-item" onclick="nxModal('NextUs Domain','Vision','The orienting capacity of civilisation. A shared picture of where we are going — and the infrastructure to move toward it together.','')">Vision<span class="nx-tooltip">Where we are going.</span></div>
+      </div>
+    </div>
+
+    <div class="nx-divider"></div>
+
+    <div class="nx-col">
+      <div class="nx-col-label" onclick="nxModal('The Framework','Scale','The level at which your life and contribution operates. Not a measure of ambition — a description of where your effort actually lands. Every scale is necessary. Every scale is valid.','')">
+        Scale<span class="nx-tooltip">Where your effort actually lands.</span>
+      </div>
+      <div class="nx-list">
+        <div class="nx-item" onclick="nxModal('Scale','Home','The individual and household level. The most immediate sphere — your own life, your own body, your own four walls. Everything else builds from here.','')">Home<span class="nx-tooltip">Your most immediate sphere.</span></div>
+        <div class="nx-item" onclick="nxModal('Scale','Neighbourhood','Immediate community. Face-to-face relationships. Where change is felt personally and directly.','')">Neighbourhood<span class="nx-tooltip">Face-to-face community.</span></div>
+        <div class="nx-item" onclick="nxModal('Scale','City','Urban and local civic scale. Where community infrastructure, local governance, and shared space meet.','')">City<span class="nx-tooltip">Local civic scale.</span></div>
+        <div class="nx-item" onclick="nxModal('Scale','Province / State','Regional scale. Operating within geographic, political, and ecological boundaries that span multiple communities.','')">Province / State<span class="nx-tooltip">Regional scale.</span></div>
+        <div class="nx-item" onclick="nxModal('Scale','Country','National systems, policy, and culture. Where institutional and governmental structures operate.','')">Country<span class="nx-tooltip">National systems and culture.</span></div>
+        <div class="nx-item" onclick="nxModal('Scale','Continent','Cross-border, multi-national. Shared geography and civilisational patterns that span nations.','')">Continent<span class="nx-tooltip">Cross-border, regional.</span></div>
+        <div class="nx-item" onclick="nxModal('Scale','Global','Planetary and species-level. The scale of the longest game — intergenerational, civilisational.','')">Global<span class="nx-tooltip">The longest game.</span></div>
+      </div>
+    </div>
   </div>
+
+  <p class="nx-hint">Hover any term to see what it means. Click to go deeper.</p>
+
   <hr class="nk-rule">
+  <h2 style="font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:#0F1523;margin-bottom:20px;">The same map at two scales.</h2>  <hr class="nk-rule">
   <h2 style="font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-weight:300;color:#0F1523;margin-bottom:20px;">The same map at two scales.</h2>
   <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:20px;max-width:600px;">Life OS asks: how am I actually doing across all of life, and where should I focus next? NextUs asks the same question at civilisational scale. Same map. Same methodology. Same commitment to honest assessment over comfortable fiction.</p>
   <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.8;margin-bottom:48px;max-width:600px;">The personal work and the civilisational work were never separate. Every person who finds their place in the map is also finding where their life touches the larger project. That is not a metaphor. It is the structure.</p>
@@ -211,20 +268,65 @@
         "https://tphbpwzozkskytoichho.supabase.co",
         "sb_publishable_M00GF1FWV5tgKHqmyRCZag_kJjgBJn-"
       );
-      const { data: { session } } = await sb.auth.getSession();
-      const dot = document.getElementById("nk-profile-dot");
-      if (!dot) return;
-      if (session?.user) {
-        const initial = (session.user.email?.split("@")[0]?.charAt(0) || "?").toUpperCase();
-        dot.textContent = initial;
-        dot.href = "/profile.html";
-        dot.title = "Your profile";
-      } else {
-        dot.textContent = "→";
-        dot.href = "/login.html";
-        dot.title = "Sign in";
+
+      function updateDot(user) {
+        const dot = document.getElementById("nk-profile-dot");
+        const btn = document.getElementById("nk-signin-btn");
+        if (!dot) return;
+        if (user) {
+          const initial = (user.email?.split("@")[0]?.charAt(0) || "?").toUpperCase();
+          dot.textContent = initial;
+          dot.href = "https://profile-five-cyan.vercel.app";
+          dot.title = "Your profile";
+          dot.style.borderColor = "rgba(200,146,42,1)";
+          dot.style.background = "rgba(200,146,42,0.10)";
+          if (btn) btn.style.display = "none";
+        } else {
+          dot.textContent = "→";
+          dot.href = "/login.html";
+          dot.title = "Sign in";
+          dot.style.borderColor = "";
+          dot.style.background = "";
+          if (btn) btn.style.display = "";
+        }
       }
+
+      const { data: { session } } = await sb.auth.getSession();
+      updateDot(session?.user || null);
+
+      sb.auth.onAuthStateChange(function(event, newSession) {
+        updateDot(newSession?.user || null);
+      });
     } catch(e) {}
   })();
 </script>
+
+<div class="nx-modal-wrap" id="nx-modal-wrap">
+  <div class="nx-modal-bg" onclick="if(event.target===this)nxClose()">
+    <div class="nx-modal">
+      <button class="nx-modal-close" onclick="nxClose()">×</button>
+      <div class="nx-modal-cat" id="nx-modal-cat"></div>
+      <div class="nx-modal-term" id="nx-modal-term"></div>
+      <div class="nx-modal-question" id="nx-modal-question"></div>
+      <div class="nx-modal-def" id="nx-modal-def"></div>
+      <div class="nx-modal-footer">Part of the NextUs vocabulary.</div>
+    </div>
+  </div>
+</div>
+<script>
+function nxModal(cat, term, def, question) {
+  document.getElementById('nx-modal-cat').textContent = cat;
+  document.getElementById('nx-modal-term').textContent = term;
+  document.getElementById('nx-modal-def').textContent = def;
+  var q = document.getElementById('nx-modal-question');
+  q.textContent = question || '';
+  q.style.display = question ? 'block' : 'none';
+  document.getElementById('nx-modal-wrap').classList.add('open');
+}
+function nxClose() {
+  document.getElementById('nx-modal-wrap').classList.remove('open');
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') nxClose(); });
+</script>
+
 </body></html>

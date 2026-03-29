@@ -174,19 +174,35 @@
         "https://tphbpwzozkskytoichho.supabase.co",
         "sb_publishable_M00GF1FWV5tgKHqmyRCZag_kJjgBJn-"
       );
-      const { data: { session } } = await sb.auth.getSession();
-      const dot = document.getElementById("nk-profile-dot");
-      if (!dot) return;
-      if (session?.user) {
-        const initial = (session.user.email?.split("@")[0]?.charAt(0) || "?").toUpperCase();
-        dot.textContent = initial;
-        dot.href = "/profile.html";
-        dot.title = "Your profile";
-      } else {
-        dot.textContent = "→";
-        dot.href = "/login.html";
-        dot.title = "Sign in";
+
+      function updateDot(user) {
+        const dot = document.getElementById("nk-profile-dot");
+        const btn = document.getElementById("nk-signin-btn");
+        if (!dot) return;
+        if (user) {
+          const initial = (user.email?.split("@")[0]?.charAt(0) || "?").toUpperCase();
+          dot.textContent = initial;
+          dot.href = "https://profile-five-cyan.vercel.app";
+          dot.title = "Your profile";
+          dot.style.borderColor = "rgba(200,146,42,1)";
+          dot.style.background = "rgba(200,146,42,0.10)";
+          if (btn) btn.style.display = "none";
+        } else {
+          dot.textContent = "→";
+          dot.href = "/login.html";
+          dot.title = "Sign in";
+          dot.style.borderColor = "";
+          dot.style.background = "";
+          if (btn) btn.style.display = "";
+        }
       }
+
+      const { data: { session } } = await sb.auth.getSession();
+      updateDot(session?.user || null);
+
+      sb.auth.onAuthStateChange(function(event, newSession) {
+        updateDot(newSession?.user || null);
+      });
     } catch(e) {}
   })();
 </script>
