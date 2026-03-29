@@ -13,7 +13,7 @@
 
     html, body {
       min-height: 100vh;
-      background: #FAFAF7;
+      background: #FFFFFF;
       font-family: 'Cormorant Garamond', Georgia, serif;
       color: #0F1523;
     }
@@ -111,7 +111,7 @@
     .email-input {
       width: 100%;
       padding: 13px 16px;
-      background: #FAFAF7;
+      background: #FFFFFF;
       border: 1.5px solid rgba(200,146,42,0.78);
       border-radius: 40px;
       font-family: 'Cormorant Garamond', serif;
@@ -151,12 +151,12 @@
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(15,21,35,0.08); border-color: rgba(200,146,42,1); background: rgba(200,146,42,0.08); }
     .btn-primary:disabled { opacity: 0.5; cursor: wait; transform: none; box-shadow: none; }
 
-    .btn-social {
+        .btn-social {
       width: 100%;
       padding: 13px 16px;
-      background: #FFFFFF;
+      background: rgba(200,146,42,0.05);
       border: 1.5px solid rgba(200,146,42,0.78);
-      border-radius: 14px;
+      border-radius: 40px;
       font-family: 'Cormorant Garamond', serif;
       font-size: 15px;
       color: #0F1523;
@@ -226,12 +226,12 @@
       display: none;
       font-size: 13px;
       font-style: italic;
-      color: #8A3030;
+      color: rgba(15,21,35,0.78);
       margin-top: 8px;
       padding: 10px 14px;
-      background: rgba(138,48,48,0.05);
+      background: rgba(200,146,42,0.05);
       border-radius: 14px;
-      border: 1.5px solid rgba(138,48,48,0.25);
+      border: 1.5px solid rgba(200,146,42,0.35);
     }
 
     /* ── Footer ── */
@@ -342,9 +342,6 @@
       "life-os-mapping.vercel.app",
       "orienteering-rose.vercel.app",
       "life-os-purpose-piece-v2.vercel.app",
-      "life-os-foundation.vercel.app",
-      "life-os-profile.vercel.app",
-      "target-goals.vercel.app",
       "nextus.world"
     ];
     if (redirect) {
@@ -360,21 +357,15 @@
   (async () => {
     const { data: { session } } = await sb.auth.getSession();
     if (session?.user) {
-      const dest = getRedirectUrl();
-      window.location.href = dest;
+      window.location.href = getRedirectUrl();
     }
   })();
 
   // ── Google ─────────────────────────────────────────────────────────────────
   document.getElementById("btn-google").addEventListener("click", async () => {
-    // Always redirect back to login.html first (fixes Safari cross-domain cookie issue)
-    // login.html will then forward to the original destination via ?redirect= param
-    const finalDest = getRedirectUrl();
-    const loginCallback = "https://nextus.world/login.html" +
-      (finalDest !== "https://nextus.world" ? "?redirect=" + encodeURIComponent(finalDest) : "");
     const { error } = await sb.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: loginCallback }
+      options: { redirectTo: getRedirectUrl() }
     });
     if (error) showError(error.message);
   });
@@ -399,13 +390,10 @@
     btn.textContent = "Sending...";
     hideError();
 
-    const finalDest = getRedirectUrl();
-    const loginCallback = "https://nextus.world/login.html" +
-      (finalDest !== "https://nextus.world" ? "?redirect=" + encodeURIComponent(finalDest) : "");
     const { error } = await sb.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: loginCallback,
+        emailRedirectTo: getRedirectUrl(),
         shouldCreateUser: true
       }
     });
