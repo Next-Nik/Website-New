@@ -371,6 +371,98 @@
     .horizon-edit-field:focus { border-color: var(--gold-border-hi); }
     .horizon-edit-field.open { display: block; }
 
+    /* ── HORIZON SELF ── */
+    .hs-voltron {
+      font-family: var(--serif);
+      font-size: 19px; font-weight: 300;
+      font-style: italic; color: var(--dark);
+      line-height: 1.75;
+      margin-bottom: 22px;
+    }
+
+    .hs-edit-trigger {
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer;
+      font-family: var(--sc); font-size: 13px;
+      font-weight: 600; letter-spacing: 0.12em;
+      color: var(--ghost); transition: color 0.15s;
+      width: fit-content;
+      margin-bottom: 20px;
+    }
+    .hs-edit-trigger:hover { color: var(--gold); }
+
+    .hs-edit-field {
+      display: none;
+      width: 100%; margin-bottom: 20px;
+      min-height: 100px; padding: 14px 16px;
+      font-family: var(--serif); font-size: 17px;
+      font-weight: 300; font-style: italic;
+      color: var(--dark); background: var(--bg);
+      border: 1.5px solid var(--gold-border);
+      border-radius: 10px; resize: vertical;
+      outline: none; line-height: 1.75;
+      transition: border-color 0.2s;
+    }
+    .hs-edit-field::placeholder { color: var(--ghost); }
+    .hs-edit-field:focus { border-color: var(--gold-border-hi); }
+    .hs-edit-field.open { display: block; }
+
+    /* Domain I Am statements — collapsible sub-list */
+    .hs-domains-toggle {
+      display: flex; align-items: center; gap: 8px;
+      cursor: pointer;
+      font-family: var(--sc); font-size: 13px;
+      font-weight: 600; letter-spacing: 0.12em;
+      color: var(--ghost); transition: color 0.15s;
+      width: fit-content;
+      margin-bottom: 0;
+      padding: 14px 0 0;
+      border-top: 1px solid var(--gold-rule);
+    }
+    .hs-domains-toggle:hover { color: var(--gold); }
+    .hs-domains-toggle.open { color: var(--gold); }
+    .hs-domains-toggle .hs-arrow {
+      font-size: 14px; transition: transform 0.2s;
+    }
+    .hs-domains-toggle.open .hs-arrow { transform: rotate(90deg); }
+
+    .hs-domains-list {
+      overflow: hidden;
+      max-height: 0; opacity: 0;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
+    }
+    .hs-domains-list.open {
+      max-height: 900px; opacity: 1;
+    }
+
+    .hs-domain-row {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--gold-rule);
+    }
+    .hs-domain-row:last-child { border-bottom: none; }
+
+    .hs-domain-label {
+      font-family: var(--sc); font-size: 13px;
+      letter-spacing: 0.10em; color: var(--meta);
+      width: 128px; flex-shrink: 0; padding-top: 3px;
+    }
+
+    .hs-domain-textarea {
+      flex: 1; min-height: 52px; padding: 10px 14px;
+      font-family: var(--serif); font-size: 15px;
+      font-weight: 300; font-style: italic;
+      color: var(--dark); background: var(--bg);
+      border: 1.5px dashed rgba(200,146,42,0.30);
+      border-radius: 10px; resize: vertical;
+      outline: none; line-height: 1.65;
+      transition: border-color 0.2s, border-style 0.2s;
+    }
+    .hs-domain-textarea::placeholder { color: var(--ghost); }
+    .hs-domain-textarea:focus {
+      border-style: solid; border-color: var(--gold-border);
+    }
+
     /* ── PRESENCE (PULSE) ── */
     .presence-streak {
       display: flex; gap: 4px; flex-wrap: wrap;
@@ -561,39 +653,7 @@
       .note-trigger { padding: 14px 20px; }
       .note-body { padding: 0 20px 18px; }
     }
-  
-    /* ── SIGN OUT ── */
-    .signout-wrap {
-      margin-top: 64px;
-      padding-top: 32px;
-      border-top: 1px solid var(--gold-rule);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .signout-note {
-      font-family: var(--sc);
-      font-size: 13px;
-      letter-spacing: 0.14em;
-      color: var(--ghost);
-    }
-    .signout-btn {
-      font-family: var(--sc);
-      font-size: 13px;
-      letter-spacing: 0.14em;
-      color: var(--ghost);
-      background: none;
-      border: 1.5px solid rgba(15,21,35,0.12);
-      border-radius: 40px;
-      padding: 8px 20px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .signout-btn:hover {
-      color: var(--text);
-      border-color: rgba(15,21,35,0.30);
-    }
-</style>
+  </style>
 </head>
 <body>
 
@@ -648,7 +708,86 @@
   </div>
   </div><!-- end slot-collapsible identity -->
 
-  <!-- ── SLOT 2: HOW YOUR LIFE LOOKS ── -->
+  <!-- ── SLOT 2: HORIZON SELF ── -->
+  <!-- Sources: Horizon Leap (when built). Manual write always leads.
+       Ghost state until user writes or Horizon Leap populates.
+       Seven domain I am statements collapsible beneath the Voltron statement. -->
+  <div class="slot" id="slot-horizonself">
+    <div class="slot-header open" onclick="toggleSlot('horizonself')">
+      <span class="slot-name">Horizon Self</span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a class="slot-source" href="/work-with-nik.html" id="horizonselfSource" onclick="event.stopPropagation()">Horizon Leap →</a>
+        <span class="slot-toggle">›</span>
+      </div>
+    </div>
+    <div class="slot-collapsible" id="slotCollapse-horizonself">
+    <div class="slot-body empty" id="horizonselfBody">
+      <div class="slot-content" id="horizonselfContent">
+        <p class="slot-ghost">This is the Voltron statement — the fully expressed version of you, drawn from every part of your life. Purpose Piece shows one facet. Horizon Self is the whole.</p>
+        <p class="slot-ghost" style="margin-top:12px;">Write it yourself now, or let Horizon Leap build it with you when you're ready.</p>
+        <div class="hs-edit-trigger" id="hsEditTrigger" onclick="toggleHorizonSelfEdit()" style="margin-top:16px;">
+          <span id="hsEditLabel">Write your Horizon Self →</span>
+        </div>
+        <textarea class="hs-edit-field" id="horizonSelfField"
+          placeholder="I am…"
+          oninput="autosave('horizonSelf', this.value); onHorizonSelfInput(this.value);"></textarea>
+
+        <div class="hs-domains-toggle" id="hsDomainToggle" onclick="toggleHorizonSelfDomains()">
+          <span>Domain I am statements</span>
+          <span class="hs-arrow">›</span>
+        </div>
+        <div class="hs-domains-list" id="hsDomainsList">
+          <div style="padding-top:16px;">
+            <div class="hs-domain-row">
+              <span class="hs-domain-label">Path</span>
+              <textarea class="hs-domain-textarea" id="hsDomain-path"
+                placeholder="In my work and purpose, I am…"
+                oninput="autosave('hsDomain-path', this.value)"></textarea>
+            </div>
+            <div class="hs-domain-row">
+              <span class="hs-domain-label">Spark</span>
+              <textarea class="hs-domain-textarea" id="hsDomain-spark"
+                placeholder="In my creativity and aliveness, I am…"
+                oninput="autosave('hsDomain-spark', this.value)"></textarea>
+            </div>
+            <div class="hs-domain-row">
+              <span class="hs-domain-label">Body</span>
+              <textarea class="hs-domain-textarea" id="hsDomain-body"
+                placeholder="In my physical life and vitality, I am…"
+                oninput="autosave('hsDomain-body', this.value)"></textarea>
+            </div>
+            <div class="hs-domain-row">
+              <span class="hs-domain-label">Finances</span>
+              <textarea class="hs-domain-textarea" id="hsDomain-finances"
+                placeholder="In my relationship with resources and money, I am…"
+                oninput="autosave('hsDomain-finances', this.value)"></textarea>
+            </div>
+            <div class="hs-domain-row">
+              <span class="hs-domain-label">Relationships</span>
+              <textarea class="hs-domain-textarea" id="hsDomain-relationships"
+                placeholder="In my connections and belonging, I am…"
+                oninput="autosave('hsDomain-relationships', this.value)"></textarea>
+            </div>
+            <div class="hs-domain-row">
+              <span class="hs-domain-label">Inner Game</span>
+              <textarea class="hs-domain-textarea" id="hsDomain-innergame"
+                placeholder="In my inner life and self-knowledge, I am…"
+                oninput="autosave('hsDomain-innergame', this.value)"></textarea>
+            </div>
+            <div class="hs-domain-row">
+              <span class="hs-domain-label">Outer Game</span>
+              <textarea class="hs-domain-textarea" id="hsDomain-outergame"
+                placeholder="In how I show up in the world, I am…"
+                oninput="autosave('hsDomain-outergame', this.value)"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div><!-- end slot-collapsible horizonself -->
+
+  <!-- ── SLOT 3: HOW YOUR LIFE LOOKS ── -->
   <!-- Sources: The Map (7 domain scores)
        Future: could receive data from other assessment tools -->
   <div class="slot" id="slot-life">
@@ -813,12 +952,13 @@
 // The render functions read from data — they don't care where it came from.
 //
 // Current sources:
-//   identity  ← Purpose Piece (archetype, domain, scale)
-//   life      ← The Map (7 domain scores)
-//   horizon   ← Purpose Piece (domain goal) + The Map (personal horizon)
-//              + Horizon Leap (personal horizon, overrides when present)
-//   presence  ← Pulse (daily check-in entries)
-//   contribution ← NextUs platform (not yet populated)
+//   identity      ← Purpose Piece (archetype, domain, scale)
+//   horizonself   ← Manual write (now) + Horizon Leap (when built)
+//   life          ← The Map (7 domain scores)
+//   horizon       ← Purpose Piece (domain goal) + The Map (personal horizon)
+//                  + Horizon Leap (personal horizon, overrides when present)
+//   presence      ← Pulse (daily check-in entries)
+//   contribution  ← NextUs platform (not yet populated)
 //
 // Future sources (add here when tools launch):
 //   groundedness ← Foundation
@@ -1026,6 +1166,77 @@ function renderHorizon(identity, personalHorizon, leapHorizon) {
   content.innerHTML = `<div class="horizon-pair">${personalBlock}${domainBlock}</div>`;
 }
 
+function toggleHorizonSelfEdit() {
+  const field   = document.getElementById('horizonSelfField');
+  const trigger = document.getElementById('hsEditTrigger');
+  const label   = document.getElementById('hsEditLabel');
+  const body    = document.getElementById('horizonselfBody');
+  if (!field) return;
+  const open = field.classList.toggle('open');
+  if (open) {
+    field.focus();
+    label.textContent = 'Close →';
+    trigger.style.color = 'var(--gold)';
+    // If user has written something, body is no longer empty
+    if (field.value.trim()) body.classList.remove('empty');
+  } else {
+    label.textContent = field.value.trim() ? 'Edit →' : 'Write your Horizon Self →';
+    trigger.style.color = '';
+    if (field.value.trim()) body.classList.remove('empty');
+  }
+}
+
+function onHorizonSelfInput(value) {
+  const body = document.getElementById('horizonselfBody');
+  if (value.trim()) {
+    body.classList.remove('empty');
+    // Swap ghost copy for live display
+    const ghost = body.querySelectorAll('.slot-ghost');
+    ghost.forEach(el => el.style.display = 'none');
+  }
+}
+
+function toggleHorizonSelfDomains() {
+  const list   = document.getElementById('hsDomainsList');
+  const toggle = document.getElementById('hsDomainToggle');
+  if (!list) return;
+  const open = list.classList.toggle('open');
+  toggle.classList.toggle('open', open);
+}
+
+function loadHorizonSelf() {
+  // Voltron statement
+  const voltronEl = document.getElementById('horizonSelfField');
+  if (voltronEl) {
+    const saved = localStorage.getItem('profile_horizonSelf') || '';
+    if (saved) {
+      voltronEl.value = saved;
+      voltronEl.classList.add('open');
+      const body = document.getElementById('horizonselfBody');
+      if (body) body.classList.remove('empty');
+      const ghosts = body?.querySelectorAll('.slot-ghost');
+      ghosts?.forEach(el => el.style.display = 'none');
+      const label = document.getElementById('hsEditLabel');
+      if (label) label.textContent = 'Edit →';
+    }
+  }
+  // Domain statements
+  const domainKeys = ['path','spark','body','finances','relationships','innergame','outergame'];
+  let anyDomain = false;
+  domainKeys.forEach(key => {
+    const el = document.getElementById('hsDomain-' + key);
+    if (!el) return;
+    const saved = localStorage.getItem('profile_hsDomain-' + key) || '';
+    if (saved) { el.value = saved; anyDomain = true; }
+  });
+  if (anyDomain) {
+    const list   = document.getElementById('hsDomainsList');
+    const toggle = document.getElementById('hsDomainToggle');
+    if (list)   { list.classList.add('open'); }
+    if (toggle) { toggle.classList.add('open'); }
+  }
+}
+
 function toggleHorizonEdit() {
   const field = document.getElementById('horizonEditField');
   const text  = document.getElementById('personalHorizonText');
@@ -1122,6 +1333,7 @@ function loadNotes() {
       if (trigger) trigger.classList.add('open');
     }
   });
+  loadHorizonSelf();
 }
 
 
@@ -1147,13 +1359,13 @@ async function init() {
   const result = await Promise.race([sessionPromise, timeoutPromise]);
 
   if (result.timedOut) {
-    console.warn("[AuthGuard] Timed out — failing open.");
+    window.location.href = 'https://nextus.world/login?redirect=' + encodeURIComponent(window.location.href);
     return;
   }
 
   const session = result.data?.session;
   if (!session?.user) {
-    window.location.href = 'https://nextus.world/login.html?redirect=' + encodeURIComponent(window.location.href);
+    window.location.href = 'https://nextus.world/login?redirect=' + encodeURIComponent(window.location.href);
     return;
   }
 
@@ -1164,7 +1376,7 @@ async function init() {
       await loadProfileData(newSession.user);
     }
     if (event === 'SIGNED_OUT') {
-      window.location.href = 'https://nextus.world/login.html?redirect=' + encodeURIComponent(window.location.href);
+      window.location.href = 'https://nextus.world/login?redirect=' + encodeURIComponent(window.location.href);
     }
   });
 }
