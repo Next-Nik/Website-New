@@ -154,7 +154,42 @@
       border-color: rgba(200,146,42,1);
       transform: translateY(-1px);
     }
-  </style>
+  
+    /* ── STAGE SELECTOR ── */
+    .stage-intro { font-family:var(--serif); font-size:16px; font-weight:300; color:rgba(15,21,35,0.78); line-height:1.75; margin-bottom:40px; max-width:520px; }
+    .stage-arc-label { font-family:var(--serif-sc); font-size:13px; font-weight:600; letter-spacing:0.20em; color:#C8922A; display:block; margin-bottom:12px; }
+    .stage-item { padding:10px 4px; cursor:pointer; border-bottom:1px solid transparent; transition:all 0.18s; position:relative; }
+    .stage-item:hover { border-bottom-color:rgba(200,146,42,0.40); }
+    .stage-item.active { border-bottom-color:#C8922A; }
+    .stage-name { font-family:var(--serif); font-size:22px; font-weight:300; color:#0F1523; display:block; line-height:1.2; margin-bottom:2px; transition:color 0.18s; }
+    .stage-item:hover .stage-name, .stage-item.active .stage-name { color:#C8922A; }
+    .stage-question { font-family:var(--serif); font-size:14px; font-style:italic; color:rgba(15,21,35,0.55); line-height:1.4; display:block; transition:color 0.18s; }
+    .stage-item:hover .stage-question, .stage-item.active .stage-question { color:rgba(200,146,42,0.78); }
+    .stage-col-divider { width:1px; background:var(--gold-rule); align-self:stretch; margin-top:34px; }
+    .stage-panel { display:none; margin-top:32px; background:#FFFFFF; border:1.5px solid rgba(200,146,42,0.78); border-radius:14px; overflow:hidden; animation:panelIn 0.2s ease; }
+    .stage-panel.open { display:block; }
+    @keyframes panelIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    .panel-inner { padding:28px 28px 24px; }
+    .panel-eyebrow { font-family:var(--serif-sc); font-size:13px; font-weight:600; letter-spacing:0.20em; color:#C8922A; display:block; margin-bottom:6px; }
+    .panel-stage-name { font-family:var(--serif); font-size:26px; font-weight:300; color:#0F1523; margin-bottom:4px; line-height:1.1; }
+    .panel-question { font-family:var(--serif); font-size:16px; font-style:italic; color:rgba(15,21,35,0.78); margin-bottom:14px; line-height:1.6; }
+    .panel-desc { font-family:var(--serif); font-size:16px; font-weight:300; color:#0F1523; line-height:1.75; margin-bottom:24px; max-width:520px; }
+    .panel-rule { height:1px; background:var(--gold-rule); margin-bottom:24px; }
+    .panel-rec-label { font-family:var(--serif-sc); font-size:13px; letter-spacing:0.14em; color:rgba(15,21,35,0.78); display:block; margin-bottom:12px; }
+    .panel-rec { display:flex; align-items:flex-start; gap:14px; padding:14px 16px; border-radius:14px; margin-bottom:8px; text-decoration:none; border:1.5px solid rgba(200,146,42,0.78); background:rgba(200,146,42,0.05); transition:all 0.2s; }
+    .panel-rec:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(15,21,35,0.08); border-color:rgba(200,146,42,1); background:rgba(200,146,42,0.08); }
+    .panel-rec.soft { border-color:var(--gold-rule); background:transparent; }
+    .panel-rec.soft:hover { border-color:rgba(200,146,42,0.78); background:rgba(200,146,42,0.05); }
+    .panel-rec-badge { font-family:var(--serif-sc); font-size:11px; letter-spacing:0.12em; color:rgba(15,21,35,0.78); background:rgba(200,146,42,0.08); border:1px solid var(--gold-rule); border-radius:40px; padding:3px 10px; flex-shrink:0; margin-top:2px; white-space:nowrap; }
+    .panel-rec-text { flex:1; }
+    .panel-rec-title { font-family:var(--serif); font-size:16px; font-weight:300; color:#C8922A; margin-bottom:3px; line-height:1.2; }
+    .panel-rec-sub { font-family:var(--serif); font-size:14px; color:rgba(15,21,35,0.78); line-height:1.4; }
+    .panel-rec-arrow { color:#C8922A; font-size:15px; margin-top:2px; flex-shrink:0; }
+    .panel-external { margin-top:16px; padding-top:16px; border-top:1px solid var(--gold-rule); }
+    .panel-external-label { font-family:var(--serif-sc); font-size:13px; letter-spacing:0.14em; color:rgba(15,21,35,0.78); display:block; margin-bottom:10px; }
+    .panel-search-terms { display:flex; flex-wrap:wrap; gap:8px; }
+    .panel-term { font-family:var(--serif-sc); font-size:13px; letter-spacing:0.10em; color:rgba(15,21,35,0.78); background:rgba(15,21,35,0.04); border:1px solid rgba(15,21,35,0.10); border-radius:40px; padding:6px 14px; }
+</style>
 </head>
 <body>
 
@@ -210,42 +245,54 @@
 <section id="start" class="nk-section">
   <div style="width:1px;height:52px;background:var(--gold-rule);margin:0 auto 64px;"></div>
   <span class="nk-eyebrow">Where you are</span>
-  <h2 style="font-family:var(--serif);font-size:clamp(28px,4vw,44px);font-weight:300;color:#0F1523;line-height:1.14;margin-bottom:12px;">Where are you right now?</h2>
-  <p style="font-family:var(--serif);font-size:16px;font-weight:300;color:#0F1523;margin-bottom:32px;max-width:400px;">The work starts from where you actually are.</p>
+  <h2 style="font-family:var(--serif);font-size:clamp(28px,4vw,44px);font-weight:300;color:#0F1523;line-height:1.14;margin-bottom:16px;">Where are you right now?</h2>
+  <p class="stage-intro">Different moments call for different kinds of support. These stages are not a ladder — they are a map. Tap the one that feels closest to where you are.</p>
 
-  <div style="margin-bottom:40px;">
-    <a href="/orienteering.html" class="nk-btn">Not sure where to start? Let's find out together →</a>
+  <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0 28px;margin-bottom:8px;">
+
+    <div>
+      <span class="stage-arc-label">Healing</span>
+      <div class="stage-item" id="si-baseline" onclick="selectStage(event,'baseline')">
+        <span class="stage-name">Baseline</span>
+        <span class="stage-question">Am I allowed to exist?</span>
+      </div>
+      <div class="stage-item" id="si-autonomy" onclick="selectStage(event,'autonomy')">
+        <span class="stage-name">Autonomy</span>
+        <span class="stage-question">Am I allowed to want?</span>
+      </div>
+      <div class="stage-item" id="si-calibration" onclick="selectStage(event,'calibration')">
+        <span class="stage-name">Calibration</span>
+        <span class="stage-question">Where am I actually?</span>
+      </div>
+      <div class="stage-item" id="si-integration" onclick="selectStage(event,'integration')">
+        <span class="stage-name">Integration</span>
+        <span class="stage-question">Can I hold all of myself?</span>
+      </div>
+    </div>
+
+    <div class="stage-col-divider"></div>
+
+    <div>
+      <span class="stage-arc-label">Development</span>
+      <div class="stage-item" id="si-agency" onclick="selectStage(event,'agency')">
+        <span class="stage-name">Agency</span>
+        <span class="stage-question">Can I act from self?</span>
+      </div>
+      <div class="stage-item" id="si-embodiment" onclick="selectStage(event,'embodiment')">
+        <span class="stage-name">Embodiment</span>
+        <span class="stage-question">Can I live as who I am?</span>
+      </div>
+      <div class="stage-item" id="si-contribution" onclick="selectStage(event,'contribution')">
+        <span class="stage-name">Contribution</span>
+        <span class="stage-question">What is my life in service of?</span>
+      </div>
+    </div>
+
   </div>
 
-  <span class="nk-eyebrow" style="margin-bottom:16px;">Or go straight to</span>
+  <div class="stage-panel" id="stage-panel"></div>
 
-  <a href="/life-os.html#foundation" class="nk-option">
-    <div class="nk-option-icon">◎</div>
-    <div><div class="nk-option-title">Something feels off</div><div class="nk-option-sub">A practice to settle and come back into yourself</div></div>
-    <span class="nk-option-arrow">→</span>
-  </a>
-  <a href="https://life-os-mapping.vercel.app" target="_blank" class="nk-option">
-    <div class="nk-option-icon">◈</div>
-    <div><div class="nk-option-title">I want to see clearly</div><div class="nk-option-sub">An honest picture of where you are across every domain of life</div></div>
-    <span class="nk-option-arrow">→</span>
-  </a>
-  <a href="/nextus.html" class="nk-option">
-    <div class="nk-option-icon">◉</div>
-    <div><div class="nk-option-title">I want to find my place in this</div><div class="nk-option-sub">The civilisational map — seven domains, and where your work belongs</div></div>
-    <span class="nk-option-arrow">→</span>
-  </a>
-  <a href="/work-with-nik.html" class="nk-option">
-    <div class="nk-option-icon">◐</div>
-    <div><div class="nk-option-title">I want to work with Nik</div><div class="nk-option-sub">Direct work — for people ready to do something with what they find</div></div>
-    <span class="nk-option-arrow">→</span>
-  </a>
-  <a href="/life-os.html#share" class="nk-option">
-    <div class="nk-option-icon">♡</div>
-    <div><div class="nk-option-title">Someone I care about needs this</div><div class="nk-option-sub">Find the right door for them — and how to offer it without prescribing</div></div>
-    <span class="nk-option-arrow">→</span>
-  </a>
-
-  <a href="/life-os.html" style="display:block;text-align:center;font-family:var(--serif);font-size:16px;font-style:italic;color:#C8922A;margin-top:22px;text-decoration:none;opacity:1;">or show me everything →</a>
+  <a href="/life-os.html" style="display:block;text-align:center;font-family:var(--serif);font-size:16px;font-style:italic;color:#C8922A;margin-top:28px;text-decoration:none;">or show me everything →</a>
 </section>
 
 <!-- THE BUILD CONTINUES — dark section -->
@@ -352,5 +399,128 @@
     } catch(e) {}
   })();
 </script>
+
+<script>
+var STAGES = {
+  baseline: {
+    name: 'Baseline',
+    question: 'Am I allowed to exist?',
+    desc: 'The floor everything else stands on. Safety and permission to exist at a nervous-system, body level. Without it, everything feels like threat, growth feels dangerous, and insight destabilises rather than liberates. The work here is regulation, containment, and finding ground.',
+    primary: { title: 'Foundation', sub: 'A guided audio practice to settle and re-establish ground.', url: 'https://life-os-foundation.vercel.app', badge: 'Life OS Tool' },
+    above: { title: 'The Map', sub: 'When you have a little more ground, see where you actually are.', url: 'https://life-os-mapping.vercel.app', badge: 'Life OS Tool' },
+    below: null,
+    external: ['somatic therapy', 'trauma-informed support', 'nervous system regulation', 'polyvagal therapy']
+  },
+  autonomy: {
+    name: 'Autonomy',
+    question: 'Am I allowed to want?',
+    desc: 'Where the self starts moving again — not goals, not strategy, but desire. The work here is reclaiming the right to direct oneself and meeting the shame around wanting.',
+    primary: { title: 'Foundation', sub: 'Build the internal stability that makes self-direction possible.', url: 'https://life-os-foundation.vercel.app', badge: 'Life OS Tool' },
+    above: { title: 'The Map', sub: 'An honest picture of where you are once you can see clearly.', url: 'https://life-os-mapping.vercel.app', badge: 'Life OS Tool' },
+    below: null,
+    external: ['inner child work', 'parts work / IFS', 'shame resilience', 'self-compassion practices']
+  },
+  calibration: {
+    name: 'Calibration',
+    question: 'Where am I actually?',
+    desc: 'Reality contact — honest self-assessment, mapping life domains, seeing patterns without collapse. This is where the picture becomes clear enough to navigate from.',
+    primary: { title: 'The Map', sub: 'Seven domains. One honest picture of where you are right now.', url: 'https://life-os-mapping.vercel.app', badge: 'Life OS Tool' },
+    above: { title: 'Purpose Piece', sub: 'Find your contribution pattern — the role you are built to play.', url: 'https://life-os-purpose-piece-v2.vercel.app', badge: 'Life OS Tool' },
+    below: { title: 'Foundation', sub: 'If looking clearly feels like too much — this is where to start.', url: 'https://life-os-foundation.vercel.app', badge: 'Life OS Tool' },
+    external: ['journalling practices', 'life audit frameworks', 'values clarification', 'honest self-assessment']
+  },
+  integration: {
+    name: 'Integration',
+    question: 'Can I hold all of myself?',
+    desc: 'Metabolising past experience, reconciling contradictions, reducing internal fragmentation. This is where energy stops leaking and becomes available for something new.',
+    primary: { title: 'Purpose Piece', sub: 'Surface the contribution pattern that has been there all along.', url: 'https://life-os-purpose-piece-v2.vercel.app', badge: 'Life OS Tool' },
+    above: { title: 'Work with Nik', sub: 'Identity-level work for people ready to do something with what they find.', url: '/work-with-nik.html', badge: 'Facilitated' },
+    below: { title: 'The Map', sub: 'See where the fragmentation shows up across your life domains.', url: 'https://life-os-mapping.vercel.app', badge: 'Life OS Tool' },
+    external: ['parts work / IFS', 'shadow work', 'narrative therapy', 'Jungian approaches']
+  },
+  agency: {
+    name: 'Agency',
+    question: 'Can I act from self?',
+    desc: 'Action becomes possible — not reactive effort, not proving, but true choice. Behaviour stabilises, discipline emerges naturally, self-trust begins to build.',
+    primary: { title: 'Target Goals', sub: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.', url: 'https://target-goals.vercel.app', badge: 'Life OS Tool' },
+    above: { title: 'Work with Nik', sub: 'For people ready to act on what they have found.', url: '/work-with-nik.html', badge: 'Facilitated' },
+    below: { title: 'Purpose Piece', sub: 'Clarify what you are acting toward before you act.', url: 'https://life-os-purpose-piece-v2.vercel.app', badge: 'Life OS Tool' },
+    external: ['implementation intentions', 'habit architecture', 'values-based goal setting', 'accountability structures']
+  },
+  embodiment: {
+    name: 'Embodiment',
+    question: 'Can I live as who I am?',
+    desc: 'Identity stops being conceptual — behaviour aligns with values, the nervous system tolerates expansion, relationships reorganise around who you actually are.',
+    primary: { title: 'Work with Nik', sub: 'Identity-level work. The crossing from who you have been to who you are becoming.', url: '/work-with-nik.html', badge: 'Facilitated' },
+    above: { title: 'NextUs', sub: 'Find where your fully expressed self belongs in the larger project.', url: '/nextus.html', badge: 'NextUs' },
+    below: { title: 'Target Goals', sub: 'Operationalise the identity shift — three areas, ninety days.', url: 'https://target-goals.vercel.app', badge: 'Life OS Tool' },
+    external: ['embodied leadership', 'somatic coaching', 'identity-level work', 'ontological coaching']
+  },
+  contribution: {
+    name: 'Contribution',
+    question: 'What is my life in service of?',
+    desc: 'Meaning stabilises the psyche. Contribution integrates the self. Purpose regulates existential anxiety. This is not saviour energy — it is participation in reality.',
+    primary: { title: 'NextUs', sub: 'The civilisational map — seven domains, and where your work belongs.', url: '/nextus.html', badge: 'NextUs' },
+    above: null,
+    below: { title: 'Purpose Piece', sub: 'What did life ask you to bring? Your archetype, domain, and scale.', url: 'https://life-os-purpose-piece-v2.vercel.app', badge: 'Life OS Tool' },
+    external: ['systems thinking', 'theory of change', 'purpose-driven leadership', 'civilisational contribution']
+  }
+};
+
+var activeStage = null;
+
+function selectStage(evt, key) {
+  if (activeStage === key) {
+    activeStage = null;
+    document.querySelectorAll('.stage-item').forEach(function(el) { el.classList.remove('active'); });
+    var p = document.getElementById('stage-panel');
+    p.classList.remove('open');
+    return;
+  }
+  activeStage = key;
+  var s = STAGES[key];
+  document.querySelectorAll('.stage-item').forEach(function(el) { el.classList.remove('active'); });
+  evt.currentTarget.classList.add('active');
+
+  function recHTML(rec, soft) {
+    if (!rec) return '';
+    var target = rec.url.indexOf('http') === 0 ? ' target="_blank"' : '';
+    return '<a href="' + rec.url + '"' + target + ' class="panel-rec' + (soft ? ' soft' : '') + '">' +
+      '<span class="panel-rec-badge">' + rec.badge + '</span>' +
+      '<div class="panel-rec-text"><div class="panel-rec-title">' + rec.title + '</div>' +
+      '<div class="panel-rec-sub">' + rec.sub + '</div></div>' +
+      '<span class="panel-rec-arrow">→</span></a>';
+  }
+
+  var html = '<div class="panel-inner">' +
+    '<span class="panel-eyebrow">' + s.name + '</span>' +
+    '<div class="panel-stage-name">' + s.name + '</div>' +
+    '<div class="panel-question">' + s.question + '</div>' +
+    '<p class="panel-desc">' + s.desc + '</p>' +
+    '<div class="panel-rule"></div>' +
+    '<span class="panel-rec-label">Where to start</span>' +
+    recHTML(s.primary, false);
+
+  if (s.above) {
+    html += '<div class="panel-rule"></div><span class="panel-rec-label">When you are ready for the next step</span>' + recHTML(s.above, true);
+  }
+  if (s.below) {
+    html += '<div class="panel-rule"></div><span class="panel-rec-label">If this feels like too much right now</span>' + recHTML(s.below, true);
+  }
+  if (s.external && s.external.length) {
+    html += '<div class="panel-external"><span class="panel-external-label">Also worth exploring</span><div class="panel-search-terms">';
+    s.external.forEach(function(t) { html += '<span class="panel-term">' + t + '</span>'; });
+    html += '</div></div>';
+  }
+
+  html += '</div>';
+
+  var panel = document.getElementById('stage-panel');
+  panel.innerHTML = html;
+  panel.classList.add('open');
+  setTimeout(function() { panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
+}
+</script>
+
 </body>
 </html>
