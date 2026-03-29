@@ -11,8 +11,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:             #FFFFFF;
-      --bg-warm:        #F5F2EC;
+      --bg:             #FAFAF7;
       --gold:           #C8922A;
       --gold-rule:      rgba(200,146,42,0.20);
       --gold-faint:     rgba(200,146,42,0.08);
@@ -22,15 +21,10 @@
       --gold-bg-hi:     rgba(200,146,42,0.08);
       --dark:           #0F1523;
       --meta:           rgba(15,21,35,0.78);
-      --ghost:          rgba(15,21,35,0.55);
+      --ghost:          rgba(15,21,35,0.28);
       --white:          #FFFFFF;
       --serif:          'Cormorant Garamond', Georgia, serif;
       --sc:             'Cormorant SC', Georgia, serif;
-      /* Button system — locked from sandbox-v2 */
-      --btn-border:     1.5px solid rgba(200,146,42,0.78);
-      --btn-bg:         rgba(200,146,42,0.05);
-      --btn-color:      #C8922A;
-      --btn-radius:     40px;
     }
 
     html, body {
@@ -46,99 +40,27 @@
 
 
 
-    /* ── BUTTON SYSTEM ── */
-    .nk-btn {
-      display: inline-block;
-      padding: 16px 36px;
-      border-radius: var(--btn-radius);
-      border: var(--btn-border);
-      background: var(--btn-bg);
-      color: var(--btn-color);
-      font-family: var(--sc);
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.16em;
-      text-decoration: none;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .nk-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(15,21,35,0.08); border-color: rgba(200,146,42,1); background: rgba(200,146,42,0.08); }
-
     /* ── NAV ── */
-    .nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-      background: rgba(255,255,255,0.96);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--gold-rule);
-    }
-
-    .nav-inner {
-      max-width: 1040px; margin: 0 auto;
-      padding: 0 40px;
-      display: flex; align-items: center;
-      justify-content: space-between; height: 64px;
-    }
-
-    .nav-logo img {
-      height: 34px; width: auto; display: block;
-    }
-
-    .nav-links {
-      display: flex; align-items: center; gap: 40px;
-    }
-
-    .nav-links a {
-      font-family: var(--sc); font-size: 13px;
-      letter-spacing: 0.10em; color: var(--meta);
-      text-decoration: none; transition: color 0.2s;
-    }
-
-    .nav-links a:hover { color: var(--dark); }
-    .nav-links a.active { color: var(--gold); }
-
-    .nav-hamburger {
-      display: none; flex-direction: column; gap: 5px;
-      cursor: pointer; background: none; border: none; padding: 4px;
-    }
-    .nav-hamburger span {
-      display: block; width: 22px; height: 1.5px;
-      background: var(--meta); border-radius: 1px;
-    }
-
-    .nav-mobile {
-      display: none; flex-direction: column;
-      background: var(--bg); border-bottom: 1px solid var(--gold-rule);
-      padding: 8px 0;
-    }
-    .nav-mobile.open { display: flex; }
-    .nav-mobile a {
-      font-family: var(--sc); font-size: 13px;
-      letter-spacing: 0.10em; color: var(--meta);
-      text-decoration: none; padding: 14px 32px;
-      border-bottom: 1px solid var(--gold-faint);
-    }
-
-    .nav-dot {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: var(--gold-bg);
-      border: 1.5px solid var(--gold-border);
-      display: flex; align-items: center;
-      justify-content: center;
-      font-family: var(--sc); font-size: 13px;
-      font-weight: 600; color: var(--gold);
-      cursor: pointer; transition: all 0.2s;
-      flex-shrink: 0;
-      text-decoration: none;
-    }
-
-    .nav-dot:hover { background: var(--gold-bg-hi); border-color: var(--gold-border-hi); }
+    .nk-nav{position:sticky;top:0;z-index:100;background:rgba(250,250,247,0.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--gold-rule);}
+    .nk-nav-inner{max-width:1040px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;}
+    .nk-nav-logo img{height:34px;width:auto;display:block;}
+    .nk-nav-links{display:flex;align-items:center;gap:28px;}
+    .nk-nav-links a{font-family:var(--sc);font-size:13px;letter-spacing:0.10em;color:var(--meta);text-decoration:none;transition:color 0.2s;}
+    .nk-nav-links a:hover{color:var(--dark);}
+    .nk-nav-links a.active{color:var(--gold);}
+    .nk-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+    .nk-hamburger span{display:block;width:22px;height:1.5px;background:var(--meta);border-radius:1px;}
+    .nk-mobile-menu{display:none;flex-direction:column;background:var(--white);border-bottom:1px solid var(--gold-rule);padding:8px 0;}
+    .nk-mobile-menu.open{display:flex;}
+    .nk-mobile-menu a{font-family:var(--sc);font-size:13px;letter-spacing:0.10em;color:var(--dark);text-decoration:none;padding:14px 32px;border-bottom:1px solid var(--gold-faint);}
+    .nk-profile-dot{width:32px;height:32px;border-radius:50%;background:var(--gold-bg);border:1.5px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-family:var(--sc);font-size:13px;font-weight:600;color:var(--gold);text-decoration:none;flex-shrink:0;transition:all 0.2s;}
+    .nk-profile-dot:hover{background:var(--gold-bg-hi);border-color:var(--gold-border-hi);transform:translateY(-1px);}
 
     /* ── PAGE ── */
     .page {
       max-width: 680px;
       margin: 0 auto;
-      padding: 96px 40px 160px;
+      padding: 64px 40px 160px;
     }
 
     /* ── PROFILE HEADER ── */
@@ -194,7 +116,7 @@
       user-select: none;
     }
 
-    .slot-header:hover .slot-name { opacity: 0.7; }
+    .slot-header:hover .slot-term { opacity: 0.8; }
 
     .slot-toggle {
       font-size: 16px; color: var(--meta);
@@ -217,11 +139,35 @@
       opacity: 0;
     }
 
-    .slot-name {
+    /* ── TERM TOOLTIP ── */
+    .slot-term {
       font-family: var(--sc); font-size: 13px;
       font-weight: 600; letter-spacing: 0.20em;
       color: var(--gold);
+      position: relative; cursor: default;
     }
+    .slot-term .term-tip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 10px); left: 0;
+      background: var(--dark);
+      color: rgba(255,255,255,0.88);
+      font-family: var(--serif); font-size: 14px;
+      font-weight: 300; font-style: italic;
+      line-height: 1.65; text-align: left;
+      padding: 14px 18px; border-radius: 10px;
+      width: 260px; pointer-events: none;
+      z-index: 50;
+      box-shadow: 0 4px 20px rgba(15,21,35,0.18);
+    }
+    .slot-term .term-tip::after {
+      content: '';
+      position: absolute;
+      top: 100%; left: 20px;
+      border: 6px solid transparent;
+      border-top-color: var(--dark);
+    }
+    .slot-term:hover .term-tip { display: block; }
 
     .slot-source {
       font-family: var(--sc); font-size: 13px;
@@ -677,20 +623,6 @@
       font-weight: 300; color: var(--ghost);
     }
 
-    /* ── SIGN OUT ── */
-    .signout-wrap {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      padding-top: 40px;
-      border-top: 1px solid var(--gold-rule);
-      margin-top: 16px;
-    }
-
-    .signout-note {
-      font-family: var(--sc); font-size: 11px;
-      letter-spacing: 0.14em; color: var(--ghost);
-    }
-
     /* ── SAVE TOAST ── */
     .save-toast {
       position: fixed; bottom: 80px; right: 24px; z-index: 200;
@@ -705,10 +637,10 @@
     .save-toast.visible { opacity: 1; transform: translateY(0); }
 
     @media (max-width: 640px) {
-      .nav-inner { padding: 0 24px; }
-      .nav-links { display: none; }
-      .nav-hamburger { display: flex; }
-      .page { padding: 88px 20px 160px; }
+      .nk-nav-inner { padding: 0 20px; }
+      .nk-nav-links { display: none; }
+      .nk-hamburger { display: flex; }
+      .page { padding: 48px 20px 160px; }
       .horizon-pair { grid-template-columns: 1fr; }
       .future-slots { grid-template-columns: 1fr 1fr; }
       .identity-coords { gap: 20px; }
@@ -720,26 +652,30 @@
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-inner">
-    <a href="/index.html" class="nav-logo"><img src="/logo_nav.png" alt="NextUs"></a>
-    <div class="nav-links">
+<nav class="nk-nav">
+  <div class="nk-nav-inner">
+    <a href="/index.html" class="nk-nav-logo"><img src="/logo_nav.png" alt="NextUs"></a>
+    <div class="nk-nav-links">
       <a href="/index.html">Home</a>
       <a href="/life-os.html">Life OS</a>
       <a href="/nextus.html">NextUs</a>
-      <a href="#" class="active">Profile</a>
+      <a href="/work-with-nik.html">Work with Nik</a>
+      <a href="/about.html">About</a>
+      <a href="/podcast.html">Podcast</a>
+      <a href="/profile.html" class="active">Profile</a>
     </div>
-    <div style="display:flex;align-items:center;gap:16px;">
-      <a class="nav-dot" href="#" id="navDot">N</a>
-      <button class="nav-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('navMobile').classList.toggle('open');"><span></span><span></span><span></span></button>
-    </div>
+    <a href="/profile.html" class="nk-profile-dot" id="nk-profile-dot" title="Your profile" style="display:none;">→</a>
+    <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob-profile').classList.toggle('open');"><span></span><span></span><span></span></button>
   </div>
 </nav>
-<div id="navMobile" class="nav-mobile">
+<div id="nk-mob-profile" class="nk-mobile-menu">
   <a href="/index.html">Home</a>
   <a href="/life-os.html">Life OS</a>
   <a href="/nextus.html">NextUs</a>
-  <a href="#">Profile</a>
+  <a href="/work-with-nik.html">Work with Nik</a>
+  <a href="/about.html">About</a>
+  <a href="/podcast.html">Podcast</a>
+  <a href="/profile.html">Profile</a>
 </div>
 
 <div class="save-toast" id="saveToast">Saved</div>
@@ -753,42 +689,10 @@
     <p class="profile-tagline" id="profileTagline"></p>
   </div>
 
-  <!-- ── SLOT 1: WHO YOU ARE ── -->
-  <!-- Sources: Purpose Piece (archetype, domain, scale, identity statement)
-       More tools can add to this slot as the ecosystem grows -->
-  <div class="slot" id="slot-identity">
-    <div class="slot-header open" onclick="toggleSlot('identity')">
-      <span class="slot-name">Who you are</span>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <a class="slot-source" href="https://life-os-purpose-piece-v2.vercel.app" id="identitySource" onclick="event.stopPropagation()">Purpose Piece →</a>
-        <span class="slot-toggle">›</span>
-      </div>
-    </div>
-    <div class="slot-collapsible" id="slotCollapse-identity">
-    <div class="slot-body" id="identityBody">
-      <div class="slot-content" id="identityContent"></div>
-      <div class="note-divider"></div>
-      <div class="note-trigger" onclick="toggleNote('identity')">
-        <span class="note-trigger-text" id="noteLabelIdentity">Your own words →</span>
-        <span class="note-arrow">›</span>
-      </div>
-      <div class="note-body" id="noteBodyIdentity">
-        <textarea id="noteIdentity"
-          placeholder="What does it feel like to be you, doing this work, in this world? Write freely."
-          oninput="autosave('noteIdentity', this.value)"></textarea>
-        <p class="note-hint">This is yours — no tool populates it.</p>
-      </div>
-    </div>
-  </div>
-  </div><!-- end slot-collapsible identity -->
-
-  <!-- ── SLOT 2: HORIZON SELF ── -->
-  <!-- Sources: Horizon Leap (when built). Manual write always leads.
-       Ghost state until user writes or Horizon Leap populates.
-       Seven domain I am statements collapsible beneath the Voltron statement. -->
+  <!-- ── SLOT 1: HORIZON SELF ── -->
   <div class="slot" id="slot-horizonself">
     <div class="slot-header open" onclick="toggleSlot('horizonself')">
-      <span class="slot-name">Horizon Self</span>
+      <span class="slot-term">Horizon Self<span class="term-tip">The version of you living fully from your values, contributing what you're here to contribute — your future identity made concrete enough to navigate toward.</span></span>
       <div style="display:flex;align-items:center;gap:12px;">
         <a class="slot-source" href="/work-with-nik.html" id="horizonselfSource" onclick="event.stopPropagation()">Horizon Leap →</a>
         <span class="slot-toggle">›</span>
@@ -797,7 +701,7 @@
     <div class="slot-collapsible" id="slotCollapse-horizonself">
     <div class="slot-body empty" id="horizonselfBody">
       <div class="slot-content" id="horizonselfContent">
-        <p class="slot-ghost">This is the Voltron statement — the fully expressed version of you, drawn from every part of your life. Purpose Piece shows one facet. Horizon Self is the whole.</p>
+        <p class="slot-ghost">The fully expressed version of you, drawn from every part of your life. Purpose Piece shows one facet. This is the whole.</p>
         <p class="slot-ghost" style="margin-top:12px;">Write it yourself now, or let Horizon Leap build it with you when you're ready.</p>
         <div class="hs-edit-trigger" id="hsEditTrigger" onclick="toggleHorizonSelfEdit()" style="margin-top:16px;">
           <span id="hsEditLabel">Write your Horizon Self →</span>
@@ -805,9 +709,8 @@
         <textarea class="hs-edit-field" id="horizonSelfField"
           placeholder="I am…"
           oninput="autosave('horizonSelf', this.value); onHorizonSelfInput(this.value);"></textarea>
-
         <div class="hs-domains-toggle" id="hsDomainToggle" onclick="toggleHorizonSelfDomains()">
-          <span>Domain I am statements</span>
+          <span>I am statements by domain</span>
           <span class="hs-arrow">›</span>
         </div>
         <div class="hs-domains-list" id="hsDomainsList">
@@ -861,12 +764,10 @@
   </div>
   </div><!-- end slot-collapsible horizonself -->
 
-  <!-- ── SLOT 3: HOW YOUR LIFE LOOKS ── -->
-  <!-- Sources: The Map (7 domain scores)
-       Future: could receive data from other assessment tools -->
+  <!-- ── SLOT 2: THE MAP ── -->
   <div class="slot" id="slot-life">
     <div class="slot-header open" onclick="toggleSlot('life')">
-      <span class="slot-name">How your life looks right now</span>
+      <span class="slot-term">The Map<span class="term-tip">Seven domains. An honest picture of where life is full and where something is quietly waiting. Not a score to improve — a map to navigate from.</span></span>
       <div style="display:flex;align-items:center;gap:12px;">
         <a class="slot-source" href="#" id="lifeSource" onclick="event.stopPropagation()">The Map →</a>
         <span class="slot-toggle">›</span>
@@ -884,20 +785,16 @@
         <textarea id="noteLife"
           placeholder="Where in your life do you feel most alive right now? Where is something quietly waiting?"
           oninput="autosave('noteLife', this.value)"></textarea>
-        <p class="note-hint">Good enough for now — The Map will give you precision when you're ready.</p>
+        <p class="note-hint">The Map will give you precision when you're ready.</p>
       </div>
     </div>
   </div>
   </div><!-- end slot-collapsible life -->
 
-  <!-- ── SLOT 3: WHERE YOU ARE HEADING ── -->
-  <!-- Sources: Purpose Piece (domain horizon goal),
-                The Map (personal horizon),
-                Horizon Leap (personal horizon, deeper)
-       All three feed this slot. The most recent / deepest wins. -->
+  <!-- ── SLOT 3: HORIZON GOALS ── -->
   <div class="slot" id="slot-horizon">
     <div class="slot-header open" onclick="toggleSlot('horizon')">
-      <span class="slot-name">Where you are heading</span>
+      <span class="slot-term">Horizon Goals<span class="term-tip">What 10/10 looks like in each of the seven Life OS domains, in your words, for your life. Not aspirations — a self-calibrated honest picture.</span></span>
       <div style="display:flex;align-items:center;gap:12px;">
         <a class="slot-source" href="/work-with-nik.html" id="horizonSource" onclick="event.stopPropagation()">Horizon Leap →</a>
         <span class="slot-toggle">›</span>
@@ -915,18 +812,16 @@
         <textarea id="noteHorizon"
           placeholder="What does a full yes life look like for you in 3 years? Write the version you actually want."
           oninput="autosave('noteHorizon', this.value)"></textarea>
-        <p class="note-hint">Good enough for now — Horizon Leap will give this shape and depth.</p>
+        <p class="note-hint">Horizon Leap will give this shape and depth.</p>
       </div>
     </div>
   </div>
   </div><!-- end slot-collapsible horizon -->
 
-  <!-- ── SLOT 4: HOW YOU'VE BEEN SHOWING UP ── -->
-  <!-- Sources: Pulse (daily check-in streak)
-       Future: other consistency / check-in tools -->
+  <!-- ── SLOT 4: PULSE ── -->
   <div class="slot" id="slot-presence">
     <div class="slot-header open" onclick="toggleSlot('presence')">
-      <span class="slot-name">How you've been showing up</span>
+      <span class="slot-term">Pulse<span class="term-tip">The ongoing navigation practice — daily check-in, weekly reflection, quarterly reset. The rhythm that keeps your map current over time.</span></span>
       <div style="display:flex;align-items:center;gap:12px;">
         <a class="slot-source" href="https://life-os-pulse.vercel.app" id="presenceSource" onclick="event.stopPropagation()">Pulse →</a>
         <span class="slot-toggle">›</span>
@@ -944,18 +839,43 @@
         <textarea id="notePresence"
           placeholder="A sentence or two. What's most present for you right now?"
           oninput="autosave('notePresence', this.value)"></textarea>
-        <p class="note-hint">Good enough for now — Pulse will track this over time.</p>
+        <p class="note-hint">Pulse will track this over time.</p>
       </div>
     </div>
   </div>
   </div><!-- end slot-collapsible presence -->
 
-  <!-- ── SLOT 5: WHERE YOUR WORK MEETS THE WORLD ── -->
-  <!-- Sources: NextUs platform (actors, contributions, DA sessions)
-       Ghosted until platform data exists -->
+  <!-- ── SLOT 5: PURPOSE PIECE ── -->
+  <div class="slot" id="slot-identity">
+    <div class="slot-header open" onclick="toggleSlot('identity')">
+      <span class="slot-term">Purpose Piece<span class="term-tip">Your naturally recurring pattern of contribution — how you show up when something needs doing. Not a role, not a job title. A pattern.</span></span>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a class="slot-source" href="https://life-os-purpose-piece-v2.vercel.app" id="identitySource" onclick="event.stopPropagation()">Purpose Piece →</a>
+        <span class="slot-toggle">›</span>
+      </div>
+    </div>
+    <div class="slot-collapsible" id="slotCollapse-identity">
+    <div class="slot-body" id="identityBody">
+      <div class="slot-content" id="identityContent"></div>
+      <div class="note-divider"></div>
+      <div class="note-trigger" onclick="toggleNote('identity')">
+        <span class="note-trigger-text" id="noteLabelIdentity">Your own words →</span>
+        <span class="note-arrow">›</span>
+      </div>
+      <div class="note-body" id="noteBodyIdentity">
+        <textarea id="noteIdentity"
+          placeholder="What does it feel like to be you, doing this work, in this world? Write freely."
+          oninput="autosave('noteIdentity', this.value)"></textarea>
+        <p class="note-hint">This is yours — no tool populates it.</p>
+      </div>
+    </div>
+  </div>
+  </div><!-- end slot-collapsible identity -->
+
+  <!-- ── SLOT 6: NEXTUS ── -->
   <div class="slot" id="slot-contribution">
     <div class="slot-header open" onclick="toggleSlot('contribution')">
-      <span class="slot-name">Where your work meets the world</span>
+      <span class="slot-term">NextUs<span class="term-tip">Seven domains. Horizon goals at every scale. Where your personal work meets the civilisational project.</span></span>
       <div style="display:flex;align-items:center;gap:12px;">
         <a class="slot-source" href="/nextus.html" onclick="event.stopPropagation()">NextUs →</a>
         <span class="slot-toggle">›</span>
@@ -1013,7 +933,7 @@
 
   <div class="signout-wrap">
     <span class="signout-note">nextus.world</span>
-    <button class="nk-btn" onclick="signOut()" style="padding:10px 24px;font-size:13px;">Sign out</button>
+    <button class="signout-btn" onclick="signOut()">Sign out</button>
   </div>
 </div><!-- end page -->
 
@@ -1069,7 +989,8 @@ function render(state) {
 
   // Nav + header
   const initial = d.name ? d.name.charAt(0).toUpperCase() : '?';
-  document.getElementById('navDot').textContent = initial;
+  const _dot1 = document.getElementById('nk-profile-dot');
+  if (_dot1) { _dot1.textContent = initial; _dot1.style.display = 'flex'; }
 
   if (d.name) {
     document.getElementById('profileName').textContent   = d.name;
@@ -1279,7 +1200,7 @@ function toggleHorizonSelfDomains() {
 }
 
 function loadHorizonSelf() {
-  // Voltron statement
+  // Horizon Self statement
   const voltronEl = document.getElementById('horizonSelfField');
   if (voltronEl) {
     const saved = localStorage.getItem('profile_horizonSelf') || '';
@@ -1433,13 +1354,13 @@ async function init() {
   const result = await Promise.race([sessionPromise, timeoutPromise]);
 
   if (result.timedOut) {
-    window.location.href = 'https://nextus.world/login?redirect=' + encodeURIComponent(window.location.href);
+    window.location.href = 'https://nextus.world/login.html?redirect=' + encodeURIComponent(window.location.href);
     return;
   }
 
   const session = result.data?.session;
   if (!session?.user) {
-    window.location.href = 'https://nextus.world/login?redirect=' + encodeURIComponent(window.location.href);
+    window.location.href = 'https://nextus.world/login.html?redirect=' + encodeURIComponent(window.location.href);
     return;
   }
 
@@ -1450,7 +1371,7 @@ async function init() {
       await loadProfileData(newSession.user);
     }
     if (event === 'SIGNED_OUT') {
-      window.location.href = 'https://nextus.world/login?redirect=' + encodeURIComponent(window.location.href);
+      window.location.href = 'https://nextus.world/login.html?redirect=' + encodeURIComponent(window.location.href);
     }
   });
 }
@@ -1499,7 +1420,8 @@ async function loadProfileData(user) {
   const displayName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : '';
   const initial     = displayName?.charAt(0)?.toUpperCase() || '?';
 
-  document.getElementById('navDot').textContent       = initial;
+  const _dot2 = document.getElementById('nk-profile-dot');
+  if (_dot2) { _dot2.textContent = initial; _dot2.style.display = 'flex'; }
   document.getElementById('profileName').textContent  = displayName;
   document.getElementById('profileName').classList.remove('ghost');
   document.getElementById('profileTagline').textContent = '';

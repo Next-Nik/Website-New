@@ -21,7 +21,7 @@
     .nk-nav { position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--gold-rule); }
     .nk-nav-inner { max-width:1040px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px; }
     .nk-nav-logo img { height:34px;width:auto;display:block; }
-    .nk-nav-links { display:flex;align-items:center;gap:40px; }
+    .nk-nav-links { display:flex;align-items:center;gap:28px; }
     .nk-nav-links a { font-family:var(--serif-sc);font-size:13px;letter-spacing:0.10em;color:var(--text-meta);text-decoration:none;transition:color 0.2s; }
     .nk-nav-links a:hover { color:var(--text-head); }
     .nk-hamburger { display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px; }
@@ -77,7 +77,8 @@
       .nk-footer-bottom { flex-direction:column;align-items:flex-start;gap:12px; }
     }
 
-    .nk-profile-dot {
+    .nk-profile-dot { display:none; }
+    .nk-profile-dot.visible {
       width: 32px; height: 32px; border-radius: 50%;
       background: rgba(200,146,42,0.05);
       border: 1.5px solid rgba(200,146,42,0.78);
@@ -183,16 +184,16 @@
         if (user) {
           const initial = (user.email?.split("@")[0]?.charAt(0) || "?").toUpperCase();
           dot.textContent = initial;
-          dot.href = "https://nextus.world/profile.html";
+          dot.href = "/profile.html";
           dot.title = "Your profile";
-          dot.style.borderColor = "rgba(200,146,42,1)";
+          dot.classList.add("visible"); dot.style.borderColor = "rgba(200,146,42,1)";
           dot.style.background = "rgba(200,146,42,0.10)";
           if (btn) btn.style.display = "none";
         } else {
           dot.textContent = "→";
           dot.href = "/login.html";
           dot.title = "Sign in";
-          dot.style.borderColor = "";
+          dot.classList.remove("visible"); dot.style.borderColor = "";
           dot.style.background = "";
           if (btn) btn.style.display = "";
         }

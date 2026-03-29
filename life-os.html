@@ -22,7 +22,7 @@
     .nk-nav { position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--gold-rule); }
     .nk-nav-inner { max-width:1040px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px; }
     .nk-nav-logo img { height:34px;width:auto;display:block; }
-    .nk-nav-links { display:flex;align-items:center;gap:40px; }
+    .nk-nav-links { display:flex;align-items:center;gap:28px; }
     .nk-nav-links a { font-family:var(--serif-sc);font-size:13px;letter-spacing:0.10em;color:var(--text-meta);text-decoration:none;transition:color 0.2s; }
     .nk-nav-links a:hover { color:var(--text-head); }
     .nk-hamburger { display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px; }
@@ -78,7 +78,8 @@
       .nk-footer-bottom { flex-direction:column;align-items:flex-start;gap:12px; }
     }
 
-    .nk-profile-dot {
+    .nk-profile-dot { display:none; }
+    .nk-profile-dot.visible {
       width: 32px; height: 32px; border-radius: 50%;
       background: rgba(200,146,42,0.05);
       border: 1.5px solid rgba(200,146,42,0.78);
@@ -166,7 +167,7 @@
         <p>"There was this sense of feeling held throughout. His presence is unmistakably there."</p>
         <span class="nk-cite">— David William Pierce</span>
       </div>
-      <a href="https://life-os-foundation.vercel.app" target="_blank" class="nk-btn">Begin Foundation →</a>
+      <a href="https://life-os-foundation.vercel.app" class="nk-btn" data-lifeos-tool>Begin Foundation →</a>
     </div></div>
   </div>
 
@@ -181,7 +182,7 @@
       <p class="tool-desc">An honest picture of your whole life. Not where you think you should be — where you actually are.</p>
       <p class="tool-detail">Ten minutes. Seven domains. One honest score each. Path · Spark · Body · Finances · Relationships · Inner Game · Outer Game. The picture that emerges is often surprising. Always useful.</p>
       <div class="tool-meta">10 minutes · free · no account needed</div>
-      <a href="https://life-os-mapping.vercel.app" target="_blank" class="nk-btn" style="margin-right:10px;margin-bottom:8px;">Begin The Map →</a>
+      <a href="https://life-os-mapping.vercel.app" class="nk-btn" style="margin-right:10px;margin-bottom:8px;" data-lifeos-tool>Begin The Map →</a>
       <a href="/work-with-nik.html" class="nk-btn" style="background:transparent;">Go deeper with Nik</a>
     </div></div>
   </div>
@@ -197,7 +198,7 @@
       <p class="tool-desc">Daily check-in. Weekly reflection. Quarterly reset. No prerequisites.</p>
       <p class="tool-detail">Thoughts · Energy · Actions. Two minutes a day. The pattern that builds over time is the kind of self-knowledge that almost nothing else provides.</p>
       <div class="tool-meta">2 min daily · weekly reflection · quarterly reset</div>
-      <a href="https://life-os-pulse.vercel.app" target="_blank" class="nk-btn">Begin Pulse →</a>
+      <a href="https://life-os-pulse.vercel.app" class="nk-btn" data-lifeos-tool>Begin Pulse →</a>
     </div></div>
   </div>
 
@@ -212,7 +213,7 @@
       <p class="tool-desc">The role you're built to play. The domain where your effort compounds most.</p>
       <p class="tool-detail">A behavioural evidence tool that surfaces your natural contribution archetype. Once you know it, everything in Life OS sharpens — not by limiting you, but by showing you where your intelligence lands hardest.</p>
       <div class="tool-meta">20 minutes · self-directed · one-time or annual</div>
-      <a href="https://life-os-purpose-piece-v2.vercel.app" target="_blank" class="nk-btn" style="margin-right:10px;margin-bottom:8px;">Begin Purpose Piece →</a>
+      <a href="https://life-os-purpose-piece-v2.vercel.app" class="nk-btn" style="margin-right:10px;margin-bottom:8px;" data-lifeos-tool>Begin Purpose Piece →</a>
       <a href="/work-with-nik.html" class="nk-btn" style="background:transparent;">Debrief with Nik</a>
     </div></div>
   </div>
@@ -228,7 +229,7 @@
       <p class="tool-desc">The bridge between knowing where you are and arriving somewhere different.</p>
       <p class="tool-detail">Pick three domains. Set a meaningful 90-day outcome for each. The tool reverse-engineers the monthly milestones and weekly focus from your destination — and anchors daily TEA (Thoughts, Emotions, Actions) so the work compounds. Standalone or linked to The Map. If you've done The Map, it already knows where the gaps are.</p>
       <div class="tool-meta">90 days · 3 domains · AI-assisted milestone planning</div>
-      <a href="https://target-goals.vercel.app" target="_blank" class="nk-btn">Begin Target Goals →</a>
+      <a href="https://target-goals.vercel.app" class="nk-btn" data-lifeos-tool>Begin Target Goals →</a>
     </div></div>
   </div>
 
@@ -352,16 +353,16 @@ function showRec(key) {
         if (user) {
           const initial = (user.email?.split("@")[0]?.charAt(0) || "?").toUpperCase();
           dot.textContent = initial;
-          dot.href = "https://nextus.world/profile.html";
+          dot.href = "/profile.html";
           dot.title = "Your profile";
-          dot.style.borderColor = "rgba(200,146,42,1)";
+          dot.classList.add("visible"); dot.style.borderColor = "rgba(200,146,42,1)";
           dot.style.background = "rgba(200,146,42,0.10)";
           if (btn) btn.style.display = "none";
         } else {
           dot.textContent = "→";
           dot.href = "/login.html";
           dot.title = "Sign in";
-          dot.style.borderColor = "";
+          dot.classList.remove("visible"); dot.style.borderColor = "";
           dot.style.background = "";
           if (btn) btn.style.display = "";
         }
@@ -376,5 +377,6 @@ function showRec(key) {
     } catch(e) {}
   })();
 </script>
+<script src="/auth-link-helper.js"></script>
 </body></html>
 
