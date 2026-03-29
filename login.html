@@ -342,6 +342,9 @@
       "life-os-mapping.vercel.app",
       "orienteering-rose.vercel.app",
       "life-os-purpose-piece-v2.vercel.app",
+      "life-os-foundation.vercel.app",
+      "life-os-profile.vercel.app",
+      "target-goals.vercel.app",
       "nextus.world"
     ];
     if (redirect) {
@@ -357,15 +360,21 @@
   (async () => {
     const { data: { session } } = await sb.auth.getSession();
     if (session?.user) {
-      window.location.href = getRedirectUrl();
+      const dest = getRedirectUrl();
+      window.location.href = dest;
     }
   })();
 
   // ── Google ─────────────────────────────────────────────────────────────────
   document.getElementById("btn-google").addEventListener("click", async () => {
+    // Always redirect back to login.html first (fixes Safari cross-domain cookie issue)
+    // login.html will then forward to the original destination via ?redirect= param
+    const finalDest = getRedirectUrl();
+    const loginCallback = "https://nextus.world/login.html" +
+      (finalDest !== "https://nextus.world" ? "?redirect=" + encodeURIComponent(finalDest) : "");
     const { error } = await sb.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: getRedirectUrl() }
+      options: { redirectTo: loginCallback }
     });
     if (error) showError(error.message);
   });
@@ -390,10 +399,13 @@
     btn.textContent = "Sending...";
     hideError();
 
+    const finalDest = getRedirectUrl();
+    const loginCallback = "https://nextus.world/login.html" +
+      (finalDest !== "https://nextus.world" ? "?redirect=" + encodeURIComponent(finalDest) : "");
     const { error } = await sb.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: getRedirectUrl(),
+        emailRedirectTo: loginCallback,
         shouldCreateUser: true
       }
     });
