@@ -11,7 +11,8 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:             #FAFAF7;
+      --bg:             #FFFFFF;
+      --bg-warm:        #F5F2EC;
       --gold:           #C8922A;
       --gold-rule:      rgba(200,146,42,0.20);
       --gold-faint:     rgba(200,146,42,0.08);
@@ -21,10 +22,15 @@
       --gold-bg-hi:     rgba(200,146,42,0.08);
       --dark:           #0F1523;
       --meta:           rgba(15,21,35,0.78);
-      --ghost:          rgba(15,21,35,0.28);
+      --ghost:          rgba(15,21,35,0.55);
       --white:          #FFFFFF;
       --serif:          'Cormorant Garamond', Georgia, serif;
       --sc:             'Cormorant SC', Georgia, serif;
+      /* Button system — locked from sandbox-v2 */
+      --btn-border:     1.5px solid rgba(200,146,42,0.78);
+      --btn-bg:         rgba(200,146,42,0.05);
+      --btn-color:      #C8922A;
+      --btn-radius:     40px;
     }
 
     html, body {
@@ -40,22 +46,42 @@
 
 
 
+    /* ── BUTTON SYSTEM ── */
+    .nk-btn {
+      display: inline-block;
+      padding: 16px 36px;
+      border-radius: var(--btn-radius);
+      border: var(--btn-border);
+      background: var(--btn-bg);
+      color: var(--btn-color);
+      font-family: var(--sc);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nk-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(15,21,35,0.08); border-color: rgba(200,146,42,1); background: rgba(200,146,42,0.08); }
+
     /* ── NAV ── */
     .nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(250,250,247,0.96);
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(255,255,255,0.96);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--gold-rule);
-      padding: 0 48px;
+    }
+
+    .nav-inner {
+      max-width: 1040px; margin: 0 auto;
+      padding: 0 40px;
       display: flex; align-items: center;
       justify-content: space-between; height: 64px;
     }
 
-    .nav-logo {
-      font-family: var(--sc); font-size: 13px;
-      letter-spacing: 0.18em; color: var(--dark);
-      text-decoration: none;
+    .nav-logo img {
+      height: 34px; width: auto; display: block;
     }
 
     .nav-links {
@@ -70,6 +96,28 @@
 
     .nav-links a:hover { color: var(--dark); }
     .nav-links a.active { color: var(--gold); }
+
+    .nav-hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      cursor: pointer; background: none; border: none; padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block; width: 22px; height: 1.5px;
+      background: var(--meta); border-radius: 1px;
+    }
+
+    .nav-mobile {
+      display: none; flex-direction: column;
+      background: var(--bg); border-bottom: 1px solid var(--gold-rule);
+      padding: 8px 0;
+    }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a {
+      font-family: var(--sc); font-size: 13px;
+      letter-spacing: 0.10em; color: var(--meta);
+      text-decoration: none; padding: 14px 32px;
+      border-bottom: 1px solid var(--gold-faint);
+    }
 
     .nav-dot {
       width: 32px; height: 32px; border-radius: 50%;
@@ -90,7 +138,7 @@
     .page {
       max-width: 680px;
       margin: 0 auto;
-      padding: 64px 40px 160px;
+      padding: 96px 40px 160px;
     }
 
     /* ── PROFILE HEADER ── */
@@ -629,6 +677,20 @@
       font-weight: 300; color: var(--ghost);
     }
 
+    /* ── SIGN OUT ── */
+    .signout-wrap {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding-top: 40px;
+      border-top: 1px solid var(--gold-rule);
+      margin-top: 16px;
+    }
+
+    .signout-note {
+      font-family: var(--sc); font-size: 11px;
+      letter-spacing: 0.14em; color: var(--ghost);
+    }
+
     /* ── SAVE TOAST ── */
     .save-toast {
       position: fixed; bottom: 80px; right: 24px; z-index: 200;
@@ -643,9 +705,10 @@
     .save-toast.visible { opacity: 1; transform: translateY(0); }
 
     @media (max-width: 640px) {
-      .nav { padding: 0 20px; }
+      .nav-inner { padding: 0 24px; }
       .nav-links { display: none; }
-      .page { padding: 48px 20px 160px; }
+      .nav-hamburger { display: flex; }
+      .page { padding: 88px 20px 160px; }
       .horizon-pair { grid-template-columns: 1fr; }
       .future-slots { grid-template-columns: 1fr 1fr; }
       .identity-coords { gap: 20px; }
@@ -658,15 +721,26 @@
 <body>
 
 <nav class="nav">
-  <a class="nav-logo" href="https://nextus.world">NextUs</a>
-  <div class="nav-links">
-    <a href="https://nextus.world">Home</a>
-    <a href="/life-os.html">Life OS</a>
-    <a href="/nextus.html">NextUs</a>
-    <a href="#" class="active">Profile</a>
+  <div class="nav-inner">
+    <a href="/index.html" class="nav-logo"><img src="/logo_nav.png" alt="NextUs"></a>
+    <div class="nav-links">
+      <a href="/index.html">Home</a>
+      <a href="/life-os.html">Life OS</a>
+      <a href="/nextus.html">NextUs</a>
+      <a href="#" class="active">Profile</a>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <a class="nav-dot" href="#" id="navDot">N</a>
+      <button class="nav-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('navMobile').classList.toggle('open');"><span></span><span></span><span></span></button>
+    </div>
   </div>
-  <a class="nav-dot" href="#" id="navDot">N</a>
 </nav>
+<div id="navMobile" class="nav-mobile">
+  <a href="/index.html">Home</a>
+  <a href="/life-os.html">Life OS</a>
+  <a href="/nextus.html">NextUs</a>
+  <a href="#">Profile</a>
+</div>
 
 <div class="save-toast" id="saveToast">Saved</div>
 
@@ -939,7 +1013,7 @@
 
   <div class="signout-wrap">
     <span class="signout-note">nextus.world</span>
-    <button class="signout-btn" onclick="signOut()">Sign out</button>
+    <button class="nk-btn" onclick="signOut()" style="padding:10px 24px;font-size:13px;">Sign out</button>
   </div>
 </div><!-- end page -->
 
