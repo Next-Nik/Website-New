@@ -1426,6 +1426,42 @@ async function loadProfileData(user) {
   document.getElementById('profileName').classList.remove('ghost');
   document.getElementById('profileTagline').textContent = '';
 
+  // Founder-only link — only renders for nik@nextus.world, invisible to all others
+  if (user.email === 'nik@nextus.world') {
+    const existing = document.getElementById('founder-editor-link');
+    if (!existing) {
+      const link = document.createElement('a');
+      link.id = 'founder-editor-link';
+      link.href = '/content-editor.html';
+      link.textContent = 'Domain editor';
+      link.style.cssText = [
+        'display:inline-block',
+        'font-family:var(--sc,"Cormorant SC",Georgia,serif)',
+        'font-size:11px',
+        'letter-spacing:0.14em',
+        'color:rgba(15,21,35,0.35)',
+        'text-decoration:none',
+        'border-bottom:1px solid rgba(15,21,35,0.15)',
+        'padding-bottom:1px',
+        'margin-top:8px',
+        'transition:color 0.2s,border-color 0.2s',
+      ].join(';');
+      link.onmouseenter = () => {
+        link.style.color = 'rgba(168,114,26,0.78)';
+        link.style.borderBottomColor = 'rgba(168,114,26,0.4)';
+      };
+      link.onmouseleave = () => {
+        link.style.color = 'rgba(15,21,35,0.35)';
+        link.style.borderBottomColor = 'rgba(15,21,35,0.15)';
+      };
+      // Append after the sign out button
+      const signoutBtn = document.querySelector('.signout-btn');
+      if (signoutBtn) {
+        signoutBtn.parentNode.insertBefore(link, signoutBtn.nextSibling);
+      }
+    }
+  }
+
   renderIdentity(purpose);
   renderLife(scores);
   renderHorizon(purpose, horizonPersonal, null);
