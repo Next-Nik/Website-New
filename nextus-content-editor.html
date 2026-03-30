@@ -214,8 +214,9 @@
   <h1 class="auth-title">Content Editor</h1>
   <p class="auth-sub">Sign in to manage domains and sub-domains.</p>
   <div class="auth-form">
-    <input type="email" id="auth-email" class="auth-input" placeholder="nik@nextus.world" autocomplete="email" value="nik@nextus.world">
-    <button class="auth-btn" id="auth-btn" onclick="signIn()">Send sign-in link →</button>
+    <input type="email" id="auth-email" class="auth-input" placeholder="your@email.com" autocomplete="email">
+    <input type="password" id="auth-password" class="auth-input" placeholder="Password" autocomplete="current-password">
+    <button class="auth-btn" onclick="signIn()">Sign in</button>
     <p class="auth-msg" id="auth-msg"></p>
   </div>
 </div>
@@ -266,28 +267,14 @@ let allDomains = [];
 
 async function signIn() {
   const email = document.getElementById("auth-email").value.trim();
-  const msg   = document.getElementById("auth-msg");
-  const btn   = document.getElementById("auth-btn");
-  if (!email) { msg.textContent = "Enter your email."; msg.className = "auth-msg error"; return; }
-  btn.disabled = true;
-  msg.textContent = "Sending...";
+  const password = document.getElementById("auth-password").value;
+  const msg = document.getElementById("auth-msg");
+  msg.textContent = "Signing in...";
   msg.className = "auth-msg";
-  const { error } = await sb.auth.signInWithOtp({
-    email,
-    options: {
-      emailRedirectTo: window.location.href,
-      shouldCreateUser: false  // only allow existing accounts
-    }
-  });
+  const { error } = await sb.auth.signInWithPassword({ email, password });
   if (error) {
     msg.textContent = error.message;
     msg.className = "auth-msg error";
-    btn.disabled = false;
-  } else {
-    msg.textContent = "Check your email — link sent to " + email;
-    msg.className = "auth-msg";
-    btn.textContent = "Resend link";
-    btn.disabled = false;
   }
 }
 
@@ -514,8 +501,8 @@ function esc(str) {
     .replace(/"/g, "&quot;");
 }
 
-// Enter key on email input
-document.getElementById("auth-email").addEventListener("keydown", e => {
+// Enter key on auth inputs
+document.getElementById("auth-password").addEventListener("keydown", e => {
   if (e.key === "Enter") signIn();
 });
 </script>
