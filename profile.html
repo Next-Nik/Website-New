@@ -13,7 +13,6 @@
     :root {
       --bg:             #FAFAF7;
       --gold:           #C8922A;
-      --gold-dk:        #A8721A;
       --gold-rule:      rgba(200,146,42,0.20);
       --gold-faint:     rgba(200,146,42,0.08);
       --gold-border:    rgba(200,146,42,0.78);
@@ -824,7 +823,7 @@
     <div class="slot-header open" onclick="toggleSlot('presence')">
       <span class="slot-term">Pulse<span class="term-tip">The ongoing navigation practice — daily check-in, weekly reflection, quarterly reset. The rhythm that keeps your map current over time.</span></span>
       <div style="display:flex;align-items:center;gap:12px;">
-        <a class="slot-source" href="https://life-os-pulse.vercel.app" id="presenceSource" onclick="event.stopPropagation()">Pulse →</a>
+        <a class="slot-source" href="https://life-os-pulse.vercel.app" id="presenceSource" data-lifeos-tool data-lifeos-tool onclick="event.stopPropagation()">Pulse →</a>
         <span class="slot-toggle">›</span>
       </div>
     </div>
@@ -851,7 +850,7 @@
     <div class="slot-header open" onclick="toggleSlot('identity')">
       <span class="slot-term">Purpose Piece<span class="term-tip">Your naturally recurring pattern of contribution — how you show up when something needs doing. Not a role, not a job title. A pattern.</span></span>
       <div style="display:flex;align-items:center;gap:12px;">
-        <a class="slot-source" href="https://life-os-purpose-piece-v2.vercel.app" id="identitySource" onclick="event.stopPropagation()">Purpose Piece →</a>
+        <a class="slot-source" href="https://life-os-purpose-piece-v2.vercel.app" id="identitySource" data-lifeos-tool data-lifeos-tool onclick="event.stopPropagation()">Purpose Piece →</a>
         <span class="slot-toggle">›</span>
       </div>
     </div>
@@ -1034,7 +1033,7 @@ function renderIdentity(data) {
     source.textContent = 'Purpose Piece →';
     content.innerHTML = `
       <p class="slot-ghost">This is where your place in this becomes visible — your archetype, your domain, the scale where your work lands hardest.</p>
-      <a class="slot-cta" href="https://life-os-purpose-piece-v2.vercel.app">Find your Purpose Piece →</a>`;
+      <a class="slot-cta" href="https://life-os-purpose-piece-v2.vercel.app" data-lifeos-tool>Find your Purpose Piece →</a>`;
     return;
   }
 
@@ -1258,7 +1257,7 @@ function renderPresence(entries) {
     source.textContent = 'Pulse →';
     content.innerHTML = `
       <p class="slot-ghost">Two minutes a day. The picture that builds is the kind of self-knowledge almost nothing else provides.</p>
-      <a class="slot-cta" href="https://life-os-pulse.vercel.app">Start Pulse →</a>`;
+      <a class="slot-cta" href="https://life-os-pulse.vercel.app" data-lifeos-tool>Start Pulse →</a>`;
     return;
   }
 
@@ -1486,6 +1485,7 @@ function renderEmpty() {
   document.getElementById('profileName').textContent = 'Loading...';
 }
 </script>
+
 <script src="/auth-link-helper.js"></script>
 </body>
 </html>
