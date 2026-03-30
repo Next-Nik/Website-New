@@ -300,13 +300,33 @@ async function loadDomains() {
   list.innerHTML = '<div class="loading">Loading domains...</div>';
 
   const { data, error } = await sb.rpc("get_domain_tree");
-  if (error || !data) {
-    list.innerHTML = '<div class="loading">Could not load domains. Check Supabase connection.</div>';
+  if (error) {
+    list.innerHTML = `<div class="loading">Could not load domains: ${error.message}</div>`;
     return;
   }
 
-  allDomains = data;
-  renderDomains(data);
+  // get_domain_tree returns jsonb — Supabase client may wrap it
+  // Handle: null, array, or object with array inside
+  let domains = data;
+  if (!domains) {
+    list.innerHTML = '<div class="loading">No domains found. Check that 02_seed.sql has been run.</div>';
+    return;
+  }
+  // If it came back as a plain object (jsonb unwrap quirk), try parsing
+  if (typeof domains === 'string') {
+    try { domains = JSON.parse(domains); } catch {}
+  }
+  // If still not an array, it may be nested one level
+  if (!Array.isArray(domains)) {
+    domains = Object.values(domains)[0] || domains;
+  }
+  if (!Array.isArray(domains) || domains.length === 0) {
+    list.innerHTML = '<div class="loading">Domains loaded but empty. Check seed data.</div>';
+    return;
+  }
+
+  allDomains = domains;
+  renderDomains(domains);
 }
 
 // ── RENDER ───────────────────────────────────────────────────
