@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NextUs · Content Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #FFFFFF;
+      --bg-warm: #FAFAF7;
+      --dark: #0F1523;
+      --gold: #C8922A;
+      --gold-dk: #A8721A;
+      --gold-rule: rgba(200,146,42,0.20);
+      --gold-faint: rgba(200,146,42,0.08);
+      --meta: rgba(15,21,35,0.88);
+      --ghost: rgba(15,21,35,0.72);
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --serif-sc: 'Cormorant SC', Georgia, serif;
+      --radius: 12px;
+    }
+    html, body { background: var(--bg-warm); color: var(--dark); font-family: var(--serif); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+
+    /* ── AUTH SCREEN ── */
+    #auth-screen {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 40px 24px;
+    }
+    .auth-logo { height: 40px; width: auto; display: block; margin: 0 auto 32px; }
+    .auth-title { font-family: var(--serif); font-size: 28px; font-weight: 300; text-align: center; margin-bottom: 8px; }
+    .auth-sub { font-family: var(--serif); font-size: 16px; color: var(--meta); text-align: center; margin-bottom: 40px; }
+    .auth-form { width: 100%; max-width: 360px; }
+    .auth-input {
+      width: 100%; padding: 14px 16px; margin-bottom: 12px;
+      border: 1.5px solid var(--gold-rule); border-radius: 40px;
+      background: var(--bg); font-family: var(--serif); font-size: 16px;
+      color: var(--dark); outline: none; transition: border-color 0.2s;
+    }
+    .auth-input:focus { border-color: rgba(200,146,42,0.78); }
+    .auth-input::placeholder { color: var(--ghost); }
+    .auth-btn {
+      width: 100%; padding: 14px; border-radius: 40px;
+      border: 1.5px solid rgba(200,146,42,0.78);
+      background: rgba(200,146,42,0.05);
+      font-family: var(--serif-sc); font-size: 14px; font-weight: 600;
+      letter-spacing: 0.16em; color: var(--gold-dk); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .auth-btn:hover { background: rgba(200,146,42,0.10); border-color: var(--gold); }
+    .auth-msg { text-align: center; font-size: 14px; color: var(--meta); margin-top: 16px; min-height: 20px; }
+    .auth-msg.error { color: #8A4A4A; }
+
+    /* ── APP SHELL ── */
+    #app { display: none; min-height: 100vh; }
+
+    /* Header */
+    .app-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gold-rule);
+      padding: 0 20px; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .app-header-title { font-family: var(--serif-sc); font-size: 13px; letter-spacing: 0.16em; color: var(--gold-dk); }
+    .signout-btn {
+      background: none; border: none; cursor: pointer;
+      font-family: var(--serif-sc); font-size: 11px; letter-spacing: 0.12em;
+      color: var(--ghost); transition: color 0.2s;
+    }
+    .signout-btn:hover { color: var(--dark); }
+
+    /* Domain list */
+    .domain-list { padding: 20px 16px; max-width: 680px; margin: 0 auto; }
+
+    .domain-card {
+      background: var(--bg); border: 1.5px solid var(--gold-rule);
+      border-radius: var(--radius); margin-bottom: 10px; overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .domain-card.expanded { border-color: rgba(200,146,42,0.78); }
+
+    .domain-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 18px; cursor: pointer; user-select: none;
+    }
+    .domain-card-left { display: flex; flex-direction: column; gap: 2px; }
+    .domain-card-name { font-family: var(--serif); font-size: 20px; font-weight: 300; color: var(--dark); }
+    .domain-card-meta { font-family: var(--serif-sc); font-size: 10px; letter-spacing: 0.12em; color: var(--ghost); }
+    .domain-card-chevron { font-size: 18px; color: var(--gold-dk); transition: transform 0.2s; }
+    .domain-card.expanded .domain-card-chevron { transform: rotate(180deg); }
+
+    /* Editor area */
+    .domain-editor { padding: 0 18px 18px; display: none; }
+    .domain-card.expanded .domain-editor { display: block; }
+
+    .field-group { margin-bottom: 18px; }
+    .field-label {
+      display: block; font-family: var(--serif-sc); font-size: 10px;
+      font-weight: 600; letter-spacing: 0.14em; color: var(--gold-dk);
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .field-input, .field-textarea {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid var(--gold-rule); border-radius: 8px;
+      background: var(--bg-warm); font-family: var(--serif); font-size: 16px;
+      color: var(--dark); outline: none; transition: border-color 0.2s;
+      resize: vertical;
+    }
+    .field-input:focus, .field-textarea:focus { border-color: rgba(200,146,42,0.78); background: var(--bg); }
+    .field-textarea { min-height: 80px; line-height: 1.6; }
+
+    /* Save button */
+    .save-row { display: flex; align-items: center; gap: 12px; margin-top: 4px; }
+    .save-btn {
+      padding: 10px 24px; border-radius: 40px;
+      border: 1.5px solid rgba(200,146,42,0.78);
+      background: rgba(200,146,42,0.05);
+      font-family: var(--serif-sc); font-size: 12px; font-weight: 600;
+      letter-spacing: 0.14em; color: var(--gold-dk); cursor: pointer;
+      transition: all 0.2s;
+    }
+    .save-btn:hover { background: rgba(200,146,42,0.10); }
+    .save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .save-status { font-family: var(--serif); font-size: 14px; color: var(--meta); min-height: 20px; }
+    .save-status.ok { color: #4A7C59; }
+    .save-status.err { color: #8A4A4A; }
+
+    /* Sub-domain toggle */
+    .sub-toggle {
+      display: flex; align-items: center; gap: 8px;
+      background: none; border: none; cursor: pointer; padding: 10px 0 4px;
+      font-family: var(--serif-sc); font-size: 10px; letter-spacing: 0.14em;
+      color: var(--ghost); text-transform: uppercase; transition: color 0.2s;
+      width: 100%;
+    }
+    .sub-toggle:hover { color: var(--gold-dk); }
+    .sub-toggle-line { flex: 1; height: 1px; background: var(--gold-rule); }
+
+    /* Sub-domain cards */
+    .sub-list { margin-top: 8px; }
+    .sub-card {
+      border: 1px solid var(--gold-rule); border-radius: 8px;
+      margin-bottom: 8px; overflow: hidden; background: var(--bg-warm);
+    }
+    .sub-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; cursor: pointer;
+    }
+    .sub-card-name { font-family: var(--serif); font-size: 16px; font-weight: 300; color: var(--dark); }
+    .sub-card-chevron { font-size: 14px; color: var(--gold-dk); transition: transform 0.2s; }
+    .sub-card.expanded .sub-card-chevron { transform: rotate(180deg); }
+    .sub-editor { padding: 0 14px 14px; display: none; }
+    .sub-card.expanded .sub-editor { display: block; }
+
+    /* Add child button */
+    .add-child-btn {
+      display: flex; align-items: center; gap: 8px;
+      background: none; border: 1.5px dashed var(--gold-rule);
+      border-radius: 8px; padding: 12px 14px; cursor: pointer;
+      width: 100%; margin-top: 8px;
+      font-family: var(--serif); font-size: 15px; color: var(--ghost);
+      transition: all 0.2s;
+    }
+    .add-child-btn:hover { border-color: rgba(200,146,42,0.78); color: var(--gold-dk); }
+
+    /* Loading */
+    .loading {
+      text-align: center; padding: 60px 20px;
+      font-family: var(--serif); font-size: 18px; font-weight: 300;
+      color: var(--meta);
+    }
+
+    /* Add new child modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15,21,35,0.55);
+      backdrop-filter: blur(4px); display: flex; align-items: center;
+      justify-content: center; z-index: 200; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--bg); border: 1px solid var(--gold-rule);
+      border-radius: var(--radius); padding: 28px 24px;
+      width: 100%; max-width: 420px;
+      transform: translateY(16px); transition: transform 0.3s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-title { font-family: var(--serif); font-size: 22px; font-weight: 300; margin-bottom: 20px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .modal-cancel {
+      flex: 1; padding: 11px; border-radius: 40px;
+      border: 1.5px solid var(--gold-rule); background: none;
+      font-family: var(--serif-sc); font-size: 12px; letter-spacing: 0.12em;
+      color: var(--ghost); cursor: pointer;
+    }
+    .modal-save {
+      flex: 2; padding: 11px; border-radius: 40px;
+      border: 1.5px solid rgba(200,146,42,0.78);
+      background: rgba(200,146,42,0.05);
+      font-family: var(--serif-sc); font-size: 12px; font-weight: 600;
+      letter-spacing: 0.14em; color: var(--gold-dk); cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <img src="https://nextus.world/logo_nav.png" alt="NextUs" class="auth-logo" onerror="this.style.display='none'">
+  <h1 class="auth-title">Content Editor</h1>
+  <p class="auth-sub">Sign in to manage domains and sub-domains.</p>
+  <div class="auth-form">
+    <input type="email" id="auth-email" class="auth-input" placeholder="your@email.com" autocomplete="email">
+    <input type="password" id="auth-password" class="auth-input" placeholder="Password" autocomplete="current-password">
+    <button class="auth-btn" onclick="signIn()">Sign in</button>
+    <p class="auth-msg" id="auth-msg"></p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header class="app-header">
+    <span class="app-header-title">Domain Editor</span>
+    <button class="signout-btn" onclick="signOut()">Sign out</button>
+  </header>
+  <div class="domain-list" id="domain-list">
+    <div class="loading">Loading domains...</div>
+  </div>
+</div>
+
+<!-- ADD CHILD MODAL -->
+<div class="modal-overlay" id="add-modal" onclick="closeAddModal(event)">
+  <div class="modal">
+    <h2 class="modal-title">Add sub-domain</h2>
+    <input type="hidden" id="add-parent-id">
+    <div class="field-group">
+      <label class="field-label">Name</label>
+      <input type="text" id="add-name" class="field-input" placeholder="e.g. Somatic Therapy">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Horizon Goal</label>
+      <textarea id="add-goal" class="field-textarea" placeholder="What does 10/10 look like here?"></textarea>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Description</label>
+      <textarea id="add-desc" class="field-textarea" placeholder="What lives here and why does it matter?"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeAddModal()">Cancel</button>
+      <button class="modal-save" onclick="saveNewChild()">Add sub-domain</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://tphbpwzozkskytoichho.supabase.co";
+const SUPABASE_KEY = "sb_publishable_M00GF1FWV5tgKHqmyRCZag_kJjgBJn-";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let allDomains = [];
+
+// ── AUTH ─────────────────────────────────────────────────────
+
+async function signIn() {
+  const email = document.getElementById("auth-email").value.trim();
+  const password = document.getElementById("auth-password").value;
+  const msg = document.getElementById("auth-msg");
+  msg.textContent = "Signing in...";
+  msg.className = "auth-msg";
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) {
+    msg.textContent = error.message;
+    msg.className = "auth-msg error";
+  }
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+}
+
+sb.auth.onAuthStateChange(async (_event, session) => {
+  if (session?.user) {
+    document.getElementById("auth-screen").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    await loadDomains();
+  } else {
+    document.getElementById("auth-screen").style.display = "flex";
+    document.getElementById("app").style.display = "none";
+  }
+});
+
+// ── LOAD DOMAINS ─────────────────────────────────────────────
+
+async function loadDomains() {
+  const list = document.getElementById("domain-list");
+  list.innerHTML = '<div class="loading">Loading domains...</div>';
+
+  const { data, error } = await sb.rpc("get_domain_tree");
+  if (error || !data) {
+    list.innerHTML = '<div class="loading">Could not load domains. Check Supabase connection.</div>';
+    return;
+  }
+
+  allDomains = data;
+  renderDomains(data);
+}
+
+// ── RENDER ───────────────────────────────────────────────────
+
+function renderDomains(domains) {
+  const list = document.getElementById("domain-list");
+  list.innerHTML = domains.map(d => renderDomainCard(d)).join("");
+}
+
+function renderDomainCard(d) {
+  const subCards = (d.subDomains || []).map(s => renderSubCard(s, d.id)).join("");
+  return `
+    <div class="domain-card" id="card-${d.id}">
+      <div class="domain-card-header" onclick="toggleCard('${d.id}')">
+        <div class="domain-card-left">
+          <span class="domain-card-name">${esc(d.name)}</span>
+          <span class="domain-card-meta">${(d.subDomains||[]).length} sub-domains</span>
+        </div>
+        <span class="domain-card-chevron">&#8964;</span>
+      </div>
+      <div class="domain-editor">
+        ${renderFields(d, 'domain')}
+        <div class="save-row">
+          <button class="save-btn" onclick="saveDomain('${d.id}')">Save</button>
+          <span class="save-status" id="status-${d.id}"></span>
+        </div>
+
+        <button class="sub-toggle" onclick="toggleSubList('${d.id}')">
+          <span class="sub-toggle-line"></span>
+          <span>Sub-domains</span>
+          <span class="sub-toggle-line"></span>
+        </button>
+        <div class="sub-list" id="sub-list-${d.id}">
+          ${subCards}
+          <button class="add-child-btn" onclick="openAddModal('${d.id}')">
+            + Add sub-domain
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderSubCard(s, parentId) {
+  const grandchildren = (s.subDomains || []).map(g => renderSubCard(g, s.id)).join("");
+  const isPlaceholder = s.name === "Being mapped";
+  return `
+    <div class="sub-card" id="card-${s.id}">
+      <div class="sub-card-header" onclick="toggleCard('${s.id}')">
+        <span class="sub-card-name">${esc(s.name)}${isPlaceholder ? ' <span style="color:var(--ghost);font-size:12px;">(placeholder)</span>' : ''}</span>
+        <span class="sub-card-chevron">&#8964;</span>
+      </div>
+      <div class="sub-editor">
+        ${renderFields(s, 'sub')}
+        <div class="save-row">
+          <button class="save-btn" onclick="saveDomain('${s.id}')">Save</button>
+          <span class="save-status" id="status-${s.id}"></span>
+        </div>
+        ${(s.subDomains||[]).length > 0 ? `
+          <button class="sub-toggle" onclick="toggleSubList('${s.id}')">
+            <span class="sub-toggle-line"></span>
+            <span>Sub-domains</span>
+            <span class="sub-toggle-line"></span>
+          </button>
+          <div class="sub-list" id="sub-list-${s.id}">
+            ${grandchildren}
+          </div>` : ''}
+        <button class="add-child-btn" onclick="openAddModal('${s.id}')">
+          + Add sub-domain
+        </button>
+      </div>
+    </div>`;
+}
+
+function renderFields(item, type) {
+  const nameLabel = type === 'domain' ? 'Domain Name' : 'Name';
+  return `
+    <div class="field-group">
+      <label class="field-label">${nameLabel}</label>
+      <input type="text" class="field-input" id="name-${item.id}" value="${esc(item.name)}">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Horizon Goal</label>
+      <textarea class="field-textarea" id="goal-${item.id}">${esc(item.horizonGoal || '')}</textarea>
+    </div>
+    <div class="field-group">
+      <label class="field-label">Description</label>
+      <textarea class="field-textarea" id="desc-${item.id}">${esc(item.description || '')}</textarea>
+    </div>`;
+}
+
+// ── TOGGLE ───────────────────────────────────────────────────
+
+function toggleCard(id) {
+  const card = document.getElementById("card-" + id);
+  card.classList.toggle("expanded");
+}
+
+function toggleSubList(parentId) {
+  const list = document.getElementById("sub-list-" + parentId);
+  if (list) list.style.display = list.style.display === "none" ? "block" : "none";
+}
+
+// ── SAVE ─────────────────────────────────────────────────────
+
+async function saveDomain(id) {
+  const name = document.getElementById("name-" + id)?.value?.trim();
+  const horizonGoal = document.getElementById("goal-" + id)?.value?.trim();
+  const description = document.getElementById("desc-" + id)?.value?.trim();
+  const statusEl = document.getElementById("status-" + id);
+
+  if (!name) { showStatus(id, "Name is required", "err"); return; }
+
+  const btn = document.querySelector(`#card-${id} .save-btn`);
+  if (btn) btn.disabled = true;
+  showStatus(id, "Saving...", "");
+
+  const { error } = await sb.from("domains")
+    .update({ name, horizon_goal: horizonGoal, description, updated_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (btn) btn.disabled = false;
+  if (error) {
+    showStatus(id, "Save failed: " + error.message, "err");
+  } else {
+    showStatus(id, "Saved", "ok");
+    setTimeout(() => showStatus(id, "", ""), 2500);
+  }
+}
+
+function showStatus(id, msg, type) {
+  const el = document.getElementById("status-" + id);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = "save-status" + (type ? " " + type : "");
+}
+
+// ── ADD CHILD ────────────────────────────────────────────────
+
+function openAddModal(parentId) {
+  document.getElementById("add-parent-id").value = parentId;
+  document.getElementById("add-name").value = "";
+  document.getElementById("add-goal").value = "";
+  document.getElementById("add-desc").value = "";
+  document.getElementById("add-modal").classList.add("open");
+  setTimeout(() => document.getElementById("add-name").focus(), 300);
+}
+
+function closeAddModal(e) {
+  if (!e || e.target === document.getElementById("add-modal")) {
+    document.getElementById("add-modal").classList.remove("open");
+  }
+}
+
+async function saveNewChild() {
+  const parentId = document.getElementById("add-parent-id").value;
+  const name = document.getElementById("add-name").value.trim();
+  const horizonGoal = document.getElementById("add-goal").value.trim() || "Being mapped";
+  const description = document.getElementById("add-desc").value.trim() || "Being mapped";
+
+  if (!name) { alert("Name is required."); return; }
+
+  // Generate id from parent + slugified name
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const id = `${parentId}-${slug}`.slice(0, 60);
+
+  // Get next sort_order
+  const { data: siblings } = await sb.from("domains").select("sort_order").eq("parent_id", parentId);
+  const maxOrder = siblings ? Math.max(0, ...siblings.map(s => s.sort_order || 0)) : 0;
+
+  const { error } = await sb.from("domains").insert({
+    id, name, horizon_goal: horizonGoal, description,
+    parent_id: parentId, sort_order: maxOrder + 1,
+  });
+
+  if (error) {
+    alert("Could not add sub-domain: " + error.message);
+    return;
+  }
+
+  closeAddModal();
+  await loadDomains();
+}
+
+// ── UTILS ────────────────────────────────────────────────────
+
+function esc(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// Enter key on auth inputs
+document.getElementById("auth-password").addEventListener("keydown", e => {
+  if (e.key === "Enter") signIn();
+});
+</script>
+</body>
+</html>
