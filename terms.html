@@ -11,10 +11,10 @@
     :root {
       --bg:#FFFFFF; --bg-warm:#F5F2EC;
       --gold:#C8922A; --gold-rule:rgba(200,146,42,0.20); --gold-faint:rgba(200,146,42,0.08);
-      --text:#0F1523; --meta:rgba(15,21,35,0.78); --ghost:rgba(15,21,35,0.55);
+      --text:#0F1523; --meta:rgba(15,21,35,0.88); --ghost:rgba(15,21,35,0.72);
       --serif:'Cormorant Garamond',Georgia,serif; --serif-sc:'Cormorant SC',Georgia,serif;
       --btn-border:1.5px solid rgba(200,146,42,0.78); --btn-bg:rgba(200,146,42,0.05);
-      --btn-color:#C8922A; --btn-radius:40px;
+      --btn-color:#A8721A; --btn-radius:40px;
     }
     html, body { background:var(--bg); color:var(--text); font-family:var(--serif); font-weight:300; font-size:16px; line-height:1.7; -webkit-font-smoothing:antialiased; }
 
@@ -35,7 +35,7 @@
 
     .nk-wrap { max-width:680px; margin:0 auto; padding:112px 40px 120px; }
 
-    .nk-eyebrow { font-family:var(--serif-sc); font-size:13px; font-weight:600; letter-spacing:0.2em; color:#C8922A; display:block; margin-bottom:16px; }
+    .nk-eyebrow { font-family:var(--serif-sc); font-size:13px; font-weight:600; letter-spacing:0.2em; color:#A8721A; display:block; margin-bottom:16px; }
     .nk-rule { border:none; border-top:1px solid var(--gold-rule); margin:48px 0; }
 
     h1 { font-family:var(--serif); font-size:clamp(36px,5vw,52px); font-weight:300; color:var(--text); line-height:1.08; letter-spacing:-0.01em; margin-bottom:24px; }
@@ -44,7 +44,7 @@
     p.meta { color:var(--meta); font-style:italic; }
     ul { padding-left:24px; margin-bottom:18px; max-width:600px; }
     ul li { font-size:16px; font-weight:300; color:var(--text); line-height:1.75; margin-bottom:6px; }
-    a { color:#C8922A; text-decoration:none; border-bottom:1px solid rgba(200,146,42,0.3); transition:opacity 0.2s; }
+    a { color:#A8721A; text-decoration:none; border-bottom:1px solid rgba(200,146,42,0.3); transition:opacity 0.2s; }
     a:hover { opacity:0.7; }
 
     .nk-footer { border-top:1px solid var(--gold-rule); padding:64px 40px 48px; background:var(--bg-warm); }
@@ -80,7 +80,7 @@
       <a href="/about.html">About</a>
       <a href="/podcast.html">Podcast</a>
     </div>
-    <a href="/login.html" class="nk-profile-dot" id="nk-profile-dot" title="Sign in">→</a>
+    <a href="/login.html" class="nk-profile-dot" id="nk-profile-dot" title="Sign in">&#8594;</a>
     <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob').classList.toggle('open');"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -91,13 +91,13 @@
   <a href="/work-with-nik.html">Work with Nik</a>
   <a href="/about.html">About</a>
   <a href="/podcast.html">Podcast</a>
-  <a href="/login.html">Sign in →</a>
+  <a href="/login.html">Sign in &#8594;</a>
 </div>
 
 <div class="nk-wrap">
 
   <span class="nk-eyebrow">Terms of Service</span>
-  <h1>Using NextUs<br><em style="color:#C8922A;">in good faith.</em></h1>
+  <h1>Using NextUs<br><em style="color:#A8721A;">in good faith.</em></h1>
   <p class="meta">Last updated March 2026 · NextUs / Nik Wood</p>
 
   <hr class="nk-rule">
@@ -150,7 +150,7 @@
 
   <h2>Ending your account</h2>
 
-  <p>You can close your account any time by emailing <a href="mailto:nik@nextus.world">nik@nextus.world</a>. We'll delete your data within a reasonable period. We may suspend accounts that violate these terms.</p>
+  <p>You can close your account any time by emailing <a href="/cdn-cgi/l/email-protection#523c3b39123c372a2627217c253d203e36"><span class="__cf_email__" data-cfemail="0967606249676c717d7c7a277e667b656d">[email&#160;protected]</span></a>. We'll delete your data within a reasonable period. We may suspend accounts that violate these terms.</p>
 
   <h2>Changes to these terms</h2>
 
@@ -162,7 +162,7 @@
 
   <hr class="nk-rule">
 
-  <p class="meta">Questions? <a href="mailto:nik@nextus.world">nik@nextus.world</a></p>
+  <p class="meta">Questions? <a href="/cdn-cgi/l/email-protection#355b5c5e755b504d4140461b425a475951"><span class="__cf_email__" data-cfemail="e38d8a88a38d869b979690cd948c918f87">[email&#160;protected]</span></a></p>
 
 </div>
 
@@ -182,7 +182,7 @@
   </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   (async function() {
     try {
@@ -208,20 +208,4 @@
           dot.href = "/login.html";
           dot.title = "Sign in";
           dot.style.borderColor = "";
-          dot.style.background = "";
-          if (btn) btn.style.display = "";
-        }
-      }
-
-      const { data: { session } } = await sb.auth.getSession();
-      updateDot(session?.user || null);
-
-      sb.auth.onAuthStateChange(function(event, newSession) {
-        updateDot(newSession?.user || null);
-      });
-    } catch(e) {}
-  })();
-</script>
-
-</body>
-</html>
+        
