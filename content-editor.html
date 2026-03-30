@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jor-El</title>
+  <title>Next-1</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -203,7 +203,7 @@
 
 <!-- AUTH -->
 <div id="auth-screen">
-  <span class="auth-mark">JOR-EL · NEXTUS</span>
+  <span class="auth-mark">NEXT-1 · NEXTUS</span>
   <h1 class="auth-title">Welcome, Nik.</h1>
   <p class="auth-sub">The ecosystem is listening.</p>
   <div class="auth-form">
@@ -218,7 +218,8 @@
 <div id="app">
   <header class="app-header">
     <div class="app-header-left">
-      <span class="header-mark">JOR-EL</span>
+      <a href="/index.html" style="font-family:var(--sc);font-size:10px;letter-spacing:0.14em;color:var(--ghost);text-decoration:none;transition:color 0.2s;margin-right:12px;" onmouseenter="this.style.color='var(--gold-dk)'" onmouseleave="this.style.color='var(--ghost)'">&#8592; Site</a>
+      <span class="header-mark">NEXT-1</span>
       <div class="status-dot" id="status-dot"></div>
       <span class="status-label" id="status-label">Connecting...</span>
     </div>
@@ -251,7 +252,7 @@
   <!-- ASK -->
   <div class="tab-pane" id="tab-ask">
     <div class="ask-intro">
-      <div class="ask-intro-name">JOR-EL</div>
+      <div class="ask-intro-name">NEXT-1</div>
       <div class="ask-intro-body">I have read the ecosystem. Ask me anything — what's working, what isn't, who's struggling, what to fix first. I'll tell you what the data shows and what it means.</div>
     </div>
 
@@ -267,18 +268,22 @@
     <div class="ask-messages" id="ask-messages"></div>
 
     <div class="ask-input-row">
-      <input type="text" class="ask-input" id="ask-input" placeholder="Ask Jor-El anything..." onkeydown="if(event.key==='Enter')sendAsk()">
+      <input type="text" class="ask-input" id="ask-input" placeholder="Ask Next-1 anything..." onkeydown="if(event.key==='Enter')sendAsk()">
       <button class="ask-send" onclick="sendAsk()">Send</button>
     </div>
   </div>
 
   <!-- USERS -->
   <div class="tab-pane" id="tab-users">
+    <div style="background:var(--card);border:1px solid var(--gold-rule);border-left:3px solid var(--gold-border);border-radius:var(--radius);padding:16px 18px;margin-bottom:20px;">
+      <div style="font-family:var(--sc);font-size:10px;letter-spacing:0.16em;color:var(--gold-dk);margin-bottom:6px;">FOR CB</div>
+      <div style="font-family:var(--serif);font-size:14px;color:var(--ghost);line-height:1.65;">Full user lookup requires a Supabase RPC function that returns auth users with metadata. Build <code style="font-family:monospace;font-size:12px;background:var(--bg);padding:2px 5px;border-radius:4px;">get_users_list()</code> returning id, email, name, created_at, last_sign_in_at. Until then, search routes through Next-1.</div>
+    </div>
     <div class="search-row">
-      <input type="email" class="search-input" id="user-search" placeholder="Search by email..." onkeydown="if(event.key==='Enter')searchUser()">
+      <input type="text" class="search-input" id="user-search" placeholder="Name, email, or username..." onkeydown="if(event.key==='Enter')searchUser()">
       <button class="search-btn" onclick="searchUser()">Search</button>
     </div>
-    <div id="user-results"><div class="user-empty">Search for a user by email to view their profile.</div></div>
+    <div id="user-results"><div class="user-empty">Search by name (fuzzy matched), email, or username.</div></div>
   </div>
 
   <!-- TOOLS -->
@@ -495,7 +500,7 @@ async function loadNow() {
     </div>
   `;
 
-  // Cache data for Jor-El
+  // Cache data for Next-1
   cachedData = {
     totalPulse, totalMap, weeklyPulse, weeklySessions,
     mapComplete, mapIncomplete,
@@ -504,7 +509,7 @@ async function loadNow() {
   };
 }
 
-// ── ASK JOR-EL ────────────────────────────────────────────────
+// ── ASK NEXT-1 ────────────────────────────────────────────────
 let askHistory = [];
 
 async function sendPrompt(text) {
@@ -526,14 +531,14 @@ async function sendAsk() {
 
   // Thinking indicator
   const thinkingId = "thinking-" + Date.now();
-  messagesEl.innerHTML += `<div class="ask-thinking" id="${thinkingId}">Jor-El is reading the data...</div>`;
+  messagesEl.innerHTML += `<div class="ask-thinking" id="${thinkingId}">Next-1 is reading the data...</div>`;
   messagesEl.scrollTop = messagesEl.scrollHeight;
 
   try {
     // Build data context
     const dataContext = JSON.stringify(cachedData, null, 2);
 
-    const systemPrompt = `You are Jor-El — the intelligence layer for the NextUs ecosystem. You are speaking directly to Nik Wood, the founder.
+    const systemPrompt = `You are Next-1 — the intelligence layer for the NextUs ecosystem. You are speaking directly to Nik Wood, the founder.
 
 WHAT YOU ARE:
 A translation layer between system data and founder judgment. You do not just report numbers. You interpret, pattern-match, and point to action.
@@ -568,7 +573,7 @@ If asked something the data cannot answer, say so clearly and explain what data 
     // Remove thinking
     document.getElementById(thinkingId)?.remove();
 
-    // Add Jor-El response
+    // Add Next-1 response
     askHistory.push({ role: "assistant", content: reply });
     messagesEl.innerHTML += `<div class="ask-msg ask-msg-jorel">${reply.replace(/\n/g, '<br>')}</div>`;
     messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -584,58 +589,75 @@ If asked something the data cannot answer, say so clearly and explain what data 
 
 // ── USERS TAB ─────────────────────────────────────────────────
 async function searchUser() {
-  const email = document.getElementById("user-search").value.trim();
-  if (!email) return;
+  const query = document.getElementById("user-search").value.trim();
+  if (!query) return;
 
   const resultsEl = document.getElementById("user-results");
   resultsEl.innerHTML = '<div class="loading-msg">Searching...</div>';
 
-  // Search pulse entries and map sessions by matching user_id
-  // We can't search auth.users directly from client, so we use data tables
+  // Pull all available data from accessible tables
   const { data: pulseData } = await sb.from("pulse_entries")
     .select("user_id, type, completed_at")
     .order("completed_at", { ascending: false })
-    .limit(100);
+    .limit(500);
 
   const { data: mapData } = await sb.from("orienteering_sessions")
-    .select("user_id, created_at, complete, domain_scores")
+    .select("user_id, created_at, complete")
     .order("created_at", { ascending: false })
-    .limit(100);
+    .limit(500);
 
   const { data: accessData } = await sb.from("access")
     .select("user_id, product, tier, expires_at")
-    .limit(200);
+    .limit(500);
 
-  // Try to find by email in access or sessions
-  // Since we can't query auth directly, show aggregate data
-  const allUserIds = [...new Set([
-    ...(pulseData || []).map(r => r.user_id),
-    ...(mapData || []).map(r => r.user_id),
-  ])];
+  // Aggregate by user_id
+  const userMap = {};
+  (pulseData || []).forEach(r => {
+    if (!userMap[r.user_id]) userMap[r.user_id] = { user_id: r.user_id, pulseCount: 0, mapCount: 0, mapComplete: 0, access: [] };
+    userMap[r.user_id].pulseCount++;
+    if (!userMap[r.user_id].lastSeen || r.completed_at > userMap[r.user_id].lastSeen) {
+      userMap[r.user_id].lastSeen = r.completed_at;
+    }
+  });
+  (mapData || []).forEach(r => {
+    if (!userMap[r.user_id]) userMap[r.user_id] = { user_id: r.user_id, pulseCount: 0, mapCount: 0, mapComplete: 0, access: [] };
+    userMap[r.user_id].mapCount++;
+    if (r.complete) userMap[r.user_id].mapComplete++;
+    if (!userMap[r.user_id].lastSeen || r.created_at > userMap[r.user_id].lastSeen) {
+      userMap[r.user_id].lastSeen = r.created_at;
+    }
+  });
+  (accessData || []).forEach(r => {
+    if (!userMap[r.user_id]) userMap[r.user_id] = { user_id: r.user_id, pulseCount: 0, mapCount: 0, mapComplete: 0, access: [] };
+    userMap[r.user_id].access.push(`${r.product} (${r.tier})`);
+  });
 
-  if (allUserIds.length === 0) {
-    resultsEl.innerHTML = '<div class="user-empty">No user data found. The user may not have used any tools yet.</div>';
-    return;
-  }
+  const users = Object.values(userMap);
+  const totalUsers = users.length;
 
-  // Show summary — note we can't resolve email to user_id without admin access
-  const pulseCount = pulseData?.length || 0;
-  const mapCount = mapData?.length || 0;
-  const mapComplete = mapData?.filter(m => m.complete).length || 0;
-
+  // Route through Next-1 for fuzzy interpretation
   resultsEl.innerHTML = `
     <div class="user-card">
-      <div class="user-card-email">${esc(email)}</div>
-      <div class="user-card-name">User lookup</div>
-      <div class="user-card-row"><span class="user-card-key">Note</span><span class="user-card-val" style="font-style:italic;color:var(--ghost);font-size:13px;">Full user lookup requires admin API access. Ask Jor-El about this user for data insights.</span></div>
-      <div class="user-card-row"><span class="user-card-key">Total Pulse Entries (all users)</span><span class="user-card-val">${pulseCount}</span></div>
-      <div class="user-card-row"><span class="user-card-key">Map Sessions (all users)</span><span class="user-card-val">${mapCount} · ${mapComplete} complete</span></div>
-      <div class="user-card-row"><span class="user-card-key">Unique Users with Activity</span><span class="user-card-val">${allUserIds.length}</span></div>
-    </div>
-    <div style="margin-top:8px;">
-      <button class="save-btn" onclick="document.getElementById('ask-input').value='Tell me about the user ${esc(email)}'; switchTab('ask', document.querySelectorAll('.nav-tab')[1]); sendAsk();">Ask Jor-El about this user</button>
-    </div>
-  `;
+      <div class="user-card-email">Search: "${esc(query)}"</div>
+      <div class="user-card-name" style="font-size:16px;margin-bottom:8px;">Routing to Next-1 for fuzzy match...</div>
+      <div class="user-card-row"><span class="user-card-key">Total users with activity</span><span class="user-card-val">${totalUsers}</span></div>
+      <div class="user-card-row"><span class="user-card-key">Note</span><span class="user-card-val" style="font-style:italic;color:var(--ghost);font-size:13px;">Name resolution requires the CB-built get_users_list() RPC. Next-1 will interpret with available data.</span></div>
+    </div>`;
+
+  // Ask Next-1 to interpret the search with fuzzy matching
+  const prompt = `I'm searching for a user: "${query}". This could be a name with variant spellings (e.g. Nikolas/Nicholas/Nicolas), a username, or an email fragment. 
+
+Here is the aggregate activity data I have (${totalUsers} unique users):
+- Total pulse entries: ${pulseData?.length || 0}
+- Total map sessions: ${mapData?.length || 0} (${mapData?.filter(m=>m.complete).length || 0} complete)
+- Users with access records: ${accessData?.length || 0}
+
+I cannot yet resolve user IDs to names without the get_users_list() RPC function. Tell me: what can you infer about this search, what data would help find this user, and what should I ask CB to build to make user lookup work properly?`;
+
+  // Switch to Ask tab and send
+  document.getElementById("ask-input").value = prompt;
+  switchTab('ask', document.querySelectorAll('.nav-tab')[1]);
+  await sendAsk();
 }
 
 // ── TOOLS TOGGLES ─────────────────────────────────────────────
