@@ -823,7 +823,7 @@
     <div class="slot-header open" onclick="toggleSlot('presence')">
       <span class="slot-term">Pulse<span class="term-tip">The ongoing navigation practice — daily check-in, weekly reflection, quarterly reset. The rhythm that keeps your map current over time.</span></span>
       <div style="display:flex;align-items:center;gap:12px;">
-        <a class="slot-source" href="/tools/pulse" id="presenceSource" onclick="event.stopPropagation()">Pulse →</a>
+        <a class="slot-source" href="https://life-os-pulse.vercel.app" id="presenceSource" onclick="event.stopPropagation()">Pulse →</a>
         <span class="slot-toggle">›</span>
       </div>
     </div>
@@ -1257,7 +1257,7 @@ function renderPresence(entries) {
     source.textContent = 'Pulse →';
     content.innerHTML = `
       <p class="slot-ghost">Two minutes a day. The picture that builds is the kind of self-knowledge almost nothing else provides.</p>
-      <a class="slot-cta" href="/tools/pulse">Start Pulse →</a>`;
+      <a class="slot-cta" href="https://life-os-pulse.vercel.app">Start Pulse →</a>`;
     return;
   }
 
