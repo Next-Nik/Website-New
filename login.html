@@ -342,7 +342,7 @@
     if (redirect) {
       try {
         const url = new URL(redirect);
-        if (url.hostname === "nextus.world" || url.hostname.endsWith(".nextus.world")) {
+        if (url.hostname === "nextus.world" || url.hostname.endsWith(".nextus.world") || url.hostname === "life-os-pulse.vercel.app") {
           localStorage.setItem(LS_REDIRECT_KEY, redirect);
           return redirect;
         }
