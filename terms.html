@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms · NextUs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#FFFFFF; --bg-warm:#F5F2EC;
+      --gold:#C8922A; --gold-rule:rgba(200,146,42,0.20); --gold-faint:rgba(200,146,42,0.08);
+      --text:#0F1523; --meta:rgba(15,21,35,0.88); --ghost:rgba(15,21,35,0.72);
+      --serif:'Cormorant Garamond',Georgia,serif; --serif-sc:'Cormorant SC',Georgia,serif;
+      --btn-border:1.5px solid rgba(200,146,42,0.78); --btn-bg:rgba(200,146,42,0.05);
+      --btn-color:#A8721A; --btn-radius:40px;
+    }
+    html, body { background:var(--bg); color:var(--text); font-family:var(--serif); font-weight:300; font-size:16px; line-height:1.7; -webkit-font-smoothing:antialiased; }
+
+    .nk-nav { position:fixed; top:0; left:0; right:0; z-index:1000; background:rgba(255,255,255,0.96); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-bottom:1px solid var(--gold-rule); }
+    .nk-nav-inner { max-width:1040px; margin:0 auto; padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:64px; }
+    .nk-nav-logo img { height:34px; width:auto; display:block; }
+    .nk-nav-links { display:flex; align-items:center; gap:40px; }
+    .nk-nav-links a { font-family:var(--serif-sc); font-size:13px; letter-spacing:0.10em; color:var(--meta); text-decoration:none; transition:color 0.2s; }
+    .nk-nav-links a:hover { color:var(--text); }
+    .nk-hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none; padding:4px; }
+    .nk-hamburger span { display:block; width:22px; height:1.5px; background:var(--meta); border-radius:1px; }
+    .nk-mobile-menu { display:none; flex-direction:column; background:var(--bg); border-bottom:1px solid var(--gold-rule); padding:8px 0; }
+    .nk-mobile-menu.open { display:flex; }
+    .nk-mobile-menu a { font-family:var(--serif-sc); font-size:13px; letter-spacing:0.10em; color:var(--text); text-decoration:none; padding:14px 32px; border-bottom:1px solid var(--gold-faint); }
+
+    .nk-profile-dot { width:32px; height:32px; border-radius:50%; background:var(--btn-bg); border:var(--btn-border); display:flex; align-items:center; justify-content:center; font-family:var(--serif-sc); font-size:13px; font-weight:600; color:var(--btn-color); text-decoration:none; flex-shrink:0; transition:all 0.2s; }
+    .nk-profile-dot:hover { background:rgba(200,146,42,0.08); border-color:rgba(200,146,42,1); transform:translateY(-1px); }
+
+    .nk-wrap { max-width:680px; margin:0 auto; padding:112px 40px 120px; }
+
+    .nk-eyebrow { font-family:var(--serif-sc); font-size:13px; font-weight:600; letter-spacing:0.2em; color:#A8721A; display:block; margin-bottom:16px; }
+    .nk-rule { border:none; border-top:1px solid var(--gold-rule); margin:48px 0; }
+
+    h1 { font-family:var(--serif); font-size:clamp(36px,5vw,52px); font-weight:300; color:var(--text); line-height:1.08; letter-spacing:-0.01em; margin-bottom:24px; }
+    h2 { font-family:var(--serif); font-size:clamp(22px,3vw,28px); font-weight:300; color:var(--text); line-height:1.2; margin-bottom:14px; margin-top:48px; }
+    p { font-size:16px; font-weight:300; color:var(--text); line-height:1.75; margin-bottom:18px; max-width:600px; }
+    p.meta { color:var(--meta); font-style:italic; }
+    ul { padding-left:24px; margin-bottom:18px; max-width:600px; }
+    ul li { font-size:16px; font-weight:300; color:var(--text); line-height:1.75; margin-bottom:6px; }
+    a { color:#A8721A; text-decoration:none; border-bottom:1px solid rgba(200,146,42,0.3); transition:opacity 0.2s; }
+    a:hover { opacity:0.7; }
+
+    .nk-footer { border-top:1px solid var(--gold-rule); padding:64px 40px 48px; background:var(--bg-warm); }
+    .nk-footer-inner { max-width:680px; margin:0 auto; }
+    .nk-footer-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:40px; gap:24px; }
+    .nk-footer-brand { font-family:var(--serif); font-size:15px; font-style:italic; font-weight:300; color:var(--meta); }
+    .nk-footer-rule { height:1px; background:var(--gold-rule); margin-bottom:28px; }
+    .nk-footer-bottom { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .nk-footer-copy { font-family:var(--serif-sc); font-size:11px; letter-spacing:0.12em; color:var(--ghost); }
+    .nk-footer-legal { display:flex; gap:20px; }
+    .nk-footer-legal a { font-family:var(--serif-sc); font-size:11px; letter-spacing:0.12em; color:var(--ghost); text-decoration:none; border:none; transition:color 0.2s; }
+    .nk-footer-legal a:hover { color:var(--meta); }
+
+    @media (max-width:640px) {
+      .nk-nav-inner { padding:0 24px; } .nk-nav-links { display:none; } .nk-hamburger { display:flex; }
+      .nk-wrap { padding:96px 24px 100px; }
+      .nk-footer { padding:48px 24px 40px; }
+      .nk-footer-top { flex-direction:column; align-items:flex-start; }
+      .nk-footer-bottom { flex-direction:column; align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nk-nav">
+  <div class="nk-nav-inner">
+    <a href="/index.html" class="nk-nav-logo"><img src="/logo_nav.png" alt="NextUs"></a>
+    <div class="nk-nav-links">
+      <a href="/index.html">Home</a>
+      <a href="/life-os.html">Life OS</a>
+      <a href="/nextus.html">NextUs</a>
+      <a href="/work-with-nik.html">Work with Nik</a>
+      <a href="/about.html">About</a>
+      <a href="/podcast.html">Podcast</a>
+    </div>
+    <a href="/login.html" class="nk-profile-dot" id="nk-profile-dot" title="Sign in">&#8594;</a>
+    <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob').classList.toggle('open');"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div id="nk-mob" class="nk-mobile-menu">
+  <a href="/index.html">Home</a>
+  <a href="/life-os.html">Life OS</a>
+  <a href="/nextus.html">NextUs</a>
+  <a href="/work-with-nik.html">Work with Nik</a>
+  <a href="/about.html">About</a>
+  <a href="/podcast.html">Podcast</a>
+  <a href="/login.html">Sign in &#8594;</a>
+</div>
+
+<div class="nk-wrap">
+
+  <span class="nk-eyebrow">Terms of Service</span>
+  <h1>Using NextUs<br><em style="color:#A8721A;">in good faith.</em></h1>
+  <p class="meta">Last updated March 2026 · NextUs / Nik Wood</p>
+
+  <hr class="nk-rule">
+
+  <p>These terms cover your use of nextus.world and the Life OS tools — Orienteering, The Map, Purpose Piece, Pulse, Foundation — and the NextUs platform. By using any of these, you're agreeing to what's written here.</p>
+
+  <p>The spirit of these terms: use the platform honestly, treat what you find here with respect, and don't do things that would harm other people or the platform itself. Most of this should go without saying.</p>
+
+  <h2>Your account</h2>
+
+  <p>You need an account to save your progress and access your profile. You're responsible for keeping your login secure. If something looks wrong with your account, let us know.</p>
+
+  <p>You must be at least 16 years old to create an account.</p>
+
+  <h2>Your content</h2>
+
+  <p>Anything you write in the tools — your notes, your horizon statements, your answers — belongs to you. We don't claim ownership over it. We store it so you can access it. See the <a href="/privacy.html">Privacy Policy</a> for how we handle it.</p>
+
+  <p>By storing content on the platform, you give us permission to display it back to you in your profile and tools. That's the only use we make of it.</p>
+
+  <h2>What the platform is for</h2>
+
+  <p>NextUs and Life OS are tools for honest self-knowledge and civilisational orientation. They're not therapy, not medical advice, not financial advice, and not a substitute for professional support when professional support is what's needed.</p>
+
+  <p>The AI-powered tools use language models to have conversations and generate reflections. They can be useful. They can also be wrong. Treat their outputs as a starting point, not a verdict.</p>
+
+  <h2>What you agree not to do</h2>
+
+  <ul>
+    <li>Use the platform to harm, harass, or deceive other people.</li>
+    <li>Attempt to access data that isn't yours.</li>
+    <li>Use automated tools to scrape or overload the platform.</li>
+    <li>Misrepresent yourself or your credentials in ways that affect other users.</li>
+    <li>Reproduce or distribute platform content — tool outputs, domain data, horizon goal frameworks — without permission.</li>
+  </ul>
+
+  <h2>Intellectual property</h2>
+
+  <p>The platform, the tools, the domain architecture, the archetype frameworks, the Horizon Goals structure, and all copy on nextus.world are the work of Nik Wood and NextUs. They're protected by copyright. You can share links and quote briefly with attribution — you can't reproduce substantial portions or build derivative products without permission.</p>
+
+  <p>The Decision Analytics framework was originally developed by Lee Crowson and adapted for NextUs by Nik Wood. The Deming and Kimmerer principles referenced in the platform belong to their respective intellectual traditions.</p>
+
+  <h2>The platform is a living thing</h2>
+
+  <p>NextUs is being built in the open. Tools will change. Features will be added. Occasionally something will break. We'll fix it when it does. We don't guarantee uninterrupted access, and we're not liable for interruptions beyond our control.</p>
+
+  <h2>Limitation of liability</h2>
+
+  <p>We provide the platform as-is. We're not liable for decisions you make based on what you find here. We're not liable for losses arising from platform interruptions, data issues, or AI outputs. If something goes wrong that is genuinely our fault, our liability is limited to the amount you've paid us in the preceding twelve months.</p>
+
+  <h2>Ending your account</h2>
+
+  <p>You can close your account any time by emailing <a href="/cdn-cgi/l/email-protection#305e595b705e55484445431e475f425c54"><span class="__cf_email__" data-cfemail="2a4443416a444f525e5f59045d4558464e">[email&#160;protected]</span></a>. We'll delete your data within a reasonable period. We may suspend accounts that violate these terms.</p>
+
+  <h2>Changes to these terms</h2>
+
+  <p>If we make material changes, we'll update this page and note the date. Continuing to use the platform after changes are posted means you accept them. If you disagree with a change, you can close your account.</p>
+
+  <h2>Governing law</h2>
+
+  <p>These terms are governed by the laws of the province of British Columbia, Canada. Any disputes will be resolved there.</p>
+
+  <hr class="nk-rule">
+
+  <p class="meta">Questions? <a href="/cdn-cgi/l/email-protection#0b6562604b656e737f7e78257c6479676f"><span class="__cf_email__" data-cfemail="214f484a614f44595554520f564e534d45">[email&#160;protected]</span></a></p>
+
+</div>
+
+<footer class="nk-footer">
+  <div class="nk-footer-inner">
+    <div class="nk-footer-top">
+      <p class="nk-footer-brand">A life worth living. A future worth building.</p>
+    </div>
+    <div class="nk-footer-rule"></div>
+    <div class="nk-footer-bottom">
+      <span class="nk-footer-copy">© 2026 NextUs · Nik Wood</span>
+      <div class="nk-footer-legal">
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  (async function() {
+    try {
+      const sb = window.supabase.createClient(
+        "https://tphbpwzozkskytoichho.supabase.co",
+        "sb_publishable_M00GF1FWV5tgKHqmyRCZag_kJjgBJn-"
+      );
+
+      function updateDot(user) {
+        const dot = document.getElementById("nk-profile-dot");
+        const btn = document.getElementById("nk-signin-btn");
+        if (!dot) return;
+        if (user) {
+          const initial = (user.email?.split("@")[0]?.charAt(0) || "?").toUpperCase();
+          dot.textContent = initial;
+          dot.href = "https://nextus.world/profile.html";
+          dot.title = "Your profile";
+          dot.style.borderColor = "rgba(200,146,42,1)";
+          dot.style.background = "rgba(200,146,42,0.10)";
+          if (btn) btn.style.display = "none";
+        } else {
+          dot.textContent = "→";
+          dot.href = "/login.html";
+          dot.title = "Sign in";
+          dot.style.borderColor = "";
+        

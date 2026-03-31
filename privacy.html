@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy · NextUs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#FFFFFF; --bg-warm:#F5F2EC;
+      --gold:#C8922A; --gold-rule:rgba(200,146,42,0.20); --gold-faint:rgba(200,146,42,0.08);
+      --text:#0F1523; --meta:rgba(15,21,35,0.88); --ghost:rgba(15,21,35,0.72);
+      --serif:'Cormorant Garamond',Georgia,serif; --serif-sc:'Cormorant SC',Georgia,serif;
+      --btn-border:1.5px solid rgba(200,146,42,0.78); --btn-bg:rgba(200,146,42,0.05);
+      --btn-color:#A8721A; --btn-radius:40px;
+    }
+    html, body { background:var(--bg); color:var(--text); font-family:var(--serif); font-weight:300; font-size:16px; line-height:1.7; -webkit-font-smoothing:antialiased; }
+
+    .nk-nav { position:fixed; top:0; left:0; right:0; z-index:1000; background:rgba(255,255,255,0.96); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border-bottom:1px solid var(--gold-rule); }
+    .nk-nav-inner { max-width:1040px; margin:0 auto; padding:0 40px; display:flex; align-items:center; justify-content:space-between; height:64px; }
+    .nk-nav-logo img { height:34px; width:auto; display:block; }
+    .nk-nav-links { display:flex; align-items:center; gap:40px; }
+    .nk-nav-links a { font-family:var(--serif-sc); font-size:13px; letter-spacing:0.10em; color:var(--meta); text-decoration:none; transition:color 0.2s; }
+    .nk-nav-links a:hover { color:var(--text); }
+    .nk-hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none; padding:4px; }
+    .nk-hamburger span { display:block; width:22px; height:1.5px; background:var(--meta); border-radius:1px; }
+    .nk-mobile-menu { display:none; flex-direction:column; background:var(--bg); border-bottom:1px solid var(--gold-rule); padding:8px 0; }
+    .nk-mobile-menu.open { display:flex; }
+    .nk-mobile-menu a { font-family:var(--serif-sc); font-size:13px; letter-spacing:0.10em; color:var(--text); text-decoration:none; padding:14px 32px; border-bottom:1px solid var(--gold-faint); }
+
+    .nk-profile-dot { width:32px; height:32px; border-radius:50%; background:var(--btn-bg); border:var(--btn-border); display:flex; align-items:center; justify-content:center; font-family:var(--serif-sc); font-size:13px; font-weight:600; color:var(--btn-color); text-decoration:none; flex-shrink:0; transition:all 0.2s; }
+    .nk-profile-dot:hover { background:rgba(200,146,42,0.08); border-color:rgba(200,146,42,1); transform:translateY(-1px); }
+
+    .nk-wrap { max-width:680px; margin:0 auto; padding:112px 40px 120px; }
+
+    .nk-eyebrow { font-family:var(--serif-sc); font-size:13px; font-weight:600; letter-spacing:0.2em; color:#A8721A; display:block; margin-bottom:16px; }
+    .nk-rule { border:none; border-top:1px solid var(--gold-rule); margin:48px 0; }
+
+    h1 { font-family:var(--serif); font-size:clamp(36px,5vw,52px); font-weight:300; color:var(--text); line-height:1.08; letter-spacing:-0.01em; margin-bottom:24px; }
+    h2 { font-family:var(--serif); font-size:clamp(22px,3vw,28px); font-weight:300; color:var(--text); line-height:1.2; margin-bottom:14px; margin-top:48px; }
+    p { font-size:16px; font-weight:300; color:var(--text); line-height:1.75; margin-bottom:18px; max-width:600px; }
+    p.meta { color:var(--meta); font-style:italic; }
+    ul { padding-left:24px; margin-bottom:18px; max-width:600px; }
+    ul li { font-size:16px; font-weight:300; color:var(--text); line-height:1.75; margin-bottom:6px; }
+    a { color:#A8721A; text-decoration:none; border-bottom:1px solid rgba(200,146,42,0.3); transition:opacity 0.2s; }
+    a:hover { opacity:0.7; }
+
+    .nk-footer { border-top:1px solid var(--gold-rule); padding:64px 40px 48px; background:var(--bg-warm); }
+    .nk-footer-inner { max-width:680px; margin:0 auto; }
+    .nk-footer-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:40px; gap:24px; }
+    .nk-footer-brand { font-family:var(--serif); font-size:15px; font-style:italic; font-weight:300; color:var(--meta); }
+    .nk-footer-rule { height:1px; background:var(--gold-rule); margin-bottom:28px; }
+    .nk-footer-bottom { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .nk-footer-copy { font-family:var(--serif-sc); font-size:11px; letter-spacing:0.12em; color:var(--ghost); }
+    .nk-footer-legal { display:flex; gap:20px; }
+    .nk-footer-legal a { font-family:var(--serif-sc); font-size:11px; letter-spacing:0.12em; color:var(--ghost); text-decoration:none; border:none; transition:color 0.2s; }
+    .nk-footer-legal a:hover { color:var(--meta); }
+
+    @media (max-width:640px) {
+      .nk-nav-inner { padding:0 24px; } .nk-nav-links { display:none; } .nk-hamburger { display:flex; }
+      .nk-wrap { padding:96px 24px 100px; }
+      .nk-footer { padding:48px 24px 40px; }
+      .nk-footer-top { flex-direction:column; align-items:flex-start; }
+      .nk-footer-bottom { flex-direction:column; align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nk-nav">
+  <div class="nk-nav-inner">
+    <a href="/index.html" class="nk-nav-logo"><img src="/logo_nav.png" alt="NextUs"></a>
+    <div class="nk-nav-links">
+      <a href="/index.html">Home</a>
+      <a href="/life-os.html">Life OS</a>
+      <a href="/nextus.html">NextUs</a>
+      <a href="/work-with-nik.html">Work with Nik</a>
+      <a href="/about.html">About</a>
+      <a href="/podcast.html">Podcast</a>
+    </div>
+    <a href="/login.html" class="nk-profile-dot" id="nk-profile-dot" title="Sign in">&#8594;</a>
+    <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob').classList.toggle('open');"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div id="nk-mob" class="nk-mobile-menu">
+  <a href="/index.html">Home</a>
+  <a href="/life-os.html">Life OS</a>
+  <a href="/nextus.html">NextUs</a>
+  <a href="/work-with-nik.html">Work with Nik</a>
+  <a href="/about.html">About</a>
+  <a href="/podcast.html">Podcast</a>
+  <a href="/login.html">Sign in &#8594;</a>
+</div>
+
+<div class="nk-wrap">
+
+  <span class="nk-eyebrow">Privacy</span>
+  <h1>How we handle<br><em style="color:#A8721A;">your information.</em></h1>
+  <p class="meta">Last updated March 2026 · NextUs / Nik Wood</p>
+
+  <hr class="nk-rule">
+
+  <p>NextUs is built on the premise that honest self-knowledge is valuable — and that what you discover about yourself belongs to you. This policy explains what we collect, why, and what we do and don't do with it.</p>
+
+  <p>The short version: we collect what we need to make the tools work and remember your progress. We don't sell your data. We don't share it with advertisers. We don't use it to build profiles for anyone other than you.</p>
+
+  <h2>What we collect</h2>
+
+  <p>When you create an account, we store your email address and a secure identifier. That's the minimum needed to keep your work attached to you across sessions.</p>
+
+  <p>When you use the Life OS tools, we store the outputs — your domain scores from The Map, your archetype and coordinates from Purpose Piece, your daily check-ins from Pulse. This is what makes your profile possible. It's also what you're coming back to. Without storing it, none of the continuity works.</p>
+
+  <p>We also store anything you write in the manual fields — your own words, your horizon statements, your notes. These are yours. They're stored so you can return to them.</p>
+
+  <p>When you sign in via Google, Google provides us with your email address and basic profile information. We don't receive anything beyond what you explicitly authorise.</p>
+
+  <h2>What we don't collect</h2>
+
+  <ul>
+    <li>Payment information — we don't handle payments directly. When payment processing is introduced, it will run through a secure third-party provider (Stripe).</li>
+    <li>Location data beyond what you choose to share in your profile.</li>
+    <li>Browsing behaviour across other sites.</li>
+    <li>Anything you don't explicitly give us.</li>
+  </ul>
+
+  <h2>Improving the tools</h2>
+
+  <p>We may use anonymised, aggregated patterns from tool usage to improve how the tools work — for example, to refine how Purpose Piece identifies archetypes or how The Map synthesises horizon goals. We will never use your individual data to train external AI models, and we will never share your data with third parties for this purpose. Any improvement to the tools benefits everyone who uses them.</p>
+
+  <h2>How we use it</h2>
+
+  <p>Your data is used to make NextUs work for you. Specifically:</p>
+
+  <ul>
+    <li>To authenticate you and keep your session active.</li>
+    <li>To populate your profile with your tool outputs.</li>
+    <li>To remember your progress across tools so you don't start from scratch each time.</li>
+    <li>To show you where your personal development connects to the civilisational project — the fractal principle in action.</li>
+  </ul>
+
+  <p>We don't use your data to train AI models. We don't use it to target you with advertising. We don't sell it, license it, or share it with third parties for commercial purposes.</p>
+
+  <h2>Third-party services</h2>
+
+  <p>We use the following third-party services to run the platform:</p>
+
+  <ul>
+    <li><strong>Supabase</strong> — our database and authentication infrastructure. Your data is stored on Supabase servers. <a href="https://supabase.com/privacy" target="_blank">Supabase privacy policy →</a></li>
+    <li><strong>Vercel</strong> — our hosting infrastructure. <a href="https://vercel.com/legal/privacy-policy" target="_blank">Vercel privacy policy →</a></li>
+    <li><strong>Anthropic</strong> — the AI that powers the conversational tools (Orienteering, The Map, Purpose Piece). Your conversations with these tools are processed by Anthropic's API. <a href="https://www.anthropic.com/privacy" target="_blank">Anthropic privacy policy →</a></li>
+    <li><strong>Kit (formerly ConvertKit)</strong> — our email platform, used for newsletters and updates. If you subscribe, your email is stored there. <a href="https://kit.com/privacy" target="_blank">Kit privacy policy →</a></li>
+  </ul>
+
+  <h2>Your data is yours</h2>
+
+  <p>You can request a copy of your data, ask us to delete your account and everything associated with it, or ask any question about how your information is handled. We'll respond within a reasonable time.</p>
+
+  <p>To make any of these requests, email <a href="/cdn-cgi/l/email-protection#315f585a715f54494544421f465e435d55"><span class="__cf_email__" data-cfemail="f8969193b8969d808c8d8bd68f978a949c">[email&#160;protected]</span></a>.</p>
+
+  <h2>Cookies</h2>
+
+  <p>We use cookies only for authentication — to keep you signed in between visits. We don't use tracking cookies or advertising cookies. If you clear your cookies you'll need to sign in again.</p>
+
+  <h2>Children</h2>
+
+  <p>NextUs is not designed for or directed at anyone under 16. If you believe someone under 16 has created an account, contact us and we'll remove it.</p>
+
+  <h2>Changes to this policy</h2>
+
+  <p>If we make material changes to how we handle your data, we'll update this page and note the date. We won't make changes that reduce your rights without telling you.</p>
+
+  <hr class="nk-rule">
+
+  <p class="meta">Questions? <a href="/cdn-cgi/l/email-protection#c9a7a0a289a7acb1bdbcbae7bea6bba5ad"><span class="__cf_email__" data-cfemail="46282f2d0628233e323335683129342a22">[email&#160;protected]</span></a></p>
+
+</div>
+
+<footer class="nk-footer">
+  <div class="nk-footer-inner">
+    <div class="nk-footer-top">
+      <p class="nk-footer-brand">A life worth living. A future worth building.</p>
+    </div>
+    <div class="nk-footer-rule"></div>
+    <div class="nk-footer-bottom">
+      <span class="nk-footer-copy">© 2026 NextUs · Nik Wood</span>
+      <div class="nk-footer-legal">
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  (async function() {
+    try {
+      const sb = window.supabase.createClient(
+        "https://tphbpwzozkskytoichho.supabase.co",
+        "sb_publishable_M00GF1FWV5tgKHqmyRCZag_kJjgBJn-"
+      );
+
+      function updateDot(user) {
+        const dot = document.getElementById("nk-profile-dot");
+        const btn = document.getElementById("nk-signin-btn");
+        if (!dot) return;
+        if (user) {
+          const initial = (user.email?.split("@")[0]?.charAt(0) || "?").toUpperCase();
+          dot.textContent = initial;
+          dot.href = "https://nextus.world/profile.html";
+          dot.title = "Your profile";
+          dot.style.borderColor = "rgba(200,146,42,1)";
+          dot.style.background = "rgba(200,146,42,0.10)";
+          if (btn) btn.style.display = "none";
+        } else {
+          dot.textContent = "→";
+          dot.href = "/login.html";
+          dot.title = "Sign in";
+          dot.style.borderColor = "";
+        
