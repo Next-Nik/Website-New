@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Life OS · Foundation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    window.SUPABASE_URL      = "https://tphbpwzozkskytoichho.supabase.co";
+    window.SUPABASE_ANON_KEY = "sb_publishable_M00GF1FWV5tgKHqmyRCZag_kJjgBJn-";
+  </script>
+  <script src="/auth-init.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #FAFAF7;
+      --gold:         #C8922A;
+      --gold-rule:    rgba(200,146,42,0.20);
+      --gold-faint:   rgba(200,146,42,0.08);
+      --gold-border:  rgba(200,146,42,0.78);
+      --gold-border-hi: rgba(200,146,42,1);
+      --gold-bg:      rgba(200,146,42,0.05);
+      --gold-bg-hi:   rgba(200,146,42,0.08);
+      --dark:         #0F1523;
+      --meta:         rgba(15,21,35,0.88);
+      --ghost:        rgba(15,21,35,0.72);
+      --white:        #FFFFFF;
+      --serif:        'Cormorant Garamond', Georgia, serif;
+      --sc:           'Cormorant SC', Georgia, serif;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--dark);
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(250,250,247,0.96);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gold-rule);
+      padding: 0 48px;
+      display: flex; align-items: center;
+      justify-content: space-between; height: 64px;
+    }
+
+    .nav-logo {
+      font-family: var(--sc); font-size: 13px;
+      letter-spacing: 0.18em; color: var(--dark);
+      text-decoration: none;
+    }
+
+    .nav-back {
+      font-family: var(--sc); font-size: 13px;
+      letter-spacing: 0.12em; color: var(--meta);
+      text-decoration: none; transition: color 0.2s;
+    }
+
+    .nav-back:hover { color: var(--gold); }
+
+    /* ── PAGE ── */
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 80px 40px 120px;
+    }
+
+    /* ── HEADER ── */
+    .eyebrow {
+      font-family: var(--sc); font-size: 13px;
+      font-weight: 600; letter-spacing: 0.20em;
+      color: var(--gold); display: block;
+      margin-bottom: 16px;
+    }
+
+    .heading {
+      font-family: var(--serif);
+      font-size: clamp(38px, 5.5vw, 56px);
+      font-weight: 300; color: var(--dark);
+      line-height: 1.06; letter-spacing: -0.01em;
+      margin-bottom: 20px;
+    }
+
+    .subheading {
+      font-family: var(--serif);
+      font-size: 18px; font-weight: 300;
+      font-style: italic; color: var(--meta);
+      line-height: 1.65; margin-bottom: 48px;
+      max-width: 480px;
+    }
+
+    .rule { border: none; border-top: 1px solid var(--gold-rule); margin: 48px 0; }
+
+    /* ── PHASE BLOCKS ── */
+    .phase {
+      margin-bottom: 32px;
+    }
+
+    .phase-header {
+      display: flex; align-items: center;
+      gap: 16px; margin-bottom: 16px;
+    }
+
+    .phase-number {
+      font-family: var(--sc); font-size: 13px;
+      font-weight: 600; letter-spacing: 0.20em;
+      color: var(--gold); flex-shrink: 0;
+    }
+
+    .phase-name {
+      font-family: var(--serif);
+      font-size: 22px; font-weight: 300;
+      color: var(--dark);
+    }
+
+    .phase-desc {
+      font-family: var(--serif);
+      font-size: 16px; font-weight: 300;
+      color: var(--meta); line-height: 1.75;
+      margin-bottom: 20px;
+    }
+
+    /* ── AUDIO PLAYER ── */
+    .player-wrap {
+      background: var(--white);
+      border: 1.5px solid var(--gold-border);
+      border-radius: 14px;
+      padding: 28px 28px 24px;
+      margin-bottom: 8px;
+    }
+
+    .player-label {
+      font-family: var(--sc); font-size: 13px;
+      letter-spacing: 0.14em; color: var(--meta);
+      display: block; margin-bottom: 16px;
+    }
+
+    .player-title {
+      font-family: var(--serif);
+      font-size: 20px; font-weight: 300;
+      color: var(--dark); margin-bottom: 6px;
+    }
+
+    .player-meta {
+      font-family: var(--sc); font-size: 13px;
+      letter-spacing: 0.10em; color: var(--ghost);
+      margin-bottom: 24px; display: block;
+    }
+
+    /* Custom audio player */
+    .audio-controls {
+      display: flex; align-items: center; gap: 16px;
+    }
+
+    .play-btn {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--gold-bg);
+      border: 1.5px solid var(--gold-border);
+      display: flex; align-items: center;
+      justify-content: center; cursor: pointer;
+      flex-shrink: 0; transition: all 0.2s;
+      color: var(--gold); font-size: 18px;
+    }
+
+    .play-btn:hover {
+      background: var(--gold-bg-hi);
+      border-color: var(--gold-border-hi);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 28px rgba(15,21,35,0.08);
+    }
+
+    .progress-wrap {
+      flex: 1; display: flex;
+      flex-direction: column; gap: 6px;
+    }
+
+    .progress-track {
+      width: 100%; height: 4px;
+      background: rgba(200,146,42,0.15);
+      border-radius: 2px; cursor: pointer;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%; background: var(--gold);
+      border-radius: 2px; width: 0%;
+      transition: width 0.1s linear;
+      pointer-events: none;
+    }
+
+    .time-row {
+      display: flex; justify-content: space-between;
+    }
+
+    .time-label {
+      font-family: var(--sc); font-size: 13px;
+      letter-spacing: 0.08em; color: var(--ghost);
+    }
+
+    /* Loading state */
+    .player-loading {
+      font-family: var(--serif); font-size: 15px;
+      font-style: italic; color: var(--ghost);
+      padding: 8px 0;
+    }
+
+    .player-error {
+      font-family: var(--serif); font-size: 15px;
+      font-style: italic; color: rgba(138,48,48,0.7);
+      padding: 8px 0;
+    }
+
+    /* ── PLACEHOLDER PHASES ── */
+    .phase-placeholder {
+      background: rgba(15,21,35,0.015);
+      border: 1.5px solid var(--gold-rule);
+      border-radius: 14px;
+      padding: 24px 28px;
+      margin-bottom: 8px;
+    }
+
+    .placeholder-label {
+      font-family: var(--sc); font-size: 13px;
+      letter-spacing: 0.14em; color: var(--ghost);
+      display: block; margin-bottom: 8px;
+    }
+
+    .placeholder-title {
+      font-family: var(--serif);
+      font-size: 20px; font-weight: 300;
+      color: var(--ghost); margin-bottom: 6px;
+    }
+
+    .placeholder-note {
+      font-family: var(--serif); font-size: 14px;
+      font-style: italic; color: var(--ghost);
+      line-height: 1.6;
+    }
+
+    /* ── QUOTE ── */
+    .quote-block {
+      border-left: 2px solid var(--gold-rule);
+      padding: 16px 0 16px 24px;
+      margin: 40px 0;
+    }
+
+    .quote-text {
+      font-family: var(--serif);
+      font-size: 17px; font-style: italic;
+      font-weight: 300; color: var(--meta);
+      line-height: 1.75; margin-bottom: 12px;
+    }
+
+    .quote-cite {
+      font-family: var(--sc); font-size: 13px;
+      letter-spacing: 0.12em; color: var(--gold);
+    }
+
+    /* ── PROTOCOL NOTE ── */
+    .protocol-note {
+      background: var(--gold-bg);
+      border: 1.5px solid var(--gold-border);
+      border-radius: 14px;
+      padding: 24px 28px;
+      margin-top: 48px;
+    }
+
+    .protocol-note-label {
+      font-family: var(--sc); font-size: 13px;
+      font-weight: 600; letter-spacing: 0.20em;
+      color: var(--gold); display: block;
+      margin-bottom: 10px;
+    }
+
+    .protocol-note-text {
+      font-family: var(--serif);
+      font-size: 16px; font-weight: 300;
+      color: var(--meta); line-height: 1.75;
+    }
+
+    @media (max-width: 640px) {
+      .nav { padding: 0 20px; }
+      .page { padding: 56px 20px 100px; }
+      .player-wrap { padding: 22px 20px 18px; }
+      .phase-placeholder { padding: 20px; }
+    }
+
+    /* ── AUTH MODAL ── */
+    .auth-modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(15,21,35,0.55);
+      display: flex; align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .auth-modal-card {
+      background: var(--white);
+      border: 1.5px solid var(--gold-border);
+      border-radius: 14px;
+      padding: 36px 32px 28px;
+      max-width: 400px; width: 100%;
+      animation: slideUp 0.25s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(12px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+
+    .auth-modal-eyebrow {
+      font-family: var(--sc); font-size: 13px;
+      font-weight: 600; letter-spacing: 0.20em;
+      color: var(--gold); display: block;
+      margin-bottom: 12px;
+    }
+
+    .auth-modal-heading {
+      font-family: var(--serif);
+      font-size: 24px; font-weight: 300;
+      color: var(--dark); line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .auth-modal-body {
+      font-family: var(--serif);
+      font-size: 16px; font-weight: 300;
+      color: var(--meta); line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    .auth-modal-btn {
+      display: block; width: 100%;
+      padding: 16px; text-align: center;
+      background: var(--gold-bg);
+      border: 1.5px solid var(--gold-border);
+      border-radius: 40px;
+      font-family: var(--sc); font-size: 16px;
+      font-weight: 600; letter-spacing: 0.16em;
+      color: var(--gold); text-decoration: none;
+      cursor: pointer; transition: all 0.2s;
+      margin-bottom: 12px;
+    }
+
+    .auth-modal-btn:hover {
+      background: var(--gold-bg-hi);
+      border-color: var(--gold-border-hi);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(15,21,35,0.08);
+    }
+
+    .auth-modal-dismiss {
+      display: block; width: 100%;
+      text-align: center;
+      font-family: var(--serif); font-size: 15px;
+      font-style: italic; color: var(--ghost);
+      background: none; border: none;
+      cursor: pointer; padding: 4px;
+      transition: color 0.2s;
+    }
+
+    .auth-modal-dismiss:hover { color: var(--meta); }
+
+
+    /* ── SITE NAV ── */
+    .nk-nav { position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--gold-rule); }
+    .nk-nav-inner { max-width:1040px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px; }
+    .nk-nav-logo img { height:34px;width:auto;display:block; }
+    .nk-nav-links { display:flex;align-items:center;gap:28px; }
+    .nk-nav-links a { font-family:var(--sc);font-size:13px;letter-spacing:0.10em;color:var(--meta);text-decoration:none;transition:color 0.2s; }
+    .nk-nav-links a:hover { color:var(--dark); }
+    .nk-nav-links a.active { color:var(--gold); }
+    .nk-hamburger { display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px; }
+    .nk-hamburger span { display:block;width:22px;height:1.5px;background:var(--meta);border-radius:1px; }
+    .nk-mobile-menu { display:none;flex-direction:column;background:#FFFFFF;border-bottom:1px solid var(--gold-rule);padding:8px 0; }
+    .nk-mobile-menu.open { display:flex; }
+    .nk-mobile-menu a { font-family:var(--sc);font-size:13px;letter-spacing:0.10em;color:var(--dark);text-decoration:none;padding:14px 32px;border-bottom:1px solid var(--gold-faint); }
+    .nk-profile-dot { width:32px;height:32px;border-radius:50%;background:var(--gold-bg);border:1.5px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-family:var(--sc);font-size:13px;font-weight:600;color:var(--gold);text-decoration:none;flex-shrink:0;transition:all 0.2s; }
+    .nk-profile-dot:hover { background:var(--gold-bg-hi);border-color:var(--gold-border-hi);transform:translateY(-1px); }
+    body { padding-top: 64px; }
+    @media (max-width:640px) { .nk-nav-inner { padding:0 24px; } .nk-nav-links { display:none; } .nk-hamburger { display:flex; } }
+  </style>
+</head>
+<body>
+
+<nav class="nk-nav">
+  <div class="nk-nav-inner">
+    <a href="https://nextus.world/index.html" class="nk-nav-logo"><img src="https://nextus.world/logo_nav.png" alt="NextUs"></a>
+    <div class="nk-nav-links">
+      <a href="https://nextus.world/index.html">Home</a>
+      <a href="https://nextus.world/life-os.html" class="active">Life OS</a>
+      <a href="https://nextus.world/nextus.html">NextUs</a>
+      <a href="https://nextus.world/work-with-nik.html">Work with Nik</a>
+      <a href="https://nextus.world/about.html">About</a>
+      <a href="https://nextus.world/podcast.html">Podcast</a>
+    </div>
+    <a href="https://nextus.world/login.html" class="nk-profile-dot" id="nk-profile-dot" title="Sign in" style="display:none;">&#8594;</a>
+    <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob').classList.toggle('open');"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div id="nk-mob" class="nk-mobile-menu">
+  <a href="https://nextus.world/index.html">Home</a>
+  <a href="https://nextus.world/life-os.html">Life OS</a>
+  <a href="https://nextus.world/nextus.html">NextUs</a>
+  <a href="https://nextus.world/work-with-nik.html">Work with Nik</a>
+  <a href="https://nextus.world/about.html">About</a>
+  <a href="https://nextus.world/podcast.html">Podcast</a>
+  <a href="https://nextus.world/login.html">Sign in &#8594;</a>
+</div>
+
+<div class="page">
+
+  <span class="eyebrow">Life OS · Foundation</span>
+  <h1 class="heading">The layer beneath<br><em style="color:var(--gold);">everything else.</em></h1>
+  <p class="subheading">Most frameworks begin after baseline stability is already online. Foundation builds it.</p>
+
+  <hr class="rule">
+
+  <!-- PHASE 1 — BASELINE (LIVE) -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-number">Phase 1</span>
+      <span class="phase-name">Baseline</span>
+    </div>
+    <p class="phase-desc">Regulated internal stability — the floor you stand on. If everything feels like too much, or like nothing is landing, this is where you start.</p>
+
+    <div class="player-wrap">
+      <span class="player-label">Guided audio</span>
+      <div class="player-title">Foundation · Baseline</div>
+      <span class="player-meta">20 min · Part 1 of 3</span>
+      <div id="player-ui">
+        <p class="player-loading">Loading...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 — CALIBRATING (PLACEHOLDER) -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-number">Phase 2</span>
+      <span class="phase-name">Calibrating</span>
+    </div>
+    <p class="phase-desc">Agency, temporal clarity, and directional awareness — the heading you face. Complete Baseline first.</p>
+
+    <div class="phase-placeholder">
+      <span class="placeholder-label">Coming</span>
+      <div class="placeholder-title">Foundation · Calibrating</div>
+      <p class="placeholder-note">This phase unlocks as the protocol develops. Return here when it's ready.</p>
+    </div>
+  </div>
+
+  <!-- PHASE 3 — EMBODYING (PLACEHOLDER) -->
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-number">Phase 3</span>
+      <span class="phase-name">Embodying</span>
+    </div>
+    <p class="phase-desc">Action from the Horizon orientation — the accomplished, resourced stance you act from. The completion of the cycle.</p>
+
+    <div class="phase-placeholder">
+      <span class="placeholder-label">Coming</span>
+      <div class="placeholder-title">Foundation · Embodying</div>
+      <p class="placeholder-note">This phase unlocks as the protocol develops. Return here when it's ready.</p>
+    </div>
+  </div>
+
+  <!-- QUOTE -->
+  <div class="quote-block">
+    <p class="quote-text">"It has helped me reset my baseline in the middle of the day — to relax, let go, and create space for a more supportive inner story. One that naturally inspires aligned action rather than effort or striving."</p>
+    <span class="quote-cite">— David William Pierce</span>
+  </div>
+
+  <div class="quote-block">
+    <p class="quote-text">"There was this sense of feeling held throughout. His presence is unmistakably there."</p>
+    <span class="quote-cite">— David William Pierce</span>
+  </div>
+
+  <!-- PROTOCOL NOTE -->
+  <div class="protocol-note">
+    <span class="protocol-note-label">How to use this</span>
+    <p class="protocol-note-text">Return to Baseline as often as you need it — morning, midday, or whenever the ground feels unsteady. The phases are sequential but revisitable. Someone may complete all three and return to Baseline during periods of high stress. The protocol trains access and re-entry, not permanent residence.</p>
+  </div>
+
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const AUDIO_FILE = 'foundation-baseline.mp3';
+const BUCKET     = 'nextus-audio';
+
+// ── AUTH INIT — handles race between auth-init.js and DOMContentLoaded ───────
+function handleAuth(user) {
+  if (user) {
+    loadAudio();
+  } else {
+    renderUnauthPlayer();
+  }
+  // Update profile dot
+  const dot = document.getElementById('nk-profile-dot');
+  if (dot && user) {
+    const initial = (user.email?.split('@')[0]?.charAt(0) || '?').toUpperCase();
+    dot.textContent = initial;
+    dot.href = 'https://nextus.world/profile.html';
+    dot.title = 'Your profile';
+    dot.style.display = 'flex';
+  }
+}
+
+function init() {
+  let handled = false;
+  function handle(user) {
+    if (handled) return;
+    handled = true;
+    handleAuth(user);
+  }
+  // Always wait for the lifeos:auth event from auth-init.js
+  window.addEventListener('lifeos:auth', (e) => {
+    handle(e.detail?.user || null);
+  }, { once: true });
+  // Safety net — if event never fires within 4s, use whatever session state exists
+  setTimeout(() => { handle(window.LIFEOS_USER || null); }, 4000);
+}
+
+// ── LOAD AUDIO ────────────────────────────────────────────────────────────────
+async function loadAudio() {
+  const playerUI = document.getElementById('player-ui');
+
+  const sb = window._sb || (window.supabase && window.SUPABASE_URL
+    ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY, {
+        auth: { storage: window.localStorage, persistSession: true, detectSessionInUrl: true }
+      })
+    : null);
+
+  if (!sb) {
+    playerUI.innerHTML = '<p class="player-error">Unable to connect. Please refresh the page.</p>';
+    return;
+  }
+
+  try {
+    // Bucket is public — use getPublicUrl, no signing needed
+    const { data } = sb.storage
+      .from(BUCKET)
+      .getPublicUrl(AUDIO_FILE);
+
+    if (!data?.publicUrl) {
+      playerUI.innerHTML = '<p class="player-error">Unable to load audio. Please try again shortly.</p>';
+      return;
+    }
+
+    renderPlayer(data.publicUrl, playerUI);
+
+  } catch(e) {
+    console.error('[Foundation] Unexpected error:', e);
+    playerUI.innerHTML = '<p class="player-error">Something went wrong. Please refresh the page.</p>';
+  }
+}
+
+// ── RENDER PLAYER ─────────────────────────────────────────────────────────────
+function renderPlayer(url, container) {
+  const audio = new Audio(url);
+  audio.preload = 'metadata';
+
+  container.innerHTML = `
+    <div class="audio-controls">
+      <button class="play-btn" id="playBtn" aria-label="Play">▶</button>
+      <div class="progress-wrap">
+        <div class="progress-track" id="progressTrack">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="time-row">
+          <span class="time-label" id="timeCurrentEl">0:00</span>
+          <span class="time-label" id="timeDurationEl">--:--</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const playBtn      = document.getElementById('playBtn');
+  const progressFill = document.getElementById('progressFill');
+  const progressTrack = document.getElementById('progressTrack');
+  const timeCurrent  = document.getElementById('timeCurrentEl');
+  const timeDuration = document.getElementById('timeDurationEl');
+
+  // Format time
+  function fmt(s) {
+    if (isNaN(s)) return '--:--';
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  // Metadata loaded
+  audio.addEventListener('loadedmetadata', () => {
+    timeDuration.textContent = fmt(audio.duration);
+  });
+
+  // Time update
+  audio.addEventListener('timeupdate', () => {
+    if (!audio.duration) return;
+    const pct = (audio.currentTime / audio.duration) * 100;
+    progressFill.style.width = pct + '%';
+    timeCurrent.textContent = fmt(audio.currentTime);
+  });
+
+  // Play/pause
+  playBtn.addEventListener('click', () => {
+    if (audio.paused) {
+      audio.play();
+      playBtn.textContent = '⏸';
+      playBtn.setAttribute('aria-label', 'Pause');
+    } else {
+      audio.pause();
+      playBtn.textContent = '▶';
+      playBtn.setAttribute('aria-label', 'Play');
+    }
+  });
+
+  // Seek
+  progressTrack.addEventListener('click', (e) => {
+    const rect = progressTrack.getBoundingClientRect();
+    const pct  = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = pct * audio.duration;
+  });
+
+  // Ended
+  audio.addEventListener('ended', () => {
+    playBtn.textContent = '▶';
+    playBtn.setAttribute('aria-label', 'Play');
+    progressFill.style.width = '0%';
+    timeCurrent.textContent = '0:00';
+  });
+}
+
+// ── UNAUTH PLAYER ────────────────────────────────────────────────────────────
+// Shows play button but fires auth modal on click instead of playing
+function renderUnauthPlayer() {
+  const playerUI = document.getElementById('player-ui');
+  playerUI.innerHTML = `
+    <div class="audio-controls">
+      <button class="play-btn" id="playBtn" aria-label="Listen" onclick="showAuthModal()">▶</button>
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div class="progress-fill" style="width:0%"></div>
+        </div>
+        <div class="time-row">
+          <span class="time-label">0:00</span>
+          <span class="time-label">20:00</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ── AUTH MODAL ────────────────────────────────────────────────────────────────
+function showAuthModal() {
+  const existing = document.getElementById('auth-modal');
+  if (existing) return;
+
+  const returnUrl = encodeURIComponent(window.location.href);
+  const overlay = document.createElement('div');
+  overlay.id = 'auth-modal';
+  overlay.className = 'auth-modal-overlay';
+  overlay.innerHTML = `
+    <div class="auth-modal-card">
+      <span class="auth-modal-eyebrow">Foundation</span>
+      <h2 class="auth-modal-heading">Sign in to listen.</h2>
+      <p class="auth-modal-body">Foundation is part of Life OS — a free account keeps your progress and gives you access to the full protocol.</p>
+      <a href="https://nextus.world/login.html?redirect=${returnUrl}" class="auth-modal-btn">Sign in or create account →</a>
+      <button class="auth-modal-dismiss" onclick="document.getElementById('auth-modal').remove()">Not now</button>
+    </div>
+  `;
+
+  // Dismiss on overlay click
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.remove();
+  });
+
+  document.body.appendChild(overlay);
+}
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
