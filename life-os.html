@@ -122,6 +122,92 @@
     @media (max-width:640px) { .nk-share { padding:64px 24px; } }
   </style>
 </head>
+<!-- MAP OVERLAY -->
+<div id="nk-map-overlay" onclick="if(event.target===this)closeMap()" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(8,11,20,0.98);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow-y:auto;padding:56px 24px 100px;">
+  <div style="max-width:720px;margin:0 auto;">
+
+    <div style="margin-bottom:52px;">
+      <div style="font-family:'Cormorant SC',Georgia,serif;font-size:11px;letter-spacing:0.30em;color:rgba(200,146,42,0.55);margin-bottom:20px;">THE PERSONAL LAYER</div>
+      <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(22px,3.5vw,34px);font-weight:300;color:rgba(255,255,255,0.95);line-height:1.5;max-width:580px;margin:0;">Life OS is the personal layer. Six tools. One developmental arc. Start anywhere — they compound.</p>
+    </div>
+
+    <div style="height:1px;background:rgba(200,146,42,0.22);margin-bottom:52px;"></div>
+
+    <div style="margin-bottom:52px;">
+      <div style="font-family:'Cormorant SC',Georgia,serif;font-size:20px;letter-spacing:0.16em;color:#C8922A;margin-bottom:10px;">YOU</div>
+      <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-style:italic;color:rgba(255,255,255,0.40);margin-bottom:28px;line-height:1.65;">The arc: Foundation → Orienteering → The Map → Pulse → Purpose Piece → Target Goals → Horizon Leap.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <a href="https://orienteering-rose.vercel.app" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Orienteering</div><div class="map-tile-desc">Not sure where to start? Begin here.</div></a>
+        <a href="https://life-os-foundation.vercel.app" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Foundation</div><div class="map-tile-desc">Regulated calm. The floor everything else stands on.</div></a>
+        <a href="https://life-os-mapping.vercel.app" class="map-tile" onclick="closeMap()"><div class="map-tile-name">The Map</div><div class="map-tile-desc">An honest picture of where you are across all of life.</div></a>
+        <a href="https://life-os-pulse.vercel.app" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Pulse</div><div class="map-tile-desc">Daily check-in. How you've actually been showing up.</div></a>
+        <a href="https://life-os-purpose-piece-v2.vercel.app" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Purpose Piece</div><div class="map-tile-desc">What did life ask you to bring? Your contribution pattern.</div></a>
+        <a href="https://target-goals.vercel.app" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Target Goals</div><div class="map-tile-desc">90 days. Three domains. A goal worth moving toward.</div></a>
+        <div class="map-tile map-tile-ghost"><div class="map-tile-name">Horizon Leap</div><div class="map-tile-desc">Deep identity work with Nik. Coming.</div></div>
+      </div>
+    </div>
+
+    <div style="height:1px;background:rgba(200,146,42,0.22);margin-bottom:52px;"></div>
+
+    <div style="margin-bottom:52px;">
+      <div style="font-family:'Cormorant SC',Georgia,serif;font-size:20px;letter-spacing:0.16em;color:#C8922A;margin-bottom:10px;">THE WORLD</div>
+      <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-style:italic;color:rgba(255,255,255,0.40);margin-bottom:28px;line-height:1.65;">The personal work doesn't end with you. The same physics operate at civilisational scale.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <a href="/nextus.html" class="map-tile" onclick="closeMap()"><div class="map-tile-name">NextUs Platform</div><div class="map-tile-desc">The seven domains of civilisational life. Where is humanity now?</div></a>
+        <a href="/about.html" class="map-tile" onclick="closeMap()"><div class="map-tile-name">The Frame</div><div class="map-tile-desc">What NextUs is and why it exists.</div></a>
+        <a href="/podcast.html" class="map-tile" onclick="closeMap()"><div class="map-tile-name">The Podcast</div><div class="map-tile-desc">220+ episodes. Conversations from the edge of what's next.</div></a>
+        <a href="/work-with-nik.html" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Work with Nik</div><div class="map-tile-desc">Direct. For individuals and organisations ready to go deeper.</div></a>
+      </div>
+    </div>
+
+    <div style="height:1px;background:rgba(200,146,42,0.22);margin-bottom:36px;"></div>
+    <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;font-style:italic;color:rgba(255,255,255,0.28);text-align:center;">The tools are a sequence, not a menu — <a href="https://orienteering-rose.vercel.app" style="color:rgba(200,146,42,0.65);text-decoration:none;" onclick="closeMap()">Orienteering</a> finds your entry point.</p>
+  </div>
+</div>
+
+<!-- MAP TAB — left edge chevron -->
+<button id="nk-map-tab" onclick="openMap()" aria-label="Open map" style="position:fixed;left:-14px;top:50%;transform:translateY(-50%);z-index:1500;background:#FAFAF7;border:1.5px solid rgba(200,146,42,0.78);width:44px;height:88px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;box-shadow:none;transition:all 0.2s;clip-path:polygon(0% 12%, 0% 88%, 30% 100%, 100% 100%, 100% 0%, 30% 0%);border-radius:0 12px 12px 0;">
+  <svg width="10" height="16" viewBox="0 0 10 16" fill="none" style="margin-left:8px;"><path d="M3 2L8 8L3 14" stroke="#A8721A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<!-- MAP CLOSE TAB — right edge, mirrored -->
+<button id="nk-map-close-tab" onclick="closeMap()" aria-label="Close map" style="position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:2100;background:#FAFAF7;border:1.5px solid rgba(200,146,42,0.78);border-right:none;width:44px;height:88px;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;box-shadow:none;transition:all 0.2s;clip-path:polygon(72% 12%, 72% 88%, 70% 100%, 0% 100%, 0% 0%, 70% 0%);border-radius:12px 0 0 12px;">
+  <svg width="10" height="16" viewBox="0 0 10 16" fill="none" style="margin-right:8px;"><path d="M7 2L2 8L7 14" stroke="#A8721A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<style>
+.map-tile { display:block;background:rgba(255,255,255,0.03);border:1px solid rgba(200,146,42,0.28);border-radius:12px;padding:22px 24px;text-decoration:none;transition:all 0.2s; }
+.map-tile:hover { background:rgba(200,146,42,0.10);border-color:rgba(200,146,42,0.75);transform:translateY(-2px);box-shadow:0 10px 40px rgba(0,0,0,0.4); }
+.map-tile-name { font-family:'Cormorant SC',Georgia,serif;font-size:16px;font-weight:600;letter-spacing:0.12em;color:#C8922A;margin-bottom:8px; }
+.map-tile-desc { font-family:'Cormorant Garamond',Georgia,serif;font-size:16px;color:rgba(255,255,255,0.60);line-height:1.6; }
+.map-tile-ghost { opacity:0.25;pointer-events:none; }
+#nk-map-tab:hover { background:rgba(200,146,42,0.08);border-color:rgba(200,146,42,1);width:40px; }
+#nk-map-tab:hover svg path { stroke:#A8721A; }
+#nk-map-close-tab:hover { background:rgba(200,146,42,0.08);border-color:rgba(200,146,42,1);width:40px; }
+#nk-map-close-tab:hover svg path { stroke:#A8721A; }
+@media (max-width:640px) {
+  .map-tile { padding:18px 18px; }
+  .map-tile-name { font-size:14px; }
+  .map-tile-desc { font-size:15px; }
+}
+</style>
+
+<script>
+function openMap() {
+  document.getElementById('nk-map-overlay').style.display = 'block';
+  document.getElementById('nk-map-close-tab').style.display = 'flex';
+  document.getElementById('nk-map-tab').style.display = 'none';
+  document.body.style.overflow = 'hidden';
+}
+function closeMap() {
+  document.getElementById('nk-map-overlay').style.display = 'none';
+  document.getElementById('nk-map-close-tab').style.display = 'none';
+  document.getElementById('nk-map-tab').style.display = 'flex';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeMap(); });
+</script>
+
 <body>
 <nav class="nk-nav">
   <div class="nk-nav-inner">
@@ -146,7 +232,7 @@
   <h1 style="font-family:var(--serif);font-size:clamp(38px,5.5vw,64px);font-weight:300;color:#0F1523;line-height:1.08;letter-spacing:-0.02em;margin-bottom:20px;">
     See clearly.<br><em style="font-style:italic;color:#C8922A;">Move from there.</em>
   </h1>
-  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.7;margin-bottom:64px;max-width:520px;">Five tools. Start anywhere. Each one does its own work — and they compound when you're ready.</p>
+  <p style="font-size:16px;font-weight:300;color:var(--text-body);line-height:1.7;margin-bottom:64px;max-width:520px;">Six tools. Start anywhere. Each one does its own work — and they compound when you're ready.</p>
   <hr class="nk-rule" style="margin-top:0;">
 
   <div class="tool" id="foundation">

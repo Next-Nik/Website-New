@@ -152,6 +152,92 @@
     @media (max-width:640px) { .nx-grid { flex-wrap:wrap; } .nx-col { width:50%; min-width:0; padding:0 8px 28px; } .nx-divider { display:none; } }
 </style>
 </head>
+<!-- MAP OVERLAY -->
+<div id="nk-map-overlay" onclick="if(event.target===this)closeMap()" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(8,11,20,0.98);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow-y:auto;padding:56px 24px 100px;">
+  <div style="max-width:720px;margin:0 auto;">
+
+    <div style="margin-bottom:52px;">
+      <div style="font-family:'Cormorant SC',Georgia,serif;font-size:11px;letter-spacing:0.30em;color:rgba(200,146,42,0.55);margin-bottom:20px;">THE CIVILISATIONAL MAP</div>
+      <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:clamp(22px,3.5vw,34px);font-weight:300;color:rgba(255,255,255,0.95);line-height:1.5;max-width:580px;margin:0;">NextUs maps the civilisational terrain — seven domains, horizon goals, and where your work belongs in it.</p>
+    </div>
+
+    <div style="height:1px;background:rgba(200,146,42,0.22);margin-bottom:52px;"></div>
+
+    <div style="margin-bottom:52px;">
+      <div style="font-family:'Cormorant SC',Georgia,serif;font-size:20px;letter-spacing:0.16em;color:#C8922A;margin-bottom:10px;">THE WORLD</div>
+      <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-style:italic;color:rgba(255,255,255,0.40);margin-bottom:28px;line-height:1.65;">Seven domains. Each one a dimension of civilisational health. All of them interdependent.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <a href="/nextus.html#human" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Human Flourishing</div><div class="map-tile-desc">Health, education, consciousness, rights, culture.</div></a>
+        <a href="/nextus.html#governance" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Governance & Peace</div><div class="map-tile-desc">Systems of power, cooperation, and social fabric.</div></a>
+        <a href="/nextus.html#ecology" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Ecology & Nature</div><div class="map-tile-desc">Climate, ecosystems, food, and planetary systems.</div></a>
+        <a href="/nextus.html#technology" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Technology</div><div class="map-tile-desc">AI, biotech, energy, and the infrastructure of the future.</div></a>
+        <a href="/nextus.html#economy" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Finance & Economy</div><div class="map-tile-desc">Economic systems, capital, distribution, and equity.</div></a>
+        <a href="/nextus.html#wisdom" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Intergenerational Wisdom</div><div class="map-tile-desc">Knowledge continuity, long-term thinking, and stewardship.</div></a>
+        <a href="/nextus.html#futures" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Futures & Meaning</div><div class="map-tile-desc">Foresight, philosophy, worldview, and conscious civilisation.</div></a>
+      </div>
+    </div>
+
+    <div style="height:1px;background:rgba(200,146,42,0.22);margin-bottom:52px;"></div>
+
+    <div style="margin-bottom:52px;">
+      <div style="font-family:'Cormorant SC',Georgia,serif;font-size:20px;letter-spacing:0.16em;color:#C8922A;margin-bottom:10px;">YOU</div>
+      <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;font-style:italic;color:rgba(255,255,255,0.40);margin-bottom:28px;line-height:1.65;">The fractal principle: the same developmental physics operate at personal and civilisational scale.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <a href="https://orienteering-rose.vercel.app" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Orienteering</div><div class="map-tile-desc">Find your entry point into the work.</div></a>
+        <a href="https://life-os-mapping.vercel.app" class="map-tile" onclick="closeMap()"><div class="map-tile-name">The Map</div><div class="map-tile-desc">Seven personal domains. Where are you right now?</div></a>
+        <a href="https://life-os-purpose-piece-v2.vercel.app" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Purpose Piece</div><div class="map-tile-desc">Where your effort meets the civilisational need.</div></a>
+        <a href="/work-with-nik.html" class="map-tile" onclick="closeMap()"><div class="map-tile-name">Work with Nik</div><div class="map-tile-desc">For individuals and organisations ready to go deeper.</div></a>
+      </div>
+    </div>
+
+    <div style="height:1px;background:rgba(200,146,42,0.22);margin-bottom:36px;"></div>
+    <p style="font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;font-style:italic;color:rgba(255,255,255,0.28);text-align:center;">The civilisational map begins with the personal — <a href="https://orienteering-rose.vercel.app" style="color:rgba(200,146,42,0.65);text-decoration:none;" onclick="closeMap()">find your place in it</a>.</p>
+  </div>
+</div>
+
+<!-- MAP TAB — left edge chevron -->
+<button id="nk-map-tab" onclick="openMap()" aria-label="Open map" style="position:fixed;left:-14px;top:50%;transform:translateY(-50%);z-index:1500;background:#FAFAF7;border:1.5px solid rgba(200,146,42,0.78);width:44px;height:88px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;box-shadow:none;transition:all 0.2s;clip-path:polygon(0% 12%, 0% 88%, 30% 100%, 100% 100%, 100% 0%, 30% 0%);border-radius:0 12px 12px 0;">
+  <svg width="10" height="16" viewBox="0 0 10 16" fill="none" style="margin-left:8px;"><path d="M3 2L8 8L3 14" stroke="#A8721A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<!-- MAP CLOSE TAB — right edge, mirrored -->
+<button id="nk-map-close-tab" onclick="closeMap()" aria-label="Close map" style="position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:2100;background:#FAFAF7;border:1.5px solid rgba(200,146,42,0.78);border-right:none;width:44px;height:88px;cursor:pointer;display:none;align-items:center;justify-content:center;padding:0;box-shadow:none;transition:all 0.2s;clip-path:polygon(72% 12%, 72% 88%, 70% 100%, 0% 100%, 0% 0%, 70% 0%);border-radius:12px 0 0 12px;">
+  <svg width="10" height="16" viewBox="0 0 10 16" fill="none" style="margin-right:8px;"><path d="M7 2L2 8L7 14" stroke="#A8721A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+
+<style>
+.map-tile { display:block;background:rgba(255,255,255,0.03);border:1px solid rgba(200,146,42,0.28);border-radius:12px;padding:22px 24px;text-decoration:none;transition:all 0.2s; }
+.map-tile:hover { background:rgba(200,146,42,0.10);border-color:rgba(200,146,42,0.75);transform:translateY(-2px);box-shadow:0 10px 40px rgba(0,0,0,0.4); }
+.map-tile-name { font-family:'Cormorant SC',Georgia,serif;font-size:16px;font-weight:600;letter-spacing:0.12em;color:#C8922A;margin-bottom:8px; }
+.map-tile-desc { font-family:'Cormorant Garamond',Georgia,serif;font-size:16px;color:rgba(255,255,255,0.60);line-height:1.6; }
+.map-tile-ghost { opacity:0.25;pointer-events:none; }
+#nk-map-tab:hover { background:rgba(200,146,42,0.08);border-color:rgba(200,146,42,1);width:40px; }
+#nk-map-tab:hover svg path { stroke:#A8721A; }
+#nk-map-close-tab:hover { background:rgba(200,146,42,0.08);border-color:rgba(200,146,42,1);width:40px; }
+#nk-map-close-tab:hover svg path { stroke:#A8721A; }
+@media (max-width:640px) {
+  .map-tile { padding:18px 18px; }
+  .map-tile-name { font-size:14px; }
+  .map-tile-desc { font-size:15px; }
+}
+</style>
+
+<script>
+function openMap() {
+  document.getElementById('nk-map-overlay').style.display = 'block';
+  document.getElementById('nk-map-close-tab').style.display = 'flex';
+  document.getElementById('nk-map-tab').style.display = 'none';
+  document.body.style.overflow = 'hidden';
+}
+function closeMap() {
+  document.getElementById('nk-map-overlay').style.display = 'none';
+  document.getElementById('nk-map-close-tab').style.display = 'none';
+  document.getElementById('nk-map-tab').style.display = 'flex';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeMap(); });
+</script>
+
 <body>
 <nav class="nk-nav">
   <div class="nk-nav-inner">
