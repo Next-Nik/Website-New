@@ -91,6 +91,17 @@
     window.LIFEOS_SESSION = session;
     window._sb = sb;
     console.log('[AuthInit] Session active:', session.user.id);
+
+    // ── Post-login redirect — consume stored redirect if present ──
+    try {
+      const redirect = localStorage.getItem('nk_post_login_redirect');
+      if (redirect) {
+        localStorage.removeItem('nk_post_login_redirect');
+        window.location.href = redirect;
+        return; // stop — page is navigating
+      }
+    } catch (e) {}
+
   } else {
     // No valid session — clear any stale localStorage tokens
     try { localStorage.removeItem(LS_KEY); } catch (e) {}

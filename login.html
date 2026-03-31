@@ -332,16 +332,30 @@
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // ── Redirect logic ─────────────────────────────────────────────────────────
-  // Reads ?redirect= param so users land back where they came from after sign-in
-  // Everything is nextus.world — no whitelist needed
-  function getRedirectUrl() {
+  // Bulletproof version: store redirect in localStorage before OAuth,
+  // restore after — survives Google's round-trip and Safari quirks.
+  const LS_REDIRECT_KEY = "nk_post_login_redirect";
+
+  function storeAndGetRedirect() {
     const params = new URLSearchParams(window.location.search);
     const redirect = params.get("redirect");
     if (redirect) {
       try {
         const url = new URL(redirect);
-        if (url.hostname === "nextus.world" || url.hostname.endsWith(".nextus.world")) return redirect;
+        if (url.hostname === "nextus.world" || url.hostname.endsWith(".nextus.world")) {
+          localStorage.setItem(LS_REDIRECT_KEY, redirect);
+          return redirect;
+        }
       } catch {}
+    }
+    return "https://nextus.world";
+  }
+
+  function consumeRedirect() {
+    const redirect = localStorage.getItem(LS_REDIRECT_KEY);
+    if (redirect) {
+      localStorage.removeItem(LS_REDIRECT_KEY);
+      return redirect;
     }
     return "https://nextus.world";
   }
@@ -350,15 +364,16 @@
   (async () => {
     const { data: { session } } = await sb.auth.getSession();
     if (session?.user) {
-      window.location.href = getRedirectUrl();
+      window.location.href = consumeRedirect();
     }
   })();
 
   // ── Google ─────────────────────────────────────────────────────────────────
   document.getElementById("btn-google").addEventListener("click", async () => {
+    storeAndGetRedirect(); // store before leaving
     const { error } = await sb.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: getRedirectUrl() }
+      options: { redirectTo: "https://nextus.world/login.html" }
     });
     if (error) showError(error.message);
   });
@@ -383,10 +398,11 @@
     btn.textContent = "Sending...";
     hideError();
 
+    const redirectTo = storeAndGetRedirect();
     const { error } = await sb.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: getRedirectUrl(),
+        emailRedirectTo: redirectTo,
         shouldCreateUser: true
       }
     });
