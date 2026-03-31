@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/tools/map/style.css" />
   <style>
     :root {
       --bg-warm: #F5F2EC;
@@ -50,7 +50,7 @@
       <a href="https://nextus.world/about.html">About</a>
       <a href="https://nextus.world/podcast.html">Podcast</a>
     </div>
-    <a href="https://nextus.world/login.html" class="nk-profile-dot" id="nk-profile-dot" title="Sign in">&#8594;</a>
+    <a href="https://nextus.world/login.html?redirect=https%3A%2F%2Fnextus.world%2Ftools%2Fmap%2F" class="nk-profile-dot" id="nk-profile-dot" title="Sign in">&#8594;</a>
     <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob').classList.toggle('open');"><span></span><span></span><span></span></button>
   </div>
 </nav>
@@ -61,7 +61,7 @@
   <a href="https://nextus.world/work-with-nik.html">Work with Nik</a>
   <a href="https://nextus.world/about.html">About</a>
   <a href="https://nextus.world/podcast.html">Podcast</a>
-  <a href="https://nextus.world/login.html">Sign in &#8594;</a>
+  <a href="https://nextus.world/login.html?redirect=https%3A%2F%2Fnextus.world%2Ftools%2Fmap%2F">Sign in &#8594;</a>
 </div>
 
 <div class="container">
@@ -155,7 +155,7 @@ window.addEventListener('lifeos:auth', function(e) {
       d.title = 'Your profile';
       d.style.display = 'flex';
     }
-    if (window.App) App.startConversation();
+    if (window.App) { App.init(); App.startConversation(); }
   } else {
     // Not signed in — clear any stale localStorage tokens on this domain
     try { localStorage.removeItem('sb-tphbpwzozkskytoichho-auth-token'); } catch(e) {}
