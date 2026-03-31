@@ -1,899 +1,561 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Life OS: Orienteering</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NextUs · A life worth living. A future worth building.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,600&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cormorant+SC:wght@400;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg:           #FAFAF7;
-      --bg-warm:      #F5F2EC;
-      --gold:         #C8922A;
-      --gold-rule:    rgba(200,146,42,0.20);
-      --gold-faint:   rgba(200,146,42,0.08);
-      --gold-border:  rgba(200,146,42,0.78);
-      --gold-hi:      rgba(200,146,42,1);
-      --gold-bg:      rgba(200,146,42,0.05);
-      --text-head:    #0F1523;
-      --text-body:    #0F1523;
-      --text-meta:    rgba(15,21,35,0.78);
-      --text-ghost:   rgba(15,21,35,0.72);
-      --serif:        'Cormorant Garamond', Georgia, serif;
-      --serif-sc:     'Cormorant SC', Georgia, serif;
-      --card-bg:      #FFFFFF;
+      --bg: #FAFAF7;
+      --bg-warm: #F5F2EC;
+      --bg-dark: #0F1523;
+      --gold: #C8922A;
+      --gold-rule: rgba(200,146,42,0.20);
+      --gold-faint: rgba(200,146,42,0.08);
+      --text-head: #0F1523;
+      --text-body: #0F1523;
+      --text-meta: rgba(15,21,35,0.88);
+      --text-ghost: rgba(15,21,35,0.72);
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --serif-sc: 'Cormorant SC', Georgia, serif;
+
+      /* Button system — locked from hero */
+      --btn-border: 1.5px solid rgba(200,146,42,0.78);
+      --btn-bg: rgba(200,146,42,0.05);
+      --gold-dk: #A8721A;
+      --btn-color: #A8721A;
+      --btn-size: 16px;
+      --btn-radius: 40px;
     }
 
-    html, body {
-      background: var(--bg);
-      color: var(--text-body);
-      font-family: var(--serif);
-      font-weight: 300;
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
-    }
+    html, body { background: var(--bg); color: var(--text-body); font-family: var(--serif); -webkit-font-smoothing: antialiased; }
 
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(200,146,42,0.35); border-radius: 2px; }
-
-    /* ── LAYOUT ── */
-    .container {
-      max-width: 640px;
-      margin: 0 auto;
-      padding: 112px 24px 140px;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* ── HEADER ── */
-    .header {
-      text-align: center;
-      padding-bottom: 28px;
-      border-bottom: 1px solid var(--gold-rule);
-      margin-bottom: 32px;
-    }
-
-    .logo {
-      width: 56px;
-      height: 56px;
-      object-fit: contain;
-      margin-bottom: 12px;
-    }
-
-    .header h1 {
-      font-family: var(--serif);
-      font-size: 42px;
-      font-weight: 300;
-      color: var(--gold);
-      letter-spacing: -0.02em;
-      line-height: 1;
-      margin: 0;
-    }
-
-    .header-prefix {
-      font-size: 18px;
-      font-weight: 400;
-      color: var(--gold);
-    }
-
-    .header-sub {
-      font-family: var(--serif);
-      font-size: 16px;
-      font-weight: 300;
-      color: var(--text-meta);
-      font-style: italic;
-      margin-top: 8px;
-    }
-
-    /* ── ENTRY CARD ── */
-    .entry-card {
-      background: var(--gold-bg);
-      border: 1.5px solid var(--gold-border);
-      border-radius: 14px;
-      padding: 40px 36px;
-      text-align: center;
-      margin-top: 8px;
-    }
-
-    .entry-body {
-      font-family: var(--serif);
-      font-size: 16px;
-      font-weight: 300;
-      color: var(--text-body);
-      line-height: 1.75;
-      margin-bottom: 32px;
-      max-width: 420px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    /* ── BUTTONS ── */
+    /* ── BUTTON SYSTEM ── */
     .nk-btn {
       display: inline-block;
       padding: 16px 36px;
-      border-radius: 40px;
-      border: 1.5px solid var(--gold-border);
-      background: var(--gold-bg);
-      color: var(--gold);
+      border-radius: var(--btn-radius);
+      border: var(--btn-border);
+      background: var(--btn-bg);
+      color: var(--btn-color);
       font-family: var(--serif-sc);
-      font-size: 16px;
+      font-size: var(--btn-size);
       font-weight: 600;
       letter-spacing: 0.16em;
       text-decoration: none;
       cursor: pointer;
       transition: all 0.2s;
     }
+    .nk-btn:hover { transform:translateY(-2px);box-shadow:0 8px 28px rgba(15,21,35,0.08);border-color:rgba(200,146,42,1);background:rgba(200,146,42,0.06); }
+    .nk-btn-full { display: block; width: 100%; text-align: center; }
 
-    .nk-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(15,21,35,0.08);
-      border-color: var(--gold-hi);
-      background: rgba(200,146,42,0.08);
+    /* ── NAV ── */
+    .nk-nav { position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(250,250,247,0.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--gold-rule); }
+    .nk-nav-inner { max-width:1040px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px; }
+    .nk-nav-logo img { height:34px;width:auto;display:block; }
+    .nk-nav-links { display:flex;align-items:center;gap:28px; }
+    .nk-nav-links a { font-family:var(--serif-sc);font-size:13px;letter-spacing:0.10em;color:var(--text-meta);text-decoration:none;transition:color 0.2s; }
+    .nk-nav-links a:hover { color:var(--text-head); }
+    .nk-hamburger { display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px; }
+    .nk-hamburger span { display:block;width:22px;height:1.5px;background:var(--text-meta);border-radius:1px; }
+    .nk-mobile-menu { display:none;flex-direction:column;background:var(--bg);border-bottom:1px solid var(--gold-rule);padding:8px 0; }
+    .nk-mobile-menu.open { display:flex; }
+    .nk-mobile-menu a { font-family:var(--serif-sc);font-size:13px;letter-spacing:0.10em;color:var(--text-body);text-decoration:none;padding:14px 32px;border-bottom:1px solid var(--gold-faint); }
+
+    /* ── HERO ── */
+    .nk-hero { min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:100px 40px 80px;position:relative; }
+    .nk-hero::before { content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 40%, rgba(200,146,42,0.06) 0%, transparent 70%);pointer-events:none; }
+
+    /* ── SECTIONS ── */
+    .nk-section { max-width:820px;margin:0 auto;padding:96px 40px;border-top:1px solid var(--gold-rule); }
+
+    /* ── EYEBROW ── */
+    .nk-eyebrow { font-family:var(--serif-sc);font-size:13px;font-weight:600;letter-spacing:0.2em;color:#A8721A;display:block;margin-bottom:16px; }
+
+    /* ── CARDS ── */
+    .nk-option { display:flex;align-items:center;gap:18px;padding:20px 22px;border-radius:14px;margin-bottom:10px;background:rgba(200,146,42,0.02);border:1.5px solid rgba(200,146,42,0.78);text-decoration:none;box-shadow:0 1px 4px rgba(15,21,35,0.04);transition:transform 0.15s,box-shadow 0.15s,border-color 0.2s; }
+    .nk-option:hover { transform:translateY(-2px);box-shadow:0 8px 28px rgba(15,21,35,0.08);border-color:rgba(200,146,42,1);background:rgba(200,146,42,0.06); }
+    .nk-option-icon { width:42px;height:42px;min-width:42px;aspect-ratio:1/1;border-radius:50%;background:rgba(200,146,42,0.02);border:1.5px solid rgba(200,146,42,0.78);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;color:#A8721A; }
+    .nk-option-title { font-family:var(--serif);font-size:17px;font-weight:400;color:#A8721A;margin-bottom:4px;line-height:1.2; }
+    .nk-option-sub { font-family:var(--serif);font-size:15px;color:#0F1523;line-height:1.4; }
+    .nk-option-arrow { font-size:16px;color:#A8721A;margin-left:auto;flex-shrink:0; }
+
+    /* ── LIST ITEMS ── */
+    .nk-list-item { display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-radius:14px;margin-bottom:8px;background:rgba(200,146,42,0.02);border:1.5px solid rgba(200,146,42,0.78);text-decoration:none;box-shadow:0 1px 4px rgba(15,21,35,0.04);transition:transform 0.15s,box-shadow 0.15s; }
+    .nk-list-item:hover { transform:translateY(-2px);box-shadow:0 8px 28px rgba(15,21,35,0.08);border-color:rgba(200,146,42,1);background:rgba(200,146,42,0.06); }
+    .nk-list-title { font-family:var(--serif);font-size:16px;color:#A8721A;margin-bottom:3px; }
+    .nk-list-sub { font-family:var(--serif);font-size:15px;color:#0F1523; }
+    .nk-list-arrow { color:#A8721A;font-size:16px; }
+
+    /* ── DARK SECTION — "The build continues" ── */
+    .nk-dark { background:var(--bg-dark);border-top:1.5px solid rgba(200,146,42,0.78);padding:96px 40px;text-align:center; }
+    .nk-dark-inner { max-width:820px;margin:0 auto; }
+    .nk-dark input {
+      width:100%;padding:15px 18px;margin-bottom:10px;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(200,146,42,0.25);
+      border-radius:var(--btn-radius);
+      font-family:var(--serif);font-size:16px;
+      color:rgba(255,255,255,0.88);outline:none;
+    }
+    .nk-dark input::placeholder { color:rgba(255,255,255,0.3);font-style:italic; }
+    .nk-dark-btn {
+      width:100%;padding:16px;
+      background:var(--gold);
+      border:1px solid rgba(168,114,26,0.8);
+      border-radius:var(--btn-radius);
+      font-family:var(--serif-sc);font-size:16px;
+      letter-spacing:0.16em;color:#FFFFFF;cursor:pointer;
+      transition:opacity 0.2s;
+    }
+    .nk-dark-btn:hover { opacity:0.88; }
+
+    /* ── FOOTER ── */
+    .nk-footer { border-top:1px solid var(--gold-rule);padding:64px 40px 48px;background:var(--bg-warm); }
+    .nk-footer-inner { max-width:820px;margin:0 auto; }
+    .nk-footer-top { display:flex;align-items:center;justify-content:space-between;margin-bottom:40px;gap:24px; }
+    .nk-footer-brand { font-family:var(--serif);font-size:15px;font-style:italic;font-weight:300;color:var(--text-meta); }
+    .nk-footer-socials { display:flex;align-items:center;gap:20px;flex-shrink:0; }
+    .nk-footer-socials a { color:var(--text-ghost);text-decoration:none;display:flex;align-items:center;transition:color 0.2s; }
+    .nk-footer-socials a:hover { color:#C8922A; }
+    .nk-footer-rule { height:1px;background:var(--gold-rule);margin-bottom:28px; }
+    .nk-footer-bottom { display:flex;align-items:center;justify-content:space-between;gap:16px; }
+    .nk-footer-copy { font-family:var(--serif-sc);font-size:11px;letter-spacing:0.12em;color:var(--text-ghost); }
+    .nk-footer-legal { display:flex;gap:20px; }
+    .nk-footer-legal a { font-family:var(--serif-sc);font-size:11px;letter-spacing:0.12em;color:var(--text-ghost);text-decoration:none;transition:color 0.2s; }
+    .nk-footer-legal a:hover { color:var(--text-meta); }
+
+
+    /* ── RESPONSIVE — THREE TIERS ── */
+    @media (min-width:641px) and (max-width:1024px) {
+      .nk-nav-inner { padding:0 28px; }
+      .nk-nav-links { gap:22px; }
+      .nk-nav-links a { font-size:13px; }
+      .nk-section { padding:72px 32px; }
+      .nk-dark { padding:72px 32px; }
+      .nk-footer { padding:56px 32px 40px; }
+    }
+    @media (max-width:640px) {
+      .nk-nav-inner { padding:0 20px; }
+      .nk-nav-links { display:none; }
+      .nk-hamburger { display:flex; }
+      .nk-hero { padding:100px 20px 72px;min-height:100svh; }
+      .nk-section { padding:64px 20px; }
+      .nk-dark { padding:64px 20px; }
+      .nk-footer { padding:48px 20px 40px; }
+      .nk-footer-top { flex-direction:column;align-items:flex-start;gap:20px; }
+      .nk-footer-bottom { flex-direction:column;align-items:flex-start;gap:12px; }
+      .nk-option { padding:16px 18px;gap:14px; }
+      .nk-option-icon { width:36px;height:36px;min-width:36px;font-size:15px; }
+      .nk-list-item { padding:16px 18px; }
     }
 
-    /* ── CHAT ── */
-    #chat-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      padding-bottom: 20px;
-    }
+    
 
-    .message-assistant {
-      max-width: 94%;
-      padding: 20px 24px;
-      border-radius: 14px;
-      background: var(--card-bg);
-      border: 1.5px solid var(--gold-border);
-      align-self: flex-start;
-      color: var(--text-body);
-      font-family: var(--serif);
-      font-size: 16px;
-      font-weight: 300;
-      line-height: 1.85;
-      animation: fadeUp 0.4s ease-out;
-    }
-
-    .message-assistant p { margin-bottom: 10px; }
-    .message-assistant p:last-child { margin-bottom: 0; }
-
-    .message-user {
-      background: var(--gold-bg);
-      border: 1.5px solid var(--gold-border);
-      color: var(--text-body);
-      align-self: flex-end;
-      border-radius: 14px;
-      padding: 14px 20px;
-      font-family: var(--serif);
-      font-size: 15px;
-      font-weight: 300;
-      font-style: italic;
-      line-height: 1.7;
-      max-width: 86%;
-      animation: fadeUp 0.3s ease-out;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── TYPING ── */
-    .typing-indicator {
+    .nk-profile-dot {
       display: none;
-      align-self: flex-start;
-      background: var(--card-bg);
-      border: 1.5px solid var(--gold-border);
-      border-radius: 14px;
-      padding: 14px 18px;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .typing-indicator.active { display: flex; }
-
-    .typing-dot {
-      width: 5px;
-      height: 5px;
-      background: rgba(200,146,42,0.5);
-      border-radius: 50%;
-      animation: typingBounce 1.3s infinite;
-    }
-
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes typingBounce {
-      0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
-      30%            { transform: translateY(-4px); opacity: 0.8; }
-    }
-
-    /* ── INPUT ── */
-    .input-area {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(250,250,247,0.96);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-top: 1px solid var(--gold-rule);
-      padding: 16px 20px;
-      z-index: 100;
-    }
-
-    .input-inner {
-      max-width: 640px;
-      margin: 0 auto;
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-    }
-
-    #user-input {
-      flex: 1;
-      padding: 14px 18px;
-      border: 1.5px solid var(--gold-border);
-      border-radius: 40px;
-      font-family: var(--serif);
-      font-size: 16px;
-      font-weight: 300;
-      font-style: italic;
-      color: var(--text-body);
-      background: var(--card-bg);
-      resize: none;
-      min-height: 52px;
-      max-height: 120px;
-      line-height: 1.6;
-      transition: border-color 0.2s;
-      outline: none;
-    }
-
-    #user-input:focus { border-color: var(--gold-hi); }
-    #user-input::placeholder { color: rgba(15,21,35,0.72); font-style: normal; }
-    #user-input:disabled { opacity: 0.4; }
-
-    #send-btn {
-      background: var(--gold-bg);
-      color: var(--gold);
-      border: 1.5px solid var(--gold-border);
-      border-radius: 40px;
-      padding: 14px 24px;
-      font-family: var(--serif-sc);
-      font-size: 16px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      cursor: pointer;
-      transition: all 0.2s;
-      min-height: 52px;
-      white-space: nowrap;
-    }
-
-    #send-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 28px rgba(15,21,35,0.08);
-      border-color: var(--gold-hi);
-      background: rgba(200,146,42,0.08);
-    }
-
-    #send-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
-
-    /* ── RESULTS CARD ── */
-    .results-card {
-      background: var(--card-bg);
-      border: 1.5px solid var(--gold-border);
-      border-radius: 14px;
-      overflow: hidden;
-      animation: fadeUp 0.5s ease-out;
-    }
-
-    .results-hero {
-      background: var(--gold-bg);
-      border-bottom: 1px solid var(--gold-rule);
-      padding: 28px 28px 24px;
-      text-align: center;
-    }
-
-    .results-eyebrow {
-      font-family: var(--serif-sc);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.20em;
-      color: var(--gold);
-      display: block;
-      margin-bottom: 10px;
-    }
-
-    .results-heading {
-      font-family: var(--serif);
-      font-size: 26px;
-      font-weight: 300;
-      color: var(--text-head);
-      line-height: 1.25;
-    }
-
-    .results-section {
-      padding: 24px 28px;
-      border-bottom: 1px solid var(--gold-rule);
-    }
-
-    .results-section:last-child { border-bottom: none; }
-
-    .results-section-label {
-      font-family: var(--serif-sc);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.20em;
-      color: var(--gold);
-      display: block;
-      margin-bottom: 14px;
-    }
-
-    .results-body {
-      font-family: var(--serif);
-      font-size: 16px;
-      font-weight: 300;
-      color: var(--text-body);
-      line-height: 1.8;
-    }
-
-    .results-body p { margin-bottom: 12px; }
-    .results-body p:last-child { margin-bottom: 0; }
-
-    /* ── RESOURCE ITEMS ── */
-    .resource-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      padding: 16px 0;
-      border-bottom: 1px solid var(--gold-rule);
-    }
-
-    .resource-item:last-child { border-bottom: none; }
-
-    .resource-tag {
-      font-family: var(--serif-sc);
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 0.14em;
-      color: var(--gold);
-      background: var(--gold-bg);
-      border: 1.5px solid var(--gold-border);
-      border-radius: 40px;
-      padding: 4px 12px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      margin-top: 3px;
-    }
-
-    .resource-content { flex: 1; }
-
-    .resource-title {
-      font-family: var(--serif);
-      font-size: 16px;
-      font-weight: 400;
-      color: var(--text-head);
-      margin-bottom: 4px;
-      line-height: 1.3;
-    }
-
-    .tool-item-title {
-      font-family: var(--serif);
-      font-size: 17px;
-      font-weight: 400;
-      color: var(--gold);
-      margin-bottom: 4px;
-    }
-
-    .resource-desc {
-      font-family: var(--serif);
-      font-size: 14px;
-      font-weight: 300;
-      color: var(--text-meta);
-      line-height: 1.6;
-      font-style: italic;
-    }
-
-    .resource-link {
-      display: inline-block;
-      margin-top: 8px;
-      font-family: var(--serif-sc);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      color: var(--gold);
-      text-decoration: none;
-      border-bottom: 1px solid rgba(200,146,42,0.35);
-      transition: border-color 0.15s;
-    }
-
-    .resource-link:hover { border-color: var(--gold); }
-
-    /* ── CLOSING SECTION ── */
-    .results-closing {
-      padding: 24px 28px;
-      background: var(--bg-warm);
-      border-radius: 0 0 12px 12px;
-    }
-
-    .results-closing-text {
-      font-family: var(--serif);
-      font-size: 16px;
-      font-weight: 300;
-      font-style: italic;
-      text-align: center;
-      color: var(--text-meta);
-      line-height: 1.7;
-    }
-
-
-    /* ── NAV BAR ── */
-    #nav-bar {
-      position: fixed;
-      bottom: 85px;
-      left: 0;
-      right: 0;
-      z-index: 99;
-      padding: 8px 20px;
-    }
-    .nav-bar-inner {
-      max-width: 640px;
-      margin: 0 auto;
-      display: flex;
-      gap: 10px;
-      justify-content: space-between;
-    }
-    .nav-btn {
-      font-family: var(--serif);
-      font-size: 13px;
-      font-style: italic;
-      color: var(--text-ghost);
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px 0;
-      transition: color 0.2s;
-    }
-    .nav-btn:hover { color: var(--gold); }
-    .nav-btn-restart { margin-left: auto; }
-
-
-    /* ── SIGN-IN PROMPT ── */
-    .signin-prompt {
-      margin-top: 24px;
-      margin-bottom: 8px;
-    }
-
-    .signin-prompt-inner {
+      width: 32px; height: 32px; border-radius: 50%;
       background: rgba(200,146,42,0.05);
       border: 1.5px solid rgba(200,146,42,0.78);
-      border-radius: 14px;
-      padding: 28px 28px 24px;
-      text-align: center;
+      align-items: center; justify-content: center;
+      font-family: var(--serif-sc, 'Cormorant SC', Georgia, serif);
+      font-size: 13px; font-weight: 600; color: #A8721A;
+      text-decoration: none; flex-shrink: 0;
+      transition: all 0.2s; cursor: pointer;
     }
-
-    .signin-eyebrow {
-      font-family: var(--serif-sc);
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.2em;
-      color: var(--gold);
-      display: block;
-      margin-bottom: 12px;
+    .nk-profile-dot.visible {
+      display: flex;
     }
-
-    .signin-body {
-      font-family: var(--serif);
-      font-size: 16px;
-      font-weight: 300;
-      color: var(--text-body);
-      line-height: 1.7;
-      margin-bottom: 24px;
-      max-width: 380px;
-      margin-left: auto;
-      margin-right: auto;
+    .nk-profile-dot:hover {
+      background: rgba(200,146,42,0.08);
+      border-color: rgba(200,146,42,1);
+      transform: translateY(-1px);
     }
-
-    .signin-cta {
-      display: inline-block;
-      margin-bottom: 14px;
-    }
-
-    .signin-skip {
-      font-family: var(--serif);
-      font-size: 13px;
-      font-style: italic;
-      color: var(--text-ghost);
-    }
-
-
-    /* ── SITE NAV ── */
-    .nk-nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(200,146,42,0.20);}
-    .nk-nav-inner{max-width:1040px;margin:0 auto;padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;}
-    .nk-nav-logo img{height:34px;width:auto;display:block;}
-    .nk-nav-links{display:flex;align-items:center;gap:28px;}
-    .nk-nav-links a{font-family:var(--serif-sc);font-size:13px;letter-spacing:0.10em;color:var(--text-meta);text-decoration:none;transition:color 0.2s;}
-    .nk-nav-links a:hover{color:var(--text-head);}
-    .nk-nav-links a.active{color:var(--gold);}
-    .nk-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
-    .nk-hamburger span{display:block;width:22px;height:1.5px;background:var(--text-meta);border-radius:1px;}
-    .nk-mobile-menu{display:none;flex-direction:column;background:#FFF;border-bottom:1px solid rgba(200,146,42,0.20);padding:8px 0;}
-    .nk-mobile-menu.open{display:flex;}
-    .nk-mobile-menu a{font-family:var(--serif-sc);font-size:13px;letter-spacing:0.10em;color:var(--text-head);text-decoration:none;padding:14px 32px;border-bottom:1px solid var(--gold-faint);}
-    .nk-profile-dot{width:32px;height:32px;border-radius:50%;background:var(--gold-bg);border:1.5px solid var(--gold-border);display:flex;align-items:center;justify-content:center;font-family:var(--serif-sc);font-size:13px;font-weight:600;color:var(--gold);text-decoration:none;flex-shrink:0;transition:all 0.2s;}
-    .nk-profile-dot:hover{background:rgba(200,146,42,0.08);border-color:var(--gold-hi);transform:translateY(-1px);}
-    body{padding-top:64px;}
-    @media(max-width:640px){.nk-nav-inner{padding:0 24px;}.nk-nav-links{display:none;}.nk-hamburger{display:flex;}}
-
-    @media (max-width: 640px) {
-      .container { padding: 100px 18px 130px; }
-      .header h1 { font-size: 32px; }
-      .entry-card { padding: 28px 20px; }
-      .results-section { padding: 20px 20px; }
-      .results-hero { padding: 22px 20px 18px; }
-      .results-closing { padding: 20px 20px; }
-    }
-  </style>
+  
+    /* ── STAGE SELECTOR ── */
+    .stage-intro { font-family:var(--serif); font-size:16px; font-weight:300; color:rgba(15,21,35,0.78); line-height:1.75; margin-bottom:40px; max-width:520px; }
+    .stage-arc-label { font-family:var(--serif-sc); font-size:13px; font-weight:600; letter-spacing:0.20em; color:#C8922A; display:block; margin-bottom:12px; }
+    .stage-item { padding:10px 4px; cursor:pointer; border-bottom:1px solid transparent; transition:all 0.18s; position:relative; }
+    .stage-item:hover { border-bottom-color:rgba(200,146,42,0.40); }
+    .stage-item.active { border-bottom-color:#C8922A; }
+    .stage-name { font-family:var(--serif); font-size:22px; font-weight:300; color:#0F1523; display:block; line-height:1.2; margin-bottom:2px; transition:color 0.18s; }
+    .stage-item:hover .stage-name, .stage-item.active .stage-name { color:#C8922A; }
+    .stage-question { font-family:var(--serif); font-size:14px; font-style:italic; color:rgba(15,21,35,0.55); line-height:1.4; display:block; transition:color 0.18s; }
+    .stage-item:hover .stage-question, .stage-item.active .stage-question { color:rgba(200,146,42,0.78); }
+    .stage-col-divider { width:1px; background:var(--gold-rule); align-self:stretch; margin-top:34px; }
+    .stage-panel { display:none; margin-top:32px; background:#FFFFFF; border:1.5px solid rgba(200,146,42,0.78); border-radius:14px; overflow:hidden; animation:panelIn 0.2s ease; }
+    .stage-panel.open { display:block; }
+    @keyframes panelIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    .panel-inner { padding:28px 28px 24px; }
+    .panel-eyebrow { font-family:var(--serif-sc); font-size:13px; font-weight:600; letter-spacing:0.20em; color:#C8922A; display:block; margin-bottom:6px; }
+    .panel-stage-name { font-family:var(--serif); font-size:26px; font-weight:300; color:#0F1523; margin-bottom:4px; line-height:1.1; }
+    .panel-question { font-family:var(--serif); font-size:16px; font-style:italic; color:rgba(15,21,35,0.78); margin-bottom:14px; line-height:1.6; }
+    .panel-desc { font-family:var(--serif); font-size:16px; font-weight:300; color:#0F1523; line-height:1.75; margin-bottom:24px; max-width:520px; }
+    .panel-rule { height:1px; background:var(--gold-rule); margin-bottom:24px; }
+    .panel-rec-label { font-family:var(--serif-sc); font-size:13px; letter-spacing:0.14em; color:rgba(15,21,35,0.78); display:block; margin-bottom:12px; }
+    .panel-rec { display:flex; align-items:flex-start; gap:14px; padding:14px 16px; border-radius:14px; margin-bottom:8px; text-decoration:none; border:1.5px solid rgba(200,146,42,0.78); background:rgba(200,146,42,0.05); transition:all 0.2s; }
+    .panel-rec:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(15,21,35,0.08); border-color:rgba(200,146,42,1); background:rgba(200,146,42,0.06); }
+    .panel-rec.soft { border-color:var(--gold-rule); background:transparent; }
+    .panel-rec.soft:hover { border-color:rgba(200,146,42,0.78); background:rgba(200,146,42,0.05); }
+    .panel-rec-badge { font-family:var(--serif-sc); font-size:11px; letter-spacing:0.12em; color:rgba(15,21,35,0.78); background:rgba(200,146,42,0.08); border:1px solid var(--gold-rule); border-radius:40px; padding:3px 10px; flex-shrink:0; margin-top:2px; white-space:nowrap; }
+    .panel-rec-text { flex:1; }
+    .panel-rec-title { font-family:var(--serif); font-size:16px; font-weight:300; color:#C8922A; margin-bottom:3px; line-height:1.2; }
+    .panel-rec-sub { font-family:var(--serif); font-size:14px; color:rgba(15,21,35,0.78); line-height:1.4; }
+    .panel-rec-arrow { color:#C8922A; font-size:15px; margin-top:2px; flex-shrink:0; }
+    .panel-external { margin-top:16px; padding-top:16px; border-top:1px solid var(--gold-rule); }
+    .panel-external-label { font-family:var(--serif-sc); font-size:13px; letter-spacing:0.14em; color:rgba(15,21,35,0.78); display:block; margin-bottom:10px; }
+    .panel-search-terms { display:flex; flex-wrap:wrap; gap:8px; }
+    .panel-term { font-family:var(--serif-sc); font-size:13px; letter-spacing:0.10em; color:rgba(15,21,35,0.78); background:rgba(15,21,35,0.04); border:1px solid rgba(15,21,35,0.10); border-radius:40px; padding:6px 14px; }
+</style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav class="nk-nav">
   <div class="nk-nav-inner">
-    <a href="https://nextus.world/index.html" class="nk-nav-logo"><img src="https://nextus.world/logo_nav.png" alt="NextUs"></a>
+    <a href="/index.html" class="nk-nav-logo"><img src="/logo_nav.png" alt="NextUs"></a>
     <div class="nk-nav-links">
-      <a href="https://nextus.world/index.html">Home</a>
-      <a href="https://nextus.world/life-os.html" class="active">Life OS</a>
-      <a href="https://nextus.world/nextus.html">NextUs</a>
-      <a href="https://nextus.world/work-with-nik.html">Work with Nik</a>
-      <a href="https://nextus.world/about.html">About</a>
-      <a href="https://nextus.world/podcast.html">Podcast</a>
+      <a href="/index.html">Home</a>
+      <a href="/life-os.html">Life OS</a>
+      <a href="/nextus.html">NextUs</a>
+      <a href="/work-with-nik.html">Work with Nik</a>
+      <a href="/about.html">About</a>
+      <a href="/podcast.html">Podcast</a>
     </div>
-    <a href="https://nextus.world/login.html" class="nk-profile-dot" id="nk-profile-dot" title="Sign in" style="display:none;">→</a>
-    <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob-or').classList.toggle('open');"><span></span><span></span><span></span></button>
+    <a href="/login.html" class="nk-btn" id="nk-signin-btn" style="padding:10px 22px;font-size:13px;">Sign in</a>
+    <a href="/login.html" class="nk-profile-dot" id="nk-profile-dot" title="Sign in"></a>
+    <button class="nk-hamburger" aria-label="Menu" onclick="this.classList.toggle('open');document.getElementById('nk-mob').classList.toggle('open');"><span></span><span></span><span></span></button>
   </div>
 </nav>
-<div id="nk-mob-or" class="nk-mobile-menu">
-  <a href="https://nextus.world/index.html">Home</a>
-  <a href="https://nextus.world/life-os.html">Life OS</a>
-  <a href="https://nextus.world/nextus.html">NextUs</a>
-  <a href="https://nextus.world/work-with-nik.html">Work with Nik</a>
-  <a href="https://nextus.world/about.html">About</a>
-  <a href="https://nextus.world/podcast.html">Podcast</a>
-  <a href="https://nextus.world/login.html">Sign in →</a>
+<div id="nk-mob" class="nk-mobile-menu">
+  <a href="/index.html">Home</a>
+  <a href="/life-os.html">Life OS</a>
+  <a href="/nextus.html">NextUs</a>
+  <a href="/work-with-nik.html">Work with Nik</a>
+  <a href="/about.html">About</a>
+  <a href="/podcast.html">Podcast</a>
+  <a href="/login.html">Sign in →</a>
 </div>
 
-<div class="container">
+<!-- HERO -->
+<section class="nk-hero">
+  <div style="position:relative;z-index:1;width:100%;max-width:680px;">
+    <div style="margin-bottom:52px;">
+      <img src="/logo_hero.png" alt="NextUs" style="height:180px;width:auto;display:inline-block;">
+    </div>
+    <div style="width:28px;height:1px;background:#C8922A;opacity:0.5;margin:0 auto 36px;"></div>
+    <h1 style="font-family:var(--serif);font-size:clamp(42px,6vw,72px);font-weight:300;color:#0F1523;line-height:1.08;letter-spacing:-0.02em;margin-bottom:24px;">
+      A life worth living.<br>
+      <em style="font-style:italic;color:#C8922A;">A future worth building.</em>
+    </h1>
+    <p style="font-family:var(--serif);font-size:16px;font-weight:300;color:#0F1523;line-height:1.7;margin-bottom:52px;max-width:460px;margin-left:auto;margin-right:auto;">
+      Life asked something of you. This is where you find out what.
+    </p>
+    <a href="#start" class="nk-btn">Where do I start? →</a>
+  </div>
+  <div style="position:absolute;bottom:36px;left:50%;transform:translateX(-50%);text-align:center;">
+    <p style="font-family:var(--serif-sc);font-size:13px;letter-spacing:0.14em;color:#C8922A;opacity:0.78;">nextus.world</p>
+  </div>
+</section>
 
-  <header class="header">
-    <img src="https://nextus.world/logo_nav.png" alt="Life OS" class="logo" />
-    <p class="header-sub">Not sure where to start? Tell me a little about where you are right now.</p>
-  </header>
+<!-- ROUTING -->
+<section id="start" class="nk-section">
+  <div style="width:1px;height:52px;background:var(--gold-rule);margin:0 auto 64px;"></div>
+  <span class="nk-eyebrow">Where you are</span>
+  <h2 style="font-family:var(--serif);font-size:clamp(28px,4vw,44px);font-weight:300;color:#0F1523;line-height:1.14;margin-bottom:16px;">Where are you right now?</h2>
+  <p class="stage-intro">Different moments call for different kinds of support. These stages are not a ladder — they are a map. Tap the one that feels closest to where you are.</p>
 
-  <!-- Chat area — visible immediately, auto-starts -->
-  <div id="chat-area" style="display:flex; flex-direction:column; flex:1;">
-    <div id="chat-container"></div>
-    <div class="typing-indicator" id="typing-indicator">
-      <div class="typing-dot"></div>
-      <div class="typing-dot"></div>
-      <div class="typing-dot"></div>
+  <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0 28px;margin-bottom:8px;">
+
+    <div>
+      <span class="stage-arc-label">Healing</span>
+      <div class="stage-item" id="si-baseline" onclick="selectStage(event,'baseline')">
+        <span class="stage-name">Baseline</span>
+        <span class="stage-question">Am I allowed to exist?</span>
+      </div>
+      <div class="stage-item" id="si-autonomy" onclick="selectStage(event,'autonomy')">
+        <span class="stage-name">Autonomy</span>
+        <span class="stage-question">Am I allowed to want?</span>
+      </div>
+      <div class="stage-item" id="si-calibration" onclick="selectStage(event,'calibration')">
+        <span class="stage-name">Calibration</span>
+        <span class="stage-question">Where am I actually?</span>
+      </div>
+      <div class="stage-item" id="si-integration" onclick="selectStage(event,'integration')">
+        <span class="stage-name">Integration</span>
+        <span class="stage-question">Can I hold all of myself?</span>
+      </div>
+    </div>
+
+    <div class="stage-col-divider"></div>
+
+    <div>
+      <span class="stage-arc-label">Development</span>
+      <div class="stage-item" id="si-agency" onclick="selectStage(event,'agency')">
+        <span class="stage-name">Agency</span>
+        <span class="stage-question">Can I act from self?</span>
+      </div>
+      <div class="stage-item" id="si-embodiment" onclick="selectStage(event,'embodiment')">
+        <span class="stage-name">Embodiment</span>
+        <span class="stage-question">Can I be who I really am?</span>
+      </div>
+      <div class="stage-item" id="si-contribution" onclick="selectStage(event,'contribution')">
+        <span class="stage-name">Contribution</span>
+        <span class="stage-question">What is my life in service of?</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="stage-panel" id="stage-panel"></div>
+
+  <a href="/life-os.html" style="display:block;text-align:center;font-family:var(--serif);font-size:16px;font-style:italic;color:#C8922A;margin-top:28px;text-decoration:none;">or show me everything →</a>
+</section>
+
+<!-- THE BUILD CONTINUES — dark section -->
+<section class="nk-dark">
+  <div class="nk-dark-inner">
+    <div style="margin-bottom:24px;">
+      <img src="/logo_nav.png" alt="NextUs" style="height:40px;width:auto;display:inline-block;opacity:0.78;">
+    </div>
+    <div style="width:28px;height:1px;background:#C8922A;opacity:0.4;margin:0 auto 36px;"></div>
+    <h2 style="font-family:var(--serif);font-size:clamp(24px,3vw,34px);font-weight:300;color:rgba(255,255,255,0.92);margin-bottom:12px;">The build continues.</h2>
+    <p style="font-family:var(--serif);font-size:16px;font-weight:300;color:rgba(255,255,255,0.55);margin-bottom:40px;max-width:320px;margin-left:auto;margin-right:auto;">The next useful thing, when it's ready.</p>
+    <div style="max-width:380px;margin:0 auto;">
+      <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
+      <form action="https://app.kit.com/forms/9215183/subscriptions" class="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
+        <div data-style="clean">
+          <ul class="formkit-alert formkit-alert-error" data-element="errors" data-group="alert"></ul>
+          <div data-element="fields" data-stacked="true" class="seva-fields formkit-fields">
+            <div class="formkit-field">
+              <input class="formkit-input" name="email_address" placeholder="your email" required type="email">
+            </div>
+            <button data-element="submit" class="formkit-submit nk-dark-btn"><span>Join us →</span></button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
+</section>
 
-</div>
+<!-- WHERE NEXT -->
+<section class="nk-section" style="padding-bottom:120px;">
+  <span class="nk-eyebrow">Work with Nik</span>
+  <a href="/work-with-nik.html" class="nk-list-item" style="margin-bottom:36px;">
+    <div>
+      <div class="nk-list-title">Book a discovery call</div>
+      <div class="nk-list-sub">30 minutes · no obligation</div>
+    </div>
+    <span class="nk-list-arrow">→</span>
+  </a>
 
-<!-- Input area -->
-<div class="input-area" id="input-area" style="display:block;">
-  <div class="input-inner">
-    <textarea
-      id="user-input"
-      placeholder="Type your answer..."
-      rows="1"
-      autocomplete="off"
-      spellcheck="false"
-    ></textarea>
-    <button id="send-btn">Send</button>
+  <span class="nk-eyebrow">Explore</span>
+  <a href="/life-os.html" class="nk-list-item">
+    <div>
+      <div class="nk-list-title">Life OS</div>
+      <div class="nk-list-sub">Six tools for your life</div>
+    </div>
+    <span class="nk-list-arrow">→</span>
+  </a>
+  <a href="/nextus.html" class="nk-list-item">
+    <div>
+      <div class="nk-list-title">NextUs</div>
+      <div class="nk-list-sub">The civilisational project</div>
+    </div>
+    <span class="nk-list-arrow">→</span>
+  </a>
+  <a href="/podcast.html" class="nk-list-item">
+    <div>
+      <div class="nk-list-title">The Podcast</div>
+      <div class="nk-list-sub">220+ episodes since 2015</div>
+    </div>
+    <span class="nk-list-arrow">→</span>
+  </a>
+</section>
+
+<!-- FOOTER -->
+<footer class="nk-footer">
+  <div class="nk-footer-inner">
+    <div class="nk-footer-top">
+      <p class="nk-footer-brand">A life worth living. A future worth building.</p>
+      <div class="nk-footer-socials">
+        <a href="https://www.instagram.com/nikwood.world/" target="_blank" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg></a>
+        <a href="https://www.youtube.com/@NextUs-World" target="_blank" aria-label="YouTube"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none"/></svg></a>
+        <a href="https://substack.com/@nextus" target="_blank" aria-label="Substack"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="opacity:0.55;"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></svg></a>
+        <a href="https://open.spotify.com/show/65LzAbOCuOZW7mvHTKsIbY" target="_blank" aria-label="Podcast"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 11.8c2.2-.7 5.8-.6 8 1.2"/><path d="M6.5 14.5c3-1.3 7.5-.8 10 1.5"/><path d="M9.5 9c1.5-.4 4.5-.3 6.5.8"/></svg></a>
+      </div>
+    </div>
+    <div class="nk-footer-rule"></div>
+    <div class="nk-footer-bottom">
+      <span class="nk-footer-copy">© 2026 NextUs · Nik Wood</span>
+      <div class="nk-footer-legal"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div>
+    </div>
   </div>
-</div>
-
+</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  window.SUPABASE_URL      = "https://tphbpwzozkskytoichho.supabase.co";
-  window.SUPABASE_ANON_KEY = "sb_publishable_M00GF1FWV5tgKHqmyRCZag_kJjgBJn-";
+  (async function() {
+    try {
+      const sb = window.supabase.createClient(
+        "https://tphbpwzozkskytoichho.supabase.co",
+        "sb_publishable_M00GF1FWV5tgKHqmyRCZag_kJjgBJn-"
+      );
+
+      function updateDot(user) {
+        const dot = document.getElementById("nk-profile-dot");
+        const btn = document.getElementById("nk-signin-btn");
+        if (!dot) return;
+        if (user) {
+          const initial = (user.email?.split("@")[0]?.charAt(0) || "?").toUpperCase();
+          dot.textContent = initial;
+          dot.href = "/profile.html";
+          dot.title = "Your profile";
+          dot.classList.add("visible"); dot.style.borderColor = "rgba(200,146,42,1)";
+          dot.style.background = "rgba(200,146,42,0.10)";
+          if (btn) btn.style.display = "none";
+        } else {
+          dot.textContent = "";
+          dot.href = "/login.html";
+          dot.title = "Sign in";
+          dot.classList.remove("visible"); dot.style.borderColor = "";
+          dot.style.background = "";
+          if (btn) btn.style.display = "";
+        }
+      }
+
+      const { data: { session } } = await sb.auth.getSession();
+      updateDot(session?.user || null);
+
+      sb.auth.onAuthStateChange(function(event, newSession) {
+        updateDot(newSession?.user || null);
+      });
+    } catch(e) {}
+  })();
 </script>
-<script src="/auth-init.js"></script>
+
 <script>
-// ── SESSION — reads from auth-init.js ─────────────────────────────────────────
-let currentUser = null;
-
-window.addEventListener('lifeos:auth', function(e) {
-  var user = e.detail && e.detail.user;
-  currentUser = user || null;
-  // Update profile dot
-  var dot = document.getElementById('nk-profile-dot');
-  if (dot && user) {
-    var initial = ((user.email||'').split('@')[0].charAt(0)||'?').toUpperCase();
-    dot.textContent = initial;
-    dot.href = 'https://nextus.world/profile.html';
-    dot.title = 'Your profile';
-    dot.style.display = 'flex';
+var STAGES = {
+  baseline: {
+    name: 'Baseline',
+    question: 'Am I allowed to exist?',
+    desc: 'The floor everything else stands on. Safety and permission to exist at a nervous-system, body level. Without it, everything feels like threat, growth feels dangerous, and insight destabilises rather than liberates. The work here is regulation, containment, and finding ground.',
+    primary: { title: 'Foundation', sub: 'A guided audio practice to settle and re-establish ground.', url: 'https://life-os-foundation.vercel.app', badge: 'Life OS Tool' },
+    above: { title: 'The Map', sub: 'When you have a little more ground, see where you actually are.', url: 'https://life-os-mapping.vercel.app', badge: 'Life OS Tool' },
+    below: null,
+    external: ['somatic therapy', 'trauma-informed support', 'nervous system regulation', 'polyvagal therapy']
+  },
+  autonomy: {
+    name: 'Autonomy',
+    question: 'Am I allowed to want?',
+    desc: 'Where the self starts moving again — not goals, not strategy, but desire. The work here is reclaiming the right to direct oneself and meeting the shame around wanting.',
+    primary: { title: 'Foundation', sub: 'Build the internal stability that makes self-direction possible.', url: 'https://life-os-foundation.vercel.app', badge: 'Life OS Tool' },
+    above: { title: 'The Map', sub: 'An honest picture of where you are once you can see clearly.', url: 'https://life-os-mapping.vercel.app', badge: 'Life OS Tool' },
+    below: null,
+    external: ['inner child work', 'parts work / IFS', 'shame resilience', 'self-compassion practices']
+  },
+  calibration: {
+    name: 'Calibration',
+    question: 'Where am I actually?',
+    desc: 'Reality contact — honest self-assessment, mapping life domains, seeing patterns without collapse. This is where the picture becomes clear enough to navigate from.',
+    primary: { title: 'The Map', sub: 'Seven domains. One honest picture of where you are right now.', url: 'https://life-os-mapping.vercel.app', badge: 'Life OS Tool' },
+    above: { title: 'Purpose Piece', sub: 'Find your contribution pattern — the role you are built to play.', url: 'https://life-os-purpose-piece-v2.vercel.app', badge: 'Life OS Tool' },
+    below: { title: 'Foundation', sub: 'If looking clearly feels like too much — this is where to start.', url: 'https://life-os-foundation.vercel.app', badge: 'Life OS Tool' },
+    external: ['journalling practices', 'life audit frameworks', 'values clarification', 'honest self-assessment']
+  },
+  integration: {
+    name: 'Integration',
+    question: 'Can I hold all of myself?',
+    desc: 'Metabolising past experience, reconciling contradictions, reducing internal fragmentation. This is where energy stops leaking and becomes available for something new.',
+    primary: { title: 'Purpose Piece', sub: 'Surface the contribution pattern that has been there all along.', url: 'https://life-os-purpose-piece-v2.vercel.app', badge: 'Life OS Tool' },
+    above: { title: 'Work with Nik', sub: 'Identity-level work for people ready to do something with what they find.', url: '/work-with-nik.html', badge: 'Facilitated' },
+    below: { title: 'The Map', sub: 'See where the fragmentation shows up across your life domains.', url: 'https://life-os-mapping.vercel.app', badge: 'Life OS Tool' },
+    external: ['parts work / IFS', 'shadow work', 'narrative therapy', 'Jungian approaches']
+  },
+  agency: {
+    name: 'Agency',
+    question: 'Can I act from self?',
+    desc: 'Action becomes possible — not reactive effort, not proving, but true choice. Behaviour stabilises, discipline emerges naturally, self-trust begins to build.',
+    primary: { title: 'Target Goals', sub: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.', url: 'https://target-goals.vercel.app', badge: 'Life OS Tool' },
+    above: { title: 'Work with Nik', sub: 'For people ready to act on what they have found.', url: '/work-with-nik.html', badge: 'Facilitated' },
+    below: { title: 'Purpose Piece', sub: 'Clarify what you are acting toward before you act.', url: 'https://life-os-purpose-piece-v2.vercel.app', badge: 'Life OS Tool' },
+    external: ['implementation intentions', 'habit architecture', 'values-based goal setting', 'accountability structures']
+  },
+  embodiment: {
+    name: 'Embodiment',
+    question: 'Can I be who I really am?',
+    desc: 'Identity stops being conceptual — behaviour aligns with values, the nervous system tolerates expansion, relationships reorganise around who you actually are.',
+    primary: { title: 'Work with Nik', sub: 'Identity-level work. The crossing from who you have been to who you are becoming.', url: '/work-with-nik.html', badge: 'Facilitated' },
+    above: { title: 'NextUs', sub: 'Find where your fully expressed self belongs in the larger project.', url: '/nextus.html', badge: 'NextUs' },
+    below: { title: 'Target Goals', sub: 'Operationalise the identity shift — three areas, ninety days.', url: 'https://target-goals.vercel.app', badge: 'Life OS Tool' },
+    external: ['embodied leadership', 'somatic coaching', 'identity-level work', 'ontological coaching']
+  },
+  contribution: {
+    name: 'Contribution',
+    question: 'What is my life in service of?',
+    desc: 'Meaning stabilises the psyche. Contribution integrates the self. Purpose regulates existential anxiety. This is not saviour energy — it is participation in reality.',
+    primary: { title: 'NextUs', sub: 'The civilisational map — seven domains, and where your work belongs.', url: '/nextus.html', badge: 'NextUs' },
+    above: null,
+    below: { title: 'Purpose Piece', sub: 'What did life ask you to bring? Your archetype, domain, and scale.', url: 'https://life-os-purpose-piece-v2.vercel.app', badge: 'Life OS Tool' },
+    external: ['systems thinking', 'theory of change', 'purpose-driven leadership', 'civilisational contribution']
   }
-}, { once: true });
-
-// ── TOOL LINKS ───────────────────────────────────────────────────────────────
-const TOOL_LINKS = {
-  "Foundation":    { url: "#",                                           text: "Begin →" },
-  "The Map":       { url: "/life-os.html#map",                           text: "Begin your map →" },
-  "Pulse":         { url: "https://life-os-pulse.vercel.app",            text: "Open Pulse →" },
-  "Purpose Piece": { url: "https://life-os-purpose-piece-v2.vercel.app", text: "Find your Purpose Piece →" },
-  "Horizon Leap":  { url: "/work-with-nik.html",                         text: "Learn more →" },
-  "NextUs":        { url: "https://nextus.world",                        text: "Explore the map →" },
 };
 
-// ── STATE ────────────────────────────────────────────────────────────────────
-let messages       = [];
-let messageHistory = []; // [{content, domEl}] for back nav
-let isWaiting      = false;
+var activeStage = null;
 
-// ── DOM ──────────────────────────────────────────────────────────────────────
-const welcomeScreen   = document.getElementById("welcome-screen");
-const chatArea        = document.getElementById("chat-area");
-const chatContainer   = document.getElementById("chat-container");
-const typingIndicator = document.getElementById("typing-indicator");
-const inputArea       = document.getElementById("input-area");
-const userInput       = document.getElementById("user-input");
-const sendBtn         = document.getElementById("send-btn");
-const beginBtn        = document.getElementById("begin-btn");
-
-// ── INIT ─────────────────────────────────────────────────────────────────────
-sendBtn.addEventListener("click", sendUserInput);
-userInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendUserInput(); }
-});
-userInput.addEventListener("input", () => {
-  userInput.style.height = "auto";
-  userInput.style.height = Math.min(userInput.scrollHeight, 120) + "px";
-});
-
-// Auto-start — no gate, conversation begins immediately
-startConversation();
-
-// ── START ────────────────────────────────────────────────────────────────────
-async function startConversation() {
-  showTyping();
-  disableInput();
-
-  try {
-    const data = await callAPI([]);
-    hideTyping();
-    addAssistantMessage(data.message);
-    enableInput();
-  } catch {
-    hideTyping();
-    addAssistantMessage("Something went quiet on my end. Try refreshing.");
-    enableInput();
+function selectStage(evt, key) {
+  if (activeStage === key) {
+    activeStage = null;
+    document.querySelectorAll('.stage-item').forEach(function(el) { el.classList.remove('active'); });
+    var p = document.getElementById('stage-panel');
+    p.classList.remove('open');
+    return;
   }
-}
+  activeStage = key;
+  var s = STAGES[key];
+  document.querySelectorAll('.stage-item').forEach(function(el) { el.classList.remove('active'); });
+  evt.currentTarget.classList.add('active');
 
-// ── SEND ─────────────────────────────────────────────────────────────────────
-function sendUserInput() {
-  if (isWaiting) return;
-  const text = userInput.value.trim();
-  if (!text) return;
-
-  addUserMessage._lastEl = null;
-  addUserMessage(text);
-  const lastUserEl = chatContainer.lastElementChild;
-  messages.push({ role: "user", content: text });
-  messageHistory.push({ content: text, domEl: lastUserEl });
-  userInput.value = "";
-  userInput.style.height = "auto";
-  disableInput();
-  showTyping();
-
-  callAPI(messages).then(data => {
-    hideTyping();
-    addAssistantMessage(data.message);
-    enableInput();
-  }).catch(() => {
-    hideTyping();
-    addAssistantMessage("Something went quiet on my end. Try again in a moment.");
-    enableInput();
-  });
-}
-
-// ── API ───────────────────────────────────────────────────────────────────────
-async function callAPI(msgs) {
-  isWaiting = true;
-  const response = await fetch("/api/chat", {
-    method:  "POST",
-    headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ messages: msgs })
-  });
-  isWaiting = false;
-  if (!response.ok) throw new Error(`API ${response.status}`);
-  return response.json();
-}
-
-// ── NAVIGATION ───────────────────────────────────────────────────────────────
-function showNavBar() {
-  if (document.getElementById("nav-bar")) return;
-  const bar = document.createElement("div");
-  bar.id = "nav-bar";
-  bar.innerHTML = `
-    <div class="nav-bar-inner">
-      <button class="nav-btn nav-btn-back" id="nav-back" style="opacity:0.35;cursor:default;" disabled>← Back</button>
-      <button class="nav-btn nav-btn-restart" id="nav-restart">Start again</button>
-    </div>
-  `;
-  inputArea.parentNode.insertBefore(bar, inputArea);
-  document.getElementById("nav-back").addEventListener("click", goBack);
-  document.getElementById("nav-restart").addEventListener("click", restartFn);
-}
-
-function setBackEnabled(enabled) {
-  const btn = document.getElementById("nav-back");
-  if (btn) {
-    btn.disabled = !enabled;
-    btn.style.opacity = enabled ? "1" : "0.35";
-    btn.style.cursor  = enabled ? "pointer" : "default";
-  }
-}
-
-function goBack() {
-  if (messageHistory.length < 2) return;
-  const lastAssistant = messageHistory.pop();
-  const lastUser      = messageHistory.pop();
-  if (lastAssistant?.domEl) lastAssistant.domEl.remove();
-  if (lastUser?.domEl)      lastUser.domEl.remove();
-  // Also pop from messages array
-  if (messages.length >= 2) messages = messages.slice(0, -2);
-  enableInput();
-  setBackEnabled(messageHistory.length >= 2);
-}
-
-function restartFn() {
-  messages       = [];
-  messageHistory = [];
-  chatContainer.innerHTML = "";
-  chatArea.style.display      = "none";
-  inputArea.style.display     = "none";
-  welcomeScreen.style.display = "";
-  const bar = document.getElementById("nav-bar");
-  if (bar) bar.remove();
-}
-
-// ── RENDER ────────────────────────────────────────────────────────────────────
-function addAssistantMessage(text) {
-  const trimmed = text.trim();
-
-  // Results JSON
-  if (trimmed.startsWith("{") && trimmed.includes('"type": "results"')) {
-    try {
-      const parsed = JSON.parse(trimmed);
-      if (parsed.type === "results") {
-        renderResults(parsed);
-        inputArea.style.display = "none";
-        return;
-      }
-    } catch {}
+  function recHTML(rec, soft) {
+    if (!rec) return '';
+    var isExternal = rec.url.indexOf('http') === 0 && rec.url.indexOf('vercel.app') === -1 && rec.url.indexOf('nextus.world') === -1;
+    var target = isExternal ? ' target="_blank"' : '';
+    return '<a href="' + rec.url + '"' + target + ' class="panel-rec' + (soft ? ' soft' : '') + '">' +
+      '<span class="panel-rec-badge">' + rec.badge + '</span>' +
+      '<div class="panel-rec-text"><div class="panel-rec-title">' + rec.title + '</div>' +
+      '<div class="panel-rec-sub">' + rec.sub + '</div></div>' +
+      '<span class="panel-rec-arrow">→</span></a>';
   }
 
-  // Regular message
-  const div = document.createElement("div");
-  div.className = "message-assistant";
-  div.innerHTML = trimmed
-    .split("\n\n")
-    .map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`)
-    .join("");
-  chatContainer.appendChild(div);
-  messages.push({ role: "assistant", content: text });
-  messageHistory.push({ content: text, domEl: div });
-  setBackEnabled(messageHistory.length >= 2);
-  scrollToBottom();
-}
+  var html = '<div class="panel-inner">' +
+    '<span class="panel-eyebrow">' + s.name + '</span>' +
+    '<div class="panel-stage-name">' + s.name + '</div>' +
+    '<div class="panel-question">' + s.question + '</div>' +
+    '<p class="panel-desc">' + s.desc + '</p>' +
+    '<div class="panel-rule"></div>' +
+    '<span class="panel-rec-label">Where to start</span>' +
+    recHTML(s.primary, false);
 
-function addUserMessage(text) {
-  const div = document.createElement("div");
-  div.className = "message-user";
-  div.textContent = text;
-  chatContainer.appendChild(div);
-  scrollToBottom();
-}
-
-function renderResults(data) {
-  const card = document.createElement("div");
-  card.className = "results-card";
-
-  const recsHTML = data.recommendations.map(r => {
-    const isNextUs   = r.category === "Life OS Tool";
-    const linkHref   = r.link || (isNextUs && TOOL_LINKS[r.title]?.url) || null;
-    const linkText   = r.link_text || (isNextUs && TOOL_LINKS[r.title]?.text) || null;
-    const titleClass = isNextUs ? "tool-item-title" : "resource-title";
-
-    return `
-      <div class="resource-item">
-        <span class="resource-tag">${r.category}</span>
-        <div class="resource-content">
-          <div class="${titleClass}">${r.title}</div>
-          <div class="resource-desc">${r.description}</div>
-          ${linkHref ? `<a href="${linkHref}" class="resource-link">${linkText}</a>` : ""}
-        </div>
-      </div>`;
-  }).join("");
-
-  card.innerHTML = `
-    <div class="results-hero">
-      <span class="results-eyebrow">Where You Are</span>
-      <div class="results-heading">${data.stage}</div>
-    </div>
-
-    <div class="results-section">
-      <span class="results-section-label">What I Heard</span>
-      <div class="results-body">
-        <p>${data.reflection}</p>
-        <p style="color:var(--text-meta);">${data.stage_note}</p>
-        ${data.larger_note ? `<p style="color:var(--text-meta);margin-top:8px;border-top:1px solid var(--gold-rule);padding-top:12px;">${data.larger_note}</p>` : ""}
-      </div>
-    </div>
-
-    <div class="results-section">
-      <span class="results-section-label">What Might Help</span>
-      <div>${recsHTML}</div>
-    </div>
-
-    <div class="results-closing">
-      <p class="results-closing-text">${data.closing}</p>
-    </div>
-  `;
-
-  chatContainer.appendChild(card);
-  messages.push({ role: "assistant", content: JSON.stringify(data) });
-
-  // Sign-in prompt — only shown if not already signed in
-  if (!currentUser) {
-    const signinPrompt = document.createElement("div");
-    signinPrompt.className = "signin-prompt";
-
-    // Check if any recommendation is a Life OS tool — if so, tailor the message
-    const hasToolRec = data.recommendations?.some(r => r.category === "Life OS Tool");
-    const promptMsg  = hasToolRec
-      ? "Create your account to carry this forward — into the tools and the larger work they point toward."
-      : "Your place in this is worth remembering. Create your account to come back to it.";
-
-    signinPrompt.innerHTML = `
-      <div class="signin-prompt-inner">
-        <span class="signin-eyebrow">Your Place in This</span>
-        <p class="signin-body">${promptMsg}</p>
-        <a href="https://nextus.world/login.html?redirect=${encodeURIComponent(window.location.href)}" class="nk-btn signin-cta">Create your account →</a>
-        <p class="signin-skip">Already have an account? <a href="https://nextus.world/login.html?redirect=${encodeURIComponent(window.location.href)}" style="color:var(--gold);text-decoration:none;">Sign in</a></p>
-      </div>
-    `;
-    chatContainer.appendChild(signinPrompt);
+  if (s.above) {
+    html += '<div class="panel-rule"></div><span class="panel-rec-label">When you are ready for the next step</span>' + recHTML(s.above, true);
+  }
+  if (s.below) {
+    html += '<div class="panel-rule"></div><span class="panel-rec-label">If this feels like too much right now</span>' + recHTML(s.below, true);
+  }
+  if (s.external && s.external.length) {
+    html += '<div class="panel-external"><span class="panel-external-label">Also worth exploring</span><div class="panel-search-terms">';
+    s.external.forEach(function(t) { html += '<span class="panel-term">' + t + '</span>'; });
+    html += '</div></div>';
   }
 
-  // Restart link
-  const restart = document.createElement("div");
-  restart.style.cssText = "text-align:center;margin-top:16px;padding-bottom:16px;";
-  restart.innerHTML = `<button onclick="restartFn()" style="font-family:var(--serif);font-size:14px;font-style:italic;color:var(--text-ghost);background:none;border:none;cursor:pointer;border-bottom:1px solid rgba(15,21,35,0.15);padding:0 0 1px;transition:color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--text-ghost)'">Start again →</button>`;
-  chatContainer.appendChild(restart);
+  html += '</div>';
 
-  scrollToBottom();
-}
-
-// ── HELPERS ───────────────────────────────────────────────────────────────────
-function showTyping()  { typingIndicator.classList.add("active"); scrollToBottom(); }
-function hideTyping()  { typingIndicator.classList.remove("active"); }
-function disableInput(){ userInput.disabled = true;  sendBtn.disabled = true; }
-function enableInput() { userInput.disabled = false; sendBtn.disabled = false; userInput.focus(); }
-function scrollToBottom() {
-  setTimeout(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }), 100);
+  var panel = document.getElementById('stage-panel');
+  panel.innerHTML = html;
+  panel.classList.add('open');
+  setTimeout(function() { panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
 }
 </script>
 
