@@ -110,10 +110,10 @@
   window.SUPABASE_ANON_KEY = "sb_publishable_M00GF1FWV5tgKHqmyRCZag_kJjgBJn-";
 </script>
 
-<script src="/auth-init.js"></script>
 <script src="/ui.js"></script>
 <script src="/glossary-tooltip.js"></script>
 <script src="/app.js"></script>
+<script src="/auth-init.js"></script>
 
 <style>
 .map-auth-overlay { position:fixed;inset:0;z-index:3000;background:rgba(15,21,35,0.55);display:flex;align-items:center;justify-content:center;padding:24px; }
@@ -139,13 +139,8 @@ function showMapAuthModal() {
     '<h2 class="map-auth-heading">Sign in to begin your map.</h2>' +
     '<p class="map-auth-body">Your results are saved to your profile so you can return to them any time.</p>' +
     '<a href="https://nextus.world/login.html?redirect=' + returnUrl + '" class="map-auth-btn">Sign in or create account →</a>' +
-    '<button class="map-auth-dismiss" id="map-auth-dismiss">Continue without saving</button>' +
     '</div>';
   document.body.appendChild(overlay);
-  document.getElementById('map-auth-dismiss').addEventListener('click', function() {
-    overlay.remove();
-    if (window.App) App.startConversation();
-  });
 }
 
 window.addEventListener('lifeos:auth', function(e) {
