@@ -2,10 +2,17 @@
   "buildCommand": "",
   "outputDirectory": ".",
   "functions": {
-    "tools/map/api/chat.js":             { "maxDuration": 60 },
-    "tools/orienteering/api/chat.js":    { "maxDuration": 60 },
-    "tools/purpose-piece/api/chat.js":   { "maxDuration": 60 },
-    "tools/purpose-piece/api/chat-deep.js": { "maxDuration": 60 },
-    "tools/target-goals/api/chat.js":    { "maxDuration": 60 }
-  }
+    "api/map-chat.js":                    { "maxDuration": 60 },
+    "api/orienteering-chat.js":           { "maxDuration": 60 },
+    "api/purpose-piece-chat.js":          { "maxDuration": 60 },
+    "api/purpose-piece-chat-deep.js":     { "maxDuration": 60 },
+    "api/target-goals-chat.js":           { "maxDuration": 60 }
+  },
+  "rewrites": [
+    { "source": "/tools/map/api/chat",                "destination": "/api/map-chat" },
+    { "source": "/tools/orienteering/api/chat",       "destination": "/api/orienteering-chat" },
+    { "source": "/tools/purpose-piece/api/chat",      "destination": "/api/purpose-piece-chat" },
+    { "source": "/tools/purpose-piece/api/chat-deep", "destination": "/api/purpose-piece-chat-deep" },
+    { "source": "/tools/target-goals/api/chat",       "destination": "/api/target-goals-chat" }
+  ]
 }
