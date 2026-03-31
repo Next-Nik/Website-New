@@ -1,0 +1,11 @@
+{
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "functions": {
+    "tools/map/api/chat.js":             { "maxDuration": 60 },
+    "tools/orienteering/api/chat.js":    { "maxDuration": 60 },
+    "tools/purpose-piece/api/chat.js":   { "maxDuration": 60 },
+    "tools/purpose-piece/api/chat-deep.js": { "maxDuration": 60 },
+    "tools/target-goals/api/chat.js":    { "maxDuration": 60 }
+  }
+}
