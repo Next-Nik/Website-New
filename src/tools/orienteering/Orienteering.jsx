@@ -20,12 +20,10 @@ export function OrienteeringPage() {
   const bottomRef = useRef(null)
   const textareaRef = useRef(null)
 
-  // Scroll new messages into view without locking viewport
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [messages, thinking])
 
-  // Auto-grow textarea
   function handleInput(e) {
     setInput(e.target.value)
     const el = textareaRef.current
@@ -80,7 +78,6 @@ export function OrienteeringPage() {
     }
   }
 
-  // Auth loading state
   if (loading) return <div className="loading" />
 
   return (
@@ -111,7 +108,7 @@ export function OrienteeringPage() {
             value={input}
             onChange={handleInput}
             onKeyDown={handleKeyDown}
-            placeholder="Type your response\u2026"
+            placeholder={'Type your response\u2026'}
             rows={1}
             disabled={thinking}
           />
