@@ -224,6 +224,7 @@
       <a href="/work-with-nik.html">Work with Nik</a>
       <a href="/about.html">About</a>
       <a href="/podcast.html">Podcast</a>
+      <button onclick="openMap()" style="background:none;border:none;cursor:pointer;font-family:var(--serif-sc);font-size:13px;letter-spacing:0.10em;color:var(--text-meta);transition:color 0.2s;padding:0;" onmouseover="this.style.color='var(--text-head)'" onmouseout="this.style.color='var(--text-meta)'">&#9697; Map</button>
     </div>
     <a href="/login.html" class="nk-btn" id="nk-signin-btn" style="padding:10px 22px;font-size:13px;">Sign in</a>
     <a href="/login.html" class="nk-profile-dot" id="nk-profile-dot" title="Sign in"></a>
@@ -237,8 +238,107 @@
   <a href="/work-with-nik.html">Work with Nik</a>
   <a href="/about.html">About</a>
   <a href="/podcast.html">Podcast</a>
+  <a href="#" onclick="openMap();return false;" style="color:var(--text-body);">&#9697; Map</a>
   <a href="/login.html">Sign in →</a>
 </div>
+
+<!-- MAP OVERLAY -->
+<div id="nk-map-overlay" onclick="if(event.target===this)closeMap()" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(10,14,26,0.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);overflow-y:auto;padding:24px 16px 48px;">
+  <div style="max-width:680px;margin:0 auto;">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:32px;padding-top:16px;">
+      <div>
+        <div style="font-family:var(--serif-sc);font-size:11px;letter-spacing:0.22em;color:rgba(200,146,42,0.78);margin-bottom:10px;">WHAT IS THIS PLACE?</div>
+        <p style="font-family:var(--serif);font-size:clamp(18px,3vw,24px);font-weight:300;color:rgba(255,255,255,0.92);line-height:1.5;max-width:480px;">NextUs is a frame for the future we want for life on earth and humanity — and the tools to help you find your place in it.</p>
+      </div>
+      <button onclick="closeMap()" style="background:none;border:1px solid rgba(255,255,255,0.15);border-radius:50%;width:36px;height:36px;color:rgba(255,255,255,0.55);font-size:18px;cursor:pointer;flex-shrink:0;margin-left:16px;transition:all 0.2s;line-height:1;" onmouseover="this.style.borderColor='rgba(200,146,42,0.6)';this.style.color='rgba(200,146,42,0.9)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)';this.style.color='rgba(255,255,255,0.55)'">&times;</button>
+    </div>
+
+    <div style="height:1px;background:rgba(200,146,42,0.20);margin-bottom:32px;"></div>
+
+    <!-- Life OS -->
+    <div style="margin-bottom:32px;">
+      <div style="font-family:var(--serif-sc);font-size:10px;letter-spacing:0.22em;color:rgba(200,146,42,0.78);margin-bottom:6px;">FOR YOUR LIFE</div>
+      <p style="font-family:var(--serif);font-size:16px;font-style:italic;color:rgba(255,255,255,0.55);margin-bottom:18px;line-height:1.6;">Tools to help you figure out where you are, what you're here for, and what to do about it.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <a href="https://orienteering-rose.vercel.app" class="map-tile">
+          <div class="map-tile-name">Orienteering</div>
+          <div class="map-tile-desc">Not sure where to start? Begin here.</div>
+        </a>
+        <a href="https://life-os-foundation.vercel.app" class="map-tile">
+          <div class="map-tile-name">Foundation</div>
+          <div class="map-tile-desc">Regulated calm. The floor everything else stands on.</div>
+        </a>
+        <a href="https://life-os-mapping.vercel.app" class="map-tile">
+          <div class="map-tile-name">The Map</div>
+          <div class="map-tile-desc">An honest picture of where you are across all of life.</div>
+        </a>
+        <a href="https://life-os-pulse.vercel.app" class="map-tile">
+          <div class="map-tile-name">Pulse</div>
+          <div class="map-tile-desc">Daily check-in. How you've actually been showing up.</div>
+        </a>
+        <a href="https://life-os-purpose-piece-v2.vercel.app" class="map-tile">
+          <div class="map-tile-name">Purpose Piece</div>
+          <div class="map-tile-desc">What did life ask you to bring? Your contribution pattern.</div>
+        </a>
+        <a href="https://target-goals.vercel.app" class="map-tile">
+          <div class="map-tile-name">Target Goals</div>
+          <div class="map-tile-desc">90 days. Three domains. A goal worth moving toward.</div>
+        </a>
+        <a href="/work-with-nik.html" class="map-tile map-tile-ghost">
+          <div class="map-tile-name">Horizon Leap</div>
+          <div class="map-tile-desc">Deep identity work with Nik. Coming.</div>
+        </a>
+      </div>
+    </div>
+
+    <div style="height:1px;background:rgba(200,146,42,0.20);margin-bottom:32px;"></div>
+
+    <!-- NextUs -->
+    <div style="margin-bottom:32px;">
+      <div style="font-family:var(--serif-sc);font-size:10px;letter-spacing:0.22em;color:rgba(200,146,42,0.78);margin-bottom:6px;">FOR THE WORLD</div>
+      <p style="font-family:var(--serif);font-size:16px;font-style:italic;color:rgba(255,255,255,0.55);margin-bottom:18px;line-height:1.6;">The civilisational project. Where the personal work connects to something larger.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <a href="/nextus.html" class="map-tile">
+          <div class="map-tile-name">NextUs Platform</div>
+          <div class="map-tile-desc">The seven domains of civilisational life. Where is humanity now?</div>
+        </a>
+        <a href="/about.html" class="map-tile">
+          <div class="map-tile-name">The Frame</div>
+          <div class="map-tile-desc">What NextUs is and why it exists.</div>
+        </a>
+        <a href="/podcast.html" class="map-tile">
+          <div class="map-tile-name">The Podcast</div>
+          <div class="map-tile-desc">220+ episodes. Conversations from the edge of what's next.</div>
+        </a>
+        <a href="/work-with-nik.html" class="map-tile">
+          <div class="map-tile-name">Work with Nik</div>
+          <div class="map-tile-desc">Direct. For individuals and organisations ready to go deeper.</div>
+        </a>
+      </div>
+    </div>
+
+    <div style="height:1px;background:rgba(200,146,42,0.20);margin-bottom:24px;"></div>
+
+    <!-- Bottom -->
+    <p style="font-family:var(--serif);font-size:14px;font-style:italic;color:rgba(255,255,255,0.35);text-align:center;">If you're not sure where to begin — <a href="https://orienteering-rose.vercel.app" style="color:rgba(200,146,42,0.78);text-decoration:none;" onclick="closeMap()">start with Orienteering</a>.</p>
+  </div>
+</div>
+
+<style>
+.map-tile { display:block;background:rgba(255,255,255,0.04);border:1px solid rgba(200,146,42,0.25);border-radius:10px;padding:16px 18px;text-decoration:none;transition:all 0.2s; }
+.map-tile:hover { background:rgba(200,146,42,0.08);border-color:rgba(200,146,42,0.6);transform:translateY(-1px); }
+.map-tile-name { font-family:'Cormorant SC',Georgia,serif;font-size:13px;font-weight:600;letter-spacing:0.10em;color:rgba(200,146,42,0.9);margin-bottom:5px; }
+.map-tile-desc { font-family:'Cormorant Garamond',Georgia,serif;font-size:14px;color:rgba(255,255,255,0.60);line-height:1.55; }
+.map-tile-ghost { opacity:0.45;pointer-events:none; }
+</style>
+
+<script>
+function openMap() { document.getElementById('nk-map-overlay').style.display='block'; document.body.style.overflow='hidden'; }
+function closeMap() { document.getElementById('nk-map-overlay').style.display='none'; document.body.style.overflow=''; }
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeMap(); });
+</script>
 
 <!-- HERO -->
 <section class="nk-hero">
@@ -254,66 +354,201 @@
     <p style="font-family:var(--serif);font-size:16px;font-weight:300;color:#0F1523;line-height:1.7;margin-bottom:52px;max-width:460px;margin-left:auto;margin-right:auto;">
       Life asked something of you. This is where you find out what.
     </p>
-    <a href="#start" class="nk-btn">Where do I start? →</a>
+    <a href="#start" class="nk-btn">Not sure where to start?</a>
   </div>
   <div style="position:absolute;bottom:36px;left:50%;transform:translateX(-50%);text-align:center;">
     <p style="font-family:var(--serif-sc);font-size:13px;letter-spacing:0.14em;color:#C8922A;opacity:0.78;">nextus.world</p>
   </div>
 </section>
 
-<!-- ROUTING -->
+<!-- ORIENTEERING — embedded chat -->
 <section id="start" class="nk-section">
   <div style="width:1px;height:52px;background:var(--gold-rule);margin:0 auto 64px;"></div>
   <span class="nk-eyebrow">Where you are</span>
-  <h2 style="font-family:var(--serif);font-size:clamp(28px,4vw,44px);font-weight:300;color:#0F1523;line-height:1.14;margin-bottom:16px;">Where are you right now?</h2>
-  <p class="stage-intro">Different moments call for different kinds of support. These stages are not a ladder — they are a map. Tap the one that feels closest to where you are.</p>
+  <h2 style="font-family:var(--serif);font-size:clamp(28px,4vw,44px);font-weight:300;color:#0F1523;line-height:1.14;margin-bottom:16px;">Not sure where to start?</h2>
+  <p style="font-family:var(--serif);font-size:17px;font-weight:300;font-style:italic;color:var(--text-meta);line-height:1.75;margin-bottom:40px;max-width:480px;">Tell me a little about where you are right now. I'll point you in the right direction.</p>
 
-  <div style="display:grid;grid-template-columns:1fr 1px 1fr;gap:0 28px;margin-bottom:8px;">
+  <!-- Chat embed -->
+  <div id="or-chat-wrap" style="background:#FFFFFF;border:1.5px solid rgba(200,146,42,0.78);border-radius:14px;overflow:hidden;max-width:600px;margin:0 auto;">
 
-    <div>
-      <span class="stage-arc-label">Healing</span>
-      <div class="stage-item" id="si-baseline" onclick="selectStage(event,'baseline')">
-        <span class="stage-name">Baseline</span>
-        <span class="stage-question">Am I allowed to exist?</span>
-      </div>
-      <div class="stage-item" id="si-autonomy" onclick="selectStage(event,'autonomy')">
-        <span class="stage-name">Autonomy</span>
-        <span class="stage-question">Am I allowed to want?</span>
-      </div>
-      <div class="stage-item" id="si-calibration" onclick="selectStage(event,'calibration')">
-        <span class="stage-name">Calibration</span>
-        <span class="stage-question">Where am I actually?</span>
-      </div>
-      <div class="stage-item" id="si-integration" onclick="selectStage(event,'integration')">
-        <span class="stage-name">Integration</span>
-        <span class="stage-question">Can I hold all of myself?</span>
+    <!-- Messages -->
+    <div id="or-messages" style="min-height:180px;max-height:420px;overflow-y:auto;padding:28px 28px 8px;display:flex;flex-direction:column;gap:16px;"></div>
+
+    <!-- Typing indicator -->
+    <div id="or-typing" style="padding:0 28px 8px;display:none;">
+      <div style="display:flex;gap:5px;align-items:center;">
+        <div class="or-dot"></div>
+        <div class="or-dot"></div>
+        <div class="or-dot"></div>
       </div>
     </div>
 
-    <div class="stage-col-divider"></div>
-
-    <div>
-      <span class="stage-arc-label">Development</span>
-      <div class="stage-item" id="si-agency" onclick="selectStage(event,'agency')">
-        <span class="stage-name">Agency</span>
-        <span class="stage-question">Can I act from self?</span>
-      </div>
-      <div class="stage-item" id="si-embodiment" onclick="selectStage(event,'embodiment')">
-        <span class="stage-name">Embodiment</span>
-        <span class="stage-question">Can I be who I really am?</span>
-      </div>
-      <div class="stage-item" id="si-contribution" onclick="selectStage(event,'contribution')">
-        <span class="stage-name">Contribution</span>
-        <span class="stage-question">What is my life in service of?</span>
-      </div>
+    <!-- Input -->
+    <div style="border-top:1px solid rgba(200,146,42,0.20);padding:16px 20px;display:flex;gap:12px;align-items:flex-end;">
+      <textarea id="or-input"
+        placeholder="Write your response here..."
+        rows="1"
+        style="flex:1;resize:none;border:1.5px solid rgba(200,146,42,0.30);border-radius:10px;padding:11px 14px;font-family:'Cormorant Garamond',Georgia,serif;font-size:16px;color:#0F1523;background:#FAFAF7;outline:none;line-height:1.5;max-height:120px;overflow-y:auto;transition:border-color 0.2s;"
+        onfocus="this.style.borderColor='rgba(200,146,42,0.78)'"
+        onblur="this.style.borderColor='rgba(200,146,42,0.30)'"
+      ></textarea>
+      <button id="or-send"
+        style="flex-shrink:0;padding:11px 22px;border-radius:40px;border:1.5px solid rgba(200,146,42,0.78);background:rgba(200,146,42,0.05);font-family:'Cormorant SC',Georgia,serif;font-size:13px;font-weight:600;letter-spacing:0.14em;color:#A8721A;cursor:pointer;transition:all 0.2s;white-space:nowrap;"
+        onmouseover="this.style.background='rgba(200,146,42,0.10)'"
+        onmouseout="this.style.background='rgba(200,146,42,0.05)'"
+      >Send</button>
     </div>
-
   </div>
 
-  <div class="stage-panel" id="stage-panel"></div>
-
-  <a href="/life-os.html" style="display:block;text-align:center;font-family:var(--serif);font-size:16px;font-style:italic;color:#C8922A;margin-top:28px;text-decoration:none;">or show me everything →</a>
+  <a href="/life-os.html" style="display:block;text-align:center;font-family:var(--serif);font-size:16px;font-style:italic;color:#A8721A;margin-top:28px;text-decoration:none;opacity:0.78;">or show me everything →</a>
 </section>
+
+<style>
+  .or-dot { width:6px;height:6px;border-radius:50%;background:rgba(200,146,42,0.45);animation:or-pulse 1.4s ease infinite; }
+  .or-dot:nth-child(2) { animation-delay:0.2s; }
+  .or-dot:nth-child(3) { animation-delay:0.4s; }
+  @keyframes or-pulse { 0%,80%,100%{transform:scale(0.7);opacity:0.4} 40%{transform:scale(1);opacity:1} }
+  .or-msg-ai { align-self:flex-start;max-width:88%;font-family:'Cormorant Garamond',Georgia,serif;font-size:16px;line-height:1.8;color:#0F1523; }
+  .or-msg-user { align-self:flex-end;max-width:80%;font-family:'Cormorant Garamond',Georgia,serif;font-size:15px;font-style:italic;color:rgba(15,21,35,0.72);background:rgba(200,146,42,0.05);border:1px solid rgba(200,146,42,0.20);border-radius:10px;padding:10px 14px; }
+  .or-result-card { background:#FAFAF7;border:1.5px solid rgba(200,146,42,0.78);border-radius:12px;padding:22px;margin-top:8px;align-self:flex-start;max-width:92%; }
+  .or-result-stage { font-family:'Cormorant SC',Georgia,serif;font-size:11px;letter-spacing:0.16em;color:#A8721A;margin-bottom:8px; }
+  .or-result-reflection { font-family:'Cormorant Garamond',Georgia,serif;font-size:16px;line-height:1.8;color:#0F1523;margin-bottom:16px; }
+  .or-result-rec { border-top:1px solid rgba(200,146,42,0.20);padding-top:14px;margin-top:14px; }
+  .or-result-rec-cat { font-family:'Cormorant SC',Georgia,serif;font-size:10px;letter-spacing:0.14em;color:rgba(15,21,35,0.72);margin-bottom:4px; }
+  .or-result-rec-title { font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;color:#0F1523;margin-bottom:4px; }
+  .or-result-rec-desc { font-family:'Cormorant Garamond',Georgia,serif;font-size:14px;color:rgba(15,21,35,0.88);line-height:1.65;margin-bottom:8px; }
+  .or-result-link { font-family:'Cormorant SC',Georgia,serif;font-size:12px;letter-spacing:0.12em;color:#A8721A;text-decoration:none; }
+  .or-result-closing { font-family:'Cormorant Garamond',Georgia,serif;font-size:15px;font-style:italic;color:rgba(15,21,35,0.72);margin-top:16px;padding-top:14px;border-top:1px solid rgba(200,146,42,0.20); }
+</style>
+
+<script>
+(function() {
+  const messagesEl = document.getElementById('or-messages');
+  const typingEl   = document.getElementById('or-typing');
+  const inputEl    = document.getElementById('or-input');
+  const sendEl     = document.getElementById('or-send');
+
+  let orMessages = [];
+  let orWaiting  = false;
+
+  function scrollBottom() {
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function showTyping() { typingEl.style.display = 'block'; scrollBottom(); }
+  function hideTyping() { typingEl.style.display = 'none'; }
+
+  function addAI(text) {
+    const el = document.createElement('div');
+    el.className = 'or-msg-ai';
+    el.innerHTML = text.replace(/\n/g, '<br>');
+    messagesEl.appendChild(el);
+    scrollBottom();
+  }
+
+  function addUser(text) {
+    const el = document.createElement('div');
+    el.className = 'or-msg-user';
+    el.textContent = text;
+    messagesEl.appendChild(el);
+    scrollBottom();
+  }
+
+  function addResultCard(data) {
+    const recs = (data.recommendations || []).map(r => `
+      <div class="or-result-rec">
+        <div class="or-result-rec-cat">${r.category || ''}</div>
+        <div class="or-result-rec-title">${r.title || ''}</div>
+        <div class="or-result-rec-desc">${r.description || ''}</div>
+        ${r.link && r.link !== 'null' ? `<a href="${r.link}" class="or-result-link">${r.link_text || 'Learn more →'}</a>` : ''}
+      </div>`).join('');
+
+    const el = document.createElement('div');
+    el.className = 'or-result-card';
+    el.innerHTML = `
+      ${data.stage ? `<div class="or-result-stage">${data.stage}</div>` : ''}
+      <div class="or-result-reflection">${data.reflection || ''}</div>
+      ${recs}
+      ${data.closing ? `<div class="or-result-closing">${data.closing}</div>` : ''}
+    `;
+    messagesEl.appendChild(el);
+    scrollBottom();
+
+    // Hide input after results
+    document.querySelector('#or-chat-wrap > div:last-child').style.display = 'none';
+  }
+
+  async function callOrAPI(msgs) {
+    const res = await fetch('https://orienteering-rose.vercel.app/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: msgs })
+    });
+    if (!res.ok) throw new Error('API error');
+    return res.json();
+  }
+
+  async function send(text) {
+    if (orWaiting) return;
+    orWaiting = true;
+    sendEl.disabled = true;
+    inputEl.disabled = true;
+
+    if (text) {
+      addUser(text);
+      orMessages.push({ role: 'user', content: text });
+    }
+
+    showTyping();
+    try {
+      const data = await callOrAPI(orMessages);
+      hideTyping();
+
+      // Check if it's a results card
+      let parsed = null;
+      try {
+        const clean = data.message.replace(/```json|```/g, '').trim();
+        parsed = JSON.parse(clean);
+      } catch {}
+
+      if (parsed?.type === 'results') {
+        addResultCard(parsed);
+      } else {
+        orMessages.push({ role: 'assistant', content: data.message });
+        addAI(data.message);
+      }
+    } catch(e) {
+      hideTyping();
+      addAI("Something went quiet on my end. Try refreshing.");
+    }
+
+    orWaiting = false;
+    sendEl.disabled = false;
+    inputEl.disabled = false;
+    inputEl.focus();
+  }
+
+  function handleSend() {
+    const text = inputEl.value.trim();
+    if (!text || orWaiting) return;
+    inputEl.value = '';
+    inputEl.style.height = 'auto';
+    send(text);
+  }
+
+  sendEl.addEventListener('click', handleSend);
+  inputEl.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+  });
+  inputEl.addEventListener('input', () => {
+    inputEl.style.height = 'auto';
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+  });
+
+  // Auto-start
+  send(null);
+})();
+</script>
 
 <!-- THE BUILD CONTINUES — dark section -->
 <section class="nk-dark">
