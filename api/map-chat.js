@@ -219,24 +219,7 @@ function thinnessResponse(step, probeCount) {
 
 // ─── Placement inference prompt ───────────────────────────────────────────────
 function placementInferencePrompt(session, domain) {
-  return `You operate within the NextUs ecosystem — a framework built on the belief that being human is an honour and a responsibility, and that every person is a participant in a living system larger than themselves.
-
-HOW YOU SEE THE PERSON IN FRONT OF YOU:
-Treat every person as capable and responsible for their life. This is not harshness — it is the deepest form of respect. Your job is never to rescue. Your job is to find where their agency lives and point them toward it.
-
-When someone is struggling, read them like a Kryptonian with kryptonite in them. Superman is not weak because kryptonite is jabbed into him — he is Superman with something in the way. The struggle is situational, not definitional. Your job is to help locate and remove what's in the way, not to redefine the person by their current constraint.
-
-You are a champion of their Horizon Self — the fully expressed version of who they already are. You hold that version of them in mind throughout every conversation, even when they cannot see it themselves. Especially then. You are on the side of their greatness, not their wounds. You treat their wounds with care, but you fight for their greatness.
-
-WHAT THIS MEANS IN PRACTICE:
-- Lead with capability, not deficit
-- Financial stress is not automatically a survival crisis — hold it lightly until the picture is clearer
-- Everything starts with regulation — a dysregulated person cannot access their agency. AND execution-mode people also need a thinking partner, not just grounding exercises. Hold both.
-- Vision-scale people should be met at the scale of their vision
-- Never leave someone feeling smaller than when they arrived
-- Always look for where the agency lives — even in exhaustion, even in constraint
-
-u are the Life OS assessment engine. Infer honest placement for ${domain.label}.
+  return `You are the Life OS assessment engine. Infer honest placement for ${domain.label}.
 
 Stewardship question: "${domain.stewardshipQuestion}"
 Avatar character: ${session.domainData[domain.id]?.characterBrief || session.domainData[domain.id]?.avatarList || "not captured"}
@@ -244,27 +227,27 @@ Current reality: ${session.currentPlacement}
 
 Infer an honest score from behavioural evidence only — not aspirations, not intentions, not self-assessment. Read what they emphasised, minimised, and omitted. The scale uses half-point increments.
 
-THE HORIZON SCALE — score against these precisely. Each tier has a descriptive label (the wink) alongside the meaning.
-10  World-Class       | Best in the world        — Complete coherence. Effortless mastery, luminous presence, contribution that uplifts others. The art and the artist are one.
-9.5 Exemplar+         | Elite professional       — Integrated and at ease. Leads by example; influence radiates naturally.
-9   Exemplar          | Professional             — Deeply skilled, balanced, reliable. Excellence feels natural and sustainable.
-8.5 Fluent+           | Elite ranked amateur     — Competence meets wisdom; growth through curiosity and depth.
-8   Fluent            | High level ranked amateur — Solid foundations, steady excellence, self-aware and grounded.
-7.5 Capable+          | Elite recreational player — Consistent progress; confidence building through deliberate practice.
-7   Capable           | High level recreational player — Dependable, engaged, purposeful.
-6.5 Functional+       | Elite casual athlete     — Mostly consistent; stabilising habits, pacing energy.
-6   Functional        | Casual athlete           — Competent, responsible; maintaining, sometimes fatigued.
-5.5 Plateau+          | Making an effort (occasionally) — Curiosity stirring; ready to move again.
-── THE LINE (5) — Development above. Healing below. ──
-4.5 Friction+         | Teetering on the edge    — Restless recognition that change is due.
-4   Friction          | Attempting to get off the couch — Desire present, momentum low; self-judgment softening into openness.
-3.5 Strain+           | Leaving an indent on the couch — Inconsistent, overwhelmed, starting to see the cycle.
-3   Strain            | Afraid to look in the mirror — Energy collapsed inward; fear or shame active. Needs rest, not force.
-2.5 Crisis+           | Danger to oneself        — High stress, low support; survival instincts active.
-2   Crisis            | Barely functioning       — Basics unmet, clarity lost; exhaustion or anxiety chronic.
-1.5 Emergency+        | Hurting real bad / numb  — Alternating between intensity and shutdown.
-1   Emergency         | Almost dead              — Spiritually or emotionally collapsed; light dimmed.
-0   Ground Zero       | In the ground            — End of a cycle. Stillness before rebirth.
+THE HORIZON SCALE — score against these precisely:
+10  World-Class       — Complete coherence. Effortless mastery, luminous presence, contribution that uplifts others. The art and the artist are one.
+9.5 Exemplar+        — Integrated and at ease. Leads by example; influence radiates naturally.
+9   Exemplar         — Deeply skilled, balanced, reliable. Excellence feels natural and sustainable.
+8.5 Fluent+          — Competence meets wisdom; growth through curiosity and depth.
+8   Fluent           — Solid foundations, steady excellence, self-aware and grounded.
+7.5 Capable+         — Consistent progress; confidence building through deliberate practice.
+7   Capable          — Dependable, engaged, purposeful.
+6.5 Functional+      — Mostly consistent; stabilising habits, pacing energy.
+6   Functional       — Competent, responsible; maintaining, sometimes fatigued.
+5.5 Plateau+         — Curiosity stirring; ready to move again.
+5   Plateau          — Holding steady but uninspired; minimal expansion.
+4.5 Friction+        — Restless recognition that change is due.
+4   Friction         — Desire present, momentum low; self-judgment softening into openness.
+3.5 Strain+          — Inconsistent, overwhelmed, starting to see the cycle.
+3   Strain           — Energy collapsed inward; fear or shame active. Needs rest, not force.
+2.5 Crisis+          — High stress, low support; survival instincts active.
+2   Crisis           — Basics unmet, clarity lost; exhaustion or anxiety chronic.
+1.5 Emergency+       — Alternating between intensity and shutdown.
+1   Emergency        — Spiritually or emotionally collapsed; light dimmed.
+0   Ground Zero      — End of a cycle. Stillness before rebirth.
 
 CRITICAL: Any score below 5 means this domain is actively creating harm to the person and the people around them. Name this honestly in the reflection without shame. Use the tier language naturally.
 
@@ -276,24 +259,7 @@ Respond ONLY with valid JSON, no markdown:
 
 // ─── Avatar synthesis prompt ──────────────────────────────────────────────────
 function avatarSynthesisPrompt(session, domain) {
-  return `You operate within the NextUs ecosystem — a framework built on the belief that being human is an honour and a responsibility, and that every person is a participant in a living system larger than themselves.
-
-HOW YOU SEE THE PERSON IN FRONT OF YOU:
-Treat every person as capable and responsible for their life. This is not harshness — it is the deepest form of respect. Your job is never to rescue. Your job is to find where their agency lives and point them toward it.
-
-When someone is struggling, read them like a Kryptonian with kryptonite in them. Superman is not weak because kryptonite is jabbed into him — he is Superman with something in the way. The struggle is situational, not definitional. Your job is to help locate and remove what's in the way, not to redefine the person by their current constraint.
-
-You are a champion of their Horizon Self — the fully expressed version of who they already are. You hold that version of them in mind throughout every conversation, even when they cannot see it themselves. Especially then. You are on the side of their greatness, not their wounds. You treat their wounds with care, but you fight for their greatness.
-
-WHAT THIS MEANS IN PRACTICE:
-- Lead with capability, not deficit
-- Financial stress is not automatically a survival crisis — hold it lightly until the picture is clearer
-- Everything starts with regulation — a dysregulated person cannot access their agency. AND execution-mode people also need a thinking partner, not just grounding exercises. Hold both.
-- Vision-scale people should be met at the scale of their vision
-- Never leave someone feeling smaller than when they arrived
-- Always look for where the agency lives — even in exhaustion, even in constraint
-
-u are the Life OS assessment engine. Synthesise a character brief for ${domain.label}.
+  return `You are the Life OS assessment engine. Synthesise a character brief for ${domain.label}.
 
 Avatar list: ${session.domainData[domain.id]?.avatarList || ""}
 Character description: ${session.domainData[domain.id]?.avatarCharacter || ""}
@@ -316,24 +282,7 @@ function finalSynthesisPrompt(session) {
   Horizon Goal: ${data.horizon || "not captured"}`;
   }).filter(Boolean).join("\n\n");
 
-  return `You operate within the NextUs ecosystem — a framework built on the belief that being human is an honour and a responsibility, and that every person is a participant in a living system larger than themselves.
-
-HOW YOU SEE THE PERSON IN FRONT OF YOU:
-Treat every person as capable and responsible for their life. This is not harshness — it is the deepest form of respect. Your job is never to rescue. Your job is to find where their agency lives and point them toward it.
-
-When someone is struggling, read them like a Kryptonian with kryptonite in them. Superman is not weak because kryptonite is jabbed into him — he is Superman with something in the way. The struggle is situational, not definitional. Your job is to help locate and remove what's in the way, not to redefine the person by their current constraint.
-
-You are a champion of their Horizon Self — the fully expressed version of who they already are. You hold that version of them in mind throughout every conversation, even when they cannot see it themselves. Especially then. You are on the side of their greatness, not their wounds. You treat their wounds with care, but you fight for their greatness.
-
-WHAT THIS MEANS IN PRACTICE:
-- Lead with capability, not deficit
-- Financial stress is not automatically a survival crisis — hold it lightly until the picture is clearer
-- Everything starts with regulation — a dysregulated person cannot access their agency. AND execution-mode people also need a thinking partner, not just grounding exercises. Hold both.
-- Vision-scale people should be met at the scale of their vision
-- Never leave someone feeling smaller than when they arrived
-- Always look for where the agency lives — even in exhaustion, even in constraint
-
-u are the Life OS assessment engine delivering the final map.
+  return `You are the Life OS assessment engine delivering the final map.
 
 Domain data:
 ${domainSummaries}
@@ -397,27 +346,15 @@ module.exports = async (req, res) => {
 
     // ── Welcome ───────────────────────────────────────────────────────────────
     if (session.phase === "welcome" || messages.length === 0) {
-      return res.json({
-        session,
-        phase: "welcome",
-        phaseLabel: "The Map",
-        message: `The Map is a process through which you will connect to the version of your life on the other side of the things you've been wanting to fix, change, alter, improve, repair, and heal. If that work was done, what life would you be living, and who would you be?\n\nFor the purpose of this tool, those are called your Horizon Life and your Horizon Self.\n\nThe process maps where you are and where you want to be across seven domains: Path, Spark, Body, Finances, Relationships, Inner Game, and Outer Game. You might think you only want to work on one specific area — but they're all interconnected, and often the stress you feel in one is a symptom of a lag in another. Map the whole system and we'll go from there.\n\nThree steps per domain:\n\n1. 10/10 — Build a character representing your ideal in that area. A living person, a dead person, a composite, or a list of qualities. This calibrates the scale to you specifically.\n2. Where are you now? — Using the scale, establish where you honestly are in each domain right now.\n3. Horizon Goal — If a genie tapped you on the head and granted your wish in this area, what would it be?\n\nSome people take five minutes per domain. Others take a full day or more. Work at your pace — your progress will be saved as you go.\n\nReady to begin?`,
-        inputMode: "none",
-        autoAdvance: true,
-        advanceDelay: 2200
-      });
-    }
-
-    // ── Welcome auto-advance → start Path ───────────────────────────────────────
-    if (session.phase === "welcome") {
       session.phase = "domain";
       session.domainIndex = 0;
       session.domainStep = "avatar";
+
       return res.json({
         session,
         phase: "domain",
         phaseLabel: "Path — 1 of 7",
-        message: DOMAINS[0].avatarPrompt,
+        message: `Welcome to Life OS.\n\nThis is the beginning of seeing your life clearly — all of it, across seven domains. Not where you wish you were. Where you actually are. And where you genuinely want to go.\n\nIn each domain, three steps. First, you'll build a character — who represents 10/10 for someone like you specifically. Then you'll describe where you honestly are right now. Then the genie question: if your wish were granted here, what would it actually be?\n\nNo right answers. Only honest ones. About 20–30 minutes.\n\nLet's begin.\n\n${DOMAINS[0].avatarPrompt}`,
         inputMode: "text"
       });
     }
@@ -617,25 +554,11 @@ module.exports = async (req, res) => {
         session.probeCount = 0;
 
         const tierLabel = inferData.tier ? ` — ${inferData.tier}` : "";
-        const DESCRIPTIVE_LABELS = {
-          "World-Class": "Best in the world", "Exemplar+": "Elite professional",
-          "Exemplar": "Professional", "Fluent+": "Elite ranked amateur",
-          "Fluent": "High level ranked amateur", "Capable+": "Elite recreational player",
-          "Capable": "High level recreational player", "Functional+": "Elite casual athlete",
-          "Functional": "Casual athlete", "Plateau+": "Making an effort (occasionally)",
-          "Plateau": "The pass/fail mark", "Friction+": "Teetering on the edge",
-          "Friction": "Attempting to get off the couch", "Strain+": "Leaving an indent on the couch",
-          "Strain": "Afraid to look in the mirror", "Crisis+": "Danger to oneself",
-          "Crisis": "Barely functioning", "Emergency+": "Hurting real bad / numb",
-          "Emergency": "Almost dead", "Ground Zero": "In the ground"
-        };
-        const descriptive = inferData.tier ? DESCRIPTIVE_LABELS[inferData.tier] : null;
-        const descriptiveLabel = descriptive ? ` _${descriptive}._` : "";
         return res.json({
           session,
           phase: "placement_confirm",
           phaseLabel: `${domain.label} — Placement`,
-          message: `${inferData.reflection}\n\nI'm reading you at ${inferData.score}/10 in ${domain.label}${tierLabel}.${descriptiveLabel}\n\n${inferData.invite_correction}`,
+          message: `${inferData.reflection}\n\nI'm reading you at ${inferData.score}/10 in ${domain.label}${tierLabel}.\n\n${inferData.invite_correction}`,
           inputMode: "text"
         });
       }
