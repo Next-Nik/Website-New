@@ -1,4 +1,5 @@
 import { SiteNav } from '../components/SiteNav'
+import { SprintPanel } from '../components/SprintPanel'
 import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -15,6 +16,7 @@ function LegalWrap({ title, eyebrow, subtitle, active, children }) {
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', marginBottom: '48px' }} />
         {children}
       </div>
+      <SprintPanel />
       <SiteFooter />
     </div>
   )

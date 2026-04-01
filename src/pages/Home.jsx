@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
+import { SprintPanel } from '../components/SprintPanel'
 
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -41,7 +42,7 @@ const STAGES = {
   agency: {
     name: 'Agency', question: 'Can I act from self?',
     desc: 'Action becomes possible — not reactive effort, not proving, but true choice. Behaviour stabilises, discipline emerges naturally, self-trust begins to build.',
-    primary: { title: 'Target Goals', sub: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.', url: '/tools/target-goals', badge: 'Life OS Tool' },
+    primary: { title: 'Target Sprint', sub: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.', url: '/tools/target-sprint', badge: 'Life OS Tool' },
     above: { title: 'Work with Nik', sub: 'For people ready to act on what they have found.', url: '/work-with-nik', badge: 'Facilitated' },
     below: { title: 'Purpose Piece', sub: 'Clarify what you are acting toward before you act.', url: '/tools/purpose-piece', badge: 'Life OS Tool' },
     external: ['implementation intentions', 'habit architecture', 'values-based goal setting', 'accountability structures']
@@ -51,7 +52,7 @@ const STAGES = {
     desc: 'Identity stops being conceptual — behaviour aligns with values, the nervous system tolerates expansion, relationships reorganise around who you actually are.',
     primary: { title: 'Work with Nik', sub: 'Identity-level work. The crossing from who you have been to who you are becoming.', url: '/work-with-nik', badge: 'Facilitated' },
     above: { title: 'NextUs', sub: 'Find where your fully expressed self belongs in the larger project.', url: '/nextus', badge: 'NextUs' },
-    below: { title: 'Target Goals', sub: 'Operationalise the identity shift — three areas, ninety days.', url: '/tools/target-goals', badge: 'Life OS Tool' },
+    below: { title: 'Target Sprint', sub: 'Operationalise the identity shift — three areas, ninety days.', url: '/tools/target-sprint', badge: 'Life OS Tool' },
     external: ['embodied leadership', 'somatic coaching', 'identity-level work', 'ontological coaching']
   },
   contribution: {
@@ -305,6 +306,7 @@ export function HomePage() {
         </div>
       </section>
 
+      <SprintPanel />
       <SiteFooter />
     </div>
   )

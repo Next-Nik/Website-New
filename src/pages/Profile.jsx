@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SiteNav } from '../components/SiteNav'
 import { useAuth } from '../hooks/useAuth'
+import { SprintPanel } from '../components/SprintPanel'
 import { supabase } from '../hooks/useSupabase'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -36,6 +37,7 @@ function ScoreBar({ label, score }) {
         <div style={{ ...serif, fontSize: '0.625rem', color, marginTop: '2px', opacity: 0.8 }}>{TIER_LABELS[score]}</div>
       </div>
     </div>
+      <SprintPanel />
   )
 }
 
@@ -105,8 +107,7 @@ export function ProfilePage() {
 
   if (!user) return null
 
-  const raw = user.email?.split('@')[0] || 'you'
-  const name = raw.charAt(0).toUpperCase() + raw.slice(1)
+  const name = user.email?.split('@')[0] || 'You'
   const scores = mapData?.session?.domainData
     ? Object.fromEntries(Object.entries(mapData.session.domainData).filter(([,d]) => d?.score !== undefined).map(([id,d]) => [id, d.score]))
     : null

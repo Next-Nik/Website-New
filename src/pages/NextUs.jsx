@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SprintPanel } from '../components/SprintPanel'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
 
@@ -96,6 +97,7 @@ export function NextUsPage() {
         </div>
       </section>
 
+      <SprintPanel />
       <SiteFooter />
     </div>
   )

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
+import { SprintPanel } from '../components/SprintPanel'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
@@ -45,12 +46,12 @@ const TOOLS = [
     secondary: { label: 'Debrief with Nik', url: '/work-with-nik' },
   },
   {
-    id: 'target-goals', name: 'Target Goals', hook: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.',
+    id: 'target-sprint', name: 'Target Sprint', hook: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.',
     label: 'The operational layer',
     desc: 'The bridge between knowing where you are and arriving somewhere different.',
     detail: 'Pick three domains. Set a meaningful 90-day outcome for each. The tool reverse-engineers the monthly milestones and weekly focus from your destination \u2014 and anchors daily TEA so the work compounds. Standalone or linked to The Map.',
     meta: '90 days · 3 domains · AI-assisted milestone planning',
-    primary: { label: 'Begin Target Goals \u2192', url: '/tools/target-goals' },
+    primary: { label: 'Begin Target Sprint \u2192', url: '/tools/target-sprint' },
   },
   {
     id: 'horizon-leap', name: 'Horizon Leap', hook: 'Not more tools. A different kind of crossing.',
@@ -184,6 +185,7 @@ export function LifeOSPage() {
         </div>
       </section>
 
+      <SprintPanel />
       <SiteFooter />
     </div>
   )

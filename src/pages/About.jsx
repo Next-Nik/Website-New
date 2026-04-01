@@ -1,4 +1,5 @@
 import { SiteNav } from '../components/SiteNav'
+import { SprintPanel } from '../components/SprintPanel'
 import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -28,6 +29,7 @@ export function AboutPage() {
           <a href="/podcast" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Listen to the podcast</a>
         </div>
       </div>
+      <SprintPanel />
       <SiteFooter />
     </div>
   )
