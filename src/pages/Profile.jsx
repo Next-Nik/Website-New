@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { SiteNav } from '../../components/SiteNav'
-import { useAuth } from '../../hooks/useAuth'
-import { supabase } from '../../hooks/useSupabase'
+import { SiteNav } from '../components/SiteNav'
+import { useAuth } from '../hooks/useAuth'
+import { supabase } from '../hooks/useSupabase'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }

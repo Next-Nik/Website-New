@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { SiteNav } from '../../components/SiteNav'
-import { useAuth } from '../../hooks/useAuth'
+import { SiteNav } from '../components/SiteNav'
+import { useAuth } from '../hooks/useAuth'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }

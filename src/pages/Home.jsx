@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { SiteNav } from '../../components/SiteNav'
-import { SiteFooter } from '../../components/SiteFooter'
+import { SiteNav } from '../components/SiteNav'
+import { SiteFooter } from '../components/SiteFooter'
 
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }

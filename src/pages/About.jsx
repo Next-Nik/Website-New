@@ -1,5 +1,5 @@
-import { SiteNav } from '../../components/SiteNav'
-import { SiteFooter } from '../../components/SiteFooter'
+import { SiteNav } from '../components/SiteNav'
+import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
