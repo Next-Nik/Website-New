@@ -1117,9 +1117,9 @@ export function MapPage() {
               {/* Supporting copy */}
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 300, color: 'var(--text-meta)', lineHeight: 1.8, marginBottom: '12px' }}>
                 For the purpose of this tool, those are called your{' '}
-                <em style={{ color: 'var(--text)' }}>Horizon Life</span>{' '}
+                <span style={{ color: 'var(--text)' }}>Horizon Life</span>{' '}
                 and your{' '}
-                <em style={{ color: 'var(--text)' }}>Horizon Self</span>.
+                <span style={{ color: 'var(--text)' }}>Horizon Self</span>.
               </p>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 300, color: 'var(--text-meta)', lineHeight: 1.8, marginBottom: '28px' }}>
                 The process maps where you are and where you want to be across seven domains:{' '}

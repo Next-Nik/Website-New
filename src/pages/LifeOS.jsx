@@ -142,7 +142,7 @@ export function LifeOSPage() {
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Life OS</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          See clearly.<br /><em style={{ color: '#A8721A' }}>Move from there.</span>
+          See clearly.<br /><span style={{ color: '#A8721A' }}>Move from there.</span>
         </h1>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '64px', maxWidth: '520px' }}>Six tools. Start anywhere. Each one does its own work {'—'} and they compound when you{'’'}re ready.</p>
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.35)', margin: '0 0 32px' }} />
