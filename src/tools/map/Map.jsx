@@ -1099,61 +1099,78 @@ export function MapPage() {
           <div style={{ animation: 'fadeUp 0.4s ease-out' }}>
             <div style={{
               background: '#FFFFFF',
-              border: '1px solid rgba(200,146,42,0.2)',
-              borderLeft: '3px solid rgba(200,146,42,0.5)',
-              borderRadius: '10px',
-              padding: '28px 28px 24px',
+              border: '1px solid rgba(200,146,42,0.18)',
+              borderLeft: '3px solid rgba(200,146,42,0.55)',
+              borderRadius: '12px',
+              padding: '32px 32px 28px',
               marginBottom: '20px',
             }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '1.0625rem', color: 'var(--text-meta)', lineHeight: 1.85, marginBottom: '16px' }}>
-                The Map is a process through which you will connect to the version of your life on the other side of the things you{'’'}ve been wanting to fix, change, alter, improve, repair, and heal. If that work was done, what life would you be living, and who would you be?
+
+              {/* Opening — large, breathing */}
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(1.125rem, 2.5vw, 1.3125rem)', fontWeight: 300, fontStyle: 'italic', color: 'var(--text)', lineHeight: 1.9, marginBottom: '12px' }}>
+                The Map is a process through which you will connect to the version of your life on the other side of the things you’ve been wanting to fix, change, alter, improve, repair, and heal.
               </p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', color: 'var(--text-meta)', lineHeight: 1.8, marginBottom: '20px' }}>
-                For the purpose of this tool, those are called your Horizon Life and your Horizon Self.
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '1.125rem', fontWeight: 300, color: 'var(--gold-dk)', lineHeight: 1.7, marginBottom: '28px', fontStyle: 'italic' }}>
+                If that work was done — what life would you be living, and who would you be?
               </p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', color: 'var(--text-meta)', lineHeight: 1.8, marginBottom: '20px' }}>
-                The process maps where you are and where you want to be across seven domains: Path, Spark, Body, Finances, Relationships, Inner Game, and Outer Game. You might think you only want to work on one specific area {'—'} but they{'’'}re all interconnected, and often the stress you feel in one is a symptom of a lag in another. Map the whole system and we{'’'}ll go from there.
+
+              {/* Supporting copy */}
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 300, color: 'var(--text-meta)', lineHeight: 1.8, marginBottom: '12px' }}>
+                For the purpose of this tool, those are called your{' '}
+                <em style={{ fontStyle: 'italic', color: 'var(--text)' }}>Horizon Life</em>{' '}
+                and your{' '}
+                <em style={{ fontStyle: 'italic', color: 'var(--text)' }}>Horizon Self</em>.
               </p>
-              <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', paddingTop: '16px', marginTop: '4px' }}>
-                <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.625rem', letterSpacing: '0.18em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '12px' }}>Three steps per domain</div>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 300, color: 'var(--text-meta)', lineHeight: 1.8, marginBottom: '28px' }}>
+                The process maps where you are and where you want to be across seven domains:{' '}
+                <span style={{ color: 'var(--text)', fontStyle: 'italic' }}>Path, Spark, Body, Finances, Relationships, Inner Game,</span>{' '}
+                and <span style={{ color: 'var(--text)', fontStyle: 'italic' }}>Outer Game.</span>{' '}
+                You might think you only want to work on one specific area — but they’re all interconnected, and often the stress you feel in one is a symptom of a lag in another. Map the whole system and we’ll go from there.
+              </p>
+
+              {/* Three steps */}
+              <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', paddingTop: '24px' }}>
+                <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.22em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '20px' }}>
+                  Three steps per domain
+                </div>
                 {[
                   { n: '1', label: '10/10', desc: 'Build a character representing your ideal in that area. Someone outside yourself — real, fictional, a composite. This calibrates the scale to you specifically.' },
                   { n: '2', label: 'Where are you now?', desc: 'Using the scale, establish where you honestly are in each domain right now.' },
-                  { n: '3', label: 'Horizon Goal', desc: 'If a genie tapped you on the head and granted your wish in this area, what would it be?' },
+                  { n: '3', label: 'Horizon Goal', desc: 'If a genie tapped you on the head and granted your wish in this area — what would it be?' },
                 ].map(s => (
-                  <div key={s.n} style={{ display: 'flex', gap: '14px', marginBottom: '12px' }}>
-                    <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.875rem', color: 'var(--gold-dk)', flexShrink: 0, paddingTop: '2px' }}>{s.n}.</span>
+                  <div key={s.n} style={{ display: 'flex', gap: '18px', marginBottom: '20px', alignItems: 'flex-start' }}>
+                    <span style={{ fontFamily: 'var(--font-sc)', fontSize: '1.125rem', fontWeight: 600, color: 'var(--gold-dk)', flexShrink: 0, lineHeight: 1.2, minWidth: '22px' }}>{s.n}</span>
                     <div>
-                      <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.8125rem', letterSpacing: '0.06em', color: 'var(--text)' }}>{s.label}</span>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text-muted)', lineHeight: 1.65 }}> — {s.desc}</span>
+                      <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.875rem', letterSpacing: '0.08em', color: 'var(--text)', marginBottom: '5px' }}>{s.label}</div>
+                      <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', fontWeight: 300, color: 'var(--text-muted)', lineHeight: 1.72 }}>{s.desc}</div>
                     </div>
                   </div>
                 ))}
               </div>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', fontStyle: 'italic', color: 'var(--text-muted)', lineHeight: 1.65, marginTop: '8px' }}>
+
+              {/* Pace note */}
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.38)', lineHeight: 1.65, paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
                 Some people take five minutes per domain. Others take a full day or more. Work at your pace — your progress will be saved as you go.
               </p>
             </div>
+
             <button
               onClick={() => setPhase('scoring')}
               style={{
-                fontFamily: 'var(--font-sc)',
-                fontSize: '0.875rem',
-                letterSpacing: '0.14em',
-                color: 'var(--gold-dk)',
-                background: 'rgba(200,146,42,0.05)',
-                border: '1.5px solid rgba(200,146,42,0.78)',
-                borderRadius: '40px',
-                padding: '14px 32px',
-                cursor: 'pointer',
-                display: 'block',
-                width: '100%',
+                fontFamily: 'var(--font-sc)', fontSize: '0.9375rem', letterSpacing: '0.16em',
+                color: 'var(--gold-dk)', background: 'rgba(200,146,42,0.05)',
+                border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px',
+                padding: '16px 32px', cursor: 'pointer', display: 'block', width: '100%',
+                transition: 'all 0.2s',
               }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.1)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.05)'; e.currentTarget.style.transform = '' }}
             >
               Ready to begin →
             </button>
           </div>
         )}
+
 
         {/* Scoring phase */}
         {phase === 'scoring' && (

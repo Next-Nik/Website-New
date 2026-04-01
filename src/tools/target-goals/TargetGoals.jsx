@@ -157,10 +157,15 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
         Three areas. Three months.
       </h1>
       <Rule />
-      <p style={{ ...serif, fontSize: '1rem', ...meta, lineHeight: 1.75, marginBottom: '20px' }}>
+      <p style={{ ...serif, fontSize: '1.0625rem', fontWeight: 300, fontStyle: 'italic', color: 'var(--text)', lineHeight: 1.8, marginBottom: '6px' }}>
         {hasMapData
-          ? 'Your Map scores are loaded. The ☆ shows where focused effort would be most catalytic right now. You have the final say.'
-          : 'Choose three areas where you most want to move this quarter. Trust your instinct.'}
+          ? 'Your Map scores are loaded.'
+          : 'Choose the three areas where focused effort this quarter would matter most.'}
+      </p>
+      <p style={{ ...serif, fontSize: '0.9375rem', fontWeight: 300, ...muted, lineHeight: 1.75, marginBottom: '20px' }}>
+        {hasMapData
+          ? 'The ☆ shows where the AI sees the most leverage right now. You have the final say.'
+          : 'Trust your instinct. The right three will feel obvious.'}
       </p>
 
       {recommendation?.soft_observation && (
