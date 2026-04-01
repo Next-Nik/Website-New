@@ -233,11 +233,11 @@ export function PurposePiecePage() {
   const [progressPct, setProgressPct] = useState(0)
   const [complete,    setComplete]    = useState(false)
   const [showDeepGate, setShowDeepGate] = useState(false)
-  const [started,     setStarted]     = useState(false)
 
-  const bottomRef  = useRef(null)
+  const bottomRef   = useRef(null)
   const textareaRef = useRef(null)
-  const sessionRef = useRef(null)
+  const sessionRef  = useRef(null)
+  const startedRef  = useRef(false)
 
   useEffect(() => { sessionRef.current = session }, [session])
 
@@ -246,10 +246,9 @@ export function PurposePiecePage() {
   }, [messages, thinking])
 
   useEffect(() => {
-    if (!authLoading) {
-      if (user) { setStarted(true); startConversation() }
-      // If not signed in, auth modal shows (no user, no started)
-    }
+    if (authLoading || !user || startedRef.current) return
+    startedRef.current = true
+    startConversation()
   }, [authLoading, user])
 
   async function startConversation() {
@@ -417,7 +416,7 @@ export function PurposePiecePage() {
     <div className="page-shell">
       <Nav activePath="life-os" />
 
-      {!user && !started && <AuthModal />}
+      {!user && <AuthModal />}
       {showDeepGate && <DeepGateModal onUnlock={unlockDeep} onDismiss={() => setShowDeepGate(false)} />}
 
       <div className="tool-wrap">
@@ -457,7 +456,7 @@ export function PurposePiecePage() {
           <div ref={bottomRef} />
         </div>
 
-        {!complete && started && (
+        {!complete && messages.length > 0 && (
           <div className="input-area">
             <textarea
               ref={textareaRef}
