@@ -74,12 +74,34 @@ function ToolAccordion({ tool }) {
   const [open, setOpen] = useState(false)
   return (
     <div id={tool.id} style={{ border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', marginBottom: '10px', overflow: 'hidden', background: 'rgba(200,146,42,0.05)' }}>
-      <div onClick={() => setOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '22px 26px', cursor: 'pointer', userSelect: 'none' }}>
-        <div>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '22px 26px', userSelect: 'none' }}>
+        <div onClick={() => setOpen(o => !o)} style={{ flex: 1, cursor: 'pointer' }}>
           <div style={{ ...serif, fontSize: '19px', fontWeight: 400, color: '#A8721A', marginBottom: '4px' }}>{tool.name}</div>
           <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.88)' }}>{tool.hook}</div>
         </div>
-        <div style={{ fontSize: '22px', color: '#A8721A', flexShrink: 0, marginLeft: '16px', transform: open ? 'rotate(45deg)' : 'none', transition: 'transform 0.25s', lineHeight: 1 }}>+</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0, marginLeft: '16px' }}>
+          <a
+            href={tool.primary.url}
+            target={tool.primary.external ? '_blank' : undefined}
+            rel={tool.primary.external ? 'noopener' : undefined}
+            onClick={e => e.stopPropagation()}
+            title={tool.primary.label}
+            style={{
+              width: '32px', height: '32px', borderRadius: '50%',
+              background: 'rgba(200,146,42,0.08)',
+              border: '1.5px solid rgba(200,146,42,0.55)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              textDecoration: 'none', color: '#A8721A',
+              fontSize: '14px', lineHeight: 1,
+              transition: 'all 0.2s', flexShrink: 0,
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.15)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)' }}
+          >
+            {'▶'}
+          </a>
+          <div onClick={() => setOpen(o => !o)} style={{ fontSize: '22px', color: '#A8721A', transform: open ? 'rotate(45deg)' : 'none', transition: 'transform 0.25s', lineHeight: 1, cursor: 'pointer' }}>+</div>
+        </div>
       </div>
       {open && (
         <div style={{ borderTop: '1px solid rgba(200,146,42,0.20)', padding: '28px 26px 32px', background: '#FAFAF7' }}>
