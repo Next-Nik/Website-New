@@ -10,7 +10,6 @@ const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const DOMAIN_LABELS = ['Path', 'Spark', 'Body', 'Finances', 'Relationships', 'Inner Game', 'Outer Game']
 const DOMAIN_KEYS   = ['path', 'spark', 'body', 'finances', 'relationships', 'inner_game', 'outer_game']
-
 const TIER_LABELS = { 10:'World-Class',9:'Exemplar',8:'Fluent',7:'Capable',6:'Functional',5:'Threshold',4:'Friction',3:'Strain',2:'Crisis',1:'Emergency',0:'Ground Zero' }
 
 function getTierColor(n) {
@@ -37,7 +36,6 @@ function ScoreBar({ label, score }) {
         <div style={{ ...serif, fontSize: '0.625rem', color, marginTop: '2px', opacity: 0.8 }}>{TIER_LABELS[score]}</div>
       </div>
     </div>
-      <SprintPanel />
   )
 }
 
@@ -103,7 +101,11 @@ export function ProfilePage() {
     navigate('/')
   }
 
-  if (authLoading || dataLoading) return <div style={{ minHeight: '100vh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)' }}>Loading{'\u2026'}</div></div>
+  if (authLoading || dataLoading) return (
+    <div style={{ minHeight: '100vh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)' }}>Loading{'\u2026'}</div>
+    </div>
+  )
 
   if (!user) return null
 
@@ -115,17 +117,16 @@ export function ProfilePage() {
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
       <SiteNav />
+      <SprintPanel />
 
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '64px 40px 160px' }}>
 
-        {/* Header */}
         <div style={{ marginBottom: '72px' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Your Profile</span>
           <h1 style={{ ...serif, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '10px' }}>{name}.</h1>
           <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{user.email}</p>
         </div>
 
-        {/* The Map slot */}
         <Slot title="The Map" tip="Seven domain scores." linkLabel="The Map" linkUrl="/tools/map">
           {scores ? (
             <div>
@@ -143,7 +144,6 @@ export function ProfilePage() {
           )}
         </Slot>
 
-        {/* Purpose Piece slot */}
         <Slot title="Purpose Piece" tip="Your contribution archetype." linkLabel="Purpose Piece" linkUrl="/tools/purpose-piece">
           {purposeData ? (
             <div>
@@ -171,19 +171,16 @@ export function ProfilePage() {
           )}
         </Slot>
 
-        {/* Pulse slot */}
         <Slot title="Pulse" tip="Daily rhythm." linkLabel="Pulse" linkUrl="/tools/pulse">
           <EmptySlot cta="Begin Pulse" ctaUrl="/tools/pulse" />
         </Slot>
 
-        {/* NextUs slot */}
         <Slot title="NextUs" tip="Seven civilisational domains." linkLabel="NextUs" linkUrl="/nextus">
           <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)' }}>
             This is where your contribution to the larger project lives. Building now.
           </div>
         </Slot>
 
-        {/* Sign out */}
         <div style={{ textAlign: 'center', paddingTop: '48px', borderTop: '1px solid rgba(200,146,42,0.20)', marginTop: '24px' }}>
           <button onClick={signOut} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '12px', fontWeight: 600, letterSpacing: '0.20em', color: 'rgba(15,21,35,0.72)', padding: '8px 0' }}>
             Sign out

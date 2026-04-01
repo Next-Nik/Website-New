@@ -30,96 +30,186 @@ function flickerIntensity(v) {
 
 export function FlameGlyph({ value = 5, size = 64, ghost = false }) {
   const { color, glow, scale } = getFlameProps(value)
-  const fi   = flickerIntensity(value)
-  const uid  = useRef(`f${Math.random().toString(36).slice(2,7)}`).current
+  const fi  = flickerIntensity(value)
+  const uid = useRef(`f${Math.random().toString(36).slice(2,7)}`).current
 
-  const dur1 = (1.8  - fi * 0.7).toFixed(2)
-  const dur2 = (2.5  - fi * 1.0).toFixed(2)
-  const dur3 = (0.85 - fi * 0.3).toFixed(2)
-  const sMin = (1 - fi * 0.16).toFixed(3)
-  const sMax = (1 + fi * 0.13).toFixed(3)
-  const rAmp = (fi * 9).toFixed(1)
+  // Animation timings — offset so nothing repeats in sync
+  const d1 = (1.6 - fi * 0.55).toFixed(2)   // main body
+  const d2 = (2.3 - fi * 0.85).toFixed(2)   // left tongue
+  const d3 = (1.1 - fi * 0.38).toFixed(2)   // right tongue
+  const d4 = (0.9 - fi * 0.28).toFixed(2)   // inner core / sparks
+  const rA = (fi * 7).toFixed(1)             // sway amplitude
+
+  // Scale the whole flame with value
+  const s = scale
 
   return (
     <svg
       width={size} height={size}
-      viewBox="0 0 64 64"
+      viewBox="0 0 64 80"
       style={{
         display: 'block',
-        opacity: ghost ? 0.3 : 1,
+        opacity: ghost ? 0.28 : 1,
         filter: ghost
           ? 'none'
-          : `drop-shadow(0 0 ${(8 * fi).toFixed(0)}px ${color}) drop-shadow(0 0 ${(18 * fi).toFixed(0)}px ${glow})`,
+          : `drop-shadow(0 0 ${Math.round(6*fi)}px ${color}) drop-shadow(0 0 ${Math.round(16*fi)}px ${glow})`,
         transition: 'filter 0.5s ease, opacity 0.4s ease',
       }}
     >
       <defs>
-        <radialGradient id={`${uid}-g`} cx="50%" cy="85%" r="65%">
-          <stop offset="0%"   stopColor={color}    stopOpacity="1" />
-          <stop offset="55%"  stopColor={color}    stopOpacity="0.75" />
-          <stop offset="100%" stopColor="#FFF4E0"  stopOpacity="0.2" />
+        {/* Main body gradient — hottest at base, vanishing tips */}
+        <linearGradient id={`${uid}-mg`} x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%"   stopColor="#FFF4E0" stopOpacity="0.95" />
+          <stop offset="30%"  stopColor={color}   stopOpacity="1" />
+          <stop offset="70%"  stopColor={color}   stopOpacity="0.7" />
+          <stop offset="100%" stopColor={color}   stopOpacity="0.05" />
+        </linearGradient>
+        {/* Left tongue gradient */}
+        <linearGradient id={`${uid}-lg`} x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%"   stopColor={color} stopOpacity="0.8" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+        {/* Right tongue gradient */}
+        <linearGradient id={`${uid}-rg`} x1="0" y1="1" x2="0" y2="0">
+          <stop offset="0%"   stopColor={color} stopOpacity="0.7" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+        {/* Outer glow halo */}
+        <radialGradient id={`${uid}-halo`} cx="50%" cy="88%" r="60%">
+          <stop offset="0%"   stopColor={color} stopOpacity="0.35" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
         </radialGradient>
       </defs>
 
-      {/* Outer glow — slow sway */}
-      <g style={{ transformOrigin: '32px 56px' }}>
-        <animateTransform attributeName="transform" type="rotate"
-          values={`-${rAmp} 32 56; ${rAmp} 32 56; -${(rAmp*0.6).toFixed(1)} 32 56; ${(rAmp*0.8).toFixed(1)} 32 56; -${rAmp} 32 56`}
-          dur={`${dur2}s`} repeatCount="indefinite" />
-        <path
-          d="M32 58 C19 58 11 47 13 35 C15 25 22 21 24 13 C26 7 28 3 32 1 C36 3 38 7 40 13 C42 21 49 25 51 35 C53 47 45 58 32 58Z"
-          fill={`url(#${uid}-g)`}
-          opacity="0.32"
-          style={{ transform: `scale(${(scale*1.18).toFixed(2)})`, transformOrigin: '32px 56px' }}
-        />
-      </g>
-
-      {/* Main body — primary flicker */}
-      <g style={{ transformOrigin: '32px 56px' }}>
-        <animateTransform attributeName="transform" type="scale"
-          values={`1 1; ${sMax} ${sMin}; ${sMin} ${sMax}; ${(+sMax*0.97).toFixed(3)} ${(+sMin*1.02).toFixed(3)}; 1 1`}
-          dur={`${dur1}s`} repeatCount="indefinite" additive="sum" />
-        <path
-          d="M32 56 C22 56 15 47 17 37 C19 29 25 25 27 17 C29 11 30 7 32 4 C34 7 35 11 37 17 C39 25 45 29 47 37 C49 47 42 56 32 56Z"
-          fill={color}
-          style={{ transform: `scale(${scale})`, transformOrigin: '32px 56px' }}
-        />
-      </g>
-
-      {/* Inner bright core */}
-      {value > 2 && (
-        <g style={{ transformOrigin: '32px 52px' }}>
-          <animateTransform attributeName="transform" type="scale"
-            values={`1 1; ${(1+fi*0.14).toFixed(3)} ${(1-fi*0.11).toFixed(3)}; ${(1-fi*0.09).toFixed(3)} ${(1+fi*0.16).toFixed(3)}; 1 1`}
-            dur={`${dur3}s`} repeatCount="indefinite" />
+      {/* === EMBER state (value ≤ 2) — just a low flicker, single tongue === */}
+      {value <= 2 && (
+        <g style={{ transformOrigin: '32px 72px', transform: `scale(${s})` }}>
+          <animateTransform attributeName="transform" type="rotate"
+            values={`-${rA} 32 72; ${(+rA*0.7).toFixed(1)} 32 72; -${(+rA*0.5).toFixed(1)} 32 72; ${rA} 32 72; -${rA} 32 72`}
+            dur={`${d1}s`} repeatCount="indefinite" additive="sum" />
           <path
-            d="M32 54 C27 54 24 48 25 42 C26 37 29 34 30 29 C31 25 31 23 32 21 C33 23 33 25 34 29 C35 34 38 37 39 42 C40 48 37 54 32 54Z"
-            fill="#FFF4E0"
-            opacity={Math.min(0.92, fi * 1.3 + 0.08)}
-            style={{ transform: `scale(${(scale*0.72).toFixed(2)})`, transformOrigin: '32px 52px' }}
+            d="M32 74 C27 74 23 67 24 60 C25 54 28 51 29 45 C30 40 31 37 32 34 C33 37 34 40 35 45 C36 51 39 54 40 60 C41 67 37 74 32 74Z"
+            fill={`url(#${uid}-mg)`}
           />
         </g>
       )}
 
-      {/* Flying sparks — only when really lit */}
-      {value >= 7 && (
+      {/* === ACTIVE state (value > 2) — multiple tongues, real fire === */}
+      {value > 2 && (
         <>
-          <circle cx="25" cy="16" r="2">
-            <animate attributeName="opacity" values="0;0.85;0" dur={`${(+dur3*1.4).toFixed(2)}s`} repeatCount="indefinite" begin="0.15s" />
-            <animate attributeName="cy" values="16;9;16" dur={`${(+dur3*1.4).toFixed(2)}s`} repeatCount="indefinite" begin="0.15s" />
-            <animate attributeName="fill" values={`${color};#FFF4E0;${color}`} dur={`${(+dur3*1.4).toFixed(2)}s`} repeatCount="indefinite" begin="0.15s" />
-          </circle>
-          <circle cx="39" cy="12" r="1.5">
-            <animate attributeName="opacity" values="0;0.65;0" dur={`${(+dur3*0.9).toFixed(2)}s`} repeatCount="indefinite" begin="0.55s" />
-            <animate attributeName="cy" values="12;5;12" dur={`${(+dur3*0.9).toFixed(2)}s`} repeatCount="indefinite" begin="0.55s" />
-            <animate attributeName="fill" values="#FFF4E0;#C8922A;#FFF4E0" dur={`${(+dur3*0.9).toFixed(2)}s`} repeatCount="indefinite" begin="0.55s" />
-          </circle>
-          {value >= 9 && (
-            <circle cx="31" cy="8" r="1.2">
-              <animate attributeName="opacity" values="0;0.9;0" dur={`${(+dur3*0.7).toFixed(2)}s`} repeatCount="indefinite" begin="0.35s" />
-              <animate attributeName="cy" values="8;1;8" dur={`${(+dur3*0.7).toFixed(2)}s`} repeatCount="indefinite" begin="0.35s" />
-              <animate attributeName="fill" values="#FFF4E0;#C8922A;#FFF4E0" dur={`${(+dur3*0.7).toFixed(2)}s`} repeatCount="indefinite" begin="0.35s" />
-            </circle>
+          {/* Halo glow at base */}
+          <ellipse cx="32" cy="72" rx={18*s} ry={7*s} fill={`url(#${uid}-halo)`} opacity={fi * 0.8} />
+
+          {/* LEFT TONGUE — leans left, shorter, slightly behind */}
+          <g style={{ transformOrigin: '24px 68px' }}>
+            <animateTransform attributeName="transform" type="rotate"
+              values={`-${(+rA*1.3).toFixed(1)} 24 68; ${(+rA*0.4).toFixed(1)} 24 68; -${(+rA*0.9).toFixed(1)} 24 68; ${(+rA*1.1).toFixed(1)} 24 68; -${(+rA*1.3).toFixed(1)} 24 68`}
+              dur={`${d2}s`} repeatCount="indefinite" />
+            <path
+              d={value >= 6
+                ? `M24 70 C19 70 15 63 17 55 C18 49 21 46 22 40 C23 35 23 31 24 27 C25 31 26 36 27 41 C28 47 31 51 31 57 C31 64 28 70 24 70Z`
+                : `M24 70 C20 70 17 65 18 59 C19 54 22 51 23 46 C24 42 24 39 24 36 C25 39 25 43 26 47 C27 52 29 55 29 60 C29 66 27 70 24 70Z`}
+              fill={`url(#${uid}-lg)`}
+              opacity={Math.min(0.88, 0.3 + fi * 0.7)}
+              style={{ transform: `scale(${s})`, transformOrigin: '24px 70px' }}
+            />
+          </g>
+
+          {/* RIGHT TONGUE — leans right, taller, independent timing */}
+          <g style={{ transformOrigin: '40px 66px' }}>
+            <animateTransform attributeName="transform" type="rotate"
+              values={`${(+rA*0.8).toFixed(1)} 40 66; -${(+rA*1.4).toFixed(1)} 40 66; ${(+rA*0.5).toFixed(1)} 40 66; -${(+rA*0.9).toFixed(1)} 40 66; ${(+rA*0.8).toFixed(1)} 40 66`}
+              dur={`${d3}s`} repeatCount="indefinite" />
+            <path
+              d={value >= 5
+                ? `M40 68 C36 68 33 62 34 55 C35 49 37 46 38 39 C39 33 40 28 40 23 C41 28 42 34 43 40 C44 46 46 49 47 56 C48 63 45 68 40 68Z`
+                : `M40 70 C37 70 35 65 36 60 C37 55 39 52 39 47 C40 43 40 40 40 37 C41 40 41 44 42 48 C43 53 44 56 44 61 C44 66 43 70 40 70Z`}
+              fill={`url(#${uid}-rg)`}
+              opacity={Math.min(0.82, 0.25 + fi * 0.65)}
+              style={{ transform: `scale(${s})`, transformOrigin: '40px 68px' }}
+            />
+          </g>
+
+          {/* MAIN BODY — central, tallest, primary sway */}
+          <g style={{ transformOrigin: '32px 72px' }}>
+            <animateTransform attributeName="transform" type="rotate"
+              values={`-${rA} 32 72; ${(+rA*0.6).toFixed(1)} 32 72; -${(+rA*0.3).toFixed(1)} 32 72; ${rA} 32 72; -${rA} 32 72`}
+              dur={`${d1}s`} repeatCount="indefinite" />
+            <animateTransform attributeName="transform" type="scale"
+              values={`1 1; ${(1+fi*0.04).toFixed(3)} ${(1-fi*0.03).toFixed(3)}; ${(1-fi*0.03).toFixed(3)} ${(1+fi*0.04).toFixed(3)}; 1 1`}
+              dur={`${d4}s`} repeatCount="indefinite" additive="sum" />
+            <path
+              d={value >= 7
+                ? `M32 73 C25 73 18 63 20 51 C22 42 26 37 27 28 C28 21 29 15 32 8 C35 15 36 21 37 28 C38 37 42 42 44 51 C46 63 39 73 32 73Z`
+                : value >= 4
+                ? `M32 73 C26 73 20 64 22 53 C24 44 27 40 28 32 C29 25 30 20 32 14 C34 20 35 25 36 32 C37 40 40 44 42 53 C44 64 38 73 32 73Z`
+                : `M32 74 C27 74 23 67 24 59 C25 52 28 49 29 43 C30 38 31 35 32 31 C33 35 34 38 35 43 C36 49 39 52 40 59 C41 67 37 74 32 74Z`}
+              fill={`url(#${uid}-mg)`}
+              style={{ transform: `scale(${s})`, transformOrigin: '32px 73px' }}
+            />
+          </g>
+
+          {/* INNER CORE — white-hot base, brightest area */}
+          {value > 3 && (
+            <g style={{ transformOrigin: '32px 70px' }}>
+              <animateTransform attributeName="transform" type="scale"
+                values={`1 1; ${(1+fi*0.08).toFixed(3)} ${(1-fi*0.06).toFixed(3)}; ${(1-fi*0.06).toFixed(3)} ${(1+fi*0.09).toFixed(3)}; 1 1`}
+                dur={`${d4}s`} repeatCount="indefinite" />
+              <path
+                d="M32 72 C29 72 26 67 27 62 C28 57 30 54 31 49 C31.5 46 32 44 32 42 C32 44 32.5 46 33 49 C34 54 36 57 37 62 C38 67 35 72 32 72Z"
+                fill="#FFF4E0"
+                opacity={Math.min(0.95, fi * 1.1 + 0.15)}
+                style={{ transform: `scale(${s * 0.65})`, transformOrigin: '32px 70px' }}
+              />
+            </g>
+          )}
+
+          {/* TRAILING WISPS — thin curling tendrils at high values */}
+          {value >= 6 && (
+            <>
+              <path d="M27 52 C24 48 21 44 22 39" stroke={color} strokeWidth="1.2" fill="none" strokeLinecap="round" opacity={fi * 0.5}>
+                <animate attributeName="opacity" values={`0;${(fi*0.5).toFixed(2)};0`} dur={`${(+d2*0.8).toFixed(2)}s`} repeatCount="indefinite" begin="0.2s" />
+              </path>
+              <path d="M37 44 C41 40 43 36 42 31" stroke={color} strokeWidth="1" fill="none" strokeLinecap="round" opacity={fi * 0.4}>
+                <animate attributeName="opacity" values={`0;${(fi*0.4).toFixed(2)};0`} dur={`${(+d3*0.75).toFixed(2)}s`} repeatCount="indefinite" begin="0.55s" />
+              </path>
+            </>
+          )}
+
+          {/* SPARKS — only at high values, fly off asymmetrically */}
+          {value >= 7 && (
+            <>
+              <circle cx="24" cy="30" r="1.8" fill={color}>
+                <animate attributeName="opacity" values="0;0.8;0" dur={`${(+d4*1.5).toFixed(2)}s`} repeatCount="indefinite" begin="0.1s" />
+                <animate attributeName="cy" values="30;20;30" dur={`${(+d4*1.5).toFixed(2)}s`} repeatCount="indefinite" begin="0.1s" />
+                <animate attributeName="cx" values="24;21;24" dur={`${(+d4*1.5).toFixed(2)}s`} repeatCount="indefinite" begin="0.1s" />
+              </circle>
+              <circle cx="41" cy="24" r="1.4" fill="#FFF4E0">
+                <animate attributeName="opacity" values="0;0.65;0" dur={`${(+d4*1.1).toFixed(2)}s`} repeatCount="indefinite" begin="0.45s" />
+                <animate attributeName="cy" values="24;14;24" dur={`${(+d4*1.1).toFixed(2)}s`} repeatCount="indefinite" begin="0.45s" />
+                <animate attributeName="cx" values="41;44;41" dur={`${(+d4*1.1).toFixed(2)}s`} repeatCount="indefinite" begin="0.45s" />
+              </circle>
+              {value >= 8 && (
+                <circle cx="32" cy="18" r="1.1" fill="#FFF4E0">
+                  <animate attributeName="opacity" values="0;0.9;0" dur={`${(+d4*0.8).toFixed(2)}s`} repeatCount="indefinite" begin="0.7s" />
+                  <animate attributeName="cy" values="18;8;18" dur={`${(+d4*0.8).toFixed(2)}s`} repeatCount="indefinite" begin="0.7s" />
+                </circle>
+              )}
+              {value >= 9 && (
+                <>
+                  <circle cx="26" cy="16" r="1" fill={color}>
+                    <animate attributeName="opacity" values="0;0.7;0" dur={`${(+d4*0.65).toFixed(2)}s`} repeatCount="indefinite" begin="0.25s" />
+                    <animate attributeName="cy" values="16;6;16" dur={`${(+d4*0.65).toFixed(2)}s`} repeatCount="indefinite" begin="0.25s" />
+                    <animate attributeName="cx" values="26;23;26" dur={`${(+d4*0.65).toFixed(2)}s`} repeatCount="indefinite" begin="0.25s" />
+                  </circle>
+                  <circle cx="38" cy="12" r="0.9" fill="#FFF4E0">
+                    <animate attributeName="opacity" values="0;0.6;0" dur={`${(+d4*0.55).toFixed(2)}s`} repeatCount="indefinite" begin="0.85s" />
+                    <animate attributeName="cy" values="12;3;12" dur={`${(+d4*0.55).toFixed(2)}s`} repeatCount="indefinite" begin="0.85s" />
+                    <animate attributeName="cx" values="38;41;38" dur={`${(+d4*0.55).toFixed(2)}s`} repeatCount="indefinite" begin="0.85s" />
+                  </circle>
+                </>
+              )}
+            </>
           )}
         </>
       )}
@@ -241,7 +331,7 @@ function FlameSlider({ value, onChange, ghostValue = null }) {
 
 // ─── FlameCheckIn — embeddable in Foundation and Target Sprint ────────────────
 
-export function FlameCheckIn({ audioPhase = 'baseline', onComplete, onSkip }) {
+export function FlameCheckIn({ audioPhase = 'baseline', ghostValue = null, onComplete, onSkip }) {
   const { user } = useAuth()
 
   const [stage,       setStage]       = useState('before')
@@ -323,7 +413,7 @@ export function FlameCheckIn({ audioPhase = 'baseline', onComplete, onSkip }) {
         <FlameSlider
           value={value}
           onChange={setValue}
-          ghostValue={isBefore ? null : beforeValue}
+          ghostValue={isBefore ? null : (ghostValue ?? beforeValue)}
         />
       </div>
 
