@@ -108,7 +108,7 @@ function ProgressBar({ act, totalActs = 3 }) {
               ...sc, fontSize: '0.5rem', letterSpacing: '0.1em',
               color: act >= i ? 'var(--gold-dk)' : 'rgba(200,146,42,0.4)',
               transition: 'all 0.4s ease',
-            }}>{act > i ? '\u2713' : i}</div>
+            }}>{act > i ? '✓' : i}</div>
             <span style={{ ...sc, fontSize: '0.5rem', letterSpacing: '0.14em', color: act >= i ? 'var(--gold-dk)' : 'rgba(200,146,42,0.4)', textTransform: 'uppercase' }}>{labels[i]}</span>
           </div>
         ))}
@@ -131,7 +131,7 @@ function AuthModal() {
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: 'var(--text)', marginBottom: '10px' }}>Sign in to begin.</h2>
         <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>Your archetype and contribution pattern are saved to your profile.</p>
         <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '14px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: 'var(--gold-dk)', ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
-          Sign in or create account {'\u2192'}
+          Sign in or create account {'→'}
         </a>
       </div>
     </div>
@@ -146,7 +146,7 @@ function DeepGateModal({ onUnlock, onDismiss }) {
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px 32px', maxWidth: '440px', width: '100%' }}>
         <div style={{ ...sc, fontSize: '0.625rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Go Deeper</div>
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: 'var(--text)', marginBottom: '12px', lineHeight: 1.2 }}>The tension. The shadow. The full picture.</h2>
-        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.75, marginBottom: '24px' }}>The First Look gave you the shape. The Deep Dive is a real conversation {'\u2014'} into what this pattern costs you, where it breaks, and what it{'\u2019'}s been asking of you.</p>
+        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.75, marginBottom: '24px' }}>The First Look gave you the shape. The Deep Dive is a real conversation {'—'} into what this pattern costs you, where it breaks, and what it{'’'}s been asking of you.</p>
         <button onClick={onUnlock} style={{ display: 'block', width: '100%', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', ...gold, ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', cursor: 'pointer', marginBottom: '12px' }}>Unlock the Deep Dive</button>
         <button onClick={onDismiss} style={{ display: 'block', width: '100%', background: 'none', border: 'none', ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: '6px' }}>Not now</button>
       </div>
@@ -269,7 +269,7 @@ function ActArchetype({ user, onComplete }) {
           <button onClick={() => onComplete(result)} style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '13px 32px', cursor: 'pointer', transition: 'all 0.2s' }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
-            Now find your domain {'\u2192'}
+            Now find your domain {'→'}
           </button>
         </div>
       </div>
@@ -279,7 +279,7 @@ function ActArchetype({ user, onComplete }) {
   // ── Conversation ───────────────────────────────────────────────────────────
   return (
     <div>
-      <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 1 {'\u00B7'} Archetype</div>
+      <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 1 {'·'} Archetype</div>
       <h2 style={{ ...serif, fontSize: 'clamp(1.5rem,4vw,2.25rem)', fontWeight: 300, color: 'var(--text)', lineHeight: 1.1, marginBottom: '8px' }}>
         What did life ask you to bring?
       </h2>
@@ -314,7 +314,7 @@ function ActArchetype({ user, onComplete }) {
           <textarea ref={textareaRef} value={input}
             onChange={e => { setInput(e.target.value); if (textareaRef.current) { textareaRef.current.style.height = 'auto'; textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px` } }}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-            placeholder={'Type your answer\u2026'} rows={1} disabled={thinking}
+            placeholder={'Type your answer…'} rows={1} disabled={thinking}
           />
           <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
         </div>
@@ -346,7 +346,7 @@ function ActDomain({ archetype, session, onComplete }) {
 
   return (
     <div>
-      <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 2 {'\u00B7'} Domain</div>
+      <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 2 {'·'} Domain</div>
       <h2 style={{ ...serif, fontSize: 'clamp(1.5rem,4vw,2.25rem)', fontWeight: 300, color: 'var(--text)', lineHeight: 1.1, marginBottom: '8px' }}>
         Where does your work land hardest?
       </h2>
@@ -386,7 +386,7 @@ function ActDomain({ archetype, session, onComplete }) {
 
       <button onClick={confirm} disabled={!selected || confirming}
         style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '13px 32px', cursor: !selected ? 'not-allowed' : 'pointer', opacity: !selected ? 0.4 : 1, transition: 'all 0.2s' }}>
-        {confirming ? 'Confirming\u2026' : 'This is my domain \u2192'}
+        {confirming ? 'Confirming…' : 'This is my domain →'}
       </button>
     </div>
   )
@@ -407,7 +407,7 @@ function ActScale({ archetype, domain, onComplete }) {
 
   return (
     <div>
-      <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 3 {'\u00B7'} Scale</div>
+      <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 3 {'·'} Scale</div>
       <h2 style={{ ...serif, fontSize: 'clamp(1.5rem,4vw,2.25rem)', fontWeight: 300, color: 'var(--text)', lineHeight: 1.1, marginBottom: '8px' }}>
         At what level does your work want to operate?
       </h2>
@@ -429,7 +429,7 @@ function ActScale({ archetype, domain, onComplete }) {
                 <div style={{ ...sc, fontSize: '0.9375rem', letterSpacing: '0.08em', color: isSel ? 'var(--gold-dk)' : 'var(--text)', marginBottom: '4px' }}>{s.label}</div>
                 <div style={{ ...serif, fontSize: '0.9rem', fontStyle: 'italic', ...muted, lineHeight: 1.55 }}>{s.desc}</div>
               </div>
-              {isSel && <div style={{ marginLeft: 'auto', ...sc, fontSize: '1rem', ...gold }}>{'\u2713'}</div>}
+              {isSel && <div style={{ marginLeft: 'auto', ...sc, fontSize: '1rem', ...gold }}>{'✓'}</div>}
             </div>
           )
         })}
@@ -437,7 +437,7 @@ function ActScale({ archetype, domain, onComplete }) {
 
       <button onClick={confirm} disabled={!selected || confirming}
         style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '13px 32px', cursor: !selected ? 'not-allowed' : 'pointer', opacity: !selected ? 0.4 : 1, transition: 'all 0.2s' }}>
-        {confirming ? 'Confirming\u2026' : 'This is my scale \u2192'}
+        {confirming ? 'Confirming…' : 'This is my scale →'}
       </button>
     </div>
   )
@@ -481,9 +481,9 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '32px', flexWrap: 'wrap' }}>
             <span style={{ ...sc, fontSize: '0.6875rem', letterSpacing: '0.12em', ...gold }}>the {archetype?.toLowerCase()}</span>
-            <span style={{ ...sc, fontSize: '0.6875rem', color: 'rgba(200,146,42,0.4)' }}>{'\u00B7'}</span>
+            <span style={{ ...sc, fontSize: '0.6875rem', color: 'rgba(200,146,42,0.4)' }}>{'·'}</span>
             <span style={{ ...sc, fontSize: '0.6875rem', letterSpacing: '0.12em', color: 'var(--text)' }}>{domainObj?.label}</span>
-            <span style={{ ...sc, fontSize: '0.6875rem', color: 'rgba(200,146,42,0.4)' }}>{'\u00B7'}</span>
+            <span style={{ ...sc, fontSize: '0.6875rem', color: 'rgba(200,146,42,0.4)' }}>{'·'}</span>
             <span style={{ ...sc, fontSize: '0.6875rem', letterSpacing: '0.12em', color: 'var(--text)' }}>{scaleObj?.label}</span>
           </div>
 
@@ -521,7 +521,7 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
             <button onClick={onDeepDive} style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '14px 36px', cursor: 'pointer', transition: 'all 0.2s' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
               onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
-              Go deeper {'\u2192'}
+              Go deeper {'→'}
             </button>
             <a href="/profile" style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, textDecoration: 'none' }}>View in your profile</a>
           </div>
@@ -607,7 +607,7 @@ export function PurposePiecePage() {
 
       <div className="tool-wrap">
         <div className="tool-header" style={{ marginBottom: '24px' }}>
-          <span className="tool-eyebrow">Life OS {'\u00B7'} Purpose Piece</span>
+          <span className="tool-eyebrow">Life OS {'·'} Purpose Piece</span>
           <h1 className="tool-title">The First Look</h1>
         </div>
 
@@ -749,7 +749,7 @@ export function PurposePieceDeepPage() {
       <Nav activePath="life-os" />
       <div className="tool-wrap">
         <div className="tool-header">
-          <span className="tool-eyebrow">Life OS {'\u00B7'} Purpose Piece</span>
+          <span className="tool-eyebrow">Life OS {'·'} Purpose Piece</span>
           <h1 className="tool-title">The Deep Dive</h1>
           {firstLook && (
             <div style={{ marginTop: '8px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -769,7 +769,7 @@ export function PurposePieceDeepPage() {
           <div>
             <div className="bubble bubble-assistant">The Deep Dive begins after the First Look. Complete Purpose Piece first, then return here.</div>
             <button onClick={() => navigate('/tools/purpose-piece')} style={{ marginTop: '16px', background: 'none', border: 'none', ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...gold, cursor: 'pointer', padding: 0 }}>
-              {'\u2190'} Start the First Look
+              {'←'} Start the First Look
             </button>
           </div>
         )}
@@ -791,7 +791,7 @@ export function PurposePieceDeepPage() {
         {complete && (
           <div style={{ textAlign: 'center', padding: '32px 0 80px' }}>
             <button onClick={() => navigate('/tools/purpose-piece')} style={{ background: 'none', border: 'none', ...gold, cursor: 'pointer', ...serif, fontSize: '0.875rem', fontStyle: 'italic' }}>
-              {'\u2190'} Return to Purpose Piece
+              {'←'} Return to Purpose Piece
             </button>
           </div>
         )}
@@ -801,7 +801,7 @@ export function PurposePieceDeepPage() {
             <textarea ref={textareaRef} value={input}
               onChange={e => { setInput(e.target.value); if (textareaRef.current) { textareaRef.current.style.height = 'auto'; textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px` } }}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-              placeholder={'Respond here\u2026'} rows={1} disabled={thinking}
+              placeholder={'Respond here…'} rows={1} disabled={thinking}
             />
             <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
           </div>

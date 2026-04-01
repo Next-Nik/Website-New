@@ -4,11 +4,11 @@ import { ChatBubble } from '../../components/ChatBubble'
 import { TypingIndicator } from '../../components/TypingIndicator'
 import { useAuth } from '../../hooks/useAuth'
 
-const OPENING_MESSAGE = `Welcome. I\u2019m here to help you find your direction.
+const OPENING_MESSAGE = `Welcome. I’m here to help you find your direction.
 
-Orienteering is about navigating toward what matters \u2014 not optimising a path that isn\u2019t yours.
+Orienteering is about navigating toward what matters — not optimising a path that isn’t yours.
 
-Where are you right now? Tell me what\u2019s present for you.`
+Where are you right now? Tell me what’s present for you.`
 
 export function OrienteeringPage() {
   const { user, loading } = useAuth()
@@ -108,7 +108,7 @@ export function OrienteeringPage() {
             value={input}
             onChange={handleInput}
             onKeyDown={handleKeyDown}
-            placeholder={'Type your response\u2026'}
+            placeholder={'Type your response…'}
             rows={1}
             disabled={thinking}
           />

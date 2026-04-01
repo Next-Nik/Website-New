@@ -17,7 +17,7 @@ const TOOLS = [
       { text: 'It has helped me reset my baseline in the middle of the day — to relax, let go, and create space for a more supportive inner story. One that naturally inspires aligned action rather than effort or striving.', cite: 'David William Pierce' },
       { text: 'There was this sense of feeling held throughout. His presence is unmistakably there.', cite: 'David William Pierce' },
     ],
-    primary: { label: 'Begin Foundation \u2192', url: '/tools/foundation' },
+    primary: { label: 'Begin Foundation →', url: '/tools/foundation' },
   },
   {
     id: 'map', name: 'The Map', hook: 'An honest picture of where you are across every domain.',
@@ -25,7 +25,7 @@ const TOOLS = [
     desc: 'An honest picture of your whole life. Not where you think you should be — where you actually are.',
     detail: 'Ten minutes. Seven domains. One honest score each. Path · Spark · Body · Finances · Relationships · Inner Game · Outer Game. The picture that emerges is often surprising. Always useful.',
     meta: '10 minutes · free · no account needed',
-    primary: { label: 'Begin The Map \u2192', url: '/tools/map' },
+    primary: { label: 'Begin The Map →', url: '/tools/map' },
     secondary: { label: 'Go deeper with Nik', url: '/work-with-nik' },
   },
   {
@@ -34,39 +34,39 @@ const TOOLS = [
     desc: 'Daily check-in. Weekly reflection. Quarterly reset. No prerequisites.',
     detail: 'Thoughts · Energy · Actions. Two minutes a day. The pattern that builds over time is the kind of self-knowledge that almost nothing else provides.',
     meta: '2 min daily · weekly reflection · quarterly reset',
-    primary: { label: 'Begin Pulse \u2192', url: '/tools/pulse' },
+    primary: { label: 'Begin Pulse →', url: '/tools/pulse' },
   },
   {
     id: 'purpose-piece', name: 'Purpose Piece', hook: 'What did life ask you to bring?',
     label: 'The contribution pattern',
-    desc: 'The role you\u2019re built to play. The domain where your effort compounds most.',
-    detail: 'A behavioural evidence tool that surfaces your natural contribution archetype. Once you know it, everything in Life OS sharpens \u2014 not by limiting you, but by showing you where your intelligence lands hardest.',
+    desc: 'The role you’re built to play. The domain where your effort compounds most.',
+    detail: 'A behavioural evidence tool that surfaces your natural contribution archetype. Once you know it, everything in Life OS sharpens — not by limiting you, but by showing you where your intelligence lands hardest.',
     meta: '20 minutes · self-directed · one-time or annual',
-    primary: { label: 'Begin Purpose Piece \u2192', url: '/tools/purpose-piece' },
+    primary: { label: 'Begin Purpose Piece →', url: '/tools/purpose-piece' },
     secondary: { label: 'Debrief with Nik', url: '/work-with-nik' },
   },
   {
     id: 'target-sprint', name: 'Target Sprint', hook: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.',
     label: 'The operational layer',
     desc: 'The bridge between knowing where you are and arriving somewhere different.',
-    detail: 'Pick three domains. Set a meaningful 90-day outcome for each. The tool reverse-engineers the monthly milestones and weekly focus from your destination \u2014 and anchors daily TEA so the work compounds. Standalone or linked to The Map.',
+    detail: 'Pick three domains. Set a meaningful 90-day outcome for each. The tool reverse-engineers the monthly milestones and weekly focus from your destination — and anchors daily TEA so the work compounds. Standalone or linked to The Map.',
     meta: '90 days · 3 domains · AI-assisted milestone planning',
-    primary: { label: 'Begin Target Sprint \u2192', url: '/tools/target-sprint' },
+    primary: { label: 'Begin Target Sprint →', url: '/tools/target-sprint' },
   },
   {
     id: 'horizon-leap', name: 'Horizon Leap', hook: 'Not more tools. A different kind of crossing.',
     label: 'The crossing',
-    desc: 'For people who keep hitting the same ceiling. Identity-level work \u2014 facilitated by Nik.',
-    detail: 'Reauthoring the biography. Closing the gap between who you\u2019ve been and who you\u2019re becoming. Not a programme to follow \u2014 a discontinuous shift. Begin with a conversation.',
+    desc: 'For people who keep hitting the same ceiling. Identity-level work — facilitated by Nik.',
+    detail: 'Reauthoring the biography. Closing the gap between who you’ve been and who you’re becoming. Not a programme to follow — a discontinuous shift. Begin with a conversation.',
     meta: 'Facilitated · with Nik · by application',
-    primary: { label: 'Book a conversation \u2192', url: 'https://calendly.com/nikwood/talk-to-nik', external: true },
+    primary: { label: 'Book a conversation →', url: 'https://calendly.com/nikwood/talk-to-nik', external: true },
   },
 ]
 
 const SHARE_RECS = {
-  foundation: { tool: 'Foundation', url: '/tools/foundation', desc: 'When someone is depleted, the first move is never to add more \u2014 it\u2019s to restore the ground. Foundation is a 20-minute guided audio practice for regulation.' },
-  map: { tool: 'The Map', url: '/tools/map', desc: 'When someone doesn\u2019t know where they are, a map is everything. The Map gives an honest picture of their whole life across seven domains \u2014 in ten minutes.' },
-  purpose: { tool: 'Purpose Piece', url: '/tools/purpose-piece', desc: 'When someone is capable but not yet fully alive in what they do, the question isn\u2019t what \u2014 it\u2019s where. Purpose Piece surfaces the role they\u2019re built to play.' },
+  foundation: { tool: 'Foundation', url: '/tools/foundation', desc: 'When someone is depleted, the first move is never to add more — it’s to restore the ground. Foundation is a 20-minute guided audio practice for regulation.' },
+  map: { tool: 'The Map', url: '/tools/map', desc: 'When someone doesn’t know where they are, a map is everything. The Map gives an honest picture of their whole life across seven domains — in ten minutes.' },
+  purpose: { tool: 'Purpose Piece', url: '/tools/purpose-piece', desc: 'When someone is capable but not yet fully alive in what they do, the question isn’t what — it’s where. Purpose Piece surfaces the role they’re built to play.' },
   leap: { tool: 'Horizon Leap', url: 'https://calendly.com/nikwood/talk-to-nik', desc: 'When the pattern keeps returning despite the work, the work needed is different. Horizon Leap is identity-level work facilitated by Nik. Start with a conversation.' },
 }
 
@@ -111,8 +111,8 @@ function ToolAccordion({ tool }) {
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', color: '#A8721A', marginBottom: '24px' }}>{tool.meta}</div>
           {tool.quotes?.map((q, i) => (
             <div key={i} style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '14px 0 14px 28px', margin: i === 0 ? '24px 0 8px' : '0 0 24px', maxWidth: '600px' }}>
-              <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '10px' }}>{'\u201C'}{q.text}{'\u201D'}</p>
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {q.cite}</span>
+              <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '10px' }}>{'“'}{q.text}{'”'}</p>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A' }}>{'—'} {q.cite}</span>
             </div>
           ))}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
@@ -144,15 +144,15 @@ export function LifeOSPage() {
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           See clearly.<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>Move from there.</em>
         </h1>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '64px', maxWidth: '520px' }}>Six tools. Start anywhere. Each one does its own work {'\u2014'} and they compound when you{'\u2019'}re ready.</p>
+        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '64px', maxWidth: '520px' }}>Six tools. Start anywhere. Each one does its own work {'—'} and they compound when you{'’'}re ready.</p>
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 32px' }} />
 
         {TOOLS.map(t => <ToolAccordion key={t.id} tool={t} />)}
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '48px 0' }} />
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', alignItems: 'center' }}>
-          <a href="/work-with-nik" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Work with Nik {'\u2192'}</a>
-          <a href="/" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.78)', textDecoration: 'none' }}>{'\u2190'} Home</a>
+          <a href="/work-with-nik" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Work with Nik {'→'}</a>
+          <a href="/" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.78)', textDecoration: 'none' }}>{'←'} Home</a>
         </div>
       </div>
 
@@ -161,8 +161,8 @@ export function LifeOSPage() {
         <div style={{ maxWidth: '820px', margin: '0 auto' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>For someone you care about</span>
           <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.12, marginBottom: '16px' }}>Passing this on.</h2>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7, marginBottom: '12px', maxWidth: '540px' }}>The fact that you{'\u2019'}re here for someone else says something. That instinct {'\u2014'} to want a better life for the people you love {'\u2014'} is worth honouring carefully.</p>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '560px' }}>Not everything lands when it{'\u2019'}s pushed. The right thing, offered at the right moment, in the right way {'\u2014'} that{'\u2019'}s different.</p>
+          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7, marginBottom: '12px', maxWidth: '540px' }}>The fact that you{'’'}re here for someone else says something. That instinct {'—'} to want a better life for the people you love {'—'} is worth honouring carefully.</p>
+          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '560px' }}>Not everything lands when it{'’'}s pushed. The right thing, offered at the right moment, in the right way {'—'} that{'’'}s different.</p>
           <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.4, marginBottom: '40px' }} />
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where do they seem to be?</span>
 
@@ -190,7 +190,7 @@ export function LifeOSPage() {
               <h4 style={{ ...serif, fontSize: '20px', fontWeight: 400, color: '#A8721A', marginBottom: '10px' }}>{SHARE_RECS[shareRec].tool}</h4>
               <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '520px' }}>{SHARE_RECS[shareRec].desc}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
-                <a href={SHARE_RECS[shareRec].url} style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>Open {SHARE_RECS[shareRec].tool} {'\u2192'}</a>
+                <a href={SHARE_RECS[shareRec].url} style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>Open {SHARE_RECS[shareRec].tool} {'→'}</a>
               </div>
             </div>
           )}
@@ -199,11 +199,11 @@ export function LifeOSPage() {
           <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, color: '#0F1523', marginBottom: '16px' }}>How to offer it well.</h3>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '20px', maxWidth: '580px' }}>The most important thing: make it an offer, not a prescription. The difference is felt immediately.</p>
           <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '20px 0 20px 28px', marginBottom: '20px', maxWidth: '580px' }}>
-            <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '12px' }}>{'\u201C'}I found something that helped me see where I actually was. No pressure {'\u2014'} but if you{'\u2019'}re curious, here it is.{'\u201D'}</p>
+            <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '12px' }}>{'“'}I found something that helped me see where I actually was. No pressure {'—'} but if you{'’'}re curious, here it is.{'”'}</p>
             <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A' }}>An offer</span>
           </div>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '580px' }}>Notice {'\u2014'} as you think about them across these domains {'\u2014'} what you{'\u2019'}re actually seeing. The same lens that helps you find the right thing for them has a way of clarifying things for you too.</p>
-          <a href="/#start" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Start your own {'\u2192'}</a>
+          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '580px' }}>Notice {'—'} as you think about them across these domains {'—'} what you{'’'}re actually seeing. The same lens that helps you find the right thing for them has a way of clarifying things for you too.</p>
+          <a href="/#start" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Start your own {'→'}</a>
         </div>
       </section>
 
