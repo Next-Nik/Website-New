@@ -36,7 +36,7 @@ function getColor(n) {
 const sc    = { fontFamily: "var(--font-sc)" }
 const serif = { fontFamily: "var(--font-body)" }
 const gold  = { color: "var(--gold-dk)" }
-const muted = { color: "var(--text-muted)" }
+const muted = { color: 'rgba(15,21,35,0.88)' }
 const meta  = { color: "var(--text-meta)" }
 
 // ─── Shared components ────────────────────────────────────────────────────────
@@ -49,7 +49,7 @@ function Rule() {
 }
 function Btn({ onClick, disabled, children, ghost, style = {} }) {
   const base = ghost
-    ? { ...serif, fontSize: '1rem', fontStyle: 'italic', ...muted, background: 'none', border: 'none', cursor: 'pointer', padding: '10px 0' }
+    ? { ...serif, fontSize: '1rem', ...muted, background: 'none', border: 'none', cursor: 'pointer', padding: '10px 0' }
     : { ...sc, fontSize: '1rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '12px 28px', cursor: 'pointer', transition: 'all 0.2s' }
   return (
     <button onClick={onClick} disabled={disabled}
@@ -69,7 +69,7 @@ function AuthModal() {
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px 32px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
         <span style={{ display: 'block', ...sc, fontSize: '0.8125rem', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Target Sprint</span>
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: 'var(--text)', marginBottom: '10px' }}>Sign in to begin.</h2>
-        <p style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>Your goals and milestones are saved to your profile.</p>
+        <p style={{ ...serif, fontSize: '1rem', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>Your goals and milestones are saved to your profile.</p>
         <a href={`/login?redirect=${r}`} style={{ display: 'block', padding: '18px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', ...gold, ...sc, fontSize: '1rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
           Sign in or create account {'→'}
         </a>
@@ -157,7 +157,7 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
         Three areas. Three months.
       </h1>
       <Rule />
-      <p style={{ ...serif, fontSize: '1.0625rem', fontWeight: 300, fontStyle: 'italic', color: 'var(--text)', lineHeight: 1.8, marginBottom: '6px' }}>
+      <p style={{ ...serif, fontSize: '1.0625rem', fontWeight: 300, color: 'var(--text)', lineHeight: 1.8, marginBottom: '6px' }}>
         {hasMapData
           ? 'Your Map scores are loaded.'
           : 'Choose the three areas where focused effort this quarter would matter most.'}
@@ -169,7 +169,7 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
       </p>
 
       {recommendation?.soft_observation && (
-        <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.45)', borderRadius: '8px', ...serif, fontSize: '1rem', fontStyle: 'italic', ...meta, marginBottom: '20px', lineHeight: 1.65 }}>
+        <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.45)', borderRadius: '8px', ...serif, fontSize: '1rem', ...meta, marginBottom: '20px', lineHeight: 1.65 }}>
           {recommendation.soft_observation}
         </div>
       )}
@@ -198,7 +198,7 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
               <div style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.08em', color: sel ? 'var(--gold-dk)' : 'var(--text)', marginBottom: '4px' }}>
                 {d.label}{isRec ? ' ☆' : ''}
               </div>
-              <div style={{ ...serif, fontSize: '0.8125rem', fontStyle: 'italic', ...muted, lineHeight: 1.55, marginBottom: s !== undefined ? '10px' : 0 }}>
+              <div style={{ ...serif, fontSize: '0.8125rem', ...muted, lineHeight: 1.55, marginBottom: s !== undefined ? '10px' : 0 }}>
                 {rat || d.question}
               </div>
               {s !== undefined && (
@@ -253,7 +253,7 @@ function PhaseQuarter({ quarterType, setQuarterType, setTargetDate, setEndDateLa
             style={{ padding: '22px 26px', border: `1.5px solid ${quarterType === o.type ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.35)'}`, borderRadius: '10px', background: quarterType === o.type ? 'rgba(200,146,42,0.06)' : '#FFFFFF', cursor: 'pointer', transition: 'all 0.2s' }}>
             <div style={{ ...sc, fontSize: '1rem', letterSpacing: '0.08em', color: quarterType === o.type ? 'var(--gold-dk)' : 'var(--text)', marginBottom: '4px' }}>{o.title}</div>
             <div style={{ ...sc, fontSize: '1rem', ...gold, marginBottom: '4px' }}>{o.date}</div>
-            <div style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', ...muted }}>{o.desc}</div>
+            <div style={{ ...serif, fontSize: '1rem', ...muted }}>{o.desc}</div>
           </div>
         ))}
       </div>
@@ -343,7 +343,7 @@ function PhaseRefine({ domain, hasMapData, scores, mapData, endDateLabel, comple
         <div style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.12em', ...gold, marginBottom: '4px' }}>{dl?.label} {'✓'}</div>
         <div style={{ ...serif, fontSize: '1rem', ...meta, lineHeight: 1.55 }}>{cd.outcome_system}</div>
         {cd.identity_statement && (
-          <div style={{ ...serif, fontSize: '0.8125rem', fontStyle: 'italic', ...muted, marginTop: '4px', lineHeight: 1.5 }}>
+          <div style={{ ...serif, fontSize: '0.8125rem', ...muted, marginTop: '4px', lineHeight: 1.5 }}>
             {'“'}{cd.identity_statement}{'”'}
           </div>
         )}
@@ -460,7 +460,7 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
         <div style={{ ...sc, fontSize: '1.5rem', ...gold, marginBottom: '8px' }}>{'✦'}</div>
         <span style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>Sprint set</span>
         <h1 style={{ ...sc, fontSize: 'clamp(1.5rem,3vw,2rem)', fontWeight: 400, color: 'var(--text)', lineHeight: 1.1, marginBottom: '12px' }}>{endDateLabel || '90 days ahead'}</h1>
-        <p style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', ...meta, lineHeight: 1.75, maxWidth: '480px', margin: '0 auto' }}>
+        <p style={{ ...serif, fontSize: '1rem', ...meta, lineHeight: 1.75, maxWidth: '480px', margin: '0 auto' }}>
           The goal is not the point {'—'} what you become moving toward it is.
         </p>
       </div>
@@ -491,7 +491,7 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
                 )}
               </div>
               {d.identity_statement && (
-                <div style={{ ...serif, fontSize: '0.8125rem', fontStyle: 'italic', ...muted, textAlign: 'right', maxWidth: '55%', lineHeight: 1.45 }}>
+                <div style={{ ...serif, fontSize: '0.8125rem', ...muted, textAlign: 'right', maxWidth: '55%', lineHeight: 1.45 }}>
                   {'“'}{d.identity_statement}{'”'}
                 </div>
               )}
@@ -511,7 +511,7 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
                   <span style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.1em', ...gold, flexShrink: 0, paddingTop: '3px', width: '52px' }}>{m.l}</span>
                   <div>
                     <div style={{ ...serif, fontSize: '1rem', ...meta, lineHeight: 1.6 }}>{m.t}</div>
-                    {m.w && <div style={{ ...serif, fontSize: '0.8125rem', fontStyle: 'italic', ...muted, lineHeight: 1.55, marginTop: '2px' }}>{m.w}</div>}
+                    {m.w && <div style={{ ...serif, fontSize: '0.8125rem', ...muted, lineHeight: 1.55, marginTop: '2px' }}>{m.w}</div>}
                   </div>
                 </div>
               ))}
@@ -545,7 +545,7 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
 
             {/* Edit */}
             <button onClick={() => setEditOpen(p => ({ ...p, [d.domain]: !p[d.domain] }))}
-              style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', ...gold, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              style={{ ...serif, fontSize: '1rem', ...gold, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               {editOpen[d.domain] ? 'Close ↑' : 'Edit this goal →'}
             </button>
             {editOpen[d.domain] && (

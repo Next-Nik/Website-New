@@ -88,7 +88,7 @@ export function OrienteeringPage() {
         <div className="tool-header">
           <span className="tool-eyebrow">Life OS</span>
           <h1 className="tool-title">Orienteering</h1>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 300, fontStyle: 'italic', color: 'var(--text-muted)', marginTop: '6px', lineHeight: 1.65, maxWidth: '420px' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 300, color: 'rgba(15,21,35,0.88)', marginTop: '6px', lineHeight: 1.65, maxWidth: '420px' }}>
             Not sure where to start? Begin here. A conversation to find your direction.
           </p>
         </div>
@@ -128,7 +128,7 @@ export function OrienteeringPage() {
           <p style={{
             marginTop: '1.25rem',
             fontSize: '1rem',
-            color: 'var(--text-muted)',
+            color: 'rgba(15,21,35,0.88)',
             textAlign: 'center'
           }}>
             <a href={`/login?redirect=${encodeURIComponent(window.location.href)}`}>

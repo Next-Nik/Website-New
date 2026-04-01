@@ -106,12 +106,12 @@ function ToolAccordion({ tool }) {
       {open && (
         <div style={{ borderTop: '1px solid rgba(200,146,42,0.35)', padding: '28px 26px 32px', background: '#FAFAF7' }}>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', display: 'block', marginBottom: '10px' }}>{tool.label}</span>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '16px', maxWidth: '580px' }}>{tool.desc}</p>
+          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '16px', maxWidth: '580px' }}>{tool.desc}</p>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '24px', maxWidth: '580px' }}>{tool.detail}</p>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', color: '#A8721A', marginBottom: '24px' }}>{tool.meta}</div>
           {tool.quotes?.map((q, i) => (
             <div key={i} style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', padding: '14px 0 14px 28px', margin: i === 0 ? '24px 0 8px' : '0 0 24px', maxWidth: '600px' }}>
-              <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '10px' }}>{'“'}{q.text}{'”'}</p>
+              <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '10px' }}>{'“'}{q.text}{'”'}</p>
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A' }}>{'—'} {q.cite}</span>
             </div>
           ))}
@@ -142,7 +142,7 @@ export function LifeOSPage() {
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Life OS</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          See clearly.<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>Move from there.</em>
+          See clearly.<br /><em style={{ color: '#A8721A' }}>Move from there.</span>
         </h1>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '64px', maxWidth: '520px' }}>Six tools. Start anywhere. Each one does its own work {'—'} and they compound when you{'’'}re ready.</p>
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.35)', margin: '0 0 32px' }} />
@@ -161,7 +161,7 @@ export function LifeOSPage() {
         <div style={{ maxWidth: '820px', margin: '0 auto' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>For someone you care about</span>
           <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.12, marginBottom: '16px' }}>Passing this on.</h2>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7, marginBottom: '12px', maxWidth: '540px' }}>The fact that you{'’'}re here for someone else says something. That instinct {'—'} to want a better life for the people you love {'—'} is worth honouring carefully.</p>
+          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.88)', lineHeight: 1.7, marginBottom: '12px', maxWidth: '540px' }}>The fact that you{'’'}re here for someone else says something. That instinct {'—'} to want a better life for the people you love {'—'} is worth honouring carefully.</p>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '560px' }}>Not everything lands when it{'’'}s pushed. The right thing, offered at the right moment, in the right way {'—'} that{'’'}s different.</p>
           <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.4, marginBottom: '40px' }} />
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where do they seem to be?</span>
@@ -199,7 +199,7 @@ export function LifeOSPage() {
           <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, color: '#0F1523', marginBottom: '16px' }}>How to offer it well.</h3>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '20px', maxWidth: '580px' }}>The most important thing: make it an offer, not a prescription. The difference is felt immediately.</p>
           <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', padding: '20px 0 20px 28px', marginBottom: '20px', maxWidth: '580px' }}>
-            <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '12px' }}>{'“'}I found something that helped me see where I actually was. No pressure {'—'} but if you{'’'}re curious, here it is.{'”'}</p>
+            <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '12px' }}>{'“'}I found something that helped me see where I actually was. No pressure {'—'} but if you{'’'}re curious, here it is.{'”'}</p>
             <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A' }}>An offer</span>
           </div>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '580px' }}>Notice {'—'} as you think about them across these domains {'—'} what you{'’'}re actually seeing. The same lens that helps you find the right thing for them has a way of clarifying things for you too.</p>
