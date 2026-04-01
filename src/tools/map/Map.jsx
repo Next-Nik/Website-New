@@ -1077,7 +1077,7 @@ export function MapPage() {
           <span className="tool-eyebrow">Life OS</span>
           <h1 className="tool-title">The Map</h1>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: '1rem', color: 'rgba(15,21,35,0.88)', marginTop: '4px' }}>
-            An honest picture of where you are.
+            From where you are to where you want to be.
           </p>
         </div>
 
