@@ -93,7 +93,7 @@ function AuthModal(){
         <span style={{display:'block',...sc,fontSize:'0.625rem',letterSpacing:'0.22em',...gold,textTransform:'uppercase',marginBottom:'14px'}}>Target Goals</span>
         <h2 style={{...sc,fontSize:'1.375rem',fontWeight:400,color:'var(--text)',marginBottom:'10px'}}>Sign in to begin.</h2>
         <p style={{...serif,fontSize:'0.9375rem',fontStyle:'italic',...meta,lineHeight:1.7,marginBottom:'24px'}}>Your goals and milestones are saved to your profile.</p>
-        <a href={`/login.html?redirect=${r}`} style={{display:'block',padding:'14px',borderRadius:'40px',border:'1.5px solid rgba(200,146,42,0.78)',background:'rgba(200,146,42,0.05)',...gold,...sc,fontSize:'0.875rem',letterSpacing:'0.14em',textDecoration:'none'}}>Sign in or create account {'\u2192'}</a>
+        <a href={`/login?redirect=${r}`} style={{display:'block',padding:'14px',borderRadius:'40px',border:'1.5px solid rgba(200,146,42,0.78)',background:'rgba(200,146,42,0.05)',...gold,...sc,fontSize:'0.875rem',letterSpacing:'0.14em',textDecoration:'none'}}>Sign in or create account {'\u2192'}</a>
       </div>
     </div>
   )

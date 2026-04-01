@@ -187,7 +187,7 @@ function AuthModal({ onDismiss }) {
           Foundation is part of Life OS {'\u2014'} a free account keeps your progress and gives you access to the full protocol.
         </p>
         <a
-          href={`/login.html?redirect=${returnUrl}`}
+          href={`/login?redirect=${returnUrl}`}
           style={{
             display: 'block', width: '100%',
             padding: '14px', textAlign: 'center',
@@ -197,7 +197,6 @@ function AuthModal({ onDismiss }) {
             fontFamily: 'var(--font-sc)', fontSize: '0.9375rem',
             letterSpacing: '0.16em', color: 'var(--gold-dk)',
             textDecoration: 'none', marginBottom: '12px',
-            display: 'block',
           }}
         >
           Sign in or create account {'\u2192'}

@@ -152,7 +152,7 @@ function AuthModal({ onDismiss }) {
         <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', fontStyle: 'italic', color: 'var(--text-meta)', lineHeight: 1.7, marginBottom: '24px' }}>
           Your archetype and contribution pattern are saved to your profile.
         </p>
-        <a href={`/login.html?redirect=${returnUrl}`} style={{ display: 'block', padding: '14px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: 'var(--gold-dk)', fontFamily: 'var(--font-sc)', fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none', marginBottom: '12px' }}>
+        <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '14px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: 'var(--gold-dk)', fontFamily: 'var(--font-sc)', fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none', marginBottom: '12px' }}>
           Sign in or create account {'\u2192'}
         </a>
       </div>
