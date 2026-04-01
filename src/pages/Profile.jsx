@@ -105,7 +105,8 @@ export function ProfilePage() {
 
   if (!user) return null
 
-  const name = user.email?.split('@')[0] || 'You'
+  const raw = user.email?.split('@')[0] || 'you'
+  const name = raw.charAt(0).toUpperCase() + raw.slice(1)
   const scores = mapData?.session?.domainData
     ? Object.fromEntries(Object.entries(mapData.session.domainData).filter(([,d]) => d?.score !== undefined).map(([id,d]) => [id, d.score]))
     : null
