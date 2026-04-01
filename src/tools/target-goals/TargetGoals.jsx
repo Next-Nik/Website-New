@@ -7,13 +7,13 @@ import { SprintPanel } from '../../components/SprintPanel'
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const DOMAINS = [
-  { id: 'path',          label: 'Path',          question: 'Am I walking my path \u2014 or just walking?',                  description: 'Your calling, contribution & the work you\u2019re here to do' },
-  { id: 'spark',         label: 'Spark',         question: 'Is the fire on?',                                               description: 'The animating fire \u2014 aliveness, joy, play & the godspark' },
+  { id: 'path',          label: 'Path',          question: 'Am I walking my path — or just walking?',                  description: 'Your calling, contribution & the work you’re here to do' },
+  { id: 'spark',         label: 'Spark',         question: 'Is the fire on?',                                               description: 'The animating fire — aliveness, joy, play & the godspark' },
   { id: 'body',          label: 'Body',          question: 'How is this living system doing?',                              description: 'Physical vitality, health, energy & embodiment' },
   { id: 'finances',      label: 'Finances',      question: 'Do I have the agency to act on what matters?',                 description: 'Your relationship with money, resources & abundance' },
   { id: 'relationships', label: 'Relationships', question: 'Am I truly known by anyone?',                                  description: 'Intimacy, friendship, community & belonging' },
-  { id: 'inner_game',    label: 'Inner Game',    question: 'Are my stories tending me, or running me?',                    description: 'Your relationship with yourself \u2014 beliefs, values & self-trust' },
-  { id: 'outer_game',    label: 'Outer Game',    question: 'Is what I\u2019m broadcasting aligned with who I actually am?', description: 'How you show up in the world \u2014 presence, expression & identity' },
+  { id: 'inner_game',    label: 'Inner Game',    question: 'Are my stories tending me, or running me?',                    description: 'Your relationship with yourself — beliefs, values & self-trust' },
+  { id: 'outer_game',    label: 'Outer Game',    question: 'Is what I’m broadcasting aligned with who I actually am?', description: 'How you show up in the world — presence, expression & identity' },
 ]
 
 const TIER = {
@@ -71,7 +71,7 @@ function AuthModal() {
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: 'var(--text)', marginBottom: '10px' }}>Sign in to begin.</h2>
         <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>Your goals and milestones are saved to your profile.</p>
         <a href={`/login?redirect=${r}`} style={{ display: 'block', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', ...gold, ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
-          Sign in or create account {'\u2192'}
+          Sign in or create account {'→'}
         </a>
       </div>
     </div>
@@ -159,7 +159,7 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
       <Rule />
       <p style={{ ...serif, fontSize: '1rem', ...meta, lineHeight: 1.75, marginBottom: '20px' }}>
         {hasMapData
-          ? 'Your Map scores are loaded. The \u2606 shows where focused effort would be most catalytic right now. You have the final say.'
+          ? 'Your Map scores are loaded. The ☆ shows where focused effort would be most catalytic right now. You have the final say.'
           : 'Choose three areas where you most want to move this quarter. Trust your instinct.'}
       </p>
 
@@ -191,7 +191,7 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
               onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
             >
               <div style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.08em', color: sel ? 'var(--gold-dk)' : 'var(--text)', marginBottom: '4px' }}>
-                {d.label}{isRec ? ' \u2606' : ''}
+                {d.label}{isRec ? ' ☆' : ''}
               </div>
               <div style={{ ...serif, fontSize: '0.8125rem', fontStyle: 'italic', ...muted, lineHeight: 1.55, marginBottom: s !== undefined ? '10px' : 0 }}>
                 {rat || d.question}
@@ -201,14 +201,14 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
                   <div style={{ height: '3px', background: 'rgba(200,146,42,0.12)', borderRadius: '2px', overflow: 'hidden', marginBottom: '4px' }}>
                     <div style={{ height: '100%', width: `${s * 10}%`, background: col, borderRadius: '2px' }} />
                   </div>
-                  <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.08em', color: col }}>{s} {'\u00B7'} {getTierLabel(s)}</div>
+                  <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.08em', color: col }}>{s} {'·'} {getTierLabel(s)}</div>
                 </>
               )}
             </div>
           )
         })}
       </div>
-      <Btn onClick={onContinue} disabled={selectedDomains.length !== 3}>Set my sprint {'\u2192'}</Btn>
+      <Btn onClick={onContinue} disabled={selectedDomains.length !== 3}>Set my sprint {'→'}</Btn>
     </div>
   )
 }
@@ -229,20 +229,20 @@ function PhaseQuarter({ quarterType, setQuarterType, setTargetDate, setEndDateLa
 
   function select(t) {
     setQuarterType(t)
-    if (t === 'rolling') { setTargetDate(rolling.toISOString().slice(0, 10)); setEndDateLabel(`90 days \u2014 ${fmt(rolling)}`) }
-    else { setTargetDate(qEnd.toISOString().slice(0, 10)); setEndDateLabel(`${qL} end \u2014 ${fmt(qEnd)} (${calDays} days)`) }
+    if (t === 'rolling') { setTargetDate(rolling.toISOString().slice(0, 10)); setEndDateLabel(`90 days — ${fmt(rolling)}`) }
+    else { setTargetDate(qEnd.toISOString().slice(0, 10)); setEndDateLabel(`${qL} end — ${fmt(qEnd)} (${calDays} days)`) }
   }
 
   return (
     <div>
-      <Eyebrow>Target Sprint {'\u00B7'} Timeline</Eyebrow>
+      <Eyebrow>Target Sprint {'·'} Timeline</Eyebrow>
       <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: 'var(--text)', lineHeight: 1.15, marginBottom: '12px' }}>When does this sprint end?</h2>
       <Rule />
       <p style={{ ...serif, fontSize: '1rem', ...meta, lineHeight: 1.75, marginBottom: '16px' }}>Both work. Choose the rhythm that fits your life.</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
         {[
           { type: 'rolling', title: 'Rolling 90 days', date: fmt(rolling), desc: 'Starts today. 90 days of focused movement.' },
-          { type: 'calendar', title: 'Calendar quarter', date: fmt(qEnd), desc: `${qL} end \u2014 syncs with how the year flows.` },
+          { type: 'calendar', title: 'Calendar quarter', date: fmt(qEnd), desc: `${qL} end — syncs with how the year flows.` },
         ].map(o => (
           <div key={o.type} onClick={() => select(o.type)}
             style={{ padding: '20px 22px', border: `1.5px solid ${quarterType === o.type ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.2)'}`, borderRadius: '10px', background: quarterType === o.type ? 'rgba(200,146,42,0.06)' : '#FFFFFF', cursor: 'pointer', transition: 'all 0.2s' }}>
@@ -252,7 +252,7 @@ function PhaseQuarter({ quarterType, setQuarterType, setTargetDate, setEndDateLa
           </div>
         ))}
       </div>
-      <Btn onClick={onContinue} disabled={!quarterType}>Lock this in {'\u2192'}</Btn>
+      <Btn onClick={onContinue} disabled={!quarterType}>Lock this in {'→'}</Btn>
     </div>
   )
 }
@@ -321,7 +321,7 @@ function PhaseRefine({ domain, hasMapData, scores, mapData, endDateLabel, comple
         onGoalSaved(domain, d.data)
       } else if (d.message) {
         // Extract sprint score hint if AI names it
-        const scoreMatch = d.message.match(/\b([5-9](?:\.[05])?)\s*(?:\/10)?(?:\s*[-\u2014]\s*(?:World|Exemplar|Fluent|Capable|Functional|Threshold))/i)
+        const scoreMatch = d.message.match(/\b([5-9](?:\.[05])?)\s*(?:\/10)?(?:\s*[-—]\s*(?:World|Exemplar|Fluent|Capable|Functional|Threshold))/i)
         if (scoreMatch) setLiveScore(parseFloat(scoreMatch[1]))
         setMsgs(p => [...p, { role: 'assistant', content: d.message }])
       }
@@ -335,11 +335,11 @@ function PhaseRefine({ domain, hasMapData, scores, mapData, endDateLabel, comple
     const dl = DOMAINS.find(x => x.id === cd.domain)
     return (
       <div key={cd.domain} style={{ padding: '12px 14px', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', marginBottom: '10px', opacity: 0.75 }}>
-        <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.12em', ...gold, marginBottom: '4px' }}>{dl?.label} {'\u2713'}</div>
+        <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.12em', ...gold, marginBottom: '4px' }}>{dl?.label} {'✓'}</div>
         <div style={{ ...serif, fontSize: '0.875rem', ...meta, lineHeight: 1.55 }}>{cd.outcome_system}</div>
         {cd.identity_statement && (
           <div style={{ ...serif, fontSize: '0.8125rem', fontStyle: 'italic', ...muted, marginTop: '4px', lineHeight: 1.5 }}>
-            {'\u201C'}{cd.identity_statement}{'\u201D'}
+            {'“'}{cd.identity_statement}{'”'}
           </div>
         )}
       </div>
@@ -354,7 +354,7 @@ function PhaseRefine({ domain, hasMapData, scores, mapData, endDateLabel, comple
       <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderLeft: `3px solid ${col}`, borderRadius: '10px', padding: '16px 20px', marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
           <div>
-            <Eyebrow>{domainObj?.label} {'\u00B7'} {completedDomains.length + 1} of {completedDomains.length + 1}</Eyebrow>
+            <Eyebrow>{domainObj?.label} {'·'} {completedDomains.length + 1} of {completedDomains.length + 1}</Eyebrow>
             <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: 'var(--text)', lineHeight: 1.15, margin: 0 }}>
               Building your {domainObj?.label} goal.
             </h2>
@@ -386,15 +386,15 @@ function PhaseRefine({ domain, hasMapData, scores, mapData, endDateLabel, comple
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {[
-                { n: '1', t: '10/10', d: 'Who is your version of best in the world here? Someone outside yourself \u2014 real, imagined, a composite.' },
-                { n: '2', t: 'Honest now', d: 'Where are you honestly against that picture? A number, and what\u2019s actually true.' },
-                { n: '3', t: 'The wish', d: 'If a genie granted your wish in this area \u2014 what would it be? Not the responsible answer.' },
+                { n: '1', t: '10/10', d: 'Who is your version of best in the world here? Someone outside yourself — real, imagined, a composite.' },
+                { n: '2', t: 'Honest now', d: 'Where are you honestly against that picture? A number, and what’s actually true.' },
+                { n: '3', t: 'The wish', d: 'If a genie granted your wish in this area — what would it be? Not the responsible answer.' },
               ].map(s => (
                 <div key={s.n} style={{ display: 'flex', gap: '10px' }}>
                   <span style={{ ...sc, fontSize: '0.75rem', ...gold, flexShrink: 0, paddingTop: '1px' }}>{s.n}.</span>
                   <div>
                     <span style={{ ...sc, fontSize: '0.6875rem', letterSpacing: '0.06em', color: 'var(--text)' }}>{s.t}</span>
-                    <span style={{ ...serif, fontSize: '0.875rem', ...muted }}> {'\u2014'} {s.d}</span>
+                    <span style={{ ...serif, fontSize: '0.875rem', ...muted }}> {'—'} {s.d}</span>
                   </div>
                 </div>
               ))}
@@ -413,7 +413,7 @@ function PhaseRefine({ domain, hasMapData, scores, mapData, endDateLabel, comple
         <textarea ref={taRef} value={input}
           onChange={e => { setInput(e.target.value); if (taRef.current) { taRef.current.style.height = 'auto'; taRef.current.style.height = `${Math.min(taRef.current.scrollHeight, 140)}px` } }}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-          placeholder={'Write your response here\u2026'} rows={3} disabled={thinking}
+          placeholder={'Write your response here…'} rows={3} disabled={thinking}
         />
         <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
       </div>
@@ -442,9 +442,9 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
     const m1 = new Date(base); m1.setDate(m1.getDate() - 60)
     const m2 = new Date(base); m2.setDate(m2.getDate() - 30)
     return [
-      { label: `${dl} \u2014 Month 1`, text: d.month1, date: m1 },
-      { label: `${dl} \u2014 Month 2`, text: d.month2, date: m2 },
-      { label: `${dl} \u2014 Month 3`, text: d.month3, date: new Date(base) },
+      { label: `${dl} — Month 1`, text: d.month1, date: m1 },
+      { label: `${dl} — Month 2`, text: d.month2, date: m2 },
+      { label: `${dl} — Month 3`, text: d.month3, date: new Date(base) },
     ]
   }) : []
 
@@ -452,11 +452,11 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
     <div>
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '32px', padding: '28px 0' }}>
-        <div style={{ ...sc, fontSize: '1.5rem', ...gold, marginBottom: '8px' }}>{'\u2726'}</div>
+        <div style={{ ...sc, fontSize: '1.5rem', ...gold, marginBottom: '8px' }}>{'✦'}</div>
         <span style={{ ...sc, fontSize: '0.6875rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>Sprint set</span>
         <h1 style={{ ...sc, fontSize: 'clamp(1.5rem,3vw,2rem)', fontWeight: 400, color: 'var(--text)', lineHeight: 1.1, marginBottom: '12px' }}>{endDateLabel || '90 days ahead'}</h1>
         <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.75, maxWidth: '480px', margin: '0 auto' }}>
-          The goal is not the point {'\u2014'} what you become moving toward it is.
+          The goal is not the point {'—'} what you become moving toward it is.
         </p>
       </div>
 
@@ -481,13 +481,13 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
                 <div style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.1em', color: col }}>{dl?.label}</div>
                 {s !== undefined && d.sprint_score !== undefined && (
                   <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.1em', ...muted, marginTop: '3px' }}>
-                    {s} {'\u2192'} {d.sprint_score} {'\u00B7'} {getTierLabel(d.sprint_score)}
+                    {s} {'→'} {d.sprint_score} {'·'} {getTierLabel(d.sprint_score)}
                   </div>
                 )}
               </div>
               {d.identity_statement && (
                 <div style={{ ...serif, fontSize: '0.8125rem', fontStyle: 'italic', ...muted, textAlign: 'right', maxWidth: '55%', lineHeight: 1.45 }}>
-                  {'\u201C'}{d.identity_statement}{'\u201D'}
+                  {'“'}{d.identity_statement}{'”'}
                 </div>
               )}
             </div>
@@ -515,7 +515,7 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
             {/* Week breakdown */}
             {d.weeks?.length > 0 && (
               <div style={{ marginBottom: '16px', padding: '12px 14px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.12)', borderRadius: '8px' }}>
-                <div style={{ ...sc, fontSize: '0.5rem', letterSpacing: '0.14em', ...gold, marginBottom: '10px' }}>Week by Week {'\u00B7'} Month 1</div>
+                <div style={{ ...sc, fontSize: '0.5rem', letterSpacing: '0.14em', ...gold, marginBottom: '10px' }}>Week by Week {'·'} Month 1</div>
                 {d.weeks.map((w, i) => (
                   <div key={i} style={{ display: 'flex', gap: '10px', marginBottom: i < d.weeks.length - 1 ? '6px' : 0 }}>
                     <span style={{ ...sc, fontSize: '0.5rem', letterSpacing: '0.08em', ...muted, flexShrink: 0, paddingTop: '2px', width: '40px' }}>Wk {i + 1}</span>
@@ -541,7 +541,7 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
             {/* Edit */}
             <button onClick={() => setEditOpen(p => ({ ...p, [d.domain]: !p[d.domain] }))}
               style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...gold, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              {editOpen[d.domain] ? 'Close \u2191' : 'Edit this goal \u2192'}
+              {editOpen[d.domain] ? 'Close ↑' : 'Edit this goal →'}
             </button>
             {editOpen[d.domain] && (
               <div style={{ marginTop: '12px' }}>
@@ -552,7 +552,7 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
                   placeholder="Write your own version..."
                 />
                 <Btn onClick={() => setEditOpen(p => ({ ...p, [d.domain]: false }))} style={{ padding: '10px 20px', fontSize: '0.8125rem' }}>
-                  Save my version {'\u2192'}
+                  Save my version {'→'}
                 </Btn>
               </div>
             )}
@@ -581,7 +581,7 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
                 style={{ ...serif, fontSize: '0.875rem', ...gold, padding: '8px 12px', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '6px', textDecoration: 'none', display: 'block', transition: 'all 0.15s' }}
                 onMouseEnter={ev => { ev.currentTarget.style.background = 'rgba(200,146,42,0.04)'; ev.currentTarget.style.borderColor = 'rgba(200,146,42,0.45)' }}
                 onMouseLeave={ev => { ev.currentTarget.style.background = ''; ev.currentTarget.style.borderColor = 'rgba(200,146,42,0.2)' }}>
-                {e.label} {'\u2192'}
+                {e.label} {'→'}
               </a>
             ))}
           </div>
@@ -593,17 +593,17 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
         <div style={{ padding: '20px 22px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '14px', marginBottom: '20px' }}>
           <div style={{ ...sc, fontSize: '0.625rem', letterSpacing: '0.18em', ...gold, marginBottom: '8px' }}>Want the full picture?</div>
           <p style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
-            The Map gives you an honest read across all seven domains {'\u2014'} and loads your scores directly into your next sprint.
+            The Map gives you an honest read across all seven domains {'—'} and loads your scores directly into your next sprint.
           </p>
           <a href="/tools/map" style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.12em', ...gold, textDecoration: 'none', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '10px 22px', display: 'inline-block', background: 'rgba(200,146,42,0.05)' }}>
-            Begin The Map {'\u2192'}
+            Begin The Map {'→'}
           </a>
         </div>
       )}
 
       <div style={{ textAlign: 'center', marginTop: '16px' }}>
         <a href="/profile" style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '12px 28px', textDecoration: 'none', display: 'inline-block' }}>
-          Go to your profile {'\u2192'}
+          Go to your profile {'→'}
         </a>
       </div>
     </div>
