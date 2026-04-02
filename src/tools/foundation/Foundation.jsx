@@ -93,7 +93,6 @@ function AudioPlayer({ url, onEnded, locked }) {
             <span style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.08em', ...muted }}>{fmt(duration)}</span>
           </div>
         </div>
-      <ProtocolPanel />
     </div>
   )
 }
@@ -116,7 +115,7 @@ function AuthModal({ onDismiss }) {
         <button onClick={onDismiss} style={{ display: 'block', width: '100%', textAlign: 'center', background: 'none', border: 'none', ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: '4px' }}>
           Not now
         </button>
-      <ProtocolPanel />
+      </div>
     </div>
   )
 }
@@ -142,7 +141,6 @@ function FlameDelta({ before, after }) {
       <div style={{ textAlign: 'center' }}>
         <div style={{ ...sc, fontSize: '0.5rem', letterSpacing: '0.16em', ...muted, marginBottom: '8px' }}>AFTER</div>
         <FlameGlyph value={after} size={40} />
-      <ProtocolPanel />
     </div>
   )
 }
@@ -285,7 +283,6 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError }) {
           style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.12em', ...gold, background: 'none', border: 'none', cursor: 'pointer' }}>
           Listen again {'\u2192'}
         </button>
-      <ProtocolPanel />
     </div>
   )
 }
