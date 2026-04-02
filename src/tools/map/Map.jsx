@@ -1099,7 +1099,7 @@ export function MapPage() {
             }}>
 
               {/* Opening — large, breathing */}
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(1.125rem, 2.5vw, 1.3125rem)', fontWeight: 300 color: 'var(--text)', lineHeight: 1.9, marginBottom: '12px' }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(1.125rem, 2.5vw, 1.3125rem)', fontWeight: 300, color: 'var(--text)', lineHeight: 1.9, marginBottom: '12px' }}>
                 The Map is a process through which you will connect to the version of your life on the other side of the things you’ve been wanting to fix, change, alter, improve, repair, and heal.
               </p>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '1.125rem', fontWeight: 300, color: 'var(--gold-dk)', lineHeight: 1.7, marginBottom: '28px' }}>

@@ -98,7 +98,7 @@ function ToolAccordion({ tool }) {
       {open && (
         <div style={{ borderTop: '1px solid rgba(200,146,42,0.20)', padding: '28px 26px 32px', background: '#FAFAF7' }}>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', display: 'block', marginBottom: '10px' }}>{tool.label}</span>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300 color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '16px', maxWidth: '580px' }}>{tool.desc}</p>
+          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '16px', maxWidth: '580px' }}>{tool.desc}</p>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '24px', maxWidth: '580px' }}>{tool.detail}</p>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', color: '#A8721A', marginBottom: '24px' }}>{tool.meta}</div>
           {tool.quotes?.map((q, i) => (
@@ -153,7 +153,7 @@ export function LifeOSPage() {
         <div style={{ maxWidth: '820px', margin: '0 auto' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>For someone you care about</span>
           <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.12, marginBottom: '16px' }}>Passing this on.</h2>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300 color: 'rgba(15,21,35,0.88)', lineHeight: 1.7, marginBottom: '12px', maxWidth: '540px' }}>The fact that you{'’'}re here for someone else says something. That instinct {'—'} to want a better life for the people you love {'—'} is worth honouring carefully.</p>
+          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.88)', lineHeight: 1.7, marginBottom: '12px', maxWidth: '540px' }}>The fact that you{'’'}re here for someone else says something. That instinct {'—'} to want a better life for the people you love {'—'} is worth honouring carefully.</p>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '560px' }}>Not everything lands when it{'’'}s pushed. The right thing, offered at the right moment, in the right way {'—'} that{'’'}s different.</p>
           <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.4, marginBottom: '40px' }} />
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where do they seem to be?</span>

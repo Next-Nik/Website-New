@@ -158,7 +158,7 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
         Three areas. Three months.
       </h1>
       <Rule />
-      <p style={{ ...serif, fontSize: '1.0625rem', fontWeight: 300 color: 'var(--text)', lineHeight: 1.8, marginBottom: '6px' }}>
+      <p style={{ ...serif, fontSize: '1.0625rem', fontWeight: 300, color: 'var(--text)', lineHeight: 1.8, marginBottom: '6px' }}>
         {hasMapData
           ? 'Your Map scores are loaded.'
           : 'Choose the three areas where focused effort this quarter would matter most.'}

@@ -259,7 +259,7 @@ export function HomePage() {
         <div style={{ width: '1px', height: '52px', background: 'rgba(200,146,42,0.20)', margin: '0 auto 64px' }} />
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where you are</span>
         <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>Not sure where to start?</h2>
-        <p style={{ ...serif, fontSize: '17px', fontWeight: 300 color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Tell me a little about where you are right now. I{'\u2019'}ll point you in the right direction.</p>
+        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Tell me a little about where you are right now. I{'\u2019'}ll point you in the right direction.</p>
         <OrienteeringEmbed />
         <a href="/life-os" style={{ display: 'block', textAlign: 'center', ...serif, fontSize: '16px', color: '#A8721A', marginTop: '28px', textDecoration: 'none', opacity: 0.78 }}>or show me everything {'\u2192'}</a>
       </section>
@@ -268,7 +268,7 @@ export function HomePage() {
       <section style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where you are in the arc</span>
         <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>Find your stage.</h2>
-        <p style={{ ...serif, fontSize: '17px', fontWeight: 300 color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Each stage of the arc has its own terrain and its own entry point. Find where you actually are.</p>
+        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Each stage of the arc has its own terrain and its own entry point. Find where you actually are.</p>
         <div>
           {stageKeys.map(key => {
             const s = STAGES[key]
