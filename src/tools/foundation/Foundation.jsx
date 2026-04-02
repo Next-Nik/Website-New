@@ -389,6 +389,7 @@ export function FoundationPage() {
             Return to Baseline as often as you need it {'\u2014'} morning, midday, or whenever the ground feels unsteady. The before and after check-ins are optional but the data compounds. Over time you{'\u2019'}ll see what the audio actually does to your system, consistently, across weeks and months.
           </p>
         </div>
+      </div>
       <ProtocolPanel />
     </div>
   )
