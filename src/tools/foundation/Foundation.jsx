@@ -93,6 +93,7 @@ function AudioPlayer({ url, onEnded, locked }) {
             <span style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.08em', ...muted }}>{fmt(duration)}</span>
           </div>
         </div>
+      </div>
     </div>
   )
 }
