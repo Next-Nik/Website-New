@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { SprintPanel } from '../components/SprintPanel'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
+import DomainExplorer from '../components/domain-explorer/DomainExplorer'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
@@ -48,9 +49,9 @@ export function NextUsPage() {
         <span style={{ ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '14px' }}>Explore the horizon goals</span>
       </div>
 
-      {/* Domain Explorer iframe */}
+      {/* Domain Explorer */}
       <div style={{ width: '96vw', marginLeft: '50%', transform: 'translateX(-50%)', borderRadius: '14px', overflow: 'hidden', border: '1.5px solid rgba(200,146,42,0.78)', marginBottom: 0 }}>
-        <iframe src="https://next-us-hazel.vercel.app/" width="100%" height="780px" style={{ border: 'none', display: 'block' }} title="NextUs Domain Explorer" loading="lazy" />
+        <DomainExplorer />
       </div>
 
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: '0 40px 120px' }}>
