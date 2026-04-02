@@ -318,7 +318,8 @@ function FlameSlider({ value, onChange, ghostValue = null }) {
       {/* Label */}
       <div style={{
         fontFamily: "'Cormorant Garamond',Georgia,serif",
-        fontSize: '0.875rem', color: getFlameProps(value).color,
+        fontSize: '0.875rem', fontStyle: 'italic',
+        color: getFlameProps(value).color,
         transition: 'color 0.4s ease',
         textAlign: 'center', minHeight: '20px',
       }}>
@@ -400,7 +401,8 @@ export function FlameCheckIn({ audioPhase = 'baseline', ghostValue = null, onCom
 
       <p style={{
         fontFamily: "'Cormorant Garamond',Georgia,serif",
-        fontSize: '1rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7,
+        fontSize: '1rem', fontStyle: 'italic',
+        color: 'rgba(15,21,35,0.6)', lineHeight: 1.7,
         textAlign: 'center', marginBottom: '24px',
       }}>
         {isBefore ? 'Where is the flame right now?' : 'And now\u2014?'}
@@ -426,7 +428,8 @@ export function FlameCheckIn({ audioPhase = 'baseline', ghostValue = null, onCom
         style={{
           width: '100%', padding: '10px 14px',
           fontFamily: "'Cormorant Garamond',Georgia,serif",
-          fontSize: '0.9375rem', color: 'rgba(15,21,35,0.75)',
+          fontSize: '0.9375rem', fontStyle: 'italic',
+          color: 'rgba(15,21,35,0.75)',
           background: 'rgba(200,146,42,0.025)',
           border: '1px solid rgba(200,146,42,0.2)',
           borderRadius: '8px', outline: 'none',
@@ -460,7 +463,8 @@ export function FlameCheckIn({ audioPhase = 'baseline', ghostValue = null, onCom
         {onSkip && (
           <button onClick={onSkip} style={{
             fontFamily: "'Cormorant Garamond',Georgia,serif",
-            fontSize: '0.875rem', color: 'rgba(15,21,35,0.72)',
+            fontSize: '0.875rem', fontStyle: 'italic',
+            color: 'rgba(15,21,35,0.35)',
             background: 'none', border: 'none',
             cursor: 'pointer', padding: '10px',
           }}>

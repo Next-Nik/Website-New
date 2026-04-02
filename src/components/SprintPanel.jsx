@@ -68,7 +68,7 @@ function MiniWheel({ domains, currentScores, sprintScores }) {
         return (
           <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
             fontFamily="'Cormorant SC',Georgia,serif" fontSize="6.5" fontWeight="600" letterSpacing="0.5"
-            fill={s !== undefined ? getColor(s) : 'rgba(15,21,35,0.72)'}>
+            fill={s !== undefined ? getColor(s) : 'rgba(15,21,35,0.28)'}>
             {d.label.substring(0, 3).toUpperCase()}
           </text>
         )
@@ -164,7 +164,7 @@ export function SprintPanel({ context = 'default' }) {
           onClick={e => { if (e.target === e.currentTarget) setOpen(false) }}
           style={{
             position: 'fixed', inset: 0, zIndex: 2000,
-            background: 'rgba(15,21,35,0.72)',
+            background: 'rgba(15,21,35,0.45)',
             backdropFilter: 'blur(4px)',
             display: 'flex',
           }}
@@ -196,7 +196,7 @@ export function SprintPanel({ context = 'default' }) {
                   Target Sprint
                 </h2>
               </div>
-              <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(15,21,35,0.72)', fontSize: '1.25rem', lineHeight: 1, padding: '4px', marginTop: '2px' }}>
+              <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(15,21,35,0.45)', fontSize: '1.25rem', lineHeight: 1, padding: '4px', marginTop: '2px' }}>
                 {'\u00D7'}
               </button>
             </div>
@@ -204,7 +204,7 @@ export function SprintPanel({ context = 'default' }) {
             {/* Content */}
             <div style={{ flex: 1, padding: '20px 24px 32px' }}>
               {loading && (
-                <p style={{ ...serif, fontSize: '0.9375rem', color: 'rgba(15,21,35,0.72)', textAlign: 'center', paddingTop: '40px' }}>
+                <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', textAlign: 'center', paddingTop: '40px' }}>
                   Loading your sprint{'\u2026'}
                 </p>
               )}
@@ -238,7 +238,7 @@ export function SprintPanel({ context = 'default' }) {
                         <span style={{ ...sc, fontSize: '0.75rem', color: 'rgba(200,146,42,0.9)', flexShrink: 0, paddingTop: '2px' }}>{s.n}.</span>
                         <div>
                           <div style={{ ...sc, fontSize: '0.6875rem', letterSpacing: '0.06em', color: '#0F1523', marginBottom: '2px' }}>{s.t}</div>
-                          <div style={{ ...serif, fontSize: '0.875rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>{s.d}</div>
+                          <div style={{ ...serif, fontSize: '0.875rem', color: 'rgba(15,21,35,0.65)', lineHeight: 1.6 }}>{s.d}</div>
                         </div>
                       </div>
                     ))}
@@ -252,8 +252,8 @@ export function SprintPanel({ context = 'default' }) {
                   {days !== null && (
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
                       <span style={{ ...sc, fontSize: '2rem', fontWeight: 600, color: 'rgba(200,146,42,0.9)', lineHeight: 1 }}>{days}</span>
-                      <span style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.72)' }}>days remaining</span>
-                      <span style={{ ...serif, fontSize: '0.8125rem', color: 'rgba(15,21,35,0.72)', marginLeft: 'auto' }}>{sprint.end_date_label?.split('\u2014')[0]?.trim()}</span>
+                      <span style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>days remaining</span>
+                      <span style={{ ...serif, fontSize: '0.8125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.4)', marginLeft: 'auto' }}>{sprint.end_date_label?.split('\u2014')[0]?.trim()}</span>
                     </div>
                   )}
 
@@ -278,7 +278,7 @@ export function SprintPanel({ context = 'default' }) {
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                           <span style={{ ...sc, fontSize: '0.6875rem', letterSpacing: '0.08em', color: col }}>{dl?.label}</span>
                           {s !== undefined && sp !== undefined && (
-                            <span style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.72)' }}>
+                            <span style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.4)' }}>
                               {s} {'\u2192'} {sp} {'\u00B7'} {TIER[sp] || ''}
                             </span>
                           )}
@@ -287,7 +287,7 @@ export function SprintPanel({ context = 'default' }) {
                           {g.outcome_user || g.outcome_system}
                         </p>
                         {g.identity_statement && (
-                          <p style={{ ...serif, fontSize: '0.8125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55 }}>
+                          <p style={{ ...serif, fontSize: '0.8125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.55 }}>
                             {'\u201C'}{g.identity_statement}{'\u201D'}
                           </p>
                         )}
@@ -327,7 +327,7 @@ export function SprintPanel({ context = 'default' }) {
                     <a href="/tools/target-goals" style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.1em', color: 'rgba(200,146,42,0.9)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '9px 18px', textDecoration: 'none', background: 'rgba(200,146,42,0.05)' }}>
                       View full sprint {'\u2192'}
                     </a>
-                    <a href="/profile" style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.72)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '40px', padding: '9px 18px', textDecoration: 'none' }}>
+                    <a href="/profile" style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '40px', padding: '9px 18px', textDecoration: 'none' }}>
                       Profile
                     </a>
                   </div>

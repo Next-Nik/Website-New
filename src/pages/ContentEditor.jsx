@@ -21,7 +21,7 @@ export function ContentEditorPage() {
 
   if (loading) return (
     <div style={{ minHeight: '100vh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)' }}>Loading{'\u2026'}</div>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)' }}>Loading{'\u2026'}</div>
     </div>
   )
 

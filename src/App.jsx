@@ -26,7 +26,7 @@ function ComingSoon({ name }) {
       <div style={{ textAlign: 'center' }}>
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Life OS</span>
         <h1 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>{name}</h1>
-        <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.72)' }}>Coming soon.</p>
+        <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>Coming soon.</p>
       </div>
     </div>
   )
