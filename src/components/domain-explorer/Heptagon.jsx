@@ -24,14 +24,13 @@ function getRotationToTop(index, currentRot) {
 
 // Smart line-wrapping: breaks at spaces, max 11 chars per line
 // Allows single long words to stand alone (e.g. 'Intergenerational')
-function getNodeLabel(name) {
-  const MAX = 11
+function wrapAt(name, max) {
   const words = name.split(' ')
   const lines = []
   let current = ''
   for (const word of words) {
     const test = current ? `${current} ${word}` : word
-    if (test.length <= MAX || !current) {
+    if (test.length <= max || !current) {
       current = test
     } else {
       lines.push(current)
@@ -42,14 +41,25 @@ function getNodeLabel(name) {
   return lines
 }
 
-// Font size and node radius based on line count and longest line
+// Smart wrap: try tight first, loosen if 4+ lines result
+function getNodeLabel(name) {
+  const tight = wrapAt(name, 11)
+  if (tight.length <= 3) return tight
+  const loose = wrapAt(name, 14)
+  return loose.length < tight.length ? loose : tight
+}
+
+// Fixed font size — radius grows to fit the text block
+// Formula: base radius + extra for each line beyond 1 + extra for long words
 function getNodeSizing(lines) {
   const maxLen = Math.max(...lines.map(l => l.length))
   const n = lines.length
-  if (n >= 4) return { fontSize: 11.5, radius: 46, lineHeight: 1.25 }
-  if (n === 3) return { fontSize: 13,   radius: 44, lineHeight: 1.28 }
-  if (maxLen > 13) return { fontSize: 12.5, radius: 44, lineHeight: 1.3 }
-  return { fontSize: 15, radius: 42, lineHeight: 1.3 }
+  const BASE = 40
+  const perLine = 7       // px added per extra line
+  const perChar = 0.6     // px added per char over 9 on longest line
+  const charExtra = Math.max(0, maxLen - 9) * perChar
+  const radius = Math.round(BASE + (n - 1) * perLine + charExtra)
+  return { fontSize: 14.5, radius, lineHeight: 1.28 }
 }
 
 export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centreLabel, onCentreClick }) {
@@ -133,10 +143,9 @@ export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centr
         const p = getNodePos(i, displayRot)
         const isActive = !isSpinning && !isIdle && i === activeIndex
         const words = getNodeLabel(domain.name)
-        const { fontSize: baseFontSize, radius: baseRadius, lineHeight } = getNodeSizing(words)
-        // Active state gets slightly larger node and font
-        const r = isActive ? Math.max(NODE_R_ACTIVE, baseRadius + 6) : baseRadius
-        const fontSize = isSpinning ? baseFontSize - 1 : isActive ? baseFontSize + 2 : baseFontSize
+        const { fontSize, radius: baseRadius, lineHeight } = getNodeSizing(words)
+        // Active state: ring grows, circle stays same size
+        const r = baseRadius
         // Vertical centering: offset to keep block centred in circle
         const blockHeight = (words.length - 1) * lineHeight
         const startDy = words.length === 1 ? '0.35em' : `-${(blockHeight / 2).toFixed(2)}em`
@@ -146,7 +155,7 @@ export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centr
             role="button" tabIndex={0} aria-label={`Select domain: ${domain.name}`}
             onKeyDown={e => e.key === 'Enter' && (isSpinning ? cancelSpinAndSelect(i) : onSelect(i))}
           >
-            {isActive && <circle cx={p.x} cy={p.y} r={r + 14} fill="rgba(200,146,42,0.06)" stroke="rgba(200,146,42,0.25)" strokeWidth="1" />}
+            {isActive && <circle cx={p.x} cy={p.y} r={r + 12} fill="rgba(200,146,42,0.06)" stroke="rgba(200,146,42,0.25)" strokeWidth="1" />}
             <circle cx={p.x} cy={p.y} r={r} className={styles.nodeCircle}
               fill={isSpinning ? 'rgba(255,255,255,0.95)' : isActive ? 'rgba(200,146,42,0.06)' : '#FFFFFF'}
               stroke={isSpinning ? 'rgba(200,146,42,0.78)' : isActive ? 'rgba(200,146,42,1)' : 'rgba(200,146,42,0.78)'}

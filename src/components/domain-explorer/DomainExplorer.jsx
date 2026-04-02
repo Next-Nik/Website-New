@@ -170,8 +170,8 @@ export default function DomainExplorer() {
           <div className={styles.heptagonWrapper}>
             <Heptagon
               domains={navState.currentList}
-              activeIndex={activeIndex ?? 0}
-              onSelect={handleSelectAndDrill}
+              activeIndex={activeIndex}
+              onSelect={handleSelect}
               isIdle={isIdle}
               centreLabel={centreLabel}
               onCentreClick={handleCentreClick}
