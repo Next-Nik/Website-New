@@ -805,7 +805,7 @@ export function PurposePieceDeepPage() {
             />
             <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
           </div>
-    </div>
       <ArchetypeReferencePanel />
+    </div>
   )
 }

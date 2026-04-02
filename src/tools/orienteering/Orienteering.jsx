@@ -139,7 +139,7 @@ export function OrienteeringPage() {
           </p>
         )}
       </div>
-    </div>
       <DomainsPanel />
+    </div>
   )
 }
