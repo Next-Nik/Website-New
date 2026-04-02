@@ -135,7 +135,7 @@ function FlameDelta({ before, after }) {
       </div>
       <div style={{ textAlign: 'center' }}>
         <div style={{ ...sc, fontSize: '1.25rem', color, lineHeight: 1 }}>{symbol}</div>
-        <div style={{ ...serif, fontSize: '0.75rem' color, marginTop: '4px' }}>
+        <div style={{ ...serif, fontSize: '0.75rem', color, marginTop: '4px' }}>
           {delta === 0 ? 'holding steady' : `${Math.abs(delta).toFixed(1)} ${delta > 0 ? 'up' : 'down'}`}
         </div>
       </div>
