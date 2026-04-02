@@ -1,5 +1,5 @@
 .app {
-  min-height: 100vh;
+  min-height: 560px;
   background: var(--bg);
   position: relative;
   overflow: hidden;
@@ -21,9 +21,9 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0;
-  min-height: 100vh;
-  align-items: center;
-  padding: 20px 40px 40px;
+  min-height: 600px;
+  align-items: start;
+  padding: 32px 40px 48px;
   max-width: 1100px;
   margin: 0 auto;
 }
@@ -42,6 +42,7 @@
   flex-direction: column;
   align-items: center;
   position: relative;
+  padding-top: 0;
 }
 
 .heptagonWrapper {
@@ -64,7 +65,7 @@
 
 /* Panel column */
 .panelCol {
-  padding: 0 0 0 48px;
+  padding: 32px 0 0 48px;
 }
 
 @media (max-width: 780px) {
@@ -87,12 +88,12 @@
 
 .idleLabel {
   font-family: 'Cormorant SC', serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.16em;
-  color: var(--text-meta);
+  letter-spacing: 0.2em;
+  color: var(--gold-dk);
   text-transform: uppercase;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .idleList {
@@ -113,10 +114,11 @@
   width: 100%;
   text-align: left;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(16px, 2.2vw, 20px);
+  font-size: clamp(17px, 2.2vw, 22px);
   font-weight: 300;
   color: var(--text-body);
   letter-spacing: 0.01em;
+  font-style: italic;
   transition: color 0.2s ease;
   border-bottom: 1px solid transparent;
 }
@@ -144,21 +146,23 @@
 
 .overviewEyebrow {
   font-family: 'Cormorant SC', serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.22em;
   color: var(--gold-dk);
   text-transform: uppercase;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .overviewTitle {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(28px, 4vw, 40px);
+  font-size: clamp(32px, 4.5vw, 48px);
   font-weight: 300;
+  font-style: italic;
   color: var(--text-head);
-  line-height: 1.15;
+  line-height: 1.1;
   margin-bottom: 16px;
+  letter-spacing: -0.01em;
 }
 
 .overviewDivider {
@@ -170,11 +174,11 @@
 
 .overviewBody {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(15px, 2vw, 17px);
+  font-size: clamp(16px, 2vw, 18px);
   font-weight: 300;
   color: var(--text-body);
-  line-height: 1.8;
-  margin-bottom: 14px;
+  line-height: 1.85;
+  margin-bottom: 16px;
 }
 
 /* The civilisational vision statement — it should land with weight */

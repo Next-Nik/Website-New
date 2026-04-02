@@ -22,7 +22,7 @@ export default function DomainExplorer() {
   const [activeIndex,    setActiveIndex]    = useState(null)
   const [levelPath,      setLevelPath]      = useState([])
   const [contributeOpen, setContributeOpen] = useState(false)
-  const [overviewOpen,   setOverviewOpen]   = useState(false)
+  const [overviewOpen,   setOverviewOpen]   = useState(true)
 
   // User initial for display (optional — auth already handled by useAuth)
   const userInitial = user?.email

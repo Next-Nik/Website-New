@@ -59,7 +59,7 @@ function getNodeSizing(lines) {
   const perChar = 0.6     // px added per char over 9 on longest line
   const charExtra = Math.max(0, maxLen - 9) * perChar
   const radius = Math.round(BASE + (n - 1) * perLine + charExtra)
-  return { fontSize: 14.5, radius, lineHeight: 1.28 }
+  return { fontSize: 15, radius, lineHeight: 1.28 }
 }
 
 export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centreLabel, onCentreClick }) {
@@ -162,9 +162,9 @@ export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centr
               strokeWidth={isActive ? 1.5 : 1}
             />
             <text x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle"
-              fill="#0F1523" fontSize={fontSize}
-              fontFamily="'Cormorant Garamond', Georgia, serif"
-              fontWeight={isActive ? '400' : '300'} letterSpacing="0.01em"
+              fill={isActive ? '#A8721A' : '#0F1523'} fontSize={fontSize}
+              fontFamily="'Cormorant SC', Georgia, serif"
+              fontWeight="500" letterSpacing="0.04em"
               style={{ pointerEvents: 'none', userSelect: 'none' }}
             >
               {words.map((word, wi) => (
@@ -190,8 +190,8 @@ export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centr
         <circle cx={CX} cy={CY} r={76} fill="#FFFFFF" stroke="rgba(200,146,42,0.78)" strokeWidth="1.5" className={styles.centreCircle} />
         {centreLabel && (
           <text x={CX} y={CY} textAnchor="middle" dominantBaseline="middle"
-            fill="#A8721A" fontSize="18" fontFamily="'Cormorant Garamond', Georgia, serif"
-            fontWeight="400" fontStyle="italic" style={{ pointerEvents: 'none', userSelect: 'none' }}
+            fill="#A8721A" fontSize="20" fontFamily="'Cormorant Garamond', Georgia, serif"
+            fontWeight="300" fontStyle="italic" style={{ pointerEvents: 'none', userSelect: 'none' }}
           >
             {centreLabel.split(' ').map((word, wi, arr) => (
               <tspan key={wi} x={CX} dy={wi === 0 ? `${-(arr.length - 1) * 0.6}em` : '1.25em'}>{word}</tspan>
