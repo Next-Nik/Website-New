@@ -47,7 +47,7 @@
 }
 
 .closeBtn:hover {
-  color: var(--gold);
+  color: #A8721A;
 }
 
 .eyebrow {
@@ -70,8 +70,7 @@
 }
 
 .title em {
-  font-style: italic;
-  color: var(--gold);
+  color: #A8721A;
 }
 
 .divider {

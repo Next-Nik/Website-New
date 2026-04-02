@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SprintPanel } from '../components/SprintPanel'
+import { CivilisationalFramePanel } from '../components/CivilisationalFramePanel'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
 import DomainExplorer from '../components/domain-explorer/DomainExplorer'
@@ -22,11 +22,11 @@ function DomainModal({ domain, onClose }) {
   return (
     <div onClick={e => e.target === e.currentTarget && onClose()} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', zIndex: 100 }}>
       <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '32px', maxWidth: '420px', width: '100%', position: 'relative', ...serif }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: '14px', right: '18px', fontSize: '18px', cursor: 'pointer', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', lineHeight: 1 }}>{'\u00D7'}</button>
+        <button onClick={onClose} style={{ position: 'absolute', top: '14px', right: '18px', fontSize: '18px', cursor: 'pointer', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', lineHeight: 1 }}>{'\u00D7'}</button>
         <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '8px' }}>NextUs Domain</div>
         <div style={{ fontSize: '24px', fontWeight: 300, color: '#0F1523', marginBottom: '12px', lineHeight: 1.1 }}>{domain.label}</div>
         <div style={{ fontSize: '16px', fontWeight: 300, lineHeight: 1.75, color: 'rgba(15,21,35,0.78)', marginBottom: '16px' }}>{domain.desc}</div>
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', borderTop: '1px solid rgba(200,146,42,0.20)', paddingTop: '12px' }}>Part of the NextUs vocabulary.</div>
+        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.72)', borderTop: '1px solid rgba(200,146,42,0.20)', paddingTop: '12px' }}>Part of the NextUs vocabulary.</div>
       </div>
     </div>
   )
@@ -43,7 +43,7 @@ export function NextUsPage() {
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 0' }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>NextUs</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          The future is not something<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>that happens to us.</em>
+          The future is not something<br /><em style={{ color: '#A8721A' }}>that happens to us.</em>
         </h1>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '520px' }}>Seven domains. A living map of where we are {'\u2014'} and the distance to where we are trying to go.</p>
         <span style={{ ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '14px' }}>Explore the horizon goals</span>
@@ -60,7 +60,7 @@ export function NextUsPage() {
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>The farmer in Kenya restoring soil carbon does not know about the financing mechanism in Amsterdam that could fund her work. The AI ethicist in Seoul cannot see the governance framework in Nairobi addressing exactly her problem. The investor in S{'\u00E3'}o Paulo has no map showing where the real gaps are.</p>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Progress is happening. But it is fragmented, invisible, and uncoordinated. The cost is duplicated effort, misallocated resources, and builders doing important work in isolation {'\u2014'} not knowing who else is carrying the same thing.</p>
         <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '20px 0 20px 28px', margin: '48px 0', maxWidth: '580px' }}>
-          <p style={{ ...serif, fontSize: '20px', fontStyle: 'italic', fontWeight: 300, color: '#0F1523', lineHeight: 1.65, margin: 0 }}>What we can see clearly, we can coordinate around. What we can coordinate around, we can change.</p>
+          <p style={{ ...serif, fontSize: '20px' fontWeight: 300, color: '#0F1523', lineHeight: 1.65, margin: 0 }}>What we can see clearly, we can coordinate around. What we can coordinate around, we can change.</p>
         </div>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '56px', maxWidth: '600px' }}>NextUs is the perceptual layer. A living map of where humanity is trying to go {'\u2014'} across seven domains, at every scale {'\u2014'} so that the people already doing the work can find each other, aim at something worth building, and compound their effort rather than scatter it.</p>
 
@@ -98,7 +98,7 @@ export function NextUsPage() {
         </div>
       </section>
 
-      <SprintPanel />
+      <CivilisationalFramePanel />
       <SiteFooter />
     </div>
   )

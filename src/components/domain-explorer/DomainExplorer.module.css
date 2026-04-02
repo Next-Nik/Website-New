@@ -118,7 +118,6 @@
   font-weight: 300;
   color: var(--text-body);
   letter-spacing: 0.01em;
-  font-style: italic;
   transition: color 0.2s ease;
   border-bottom: 1px solid transparent;
 }
@@ -158,7 +157,6 @@
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(32px, 4.5vw, 48px);
   font-weight: 300;
-  font-style: italic;
   color: var(--text-head);
   line-height: 1.1;
   margin-bottom: 16px;

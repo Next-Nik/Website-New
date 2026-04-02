@@ -8,7 +8,7 @@ const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 function Quote({ text, cite }) {
   return (
     <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '14px 0 14px 28px', margin: '0 0 28px', maxWidth: '600px' }}>
-      <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '10px' }}>{text}</p>
+      <p style={{ ...serif, fontSize: '16px' color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '10px' }}>{text}</p>
       <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {cite}</span>
     </div>
   )
@@ -30,7 +30,7 @@ export function WorkWithNikPage() {
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Work with Nik</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          From processing<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>to building.</em>
+          From processing<br /><em style={{ color: '#A8721A' }}>to building.</em>
         </h1>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '520px' }}>One-on-one work for people who are done with the loop they{'\u2019'}re in.</p>
         <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none', marginBottom: '64px' }}>Book a discovery call {'\u2192'}</a>
@@ -61,7 +61,7 @@ export function WorkWithNikPage() {
         <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
         <div className="calendly-inline-widget" data-url="https://calendly.com/nikwood/talk-to-nik" style={{ minWidth: '280px', height: '700px', borderRadius: '14px', overflow: 'hidden', border: '1.5px solid rgba(200,146,42,0.78)' }} />
         <script src="https://assets.calendly.com/assets/external/widget.js" async />
-        <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginTop: '14px' }}>30 minutes · no cost · no obligation</p>
+        <p style={{ ...serif, fontSize: '13px' color: 'rgba(15,21,35,0.72)', marginTop: '14px' }}>30 minutes · no cost · no obligation</p>
       </div>
       <SprintPanel />
       <SiteFooter />
@@ -85,7 +85,7 @@ export function PodcastPage() {
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>The Podcast</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          NextUs.<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>The conversation.</em>
+          NextUs.<br /><em style={{ color: '#A8721A' }}>The conversation.</em>
         </h1>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '500px' }}>220+ episodes since 2015. Long-form conversations at the intersection of personal development, human potential, and civilisational possibility.</p>
 
@@ -97,7 +97,7 @@ export function PodcastPage() {
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Listen on</span>
         {platforms.map(p => (
           <a key={p.label} href={p.url} target="_blank" rel="noopener" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 22px', borderRadius: '14px', marginBottom: '8px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', textDecoration: 'none', transition: 'all 0.15s' }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.72)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
           >
             <div style={{ ...serif, fontSize: '16px', color: '#A8721A' }}>{p.label}</div>

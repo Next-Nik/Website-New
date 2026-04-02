@@ -24,13 +24,14 @@ const SCALE = [
 ]
 
 const ZONE_COLORS = {
-  development: { row: 'rgba(200,146,42,0.03)', tier: '#A8721A',   meaning: 'rgba(15,21,35,0.65)' },
+  development: { row: 'rgba(200,146,42,0.03)', tier: '#A8721A',   meaning: 'rgba(15,21,35,0.72)' },
   line:        { row: 'rgba(200,146,42,0.08)', tier: '#A8721A',   meaning: 'rgba(15,21,35,0.72)' },
-  healing:     { row: 'rgba(15,21,35,0.015)', tier: '#6B5040',    meaning: 'rgba(15,21,35,0.55)' },
+  healing:     { row: 'rgba(15,21,35,0.72)', tier: '#6B5040',    meaning: 'rgba(15,21,35,0.72)' },
 }
 
-export function ScalePanel() {
+export function ScalePanel({ side = 'left' }) {
   const [open, setOpen] = useState(false)
+  const isRight = side === 'right'
 
   useEffect(() => {
     function onKey(e) { if (e.key === 'Escape') setOpen(false) }
@@ -40,13 +41,15 @@ export function ScalePanel() {
 
   return (
     <>
-      {/* Left edge tab */}
+      {/* Edge tab */}
       <button
         onClick={() => setOpen(true)}
         aria-label="Open Horizon Scale"
         style={{
           position: 'fixed',
-          left: open ? '-60px' : '-14px',
+          ...(isRight
+            ? { right: open ? '-60px' : '-14px', left: 'auto' }
+            : { left: open ? '-60px' : '-14px' }),
           top: '50%',
           transform: 'translateY(-50%)',
           zIndex: 1500,
@@ -60,8 +63,10 @@ export function ScalePanel() {
           justifyContent: 'center',
           padding: 0,
           transition: 'all 0.25s ease',
-          clipPath: 'polygon(0% 12%, 0% 88%, 30% 100%, 100% 100%, 100% 0%, 30% 0%)',
-          borderRadius: '0 12px 12px 0',
+          clipPath: isRight
+            ? 'polygon(100% 12%, 100% 88%, 70% 100%, 0% 100%, 0% 0%, 70% 0%)'
+            : 'polygon(0% 12%, 0% 88%, 30% 100%, 100% 100%, 100% 0%, 30% 0%)',
+          borderRadius: isRight ? '12px 0 0 12px' : '0 12px 12px 0',
         }}
       >
         <span style={{
@@ -87,9 +92,10 @@ export function ScalePanel() {
             position: 'fixed',
             inset: 0,
             zIndex: 2000,
-            background: 'rgba(15,21,35,0.45)',
+            background: 'rgba(15,21,35,0.72)',
             backdropFilter: 'blur(4px)',
             display: 'flex',
+            justifyContent: isRight ? 'flex-end' : 'flex-start',
           }}
         >
           {/* Panel */}
@@ -97,11 +103,12 @@ export function ScalePanel() {
             width: 'min(480px, 92vw)',
             height: '100%',
             background: '#FAFAF7',
-            borderRight: '1.5px solid rgba(200,146,42,0.3)',
+            borderRight: isRight ? 'none' : '1.5px solid rgba(200,146,42,0.3)',
+            borderLeft: isRight ? '1.5px solid rgba(200,146,42,0.3)' : 'none',
             overflowY: 'auto',
             display: 'flex',
             flexDirection: 'column',
-            animation: 'slideInLeft 0.25s ease',
+            animation: isRight ? 'slideInRight 0.25s ease' : 'slideInLeft 0.25s ease',
           }}>
             {/* Header */}
             <div style={{
@@ -122,7 +129,7 @@ export function ScalePanel() {
                 <h2 style={{ fontFamily: 'var(--font-sc)', fontSize: '1.25rem', fontWeight: 400, color: 'var(--text)', lineHeight: 1.1, marginBottom: '4px' }}>
                   The Horizon Scale
                 </h2>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', fontStyle: 'italic', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem' color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
                   Fulfilment calibration {'\u00B7'} 0{'\u2013'}10
                 </p>
               </div>
@@ -134,7 +141,7 @@ export function ScalePanel() {
                   border: 'none',
                   cursor: 'pointer',
                   padding: '4px',
-                  color: 'var(--text-muted)',
+                  color: 'rgba(15,21,35,0.72)',
                   fontSize: '1.25rem',
                   lineHeight: 1,
                   flexShrink: 0,
@@ -150,7 +157,7 @@ export function ScalePanel() {
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-meta)', lineHeight: 1.7, marginBottom: '8px' }}>
                 Each domain of your life is scored against this scale. The scale has two zones separated by The Line at 5. Development sits above {'\u2014'} growing, building, expressing. Healing sits below {'\u2014'} restoration, repair, return.
               </p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', fontStyle: 'italic', color: 'var(--text-muted)', lineHeight: 1.65 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem' color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 The Line is yours. You build the character who represents 10. You name where you actually are.
               </p>
             </div>
@@ -160,7 +167,7 @@ export function ScalePanel() {
               <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.18em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '4px' }}>
                 Development
               </div>
-              <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontStyle: 'italic', color: 'var(--text-muted)' }}>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem' color: 'rgba(15,21,35,0.72)' }}>
                 above The Line {'\u2014'} growing, building, expressing
               </div>
             </div>
@@ -179,7 +186,7 @@ export function ScalePanel() {
                         <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.18em', color: '#6B5040', textTransform: 'uppercase', marginBottom: '4px' }}>
                           Healing
                         </div>
-                        <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontStyle: 'italic', color: 'var(--text-muted)' }}>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem' color: 'rgba(15,21,35,0.72)' }}>
                           below The Line {'\u2014'} restoration, repair, return
                         </div>
                       </div>
@@ -202,7 +209,7 @@ export function ScalePanel() {
                           <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.75rem', letterSpacing: '0.12em', color: 'var(--gold-dk)', textTransform: 'uppercase' }}>
                             The Line
                           </div>
-                          <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontStyle: 'italic', color: 'var(--text-muted)', marginTop: '2px' }}>
+                          <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem' color: 'rgba(15,21,35,0.72)', marginTop: '2px' }}>
                             {row.meaning}
                           </div>
                         </div>
@@ -233,7 +240,7 @@ export function ScalePanel() {
                               {row.tier}
                             </span>
                             {row.label && (
-                              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontStyle: 'italic', color: 'var(--text-muted)' }}>
+                              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem' color: 'rgba(15,21,35,0.72)' }}>
                                 {row.label}
                               </span>
                             )}
@@ -251,25 +258,28 @@ export function ScalePanel() {
 
             {/* Footer note */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(200,146,42,0.12)', marginTop: 'auto' }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', fontStyle: 'italic', color: 'var(--text-muted)', lineHeight: 1.65 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem' color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 Any score below 5 means this domain is actively creating friction {'\u2014'} consuming more than it generates. Stabilise before optimising.
               </p>
             </div>
           </div>
 
-          {/* Close tab on right edge of panel */}
+          {/* Close tab on edge of panel */}
           <button
             onClick={() => setOpen(false)}
             aria-label="Close scale"
             style={{
               position: 'fixed',
-              left: 'min(480px, 92vw)',
+              ...(isRight
+                ? { right: 'min(480px, 92vw)', left: 'auto' }
+                : { left: 'min(480px, 92vw)' }),
               top: '50%',
               transform: 'translateY(-50%)',
               zIndex: 2100,
               background: '#FAFAF7',
               border: '1.5px solid rgba(200,146,42,0.78)',
-              borderLeft: 'none',
+              borderLeft: isRight ? '1.5px solid rgba(200,146,42,0.78)' : 'none',
+              borderRight: isRight ? 'none' : '1.5px solid rgba(200,146,42,0.78)',
               width: '44px',
               height: '88px',
               cursor: 'pointer',
@@ -277,8 +287,10 @@ export function ScalePanel() {
               alignItems: 'center',
               justifyContent: 'center',
               padding: 0,
-              clipPath: 'polygon(28% 12%, 28% 88%, 30% 100%, 100% 100%, 100% 0%, 30% 0%)',
-              borderRadius: '0 12px 12px 0',
+              clipPath: isRight
+                ? 'polygon(0% 0%, 72% 0%, 72% 12%, 100% 12%, 100% 88%, 72% 88%, 72% 100%, 0% 100%)'
+                : 'polygon(28% 12%, 28% 88%, 30% 100%, 100% 100%, 100% 0%, 30% 0%)',
+              borderRadius: isRight ? '12px 0 0 12px' : '0 12px 12px 0',
             }}
           >
             <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.75rem', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
@@ -290,6 +302,10 @@ export function ScalePanel() {
         @keyframes slideInLeft {
           from { transform: translateX(-100%); opacity: 0; }
           to   { transform: translateX(0);    opacity: 1; }
+        }
+        @keyframes slideInRight {
+          from { transform: translateX(100%); opacity: 0; }
+          to   { transform: translateX(0);   opacity: 1; }
         }
         #scale-tab:hover {
           background: rgba(200,146,42,0.06);

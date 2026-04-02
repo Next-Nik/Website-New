@@ -1,5 +1,4 @@
 import { SiteNav } from '../components/SiteNav'
-import { SprintPanel } from '../components/SprintPanel'
 import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -12,11 +11,10 @@ function LegalWrap({ title, eyebrow, subtitle, active, children }) {
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>{eyebrow}</span>
         <h1 style={{ ...serif, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '24px' }} dangerouslySetInnerHTML={{ __html: title }} />
-        <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginBottom: '48px' }}>{subtitle}</p>
+        <p style={{ ...serif, fontSize: '14px' color: 'rgba(15,21,35,0.72)', marginBottom: '48px' }}>{subtitle}</p>
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', marginBottom: '48px' }} />
         {children}
       </div>
-      <SprintPanel />
       <SiteFooter />
     </div>
   )
@@ -39,7 +37,7 @@ export function PrivacyPage() {
       <P>The short version: we collect what we need to make the tools work and remember your progress. We don{'\u2019'}t sell your data. We don{'\u2019'}t share it with advertisers. We don{'\u2019'}t use it to build profiles for anyone other than you.</P>
       <H2>What we collect</H2>
       <P>When you create an account, we store your email address and a secure identifier. That{'\u2019'}s the minimum needed to keep your work attached to you across sessions.</P>
-      <P>When you use the Life OS tools, we store the outputs {'\u2014'} your domain scores from The Map, your archetype and coordinates from Purpose Piece, your daily check-ins from Pulse. This is what makes your profile possible.</P>
+      <P>When you use the Life OS tools, we store the outputs {'\u2014'} your domain scores from The Map, your archetype and coordinates from Purpose Piece, your sprint data from Target Goals. This is what makes your profile possible.</P>
       <P>We also store anything you write in the manual fields {'\u2014'} your own words, your horizon statements, your notes. These are yours. They{'\u2019'}re stored so you can return to them.</P>
       <P>When you sign in via Google, Google provides us with your email address and basic profile information. We don{'\u2019'}t receive anything beyond what you explicitly authorise.</P>
       <H2>What we don{'\u2019'}t collect</H2>
@@ -67,7 +65,7 @@ export function PrivacyPage() {
 export function TermsPage() {
   return (
     <LegalWrap eyebrow="Terms of Service" title="Using NextUs<br><em style='color:#A8721A;'>in good faith.</em>" subtitle="Last updated March 2026 · NextUs / Nik Wood" active="">
-      <P>These terms cover your use of nextus.world and the Life OS tools {'\u2014'} Orienteering, The Map, Purpose Piece, Pulse, Foundation {'\u2014'} and the NextUs platform.</P>
+      <P>These terms cover your use of nextus.world and the Life OS tools {'\u2014'} Orienteering, The Map, Purpose Piece, Foundation, Target Goals {'\u2014'} and the NextUs platform.</P>
       <P>The spirit of these terms: use the platform honestly, treat what you find here with respect, and don{'\u2019'}t do things that would harm other people or the platform itself.</P>
       <H2>Your account</H2>
       <P>You need an account to save your progress and access your profile. You{'\u2019'}re responsible for keeping your login secure. You must be at least 16 years old to create an account.</P>

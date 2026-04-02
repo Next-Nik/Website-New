@@ -24,7 +24,7 @@ function ScoreBar({ label, score }) {
   const color = getTierColor(score)
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)', width: '96px', flexShrink: 0 }}>{label}</div>
+      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.72)', width: '96px', flexShrink: 0 }}>{label}</div>
       <div style={{ flex: 1, position: 'relative', height: '20px', display: 'flex', alignItems: 'center' }}>
         <div style={{ position: 'absolute', left: 0, right: 0, height: '4px', background: 'rgba(200,146,42,0.12)', borderRadius: '2px' }} />
         <div style={{ position: 'absolute', left: 0, width: `${(score/10)*100}%`, height: '4px', background: color, borderRadius: '2px', transition: 'width 0.6s ease' }} />
@@ -32,7 +32,7 @@ function ScoreBar({ label, score }) {
       </div>
       <div style={{ width: '80px', flexShrink: 0, textAlign: 'right' }}>
         <span style={{ ...sc, fontSize: '1.125rem', fontWeight: 600, color, lineHeight: 1 }}>{score}</span>
-        <span style={{ ...serif, fontSize: '0.75rem', color: 'rgba(15,21,35,0.55)' }}>/10</span>
+        <span style={{ ...serif, fontSize: '0.75rem', color: 'rgba(15,21,35,0.72)' }}>/10</span>
         <div style={{ ...serif, fontSize: '0.625rem', color, marginTop: '2px', opacity: 0.8 }}>{TIER_LABELS[score]}</div>
       </div>
     </div>
@@ -63,7 +63,7 @@ function Slot({ title, tip, linkLabel, linkUrl, children, defaultOpen = true }) 
 
 function EmptySlot({ cta, ctaUrl }) {
   return (
-    <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginBottom: '16px' }}>
+    <div style={{ ...serif, fontSize: '15px' color: 'rgba(15,21,35,0.72)', marginBottom: '16px' }}>
       Not yet populated.{' '}
       {cta && ctaUrl && <a href={ctaUrl} style={{ color: '#A8721A', textDecoration: 'none' }}>{cta} {'\u2192'}</a>}
     </div>
@@ -103,7 +103,7 @@ export function ProfilePage() {
 
   if (authLoading || dataLoading) return (
     <div style={{ minHeight: '100vh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)' }}>Loading{'\u2026'}</div>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)' }}>Loading{'\u2026'}</div>
     </div>
   )
 
@@ -124,7 +124,7 @@ export function ProfilePage() {
         <div style={{ marginBottom: '72px' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Your Profile</span>
           <h1 style={{ ...serif, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '10px' }}>{name}.</h1>
-          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{user.email}</p>
+          <p style={{ ...serif, fontSize: '15px' color: 'rgba(15,21,35,0.72)' }}>{user.email}</p>
         </div>
 
         <Slot title="The Map" tip="Seven domain scores." linkLabel="The Map" linkUrl="/tools/map">
@@ -134,7 +134,7 @@ export function ProfilePage() {
                 <ScoreBar key={key} label={DOMAIN_LABELS[i]} score={scores[key]} />
               ))}
               {mapData?.completed_at && (
-                <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginTop: '16px' }}>
+                <p style={{ ...serif, fontSize: '13px' color: 'rgba(15,21,35,0.72)', marginTop: '16px' }}>
                   Completed {new Date(mapData.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
               )}
@@ -171,12 +171,8 @@ export function ProfilePage() {
           )}
         </Slot>
 
-        <Slot title="Pulse" tip="Daily rhythm." linkLabel="Pulse" linkUrl="/tools/pulse">
-          <EmptySlot cta="Begin Pulse" ctaUrl="/tools/pulse" />
-        </Slot>
-
         <Slot title="NextUs" tip="Seven civilisational domains." linkLabel="NextUs" linkUrl="/nextus">
-          <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)' }}>
+          <div style={{ ...serif, fontSize: '15px' color: 'rgba(15,21,35,0.72)' }}>
             This is where your contribution to the larger project lives. Building now.
           </div>
         </Slot>

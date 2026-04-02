@@ -1,5 +1,5 @@
 import { SiteNav } from '../components/SiteNav'
-import { SprintPanel } from '../components/SprintPanel'
+import { GlossaryPanel } from '../components/GlossaryPanel'
 import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -18,7 +18,7 @@ export function AboutPage() {
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Not lack of information. Not lack of will. Something structural {'\u2014'} a missing layer between knowing and living. Between the person who understands what a good life looks like and the person who actually builds one.</p>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '48px', maxWidth: '600px' }}>That question became a decade of study, practice, and iteration. Life OS is the architecture that emerged. NextUs is where it points.</p>
         <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '20px 0 20px 28px', margin: '0 0 64px', maxWidth: '560px' }}>
-          <p style={{ ...serif, fontSize: '20px', fontStyle: 'italic', fontWeight: 300, color: '#0F1523', lineHeight: 1.65, margin: 0 }}>The personal work and the civilisational work are not separate projects. They are the same orientation, at different scales.</p>
+          <p style={{ ...serif, fontSize: '20px' fontWeight: 300, color: '#0F1523', lineHeight: 1.65, margin: 0 }}>The personal work and the civilisational work are not separate projects. They are the same orientation, at different scales.</p>
         </div>
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 48px' }} />
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Nik works directly with individuals through coaching and the Horizon Leap programme. He hosts the NextUs podcast {'\u2014'} 220+ episodes since 2015 {'\u2014'} and builds the tools and platforms that make this ecosystem accessible at scale.</p>
@@ -29,7 +29,7 @@ export function AboutPage() {
           <a href="/podcast" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Listen to the podcast</a>
         </div>
       </div>
-      <SprintPanel />
+      <GlossaryPanel />
       <SiteFooter />
     </div>
   )

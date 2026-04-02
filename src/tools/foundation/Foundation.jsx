@@ -3,6 +3,7 @@ import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 import { FlameCheckIn, FlameGlyph } from '../../components/FlameCheckIn'
+import { ProtocolPanel } from '../../components/ProtocolPanel'
 
 const AUDIO_FILE = 'foundation-baseline.mp3'
 const BUCKET     = 'nextus-audio'
@@ -49,14 +50,14 @@ function AudioPlayer({ url, onEnded, locked }) {
   return (
     <div style={{
       padding: '20px 22px',
-      background: locked ? 'rgba(15,21,35,0.02)' : '#FFFFFF',
+      background: locked ? 'rgba(15,21,35,0.72)' : '#FFFFFF',
       border: `1.5px solid ${locked ? 'rgba(200,146,42,0.2)' : 'rgba(200,146,42,0.78)'}`,
       borderRadius: '14px',
       transition: 'all 0.4s ease',
       opacity: locked ? 0.55 : 1,
     }}>
       {locked && (
-        <p style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, marginBottom: '14px', lineHeight: 1.6 }}>
+        <p style={{ ...serif, fontSize: '0.875rem' ...muted, marginBottom: '14px', lineHeight: 1.6 }}>
           Check in before you begin {'\u2014'} then the audio unlocks.
         </p>
       )}
@@ -102,7 +103,7 @@ function AudioPlayer({ url, onEnded, locked }) {
 function AuthModal({ onDismiss }) {
   const returnUrl = encodeURIComponent(window.location.href)
   return (
-    <div onClick={e => e.target === e.currentTarget && onDismiss()} style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+    <div onClick={e => e.target === e.currentTarget && onDismiss()} style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.72)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '36px 32px 28px', maxWidth: '400px', width: '100%' }}>
         <span style={{ display: 'block', ...sc, fontSize: '0.75rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Foundation</span>
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: 'var(--text)', lineHeight: 1.2, marginBottom: '10px' }}>Sign in to listen.</h2>
@@ -112,7 +113,7 @@ function AuthModal({ onDismiss }) {
         <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', width: '100%', padding: '14px', textAlign: 'center', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...sc, fontSize: '0.9375rem', letterSpacing: '0.16em', ...gold, textDecoration: 'none', marginBottom: '12px' }}>
           Sign in or create account {'\u2192'}
         </a>
-        <button onClick={onDismiss} style={{ display: 'block', width: '100%', textAlign: 'center', background: 'none', border: 'none', ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: '4px' }}>
+        <button onClick={onDismiss} style={{ display: 'block', width: '100%', textAlign: 'center', background: 'none', border: 'none', ...serif, fontSize: '0.9375rem' ...muted, cursor: 'pointer', padding: '4px' }}>
           Not now
         </button>
       </div>
@@ -134,7 +135,7 @@ function FlameDelta({ before, after }) {
       </div>
       <div style={{ textAlign: 'center' }}>
         <div style={{ ...sc, fontSize: '1.25rem', color, lineHeight: 1 }}>{symbol}</div>
-        <div style={{ ...serif, fontSize: '0.75rem', fontStyle: 'italic', color, marginTop: '4px' }}>
+        <div style={{ ...serif, fontSize: '0.75rem' color, marginTop: '4px' }}>
           {delta === 0 ? 'holding steady' : `${Math.abs(delta).toFixed(1)} ${delta > 0 ? 'up' : 'down'}`}
         </div>
       </div>
@@ -177,7 +178,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError }) {
           </div>
           {/* Right: audio player locked */}
           <div style={{ flex: 1, minWidth: '220px' }}>
-            <div style={{ padding: '20px 22px', background: 'rgba(15,21,35,0.02)', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', opacity: 0.6 }}>
+            <div style={{ padding: '20px 22px', background: 'rgba(15,21,35,0.72)', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', opacity: 0.6 }}>
               <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>Foundation {'\u00B7'} Baseline {'\u00B7'} 20 min</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <button onClick={() => setShowModal(true)} style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', ...gold, fontSize: '18px' }}>{'\u25B6'}</button>
@@ -210,15 +211,15 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError }) {
               // Before complete — show locked ghost flame
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                 <FlameGlyph value={beforeResult?.afterValue ?? 5} size={72} ghost />
-                <span style={{ ...serif, fontSize: '0.75rem', fontStyle: 'italic', ...muted, textAlign: 'center' }}>noted</span>
+                <span style={{ ...serif, fontSize: '0.75rem' ...muted, textAlign: 'center' }}>noted</span>
               </div>
             )}
           </div>
 
           {/* RIGHT — Audio player */}
           <div style={{ flex: 1, minWidth: '220px', paddingTop: '28px' }}>
-            {audioLoading && <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted }}>Loading audio...</p>}
-            {audioError  && <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
+            {audioLoading && <p style={{ ...serif, fontSize: '0.9375rem' ...muted }}>Loading audio...</p>}
+            {audioError  && <p style={{ ...serif, fontSize: '0.9375rem' color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
             {!audioLoading && !audioError && audioUrl && (
               <AudioPlayer
                 url={audioUrl}
@@ -273,7 +274,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError }) {
         <FlameDelta before={beforeResult.afterValue} after={afterResult.afterValue} />
       )}
       <div style={{ textAlign: 'center', marginTop: '20px' }}>
-        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.75, marginBottom: '16px' }}>
+        <p style={{ ...serif, fontSize: '0.9375rem' ...muted, lineHeight: 1.75, marginBottom: '16px' }}>
           {afterResult && afterResult.afterValue > (beforeResult?.afterValue ?? 5)
             ? 'The audio did something. That\'s the data.'
             : afterResult && afterResult.afterValue < (beforeResult?.afterValue ?? 5)
@@ -306,10 +307,10 @@ function PhaseBlock({ number, name, desc, children }) {
 
 function PhasePlaceholder({ title }) {
   return (
-    <div style={{ background: 'rgba(15,21,35,0.015)', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', padding: '24px 28px' }}>
+    <div style={{ background: 'rgba(15,21,35,0.72)', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', padding: '24px 28px' }}>
       <span style={{ display: 'block', ...sc, fontSize: '0.75rem', letterSpacing: '0.14em', ...muted, marginBottom: '8px' }}>Coming</span>
       <div style={{ ...serif, fontSize: '1.1875rem', fontWeight: 300, color: 'var(--text-muted)', marginBottom: '6px' }}>{title}</div>
-      <p style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, lineHeight: 1.6 }}>This phase unlocks as the protocol develops.</p>
+      <p style={{ ...serif, fontSize: '0.875rem' ...muted, lineHeight: 1.6 }}>This phase unlocks as the protocol develops.</p>
     </div>
   )
 }
@@ -317,7 +318,7 @@ function PhasePlaceholder({ title }) {
 function QuoteBlock({ text, cite }) {
   return (
     <div style={{ borderLeft: '2px solid rgba(200,146,42,0.2)', padding: '16px 0 16px 24px', margin: '40px 0' }}>
-      <p style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', fontWeight: 300, ...meta, lineHeight: 1.75, marginBottom: '12px' }}>{'\u201C'}{text}{'\u201D'}</p>
+      <p style={{ ...serif, fontSize: '1.0625rem' fontWeight: 300, ...meta, lineHeight: 1.75, marginBottom: '12px' }}>{'\u201C'}{text}{'\u201D'}</p>
       <span style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.12em', ...gold }}>{'\u2014'} {cite}</span>
     </div>
   )
@@ -356,7 +357,7 @@ export function FoundationPage() {
           <h1 style={{ ...serif, fontSize: 'clamp(2.25rem, 5.5vw, 3.25rem)', fontWeight: 300, color: 'var(--text)', lineHeight: 1.06, letterSpacing: '-0.01em', marginBottom: '16px' }}>
             The layer beneath<br /><em style={{ ...gold }}>everything else.</em>
           </h1>
-          <p style={{ ...serif, fontSize: '1.0625rem', fontWeight: 300, fontStyle: 'italic', ...meta, lineHeight: 1.65, maxWidth: '480px' }}>
+          <p style={{ ...serif, fontSize: '1.0625rem', fontWeight: 300 ...meta, lineHeight: 1.65, maxWidth: '480px' }}>
             Most frameworks begin after baseline stability is already online. Foundation builds it.
           </p>
         </div>
@@ -389,6 +390,7 @@ export function FoundationPage() {
           </p>
         </div>
       </div>
+      <ProtocolPanel />
     </div>
   )
 }

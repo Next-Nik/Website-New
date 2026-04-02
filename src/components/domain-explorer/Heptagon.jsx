@@ -191,7 +191,7 @@ export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centr
         {centreLabel && (
           <text x={CX} y={CY} textAnchor="middle" dominantBaseline="middle"
             fill="#A8721A" fontSize="20" fontFamily="'Cormorant Garamond', Georgia, serif"
-            fontWeight="300" fontStyle="italic" style={{ pointerEvents: 'none', userSelect: 'none' }}
+            fontWeight="300" fontStyle="normal" style={{ pointerEvents: 'none', userSelect: 'none' }}
           >
             {centreLabel.split(' ').map((word, wi, arr) => (
               <tspan key={wi} x={CX} dy={wi === 0 ? `${-(arr.length - 1) * 0.6}em` : '1.25em'}>{word}</tspan>
