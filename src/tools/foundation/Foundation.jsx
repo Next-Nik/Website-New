@@ -142,6 +142,7 @@ function FlameDelta({ before, after }) {
       <div style={{ textAlign: 'center' }}>
         <div style={{ ...sc, fontSize: '0.5rem', letterSpacing: '0.16em', ...muted, marginBottom: '8px' }}>AFTER</div>
         <FlameGlyph value={after} size={40} />
+      </div>
     </div>
   )
 }
@@ -284,6 +285,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError }) {
           style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.12em', ...gold, background: 'none', border: 'none', cursor: 'pointer' }}>
           Listen again {'\u2192'}
         </button>
+      </div>
     </div>
   )
 }
