@@ -10,6 +10,8 @@ import { LoginPage }         from './pages/Login'
 import { PrivacyPage, TermsPage } from './pages/Legal'
 import { ProfilePage }       from './pages/Profile'
 import { ContentEditorPage } from './pages/ContentEditor'
+import { AdminConsolePage }  from './pages/AdminConsole'
+import { GroupJoinPage }      from './pages/GroupJoin'
 
 // Tools
 import { OrienteeringPage }  from './tools/orienteering/Orienteering'
@@ -57,6 +59,9 @@ export default function App() {
         <Route path="/tools/purpose-piece"      element={<PurposePiecePage />} />
         <Route path="/tools/purpose-piece/deep" element={<PurposePieceDeepPage />} />
         <Route path="/tools/target-goals"       element={<TargetGoalsPage />} />
+
+        <Route path="/admin"           element={<AdminConsolePage />} />
+        <Route path="/join/:slug"      element={<GroupJoinPage />} />
 
         {/* ── Fallback ── */}
         <Route path="*" element={<Navigate to="/" replace />} />
