@@ -219,7 +219,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError }) {
           {/* RIGHT — Audio player */}
           <div style={{ flex: 1, minWidth: '220px', paddingTop: '28px' }}>
             {audioLoading && <p style={{ ...serif, fontSize: '0.9375rem' ...muted }}>Loading audio...</p>}
-            {audioError  && <p style={{ ...serif, fontSize: '0.9375rem' color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
+            {audioError  && <p style={{ ...serif, fontSize: '0.9375rem', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
             {!audioLoading && !audioError && audioUrl && (
               <AudioPlayer
                 url={audioUrl}
@@ -318,7 +318,7 @@ function PhasePlaceholder({ title }) {
 function QuoteBlock({ text, cite }) {
   return (
     <div style={{ borderLeft: '2px solid rgba(200,146,42,0.2)', padding: '16px 0 16px 24px', margin: '40px 0' }}>
-      <p style={{ ...serif, fontSize: '1.0625rem' fontWeight: 300, ...meta, lineHeight: 1.75, marginBottom: '12px' }}>{'\u201C'}{text}{'\u201D'}</p>
+      <p style={{ ...serif, fontSize: '1.0625rem', fontWeight: 300, ...meta, lineHeight: 1.75, marginBottom: '12px' }}>{'\u201C'}{text}{'\u201D'}</p>
       <span style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.12em', ...gold }}>{'\u2014'} {cite}</span>
     </div>
   )

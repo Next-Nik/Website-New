@@ -63,7 +63,7 @@ function Slot({ title, tip, linkLabel, linkUrl, children, defaultOpen = true }) 
 
 function EmptySlot({ cta, ctaUrl }) {
   return (
-    <div style={{ ...serif, fontSize: '15px' color: 'rgba(15,21,35,0.72)', marginBottom: '16px' }}>
+    <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)', marginBottom: '16px' }}>
       Not yet populated.{' '}
       {cta && ctaUrl && <a href={ctaUrl} style={{ color: '#A8721A', textDecoration: 'none' }}>{cta} {'\u2192'}</a>}
     </div>
@@ -124,7 +124,7 @@ export function ProfilePage() {
         <div style={{ marginBottom: '72px' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Your Profile</span>
           <h1 style={{ ...serif, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '10px' }}>{name}.</h1>
-          <p style={{ ...serif, fontSize: '15px' color: 'rgba(15,21,35,0.72)' }}>{user.email}</p>
+          <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>{user.email}</p>
         </div>
 
         <Slot title="The Map" tip="Seven domain scores." linkLabel="The Map" linkUrl="/tools/map">
@@ -134,7 +134,7 @@ export function ProfilePage() {
                 <ScoreBar key={key} label={DOMAIN_LABELS[i]} score={scores[key]} />
               ))}
               {mapData?.completed_at && (
-                <p style={{ ...serif, fontSize: '13px' color: 'rgba(15,21,35,0.72)', marginTop: '16px' }}>
+                <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginTop: '16px' }}>
                   Completed {new Date(mapData.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
               )}
@@ -172,7 +172,7 @@ export function ProfilePage() {
         </Slot>
 
         <Slot title="NextUs" tip="Seven civilisational domains." linkLabel="NextUs" linkUrl="/nextus">
-          <div style={{ ...serif, fontSize: '15px' color: 'rgba(15,21,35,0.72)' }}>
+          <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>
             This is where your contribution to the larger project lives. Building now.
           </div>
         </Slot>

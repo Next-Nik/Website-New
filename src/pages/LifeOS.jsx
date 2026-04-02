@@ -103,7 +103,7 @@ function ToolAccordion({ tool }) {
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', color: '#A8721A', marginBottom: '24px' }}>{tool.meta}</div>
           {tool.quotes?.map((q, i) => (
             <div key={i} style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '14px 0 14px 28px', margin: i === 0 ? '24px 0 8px' : '0 0 24px', maxWidth: '600px' }}>
-              <p style={{ ...serif, fontSize: '16px' color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '10px' }}>{'“'}{q.text}{'”'}</p>
+              <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '10px' }}>{'“'}{q.text}{'”'}</p>
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A' }}>{'—'} {q.cite}</span>
             </div>
           ))}
@@ -191,7 +191,7 @@ export function LifeOSPage() {
           <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, color: '#0F1523', marginBottom: '16px' }}>How to offer it well.</h3>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '20px', maxWidth: '580px' }}>The most important thing: make it an offer, not a prescription. The difference is felt immediately.</p>
           <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '20px 0 20px 28px', marginBottom: '20px', maxWidth: '580px' }}>
-            <p style={{ ...serif, fontSize: '16px' color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '12px' }}>{'“'}I found something that helped me see where I actually was. No pressure {'—'} but if you{'’'}re curious, here it is.{'”'}</p>
+            <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '12px' }}>{'“'}I found something that helped me see where I actually was. No pressure {'—'} but if you{'’'}re curious, here it is.{'”'}</p>
             <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A' }}>An offer</span>
           </div>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '580px' }}>Notice {'—'} as you think about them across these domains {'—'} what you{'’'}re actually seeing. The same lens that helps you find the right thing for them has a way of clarifying things for you too.</p>

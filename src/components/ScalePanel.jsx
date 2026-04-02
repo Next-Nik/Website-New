@@ -129,7 +129,7 @@ export function ScalePanel({ side = 'left' }) {
                 <h2 style={{ fontFamily: 'var(--font-sc)', fontSize: '1.25rem', fontWeight: 400, color: 'var(--text)', lineHeight: 1.1, marginBottom: '4px' }}>
                   The Horizon Scale
                 </h2>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem' color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
                   Fulfilment calibration {'\u00B7'} 0{'\u2013'}10
                 </p>
               </div>
@@ -157,7 +157,7 @@ export function ScalePanel({ side = 'left' }) {
               <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-meta)', lineHeight: 1.7, marginBottom: '8px' }}>
                 Each domain of your life is scored against this scale. The scale has two zones separated by The Line at 5. Development sits above {'\u2014'} growing, building, expressing. Healing sits below {'\u2014'} restoration, repair, return.
               </p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem' color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 The Line is yours. You build the character who represents 10. You name where you actually are.
               </p>
             </div>
@@ -167,7 +167,7 @@ export function ScalePanel({ side = 'left' }) {
               <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.18em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '4px' }}>
                 Development
               </div>
-              <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem' color: 'rgba(15,21,35,0.72)' }}>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(15,21,35,0.72)' }}>
                 above The Line {'\u2014'} growing, building, expressing
               </div>
             </div>
@@ -186,7 +186,7 @@ export function ScalePanel({ side = 'left' }) {
                         <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.18em', color: '#6B5040', textTransform: 'uppercase', marginBottom: '4px' }}>
                           Healing
                         </div>
-                        <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem' color: 'rgba(15,21,35,0.72)' }}>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(15,21,35,0.72)' }}>
                           below The Line {'\u2014'} restoration, repair, return
                         </div>
                       </div>
@@ -209,7 +209,7 @@ export function ScalePanel({ side = 'left' }) {
                           <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.75rem', letterSpacing: '0.12em', color: 'var(--gold-dk)', textTransform: 'uppercase' }}>
                             The Line
                           </div>
-                          <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem' color: 'rgba(15,21,35,0.72)', marginTop: '2px' }}>
+                          <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(15,21,35,0.72)', marginTop: '2px' }}>
                             {row.meaning}
                           </div>
                         </div>
@@ -240,7 +240,7 @@ export function ScalePanel({ side = 'left' }) {
                               {row.tier}
                             </span>
                             {row.label && (
-                              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem' color: 'rgba(15,21,35,0.72)' }}>
+                              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(15,21,35,0.72)' }}>
                                 {row.label}
                               </span>
                             )}
@@ -258,7 +258,7 @@ export function ScalePanel({ side = 'left' }) {
 
             {/* Footer note */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(200,146,42,0.12)', marginTop: 'auto' }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem' color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 Any score below 5 means this domain is actively creating friction {'\u2014'} consuming more than it generates. Stabilise before optimising.
               </p>
             </div>

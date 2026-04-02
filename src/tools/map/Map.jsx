@@ -172,7 +172,7 @@ function HourglassPicker({ onScore, horizonMode = false, currentScore }) {
         }}>
           <span style={{ fontFamily: 'var(--font-sc)', fontSize: '1.125rem', fontWeight: 600, color: getScoreColor(hovered) }}>{hovered}</span>
           <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.75rem', letterSpacing: '0.08em', color: getScoreColor(hovered) }}>{TIER_MAP[hovered]}</span>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem' color: 'var(--text-muted)' }}>{LABEL_MAP[hovered]}</span>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)' }}>{LABEL_MAP[hovered]}</span>
         </div>
       )}
     </div>
@@ -478,7 +478,7 @@ function DomainStep({ domain, domainIndex, totalDomains, onComplete, existingDat
         <h2 style={{ fontFamily: 'var(--font-sc)', fontSize: '1.375rem', fontWeight: 400, color: 'var(--text)', marginBottom: '4px' }}>
           {domain.label}
         </h2>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem' color: 'var(--text-muted)', lineHeight: 1.6 }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
           {domain.question}
         </p>
       </div>
@@ -541,8 +541,7 @@ function DomainStep({ domain, domainIndex, totalDomains, onComplete, existingDat
             <div>
               <div style={{
                 fontFamily: 'var(--font-body)',
-                fontSize: '0.9375rem'
-                color: 'var(--text-muted)',
+                fontSize: '0.9375rem', color: 'var(--text-muted)',
                 lineHeight: 1.7,
                 padding: '10px 14px',
                 background: 'rgba(200,146,42,0.03)',
@@ -579,7 +578,7 @@ function DomainStep({ domain, domainIndex, totalDomains, onComplete, existingDat
           </span>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text-meta)', lineHeight: 1.7, marginBottom: '10px' }}>
             What{'’'}s actually true right now in {domain.label}?
-            <span style={{ display: 'block', fontSize: '0.8125rem' color: 'var(--text-muted)', marginTop: '4px' }}>
+            <span style={{ display: 'block', fontSize: '0.8125rem', color: 'var(--text-muted)', marginTop: '4px' }}>
               Voice to text works well here. Don{'’'}t edit. Just pour it out.
             </span>
           </p>
@@ -616,8 +615,7 @@ function DomainStep({ domain, domainIndex, totalDomains, onComplete, existingDat
               {realityInput && (
                 <div style={{
                   fontFamily: 'var(--font-body)',
-                  fontSize: '0.9375rem'
-                  color: 'var(--text-muted)',
+                  fontSize: '0.9375rem', color: 'var(--text-muted)',
                   lineHeight: 1.7,
                   padding: '10px 14px',
                   background: 'rgba(200,146,42,0.03)',
@@ -632,7 +630,7 @@ function DomainStep({ domain, domainIndex, totalDomains, onComplete, existingDat
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 14px', borderRadius: '40px', border: `1.5px solid ${getScoreColor(currentScore)}44`, background: `${getScoreColor(currentScore)}12` }}>
                   <span style={{ fontFamily: 'var(--font-sc)', fontSize: '1rem', fontWeight: 600, color: getScoreColor(currentScore) }}>{currentScore}</span>
                   <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.625rem', letterSpacing: '0.08em', color: getScoreColor(currentScore) }}>{TIER_MAP[currentScore]}</span>
-                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem' color: 'var(--text-muted)' }}>{LABEL_MAP[currentScore]}</span>
+                  <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)' }}>{LABEL_MAP[currentScore]}</span>
                 </div>
               )}
               {isBelow5 && (
@@ -643,8 +641,7 @@ function DomainStep({ domain, domainIndex, totalDomains, onComplete, existingDat
                   border: '1px solid rgba(138,48,48,0.18)',
                   borderRadius: '8px',
                   fontFamily: 'var(--font-body)',
-                  fontSize: '0.875rem'
-                  color: 'rgba(138,48,48,0.75)',
+                  fontSize: '0.875rem', color: 'rgba(138,48,48,0.75)',
                   lineHeight: 1.65,
                 }}>
                   This domain is below The Line. It{'’'}s consuming more than it{'’'}s generating. That{'’'}s not a verdict {'—'} it{'’'}s useful information. Stabilise before optimise.
@@ -709,7 +706,7 @@ function DomainStep({ domain, domainIndex, totalDomains, onComplete, existingDat
           <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text-meta)', lineHeight: 1.7, marginBottom: '4px' }}>
             If the genie granted your wish in {domain.label}, what would it be?
           </p>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem' color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '12px' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '12px' }}>
             Not the avatar {'—'} that{'’'}s best in the world. Your life. You don{'’'}t have to want 10.
           </p>
 
@@ -749,8 +746,7 @@ function DomainStep({ domain, domainIndex, totalDomains, onComplete, existingDat
               {horizonText && (
                 <div style={{
                   fontFamily: 'var(--font-body)',
-                  fontSize: '0.9375rem'
-                  color: 'var(--text-muted)',
+                  fontSize: '0.9375rem', color: 'var(--text-muted)',
                   lineHeight: 1.7,
                   padding: '10px 14px',
                   background: 'rgba(200,146,42,0.03)',
@@ -811,7 +807,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores, onSign
       <div style={{ padding: '28px 28px 22px', borderBottom: '1px solid rgba(200,146,42,0.1)', background: 'rgba(200,146,42,0.03)' }}>
         <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.22em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '12px' }}>Your Life OS Map</div>
         <div style={{ display: 'inline-block', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '6px', padding: '4px 14px', fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.16em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '10px' }}>{mapData.stage}</div>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem' color: 'var(--text-meta)', lineHeight: 1.75 }}>{mapData.stage_description}</p>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text-meta)', lineHeight: 1.75 }}>{mapData.stage_description}</p>
       </div>
 
       {/* Full wheel */}
@@ -852,7 +848,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores, onSign
                     </div>
                   </div>
                   {isFocus && (
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.6875rem' color: 'var(--text-muted)' }}>{d.question}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.6875rem', color: 'var(--text-muted)' }}>{d.question}</div>
                   )}
                 </div>
               )
@@ -894,7 +890,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores, onSign
 
       {/* Next step */}
       {mapData.next_step && (
-        <div style={{ padding: '20px 28px', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '0.875rem' color: 'var(--text-muted)', lineHeight: 1.7, borderTop: '1px solid rgba(200,146,42,0.07)' }}>
+        <div style={{ padding: '20px 28px', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)', lineHeight: 1.7, borderTop: '1px solid rgba(200,146,42,0.07)' }}>
           {mapData.next_step}
         </div>
       )}
@@ -909,15 +905,15 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores, onSign
             disabled={horizonLocked}
             placeholder={'Write your own Life Horizon — in your own voice.'}
             rows={4}
-            style={{ width: '100%', padding: '12px 14px', fontFamily: 'var(--font-body)', fontSize: '1rem' fontWeight: 300, color: 'var(--text-meta)', background: '#FFFFFF', border: horizonLocked ? '1px solid rgba(200,146,42,0.3)' : '1.5px dashed rgba(200,146,42,0.4)', borderRadius: '10px', resize: 'vertical', outline: 'none', lineHeight: 1.7, marginBottom: '8px', opacity: horizonLocked ? 0.7 : 1 }}
+            style={{ width: '100%', padding: '12px 14px', fontFamily: 'var(--font-body)', fontSize: '1rem', fontWeight: 300, color: 'var(--text-meta)', background: '#FFFFFF', border: horizonLocked ? '1px solid rgba(200,146,42,0.3)' : '1.5px dashed rgba(200,146,42,0.4)', borderRadius: '10px', resize: 'vertical', outline: 'none', lineHeight: 1.7, marginBottom: '8px', opacity: horizonLocked ? 0.7 : 1 }}
           />
-          <button onClick={() => setDraftVisible(v => !v)} style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem' color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: '10px', display: 'block' }}>
+          <button onClick={() => setDraftVisible(v => !v)} style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: '10px', display: 'block' }}>
             {draftVisible ? 'Hide draft ↑' : 'See what The Map drafted →'}
           </button>
           {draftVisible && (
             <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '10px', marginBottom: '12px' }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem' fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '10px' }}>{mapData.life_horizon_draft}</p>
-              <button onClick={() => { setHorizonText(mapData.life_horizon_draft); setDraftVisible(false) }} style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem' color: 'var(--gold-dk)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '10px' }}>{mapData.life_horizon_draft}</p>
+              <button onClick={() => { setHorizonText(mapData.life_horizon_draft); setDraftVisible(false) }} style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'var(--gold-dk)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                 Use this as my starting point →
               </button>
             </div>
@@ -928,7 +924,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores, onSign
             </button>
           )}
           {horizonLocked && (
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem' color: 'var(--text-muted)' }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
               <span style={{ color: 'var(--gold-dk)', fontStyle: 'normal', fontFamily: 'var(--font-sc)', fontSize: '0.8125rem', letterSpacing: '0.1em' }}>✓ Locked.</span>{' '}This is your Life Horizon.
             </p>
           )}
@@ -939,7 +935,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores, onSign
       {!isSignedIn && (
         <div style={{ padding: '24px 28px 28px', borderTop: '1px solid rgba(200,146,42,0.12)', background: 'rgba(200,146,42,0.03)', textAlign: 'center' }}>
           <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.22em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '10px' }}>Save Your Map</div>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem' color: 'var(--text-meta)', lineHeight: 1.75, marginBottom: '18px', maxWidth: '380px', margin: '0 auto 18px' }}>Sign in to save your map and access your full results.</p>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text-meta)', lineHeight: 1.75, marginBottom: '18px', maxWidth: '380px', margin: '0 auto 18px' }}>Sign in to save your map and access your full results.</p>
           <button onClick={onSignIn} style={{ padding: '12px 32px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: 'var(--gold-dk)', fontFamily: 'var(--font-sc)', fontSize: '0.875rem', letterSpacing: '0.14em', cursor: 'pointer' }}>
             Sign in to save →
           </button>
@@ -958,7 +954,7 @@ function AuthModal() {
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.6)', borderRadius: '14px', padding: '40px 32px 32px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
         <span style={{ display: 'block', fontFamily: 'var(--font-sc)', fontSize: '0.625rem', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '14px' }}>The Map</span>
         <h2 style={{ fontFamily: 'var(--font-sc)', fontSize: '1.375rem', fontWeight: 400, color: 'var(--text)', marginBottom: '10px' }}>Sign in to begin.</h2>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem' color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '24px' }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '24px' }}>
           Your map is saved to your profile so you can return to it any time.
         </p>
         <a href={`/login.html?redirect=${returnUrl}`} style={{ display: 'block', padding: '14px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: 'var(--gold-dk)', fontFamily: 'var(--font-sc)', fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
@@ -1072,7 +1068,7 @@ export function MapPage() {
         <div className="tool-header">
           <span className="tool-eyebrow">Life OS</span>
           <h1 className="tool-title">The Map</h1>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem' color: 'var(--text-muted)', marginTop: '4px' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.9375rem', color: 'var(--text-muted)', marginTop: '4px' }}>
             An honest picture of where you are.
           </p>
         </div>
@@ -1145,7 +1141,7 @@ export function MapPage() {
               </div>
 
               {/* Pace note */}
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem' color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
                 Some people take five minutes per domain. Others take a full day or more. Work at your pace — your progress will be saved as you go.
               </p>
             </div>

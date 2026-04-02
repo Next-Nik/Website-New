@@ -8,7 +8,7 @@ const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 function Quote({ text, cite }) {
   return (
     <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '14px 0 14px 28px', margin: '0 0 28px', maxWidth: '600px' }}>
-      <p style={{ ...serif, fontSize: '16px' color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '10px' }}>{text}</p>
+      <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '10px' }}>{text}</p>
       <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {cite}</span>
     </div>
   )
@@ -61,7 +61,7 @@ export function WorkWithNikPage() {
         <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
         <div className="calendly-inline-widget" data-url="https://calendly.com/nikwood/talk-to-nik" style={{ minWidth: '280px', height: '700px', borderRadius: '14px', overflow: 'hidden', border: '1.5px solid rgba(200,146,42,0.78)' }} />
         <script src="https://assets.calendly.com/assets/external/widget.js" async />
-        <p style={{ ...serif, fontSize: '13px' color: 'rgba(15,21,35,0.72)', marginTop: '14px' }}>30 minutes · no cost · no obligation</p>
+        <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginTop: '14px' }}>30 minutes · no cost · no obligation</p>
       </div>
       <SprintPanel />
       <SiteFooter />

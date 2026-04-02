@@ -102,7 +102,7 @@ function StagePanel({ stage }) {
       <div style={{ padding: '28px 28px 24px' }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '6px' }}>{s.name}</span>
         <div style={{ ...serif, fontSize: '26px', fontWeight: 300, color: '#0F1523', marginBottom: '4px', lineHeight: 1.1 }}>{s.name}</div>
-        <div style={{ ...serif, fontSize: '16px' color: 'rgba(15,21,35,0.78)', marginBottom: '14px', lineHeight: 1.6 }}>{s.question}</div>
+        <div style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.78)', marginBottom: '14px', lineHeight: 1.6 }}>{s.question}</div>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '520px' }}>{s.desc}</p>
         <div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', marginBottom: '24px' }} />
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.78)', display: 'block', marginBottom: '12px' }}>Where to start</span>
@@ -171,7 +171,7 @@ function OrienteeringEmbed() {
       <div ref={messagesRef} style={{ minHeight: '180px', maxHeight: '420px', overflowY: 'auto', padding: '28px 28px 8px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {messages.map((m, i) => {
           if (m.role === 'assistant') return <div key={i} style={{ ...serif, fontSize: '16px', lineHeight: 1.8, color: '#0F1523', alignSelf: 'flex-start', maxWidth: '88%' }}>{m.content}</div>
-          if (m.role === 'user') return <div key={i} style={{ ...serif, fontSize: '15px' color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px', padding: '10px 14px', alignSelf: 'flex-end', maxWidth: '80%' }}>{m.content}</div>
+          if (m.role === 'user') return <div key={i} style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px', padding: '10px 14px', alignSelf: 'flex-end', maxWidth: '80%' }}>{m.content}</div>
           if (m.role === 'result') {
             const d = m.data
             return (
@@ -186,7 +186,7 @@ function OrienteeringEmbed() {
                     {r.link && r.link !== 'null' && <a href={r.link} style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>{r.link_text || 'Learn more \u2192'}</a>}
                   </div>
                 ))}
-                {d.closing && <div style={{ ...serif, fontSize: '15px' color: 'rgba(15,21,35,0.72)', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>{d.closing}</div>}
+                {d.closing && <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>{d.closing}</div>}
               </div>
             )
           }
@@ -261,7 +261,7 @@ export function HomePage() {
         <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>Not sure where to start?</h2>
         <p style={{ ...serif, fontSize: '17px', fontWeight: 300 color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Tell me a little about where you are right now. I{'\u2019'}ll point you in the right direction.</p>
         <OrienteeringEmbed />
-        <a href="/life-os" style={{ display: 'block', textAlign: 'center', ...serif, fontSize: '16px' color: '#A8721A', marginTop: '28px', textDecoration: 'none', opacity: 0.78 }}>or show me everything {'\u2192'}</a>
+        <a href="/life-os" style={{ display: 'block', textAlign: 'center', ...serif, fontSize: '16px', color: '#A8721A', marginTop: '28px', textDecoration: 'none', opacity: 0.78 }}>or show me everything {'\u2192'}</a>
       </section>
 
       {/* Stage selector */}
@@ -279,7 +279,7 @@ export function HomePage() {
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderBottomColor = 'transparent' }}
               >
                 <span style={{ ...serif, fontSize: '22px', fontWeight: 300, color: isActive ? '#A8721A' : '#0F1523', display: 'block', lineHeight: 1.2, marginBottom: '2px', transition: 'color 0.18s' }}>{s.name}</span>
-                <span style={{ ...serif, fontSize: '14px' color: isActive ? 'rgba(200,146,42,0.78)' : 'rgba(15,21,35,0.72)', lineHeight: 1.4, display: 'block', transition: 'color 0.18s' }}>{s.question}</span>
+                <span style={{ ...serif, fontSize: '14px', color: isActive ? 'rgba(200,146,42,0.78)' : 'rgba(15,21,35,0.72)', lineHeight: 1.4, display: 'block', transition: 'color 0.18s' }}>{s.question}</span>
               </div>
             )
           })}

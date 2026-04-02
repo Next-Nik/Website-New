@@ -204,7 +204,7 @@ export function SprintPanel({ context = 'default' }) {
             {/* Content */}
             <div style={{ flex: 1, padding: '20px 24px 32px' }}>
               {loading && (
-                <p style={{ ...serif, fontSize: '0.9375rem' color: 'rgba(15,21,35,0.72)', textAlign: 'center', paddingTop: '40px' }}>
+                <p style={{ ...serif, fontSize: '0.9375rem', color: 'rgba(15,21,35,0.72)', textAlign: 'center', paddingTop: '40px' }}>
                   Loading your sprint{'\u2026'}
                 </p>
               )}
@@ -253,7 +253,7 @@ export function SprintPanel({ context = 'default' }) {
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
                       <span style={{ ...sc, fontSize: '2rem', fontWeight: 600, color: 'rgba(200,146,42,0.9)', lineHeight: 1 }}>{days}</span>
                       <span style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.72)' }}>days remaining</span>
-                      <span style={{ ...serif, fontSize: '0.8125rem' color: 'rgba(15,21,35,0.72)', marginLeft: 'auto' }}>{sprint.end_date_label?.split('\u2014')[0]?.trim()}</span>
+                      <span style={{ ...serif, fontSize: '0.8125rem', color: 'rgba(15,21,35,0.72)', marginLeft: 'auto' }}>{sprint.end_date_label?.split('\u2014')[0]?.trim()}</span>
                     </div>
                   )}
 
@@ -287,7 +287,7 @@ export function SprintPanel({ context = 'default' }) {
                           {g.outcome_user || g.outcome_system}
                         </p>
                         {g.identity_statement && (
-                          <p style={{ ...serif, fontSize: '0.8125rem' color: 'rgba(15,21,35,0.72)', lineHeight: 1.55 }}>
+                          <p style={{ ...serif, fontSize: '0.8125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55 }}>
                             {'\u201C'}{g.identity_statement}{'\u201D'}
                           </p>
                         )}
