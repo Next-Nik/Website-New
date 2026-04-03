@@ -487,11 +487,9 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
           }}
         >
           <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}>
-            DOMAINS
+DOMAINS
           </span>
-          <span style={{ color: '#A8721A', fontSize: '12px', marginTop: '4px' }}>
-            {open ? '‹' : '›'}
-          </span>
+          
         </button>
       </div>
 
