@@ -345,13 +345,13 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
             <circle cx={CX} cy={CY} r={sunR}
               fill="#C8922A"
               stroke="#fcb823"
-strokeWidth="1.5"
+strokeWidth="0.5"
             />
 
             {/* Label */}
             <text x={CX} y={CY} textAnchor="middle" dominantBaseline="middle"
               fill="#FAFAF7"
-              fontSize="14" stroke="#FFFFFF" strokeWidth="0.4" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.14em"
+              fontSize="14" stroke="#FFFFFF" strokeWidth="1.4" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.14em"
               style={{ pointerEvents: 'none', userSelect: 'none' }}>
               YOUR LIFE
             </text>
