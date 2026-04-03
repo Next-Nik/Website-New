@@ -151,7 +151,7 @@ function getRotationToTop(index, currentRot) {
   return currentRot + diff
 }
 
-function MapWheel({ domainData, activeIndex, onSelect }) {
+function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0 }) {
   const [phase,      setPhase]      = useState('spinning')
   const [displayRot, setDisplayRot] = useState(0)
   const rotRef      = useRef(0)
@@ -312,18 +312,28 @@ function MapWheel({ domainData, activeIndex, onSelect }) {
         )
       })}
 
-      {/* Centre */}
-      <circle cx={CX} cy={CY} r={24} fill="rgba(200,146,42,0.04)" stroke="rgba(200,146,42,0.15)" strokeWidth="1" />
-      <text x={CX} y={CY - 5} textAnchor="middle" dominantBaseline="middle"
-        fill="rgba(200,146,42,0.6)" fontSize="11" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.06em"
-        style={{ pointerEvents: 'none', userSelect: 'none' }}>
-        {Object.values(DOMAINS).filter(d => getDomainStage(domainData[d.id]) === 3).length}
-      </text>
-      <text x={CX} y={CY + 8} textAnchor="middle" dominantBaseline="middle"
-        fill="rgba(200,146,42,0.35)" fontSize="7" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.08em"
-        style={{ pointerEvents: 'none', userSelect: 'none' }}>
-        OF 7
-      </text>
+      {/* Centre — "Your life" — gets brighter with each completed step */}
+      {(() => {
+        const maxSteps = 21 // 7 domains × 3 steps
+        const brightness = 0.12 + (totalSteps / maxSteps) * 0.72 // 0.12 → 0.84
+        const strokeBrightness = 0.15 + (totalSteps / maxSteps) * 0.65
+        return (
+          <>
+            <circle cx={CX} cy={CY} r={26}
+              fill={`rgba(200,146,42,${(brightness * 0.25).toFixed(3)})`}
+              stroke={`rgba(200,146,42,${strokeBrightness.toFixed(3)})`}
+              strokeWidth="1"
+              style={{ transition: 'fill 0.8s ease, stroke 0.8s ease' }}
+            />
+            <text x={CX} y={CY} textAnchor="middle" dominantBaseline="middle"
+              fill={`rgba(200,146,42,${brightness.toFixed(3)})`}
+              fontSize="9" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.1em"
+              style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill 0.8s ease' }}>
+              YOUR LIFE
+            </text>
+          </>
+        )
+      })()}
     </svg>
   )
 }
@@ -1318,8 +1328,9 @@ export function MapPage() {
         <div className="tool-header">
           <span className="tool-eyebrow">Life OS · The Map</span>
           <h1 className="tool-title">The Map</h1>
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
-            An honest picture of where you are — and where you want to be.
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.0625rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.6 }}>
+            From where you are,<br />
+            to where you want to be.
           </p>
         </div>
 
@@ -1365,22 +1376,22 @@ export function MapPage() {
             <div style={{ position: 'relative', marginBottom: '32px', minHeight: '280px' }}>
 
               {/* Wheel — positioned behind card, right-aligned, large */}
-              {/* Centre orb is 3/4 above card top edge, lower nodes masked by card */}
+              {/* Centre orb sits level with bottom of header text */}
               <div style={{
                 position: 'absolute',
                 right: '-60px',
-                top: '-380px', // pushes 3/4 of wheel above the card top
+                top: '-280px', // centre orb aligns with bottom of header area
                 width: '520px',
                 height: '520px',
                 zIndex: 0,
-                pointerEvents: 'none', // card handles clicks; wheel nodes visible above card are interactive
+                pointerEvents: 'none',
               }}>
-                {/* Re-enable pointer events only for the visible upper portion */}
                 <div style={{ pointerEvents: 'auto' }}>
                   <MapWheel
                     domainData={domainData}
                     activeIndex={activeIndex}
                     onSelect={setActiveIndex}
+                    totalSteps={Object.values(domainData).reduce((sum, d) => sum + getDomainStage(d), 0)}
                   />
                 </div>
               </div>
