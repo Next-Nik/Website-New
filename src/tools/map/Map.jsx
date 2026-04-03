@@ -376,28 +376,7 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
 
   return (
     <>
-      {/* Pull tab */}
-      <button
-        onClick={() => setOpen(o => !o)}
-        style={{
-          position: 'fixed', left: 0, top: '50%', transform: 'translateY(-50%)',
-          zIndex: 200, background: '#FAFAF7',
-          border: '1.5px solid rgba(200,146,42,0.78)',
-          borderLeft: 'none', borderRadius: '0 8px 8px 0',
-          padding: '14px 8px', cursor: 'pointer',
-          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-          boxShadow: '2px 0 12px rgba(15,21,35,0.06)',
-        }}
-      >
-        <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '9px', letterSpacing: '0.14em', color: '#A8721A', writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}>
-          DOMAINS
-        </span>
-        <span style={{ color: '#A8721A', fontSize: '12px', marginTop: '4px' }}>
-          {open ? '‹' : '›'}
-        </span>
-      </button>
-
-      {/* Panel */}
+      {/* Panel — tab is attached to right edge and travels with it */}
       <div style={{
         position: 'fixed', left: 0, top: 0, bottom: 0, zIndex: 199,
         width: '260px',
@@ -408,6 +387,40 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
         overflowY: 'auto',
         boxShadow: open ? '4px 0 24px rgba(15,21,35,0.1)' : 'none',
         paddingTop: '72px',
+      }}>
+
+        {/* Tab — attached to right edge of panel, slides with it */}
+        <button
+          onClick={() => setOpen(o => !o)}
+          style={{
+            position: 'absolute',
+            right: '-44px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 200,
+            background: '#FAFAF7',
+            border: '1.5px solid rgba(200,146,42,0.78)',
+            borderLeft: 'none',
+            width: '44px',
+            height: '88px',
+            cursor: 'pointer',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '4px',
+            padding: 0,
+            clipPath: 'polygon(0% 12%, 0% 88%, 30% 100%, 100% 100%, 100% 0%, 30% 0%)',
+            borderRadius: '0 12px 12px 0',
+          }}
+        >
+          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '9px', letterSpacing: '0.14em', color: '#A8721A', writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}>
+            DOMAINS
+          </span>
+          <span style={{ color: '#A8721A', fontSize: '12px', marginTop: '4px' }}>
+            {open ? '‹' : '›'}
+          </span>
+        </button>
       }}>
         <div style={{ padding: '0 20px 20px' }}>
           <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', letterSpacing: '0.2em', color: '#A8721A', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
