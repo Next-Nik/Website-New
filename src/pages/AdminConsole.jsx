@@ -6,7 +6,7 @@ import { SiteNav } from '../components/SiteNav'
 
 // ── YOUR UUID — replace with your actual Supabase user ID ─────
 // Find it: Supabase Dashboard → Authentication → Users → your email
-const FOUNDER_UUID = 'REPLACE_WITH_YOUR_UUID'
+const FOUNDER_UUID = '304f778f-f859-4c06-972c-f37ae8042457'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
