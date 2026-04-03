@@ -344,7 +344,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
             {/* Sun body — solid gold from start */}
             <circle cx={CX} cy={CY} r={sunR}
               fill="#C8922A"
-              stroke="#C8922A"
+              stroke="#fcb823"
 strokeWidth="8.5"
             />
 
