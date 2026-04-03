@@ -5,16 +5,27 @@ import { useAuth } from '../hooks/useAuth'
 // ─── Colour scale — cool ember to blazing scarf gold ─────────────────────────
 
 function getFlameProps(v) {
-  if (v <= 1)  return { color: '#6B7280', glow: 'rgba(107,114,128,0.12)', scale: 0.50, label: 'barely a flicker' }
-  if (v <= 2)  return { color: '#8B7355', glow: 'rgba(139,115,85,0.18)',  scale: 0.60, label: 'low and cool' }
-  if (v <= 3)  return { color: '#A0845C', glow: 'rgba(160,132,92,0.22)',  scale: 0.68, label: 'something still alive' }
-  if (v <= 4)  return { color: '#B8923A', glow: 'rgba(184,146,58,0.28)',  scale: 0.76, label: 'wanting to catch' }
-  if (v <= 5)  return { color: '#C8922A', glow: 'rgba(200,146,42,0.35)',  scale: 0.84, label: 'present' }
-  if (v <= 6)  return { color: '#D4821A', glow: 'rgba(212,130,26,0.42)',  scale: 0.88, label: 'warming up' }
-  if (v <= 7)  return { color: '#C8721A', glow: 'rgba(200,114,26,0.48)',  scale: 0.92, label: 'lit' }
-  if (v <= 8)  return { color: '#C05A10', glow: 'rgba(192,90,16,0.55)',   scale: 0.96, label: 'burning well' }
-  if (v <= 9)  return { color: '#A8721A', glow: 'rgba(168,114,26,0.62)',  scale: 1.00, label: 'bright and steady' }
-  return         { color: '#C8922A', glow: 'rgba(200,146,42,0.72)',  scale: 1.08, label: 'going' }
+  if (v === 0)   return { color: '#6B7280', glow: 'rgba(107,114,128,0.12)', scale: 0.45, label: 'not good' }
+  if (v <= 0.5)  return { color: '#6B7280', glow: 'rgba(107,114,128,0.12)', scale: 0.48, label: 'barely here' }
+  if (v <= 1)    return { color: '#6B7280', glow: 'rgba(107,114,128,0.15)', scale: 0.50, label: 'running on empty' }
+  if (v <= 1.5)  return { color: '#7A7060', glow: 'rgba(122,112,96,0.16)',  scale: 0.54, label: 'heavy' }
+  if (v <= 2)    return { color: '#8B7355', glow: 'rgba(139,115,85,0.18)',  scale: 0.58, label: 'getting through it' }
+  if (v <= 2.5)  return { color: '#927860', glow: 'rgba(146,120,96,0.20)',  scale: 0.62, label: 'low' }
+  if (v <= 3)    return { color: '#A0845C', glow: 'rgba(160,132,92,0.22)',  scale: 0.66, label: 'a little flat' }
+  if (v <= 3.5)  return { color: '#AA8C60', glow: 'rgba(170,140,96,0.24)',  scale: 0.70, label: 'quiet' }
+  if (v <= 4)    return { color: '#B8923A', glow: 'rgba(184,146,58,0.28)',  scale: 0.74, label: 'okay-ish' }
+  if (v <= 4.5)  return { color: '#C09030', glow: 'rgba(192,144,48,0.30)',  scale: 0.78, label: 'finding my feet' }
+  if (v <= 5)    return { color: '#C8922A', glow: 'rgba(200,146,42,0.35)',  scale: 0.82, label: 'Neutral / "Fine"' }
+  if (v <= 5.5)  return { color: '#CC8C24', glow: 'rgba(204,140,36,0.38)',  scale: 0.85, label: 'settling in' }
+  if (v <= 6)    return { color: '#D4821A', glow: 'rgba(212,130,26,0.42)',  scale: 0.88, label: 'steadier' }
+  if (v <= 6.5)  return { color: '#CE7A18', glow: 'rgba(206,122,24,0.44)',  scale: 0.90, label: 'good, actually' }
+  if (v <= 7)    return { color: '#C8721A', glow: 'rgba(200,114,26,0.48)',  scale: 0.92, label: 'present' }
+  if (v <= 7.5)  return { color: '#C46A16', glow: 'rgba(196,106,22,0.50)',  scale: 0.94, label: 'open' }
+  if (v <= 8)    return { color: '#C05A10', glow: 'rgba(192,90,16,0.55)',   scale: 0.96, label: 'clear' }
+  if (v <= 8.5)  return { color: '#B46010', glow: 'rgba(180,96,16,0.58)',   scale: 0.98, label: 'alive' }
+  if (v <= 9)    return { color: '#A8721A', glow: 'rgba(168,114,26,0.62)',  scale: 1.00, label: 'flowing' }
+  if (v <= 9.5)  return { color: '#B87820', glow: 'rgba(184,120,32,0.66)',  scale: 1.04, label: 'lit up' }
+  return           { color: '#C8922A', glow: 'rgba(200,146,42,0.72)',  scale: 1.08, label: 'thriving and radiant' }
 }
 
 function flickerIntensity(v) {
@@ -325,6 +336,32 @@ function FlameSlider({ value, onChange, ghostValue = null }) {
       }}>
         {getFlameProps(value).label}
       </div>
+
+      {/* Zero state — gentle alert */}
+      {value === 0 && (
+        <div style={{
+          marginTop: '8px', padding: '10px 14px',
+          background: 'rgba(107,114,128,0.06)',
+          border: '1px solid rgba(107,114,128,0.2)',
+          borderRadius: '10px', textAlign: 'center',
+          maxWidth: '200px',
+        }}>
+          <p style={{
+            fontFamily: "'Cormorant Garamond',Georgia,serif",
+            fontSize: '0.875rem', fontStyle: 'italic',
+            color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, margin: '0 0 6px',
+          }}>
+            That's a hard place to be.
+          </p>
+          <a href="/tools/foundation" style={{
+            fontFamily: "'Cormorant SC',Georgia,serif",
+            fontSize: '0.75rem', letterSpacing: '0.10em',
+            color: '#A8721A', textDecoration: 'none',
+          }}>
+            Foundation is here if you need it →
+          </a>
+        </div>
+      )}
     </div>
   )
 }

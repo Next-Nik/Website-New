@@ -139,6 +139,16 @@ export function LifeOSPage() {
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '64px', maxWidth: '520px' }}>Six tools. Start anywhere. Each one does its own work {'—'} and they compound when you{'’'}re ready.</p>
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 32px' }} />
 
+        {/* Orienteering CTA */}
+        <div style={{ marginBottom: '32px', padding: '24px 28px', background: 'rgba(200,146,42,0.03)', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
+          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '16px', maxWidth: '520px' }}>
+            If you don't know where to begin, begin with Orienteering — it reads your current state and points you somewhere useful. Everything else flows from knowing where you're starting from.
+          </p>
+          <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '12px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
+            Begin with Orienteering →
+          </a>
+        </div>
+
         {TOOLS.map(t => <ToolAccordion key={t.id} tool={t} />)}
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '48px 0' }} />

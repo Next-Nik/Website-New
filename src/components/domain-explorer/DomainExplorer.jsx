@@ -23,6 +23,7 @@ export default function DomainExplorer() {
   const [levelPath,      setLevelPath]      = useState([])
   const [contributeOpen, setContributeOpen] = useState(false)
   const [overviewOpen,   setOverviewOpen]   = useState(true)
+  const [parentItem,     setParentItem]     = useState(null) // keeps text visible when drilling into subdomains
 
   // User initial for display (optional — auth already handled by useAuth)
   const userInitial = user?.email
@@ -147,15 +148,17 @@ export default function DomainExplorer() {
     if (activeIndex === null) return
     const currentItem = navState.currentList[activeIndex]
     if (!currentItem?.subDomains?.length) return
+    setParentItem(currentItem) // preserve text
     setLevelPath(prev => [...prev, { index: activeIndex }])
     setActiveIndex(null)
   }
 
   function handleBack() {
-    if (levelPath.length === 0) { setActiveIndex(null); return }
+    if (levelPath.length === 0) { setActiveIndex(null); setParentItem(null); return }
     const prevIndex = levelPath[levelPath.length - 1].index
     setLevelPath(prev => prev.slice(0, -1))
     setActiveIndex(prevIndex)
+    setParentItem(null) // clear preserved text when going back
   }
 
   const selectedItem = activeIndex !== null ? navState.currentList[activeIndex] : null
@@ -216,6 +219,27 @@ export default function DomainExplorer() {
             />
           ) : !overviewOpen && (
             <div className={styles.idlePanel}>
+              {/* Show parent item text when drilling into subdomains */}
+              {parentItem && (
+                <div style={{ marginBottom: '24px', paddingBottom: '20px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
+                  <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px', textTransform: 'uppercase' }}>
+                    {parentItem.name}
+                  </p>
+                  {parentItem.horizonGoal && (
+                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, marginBottom: '8px' }}>
+                      {parentItem.horizonGoal}
+                    </p>
+                  )}
+                  {parentItem.description && (
+                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.65 }}>
+                      {parentItem.description}
+                    </p>
+                  )}
+                  <button onClick={handleBack} style={{ marginTop: '12px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.12em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                    ← Back
+                  </button>
+                </div>
+              )}
               <div className={styles.idleDivider} />
               <p className={styles.idleLabel}>
                 {levelPath.length === 0
