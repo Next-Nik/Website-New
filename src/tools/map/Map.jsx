@@ -238,7 +238,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
         return (
           <g key={domain.id}
             onClick={() => !isSpinning && onSelect(i)}
-            style={{ cursor: isSpinning ? 'default' : 'pointer' }}
+            style={{ cursor: isSpinning ? 'default' : 'pointer', outline: 'none' }}
             role="button" tabIndex={0} aria-label={domain.label}
             onKeyDown={e => e.key === 'Enter' && !isSpinning && onSelect(i)}
           >
@@ -323,7 +323,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
         const outerGlowOpacity = progress * 0.15
 
         return (
-          <g onClick={onCentreClick} style={{ cursor: 'pointer' }} role="button" tabIndex={0}
+          <g onClick={onCentreClick} style={{ cursor: 'pointer', outline: 'none' }} role="button" tabIndex={0}
             aria-label="Open domain status"
             onKeyDown={e => e.key === 'Enter' && onCentreClick?.()}>
 
@@ -351,7 +351,7 @@ strokeWidth="0.5"
             {/* Label */}
             <text x={CX} y={CY} textAnchor="middle" dominantBaseline="middle"
               fill="#FAFAF7"
-              fontSize="14" stroke="#FFFFFF" strokeWidth="1.1" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.14em"
+              fontSize="14" stroke="#FFFFFF" strokeWidth="0.4" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.14em"
               style={{ pointerEvents: 'none', userSelect: 'none' }}>
               YOUR LIFE
             </text>
