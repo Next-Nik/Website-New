@@ -74,7 +74,7 @@ export function ScalePanel({ side = 'left' }) {
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
           fontFamily: 'var(--font-sc)',
-          fontSize: '0.5625rem',
+          fontSize: '0.8125rem',
           letterSpacing: '0.18em',
           color: 'var(--gold-dk)',
           textTransform: 'uppercase',
