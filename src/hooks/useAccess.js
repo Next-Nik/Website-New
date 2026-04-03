@@ -2,25 +2,11 @@ import { useState, useEffect } from 'react'
 import { supabase } from './useSupabase'
 import { useAuth } from './useAuth'
 
-// Tier hierarchy for comparison
 const TIER_RANK = { full: 3, beta: 2, preview: 1, none: 0 }
 
-/**
- * useAccess(productKey)
- *
- * Returns: { tier, discountPct, loading, error }
- *
- * tier:
- *   'full'      — complete access
- *   'beta'      — full access, beta source
- *   'preview'   — limited/lite access
- *   'none'      — no access, show paywall
- *   'suspended' — account suspended
- *   'banned'    — account banned
- *   null        — still loading
- *
- * discountPct: 0–100, applicable if tier is 'none'
- */
+// Founder UUID — always gets full access regardless of database state
+const FOUNDER_UUID = '304f778f-f859-4c06-972c-f37ae8042457'
+
 export function useAccess(productKey) {
   const { user, loading: authLoading } = useAuth()
   const [tier, setTier]               = useState(null)
@@ -30,6 +16,15 @@ export function useAccess(productKey) {
 
   useEffect(() => {
     if (authLoading) return
+
+    // Founder always gets full access — no database check needed
+    if (user?.id === FOUNDER_UUID) {
+      setTier('full')
+      setDiscountPct(0)
+      setLoading(false)
+      return
+    }
+
     if (!user) {
       setTier('none')
       setDiscountPct(0)
@@ -45,17 +40,15 @@ export function useAccess(productKey) {
           p_user_id: user.id,
           p_product: productKey,
         })
-
         if (cancelled) return
         if (rpcError) throw rpcError
-
         setTier(data?.tier ?? 'none')
         setDiscountPct(data?.discount_pct ?? 0)
       } catch (err) {
         if (!cancelled) {
           console.error('useAccess error:', err)
           setError(err)
-          setTier('none') // fail open — don't hard-block on error
+          setTier('full') // fail open on error — don't block users on backend issues
         }
       } finally {
         if (!cancelled) setLoading(false)
@@ -69,18 +62,10 @@ export function useAccess(productKey) {
   return { tier, discountPct, loading, error }
 }
 
-/**
- * hasAccess(tier)
- * Returns true if tier grants tool access (preview, beta, or full).
- */
 export function hasAccess(tier) {
   return TIER_RANK[tier] >= TIER_RANK['preview']
 }
 
-/**
- * hasFullAccess(tier)
- * Returns true only for beta or full.
- */
 export function hasFullAccess(tier) {
   return TIER_RANK[tier] >= TIER_RANK['beta']
 }
