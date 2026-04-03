@@ -102,7 +102,7 @@ function HourglassPicker({ onScore, horizonMode = false, currentScore }) {
   return (
     <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '12px', padding: '16px 20px', marginTop: '12px' }}>
       {horizonMode && (
-        <div style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.5625rem', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '12px', paddingBottom: '10px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
+        <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.5625rem', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '12px', paddingBottom: '10px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
           Horizon target · Development zone only
         </div>
       )}
@@ -115,12 +115,12 @@ function HourglassPicker({ onScore, horizonMode = false, currentScore }) {
           const isLine   = n === 5 && !horizonMode
           return (
             <div key={n} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '28px', textAlign: 'right', fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.625rem', letterSpacing: '0.04em', color: isLine ? '#A8721A' : isCur ? c : 'rgba(15,21,35,0.45)', fontWeight: (isLine || isCur) ? 600 : 400, flexShrink: 0 }}>{n}</div>
+              <div style={{ width: '28px', textAlign: 'right', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.625rem', letterSpacing: '0.04em', color: isLine ? '#A8721A' : isCur ? c : 'rgba(15,21,35,0.45)', fontWeight: (isLine || isCur) ? 600 : 400, flexShrink: 0 }}>{n}</div>
               <div style={{ flex: 1, display: 'flex', alignItems: 'center', position: 'relative', height: '26px' }}>
                 <div style={{ position: 'absolute', left: 0, right: 0, height: isLine ? '1.5px' : '1px', background: isLine ? 'rgba(200,146,42,0.4)' : 'rgba(200,146,42,0.08)' }} />
                 <button onMouseEnter={() => setHovered(n)} onMouseLeave={() => setHovered(null)} onClick={() => onScore(n)} style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', width: `${w}%`, height: isCur ? '20px' : '18px', background: isHov || isCur ? c : horizonMode ? `${c}18` : `${c}14`, border: `1px solid ${isHov || isCur ? c : `${c}30`}`, borderRadius: '4px', cursor: 'pointer', transition: 'all 0.12s ease', outline: isCur ? `2px solid ${c}44` : 'none', outlineOffset: '2px' }} />
               </div>
-              <div style={{ width: '130px', flexShrink: 0, fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.625rem', color: isLine ? '#A8721A' : isCur ? c : 'rgba(15,21,35,0.35)', fontWeight: isCur ? 600 : 400, letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ width: '130px', flexShrink: 0, fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.625rem', color: isLine ? '#A8721A' : isCur ? c : 'rgba(15,21,35,0.35)', fontWeight: isCur ? 600 : 400, letterSpacing: '0.03em', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {LABEL_MAP[n]}
               </div>
             </div>
@@ -129,9 +129,9 @@ function HourglassPicker({ onScore, horizonMode = false, currentScore }) {
       </div>
       {hovered !== null && (
         <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid rgba(200,146,42,0.12)', display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-          <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '1.125rem', fontWeight: 600, color: getScoreColor(hovered) }}>{hovered}</span>
-          <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.75rem', letterSpacing: '0.08em', color: getScoreColor(hovered) }}>{TIER_MAP[hovered]}</span>
-          <span style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.8125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{LABEL_MAP[hovered]}</span>
+          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', fontWeight: 600, color: getScoreColor(hovered) }}>{hovered}</span>
+          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.75rem', letterSpacing: '0.08em', color: getScoreColor(hovered) }}>{TIER_MAP[hovered]}</span>
+          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{LABEL_MAP[hovered]}</span>
         </div>
       )}
     </div>
@@ -351,7 +351,7 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect }) {
           boxShadow: '2px 0 12px rgba(15,21,35,0.06)',
         }}
       >
-        <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '9px', letterSpacing: '0.14em', color: '#A8721A', writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}>
+        <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '9px', letterSpacing: '0.14em', color: '#A8721A', writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}>
           DOMAINS
         </span>
         <span style={{ color: '#A8721A', fontSize: '12px', marginTop: '4px' }}>
@@ -372,7 +372,7 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect }) {
         paddingTop: '72px',
       }}>
         <div style={{ padding: '0 20px 20px' }}>
-          <div style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '10px', letterSpacing: '0.2em', color: '#A8721A', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
+          <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', letterSpacing: '0.2em', color: '#A8721A', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
             DOMAIN STATUS
           </div>
 
@@ -397,24 +397,24 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect }) {
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
-                  <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '12px', color: stage === 3 ? 'rgba(200,146,42,0.9)' : stage > 0 ? 'rgba(200,146,42,0.6)' : 'rgba(15,21,35,0.3)' }}>
+                  <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', color: stage === 3 ? 'rgba(200,146,42,0.9)' : stage > 0 ? 'rgba(200,146,42,0.6)' : 'rgba(15,21,35,0.3)' }}>
                     {STAGE_ICONS[stage]}
                   </span>
-                  <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '11px', letterSpacing: '0.08em', color: isActive ? '#A8721A' : 'rgba(15,21,35,0.72)' }}>
+                  <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.08em', color: isActive ? '#A8721A' : 'rgba(15,21,35,0.72)' }}>
                     {domain.label}
                   </span>
                   {score !== undefined && (
-                    <span style={{ marginLeft: 'auto', fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '12px', fontWeight: 600, color: getScoreColor(score) }}>
+                    <span style={{ marginLeft: 'auto', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', fontWeight: 600, color: getScoreColor(score) }}>
                       {score}
                     </span>
                   )}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '11px', fontStyle: 'italic', color: 'rgba(15,21,35,0.4)' }}>
+                  <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '11px', fontStyle: 'italic', color: 'rgba(15,21,35,0.4)' }}>
                     {STAGE_LABELS[stage]}
                   </span>
                   {horizon !== undefined && (
-                    <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '10px', color: 'rgba(200,146,42,0.6)' }}>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', color: 'rgba(200,146,42,0.6)' }}>
                       → {horizon}
                     </span>
                   )}
@@ -432,8 +432,8 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect }) {
               { icon: '●', label: 'Complete' },
             ].map(item => (
               <div key={item.icon} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '11px', color: 'rgba(200,146,42,0.55)', width: '14px' }}>{item.icon}</span>
-                <span style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '11px', color: 'rgba(15,21,35,0.45)' }}>{item.label}</span>
+                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', color: 'rgba(200,146,42,0.55)', width: '14px' }}>{item.icon}</span>
+                <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '11px', color: 'rgba(15,21,35,0.45)' }}>{item.label}</span>
               </div>
             ))}
           </div>
@@ -454,13 +454,13 @@ function AvatarEditPrompt({ onSaveAndReview, onJustSave, onCancel }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '32px 28px', maxWidth: '400px', width: '100%' }}>
-        <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '1rem', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px' }}>
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px' }}>
           You're updating your avatar. If your new construct changes the scale significantly, your current score and horizon goal might be worth revisiting. Want to flag those for review, or just save?
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <button onClick={onSaveAndReview} style={btnStyle}>Save and review those steps →</button>
           <button onClick={onJustSave} style={{ ...btnStyle, background: 'transparent', border: '1px solid rgba(200,146,42,0.3)', color: 'rgba(15,21,35,0.72)' }}>Just save</button>
-          <button onClick={onCancel} style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>Cancel</button>
+          <button onClick={onCancel} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>Cancel</button>
         </div>
       </div>
     </div>
@@ -468,7 +468,7 @@ function AvatarEditPrompt({ onSaveAndReview, onJustSave, onCancel }) {
 }
 
 const btnStyle = {
-  fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.875rem', letterSpacing: '0.12em',
+  fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.875rem', letterSpacing: '0.12em',
   color: '#A8721A', background: 'rgba(200,146,42,0.05)',
   border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px',
   padding: '12px 20px', cursor: 'pointer',
@@ -700,7 +700,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           borderRadius: isUser ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
           background: isUser ? 'rgba(200,146,42,0.07)' : '#FFFFFF',
           border: isUser ? '1px solid rgba(200,146,42,0.22)' : '1px solid rgba(200,146,42,0.15)',
-          fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', fontWeight: 300,
+          fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontWeight: 300,
           color: isUser ? 'rgba(15,21,35,0.72)' : 'rgba(15,21,35,0.78)',
           lineHeight: 1.72,
           fontStyle: isUser ? 'italic' : 'normal',
@@ -731,7 +731,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           placeholder={placeholder}
           rows={2}
           disabled={disabled}
-          style={{ flex: 1, padding: '10px 14px', fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', outline: 'none', resize: 'none', lineHeight: 1.55 }}
+          style={{ flex: 1, padding: '10px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', outline: 'none', resize: 'none', lineHeight: 1.55 }}
         />
         <button onClick={() => onSend(value)} disabled={!value.trim() || disabled} style={{ ...btnStyle, padding: '10px 16px', alignSelf: 'flex-end', opacity: !value.trim() || disabled ? 0.4 : 1 }}>→</button>
       </div>
@@ -766,18 +766,18 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
       {/* Domain header */}
       <div style={{ marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-          <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.5625rem', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase' }}>
+          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.5625rem', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase' }}>
             {domain.label}
           </span>
           {stage === 3 && (
-            <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.5625rem', letterSpacing: '0.14em', color: 'rgba(200,146,42,0.7)' }}>● Complete</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.5625rem', letterSpacing: '0.14em', color: 'rgba(200,146,42,0.7)' }}>● Complete</span>
           )}
         </div>
-        <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>
           {domain.question}
         </p>
         {flagReview && step !== 'done' && (
-          <div style={{ marginTop: '8px', padding: '8px 12px', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.8125rem', fontStyle: 'italic', color: 'rgba(200,146,42,0.8)' }}>
+          <div style={{ marginTop: '8px', padding: '8px 12px', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', fontStyle: 'italic', color: 'rgba(200,146,42,0.8)' }}>
             Your avatar changed — worth reviewing your score and horizon goal when you're ready.
           </div>
         )}
@@ -792,7 +792,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           return (
             <button key={s} onClick={() => reachable && setStep(s)}
               style={{
-                fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.625rem', letterSpacing: '0.12em',
+                fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.625rem', letterSpacing: '0.12em',
                 padding: '8px 14px', background: 'none', border: 'none',
                 borderBottom: active ? '2px solid #A8721A' : '2px solid transparent',
                 marginBottom: '-1px', cursor: reachable ? 'pointer' : 'default',
@@ -809,7 +809,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
         <div>
           {!avatarLocked || editingAvatar ? (
             <>
-              <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '16px' }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '16px' }}>
                 Create a construct of "Best in the World" for you in {domain.label}. Think of it like you're creating a character for a movie or a video game that represents best in this area for you. Feel free to reference real people, fictional characters, and to make elements up from scratch. If you're using a real or fictional person, we're just looking at how they are in this area — feel free to write as much as you want, I'll help you refine, distil and interpret as we go.
               </p>
 
@@ -820,7 +820,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                   onChange={e => setAvatarDraft(e.target.value)}
                   placeholder="Name people, characters, qualities. Don't edit — just pour it out."
                   rows={4}
-                  style={{ width: '100%', padding: '12px 14px', fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '1rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '10px' }}
+                  style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '10px' }}
                 />
               )}
 
@@ -853,10 +853,10 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
             // Avatar locked — show summary
             <div>
               <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '12px' }}>
-                <div style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.5625rem', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '8px' }}>YOUR AVATAR</div>
-                <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>{avatarFinal}</p>
+                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.5625rem', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '8px' }}>YOUR AVATAR</div>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>{avatarFinal}</p>
               </div>
-              <button onClick={startEditAvatar} style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <button onClick={startEditAvatar} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                 Edit avatar ↗
               </button>
             </div>
@@ -867,7 +867,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
       {/* ── STEP 2: SCORE ── */}
       {step === 'score' && (
         <div>
-          <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '16px' }}>
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '16px' }}>
             Now that we've calibrated the scale, where would you place yourself relative to that best in the world mark? Please give a number and then explain your choice — describe your current state in this area to the best of your ability.
           </p>
 
@@ -880,7 +880,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
             onChange={e => setRealityDraft(e.target.value)}
             placeholder="Describe where you are right now. Voice to text works well here — don't edit, just pour it out."
             rows={4}
-            style={{ width: '100%', marginTop: '16px', padding: '12px 14px', fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '1rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65 }}
+            style={{ width: '100%', marginTop: '16px', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65 }}
           />
 
           {/* Score conversation */}
@@ -914,9 +914,9 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
 
           {scoreLocked && (
             <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '1rem', fontWeight: 600, color: getScoreColor(currentScore) }}>{currentScore}</span>
-              <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.625rem', letterSpacing: '0.08em', color: getScoreColor(currentScore) }}>{TIER_MAP[currentScore]}</span>
-              <button onClick={() => { setScoreLocked(false) }} style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.8125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.4)', background: 'none', border: 'none', cursor: 'pointer', marginLeft: '8px' }}>Edit</button>
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1rem', fontWeight: 600, color: getScoreColor(currentScore) }}>{currentScore}</span>
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.625rem', letterSpacing: '0.08em', color: getScoreColor(currentScore) }}>{TIER_MAP[currentScore]}</span>
+              <button onClick={() => { setScoreLocked(false) }} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.4)', background: 'none', border: 'none', cursor: 'pointer', marginLeft: '8px' }}>Edit</button>
             </div>
           )}
         </div>
@@ -930,16 +930,16 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
               {/* Permission-to-challenge moment */}
               {horizonMsgs.length === 0 && (
                 <div style={{ padding: '16px 18px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderLeft: '3px solid rgba(200,146,42,0.4)', borderRadius: '10px', marginBottom: '16px' }}>
-                  <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, margin: 0 }}>
+                  <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, margin: 0 }}>
                     I'm going to challenge you here, just to pressure test your answer. If afterwards you choose to stay with what you wrote, that's great. If you choose to alter or edit any part of it — or the whole thing — that's also great. We're aiming for the truth of your life here, so let's get it.
                   </p>
                 </div>
               )}
 
-              <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '8px' }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '8px' }}>
                 If the genie granted your wish in {domain.label}, what would it be?
               </p>
-              <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.8125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '16px' }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '16px' }}>
                 Not the avatar — that's best in the world. Your life. You don't have to want 10.
               </p>
 
@@ -948,7 +948,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                 onChange={e => setHorizonText(e.target.value)}
                 placeholder="What would your life look like if this area were genuinely good?"
                 rows={3}
-                style={{ width: '100%', padding: '12px 14px', fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '1rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '12px' }}
+                style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '12px' }}
               />
 
               <HourglassPicker onScore={handleHorizonScoreSelect} horizonMode currentScore={horizonScore} />
@@ -985,14 +985,14 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
             // Horizon locked — show summary
             <div>
               <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '10px' }}>
-                <div style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.5625rem', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>YOUR HORIZON</div>
-                <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '8px' }}>{horizonText}</p>
+                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.5625rem', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>YOUR HORIZON</div>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '8px' }}>{horizonText}</p>
                 <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.35)', background: 'rgba(200,146,42,0.06)' }}>
-                  <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.875rem', color: '#A8721A' }}>Horizon: {horizonScore}</span>
-                  <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.5625rem', letterSpacing: '0.08em', color: '#A8721A' }}>{TIER_MAP[horizonScore]}</span>
+                  <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.875rem', color: '#A8721A' }}>Horizon: {horizonScore}</span>
+                  <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.5625rem', letterSpacing: '0.08em', color: '#A8721A' }}>{TIER_MAP[horizonScore]}</span>
                 </div>
               </div>
-              <button onClick={() => { setHorizonLocked(false); setStep('horizon') }} style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <button onClick={() => { setHorizonLocked(false); setStep('horizon') }} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                 Edit →
               </button>
             </div>
@@ -1032,18 +1032,18 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
 
       {/* Hero */}
       <div style={{ padding: '28px 28px 22px', borderBottom: '1px solid rgba(200,146,42,0.1)', background: 'rgba(200,146,42,0.03)' }}>
-        <div style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.5625rem', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '12px' }}>Your Life OS Map</div>
+        <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.5625rem', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '12px' }}>Your Life OS Map</div>
         {mapData?.stage && (
-          <div style={{ display: 'inline-block', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '6px', padding: '4px 14px', fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.5625rem', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px' }}>{mapData.stage}</div>
+          <div style={{ display: 'inline-block', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '6px', padding: '4px 14px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.5625rem', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px' }}>{mapData.stage}</div>
         )}
         {mapData?.stage_description && (
-          <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75 }}>{mapData.stage_description}</p>
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75 }}>{mapData.stage_description}</p>
         )}
       </div>
 
       {/* Domain scores */}
       <div style={{ padding: '20px 28px', borderBottom: '1px solid rgba(200,146,42,0.07)' }}>
-        <div style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.5625rem', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px', paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>
+        <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.5625rem', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px', paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>
           Your Seven Domains
         </div>
         {DOMAINS.map(d => {
@@ -1056,17 +1056,17 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
           return (
             <div key={d.id} style={{ padding: '8px 0', borderBottom: '1px solid rgba(200,146,42,0.07)', background: isFocus ? 'rgba(200,146,42,0.03)' : 'transparent', paddingLeft: isFocus ? '8px' : 0, borderLeft: isFocus ? '2px solid rgba(200,146,42,0.4)' : 'none', marginLeft: isFocus ? '-8px' : 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.6875rem', letterSpacing: '0.06em', color: isFocus ? '#A8721A' : '#0F1523', minWidth: '90px' }}>{isFocus ? '▸ ' : ''}{d.label}</span>
+                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.6875rem', letterSpacing: '0.06em', color: isFocus ? '#A8721A' : '#0F1523', minWidth: '90px' }}>{isFocus ? '▸ ' : ''}{d.label}</span>
                 <div style={{ flex: 1, height: '3px', background: 'rgba(200,146,42,0.1)', borderRadius: '2px', position: 'relative' }}>
                   <div style={{ position: 'absolute', left: 0, width: `${(s / 10) * 100}%`, height: '100%', background: col, borderRadius: '2px', transition: 'width 0.8s ease' }} />
                   {h && <div style={{ position: 'absolute', left: `${(h / 10) * 100}%`, top: '-4px', width: '2px', height: '11px', background: 'rgba(200,146,42,0.55)', borderRadius: '1px', transform: 'translateX(-1px)' }} />}
                 </div>
                 <div style={{ textAlign: 'right', minWidth: '60px' }}>
-                  <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.9375rem', fontWeight: 600, color: col }}>{s}</span>
-                  {h && <span style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.625rem', color: 'rgba(200,146,42,0.55)', marginLeft: '4px' }}>→{h}</span>}
+                  <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.9375rem', fontWeight: 600, color: col }}>{s}</span>
+                  {h && <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.625rem', color: 'rgba(200,146,42,0.55)', marginLeft: '4px' }}>→{h}</span>}
                 </div>
               </div>
-              {isFocus && <div style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.6875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{d.question}</div>}
+              {isFocus && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.6875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{d.question}</div>}
             </div>
           )
         })}
@@ -1075,9 +1075,9 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
       {/* Pattern */}
       {mapData?.overall_reflection && (
         <div style={{ padding: '18px 28px', borderBottom: '1px solid rgba(200,146,42,0.07)' }}>
-          <div style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.5625rem', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>What The Pattern Shows</div>
+          <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.5625rem', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>What The Pattern Shows</div>
           {mapData.overall_reflection.split('\n\n').map((p, i) => (
-            <p key={i} style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, lineHeight: 1.8, color: 'rgba(15,21,35,0.78)', margin: i > 0 ? '12px 0 0' : 0 }}>{p}</p>
+            <p key={i} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", lineHeight: 1.8, color: 'rgba(15,21,35,0.78)', margin: i > 0 ? '12px 0 0' : 0 }}>{p}</p>
           ))}
         </div>
       )}
@@ -1085,12 +1085,12 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
       {/* Focus domains */}
       {focusDomains.length > 0 && (
         <div style={{ padding: '18px 28px', borderBottom: '1px solid rgba(200,146,42,0.07)' }}>
-          <div style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.5625rem', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>Your Three Focus Domains</div>
-          <p style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.9375rem', color: '#A8721A', letterSpacing: '0.04em', marginBottom: '8px' }}>
+          <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.5625rem', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>Your Three Focus Domains</div>
+          <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.9375rem', color: '#A8721A', letterSpacing: '0.04em', marginBottom: '8px' }}>
             {focusDomains.map(id => DOMAINS.find(d => d.id === id)?.label).filter(Boolean).join('  ·  ')}
           </p>
           {mapData.focus_reasoning && (
-            <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75 }}>{mapData.focus_reasoning}</p>
+            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75 }}>{mapData.focus_reasoning}</p>
           )}
         </div>
       )}
@@ -1098,18 +1098,18 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
       {/* Life horizon draft */}
       {mapData?.life_horizon_draft && (
         <div style={{ padding: '20px 28px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
-          <div style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.5625rem', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>Your Life Horizon</div>
+          <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.5625rem', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>Your Life Horizon</div>
           <textarea value={horizonText} onChange={e => setHorizonText(e.target.value)} disabled={horizonLocked}
             placeholder="Write your own Life Horizon — in your own voice."
-            rows={4} style={{ width: '100%', padding: '12px 14px', fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '1rem', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.78)', background: '#FFFFFF', border: horizonLocked ? '1px solid rgba(200,146,42,0.3)' : '1.5px dashed rgba(200,146,42,0.4)', borderRadius: '10px', resize: 'vertical', outline: 'none', lineHeight: 1.7, marginBottom: '8px', opacity: horizonLocked ? 0.7 : 1 }}
+            rows={4} style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.78)', background: '#FFFFFF', border: horizonLocked ? '1px solid rgba(200,146,42,0.3)' : '1.5px dashed rgba(200,146,42,0.4)', borderRadius: '10px', resize: 'vertical', outline: 'none', lineHeight: 1.7, marginBottom: '8px', opacity: horizonLocked ? 0.7 : 1 }}
           />
-          <button onClick={() => setDraftVisible(v => !v)} style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: '10px', display: 'block' }}>
+          <button onClick={() => setDraftVisible(v => !v)} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: '10px', display: 'block' }}>
             {draftVisible ? 'Hide draft ↑' : 'See what The Map drafted →'}
           </button>
           {draftVisible && (
             <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '10px', marginBottom: '12px' }}>
-              <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '10px' }}>{mapData.life_horizon_draft}</p>
-              <button onClick={() => { setHorizonText(mapData.life_horizon_draft); setDraftVisible(false) }} style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.8125rem', fontStyle: 'italic', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '10px' }}>{mapData.life_horizon_draft}</p>
+              <button onClick={() => { setHorizonText(mapData.life_horizon_draft); setDraftVisible(false) }} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', fontStyle: 'italic', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                 Use this as my starting point →
               </button>
             </div>
@@ -1118,8 +1118,8 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
             <button onClick={lockHorizon} style={btnStyle}>Lock this as my Life Horizon ✓</button>
           )}
           {horizonLocked && (
-            <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>
-              <span style={{ color: '#A8721A', fontStyle: 'normal', fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.8125rem', letterSpacing: '0.1em' }}>✓ Locked.</span>{' '}This is your Life Horizon.
+            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>
+              <span style={{ color: '#A8721A', fontStyle: 'normal', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.8125rem', letterSpacing: '0.1em' }}>✓ Locked.</span>{' '}This is your Life Horizon.
             </p>
           )}
         </div>
@@ -1135,12 +1135,12 @@ function AuthModal() {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '36px 32px', maxWidth: '380px', width: '100%', textAlign: 'center' }}>
-        <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '14px' }}>THE MAP</span>
-        <h2 style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '22px', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>Sign in to begin.</h2>
-        <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '24px' }}>
+        <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '14px' }}>THE MAP</span>
+        <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '22px', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>Sign in to begin.</h2>
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '24px' }}>
           The Map saves your progress as you go — you can pick up where you left off, any time.
         </p>
-        <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.9375rem', letterSpacing: '0.16em', color: '#A8721A', textDecoration: 'none' }}>
+        <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.9375rem', letterSpacing: '0.16em', color: '#A8721A', textDecoration: 'none' }}>
           Sign in or create account →
         </a>
       </div>
@@ -1318,7 +1318,7 @@ export function MapPage() {
         <div className="tool-header">
           <span className="tool-eyebrow">Life OS · The Map</span>
           <h1 className="tool-title">The Map</h1>
-          <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
             An honest picture of where you are — and where you want to be.
           </p>
         </div>
@@ -1327,13 +1327,13 @@ export function MapPage() {
         {phase === 'welcome' && (
           <div style={{ animation: 'fadeUp 0.4s ease-out' }}>
             <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.18)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '12px', padding: '32px 32px 28px', marginBottom: '20px' }}>
-              <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: 'clamp(1.125rem, 2.5vw, 1.3125rem)', fontWeight: 300, fontStyle: 'italic', color: '#0F1523', lineHeight: 1.9, marginBottom: '12px' }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(1.125rem, 2.5vw, 1.3125rem)', fontWeight: 300, fontStyle: 'italic', color: '#0F1523', lineHeight: 1.9, marginBottom: '12px' }}>
                 The Map is a process through which you will connect to the version of your life on the other side of the things you've been wanting to fix, change, alter, improve, repair, and heal.
               </p>
-              <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '1.125rem', fontWeight: 300, color: '#A8721A', lineHeight: 1.7, marginBottom: '28px', fontStyle: 'italic' }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: '#A8721A', lineHeight: 1.7, marginBottom: '28px', fontStyle: 'italic' }}>
                 If that work was done — what life would you be living, and who would you be?
               </p>
-              <p style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '1rem', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.8, marginBottom: '28px' }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.8, marginBottom: '28px' }}>
                 Seven domains. Three steps each. You can move between domains in any order — do all the avatars first, then come back to score them, then set your horizons. Work at your pace. Your progress saves as you go.
               </p>
               <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', paddingTop: '24px' }}>
@@ -1343,10 +1343,10 @@ export function MapPage() {
                   { n: '3', label: 'Horizon Goal', desc: 'If a genie tapped you on the head and granted your wish in this area — what would it be?' },
                 ].map(s => (
                   <div key={s.n} style={{ display: 'flex', gap: '18px', marginBottom: '20px', alignItems: 'flex-start' }}>
-                    <span style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '1.125rem', fontWeight: 600, color: '#A8721A', flexShrink: 0, lineHeight: 1.2, minWidth: '22px' }}>{s.n}</span>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', fontWeight: 600, color: '#A8721A', flexShrink: 0, lineHeight: 1.2, minWidth: '22px' }}>{s.n}</span>
                     <div>
-                      <div style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.875rem', letterSpacing: '0.08em', color: '#0F1523', marginBottom: '5px' }}>{s.label}</div>
-                      <div style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.9375rem', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.72 }}>{s.desc}</div>
+                      <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.875rem', letterSpacing: '0.08em', color: '#0F1523', marginBottom: '5px' }}>{s.label}</div>
+                      <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.72 }}>{s.desc}</div>
                     </div>
                   </div>
                 ))}
@@ -1434,7 +1434,7 @@ export function MapPage() {
             <div style={{ padding: '32px 28px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '12px', textAlign: 'center' }}>
               {thinking ? (
                 <>
-                  <p style={{ fontFamily: 'Cormorant SC', Georgia, serif, fontSize: '0.75rem', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '12px' }}>BUILDING YOUR MAP</p>
+                  <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.75rem', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '12px' }}>BUILDING YOUR MAP</p>
                   <div className="typing-indicator"><span /><span /><span /></div>
                 </>
               ) : synthesis}
@@ -1446,7 +1446,7 @@ export function MapPage() {
         {phase === 'results' && mapData && (
           <>
             <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => setPhase('mapping')} style={{ fontFamily: 'Cormorant Garamond', Georgia, serif, fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer' }}>
+              <button onClick={() => setPhase('mapping')} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer' }}>
                 ← Go back and edit
               </button>
             </div>
