@@ -386,7 +386,7 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
         {/* Panel */}
         <div style={{
           position: 'absolute', left: 0, top: 0, bottom: 0,
-          width: '1260px',
+          width: '260px',
           background: '#FAFAF7',
           borderRight: '1.5px solid rgba(200,146,42,0.78)',
           overflowY: 'auto',
