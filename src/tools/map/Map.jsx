@@ -486,7 +486,7 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
             borderRadius: '0 12px 12px 0',
           }}
         >
-          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '9px', letterSpacing: '0.14em', color: '#A8721A', writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}>
+          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}>
             DOMAINS
           </span>
           <span style={{ color: '#A8721A', fontSize: '12px', marginTop: '4px' }}>
