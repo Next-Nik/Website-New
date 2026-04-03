@@ -345,7 +345,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
             <circle cx={CX} cy={CY} r={sunR}
               fill="#C8922A"
               stroke="#fcb823"
-strokeWidth="0.5"
+strokeWidth="1.5"
             />
 
             {/* Label */}
