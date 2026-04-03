@@ -351,7 +351,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
             {/* Label */}
             <text x={CX} y={CY} textAnchor="middle" dominantBaseline="middle"
               fill="#FAFAF7"
-              fontSize="8" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.14em"
+              fontSize="14" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.14em"
               style={{ pointerEvents: 'none', userSelect: 'none' }}>
               YOUR LIFE
             </text>
