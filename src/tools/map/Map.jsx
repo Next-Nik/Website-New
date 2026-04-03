@@ -1410,7 +1410,7 @@ export function MapPage() {
               <div style={{
                 position: 'absolute',
                 right: '-60px',
-                top: '-330px',
+                top: '-290px',
                 width: '520px',
                 height: '520px',
                 zIndex: 0,
