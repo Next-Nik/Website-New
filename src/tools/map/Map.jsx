@@ -151,7 +151,7 @@ function getRotationToTop(index, currentRot) {
   return currentRot + diff
 }
 
-function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0 }) {
+function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreClick }) {
   const [phase,      setPhase]      = useState('spinning')
   const [displayRot, setDisplayRot] = useState(0)
   const rotRef      = useRef(0)
@@ -312,26 +312,50 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0 }) {
         )
       })}
 
-      {/* Centre — "Your life" — gets brighter with each completed step */}
+      {/* Centre — The Sun — solid gold, glow grows with steps completed */}
       {(() => {
         const maxSteps = 21 // 7 domains × 3 steps
-        const brightness = 0.12 + (totalSteps / maxSteps) * 0.72 // 0.12 → 0.84
-        const strokeBrightness = 0.15 + (totalSteps / maxSteps) * 0.65
+        const progress = totalSteps / maxSteps // 0 → 1
+        const sunR = 54 // Sun is the largest element — domain nodes are NODE_R = 40
+        const glowR = sunR + 8 + progress * 28 // glow expands outward as steps complete
+        const glowOpacity = 0.08 + progress * 0.35
+        const outerGlowR = glowR + 12 + progress * 20
+        const outerGlowOpacity = progress * 0.15
+
         return (
-          <>
-            <circle cx={CX} cy={CY} r={26}
-              fill={`rgba(200,146,42,${(brightness * 0.25).toFixed(3)})`}
-              stroke={`rgba(200,146,42,${strokeBrightness.toFixed(3)})`}
-              strokeWidth="1"
-              style={{ transition: 'fill 0.8s ease, stroke 0.8s ease' }}
+          <g onClick={onCentreClick} style={{ cursor: 'pointer' }} role="button" tabIndex={0}
+            aria-label="Open domain status"
+            onKeyDown={e => e.key === 'Enter' && onCentreClick?.()}>
+
+            {/* Outer glow — grows with progress */}
+            {progress > 0 && (
+              <circle cx={CX} cy={CY} r={outerGlowR}
+                fill={`rgba(200,146,42,${outerGlowOpacity.toFixed(3)})`}
+                style={{ transition: 'all 1.2s ease' }}
+              />
+            )}
+
+            {/* Inner glow ring */}
+            <circle cx={CX} cy={CY} r={glowR}
+              fill={`rgba(200,146,42,${glowOpacity.toFixed(3)})`}
+              style={{ transition: 'all 0.8s ease' }}
             />
+
+            {/* Sun body — solid gold from start */}
+            <circle cx={CX} cy={CY} r={sunR}
+              fill="#C8922A"
+              stroke="rgba(200,146,42,0.6)"
+              strokeWidth="1.5"
+            />
+
+            {/* Label */}
             <text x={CX} y={CY} textAnchor="middle" dominantBaseline="middle"
-              fill={`rgba(200,146,42,${brightness.toFixed(3)})`}
-              fontSize="9" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.1em"
-              style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill 0.8s ease' }}>
+              fill="#FAFAF7"
+              fontSize="8" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.14em"
+              style={{ pointerEvents: 'none', userSelect: 'none' }}>
               YOUR LIFE
             </text>
-          </>
+          </g>
         )
       })()}
     </svg>
@@ -340,8 +364,12 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0 }) {
 
 // ─── Domain Thread Panel (left-edge slider) ───────────────────────────────────
 
-export function DomainThreadPanel({ domainData, activeIndex, onSelect }) {
+export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen = false }) {
   const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (forceOpen) setOpen(true)
+  }, [forceOpen])
 
   const STAGE_LABELS = ['Not started', 'Avatar done', 'Score done', 'Complete']
   const STAGE_ICONS  = ['○', '◎', '◑', '●']
@@ -1166,6 +1194,7 @@ export function MapPage() {
 
   const [activeIndex,  setActiveIndex]  = useState(null)
   const [domainData,   setDomainData]   = useState({})
+  const [threadPanelOpen, setThreadPanelOpen] = useState(false)
   const [currentScores,setCurrentScores]= useState({})
   const [horizonScores,setHorizonScores]= useState({})
   const [phase,        setPhase]        = useState('mapping') // 'welcome' | 'mapping' | 'results'
@@ -1317,6 +1346,7 @@ export function MapPage() {
         domainData={domainData}
         activeIndex={activeIndex}
         onSelect={i => { setActiveIndex(i); setPhase('mapping') }}
+        forceOpen={threadPanelOpen}
       />
 
       {/* Right — scale reference */}
@@ -1376,11 +1406,11 @@ export function MapPage() {
             <div style={{ position: 'relative', marginBottom: '32px', minHeight: '280px' }}>
 
               {/* Wheel — positioned behind card, right-aligned, large */}
-              {/* Centre orb sits level with bottom of header text */}
+              {/* Centre orb sits at height of Outer Game label */}
               <div style={{
                 position: 'absolute',
                 right: '-60px',
-                top: '-280px', // centre orb aligns with bottom of header area
+                top: '-180px',
                 width: '520px',
                 height: '520px',
                 zIndex: 0,
@@ -1392,6 +1422,7 @@ export function MapPage() {
                     activeIndex={activeIndex}
                     onSelect={setActiveIndex}
                     totalSteps={Object.values(domainData).reduce((sum, d) => sum + getDomainStage(d), 0)}
+                    onCentreClick={() => setThreadPanelOpen(p => !p)}
                   />
                 </div>
               </div>
@@ -1414,13 +1445,7 @@ export function MapPage() {
                     onUpdate={handleDomainUpdate}
                     onComplete={handleDomainComplete}
                   />
-                ) : (
-                  <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
-                      The wheel will land on your first domain. Or tap any node to begin there.
-                    </p>
-                  </div>
-                )}
+                ) : null}
 
                 {/* All complete CTA — inside card */}
                 {allComplete && (
