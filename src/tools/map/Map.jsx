@@ -376,28 +376,100 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
 
   return (
     <>
-      {/* Panel — tab is attached to right edge and travels with it */}
+      {/* Wrapper — panel + tab slide together */}
       <div style={{
         position: 'fixed', left: 0, top: 0, bottom: 0, zIndex: 199,
-        width: '260px',
-        background: '#FAFAF7',
-        borderRight: '1.5px solid rgba(200,146,42,0.78)',
-        transform: open ? 'translateX(0)' : 'translateX(-100%)',
+        width: '304px', // 260px panel + 44px tab
+        transform: open ? 'translateX(0)' : 'translateX(-260px)',
         transition: 'transform 0.28s ease',
-        overflowY: 'auto',
-        boxShadow: open ? '4px 0 24px rgba(15,21,35,0.1)' : 'none',
-        paddingTop: '72px',
       }}>
+        {/* Panel */}
+        <div style={{
+          position: 'absolute', left: 0, top: 0, bottom: 0,
+          width: '260px',
+          background: '#FAFAF7',
+          borderRight: '1.5px solid rgba(200,146,42,0.78)',
+          overflowY: 'auto',
+          boxShadow: open ? '4px 0 24px rgba(15,21,35,0.1)' : 'none',
+          paddingTop: '72px',
+        }}>
+          <div style={{ padding: '0 20px 20px' }}>
+            <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', letterSpacing: '0.2em', color: '#A8721A', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
+              DOMAIN STATUS
+            </div>
 
-        {/* Tab — attached to right edge of panel, slides with it */}
+            {DOMAINS.map((domain, i) => {
+              const data    = domainData[domain.id]
+              const stage   = getDomainStage(data)
+              const isActive = i === activeIndex
+              const score   = data?.currentScore
+              const horizon = data?.horizonScore
+
+              return (
+                <button key={domain.id} onClick={() => { onSelect(i); setOpen(false) }}
+                  style={{
+                    display: 'block', width: '100%', textAlign: 'left',
+                    padding: '12px 14px', marginBottom: '6px',
+                    borderRadius: '10px', border: 'none', cursor: 'pointer',
+                    background: isActive ? 'rgba(200,146,42,0.08)' : 'transparent',
+                    borderLeft: isActive ? '2px solid rgba(200,146,42,0.78)' : '2px solid transparent',
+                    transition: 'all 0.15s',
+                  }}
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(200,146,42,0.04)' }}
+                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', color: stage === 3 ? 'rgba(200,146,42,0.9)' : stage > 0 ? 'rgba(200,146,42,0.6)' : 'rgba(15,21,35,0.3)' }}>
+                      {STAGE_ICONS[stage]}
+                    </span>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.08em', color: isActive ? '#A8721A' : 'rgba(15,21,35,0.72)' }}>
+                      {domain.label}
+                    </span>
+                    {score !== undefined && (
+                      <span style={{ marginLeft: 'auto', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', fontWeight: 600, color: getScoreColor(score) }}>
+                        {score}
+                      </span>
+                    )}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '11px', fontStyle: 'italic', color: 'rgba(15,21,35,0.4)' }}>
+                      {STAGE_LABELS[stage]}
+                    </span>
+                    {horizon !== undefined && (
+                      <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', color: 'rgba(200,146,42,0.6)' }}>
+                        → {horizon}
+                      </span>
+                    )}
+                  </div>
+                </button>
+              )
+            })}
+
+            {/* Legend */}
+            <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
+              {[
+                { icon: '○', label: 'Not started' },
+                { icon: '◎', label: 'Avatar done' },
+                { icon: '◑', label: 'Score done' },
+                { icon: '●', label: 'Complete' },
+              ].map(item => (
+                <div key={item.icon} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', color: 'rgba(200,146,42,0.55)', width: '14px' }}>{item.icon}</span>
+                  <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '11px', color: 'rgba(15,21,35,0.45)' }}>{item.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Tab — sits at right edge of wrapper, travels with it */}
         <button
           onClick={() => setOpen(o => !o)}
           style={{
             position: 'absolute',
-            right: '-44px',
+            left: '260px',
             top: '50%',
             transform: 'translateY(-50%)',
-            zIndex: 200,
             background: '#FAFAF7',
             border: '1.5px solid rgba(200,146,42,0.78)',
             borderLeft: 'none',
@@ -421,74 +493,6 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
             {open ? '‹' : '›'}
           </span>
         </button>
-      }}>
-        <div style={{ padding: '0 20px 20px' }}>
-          <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', letterSpacing: '0.2em', color: '#A8721A', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
-            DOMAIN STATUS
-          </div>
-
-          {DOMAINS.map((domain, i) => {
-            const data    = domainData[domain.id]
-            const stage   = getDomainStage(data)
-            const isActive = i === activeIndex
-            const score   = data?.currentScore
-            const horizon = data?.horizonScore
-
-            return (
-              <button key={domain.id} onClick={() => { onSelect(i); setOpen(false) }}
-                style={{
-                  display: 'block', width: '100%', textAlign: 'left',
-                  padding: '12px 14px', marginBottom: '6px',
-                  borderRadius: '10px', border: 'none', cursor: 'pointer',
-                  background: isActive ? 'rgba(200,146,42,0.08)' : 'transparent',
-                  borderLeft: isActive ? '2px solid rgba(200,146,42,0.78)' : '2px solid transparent',
-                  transition: 'all 0.15s',
-                }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(200,146,42,0.04)' }}
-                onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
-                  <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', color: stage === 3 ? 'rgba(200,146,42,0.9)' : stage > 0 ? 'rgba(200,146,42,0.6)' : 'rgba(15,21,35,0.3)' }}>
-                    {STAGE_ICONS[stage]}
-                  </span>
-                  <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.08em', color: isActive ? '#A8721A' : 'rgba(15,21,35,0.72)' }}>
-                    {domain.label}
-                  </span>
-                  {score !== undefined && (
-                    <span style={{ marginLeft: 'auto', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', fontWeight: 600, color: getScoreColor(score) }}>
-                      {score}
-                    </span>
-                  )}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '11px', fontStyle: 'italic', color: 'rgba(15,21,35,0.4)' }}>
-                    {STAGE_LABELS[stage]}
-                  </span>
-                  {horizon !== undefined && (
-                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', color: 'rgba(200,146,42,0.6)' }}>
-                      → {horizon}
-                    </span>
-                  )}
-                </div>
-              </button>
-            )
-          })}
-
-          {/* Legend */}
-          <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
-            {[
-              { icon: '○', label: 'Not started' },
-              { icon: '◎', label: 'Avatar done' },
-              { icon: '◑', label: 'Score done' },
-              { icon: '●', label: 'Complete' },
-            ].map(item => (
-              <div key={item.icon} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', color: 'rgba(200,146,42,0.55)', width: '14px' }}>{item.icon}</span>
-                <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '11px', color: 'rgba(15,21,35,0.45)' }}>{item.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* Backdrop */}
