@@ -732,7 +732,7 @@ export function TargetGoalsPage() {
   if (authLoading || accessLoading) return <div className="loading" />
 
   if (tier !== 'full' && tier !== 'beta') {
-    return <AccessGate productKey="target_goals" toolName="Target Goals">{null}</AccessGate>
+    return <AccessGate productKey="target_goals" toolName="Target Sprint">{null}</AccessGate>
   }
 
   const curPhase = phase.startsWith('refine') ? 'refine' : phase
