@@ -283,12 +283,12 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
                   style={{ pointerEvents: 'none', userSelect: 'none' }}>
                   {score}
                 </text>
-                {/* Pill behind label */}
-                <rect x={p.x - 28} y={p.y + 2} width="56" height="14" rx="7"
-                  fill="#FFFFFF" fillOpacity="0.95"
+                {/* Pill + label below circle edge */}
+                <rect x={p.x - 30} y={p.y + NODE_R - 10} width="60" height="16" rx="8"
+                  fill="#FFFFFF" fillOpacity="0.96" stroke="rgba(200,146,42,0.15)" strokeWidth="0.5"
                   style={{ pointerEvents: 'none' }} />
-                <text x={p.x} y={p.y + 10} textAnchor="middle" dominantBaseline="middle"
-                  fill="rgba(200,146,42,0.7)" fontSize="9" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.06em"
+                <text x={p.x} y={p.y + NODE_R - 1} textAnchor="middle" dominantBaseline="middle"
+                  fill="rgba(200,146,42,0.8)" fontSize="9" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.06em"
                   style={{ pointerEvents: 'none', userSelect: 'none' }}>
                   {domain.label.toUpperCase()}
                 </text>
@@ -302,11 +302,11 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
                     {stage === 1 ? '◎' : stage === 2 ? '◑' : ''}
                   </text>
                 )}
-                {/* Pill behind label */}
-                <rect x={p.x - 36} y={stage > 0 ? p.y - 1 : p.y - 7} width="72" height="16" rx="8"
-                  fill="#FFFFFF" fillOpacity="0.95"
+                {/* Pill + label below circle edge */}
+                <rect x={p.x - 36} y={p.y + NODE_R - 10} width="72" height="16" rx="8"
+                  fill="#FFFFFF" fillOpacity="0.96" stroke="rgba(200,146,42,0.15)" strokeWidth="0.5"
                   style={{ pointerEvents: 'none' }} />
-                <text x={p.x} y={stage > 0 ? p.y + 7 : p.y} textAnchor="middle" dominantBaseline="middle"
+                <text x={p.x} y={p.y + NODE_R - 1} textAnchor="middle" dominantBaseline="middle"
                   fill={isActive ? '#A8721A' : stage > 0 ? 'rgba(200,146,42,0.7)' : 'rgba(15,21,35,0.55)'}
                   fontSize="10" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.04em"
                   style={{ pointerEvents: 'none', userSelect: 'none' }}>
@@ -386,9 +386,9 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
     <>
       {/* Wrapper — panel + tab slide together */}
       <div style={{
-        position: 'fixed', left: 0, top: 0, bottom: 0, zIndex: 199,
+        position: 'fixed', left: 0, top: 0, bottom: 0, zIndex: 999,
         width: '304px', // 260px panel + 44px tab
-        transform: open ? 'translateX(0)' : 'translateX(-216px)',
+        transform: open ? 'translateX(0)' : 'translateX(-260px)',
         transition: 'transform 0.28s ease',
       }}>
         {/* Panel */}
