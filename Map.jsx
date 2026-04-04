@@ -295,7 +295,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
                 </text>
                 {/* Pill + label centred in circle */}
                 <rect x={p.x - 30} y={p.y + 6} width="60" height="16" rx="8"
-                  fill="#FFFFFF" fillOpacity="0.96"
+                  fill="#FFFFFF"
                   style={{ pointerEvents: 'none' }} />
                 <text x={p.x} y={p.y + 15} textAnchor="middle" dominantBaseline="middle"
                   fill="rgba(200,146,42,0.8)" fontSize="13" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.06em"
@@ -314,7 +314,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
                 )}
                 {/* Pill + label centred in circle */}
                 <rect x={p.x - 36} y={p.y - 8} width="72" height="16" rx="8"
-                  fill="#FFFFFF" fillOpacity="0.96"
+                  fill="#FFFFFF"
                   style={{ pointerEvents: 'none' }} />
                 <text x={p.x} y={p.y + 1} textAnchor="middle" dominantBaseline="middle"
                   fill={isActive ? '#A8721A' : stage > 0 ? 'rgba(200,146,42,0.7)' : 'rgba(15,21,35,0.55)'}
@@ -1522,29 +1522,40 @@ export function MapPage() {
                     onCentreClick={() => setThreadPanelOpen(p => !p)}
                     triggerSpin={spinCount}
                   />
-                  {/* Spin button — curved arrow, sits below wheel */}
-                  <button
-                    onClick={() => setSpinCount(c => c + 1)}
-                    title="Spin the wheel"
-                    style={{
-                      position: 'absolute',
-                      bottom: '20px',
-                      right: '80px',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: '8px',
-                      opacity: 0.45,
-                      transition: 'opacity 0.2s',
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-                    onMouseLeave={e => e.currentTarget.style.opacity = '0.45'}
-                  >
-                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M6 14 A8 8 0 1 1 14 22" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-                      <polyline points="10,22 14,22 14,18" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                    </svg>
-                  </button>
+                  {/* Prev/Next rotation arrows */}
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '16px',
+                    right: '60px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}>
+                    <button
+                      onClick={() => setActiveIndex(i => i === null ? 0 : (i - 1 + DOMAINS.length) % DOMAINS.length)}
+                      title="Previous domain"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', opacity: 0.4, transition: 'opacity 0.2s' }}
+                      onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+                      onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
+                    >
+                      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                        <path d="M13 5 C8 5 4 8 4 11 C4 14 8 17 13 17" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                        <polyline points="7,8 4,11 7,14" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => setActiveIndex(i => i === null ? 0 : (i + 1) % DOMAINS.length)}
+                      title="Next domain"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', opacity: 0.4, transition: 'opacity 0.2s' }}
+                      onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+                      onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
+                    >
+                      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                        <path d="M9 5 C14 5 18 8 18 11 C18 14 14 17 9 17" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                        <polyline points="15,8 18,11 15,14" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
 
