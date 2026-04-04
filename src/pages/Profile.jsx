@@ -24,7 +24,7 @@ function ScoreBar({ label, score }) {
   const color = getTierColor(score)
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)', width: '96px', flexShrink: 0 }}>{label}</div>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)', width: '96px', flexShrink: 0 }}>{label}</div>
       <div style={{ flex: 1, position: 'relative', height: '20px', display: 'flex', alignItems: 'center' }}>
         <div style={{ position: 'absolute', left: 0, right: 0, height: '4px', background: 'rgba(200,146,42,0.12)', borderRadius: '2px' }} />
         <div style={{ position: 'absolute', left: 0, width: `${(score/10)*100}%`, height: '4px', background: color, borderRadius: '2px', transition: 'width 0.6s ease' }} />
@@ -32,8 +32,8 @@ function ScoreBar({ label, score }) {
       </div>
       <div style={{ width: '80px', flexShrink: 0, textAlign: 'right' }}>
         <span style={{ ...sc, fontSize: '1.125rem', fontWeight: 600, color, lineHeight: 1 }}>{score}</span>
-        <span style={{ ...serif, fontSize: '0.75rem', color: 'rgba(15,21,35,0.55)' }}>/10</span>
-        <div style={{ ...serif, fontSize: '0.625rem', color, marginTop: '2px', opacity: 0.8 }}>{TIER_LABELS[score]}</div>
+        <span style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>/10</span>
+        <div style={{ ...serif, fontSize: '13px', color, marginTop: '2px', opacity: 0.8 }}>{TIER_LABELS[score]}</div>
       </div>
     </div>
   )
@@ -47,7 +47,7 @@ function Slot({ title, tip, linkLabel, linkUrl, children, defaultOpen = true }) 
         <span style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: '#0F1523' }}>{title}</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           {linkLabel && linkUrl && (
-            <a href={linkUrl} onClick={e => e.stopPropagation()} style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: '#A8721A', textDecoration: 'none' }}>{linkLabel} {'\u2192'}</a>
+            <a href={linkUrl} onClick={e => e.stopPropagation()} style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: '#A8721A', textDecoration: 'none' }}>{linkLabel} {'\u2192'}</a>
           )}
           <span style={{ color: '#A8721A', fontSize: '18px', transform: open ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', lineHeight: 1 }}>{'\u203A'}</span>
         </div>
@@ -149,19 +149,19 @@ export function ProfilePage() {
             <div>
               {purposeData.archetype && (
                 <div style={{ marginBottom: '16px' }}>
-                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>Archetype</div>
+                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>Archetype</div>
                   <div style={{ ...serif, fontSize: '22px', fontWeight: 300, color: '#0F1523' }}>{purposeData.archetype}</div>
                 </div>
               )}
               {purposeData.domain && (
                 <div style={{ marginBottom: '16px' }}>
-                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>Primary Domain</div>
+                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>Primary Domain</div>
                   <div style={{ ...serif, fontSize: '16px', color: '#0F1523' }}>{purposeData.domain}</div>
                 </div>
               )}
               {purposeData.scale && (
                 <div>
-                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>Scale</div>
+                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>Scale</div>
                   <div style={{ ...serif, fontSize: '16px', color: '#0F1523' }}>{purposeData.scale}</div>
                 </div>
               )}
@@ -178,7 +178,7 @@ export function ProfilePage() {
         </Slot>
 
         <div style={{ textAlign: 'center', paddingTop: '48px', borderTop: '1px solid rgba(200,146,42,0.20)', marginTop: '24px' }}>
-          <button onClick={signOut} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '12px', fontWeight: 600, letterSpacing: '0.20em', color: 'rgba(15,21,35,0.72)', padding: '8px 0' }}>
+          <button onClick={signOut} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: 'rgba(15,21,35,0.72)', padding: '8px 0' }}>
             Sign out
           </button>
         </div>

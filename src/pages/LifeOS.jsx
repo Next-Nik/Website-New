@@ -202,7 +202,7 @@ export function LifeOSPage() {
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '20px', maxWidth: '580px' }}>The most important thing: make it an offer, not a prescription. The difference is felt immediately.</p>
           <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '20px 0 20px 28px', marginBottom: '20px', maxWidth: '580px' }}>
             <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '12px' }}>{'“'}I found something that helped me see where I actually was. No pressure {'—'} but if you{'’'}re curious, here it is.{'”'}</p>
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A' }}>An offer</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A' }}>An offer</span>
           </div>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '580px' }}>Notice {'—'} as you think about them across these domains {'—'} what you{'’'}re actually seeing. The same lens that helps you find the right thing for them has a way of clarifying things for you too.</p>
           <a href="/#start" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Start your own {'→'}</a>

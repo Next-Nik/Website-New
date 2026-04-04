@@ -39,7 +39,7 @@ export function ContentEditorPage() {
           The React content editor is being built. The Supabase-backed domain tree, RPC, and mobile-first editing interface will live here.
         </p>
         <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '28px 32px' }}>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>Status</span>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>Status</span>
           <p style={{ ...serif, fontSize: '15px', color: '#0F1523', lineHeight: 1.7 }}>
             Supabase schema pending (domains table, get_domain_tree RPC). Once the migration runs, the editor mounts here with the full domain tree, inline editing, and publish controls.
           </p>

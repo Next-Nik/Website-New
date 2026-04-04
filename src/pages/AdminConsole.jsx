@@ -22,7 +22,7 @@ const ENTITLE_TYPES   = ['access', 'discount', 'trial']
 
 function Eyebrow({ children }) {
   return (
-    <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: gold,
+    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: gold,
       textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
       {children}
     </span>
@@ -93,7 +93,7 @@ function Card({ children, style }) {
 function Badge({ label, color = gold }) {
   return (
     <span style={{
-      ...sc, fontSize: '10px', letterSpacing: '0.12em',
+      ...sc, fontSize: '13px', letterSpacing: '0.12em',
       padding: '3px 9px', borderRadius: '40px',
       border: `1px solid ${color}40`, color,
       background: `${color}12`,
@@ -207,32 +207,32 @@ function GroupsTab({ toast }) {
           <Eyebrow>New group</Eyebrow>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
             <div>
-              <label style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)',
+              <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
                 display: 'block', marginBottom: '4px' }}>Name *</label>
               <Input value={form.name} onChange={v => setForm(f => ({ ...f, name: v }))}
                 placeholder="NextMen Inner Circle" />
             </div>
             <div>
-              <label style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)',
+              <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
                 display: 'block', marginBottom: '4px' }}>Access code *</label>
               <Input value={form.code} onChange={v => setForm(f => ({ ...f, code: v }))}
                 placeholder="NEXTMEN2026" />
             </div>
             <div>
-              <label style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)',
+              <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
                 display: 'block', marginBottom: '4px' }}>URL slug</label>
               <Input value={form.slug} onChange={v => setForm(f => ({ ...f, slug: v }))}
                 placeholder="auto-generated from name" />
             </div>
             <div>
-              <label style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)',
+              <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
                 display: 'block', marginBottom: '4px' }}>Grace period (days on leave)</label>
               <Input value={form.grace_period_days} type="number"
                 onChange={v => setForm(f => ({ ...f, grace_period_days: parseInt(v) || 0 }))} />
             </div>
           </div>
           <div>
-            <label style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)',
+            <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
               display: 'block', marginBottom: '4px' }}>Description</label>
             <Input value={form.description}
               onChange={v => setForm(f => ({ ...f, description: v }))}
@@ -277,12 +277,12 @@ function GroupsTab({ toast }) {
                 )}
                 <div style={{ marginTop: '10px', display: 'flex', gap: '8px' }}>
                   <a href={joinUrl(g)} target="_blank" rel="noopener noreferrer"
-                    style={{ ...sc, fontSize: '11px', color: gold, textDecoration: 'none',
+                    style={{ ...sc, fontSize: '13px', color: gold, textDecoration: 'none',
                       letterSpacing: '0.10em' }}>
                     Join URL ↗
                   </a>
-                  <span style={{ color: 'rgba(200,146,42,0.4)' }}>·</span>
-                  <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.45)',
+                  <span style={{ color: '#C8922A' }}>·</span>
+                  <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.45)',
                     letterSpacing: '0.10em' }}>
                     {g.group_members?.[0]?.count ?? 0} members
                   </span>
@@ -374,7 +374,7 @@ function MembersTab({ toast }) {
             )}
           </div>
         </div>
-        <div style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.4)',
+        <div style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.4)',
           letterSpacing: '0.08em' }}>
           {new Date(m.joined_at).toLocaleDateString()}
         </div>
@@ -433,7 +433,7 @@ function MembersTab({ toast }) {
               </div>
               {removed.length > 0 && (
                 <details>
-                  <summary style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                  <summary style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
                     color: 'rgba(15,21,35,0.45)', cursor: 'pointer', marginBottom: '8px' }}>
                     Removed ({removed.length})
                   </summary>
@@ -531,14 +531,14 @@ function EntitlementsTab({ toast }) {
               <Eyebrow>New entitlement</Eyebrow>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
                 <div>
-                  <label style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)',
+                  <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
                     display: 'block', marginBottom: '4px' }}>Product</label>
                   <Select value={form.product_key} onChange={v => setForm(f => ({ ...f, product_key: v }))}
                     options={[{ value: '', label: 'Choose…' },
                       ...products.map(p => ({ value: p.key, label: p.name }))]} />
                 </div>
                 <div>
-                  <label style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)',
+                  <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
                     display: 'block', marginBottom: '4px' }}>Type</label>
                   <Select value={form.type} onChange={v => setForm(f => ({ ...f, type: v }))}
                     options={ENTITLE_TYPES} />
@@ -546,7 +546,7 @@ function EntitlementsTab({ toast }) {
 
                 {form.type === 'access' && (
                   <div>
-                    <label style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)',
+                    <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
                       display: 'block', marginBottom: '4px' }}>Tier</label>
                     <Select value={form.tier} onChange={v => setForm(f => ({ ...f, tier: v }))}
                       options={TIER_OPTIONS} />
@@ -554,7 +554,7 @@ function EntitlementsTab({ toast }) {
                 )}
                 {form.type === 'discount' && (
                   <div>
-                    <label style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)',
+                    <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
                       display: 'block', marginBottom: '4px' }}>Discount %</label>
                     <Input value={form.discount_pct} type="number"
                       onChange={v => setForm(f => ({ ...f, discount_pct: v }))} />
@@ -562,7 +562,7 @@ function EntitlementsTab({ toast }) {
                 )}
                 {form.type === 'trial' && (
                   <div>
-                    <label style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)',
+                    <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
                       display: 'block', marginBottom: '4px' }}>Trial days</label>
                     <Input value={form.trial_days} type="number"
                       onChange={v => setForm(f => ({ ...f, trial_days: v }))} />
@@ -570,7 +570,7 @@ function EntitlementsTab({ toast }) {
                 )}
 
                 <div>
-                  <label style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)',
+                  <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
                     display: 'block', marginBottom: '4px' }}>
                     Uses allowed (blank = unlimited)
                   </label>
@@ -579,7 +579,7 @@ function EntitlementsTab({ toast }) {
                     onChange={v => setForm(f => ({ ...f, uses_allowed: v }))} />
                 </div>
                 <div>
-                  <label style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)',
+                  <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
                     display: 'block', marginBottom: '4px' }}>
                     Expires after days (blank = while member, 0 = permanent)
                   </label>
@@ -819,7 +819,7 @@ function UsersTab({ toast }) {
                     <Badge label={a.tier} color="#3B6B4A" />
                     <Badge label={a.source} />
                     {a.expires_at && (
-                      <span style={{ ...sc, fontSize: '10px', color: 'rgba(15,21,35,0.4)',
+                      <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.4)',
                         letterSpacing: '0.08em' }}>
                         exp {new Date(a.expires_at).toLocaleDateString()}
                       </span>
@@ -898,12 +898,12 @@ function GrantsTab() {
               <Badge label={g.product} />
               <Badge label={g.tier} color="#3B6B4A" />
               <Badge label={g.source} />
-              <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.4)',
+              <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.4)',
                 letterSpacing: '0.08em', flexShrink: 0 }}>
                 {new Date(g.granted_at).toLocaleDateString()}
               </span>
               {g.expires_at && (
-                <span style={{ ...sc, fontSize: '10px',
+                <span style={{ ...sc, fontSize: '13px',
                   color: new Date(g.expires_at) < new Date() ? '#8A2020' : 'rgba(15,21,35,0.4)',
                   letterSpacing: '0.08em' }}>
                   {new Date(g.expires_at) < new Date() ? 'expired' : `exp ${new Date(g.expires_at).toLocaleDateString()}`}

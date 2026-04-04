@@ -100,7 +100,7 @@ export function LoginPage() {
       </div>
 
       <p style={{ marginTop: '32px', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.3)' }}>
-        <a href="/" style={{ color: 'rgba(200,146,42,0.7)', textDecoration: 'none' }}>nextus.world</a>
+        <a href="/" style={{ color: '#C8922A', textDecoration: 'none' }}>nextus.world</a>
       </p>
     </div>
   )
