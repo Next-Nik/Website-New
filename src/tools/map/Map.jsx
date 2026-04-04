@@ -151,7 +151,7 @@ function getRotationToTop(index, currentRot) {
   return currentRot + diff
 }
 
-function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreClick }) {
+function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreClick, triggerSpin = 0 }) {
   const [phase,      setPhase]      = useState('spinning')
   const [displayRot, setDisplayRot] = useState(0)
   const rotRef      = useRef(0)
@@ -160,6 +160,16 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
   const animRef     = useRef(null)
   const lastRef     = useRef(null)
   const spinStart   = useRef(Date.now())
+
+  // Re-spin when triggerSpin changes
+  useEffect(() => {
+    if (triggerSpin === 0) return
+    const incomplete = DOMAINS.findIndex(d => getDomainStage(domainData[d.id]) < 3)
+    landingRef.current = incomplete >= 0 ? incomplete : Math.floor(Math.random() * N)
+    spinStart.current = Date.now()
+    lastRef.current = null
+    setPhase('spinning')
+  }, [triggerSpin]) // eslint-disable-line
 
   // Pick landing domain: first incomplete, or random
   useEffect(() => {
@@ -285,10 +295,10 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
                 </text>
                 {/* Pill + label centred in circle */}
                 <rect x={p.x - 30} y={p.y + 6} width="60" height="16" rx="8"
-                  fill="#FFFFFF" fillOpacity="0.96" stroke="rgba(200,146,42,0.15)" strokeWidth="0.5"
+                  fill="#FFFFFF" fillOpacity="0.96"
                   style={{ pointerEvents: 'none' }} />
                 <text x={p.x} y={p.y + 15} textAnchor="middle" dominantBaseline="middle"
-                  fill="rgba(200,146,42,0.8)" fontSize="9" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.06em"
+                  fill="rgba(200,146,42,0.8)" fontSize="13" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.06em"
                   style={{ pointerEvents: 'none', userSelect: 'none' }}>
                   {domain.label.toUpperCase()}
                 </text>
@@ -304,11 +314,11 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
                 )}
                 {/* Pill + label centred in circle */}
                 <rect x={p.x - 36} y={p.y - 8} width="72" height="16" rx="8"
-                  fill="#FFFFFF" fillOpacity="0.96" stroke="rgba(200,146,42,0.15)" strokeWidth="0.5"
+                  fill="#FFFFFF" fillOpacity="0.96"
                   style={{ pointerEvents: 'none' }} />
                 <text x={p.x} y={p.y + 1} textAnchor="middle" dominantBaseline="middle"
                   fill={isActive ? '#A8721A' : stage > 0 ? 'rgba(200,146,42,0.7)' : 'rgba(15,21,35,0.55)'}
-                  fontSize="10" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.04em"
+                  fontSize="13" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.04em"
                   style={{ pointerEvents: 'none', userSelect: 'none' }}>
                   {domain.label.toUpperCase()}
                 </text>
@@ -577,10 +587,6 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
   const [horizonInput,   setHorizonInput]   = useState('')
 
   const bottomRef = useRef(null)
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-  }, [step, avatarMessages, scoreMsgs, horizonMsgs])
 
   function buildData(overrides = {}) {
     return {
@@ -1285,6 +1291,7 @@ export function MapPage() {
   const [activeIndex,  setActiveIndex]  = useState(null)
   const [domainData,   setDomainData]   = useState({})
   const [threadPanelOpen, setThreadPanelOpen] = useState(false)
+  const [spinCount,    setSpinCount]    = useState(0)
   const [currentScores,setCurrentScores]= useState({})
   const [horizonScores,setHorizonScores]= useState({})
   const [phase,        setPhase]        = useState('mapping') // 'welcome' | 'mapping' | 'results'
@@ -1513,7 +1520,31 @@ export function MapPage() {
                     onSelect={setActiveIndex}
                     totalSteps={Object.values(domainData).reduce((sum, d) => sum + getDomainStage(d), 0)}
                     onCentreClick={() => setThreadPanelOpen(p => !p)}
+                    triggerSpin={spinCount}
                   />
+                  {/* Spin button — curved arrow, sits below wheel */}
+                  <button
+                    onClick={() => setSpinCount(c => c + 1)}
+                    title="Spin the wheel"
+                    style={{
+                      position: 'absolute',
+                      bottom: '20px',
+                      right: '80px',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '8px',
+                      opacity: 0.45,
+                      transition: 'opacity 0.2s',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
+                    onMouseLeave={e => e.currentTarget.style.opacity = '0.45'}
+                  >
+                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M6 14 A8 8 0 1 1 14 22" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                      <polyline points="10,22 14,22 14,18" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+                    </svg>
+                  </button>
                 </div>
               </div>
 
