@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
-import { SprintPanel } from '../components/SprintPanel'
 
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -306,7 +305,6 @@ export function HomePage() {
         </div>
       </section>
 
-      <SprintPanel />
       <SiteFooter />
     </div>
   )
