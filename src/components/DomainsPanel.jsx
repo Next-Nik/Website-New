@@ -79,7 +79,7 @@ export function DomainsPanel() {
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
           fontFamily: 'var(--font-sc)',
-          fontSize: '0.5625rem',
+          fontSize: '13px',
           letterSpacing: '0.18em',
           color: 'var(--gold-dk)',
           textTransform: 'uppercase',
@@ -126,7 +126,7 @@ export function DomainsPanel() {
               justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   Life OS
                 </span>
                 <h2 style={{ fontFamily: 'var(--font-sc)', fontSize: '1.25rem', fontWeight: 400, color: 'var(--text)', lineHeight: 1.1, marginBottom: '4px' }}>
@@ -194,7 +194,7 @@ export function DomainsPanel() {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.6875rem', color: 'rgba(15,21,35,0.72)', minWidth: '18px' }}>
+                        <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', color: 'rgba(15,21,35,0.72)', minWidth: '18px' }}>
                           {String(i + 1).padStart(2, '0')}
                         </span>
                         <span style={{ fontFamily: 'var(--font-sc)', fontSize: '1rem', color: '#A8721A', lineHeight: 1.2 }}>
@@ -212,7 +212,7 @@ export function DomainsPanel() {
                           {domain.description}
                         </p>
                         <div style={{ padding: '10px 14px', background: 'rgba(200,146,42,0.06)', borderLeft: '2px solid rgba(200,146,42,0.55)', borderRadius: '0 6px 6px 0' }}>
-                          <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5rem', letterSpacing: '0.16em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '5px' }}>
+                          <div style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.16em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '5px' }}>
                             Stewardship question
                           </div>
                           <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.65 }}>
@@ -228,7 +228,7 @@ export function DomainsPanel() {
 
             {/* Footer */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(200,146,42,0.12)', marginTop: 'auto' }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 Seven domains, seven honest questions. The Map scores them. Orienteering starts with whichever one is most alive right now.
               </p>
             </div>
@@ -258,7 +258,7 @@ export function DomainsPanel() {
               borderRadius: '0 12px 12px 0',
             }}
           >
-            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.75rem', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

@@ -67,7 +67,7 @@ export function ProtocolPanel() {
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
           fontFamily: 'var(--font-sc)',
-          fontSize: '0.5625rem',
+          fontSize: '13px',
           letterSpacing: '0.18em',
           color: 'var(--gold-dk)',
           textTransform: 'uppercase',
@@ -114,7 +114,7 @@ export function ProtocolPanel() {
               justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   Foundation
                 </span>
                 <h2 style={{ fontFamily: 'var(--font-sc)', fontSize: '1.25rem', fontWeight: 400, color: 'var(--text)', lineHeight: 1.1, marginBottom: '4px' }}>
@@ -189,7 +189,7 @@ export function ProtocolPanel() {
                           <span style={{ fontFamily: 'var(--font-sc)', fontSize: '1rem', color: '#A8721A', lineHeight: 1.2 }}>
                             {phase.name}
                           </span>
-                          <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5rem', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase', flexShrink: 0 }}>
+                          <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase', flexShrink: 0 }}>
                             {phase.duration}
                           </span>
                         </div>
@@ -204,10 +204,10 @@ export function ProtocolPanel() {
                     </p>
 
                     <div style={{ padding: '9px 12px', background: 'rgba(200,146,42,0.06)', borderLeft: '2px solid rgba(200,146,42,0.45)', borderRadius: '0 6px 6px 0' }}>
-                      <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5rem', letterSpacing: '0.16em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '4px' }}>
+                      <div style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.16em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '4px' }}>
                         Why this comes here
                       </div>
-                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
                         {phase.why}
                       </p>
                     </div>
@@ -218,7 +218,7 @@ export function ProtocolPanel() {
 
             {/* Footer */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(200,146,42,0.12)', marginTop: 'auto' }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 The sequence is the practice. Run it in order, every time. Consistency of sequence matters more than consistency of duration.
               </p>
             </div>
@@ -248,7 +248,7 @@ export function ProtocolPanel() {
               borderRadius: '0 12px 12px 0',
             }}
           >
-            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.75rem', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

@@ -123,7 +123,7 @@ export function ScalePanel({ side = 'left' }) {
               justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   Life OS
                 </span>
                 <h2 style={{ fontFamily: 'var(--font-sc)', fontSize: '1.25rem', fontWeight: 400, color: 'var(--text)', lineHeight: 1.1, marginBottom: '4px' }}>
@@ -164,10 +164,10 @@ export function ScalePanel({ side = 'left' }) {
 
             {/* Zone label: Development */}
             <div style={{ padding: '16px 24px 8px' }}>
-              <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.18em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '4px' }}>
+              <div style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.18em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '4px' }}>
                 Development
               </div>
-              <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(15,21,35,0.72)' }}>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(15,21,35,0.72)' }}>
                 above The Line {'\u2014'} growing, building, expressing
               </div>
             </div>
@@ -183,10 +183,10 @@ export function ScalePanel({ side = 'left' }) {
                   <div key={row.score}>
                     {isHealingStart && (
                       <div style={{ padding: '16px 8px 8px' }}>
-                        <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.18em', color: '#6B5040', textTransform: 'uppercase', marginBottom: '4px' }}>
+                        <div style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.18em', color: '#6B5040', textTransform: 'uppercase', marginBottom: '4px' }}>
                           Healing
                         </div>
-                        <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(15,21,35,0.72)' }}>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(15,21,35,0.72)' }}>
                           below The Line {'\u2014'} restoration, repair, return
                         </div>
                       </div>
@@ -206,10 +206,10 @@ export function ScalePanel({ side = 'left' }) {
                       }}>
                         <span style={{ fontFamily: 'var(--font-sc)', fontSize: '1rem', fontWeight: 600, color: 'var(--gold-dk)', minWidth: '28px' }}>5</span>
                         <div>
-                          <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.75rem', letterSpacing: '0.12em', color: 'var(--gold-dk)', textTransform: 'uppercase' }}>
+                          <div style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.12em', color: 'var(--gold-dk)', textTransform: 'uppercase' }}>
                             The Line
                           </div>
-                          <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(15,21,35,0.72)', marginTop: '2px' }}>
+                          <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginTop: '2px' }}>
                             {row.meaning}
                           </div>
                         </div>
@@ -236,16 +236,16 @@ export function ScalePanel({ side = 'left' }) {
                         </span>
                         <div>
                           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '2px', flexWrap: 'wrap' }}>
-                            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.6875rem', letterSpacing: '0.08em', color: colors.tier }}>
+                            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.08em', color: colors.tier }}>
                               {row.tier}
                             </span>
                             {row.label && (
-                              <span style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(15,21,35,0.72)' }}>
+                              <span style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(15,21,35,0.72)' }}>
                                 {row.label}
                               </span>
                             )}
                           </div>
-                          <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: colors.meaning, lineHeight: 1.55 }}>
+                          <div style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: colors.meaning, lineHeight: 1.55 }}>
                             {row.meaning}
                           </div>
                         </div>
@@ -258,7 +258,7 @@ export function ScalePanel({ side = 'left' }) {
 
             {/* Footer note */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(200,146,42,0.12)', marginTop: 'auto' }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 Any score below 5 means this domain is actively creating friction {'\u2014'} consuming more than it generates. Stabilise before optimising.
               </p>
             </div>
@@ -293,7 +293,7 @@ export function ScalePanel({ side = 'left' }) {
               borderRadius: isRight ? '12px 0 0 12px' : '0 12px 12px 0',
             }}
           >
-            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.75rem', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

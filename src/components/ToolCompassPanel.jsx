@@ -74,7 +74,7 @@ export function ToolCompassPanel() {
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
           fontFamily: 'var(--font-sc)',
-          fontSize: '0.5625rem',
+          fontSize: '13px',
           letterSpacing: '0.18em',
           color: 'var(--gold-dk)',
           textTransform: 'uppercase',
@@ -121,7 +121,7 @@ export function ToolCompassPanel() {
               justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   Life OS
                 </span>
                 <h2 style={{ fontFamily: 'var(--font-sc)', fontSize: '1.25rem', fontWeight: 400, color: 'var(--text)', lineHeight: 1.1, marginBottom: '4px' }}>
@@ -188,7 +188,7 @@ export function ToolCompassPanel() {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                    <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.16em', color: 'var(--gold-dk)', textTransform: 'uppercase' }}>
+                    <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.16em', color: 'var(--gold-dk)', textTransform: 'uppercase' }}>
                       {tool.eyebrow}
                     </span>
                     <span style={{ color: '#A8721A', fontSize: '0.875rem' }}>→</span>
@@ -228,7 +228,7 @@ export function ToolCompassPanel() {
               borderRadius: '0 12px 12px 0',
             }}
           >
-            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.75rem', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

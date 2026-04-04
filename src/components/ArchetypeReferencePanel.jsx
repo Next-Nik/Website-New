@@ -89,7 +89,7 @@ export function ArchetypeReferencePanel() {
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
           fontFamily: 'var(--font-sc)',
-          fontSize: '0.5625rem',
+          fontSize: '13px',
           letterSpacing: '0.18em',
           color: 'var(--gold-dk)',
           textTransform: 'uppercase',
@@ -136,7 +136,7 @@ export function ArchetypeReferencePanel() {
               justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   Purpose Piece
                 </span>
                 <h2 style={{ fontFamily: 'var(--font-sc)', fontSize: '1.25rem', fontWeight: 400, color: 'var(--text)', lineHeight: 1.1, marginBottom: '4px' }}>
@@ -213,7 +213,7 @@ export function ArchetypeReferencePanel() {
                     {isOpen && (
                       <div style={{ padding: '0 18px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                         <div style={{ padding: '10px 14px', background: 'rgba(200,146,42,0.06)', borderLeft: '2px solid rgba(200,146,42,0.55)', borderRadius: '0 6px 6px 0' }}>
-                          <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5rem', letterSpacing: '0.16em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '5px' }}>
+                          <div style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.16em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '5px' }}>
                             Signal
                           </div>
                           <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.6 }}>
@@ -221,7 +221,7 @@ export function ArchetypeReferencePanel() {
                           </p>
                         </div>
                         <div style={{ padding: '10px 14px', background: 'rgba(15,21,35,0.72)', borderLeft: '2px solid rgba(15,21,35,0.72)', borderRadius: '0 6px 6px 0' }}>
-                          <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5rem', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase', marginBottom: '5px' }}>
+                          <div style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase', marginBottom: '5px' }}>
                             Shadow
                           </div>
                           <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
@@ -237,7 +237,7 @@ export function ArchetypeReferencePanel() {
 
             {/* Footer */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(200,146,42,0.12)', marginTop: 'auto' }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 The nine archetypes are locked. Every person maps to a primary pattern. The Purpose Piece conversation identifies which one fits most naturally.
               </p>
             </div>
@@ -267,7 +267,7 @@ export function ArchetypeReferencePanel() {
               borderRadius: '0 12px 12px 0',
             }}
           >
-            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.75rem', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

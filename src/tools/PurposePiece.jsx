@@ -72,7 +72,7 @@ function SpinningHeptagon({ opacity = 0.06, speed = '40s', reverse = false }) {
       <text key={i}
         x={cx + (r + 18) * Math.cos(a)} y={cy + (r + 18) * Math.sin(a)}
         textAnchor="middle" dominantBaseline="middle"
-        fontFamily="'Cormorant SC',Georgia,serif" fontSize="9" letterSpacing="0.5"
+        fontFamily="'Cormorant SC',Georgia,serif" fontSize="13" letterSpacing="0.5"
         fill="rgba(200,146,42,0.7)">{d?.label?.toUpperCase().slice(0,6)}
       </text>
     )
@@ -108,11 +108,11 @@ function ProgressBar({ act, totalActs = 3 }) {
               border: `1.5px solid ${act >= i ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.2)'}`,
               background: act > i ? 'rgba(200,146,42,0.15)' : act === i ? 'rgba(200,146,42,0.08)' : 'transparent',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              ...sc, fontSize: '0.5rem', letterSpacing: '0.1em',
+              ...sc, fontSize: '13px', letterSpacing: '0.1em',
               color: act >= i ? 'var(--gold-dk)' : 'rgba(200,146,42,0.4)',
               transition: 'all 0.4s ease',
             }}>{act > i ? '✓' : i}</div>
-            <span style={{ ...sc, fontSize: '0.5rem', letterSpacing: '0.14em', color: act >= i ? 'var(--gold-dk)' : 'rgba(200,146,42,0.4)', textTransform: 'uppercase' }}>{labels[i]}</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: act >= i ? 'var(--gold-dk)' : 'rgba(200,146,42,0.4)', textTransform: 'uppercase' }}>{labels[i]}</span>
           </div>
         ))}
       </div>
@@ -130,7 +130,7 @@ function AuthModal() {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px 32px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
-        <span style={{ display: 'block', ...sc, fontSize: '0.625rem', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
+        <span style={{ display: 'block', ...sc, fontSize: '13px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: 'var(--text)', marginBottom: '10px' }}>Sign in to begin.</h2>
         <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>Your archetype and contribution pattern are saved to your profile.</p>
         <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '14px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: 'var(--gold-dk)', ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
@@ -147,7 +147,7 @@ function DeepGateModal({ onUnlock, onDismiss }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px 32px', maxWidth: '440px', width: '100%' }}>
-        <div style={{ ...sc, fontSize: '0.625rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Go Deeper</div>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Go Deeper</div>
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: 'var(--text)', marginBottom: '12px', lineHeight: 1.2 }}>The tension. The shadow. The full picture.</h2>
         <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.75, marginBottom: '24px' }}>The First Look gave you the shape. The Deep Dive is a real conversation {'—'} into what this pattern costs you, where it breaks, and what it{'’'}s been asking of you.</p>
         <button onClick={onUnlock} style={{ display: 'block', width: '100%', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', ...gold, ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', cursor: 'pointer', marginBottom: '12px' }}>Unlock the Deep Dive</button>
@@ -261,7 +261,7 @@ function ActArchetype({ user, onComplete }) {
         <SpinningHeptagon opacity={0.08} speed="50s" />
         <style>{`@keyframes archetypeIn { from { opacity:0; transform:scale(0.88) translateY(12px); } to { opacity:1; transform:scale(1) translateY(0); } }`}</style>
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', animation: 'archetypeIn 0.7s ease-out forwards' }}>
-          <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '20px' }}>Your archetype</div>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '20px' }}>Your archetype</div>
           <div style={{ fontSize: '52px', marginBottom: '16px', lineHeight: 1, filter: 'drop-shadow(0 0 12px rgba(200,146,42,0.4))' }}>{glyph}</div>
           <h1 style={{ ...sc, fontSize: 'clamp(2rem,6vw,3.5rem)', fontWeight: 400, color: 'var(--text)', lineHeight: 1.05, marginBottom: '16px' }}>{result.archetype}</h1>
           {result.synthesis?.your_signal && (
@@ -282,7 +282,7 @@ function ActArchetype({ user, onComplete }) {
   // ── Conversation ───────────────────────────────────────────────────────────
   return (
     <div>
-      <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 1 {'·'} Archetype</div>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 1 {'·'} Archetype</div>
       <h2 style={{ ...serif, fontSize: 'clamp(1.5rem,4vw,2.25rem)', fontWeight: 300, color: 'var(--text)', lineHeight: 1.1, marginBottom: '8px' }}>
         What did life ask you to bring?
       </h2>
@@ -300,7 +300,7 @@ function ActArchetype({ user, onComplete }) {
                 <button key={opt.id} onClick={() => handleOptionSelect(opt.id)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)'; e.currentTarget.style.background = 'rgba(200,146,42,0.04)' }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.25)'; e.currentTarget.style.background = '#FFFFFF' }}>
-                  <span style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.1em', ...gold, flexShrink: 0, width: '16px' }}>{opt.id.toUpperCase()}</span>
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', ...gold, flexShrink: 0, width: '16px' }}>{opt.id.toUpperCase()}</span>
                   <span style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.5 }}>{opt.text}</span>
                 </button>
               ))}
@@ -349,7 +349,7 @@ function ActDomain({ archetype, session, onComplete }) {
 
   return (
     <div>
-      <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 2 {'·'} Domain</div>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 2 {'·'} Domain</div>
       <h2 style={{ ...serif, fontSize: 'clamp(1.5rem,4vw,2.25rem)', fontWeight: 300, color: 'var(--text)', lineHeight: 1.1, marginBottom: '8px' }}>
         Where does your work land hardest?
       </h2>
@@ -379,8 +379,8 @@ function ActDomain({ archetype, session, onComplete }) {
                 onMouseEnter={e => { if (!isSel) { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)'; e.currentTarget.style.transform = 'translateY(-2px)' } }}
                 onMouseLeave={e => { if (!isSel) { e.currentTarget.style.borderColor = isSug ? 'rgba(200,146,42,0.4)' : 'rgba(200,146,42,0.18)'; e.currentTarget.style.transform = '' } }}>
                 <div style={{ fontSize: '22px', marginBottom: '8px', filter: isSel ? 'drop-shadow(0 0 6px rgba(200,146,42,0.5))' : 'none' }}>{d.glyph}</div>
-                <div style={{ ...sc, fontSize: '0.6875rem', letterSpacing: '0.1em', color: isSel ? 'var(--gold-dk)' : 'var(--text)', marginBottom: '4px' }}>{d.label}</div>
-                {isSug && <div style={{ ...sc, fontSize: '0.4375rem', letterSpacing: '0.12em', color: 'rgba(200,146,42,0.6)', textTransform: 'uppercase' }}>suggested</div>}
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: isSel ? 'var(--gold-dk)' : 'var(--text)', marginBottom: '4px' }}>{d.label}</div>
+                {isSug && <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(200,146,42,0.6)', textTransform: 'uppercase' }}>suggested</div>}
               </div>
             )
           })}
@@ -410,7 +410,7 @@ function ActScale({ archetype, domain, onComplete }) {
 
   return (
     <div>
-      <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 3 {'·'} Scale</div>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 3 {'·'} Scale</div>
       <h2 style={{ ...serif, fontSize: 'clamp(1.5rem,4vw,2.25rem)', fontWeight: 300, color: 'var(--text)', lineHeight: 1.1, marginBottom: '8px' }}>
         At what level does your work want to operate?
       </h2>
@@ -476,18 +476,18 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
         <style>{`@keyframes revealIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }`}</style>
 
         <div style={{ position: 'relative', zIndex: 1, animation: 'revealIn 0.8s ease-out forwards' }}>
-          <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '24px' }}>Purpose Piece</div>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '24px' }}>Purpose Piece</div>
 
           {/* Archetype */}
           <div style={{ fontSize: '48px', marginBottom: '8px', filter: 'drop-shadow(0 0 16px rgba(200,146,42,0.45))' }}>{glyph}</div>
           <h1 style={{ ...sc, fontSize: 'clamp(2.5rem,7vw,4rem)', fontWeight: 400, color: 'var(--text)', lineHeight: 1, marginBottom: '6px' }}>{archetype}</h1>
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '32px', flexWrap: 'wrap' }}>
-            <span style={{ ...sc, fontSize: '0.6875rem', letterSpacing: '0.12em', ...gold }}>the {archetype?.toLowerCase()}</span>
-            <span style={{ ...sc, fontSize: '0.6875rem', color: 'rgba(200,146,42,0.4)' }}>{'·'}</span>
-            <span style={{ ...sc, fontSize: '0.6875rem', letterSpacing: '0.12em', color: 'var(--text)' }}>{domainObj?.label}</span>
-            <span style={{ ...sc, fontSize: '0.6875rem', color: 'rgba(200,146,42,0.4)' }}>{'·'}</span>
-            <span style={{ ...sc, fontSize: '0.6875rem', letterSpacing: '0.12em', color: 'var(--text)' }}>{scaleObj?.label}</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', ...gold }}>the {archetype?.toLowerCase()}</span>
+            <span style={{ ...sc, fontSize: '13px', color: 'rgba(200,146,42,0.4)' }}>{'·'}</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'var(--text)' }}>{domainObj?.label}</span>
+            <span style={{ ...sc, fontSize: '13px', color: 'rgba(200,146,42,0.4)' }}>{'·'}</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'var(--text)' }}>{scaleObj?.label}</span>
           </div>
 
           {/* Three coordinates */}
@@ -498,10 +498,10 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
               { label: 'Scale',     value: scaleObj?.label,  glyph: scaleObj?.glyph,  sublabel: 'The level you operate at' },
             ].map(c => (
               <div key={c.label} style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '12px', padding: '16px 12px' }}>
-                <div style={{ ...sc, fontSize: '0.4375rem', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.6)', textTransform: 'uppercase', marginBottom: '8px' }}>{c.label}</div>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.6)', textTransform: 'uppercase', marginBottom: '8px' }}>{c.label}</div>
                 <div style={{ fontSize: '22px', marginBottom: '6px' }}>{c.glyph}</div>
                 <div style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.06em', color: 'var(--text)', marginBottom: '4px', lineHeight: 1.2 }}>{c.value}</div>
-                <div style={{ ...serif, fontSize: '0.6875rem', fontStyle: 'italic', ...muted, lineHeight: 1.4 }}>{c.sublabel}</div>
+                <div style={{ ...serif, fontSize: '13px', fontStyle: 'italic', ...muted, lineHeight: 1.4 }}>{c.sublabel}</div>
               </div>
             ))}
           </div>
@@ -509,10 +509,10 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
           {/* Synthesis */}
           {synthesis && (
             <div style={{ textAlign: 'left', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '10px', padding: '24px 24px 20px', marginBottom: '28px' }}>
-              <div style={{ ...sc, fontSize: '0.5rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>The Pattern</div>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>The Pattern</div>
               {SYNTHESIS_SECTIONS.map(({ key, label }) => synthesis[key] && (
                 <div key={key} style={{ marginBottom: '16px' }}>
-                  <div style={{ ...sc, fontSize: '0.5rem', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '8px' }}>{label}</div>
+                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '8px' }}>{label}</div>
                   <p style={{ ...serif, fontSize: '0.9375rem', lineHeight: 1.85, ...meta, margin: 0 }}>{synthesis[key]}</p>
                 </div>
               ))}
@@ -762,7 +762,7 @@ export function PurposePieceDeepPage() {
           {firstLook && (
             <div style={{ marginTop: '8px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               {[firstLook.archetype, NEXUS_DOMAINS.find(d=>d.id===firstLook.domain)?.label, SCALES.find(s=>s.id===firstLook.scale)?.label].filter(Boolean).map(v => (
-                <span key={v} style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.12em', ...gold, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '20px', padding: '4px 12px' }}>{v}</span>
+                <span key={v} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', ...gold, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '20px', padding: '4px 12px' }}>{v}</span>
               ))}
             </div>
           )}
@@ -771,7 +771,7 @@ export function PurposePieceDeepPage() {
         <div style={{ height: '2px', background: 'rgba(200,146,42,0.12)', borderRadius: '1px', overflow: 'hidden', marginBottom: '6px' }}>
           <div style={{ height: '100%', width: `${progressPct}%`, background: 'var(--gold)', transition: 'width 0.6s ease' }} />
         </div>
-        <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '20px' }}>{progressLabel}</div>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '20px' }}>{progressLabel}</div>
 
         {noFirstLook && (
           <div>
@@ -784,7 +784,7 @@ export function PurposePieceDeepPage() {
 
         <div className="chat-thread">
           {messages.map(m => {
-            if (m.type === 'label') return <div key={m.id} style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', padding: '8px 0 4px' }}>{m.content}</div>
+            if (m.type === 'label') return <div key={m.id} style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', padding: '8px 0 4px' }}>{m.content}</div>
             if (m.type === 'user') return <div key={m.id} className="bubble bubble-user">{m.content}</div>
             if (m.type === 'profile-html') return <div key={m.id} className="bubble bubble-assistant" dangerouslySetInnerHTML={{ __html: m.content }} />
             if (m.type === 'deep-opening') return (

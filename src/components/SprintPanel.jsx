@@ -67,7 +67,7 @@ function MiniWheel({ domains, currentScores, sprintScores }) {
         const s = currentScores[d.id]
         return (
           <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
-            fontFamily="'Cormorant SC',Georgia,serif" fontSize="6.5" fontWeight="600" letterSpacing="0.5"
+            fontFamily="'Cormorant SC',Georgia,serif" fontSize="13" fontWeight="600" letterSpacing="0.5"
             fill={s !== undefined ? getColor(s) : 'rgba(15,21,35,0.28)'}>
             {d.label.substring(0, 3).toUpperCase()}
           </text>
@@ -148,7 +148,7 @@ export function SprintPanel({ context = 'default' }) {
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
           ...sc,
-          fontSize: '0.5rem',
+          fontSize: '13px',
           letterSpacing: '0.18em',
           color: 'rgba(200,146,42,0.9)',
           textTransform: 'uppercase',
@@ -189,7 +189,7 @@ export function SprintPanel({ context = 'default' }) {
               display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.2em', color: 'rgba(200,146,42,0.9)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(200,146,42,0.9)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
                   Life OS
                 </span>
                 <h2 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1 }}>
@@ -225,7 +225,7 @@ export function SprintPanel({ context = 'default' }) {
                   </a>
 
                   <div style={{ marginTop: '36px', paddingTop: '24px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
-                    <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.9)', textTransform: 'uppercase', marginBottom: '12px' }}>
+                    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.9)', textTransform: 'uppercase', marginBottom: '12px' }}>
                       How it works
                     </div>
                     {[
@@ -235,9 +235,9 @@ export function SprintPanel({ context = 'default' }) {
                       { n: '4', t: 'Monthly milestones', d: 'Reverse-engineered from your destination. Export to calendar.' },
                     ].map(s => (
                       <div key={s.n} style={{ display: 'flex', gap: '12px', marginBottom: '14px' }}>
-                        <span style={{ ...sc, fontSize: '0.75rem', color: 'rgba(200,146,42,0.9)', flexShrink: 0, paddingTop: '2px' }}>{s.n}.</span>
+                        <span style={{ ...sc, fontSize: '13px', color: 'rgba(200,146,42,0.9)', flexShrink: 0, paddingTop: '2px' }}>{s.n}.</span>
                         <div>
-                          <div style={{ ...sc, fontSize: '0.6875rem', letterSpacing: '0.06em', color: '#0F1523', marginBottom: '2px' }}>{s.t}</div>
+                          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', color: '#0F1523', marginBottom: '2px' }}>{s.t}</div>
                           <div style={{ ...serif, fontSize: '0.875rem', color: 'rgba(15,21,35,0.65)', lineHeight: 1.6 }}>{s.d}</div>
                         </div>
                       </div>
@@ -252,7 +252,7 @@ export function SprintPanel({ context = 'default' }) {
                   {days !== null && (
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
                       <span style={{ ...sc, fontSize: '2rem', fontWeight: 600, color: 'rgba(200,146,42,0.9)', lineHeight: 1 }}>{days}</span>
-                      <span style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>days remaining</span>
+                      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>days remaining</span>
                       <span style={{ ...serif, fontSize: '0.8125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.4)', marginLeft: 'auto' }}>{sprint.end_date_label?.split('\u2014')[0]?.trim()}</span>
                     </div>
                   )}
@@ -265,7 +265,7 @@ export function SprintPanel({ context = 'default' }) {
                   )}
 
                   {/* Goals */}
-                  <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.9)', textTransform: 'uppercase', marginBottom: '12px' }}>
+                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.9)', textTransform: 'uppercase', marginBottom: '12px' }}>
                     Active Goals
                   </div>
                   {sprint.goals?.map((g, i) => {
@@ -276,9 +276,9 @@ export function SprintPanel({ context = 'default' }) {
                     return (
                       <div key={i} style={{ padding: '14px 16px', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '10px', marginBottom: '10px', background: '#FFFFFF' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                          <span style={{ ...sc, fontSize: '0.6875rem', letterSpacing: '0.08em', color: col }}>{dl?.label}</span>
+                          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: col }}>{dl?.label}</span>
                           {s !== undefined && sp !== undefined && (
-                            <span style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.4)' }}>
+                            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.4)' }}>
                               {s} {'\u2192'} {sp} {'\u00B7'} {TIER[sp] || ''}
                             </span>
                           )}
@@ -306,14 +306,14 @@ export function SprintPanel({ context = 'default' }) {
                     const key   = now < m1 ? 'month1' : now < m2 ? 'month2' : 'month3'
                     return (
                       <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
-                        <div style={{ ...sc, fontSize: '0.5625rem', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.9)', textTransform: 'uppercase', marginBottom: '12px' }}>
+                        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.9)', textTransform: 'uppercase', marginBottom: '12px' }}>
                           {label} {'\u00B7'} Right Now
                         </div>
                         {sprint.goals.map((g, i) => {
                           const dl = DOMAINS.find(d => d.id === g.domain)
                           return g[key] ? (
                             <div key={i} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                              <span style={{ ...sc, fontSize: '0.5625rem', color: 'rgba(200,146,42,0.9)', flexShrink: 0, paddingTop: '2px', width: '72px' }}>{dl?.label}</span>
+                              <span style={{ ...sc, fontSize: '13px', color: 'rgba(200,146,42,0.9)', flexShrink: 0, paddingTop: '2px', width: '72px' }}>{dl?.label}</span>
                               <span style={{ ...serif, fontSize: '0.875rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55 }}>{g[key]}</span>
                             </div>
                           ) : null
@@ -324,10 +324,10 @@ export function SprintPanel({ context = 'default' }) {
 
                   {/* Actions */}
                   <div style={{ marginTop: '24px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    <a href="/tools/target-goals" style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.1em', color: 'rgba(200,146,42,0.9)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '9px 18px', textDecoration: 'none', background: 'rgba(200,146,42,0.05)' }}>
+                    <a href="/tools/target-goals" style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(200,146,42,0.9)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '9px 18px', textDecoration: 'none', background: 'rgba(200,146,42,0.05)' }}>
                       View full sprint {'\u2192'}
                     </a>
-                    <a href="/profile" style={{ ...sc, fontSize: '0.75rem', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '40px', padding: '9px 18px', textDecoration: 'none' }}>
+                    <a href="/profile" style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '40px', padding: '9px 18px', textDecoration: 'none' }}>
                       Profile
                     </a>
                   </div>
@@ -354,7 +354,7 @@ export function SprintPanel({ context = 'default' }) {
             clipPath: 'polygon(28% 12%, 28% 88%, 30% 100%, 100% 100%, 100% 0%, 30% 0%)',
             borderRadius: '0 12px 12px 0',
           }}>
-            <span style={{ ...sc, fontSize: '0.75rem', color: 'rgba(200,146,42,0.9)' }}>{'\u00D7'}</span>
+            <span style={{ ...sc, fontSize: '13px', color: 'rgba(200,146,42,0.9)' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

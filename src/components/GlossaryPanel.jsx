@@ -95,7 +95,7 @@ export function GlossaryPanel() {
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
           fontFamily: 'var(--font-sc)',
-          fontSize: '0.5625rem',
+          fontSize: '13px',
           letterSpacing: '0.18em',
           color: 'var(--gold-dk)',
           textTransform: 'uppercase',
@@ -140,7 +140,7 @@ export function GlossaryPanel() {
             }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '14px' }}>
                 <div>
-                  <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                  <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                     NextUs {'\u00B7'} Life OS
                   </span>
                   <h2 style={{ fontFamily: 'var(--font-sc)', fontSize: '1.25rem', fontWeight: 400, color: 'var(--text)', lineHeight: 1.1 }}>
@@ -214,7 +214,7 @@ export function GlossaryPanel() {
                 if (!terms.length) return null
                 return (
                   <div key={cat.label} style={{ marginBottom: '20px' }}>
-                    <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.5625rem', letterSpacing: '0.18em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '8px', padding: '0 8px' }}>
+                    <div style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.18em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '8px', padding: '0 8px' }}>
                       {cat.label}
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
@@ -252,7 +252,7 @@ export function GlossaryPanel() {
               borderRadius: '0 12px 12px 0',
             }}
           >
-            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '0.75rem', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}
@@ -275,7 +275,7 @@ function TermCard({ term }) {
       background: 'rgba(200,146,42,0.02)',
       border: '1px solid rgba(200,146,42,0.55)',
     }}>
-      <div style={{ fontFamily: 'var(--font-sc)', fontSize: '0.75rem', color: '#A8721A', marginBottom: '4px', lineHeight: 1.2 }}>
+      <div style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', color: '#A8721A', marginBottom: '4px', lineHeight: 1.2 }}>
         {term.term}
       </div>
       <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
