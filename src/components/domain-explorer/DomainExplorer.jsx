@@ -222,7 +222,7 @@ export default function DomainExplorer() {
               {/* Show parent item text when drilling into subdomains */}
               {parentItem && (
                 <div style={{ marginBottom: '24px', paddingBottom: '20px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
-                  <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px', textTransform: 'uppercase' }}>
+                  <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px', textTransform: 'uppercase' }}>
                     {parentItem.name}
                   </p>
                   {parentItem.horizonGoal && (
@@ -235,7 +235,7 @@ export default function DomainExplorer() {
                       {parentItem.description}
                     </p>
                   )}
-                  <button onClick={handleBack} style={{ marginTop: '12px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                  <button onClick={handleBack} style={{ marginTop: '12px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.12em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                     ← Back
                   </button>
                 </div>

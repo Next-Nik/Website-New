@@ -299,7 +299,7 @@ function FlameSlider({ value, onChange, ghostValue = null }) {
           display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'none',
         }}>
           <div style={{ width: '12px', height: '1.5px', background: 'rgba(200,146,42,0.45)', borderRadius: '1px' }} />
-          <span style={{ fontFamily: "'Cormorant SC',Georgia,serif", fontSize: '13px', letterSpacing: '0.14em', color: '#C8922A', whiteSpace: 'nowrap' }}>The Line</span>
+          <span style={{ fontFamily: "'Cormorant SC',Georgia,serif", fontSize: '0.4375rem', letterSpacing: '0.14em', color: 'rgba(200,146,42,0.5)', whiteSpace: 'nowrap' }}>The Line</span>
         </div>
 
         {/* Ghost flame */}
@@ -355,7 +355,7 @@ function FlameSlider({ value, onChange, ghostValue = null }) {
           </p>
           <a href="/tools/foundation" style={{
             fontFamily: "'Cormorant SC',Georgia,serif",
-            fontSize: '13px', letterSpacing: '0.10em',
+            fontSize: '0.75rem', letterSpacing: '0.10em',
             color: '#A8721A', textDecoration: 'none',
           }}>
             Foundation is here if you need it →
@@ -429,8 +429,8 @@ export function FlameCheckIn({ audioPhase = 'baseline', ghostValue = null, onCom
       {/* Stage label */}
       <span style={{
         fontFamily: "'Cormorant SC',Georgia,serif",
-        fontSize: '13px', letterSpacing: '0.2em',
-        color: '#C8922A', textTransform: 'uppercase',
+        fontSize: '0.5625rem', letterSpacing: '0.2em',
+        color: 'rgba(200,146,42,0.75)', textTransform: 'uppercase',
         marginBottom: '6px',
       }}>
         {isBefore ? `Before \u00B7 ${audioPhase}` : `After \u00B7 ${audioPhase}`}
@@ -486,7 +486,7 @@ export function FlameCheckIn({ audioPhase = 'baseline', ghostValue = null, onCom
             flex: 1, padding: '13px',
             fontFamily: "'Cormorant SC',Georgia,serif",
             fontSize: '0.875rem', letterSpacing: '0.14em',
-            color: '#C8922A',
+            color: 'rgba(200,146,42,0.9)',
             background: 'rgba(200,146,42,0.05)',
             border: '1.5px solid rgba(200,146,42,0.78)',
             borderRadius: '40px',

@@ -193,7 +193,6 @@ export function ScalePanel({ side = 'left' }) {
                     )}
 
                     {isLine ? (
-                      /* The Line */
                       <div style={{
                         margin: '8px 0',
                         padding: '10px 12px',
@@ -215,7 +214,6 @@ export function ScalePanel({ side = 'left' }) {
                         </div>
                       </div>
                     ) : (
-                      /* Regular row */
                       <div style={{
                         display: 'grid',
                         gridTemplateColumns: '28px 1fr',
