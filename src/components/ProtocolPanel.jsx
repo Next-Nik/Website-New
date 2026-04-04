@@ -11,10 +11,10 @@ const PHASES = [
   },
   {
     number: '02',
-    name: 'Orienting',
-    tagline: 'Locate yourself in time and place.',
+    name: 'Calibration',
+    tagline: 'Agency, temporal clarity, and directional awareness.'
     description: 'The audio guides you from the raw signal of Baseline into a wider orientation. You locate yourself in the present moment \u2014 body, breath, environment. Nothing is forced. The nervous system registers that it is safe to be here, now.',
-    why: 'Regulation precedes clear thinking. When the system is dysregulated, perception narrows and honest self-assessment becomes unreliable. Orienting creates the conditions for everything else.',
+    why: 'Regulation precedes clear thinking. When the system is dysregulated, perception narrows and honest self-assessment becomes unreliable. Calibration creates the conditions for everything else.',
     duration: '5 \u2013 8 min',
   },
   {
