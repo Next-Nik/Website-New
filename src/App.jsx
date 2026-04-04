@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 
 // Site pages
 import { HomePage }          from './pages/Home'
@@ -20,6 +21,12 @@ import { FoundationPage }    from './tools/foundation/Foundation'
 import { PurposePiecePage, PurposePieceDeepPage } from './tools/purpose-piece/PurposePiece'
 import { TargetGoalsPage }   from './tools/target-goals/TargetGoals'
 
+function ScrollToTop() {
+  const { pathname } = useLocation()
+  useEffect(() => { window.scrollTo(0, 0) }, [pathname])
+  return null
+}
+
 function ComingSoon({ name }) {
   const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
@@ -37,6 +44,7 @@ function ComingSoon({ name }) {
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         {/* ── Site pages ── */}
         <Route path="/"                element={<HomePage />} />
