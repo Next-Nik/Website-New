@@ -1,5 +1,5 @@
 import { SiteNav } from '../components/SiteNav'
-import { SprintPanel } from '../components/SprintPanel'
+import { ScalePanel } from '../components/ScalePanel'
 import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -63,7 +63,7 @@ export function WorkWithNikPage() {
         <script src="https://assets.calendly.com/assets/external/widget.js" async />
         <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginTop: '14px' }}>30 minutes · no cost · no obligation</p>
       </div>
-      <SprintPanel />
+      <ScalePanel side="right" />
       <SiteFooter />
     </div>
   )
@@ -123,7 +123,7 @@ export function PodcastPage() {
         </div>
       </section>
 
-      <SprintPanel />
+      <ScalePanel side="right" />
       <SiteFooter />
     </div>
   )
