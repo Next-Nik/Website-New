@@ -51,7 +51,7 @@ function Rule() {
 function Btn({ onClick, disabled, children, ghost, style = {} }) {
   const base = ghost
     ? { ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, background: 'none', border: 'none', cursor: 'pointer', padding: '10px 0' }
-    : { ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '12px 28px', cursor: 'pointer', transition: 'all 0.2s' }
+    : { ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', color: '#FFFFFF', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', padding: '12px 28px', cursor: 'pointer', transition: 'all 0.2s' }
   return (
     <button onClick={onClick} disabled={disabled}
       style={{ ...base, opacity: disabled ? 0.35 : 1, cursor: disabled ? 'not-allowed' : 'pointer', ...style }}
@@ -67,11 +67,11 @@ function AuthModal() {
   const r = encodeURIComponent(window.location.href)
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px 32px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
+      <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px 32px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
         <span style={{ display: 'block', ...sc, fontSize: '13px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Target Sprint</span>
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>Sign in to begin.</h2>
         <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>Your goals and milestones are saved to your profile.</p>
-        <a href={`/login?redirect=${r}`} style={{ display: 'block', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', ...gold, ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
+        <a href={`/login?redirect=${r}`} style={{ display: 'block', padding: '14px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
           Sign in or create account {'→'}
         </a>
       </div>
@@ -601,14 +601,14 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
           <p style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
             The Map gives you an honest read across all seven domains {'—'} and loads your scores directly into your next sprint.
           </p>
-          <a href="/tools/map" style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.12em', ...gold, textDecoration: 'none', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '10px 22px', display: 'inline-block', background: 'rgba(200,146,42,0.05)' }}>
+          <a href="/tools/map" style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.12em', color: '#FFFFFF', textDecoration: 'none', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', padding: '10px 22px', display: 'inline-block', background: '#C8922A' }}>
             Begin The Map {'→'}
           </a>
         </div>
       )}
 
       <div style={{ textAlign: 'center', marginTop: '16px' }}>
-        <a href="/profile" style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '12px 28px', textDecoration: 'none', display: 'inline-block' }}>
+        <a href="/profile" style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', color: '#FFFFFF', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', padding: '12px 28px', textDecoration: 'none', display: 'inline-block' }}>
           Go to your profile {'→'}
         </a>
       </div>

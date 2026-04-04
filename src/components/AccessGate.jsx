@@ -104,7 +104,7 @@ function GateCard({ toolName, variant, discountPct = 0 }) {
       padding: '24px',
     }}>
       <div style={{
-        background: '#FAFAF7',
+        background: '#FFFFFF',
         border: '1.5px solid rgba(200,146,42,0.78)',
         borderRadius: '14px',
         padding: '36px 32px',
@@ -135,10 +135,10 @@ function GateCard({ toolName, variant, discountPct = 0 }) {
             display: 'inline-block',
             padding: '14px 28px',
             borderRadius: '40px',
-            border: '1.5px solid rgba(200,146,42,0.78)',
-            background: 'rgba(200,146,42,0.05)',
+            border: '1px solid rgba(168,114,26,0.8)',
+            background: '#C8922A',
             ...sc, fontSize: '14px', fontWeight: 600,
-            letterSpacing: '0.14em', color: '#A8721A',
+            letterSpacing: '0.14em', color: '#FFFFFF',
             textDecoration: 'none',
           }}>
             {m.cta}
