@@ -247,7 +247,7 @@ export function HomePage() {
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '52px', maxWidth: '460px', marginLeft: 'auto', marginRight: 'auto' }}>
             Life asked something of you. This is where you find out what.
           </p>
-          <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Not sure where to start? Begin with Orienteering →</a>
+          <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Begin with Orienteering →</a>
         </div>
         <div style={{ position: 'absolute', bottom: '36px', left: '50%', transform: 'translateX(-50%)', textAlign: 'center' }}>
           <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', opacity: 0.78 }}>nextus.world</p>
@@ -279,7 +279,7 @@ export function HomePage() {
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderBottomColor = 'transparent' }}
               >
                 <span style={{ ...serif, fontSize: '22px', fontWeight: 300, color: isActive ? '#A8721A' : '#0F1523', display: 'block', lineHeight: 1.2, marginBottom: '2px', transition: 'color 0.18s' }}>{s.name}</span>
-                <span style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: isActive ? 'rgba(200,146,42,0.78)' : 'rgba(15,21,35,0.55)', lineHeight: 1.4, display: 'block', transition: 'color 0.18s' }}>{s.question}</span>
+                <span style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: isActive ? 'rgba(200,146,42,0.78)' : 'rgba(15,21,35,0.72)', lineHeight: 1.4, display: 'block', transition: 'color 0.18s' }}>{s.question}</span>
               </div>
             )
           })}

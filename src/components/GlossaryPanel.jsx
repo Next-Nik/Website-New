@@ -94,10 +94,10 @@ export function GlossaryPanel() {
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
-          fontFamily: 'var(--font-sc)',
+          fontFamily: "'Cormorant SC', Georgia, serif",
           fontSize: '13px',
           letterSpacing: '0.18em',
-          color: 'var(--gold-dk)',
+          color: '#A8721A',
           textTransform: 'uppercase',
           userSelect: 'none',
         }}>
@@ -140,10 +140,10 @@ export function GlossaryPanel() {
             }}>
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '14px' }}>
                 <div>
-                  <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                  <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                     NextUs {'\u00B7'} Life OS
                   </span>
-                  <h2 style={{ fontFamily: 'var(--font-sc)', fontSize: '1.25rem', fontWeight: 400, color: 'var(--text)', lineHeight: 1.1 }}>
+                  <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1 }}>
                     Glossary
                   </h2>
                 </div>
@@ -173,7 +173,7 @@ export function GlossaryPanel() {
                 style={{
                   width: '100%',
                   padding: '9px 14px',
-                  fontFamily: 'var(--font-body)',
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
                   fontSize: '0.875rem',
                   color: 'rgba(15,21,35,0.88)',
                   background: 'rgba(200,146,42,0.04)',
@@ -188,7 +188,7 @@ export function GlossaryPanel() {
             {/* Body */}
             <div style={{ padding: '12px 16px 32px', flex: 1 }}>
               {loading && (
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'rgba(15,21,35,0.72)', padding: '24px 8px' }}>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', color: 'rgba(15,21,35,0.72)', padding: '24px 8px' }}>
                   Loading glossary...
                 </p>
               )}
@@ -196,7 +196,7 @@ export function GlossaryPanel() {
               {!loading && glossary && isFiltering && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {filteredTerms.length === 0 && (
-                    <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'rgba(15,21,35,0.72)', padding: '12px 8px' }}>
+                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', color: 'rgba(15,21,35,0.72)', padding: '12px 8px' }}>
                       No terms match "{query}"
                     </p>
                   )}
@@ -214,7 +214,7 @@ export function GlossaryPanel() {
                 if (!terms.length) return null
                 return (
                   <div key={cat.label} style={{ marginBottom: '20px' }}>
-                    <div style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.18em', color: 'var(--gold-dk)', textTransform: 'uppercase', marginBottom: '8px', padding: '0 8px' }}>
+                    <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '8px', padding: '0 8px' }}>
                       {cat.label}
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
@@ -252,7 +252,7 @@ export function GlossaryPanel() {
               borderRadius: '0 12px 12px 0',
             }}
           >
-            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', color: '#A8721A' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}
@@ -275,10 +275,10 @@ function TermCard({ term }) {
       background: 'rgba(200,146,42,0.02)',
       border: '1px solid rgba(200,146,42,0.55)',
     }}>
-      <div style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', color: '#A8721A', marginBottom: '4px', lineHeight: 1.2 }}>
+      <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', color: '#A8721A', marginBottom: '4px', lineHeight: 1.2 }}>
         {term.term}
       </div>
-      <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
+      <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
         {term.short}
       </div>
     </div>

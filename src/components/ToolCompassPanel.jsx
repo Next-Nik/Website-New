@@ -73,10 +73,10 @@ export function ToolCompassPanel() {
           writingMode: 'vertical-rl',
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
-          fontFamily: 'var(--font-sc)',
+          fontFamily: "'Cormorant SC', Georgia, serif",
           fontSize: '13px',
           letterSpacing: '0.18em',
-          color: 'var(--gold-dk)',
+          color: '#A8721A',
           textTransform: 'uppercase',
           userSelect: 'none',
         }}>
@@ -121,13 +121,13 @@ export function ToolCompassPanel() {
               justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.2em', color: 'var(--gold-dk)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   Life OS
                 </span>
-                <h2 style={{ fontFamily: 'var(--font-sc)', fontSize: '1.25rem', fontWeight: 400, color: 'var(--text)', lineHeight: 1.1, marginBottom: '4px' }}>
+                <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
                   Where do I start?
                 </h2>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
                   Five tools. One ecosystem. The right entry depends on where you are.
                 </p>
               </div>
@@ -152,7 +152,7 @@ export function ToolCompassPanel() {
 
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.875rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
                 If you don't know where to begin, begin with Orienteering — it reads your current state and points you somewhere useful. Everything else follows from honest location.
               </p>
             </div>
@@ -188,15 +188,15 @@ export function ToolCompassPanel() {
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                    <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', letterSpacing: '0.16em', color: 'var(--gold-dk)', textTransform: 'uppercase' }}>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase' }}>
                       {tool.eyebrow}
                     </span>
                     <span style={{ color: '#A8721A', fontSize: '0.875rem' }}>→</span>
                   </div>
-                  <div style={{ fontFamily: 'var(--font-sc)', fontSize: '1rem', color: '#A8721A', marginBottom: '6px', lineHeight: 1.2 }}>
+                  <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1rem', color: '#A8721A', marginBottom: '6px', lineHeight: 1.2 }}>
                     {tool.name}
                   </div>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.8125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
+                  <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
                     {tool.hook}
                   </div>
                 </Link>
@@ -228,7 +228,7 @@ export function ToolCompassPanel() {
               borderRadius: '0 12px 12px 0',
             }}
           >
-            <span style={{ fontFamily: 'var(--font-sc)', fontSize: '13px', color: 'var(--gold-dk)' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', color: '#A8721A' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

@@ -13,7 +13,7 @@ const BUCKET     = 'nextus-audio'
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const gold  = { color: "#A8721A" }
-const muted = { color: "rgba(15,21,35,0.55)" }
+const muted = { color: "rgba(15,21,35,0.72)" }
 const meta  = { color: "rgba(15,21,35,0.78)" }
 
 // ─── Audio Player ─────────────────────────────────────────────────────────────
@@ -127,7 +127,7 @@ function AuthModal({ onDismiss }) {
 
 function FlameDelta({ before, after }) {
   const delta  = after - before
-  const color  = delta > 0 ? '#5A8AB8' : delta < 0 ? '#8A7030' : 'rgba(15,21,35,0.55)'
+  const color  = delta > 0 ? '#5A8AB8' : delta < 0 ? '#8A7030' : 'rgba(15,21,35,0.72)'
   const symbol = delta > 0 ? '\u2191' : delta < 0 ? '\u2193' : '\u2014'
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px', padding: '20px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '12px', marginTop: '20px' }}>
@@ -311,7 +311,7 @@ function PhasePlaceholder({ title }) {
   return (
     <div style={{ background: 'rgba(15,21,35,0.015)', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', padding: '24px 28px' }}>
       <span style={{ display: 'block', ...sc, fontSize: '13px', letterSpacing: '0.14em', ...muted, marginBottom: '8px' }}>Coming</span>
-      <div style={{ ...serif, fontSize: '1.1875rem', fontWeight: 300, color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>{title}</div>
+      <div style={{ ...serif, fontSize: '1.1875rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', marginBottom: '6px' }}>{title}</div>
       <p style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, lineHeight: 1.6 }}>This phase unlocks as the protocol develops.</p>
     </div>
   )

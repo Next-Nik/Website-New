@@ -38,7 +38,7 @@ const TOOLS = [
     secondary: { label: 'Debrief with Nik', url: '/work-with-nik' },
   },
   {
-    id: 'target-sprint', name: 'Target Sprint', hook: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.',
+    id: 'target-goals', name: 'Target Goals', hook: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.',
     label: 'The operational layer',
     desc: 'The bridge between knowing where you are and arriving somewhere different.',
     detail: 'Pick three domains. Set a meaningful 90-day outcome for each. The tool reverse-engineers the monthly milestones and weekly focus from your destination — and anchors daily TEA so the work compounds. Standalone or linked to The Map.',
@@ -109,7 +109,7 @@ function ToolAccordion({ tool }) {
           ))}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
             <a href={tool.primary.url} target={tool.primary.external ? '_blank' : undefined} rel={tool.primary.external ? 'noopener' : undefined}
-              style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
+              style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
               {tool.primary.label}
             </a>
             {tool.secondary && (
@@ -144,7 +144,7 @@ export function LifeOSPage() {
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '16px', maxWidth: '520px' }}>
             If you don't know where to begin, begin with Orienteering — it reads your current state and points you somewhere useful. Everything else flows from knowing where you're starting from.
           </p>
-          <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '12px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
+          <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '12px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
             Begin with Orienteering →
           </a>
         </div>
@@ -153,7 +153,7 @@ export function LifeOSPage() {
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '48px 0' }} />
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', alignItems: 'center' }}>
-          <a href="/work-with-nik" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Work with Nik {'→'}</a>
+          <a href="/work-with-nik" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Work with Nik {'→'}</a>
           <a href="/" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.78)', textDecoration: 'none' }}>{'←'} Home</a>
         </div>
       </div>
@@ -192,7 +192,7 @@ export function LifeOSPage() {
               <h4 style={{ ...serif, fontSize: '20px', fontWeight: 400, color: '#A8721A', marginBottom: '10px' }}>{SHARE_RECS[shareRec].tool}</h4>
               <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '520px' }}>{SHARE_RECS[shareRec].desc}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
-                <a href={SHARE_RECS[shareRec].url} style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>Open {SHARE_RECS[shareRec].tool} {'→'}</a>
+                <a href={SHARE_RECS[shareRec].url} style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>Open {SHARE_RECS[shareRec].tool} {'→'}</a>
               </div>
             </div>
           )}
@@ -205,7 +205,7 @@ export function LifeOSPage() {
             <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A' }}>An offer</span>
           </div>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '580px' }}>Notice {'—'} as you think about them across these domains {'—'} what you{'’'}re actually seeing. The same lens that helps you find the right thing for them has a way of clarifying things for you too.</p>
-          <a href="/#start" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Start your own {'→'}</a>
+          <a href="/#start" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Start your own {'→'}</a>
         </div>
       </section>
 
