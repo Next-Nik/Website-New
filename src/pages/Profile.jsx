@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { SiteNav } from '../components/SiteNav'
 import { useAuth } from '../hooks/useAuth'
-import { SprintPanel } from '../components/SprintPanel'
+import { ScalePanel } from '../components/ScalePanel'
 import { supabase } from '../hooks/useSupabase'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -117,7 +117,7 @@ export function ProfilePage() {
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
       <SiteNav />
-      <SprintPanel />
+      <ScalePanel side="right" />
 
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '64px 40px 160px' }}>
 
