@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { SiteNav } from '../components/SiteNav'
 import { SiteFooter } from '../components/SiteFooter'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
+import { GlossaryPanel } from '../components/GlossaryPanel'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
@@ -209,6 +210,7 @@ export function LifeOSPage() {
         </div>
       </section>
 
+      <GlossaryPanel />
       <ToolCompassPanel />
       <SiteFooter />
     </div>
