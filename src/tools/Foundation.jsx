@@ -175,7 +175,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError }) {
         <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
           {/* Left: locked flame placeholder */}
           <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', opacity: 0.35 }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.6)', textTransform: 'uppercase' }}>Before</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase' }}>Before</span>
             <FlameGlyph value={5} size={64} ghost />
           </div>
           {/* Right: audio player locked */}
@@ -202,7 +202,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError }) {
 
           {/* LEFT — Before flame check-in */}
           <div style={{ flex: '0 0 auto', minWidth: '120px' }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>Before</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>Before</span>
             {flow === 'before' ? (
               <FlameCheckIn
                 audioPhase="baseline"
@@ -249,13 +249,13 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError }) {
 
           {/* LEFT — locked before flame */}
           <div style={{ flex: '0 0 auto', minWidth: '120px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.5)', textTransform: 'uppercase', textAlign: 'center' }}>Before</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', textAlign: 'center' }}>Before</span>
             <FlameGlyph value={beforeResult?.afterValue ?? 5} size={72} ghost />
           </div>
 
           {/* RIGHT — after flame check-in */}
           <div style={{ flex: 1, minWidth: '180px' }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
             <FlameCheckIn
               audioPhase="baseline"
               ghostValue={beforeResult?.afterValue ?? null}

@@ -378,7 +378,7 @@ function ActDomain({ archetype, session, onComplete }) {
                 onMouseLeave={e => { if (!isSel) { e.currentTarget.style.borderColor = isSug ? 'rgba(200,146,42,0.4)' : 'rgba(200,146,42,0.18)'; e.currentTarget.style.transform = '' } }}>
                 <div style={{ fontSize: '22px', marginBottom: '8px', filter: isSel ? 'drop-shadow(0 0 6px rgba(200,146,42,0.5))' : 'none' }}>{d.glyph}</div>
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: isSel ? 'var(--gold-dk)' : 'var(--text)', marginBottom: '4px' }}>{d.label}</div>
-                {isSug && <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(200,146,42,0.6)', textTransform: 'uppercase' }}>suggested</div>}
+                {isSug && <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#C8922A', textTransform: 'uppercase' }}>suggested</div>}
               </div>
             )
           })}
@@ -482,9 +482,9 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '32px', flexWrap: 'wrap' }}>
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', ...gold }}>the {archetype?.toLowerCase()}</span>
-            <span style={{ ...sc, fontSize: '13px', color: 'rgba(200,146,42,0.4)' }}>{'·'}</span>
+            <span style={{ ...sc, fontSize: '13px', color: '#C8922A' }}>{'·'}</span>
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'var(--text)' }}>{domainObj?.label}</span>
-            <span style={{ ...sc, fontSize: '13px', color: 'rgba(200,146,42,0.4)' }}>{'·'}</span>
+            <span style={{ ...sc, fontSize: '13px', color: '#C8922A' }}>{'·'}</span>
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'var(--text)' }}>{scaleObj?.label}</span>
           </div>
 
@@ -496,7 +496,7 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
               { label: 'Scale',     value: scaleObj?.label,  glyph: scaleObj?.glyph,  sublabel: 'The level you operate at' },
             ].map(c => (
               <div key={c.label} style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '12px', padding: '16px 12px' }}>
-                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.6)', textTransform: 'uppercase', marginBottom: '8px' }}>{c.label}</div>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', marginBottom: '8px' }}>{c.label}</div>
                 <div style={{ fontSize: '22px', marginBottom: '6px' }}>{c.glyph}</div>
                 <div style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.06em', color: 'var(--text)', marginBottom: '4px', lineHeight: 1.2 }}>{c.value}</div>
                 <div style={{ ...serif, fontSize: '13px', fontStyle: 'italic', ...muted, lineHeight: 1.4 }}>{c.sublabel}</div>

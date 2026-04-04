@@ -281,7 +281,7 @@ function GroupsTab({ toast }) {
                       letterSpacing: '0.10em' }}>
                     Join URL ↗
                   </a>
-                  <span style={{ color: 'rgba(200,146,42,0.4)' }}>·</span>
+                  <span style={{ color: '#C8922A' }}>·</span>
                   <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.45)',
                     letterSpacing: '0.10em' }}>
                     {g.group_members?.[0]?.count ?? 0} members

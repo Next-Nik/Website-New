@@ -177,7 +177,7 @@ export function ProtocolPanel() {
                         fontFamily: 'var(--font-sc)',
                         fontSize: '1.125rem',
                         fontWeight: 600,
-                        color: 'rgba(200,146,42,0.35)',
+                        color: '#C8922A',
                         lineHeight: 1,
                         minWidth: '24px',
                         marginTop: '2px',

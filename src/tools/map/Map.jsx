@@ -436,7 +436,7 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
                       {STAGE_LABELS[stage]}
                     </span>
                     {horizon !== undefined && (
-                      <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', color: 'rgba(200,146,42,0.6)' }}>
+                      <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', color: '#C8922A' }}>
                         → {horizon}
                       </span>
                     )}
@@ -454,7 +454,7 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
                 { icon: '●', label: 'Complete' },
               ].map(item => (
                 <div key={item.icon} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                  <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', color: 'rgba(200,146,42,0.55)', width: '14px' }}>{item.icon}</span>
+                  <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', color: '#C8922A', width: '14px' }}>{item.icon}</span>
                   <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.45)' }}>{item.label}</span>
                 </div>
               ))}
@@ -823,14 +823,14 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
             {domain.label}
           </span>
           {stage === 3 && (
-            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(200,146,42,0.7)' }}>● Complete</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#C8922A' }}>● Complete</span>
           )}
         </div>
         <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>
           {domain.question}
         </p>
         {flagReview && step !== 'done' && (
-          <div style={{ marginTop: '8px', padding: '8px 12px', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', fontStyle: 'italic', color: 'rgba(200,146,42,0.8)' }}>
+          <div style={{ marginTop: '8px', padding: '8px 12px', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', fontStyle: 'italic', color: '#C8922A' }}>
             Your avatar changed — worth reviewing your score and horizon goal when you're ready.
           </div>
         )}
@@ -1116,7 +1116,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
                 </div>
                 <div style={{ textAlign: 'right', minWidth: '60px' }}>
                   <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.9375rem', fontWeight: 600, color: col }}>{s}</span>
-                  {h && <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: 'rgba(200,146,42,0.55)', marginLeft: '4px' }}>→{h}</span>}
+                  {h && <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: '#C8922A', marginLeft: '4px' }}>→{h}</span>}
                 </div>
               </div>
               {isFocus && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{d.question}</div>}
