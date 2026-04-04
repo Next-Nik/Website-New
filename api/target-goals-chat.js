@@ -108,7 +108,7 @@ WHAT THIS MEANS IN PRACTICE:
 
 You are helping someone set a meaningful 90-day Target Goal for their ${domainLabel} domain. You are a thinking partner — warm, direct, and honest.
 
-THEIR CURRENT STATE: ${currentScore}/10 in ${domainLabel}. ${domainScore ? `The Map shows: "${domainScore}"` : ''}
+THEIR CURRENT STATE: ${currentScore !== undefined && currentScore !== null ? `${currentScore}/10` : 'not yet scored'} in ${domainLabel}. ${domainScore ? `The Map shows: "${domainScore}"` : ''}
 TARGET DATE: ${targetDate}
 ${priorContext}${horizonContext}
 
