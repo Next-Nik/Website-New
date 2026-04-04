@@ -37,7 +37,7 @@ export function PrivacyPage() {
       <P>The short version: we collect what we need to make the tools work and remember your progress. We don{'\u2019'}t sell your data. We don{'\u2019'}t share it with advertisers. We don{'\u2019'}t use it to build profiles for anyone other than you.</P>
       <H2>What we collect</H2>
       <P>When you create an account, we store your email address and a secure identifier. That{'\u2019'}s the minimum needed to keep your work attached to you across sessions.</P>
-      <P>When you use the Life OS tools, we store the outputs {'\u2014'} your domain scores from The Map, your archetype and coordinates from Purpose Piece, your sprint data from Target Goals. This is what makes your profile possible.</P>
+      <P>When you use the Life OS tools, we store the outputs {'\u2014'} your domain scores from The Map, your archetype and coordinates from Purpose Piece, your sprint data from Target Sprint. This is what makes your profile possible.</P>
       <P>We also store anything you write in the manual fields {'\u2014'} your own words, your horizon statements, your notes. These are yours. They{'\u2019'}re stored so you can return to them.</P>
       <P>When you sign in via Google, Google provides us with your email address and basic profile information. We don{'\u2019'}t receive anything beyond what you explicitly authorise.</P>
       <H2>What we don{'\u2019'}t collect</H2>
@@ -65,7 +65,7 @@ export function PrivacyPage() {
 export function TermsPage() {
   return (
     <LegalWrap eyebrow="Terms of Service" title="Using NextUs<br><em style='color:#A8721A;'>in good faith.</em>" subtitle="Last updated March 2026 · NextUs / Nik Wood" active="">
-      <P>These terms cover your use of nextus.world and the Life OS tools {'\u2014'} Orienteering, The Map, Purpose Piece, Foundation, Target Goals {'\u2014'} and the NextUs platform.</P>
+      <P>These terms cover your use of nextus.world and the Life OS tools {'\u2014'} Orienteering, The Map, Purpose Piece, Foundation, Target Sprint {'\u2014'} and the NextUs platform.</P>
       <P>The spirit of these terms: use the platform honestly, treat what you find here with respect, and don{'\u2019'}t do things that would harm other people or the platform itself.</P>
       <H2>Your account</H2>
       <P>You need an account to save your progress and access your profile. You{'\u2019'}re responsible for keeping your login secure. You must be at least 16 years old to create an account.</P>
