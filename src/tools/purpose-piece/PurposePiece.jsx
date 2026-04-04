@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
+import { useAccess } from '../../hooks/useAccess'
+import { AccessGate } from '../../components/AccessGate'
 import { supabase } from '../../hooks/useSupabase'
 import { ArchetypeReferencePanel } from '../../components/ArchetypeReferencePanel'
 
@@ -39,7 +41,7 @@ const SCALES = [
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const gold  = { color: "#A8721A" }
-const muted = { color: "rgba(15,21,35,0.72)" }
+const muted = { color: "rgba(15,21,35,0.55)" }
 const meta  = { color: "rgba(15,21,35,0.78)" }
 
 // ─── Spinning heptagon background ────────────────────────────────────────────
@@ -127,11 +129,11 @@ function AuthModal() {
   const returnUrl = encodeURIComponent(window.location.href)
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-      <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px 32px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
+      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px 32px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
         <span style={{ display: 'block', ...sc, fontSize: '13px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>Sign in to begin.</h2>
         <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>Your archetype and contribution pattern are saved to your profile.</p>
-        <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '14px 24px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
+        <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '14px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
           Sign in or create account {'→'}
         </a>
       </div>
@@ -144,11 +146,11 @@ function AuthModal() {
 function DeepGateModal({ onUnlock, onDismiss }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-      <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px 32px', maxWidth: '440px', width: '100%' }}>
+      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px 32px', maxWidth: '440px', width: '100%' }}>
         <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Go Deeper</div>
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', marginBottom: '12px', lineHeight: 1.2 }}>The tension. The shadow. The full picture.</h2>
-        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.75, marginBottom: '24px' }}>The First Look gave you the shape. The Deep Dive is a real conversation {'—'} into what this pattern costs you, where it breaks, and what it{'''}s been asking of you.</p>
-        <button onClick={onUnlock} style={{ display: 'block', width: '100%', padding: '14px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', cursor: 'pointer', marginBottom: '12px' }}>Unlock the Deep Dive</button>
+        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.75, marginBottom: '24px' }}>The First Look gave you the shape. The Deep Dive is a real conversation {'—'} into what this pattern costs you, where it breaks, and what it{'’'}s been asking of you.</p>
+        <button onClick={onUnlock} style={{ display: 'block', width: '100%', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', ...gold, ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', cursor: 'pointer', marginBottom: '12px' }}>Unlock the Deep Dive</button>
         <button onClick={onDismiss} style={{ display: 'block', width: '100%', background: 'none', border: 'none', ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: '6px' }}>Not now</button>
       </div>
     </div>
@@ -267,7 +269,7 @@ function ActArchetype({ user, onComplete }) {
               {result.synthesis.your_signal}
             </p>
           )}
-          <button onClick={() => onComplete(result)} style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', color: '#FFFFFF', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', padding: '13px 32px', cursor: 'pointer', transition: 'all 0.2s' }}
+          <button onClick={() => onComplete(result)} style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '13px 32px', cursor: 'pointer', transition: 'all 0.2s' }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
             Now find your domain {'→'}
@@ -355,7 +357,7 @@ function ActDomain({ archetype, session, onComplete }) {
         The {archetype} pattern shows up in every domain. But one is where your effort compounds most.
       </p>
       {suggested && (
-        <p style={{ ...serif, fontSize: '1rem', ...meta, marginBottom: '24px', lineHeight: 1.6 }}>
+        <p style={{ ...serif, fontSize: '0.875rem', ...meta, marginBottom: '24px', lineHeight: 1.6 }}>
           <span style={{ ...gold }}>{glyph}</span> Based on what emerged, {' '}
           <span style={{ ...gold }}>{NEXUS_DOMAINS.find(d => d.id === suggested)?.label}</span> may be your strongest signal. Trust your instinct.
         </p>
@@ -386,7 +388,7 @@ function ActDomain({ archetype, session, onComplete }) {
       </div>
 
       <button onClick={confirm} disabled={!selected || confirming}
-        style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', color: '#FFFFFF', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', padding: '13px 32px', cursor: !selected ? 'not-allowed' : 'pointer', opacity: !selected ? 0.4 : 1, transition: 'all 0.2s' }}>
+        style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '13px 32px', cursor: !selected ? 'not-allowed' : 'pointer', opacity: !selected ? 0.4 : 1, transition: 'all 0.2s' }}>
         {confirming ? 'Confirming…' : 'This is my domain →'}
       </button>
     </div>
@@ -428,7 +430,7 @@ function ActScale({ archetype, domain, onComplete }) {
               <div style={{ fontSize: '28px', flexShrink: 0, filter: isSel ? 'drop-shadow(0 0 8px rgba(200,146,42,0.45))' : 'none', transition: 'filter 0.3s' }}>{s.glyph}</div>
               <div>
                 <div style={{ ...sc, fontSize: '0.9375rem', letterSpacing: '0.08em', color: isSel ? '#A8721A' : '#0F1523', marginBottom: '4px' }}>{s.label}</div>
-                <div style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.55 }}>{s.desc}</div>
+                <div style={{ ...serif, fontSize: '0.9rem', fontStyle: 'italic', ...muted, lineHeight: 1.55 }}>{s.desc}</div>
               </div>
               {isSel && <div style={{ marginLeft: 'auto', ...sc, fontSize: '1rem', ...gold }}>{'✓'}</div>}
             </div>
@@ -437,7 +439,7 @@ function ActScale({ archetype, domain, onComplete }) {
       </div>
 
       <button onClick={confirm} disabled={!selected || confirming}
-        style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', color: '#FFFFFF', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', padding: '13px 32px', cursor: !selected ? 'not-allowed' : 'pointer', opacity: !selected ? 0.4 : 1, transition: 'all 0.2s' }}>
+        style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '13px 32px', cursor: !selected ? 'not-allowed' : 'pointer', opacity: !selected ? 0.4 : 1, transition: 'all 0.2s' }}>
         {confirming ? 'Confirming…' : 'This is my scale →'}
       </button>
     </div>
@@ -467,7 +469,7 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
   return (
     <div>
       {/* The three-coordinate card */}
-      <div style={{ position: 'relative', overflow: 'hidden', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '20px', padding: '48px 36px 40px', marginBottom: '24px', textAlign: 'center' }}>
+      <div style={{ position: 'relative', overflow: 'hidden', background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '20px', padding: '48px 36px 40px', marginBottom: '24px', textAlign: 'center' }}>
         <SpinningHeptagon opacity={0.05} speed="80s" />
         <SpinningHeptagon opacity={0.03} speed="120s" reverse />
 
@@ -519,7 +521,7 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
 
           {/* Actions */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
-            <button onClick={onDeepDive} style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', color: '#FFFFFF', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', padding: '14px 36px', cursor: 'pointer', transition: 'all 0.2s' }}
+            <button onClick={onDeepDive} style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '14px 36px', cursor: 'pointer', transition: 'all 0.2s' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
               onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
               Go deeper {'→'}
@@ -536,6 +538,7 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
 
 export function PurposePiecePage() {
   const { user, loading: authLoading } = useAuth()
+  const { tier, loading: accessLoading } = useAccess('purpose_piece')
   const navigate = useNavigate()
 
   // act: 1=archetype, 2=domain, 3=scale, 4=reveal
@@ -598,7 +601,11 @@ export function PurposePiecePage() {
     navigate('/tools/purpose-piece/deep')
   }
 
-  if (authLoading) return <div className="loading" />
+  if (authLoading || accessLoading) return <div className="loading" />
+
+  if (tier !== 'full' && tier !== 'beta') {
+    return <AccessGate productKey="purpose_piece" toolName="Purpose Piece">{null}</AccessGate>
+  }
 
   return (
     <div className="page-shell">
