@@ -319,6 +319,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
     setFlow('listening')
   }
 
+
   function handleAfterComplete(data) {
     setAfterResult(data)
     setFlow('done')
@@ -354,14 +355,19 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
       <div>
         <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
 
-          {/* LEFT — Before flame check-in */}
-          <div style={{ flex: '0 0 auto', minWidth: '120px' }}>
+          {/* LEFT — Before flame (active until completed) */}
+          <div style={{
+            flex: '0 0 auto', minWidth: '120px',
+            opacity: beforeResult ? 0.35 : 1,
+            transition: 'opacity 0.6s ease',
+            pointerEvents: beforeResult ? 'none' : 'auto',
+          }}>
             <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>Before</span>
-            {flow === 'before' ? (
+            {!beforeResult ? (
               <FlameCheckIn
                 audioPhase="baseline"
                 onBeforeComplete={handleBeforeComplete}
-                onSkip={() => setFlow('listening')}
+                onSkip={() => { setBeforeResult({ beforeValue: 5 }); setFlow('listening') }}
               />
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
@@ -372,41 +378,39 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
           </div>
 
           {/* CENTRE — Audio player */}
-          <div style={{ flex: 1, minWidth: '220px', paddingTop: flow === 'listening' ? '0' : '28px' }}>
+          <div style={{ flex: 1, minWidth: '220px', paddingTop: '0' }}>
             {audioLoading && <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted }}>Loading audio...</p>}
             {audioError  && <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
             {!audioLoading && !audioError && audioUrl && (
               <AudioPlayer
                 url={audioUrl}
-                locked={flow === 'before'}
+                locked={!beforeResult}
                 onNearEnd={() => setAfterUnlocked(true)}
                 onEnded={() => { setAfterUnlocked(true); if (flow === 'listening') setFlow('after') }}
               />
             )}
-            {flow === 'listening' && (
+            {beforeResult && flow !== 'done' && flow !== 'after' && (
               <button onClick={() => setFlow('after')} style={{ display: 'block', width: '100%', marginTop: '14px', padding: '11px', textAlign: 'center', ...sc, fontSize: '0.8125rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', cursor: 'pointer' }}>
                 Check in after {'\u2192'}
               </button>
             )}
           </div>
 
-          {/* RIGHT — After flame (faint until 1 min remaining) */}
-          {flow === 'listening' && (
-            <div style={{
-              flex: '0 0 auto', minWidth: '120px',
-              opacity: afterUnlocked ? 1 : 0.18,
-              transition: 'opacity 0.8s ease',
-              pointerEvents: afterUnlocked ? 'auto' : 'none',
-            }}>
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
-              <FlameCheckIn
-                audioPhase="baseline"
-                ghostValue={beforeResult?.beforeValue ?? null}
-                onBeforeComplete={() => {}}
-                onComplete={handleAfterComplete}
-              />
-            </div>
-          )}
+          {/* RIGHT — After flame (always visible, faint until 1 min remaining) */}
+          <div style={{
+            flex: '0 0 auto', minWidth: '120px',
+            opacity: afterUnlocked ? 1 : 0.18,
+            transition: 'opacity 0.8s ease',
+            pointerEvents: afterUnlocked ? 'auto' : 'none',
+          }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
+            <FlameCheckIn
+              audioPhase="baseline"
+              ghostValue={beforeResult?.beforeValue ?? null}
+              onBeforeComplete={() => {}}
+              onComplete={handleAfterComplete}
+            />
+          </div>
 
         </div>
       </div>
