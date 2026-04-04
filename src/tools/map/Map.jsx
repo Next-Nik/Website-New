@@ -1522,29 +1522,42 @@ export function MapPage() {
                     onCentreClick={() => setThreadPanelOpen(p => !p)}
                     triggerSpin={spinCount}
                   />
-                  {/* Spin button — curved arrow, sits below wheel */}
-                  <button
-                    onClick={() => setSpinCount(c => c + 1)}
-                    title="Spin the wheel"
-                    style={{
-                      position: 'absolute',
-                      bottom: '20px',
-                      right: '80px',
-                      background: 'none',
-                      border: 'none',
-                      cursor: 'pointer',
-                      padding: '8px',
-                      opacity: 0.45,
-                      transition: 'opacity 0.2s',
-                    }}
-                    onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-                    onMouseLeave={e => e.currentTarget.style.opacity = '0.45'}
-                  >
-                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M6 14 A8 8 0 1 1 14 22" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-                      <polyline points="10,22 14,22 14,18" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                    </svg>
-                  </button>
+                  {/* Prev / Next domain arrows */}
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '16px',
+                    right: '60px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}>
+                    {/* Previous — rotate left */}
+                    <button
+                      onClick={() => setActiveIndex(i => i === null ? DOMAINS.length - 1 : (i - 1 + DOMAINS.length) % DOMAINS.length)}
+                      title="Previous domain"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', opacity: 0.4, transition: 'opacity 0.2s' }}
+                      onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                      onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M15 5 C9 5 5 8.1 5 12 C5 15.9 9 19 15 19" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                        <polyline points="8,9 5,12 8,15" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                    {/* Next — rotate right */}
+                    <button
+                      onClick={() => setActiveIndex(i => i === null ? 0 : (i + 1) % DOMAINS.length)}
+                      title="Next domain"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', opacity: 0.4, transition: 'opacity 0.2s' }}
+                      onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                      onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
+                    >
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 5 C15 5 19 8.1 19 12 C19 15.9 15 19 9 19" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+                        <polyline points="16,9 19,12 16,15" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
 
