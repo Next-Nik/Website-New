@@ -144,19 +144,21 @@ function FlameSlider({ value, onChange, ghostValue = null }) {
 
   const onDown = useCallback(e => {
     dragging.current = true
-    onChange(posToValue(e.clientY ?? e.touches?.[0]?.clientY))
-    e.preventDefault?.()
+    const clientY = e.clientY ?? e.touches?.[0]?.clientY
+    onChange(posToValue(clientY))
+    e.preventDefault()
   }, [onChange])
 
   useEffect(() => {
     function move(e) {
       if (!dragging.current) return
-      onChange(posToValue(e.clientY ?? e.touches?.[0]?.clientY))
+      const clientY = e.clientY ?? e.touches?.[0]?.clientY
+      onChange(posToValue(clientY))
     }
     function up() { dragging.current = false }
     window.addEventListener('mousemove', move)
     window.addEventListener('mouseup', up)
-    window.addEventListener('touchmove', move, { passive: true })
+    window.addEventListener('touchmove', move, { passive: false })
     window.addEventListener('touchend', up)
     return () => {
       window.removeEventListener('mousemove', move)
@@ -166,6 +168,17 @@ function FlameSlider({ value, onChange, ghostValue = null }) {
     }
   }, [onChange])
 
+  // Prevent page scroll when touching the track directly
+  useEffect(() => {
+    const el = trackRef.current
+    if (!el) return
+    function preventScroll(e) {
+      if (dragging.current) e.preventDefault()
+    }
+    el.addEventListener('touchmove', preventScroll, { passive: false })
+    return () => el.removeEventListener('touchmove', preventScroll)
+  }, [])
+
   const pct = v => 100 - (v / 10) * 100
 
   return (
@@ -174,7 +187,14 @@ function FlameSlider({ value, onChange, ghostValue = null }) {
         ref={trackRef}
         onMouseDown={onDown}
         onTouchStart={onDown}
-        style={{ position: 'relative', width: '56px', height: `${TRACK_H}px`, cursor: 'pointer' }}
+        style={{
+          position: 'relative', width: '56px', height: `${TRACK_H}px`,
+          cursor: 'pointer',
+          // Larger touch target without visual change
+          padding: '0 20px',
+          margin: '0 -20px',
+          touchAction: 'none',
+        }}
       >
         {/* Track */}
         <div style={{
@@ -241,7 +261,7 @@ function FlameSlider({ value, onChange, ghostValue = null }) {
 
 // ─── FlameCheckIn — embeddable in Foundation and Target Sprint ────────────────
 
-export function FlameCheckIn({ audioPhase = 'baseline', onComplete, onSkip }) {
+export function FlameCheckIn({ audioPhase = 'baseline', onBeforeComplete, onComplete, onSkip }) {
   const { user } = useAuth()
 
   const [stage,       setStage]       = useState('before')
@@ -261,9 +281,12 @@ export function FlameCheckIn({ audioPhase = 'baseline', onComplete, onSkip }) {
   const delta = afterValue - beforeValue
 
   async function confirmBefore() {
-    setBeforeAt(new Date().toISOString())
+    const ts = new Date().toISOString()
+    setBeforeAt(ts)
     setAfterValue(beforeValue)
     setStage('after')
+    // Signal Foundation that before is done so audio can unlock
+    onBeforeComplete?.({ beforeValue, beforeNote, beforeAt: ts })
   }
 
   async function confirmAfter() {
@@ -272,12 +295,26 @@ export function FlameCheckIn({ audioPhase = 'baseline', onComplete, onSkip }) {
       if (user?.id && supabase) {
         const now   = new Date()
         const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`
+        const weekId = (() => {
+          const d = new Date(now); d.setHours(0,0,0,0)
+          const day = d.getDay()
+          const mon = new Date(d); mon.setDate(d.getDate() - ((day + 6) % 7))
+          return `${mon.getFullYear()}-${String(mon.getMonth()+1).padStart(2,'0')}-${String(mon.getDate()).padStart(2,'0')}`
+        })()
+        const monthId   = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`
+        const quarterId = `${now.getFullYear()}-Q${Math.floor(now.getMonth()/3)+1}`
+        const yearId    = String(now.getFullYear())
+
         await supabase.from('pulse_entries').upsert({
           user_id:      user.id,
-          type:         'daily',
+          type:         'foundation_session',
           period_id:    `${today}-foundation-${audioPhase}`,
           source:       'foundation',
           audio_phase:  audioPhase,
+          week_id:      weekId,
+          month_id:     monthId,
+          quarter_id:   quarterId,
+          year_id:      yearId,
           scores:       { spark: afterValue },
           note:         afterNote || null,
           before_value: beforeValue,
