@@ -1529,12 +1529,12 @@ export function MapPage() {
               {/* Prev / Next arrows — level with domain eyebrow, right of card */}
               <div style={{
                 position: 'absolute',
-                top: '28px', // aligns with domain eyebrow inside card
-                right: '-48px',
+                top: '28px',
+                right: '-56px',
                 display: 'flex',
-                flexDirection: 'column',
+                flexDirection: 'row',
                 alignItems: 'center',
-                gap: '2px',
+                gap: '6px',
                 zIndex: 2,
               }}>
                 <button
@@ -1544,9 +1544,8 @@ export function MapPage() {
                   onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
                   onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
                 >
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <path d="M15 5 C9 5 5 8.1 5 12 C5 15.9 9 19 15 19" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-                    <polyline points="8,9 5,12 8,15" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <polyline points="12,2 4,9 12,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </button>
                 <button
@@ -1556,9 +1555,8 @@ export function MapPage() {
                   onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
                   onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
                 >
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                    <path d="M9 5 C15 5 19 8.1 19 12 C19 15.9 15 19 9 19" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-                    <polyline points="16,9 19,12 16,15" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <polyline points="6,2 14,9 6,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </button>
               </div>
