@@ -19,6 +19,17 @@
   --nav-h:        56px;
 }
 
+/* ─── Type scale ────────────────────────────────────────────── */
+:root {
+  --text-xs:    11px;       /* UI labels, metadata, badges */
+  --text-sm:    13px;       /* Eyebrows, captions, nav links */
+  --text-base:  1rem;       /* 16px — standard body copy */
+  --text-md:    1.0625rem;  /* 17px — tool body copy (current default) */
+  --text-lg:    1.25rem;    /* 20px — subheadings, lead copy */
+  --text-xl:    1.5rem;     /* 24px — section headings */
+  --text-2xl:   1.75rem;    /* 28px — tool titles */
+}
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;

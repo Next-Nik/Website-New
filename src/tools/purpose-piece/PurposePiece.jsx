@@ -355,7 +355,7 @@ function ActDomain({ archetype, session, onComplete }) {
         The {archetype} pattern shows up in every domain. But one is where your effort compounds most.
       </p>
       {suggested && (
-        <p style={{ ...serif, fontSize: '0.875rem', ...meta, marginBottom: '24px', lineHeight: 1.6 }}>
+        <p style={{ ...serif, fontSize: '1rem', ...meta, marginBottom: '24px', lineHeight: 1.6 }}>
           <span style={{ ...gold }}>{glyph}</span> Based on what emerged, {' '}
           <span style={{ ...gold }}>{NEXUS_DOMAINS.find(d => d.id === suggested)?.label}</span> may be your strongest signal. Trust your instinct.
         </p>
@@ -428,7 +428,7 @@ function ActScale({ archetype, domain, onComplete }) {
               <div style={{ fontSize: '28px', flexShrink: 0, filter: isSel ? 'drop-shadow(0 0 8px rgba(200,146,42,0.45))' : 'none', transition: 'filter 0.3s' }}>{s.glyph}</div>
               <div>
                 <div style={{ ...sc, fontSize: '0.9375rem', letterSpacing: '0.08em', color: isSel ? '#A8721A' : '#0F1523', marginBottom: '4px' }}>{s.label}</div>
-                <div style={{ ...serif, fontSize: '0.9rem', fontStyle: 'italic', ...muted, lineHeight: 1.55 }}>{s.desc}</div>
+                <div style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.55 }}>{s.desc}</div>
               </div>
               {isSel && <div style={{ marginLeft: 'auto', ...sc, fontSize: '1rem', ...gold }}>{'✓'}</div>}
             </div>
