@@ -144,11 +144,11 @@ function AuthModal() {
 function DeepGateModal({ onUnlock, onDismiss }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
-      <div style={{ background: ‘#FFFFFF’, border: ‘1.5px solid rgba(200,146,42,0.78)’, borderRadius: ‘14px’, padding: ‘40px 32px 32px’, maxWidth: ‘440px’, width: ‘100%’ }}>
-        <div style={{ ...sc, fontSize: ‘13px’, letterSpacing: ‘0.2em’, ...gold, textTransform: ‘uppercase’, marginBottom: ‘14px’ }}>Go Deeper</div>
-        <h2 style={{ ...sc, fontSize: ‘1.375rem’, fontWeight: 400, color: ‘#0F1523’, marginBottom: ‘12px’, lineHeight: 1.2 }}>The tension. The shadow. The full picture.</h2>
-        <p style={{ ...serif, fontSize: ‘0.9375rem’, fontStyle: ‘italic’, ...meta, lineHeight: 1.75, marginBottom: ‘24px’ }}>The First Look gave you the shape. The Deep Dive is a real conversation {‘—‘} into what this pattern costs you, where it breaks, and what it{‘’’}s been asking of you.</p>
-        <button onClick={onUnlock} style={{ display: ‘block’, width: ‘100%’, padding: ‘14px’, borderRadius: ‘40px’, border: ‘1px solid rgba(168,114,26,0.8)’, background: ‘#C8922A’, color: ‘#FFFFFF’, ...sc, fontSize: ‘0.875rem’, letterSpacing: ‘0.14em’, cursor: ‘pointer’, marginBottom: ‘12px’ }}>Unlock the Deep Dive</button>
+      <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px 32px', maxWidth: '440px', width: '100%' }}>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Go Deeper</div>
+        <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', marginBottom: '12px', lineHeight: 1.2 }}>The tension. The shadow. The full picture.</h2>
+        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.75, marginBottom: '24px' }}>The First Look gave you the shape. The Deep Dive is a real conversation {'—'} into what this pattern costs you, where it breaks, and what it{'''}s been asking of you.</p>
+        <button onClick={onUnlock} style={{ display: 'block', width: '100%', padding: '14px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', cursor: 'pointer', marginBottom: '12px' }}>Unlock the Deep Dive</button>
         <button onClick={onDismiss} style={{ display: 'block', width: '100%', background: 'none', border: 'none', ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: '6px' }}>Not now</button>
       </div>
     </div>
