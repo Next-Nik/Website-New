@@ -285,7 +285,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
                 </text>
                 {/* Pill behind label */}
                 <rect x={p.x - 28} y={p.y + 2} width="56" height="14" rx="7"
-                  fill="#FAFAF7" fillOpacity="0.92"
+                  fill="#FFFFFF" fillOpacity="0.95"
                   style={{ pointerEvents: 'none' }} />
                 <text x={p.x} y={p.y + 10} textAnchor="middle" dominantBaseline="middle"
                   fill="rgba(200,146,42,0.7)" fontSize="9" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.06em"
@@ -303,8 +303,8 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
                   </text>
                 )}
                 {/* Pill behind label */}
-                <rect x={p.x - 32} y={stage > 0 ? p.y - 1 : p.y - 7} width="64" height="15" rx="7"
-                  fill="#FAFAF7" fillOpacity="0.88"
+                <rect x={p.x - 36} y={stage > 0 ? p.y - 1 : p.y - 7} width="72" height="16" rx="8"
+                  fill="#FFFFFF" fillOpacity="0.95"
                   style={{ pointerEvents: 'none' }} />
                 <text x={p.x} y={stage > 0 ? p.y + 7 : p.y} textAnchor="middle" dominantBaseline="middle"
                   fill={isActive ? '#A8721A' : stage > 0 ? 'rgba(200,146,42,0.7)' : 'rgba(15,21,35,0.55)'}
@@ -555,6 +555,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
   const [avatarFinal,    setAvatarFinal]    = useState(existingData?.avatarFinal || '')
   const [avatarMessages, setAvatarMessages] = useState(existingData?.avatarMessages || [])
   const [avatarLocked,   setAvatarLocked]   = useState(!!existingData?.avatarFinal)
+  const [avatarDoc,      setAvatarDoc]      = useState(existingData?.avatarDoc || { essence: '', references: '', other: '' })
   const [showAvatarEdit, setShowAvatarEdit] = useState(false)
   const [editingAvatar,  setEditingAvatar]  = useState(false)
 
@@ -584,7 +585,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
   function buildData(overrides = {}) {
     return {
       domainId: domain.id,
-      avatarDraft, avatarFinal, avatarMessages, avatarLocked,
+      avatarDraft, avatarFinal, avatarMessages, avatarLocked, avatarDoc,
       currentScore, realityDraft, realityFinal, scoreMsgs, scoreLocked,
       horizonScore, horizonText, horizonMsgs, horizonLocked,
       flagReview,
@@ -796,7 +797,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           disabled={disabled}
           style={{ flex: 1, padding: '10px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', outline: 'none', resize: 'none', lineHeight: 1.55 }}
         />
-        <button onClick={() => onSend(value)} disabled={!value.trim() || disabled} style={{ ...btnStyle, padding: '10px 16px', alignSelf: 'flex-end', opacity: !value.trim() || disabled ? 0.4 : 1 }}>→</button>
+        <button onClick={() => onSend(value)} disabled={!value.trim() || disabled} style={{ ...btnStyle, padding: '10px 16px', alignSelf: 'flex-end', opacity: !value.trim() || disabled ? 0.4 : 1, fontSize: '0.75rem', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>Update draft</button>
       </div>
     )
   }
@@ -872,22 +873,84 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
         <div>
           {!avatarLocked || editingAvatar ? (
             <>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '16px' }}>
-                Create a construct of "Best in the World" for you in {domain.label}. Think of it like you're creating a character for a movie or a video game that represents best in this area for you. Feel free to reference real people, fictional characters, and to make elements up from scratch. If you're using a real or fictional person, we're just looking at how they are in this area — feel free to write as much as you want, I'll help you refine, distil and interpret as we go.
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '20px' }}>
+                Create a construct of "Best in the World" for you in {domain.label}. Think of it like you're creating a character for a movie or a video game. Feel free to reference real people, fictional characters, or make elements up from scratch.
               </p>
 
-              {/* Initial draft textarea — visible before first message */}
+              {/* Doc-style input — before first AI exchange */}
               {avatarMessages.length === 0 && (
-                <textarea
-                  value={avatarDraft}
-                  onChange={e => setAvatarDraft(e.target.value)}
-                  placeholder="Name people, characters, qualities. Don't edit — just pour it out."
-                  rows={4}
-                  style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '10px' }}
-                />
+                <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '10px', overflow: 'hidden', marginBottom: '16px', boxShadow: '0 1px 8px rgba(15,21,35,0.04)' }}>
+                  {/* Doc header bar */}
+                  <div style={{ background: 'rgba(200,146,42,0.04)', borderBottom: '1px solid rgba(200,146,42,0.12)', padding: '10px 18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.16em', color: '#A8721A' }}>AVATAR DRAFT</span>
+                    <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '11px', color: 'rgba(15,21,35,0.35)', fontStyle: 'italic' }}>· {domain.label}</span>
+                  </div>
+
+                  {/* Section 1 */}
+                  <div style={{ padding: '16px 18px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
+                    <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', display: 'block', marginBottom: '6px' }}>
+                      BEST IN THE WORLD IN THE AREA OF {domain.label.toUpperCase()} LOOKS LIKE...
+                    </label>
+                    <textarea
+                      value={avatarDoc?.essence || ''}
+                      onChange={e => setAvatarDoc(d => ({ ...d, essence: e.target.value }))}
+                      placeholder="Describe the qualities, the presence, the way this person operates..."
+                      rows={3}
+                      style={{ width: '100%', padding: '4px 0 12px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', color: '#0F1523', background: 'transparent', border: 'none', outline: 'none', resize: 'none', lineHeight: 1.7 }}
+                    />
+                  </div>
+
+                  {/* Section 2 */}
+                  <div style={{ padding: '16px 18px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
+                    <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', display: 'block', marginBottom: '6px' }}>
+                      PEOPLE AND CHARACTERS FOR REFERENCE
+                    </label>
+                    <textarea
+                      value={avatarDoc?.references || ''}
+                      onChange={e => setAvatarDoc(d => ({ ...d, references: e.target.value }))}
+                      placeholder="Real people, fictional characters, composites... name them and what you're borrowing from each"
+                      rows={3}
+                      style={{ width: '100%', padding: '4px 0 12px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', color: '#0F1523', background: 'transparent', border: 'none', outline: 'none', resize: 'none', lineHeight: 1.7 }}
+                    />
+                  </div>
+
+                  {/* Section 3 */}
+                  <div style={{ padding: '16px 18px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
+                    <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', display: 'block', marginBottom: '6px' }}>
+                      OTHER CHARACTERISTICS
+                    </label>
+                    <textarea
+                      value={avatarDoc?.other || ''}
+                      onChange={e => setAvatarDoc(d => ({ ...d, other: e.target.value }))}
+                      placeholder="Anything else — energy, values, how they move through the world..."
+                      rows={2}
+                      style={{ width: '100%', padding: '4px 0 12px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', color: '#0F1523', background: 'transparent', border: 'none', outline: 'none', resize: 'none', lineHeight: 1.7 }}
+                    />
+                  </div>
+
+                  {/* Doc footer — Update draft button */}
+                  <div style={{ padding: '12px 18px', display: 'flex', justifyContent: 'flex-end' }}>
+                    <button
+                      onClick={() => {
+                        const composed = [
+                          avatarDoc?.essence && `Best in the world in ${domain.label} looks like:\n${avatarDoc.essence}`,
+                          avatarDoc?.references && `People and characters for reference:\n${avatarDoc.references}`,
+                          avatarDoc?.other && `Other characteristics:\n${avatarDoc.other}`,
+                        ].filter(Boolean).join('\n\n')
+                        if (!composed.trim()) return
+                        setAvatarDraft(composed)
+                        sendAvatarMessage(composed)
+                      }}
+                      disabled={thinking || !((avatarDoc?.essence || avatarDoc?.references || avatarDoc?.other))}
+                      style={{ ...btnStyle, opacity: thinking || !((avatarDoc?.essence || avatarDoc?.references || avatarDoc?.other)) ? 0.4 : 1, fontSize: '0.75rem', letterSpacing: '0.08em' }}
+                    >
+                      Update draft
+                    </button>
+                  </div>
+                </div>
               )}
 
-              {/* Conversation */}
+              {/* Conversation — after first AI exchange */}
               {avatarMessages.length > 0 && (
                 <div style={{ marginBottom: '8px' }}>
                   {avatarMessages.map((m, i) => <ChatBubble key={i} msg={m} />)}
@@ -895,22 +958,24 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                 </div>
               )}
 
-              {/* Lock button — shown when AI says canLock, or after 2+ exchanges */}
+              {/* Lock button */}
               {(avatarMessages.some(m => m.canLock) || avatarMessages.length >= 4) && !thinking && (
                 <LockBtn onClick={lockAvatar} label="Lock in my avatar →" />
               )}
 
-              <ChatInput
-                value={avatarInput || avatarDraft}
-                onChange={v => { setAvatarInput(v); if (avatarMessages.length === 0) setAvatarDraft(v) }}
-                onSend={text => {
-                  if (avatarMessages.length === 0) setAvatarDraft(text)
-                  sendAvatarMessage(text)
-                  setAvatarInput('')
-                }}
-                placeholder="Write here, then press Enter or →"
-                disabled={thinking}
-              />
+              {/* Chat input — only after first exchange */}
+              {avatarMessages.length > 0 && (
+                <ChatInput
+                  value={avatarInput}
+                  onChange={v => setAvatarInput(v)}
+                  onSend={text => {
+                    sendAvatarMessage(text)
+                    setAvatarInput('')
+                  }}
+                  placeholder="Respond or refine..."
+                  disabled={thinking}
+                />
+              )}
             </>
           ) : (
             // Avatar locked — show summary
