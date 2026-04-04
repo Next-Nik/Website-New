@@ -38,7 +38,7 @@ const TOOLS = [
     secondary: { label: 'Debrief with Nik', url: '/work-with-nik' },
   },
   {
-    id: 'target-sprint', name: 'Target Sprint', hook: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.',
+    id: 'target-goals', name: 'Target Goals', hook: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.',
     label: 'The operational layer',
     desc: 'The bridge between knowing where you are and arriving somewhere different.',
     detail: 'Pick three domains. Set a meaningful 90-day outcome for each. The tool reverse-engineers the monthly milestones and weekly focus from your destination — and anchors daily TEA so the work compounds. Standalone or linked to The Map.',

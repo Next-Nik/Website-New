@@ -279,7 +279,7 @@ export function HomePage() {
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderBottomColor = 'transparent' }}
               >
                 <span style={{ ...serif, fontSize: '22px', fontWeight: 300, color: isActive ? '#A8721A' : '#0F1523', display: 'block', lineHeight: 1.2, marginBottom: '2px', transition: 'color 0.18s' }}>{s.name}</span>
-                <span style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: isActive ? 'rgba(200,146,42,0.78)' : 'rgba(15,21,35,0.55)', lineHeight: 1.4, display: 'block', transition: 'color 0.18s' }}>{s.question}</span>
+                <span style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: isActive ? 'rgba(200,146,42,0.78)' : 'rgba(15,21,35,0.72)', lineHeight: 1.4, display: 'block', transition: 'color 0.18s' }}>{s.question}</span>
               </div>
             )
           })}

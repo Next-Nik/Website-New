@@ -37,7 +37,7 @@ function getColor(n) {
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const gold  = { color: "#A8721A" }
-const muted = { color: "rgba(15,21,35,0.55)" }
+const muted = { color: "rgba(15,21,35,0.72)" }
 const meta  = { color: "rgba(15,21,35,0.78)" }
 
 // ─── Shared components ────────────────────────────────────────────────────────
@@ -576,7 +576,7 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
           <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
             {[{ key: 'google', label: 'Google Calendar' }, { key: 'apple', label: 'Apple Calendar' }, { key: 'gtasks', label: 'Google Tasks' }].map(t => (
               <button key={t.key} onClick={() => setCalType(t.key)}
-                style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '6px 14px', borderRadius: '20px', border: `1px solid ${calType === t.key ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.2)'}`, background: calType === t.key ? 'rgba(200,146,42,0.08)' : 'transparent', color: calType === t.key ? '#A8721A' : 'rgba(15,21,35,0.55)', cursor: 'pointer' }}>
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '6px 14px', borderRadius: '20px', border: `1px solid ${calType === t.key ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.2)'}`, background: calType === t.key ? 'rgba(200,146,42,0.08)' : 'transparent', color: calType === t.key ? '#A8721A' : 'rgba(15,21,35,0.72)', cursor: 'pointer' }}>
                 {t.label}
               </button>
             ))}
