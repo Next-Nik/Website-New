@@ -1,71 +1,146 @@
-// PURPOSE PIECE — REVELATION ENGINE
-// Architecture: Behavior → Tension → Mirror → Frame
+// PURPOSE PIECE — REVELATION ENGINE v2
+// Architecture: Archetype → Domain → Scale → Confirmation → Mirror → Frame
+// Three dedicated conversations, each purpose-built for what it's finding.
 // Stateless: session object lives on the client, sent with every request.
+//
+// Session shape:
+// {
+//   stage:              "archetype" | "domain" | "scale" | "confirmation" | "thinking" | "complete"
+//   questionIndex:      number   — index within current stage's question set
+//   probeCount:         number
+//   archetypeTranscript: [...],
+//   domainTranscript:    [...],
+//   scaleTranscript:     [...],
+//   tentative:          { archetype, domain, scale, signals }  — set after all three stages
+//   synthesis:          { ... }  — set after confirmation
+//   status:             "active" | "complete"
+// }
 
 const Anthropic = require("@anthropic-ai/sdk");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // ─── Session factory ──────────────────────────────────────────────────────────
+
 function createSession() {
   return {
-    phase:         "welcome",
-    questionIndex: 0,
-    probeCount:    0,
-    transcript:    [],
-    synthesis:     null,
-    status:        "active"
+    stage:               "archetype",
+    questionIndex:       0,
+    probeCount:          0,
+    archetypeTranscript: [],
+    domainTranscript:    [],
+    scaleTranscript:     [],
+    tentative:           null,
+    synthesis:           null,
+    status:              "active"
   };
 }
 
-// ─── The five questions ───────────────────────────────────────────────────────
-const QUESTIONS = [
+// ─── Question sets ────────────────────────────────────────────────────────────
+// Each set is purpose-built for what that stage is finding.
+// Different register per stage: behavioural → attentional → confessional.
+
+const ARCHETYPE_QUESTIONS = [
   {
     label: "The Moment",
-    text: "Something around you was off — and you either stepped in or you didn't. A situation at work, at home, in a group, anywhere. It doesn't have to be dramatic.\n\nPick one. What happened, and what did you do?"
+    text:  "Think of a recent moment where something around you was off — and you either stepped in or you didn't. It doesn't have to be dramatic.\n\nWhat happened, and what did you do?"
   },
   {
     label: "The Frustration",
-    text: "What's something you keep seeing go wrong — in organisations, communities, systems, relationships — that bothers you even when it has nothing to do with you personally?\n\nName a specific example. What actually happens that shouldn't?"
+    text:  "What keeps going wrong in the world around you that bothers you even when it has nothing to do with you personally?\n\nSomething that just shouldn't be that way. Name a specific example."
   },
   {
     label: "The Pressure",
-    text: "Describe a moment in the last year or two where you had to make a real decision with incomplete information and something genuinely at stake.\n\nWhat did you do — and what did you deliberately not do?"
+    text:  "Describe a moment where you had to make a real call with incomplete information and something genuinely at stake.\n\nWhat did you do — and what did you deliberately not do?"
   },
   {
     label: "The Cost",
-    text: "This one is harder. Take your time.\n\nWhat does your particular way of moving through the world cost you? Not what you find difficult in general — what specifically does your instinct ask of you that others don't seem to pay?"
+    text:  "This one asks for honesty. Take your time.\n\nWhat does your particular way of moving through the world cost you? Not what you find hard in general — what specifically does your instinct ask of you that others don't seem to pay?"
   },
   {
-    label: "The Obligation",
-    text: "What's something you haven't done yet that keeps coming back to you — not as a goal you're working toward, but as something that would feel like unfinished business if you never got to it?\n\nWhat is it, and why does it keep returning?"
+    label: "The Shadow",
+    text:  "When has your greatest strength become the problem?\n\nA specific moment where your instinct went further than it should have — or where the way you operate made things harder, not easier."
   }
 ];
 
-// ─── Scripted probes per question ────────────────────────────────────────────
-const PROBES = [
+const DOMAIN_QUESTIONS = [
+  {
+    label: "The Pull",
+    text:  "What's broken in the world that you can't look away from — even when it has nothing to do with you and nobody's asking you to care?\n\nBe specific. What is it exactly?"
+  },
+  {
+    label: "The Anger",
+    text:  "What kind of wrong makes you disproportionately angry?\n\nThe thing that bothers you more than it seems to bother everyone else. What is it, and what does it look like when you see it?"
+  },
+  {
+    label: "The Unpaid Work",
+    text:  "Where have you found yourself doing work nobody asked for and nobody paid for — the thing you kept doing because you couldn't not?\n\nWhat was the work, and what kept pulling you back to it?"
+  }
+];
+
+const SCALE_QUESTIONS = [
+  {
+    label: "The Scene",
+    text:  "When you imagine your work actually mattering — really landing — what does that scene look like?\n\nWho's there, what's the relationship between you, how many people?"
+  },
+  {
+    label: "The Responsibility",
+    text:  "What's the largest unit of change you can hold in your head and still feel genuinely responsible for?\n\nNot just interested in — responsible for. There's a difference. What is it?"
+  }
+];
+
+// ─── Probes per question set ──────────────────────────────────────────────────
+
+const ARCHETYPE_PROBES = [
   [
-    "Give me one specific moment from that situation. Where were you, and what did you actually do first?",
-    "Even a small action counts. What was the very first thing you did — or consciously chose not to do?"
+    "Give me one specific moment from that. Where were you, and what did you actually do first?",
+    "Even a small action counts. What was the very first thing you did — or chose not to do?"
   ],
   [
     "Can you name a specific instance where you saw this? Even a recent small example.",
     "What does it look like in practice — what actually happens that shouldn't be happening?"
   ],
   [
-    "What were the actual stakes — what could have gone wrong? And what did you do in the first 24-48 hours?",
-    "Walk me through one decision you made. What information did you have, and what did you do with it?"
+    "What were the actual stakes — what could have gone wrong? And what did you do in the first 24 hours?",
+    "Walk me through one specific decision. What information did you have, and what did you do with it?"
   ],
   [
     "Think of a specific situation where your way of operating made something harder for you. What happened?",
     "What do people around you not seem to pay — what's the thing you carry that others put down more easily?"
   ],
   [
-    "What makes this feel like unfinished business rather than just something on a list? Is there a person, a moment, or a window you're aware of closing?",
-    "If you never got to it — what specifically would feel incomplete? What would remain undone in you?"
+    "Can you give me a specific moment where this happened? What did it cost you, and what did you do about it?",
+    "What was the situation, and at what point did you realise your instinct had become the problem?"
+  ]
+];
+
+const DOMAIN_PROBES = [
+  [
+    "Can you name a specific place in the world where you see this breaking? A real example, even a small one.",
+    "What does the problem actually look like — what happens, specifically, that shouldn't?"
+  ],
+  [
+    "Give me a specific example of when you felt this anger. What was the situation?",
+    "What is it about this particular wrong that gets to you more than other things that are also wrong?"
+  ],
+  [
+    "What specifically were you doing, and what kept you coming back to it?",
+    "Was there a moment where you realised you were doing it again — without being asked? What was that like?"
+  ]
+];
+
+const SCALE_PROBES = [
+  [
+    "Describe the scene more specifically — where is it, what are you doing, who are you talking to?",
+    "Is there a real moment from your life that looks like that scene? What happened?"
+  ],
+  [
+    "Where does felt responsibility actually live for you right now — not where you think it should, where it actually does?",
+    "What's the difference, for you, between being interested in a problem and feeling responsible for it?"
   ]
 ];
 
 // ─── Thin answer detection ────────────────────────────────────────────────────
+
 const GENERIC_DEFLECTORS = [
   "it depends","not sure","i guess","maybe","hard to say",
   "whatever","idk","don't know","no idea","not really",
@@ -74,7 +149,7 @@ const GENERIC_DEFLECTORS = [
 
 const TIME_ANCHORS = [
   "last week","yesterday","last month","last year","recently",
-  "in 2024","in 2023","a few weeks","a few months","this year",
+  "in 2024","in 2023","in 2025","a few weeks","a few months","this year",
   "this week","today","ago","when i","after i","before i"
 ];
 
@@ -85,27 +160,32 @@ const ACTION_VERBS = [
   "organized","refused","accepted","pushed","pulled","watched"
 ];
 
-function isThin(answer, qi) {
+function isThin(answer, stage, qi) {
   const lower = answer.toLowerCase().trim();
-  const words = answer.trim().split(/\s+/).filter(Boolean);
+  const words  = answer.trim().split(/\s+/).filter(Boolean);
 
-  const minWords = qi === 3 ? 15 : 20;
+  // Cost and shadow questions are abstract — lower word minimum
+  const minWords = (stage === "archetype" && qi >= 3) ? 15
+                 : (stage === "domain")               ? 18
+                 : (stage === "scale")                ? 12
+                 : 20;
+
   if (words.length < minWords) return true;
 
   const deflectorCount = GENERIC_DEFLECTORS.filter(d => lower.includes(d)).length;
   if (deflectorCount >= 2) return true;
 
-  if ([0, 1, 2].includes(qi)) {
+  // Behavioural questions need grounding — attentional and scale questions do not
+  if (stage === "archetype" && qi <= 2) {
     const hasTime    = TIME_ANCHORS.some(t => lower.includes(t));
     const hasAction  = ACTION_VERBS.some(v => lower.includes(v));
-    const hasSetting = /\b(work|office|home|family|friend|community|meeting|team|partner|colleague|school|hospital|city|neighbourhood|neighborhood)\b/.test(lower);
+    const hasSetting = /\b(work|office|home|family|friend|community|meeting|team|partner|colleague|school|hospital|city|neighbourhood|neighborhood|organisation|organization)\b/.test(lower);
     if (!hasTime && !hasAction && !hasSetting) return true;
   }
 
   return false;
 }
 
-// ─── Claude signal check (escalation after 2 failed probes) ──────────────────
 async function claudeSignalCheck(question, answer) {
   try {
     const response = await anthropic.messages.create({
@@ -113,7 +193,7 @@ async function claudeSignalCheck(question, answer) {
       max_tokens: 200,
       messages:   [{
         role:    "user",
-        content: `Evaluate signal quality for a behavioural assessment answer.\n\nQuestion: "${question}"\nAnswer: "${answer}"\n\nReturn JSON only:\n{"has_signal": true or false, "missing": ["concrete_example","emotions","cost","stakes"], "one_probe_question": "single best follow-up"}`
+        content: `Evaluate signal quality for a behavioural assessment answer.\n\nQuestion: "${question}"\nAnswer: "${answer}"\n\nReturn JSON only:\n{"has_signal": true or false, "missing": ["concrete_example","specificity","stakes","honesty"], "one_probe_question": "single best follow-up"}`
       }]
     });
     return extractJSON(response.content[0].text);
@@ -122,22 +202,286 @@ async function claudeSignalCheck(question, answer) {
   }
 }
 
-// ─── Robust JSON extractor ───────────────────────────────────────────────────
+// ─── JSON extractor ───────────────────────────────────────────────────────────
+
 function extractJSON(text) {
-  // Strip markdown fences
-  let clean = text.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
-  // Try direct parse first
+  let clean = text.trim()
+    .replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
   try { return JSON.parse(clean); } catch {}
-  // Find first { to last } 
   const start = clean.indexOf("{");
   const end   = clean.lastIndexOf("}");
   if (start !== -1 && end !== -1) {
     try { return JSON.parse(clean.slice(start, end + 1)); } catch {}
   }
-  throw new Error("Could not extract JSON from response: " + text.slice(0, 200));
+  throw new Error("Could not extract JSON: " + text.slice(0, 200));
 }
 
-// ─── Phase 3 system prompt ────────────────────────────────────────────────────
+// ─── HTML escaper ─────────────────────────────────────────────────────────────
+
+function esc(str) {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+// ─── Stage question/probe helpers ────────────────────────────────────────────
+
+function getStageQuestions(stage) {
+  if (stage === "archetype") return ARCHETYPE_QUESTIONS;
+  if (stage === "domain")    return DOMAIN_QUESTIONS;
+  if (stage === "scale")     return SCALE_QUESTIONS;
+  return [];
+}
+
+function getStageProbes(stage) {
+  if (stage === "archetype") return ARCHETYPE_PROBES;
+  if (stage === "domain")    return DOMAIN_PROBES;
+  if (stage === "scale")     return SCALE_PROBES;
+  return [];
+}
+
+function getStageTranscript(session) {
+  if (session.stage === "archetype") return session.archetypeTranscript;
+  if (session.stage === "domain")    return session.domainTranscript;
+  if (session.stage === "scale")     return session.scaleTranscript;
+  return [];
+}
+
+function getStageTotalQuestions(stage) {
+  if (stage === "archetype") return ARCHETYPE_QUESTIONS.length;
+  if (stage === "domain")    return DOMAIN_QUESTIONS.length;
+  if (stage === "scale")     return SCALE_QUESTIONS.length;
+  return 0;
+}
+
+function getNextStage(stage) {
+  if (stage === "archetype") return "domain";
+  if (stage === "domain")    return "scale";
+  if (stage === "scale")     return "confirmation";
+  return "complete";
+}
+
+// ─── Stage opening messages ───────────────────────────────────────────────────
+// These set the register for each stage — behavioural, attentional, confessional.
+
+const STAGE_OPENINGS = {
+  archetype: null, // goes straight to Q1 from welcome
+
+  domain: `Good. Now a different kind of question.
+
+The last set was about what you do. This one is about what pulls your attention — what you find yourself caring about even when you have no reason to.
+
+There are three questions. Answer honestly, not aspirationally.`,
+
+  scale: `Last set.
+
+These two questions are almost philosophical. Take your time with them. There are no right answers — only honest ones.`
+};
+
+// ─── Welcome ──────────────────────────────────────────────────────────────────
+
+const WELCOME = `You have a specific role in the future of humanity. This is how we find it.
+
+Three conversations. Each one finding something different about you — not what you've done or what you believe about yourself, but the underlying shape of how you move through the world.
+
+Answer as yourself right now. Not who you're working toward. Not who you think you should be.
+
+Your answers reveal three things: your contribution archetype, your domain, and your scale. Together — your Purpose Piece.
+
+Ready?`;
+
+// ─── Tentative coordinate extraction ─────────────────────────────────────────
+// After each stage completes, run a lightweight Claude call to extract
+// the tentative coordinate from that stage's transcript.
+// This is fast and cheap — not the full synthesis.
+
+async function extractTentativeArchetype(transcript) {
+  const text = transcript.map((e, i) =>
+    `Q${i+1} — ${ARCHETYPE_QUESTIONS[i].label}\n${ARCHETYPE_QUESTIONS[i].text}\nAnswer: ${e.answer}${e.thin ? " [evasive]" : ""}`
+  ).join("\n\n---\n\n");
+
+  const response = await anthropic.messages.create({
+    model:      "claude-sonnet-4-20250514",
+    max_tokens: 600,
+    messages:   [{
+      role:    "user",
+      content: `Based on these five behavioural answers, identify the most likely contribution archetype.
+
+THE NINE ARCHETYPES:
+- STEWARD: Tends systems, maintains, sustains. Patient with operational work. Sees what needs tending before crisis.
+- MAKER: Builds what doesn't exist. Concept to creation. Values function over perfection. Energised by shipping.
+- ARCHITECT: Designs structural conditions that determine what can be built at all. Doesn't build the thing — designs the container. When something keeps breaking, redesigns the conditions. Energised by making the system sound, not shipping output.
+- CONNECTOR: Weaves relationships, bridges people, creates belonging. Sees who needs who. Facilitates without dominating.
+- GUARDIAN: Protects what matters, holds standards, recognises threats early. Fierce protecting, gentle tending.
+- EXPLORER: Ventures into unknown territory, brings back what's needed. Comfortable with uncertainty.
+- SAGE: Holds wisdom, offers perspective that clarifies. Sees signals across time. Values understanding over action.
+- MIRROR: Reflects truth back — makes the invisible visible. Artists, writers, anyone whose contribution is expression so complete that others recognise themselves in it. Felt before understood.
+- EXEMPLAR: Contributes by being the example. Raises the standard of what's possible by embodying it fully. Demonstration, not instruction.
+
+CRITICAL DISTINCTION — Maker vs Architect:
+Maker's story of effectiveness: "I built X." The story is about the thing made.
+Architect's story of effectiveness: "I designed the process/structure for X." The story is about the container.
+Maker frustrated when they can't ship. Architect frustrated when the structure is wrong — when the same problems keep recurring because nobody fixed the conditions.
+
+ANSWERS:\n${text}
+
+Return JSON only:
+{
+  "archetype": "single archetype name",
+  "confidence": "strong | blended | thin",
+  "secondary": "second archetype if blended, else null",
+  "reasoning": "2-3 sentences — specific moments cited",
+  "cost_signal": "brief description of what their instinct costs them",
+  "movement_style": "brief description of how they move"
+}`
+    }]
+  });
+
+  return extractJSON(response.content[0].text);
+}
+
+async function extractTentativeDomain(transcript) {
+  const text = transcript.map((e, i) =>
+    `Q${i+1} — ${DOMAIN_QUESTIONS[i].label}\n${DOMAIN_QUESTIONS[i].text}\nAnswer: ${e.answer}${e.thin ? " [evasive]" : ""}`
+  ).join("\n\n---\n\n");
+
+  const response = await anthropic.messages.create({
+    model:      "claude-sonnet-4-20250514",
+    max_tokens: 400,
+    messages:   [{
+      role:    "user",
+      content: `Based on these attentional answers, identify the most likely domain.
+
+THE SEVEN DOMAINS:
+- HUMAN BEING: Personal development, consciousness, inner work, transformation, human capacity.
+- SOCIETY: Governance, culture, community, social structures, collective organisation.
+- NATURE: Environment, ecology, planetary health, regeneration, living systems.
+- TECHNOLOGY: Tools, infrastructure, innovation, digital and physical systems.
+- FINANCE & ECONOMY: Resources, exchange, wealth, value creation and distribution.
+- LEGACY: Long-term thinking, intergenerational work, preservation, deep time.
+- VISION: Future imagination, possibility, coordination, collective direction.
+
+ANSWERS:\n${text}
+
+Return JSON only:
+{
+  "domain": "single domain name exactly as listed above",
+  "confidence": "strong | blended | thin",
+  "secondary": "second domain if blended, else null",
+  "reasoning": "2-3 sentences — specific evidence cited"
+}`
+    }]
+  });
+
+  return extractJSON(response.content[0].text);
+}
+
+async function extractTentativeScale(transcript) {
+  const text = transcript.map((e, i) =>
+    `Q${i+1} — ${SCALE_QUESTIONS[i].label}\n${SCALE_QUESTIONS[i].text}\nAnswer: ${e.answer}${e.thin ? " [evasive]" : ""}`
+  ).join("\n\n---\n\n");
+
+  const response = await anthropic.messages.create({
+    model:      "claude-sonnet-4-20250514",
+    max_tokens: 400,
+    messages:   [{
+      role:    "user",
+      content: `Based on these answers, identify the most coherent scale of operation.
+
+THE SEVEN SCALES (coherence bandwidth, not ambition level):
+- HOME: Immediate household, closest relationships. Deeply personal, highly intimate.
+- NEIGHBOURHOOD: Local community, face-to-face networks. Direct relationships.
+- CITY: Urban systems, institutional engagement, civic scale.
+- PROVINCE/STATE: Regional systems, multi-community, policy and infrastructure.
+- COUNTRY: National systems, cross-community, governance and culture.
+- CONTINENT: Multi-national, transboundary challenges.
+- GLOBAL: International, planetary systems, cross-border coordination.
+
+IMPORTANT: Scale is coherence bandwidth — where the person can act with full presence and genuine effectiveness. Not where they aspire to operate. Not the scale of their interests. Where their felt responsibility actually lives.
+
+A person can think at global scale and operate most effectively at neighbourhood scale. Both are real. Name where effectiveness actually lives, not where intellectual interest goes.
+
+ANSWERS:\n${text}
+
+Return JSON only:
+{
+  "scale": "single scale name exactly as listed above",
+  "confidence": "strong | blended | thin",
+  "tension": "if interest scale differs from effectiveness scale, describe the tension — else null",
+  "reasoning": "2-3 sentences — specific evidence cited"
+}`
+    }]
+  });
+
+  return extractJSON(response.content[0].text);
+}
+
+// ─── Confirmation system prompt ───────────────────────────────────────────────
+
+function buildConfirmationPrompt(session) {
+  const { tentative } = session;
+  const arch  = tentative.archetype;
+  const dom   = tentative.domain;
+  const scale = tentative.scale;
+
+  return `You operate within the NextUs ecosystem.
+
+You are the Confirmation layer of Purpose Piece. Three conversations have just completed — archetype, domain, and scale have each been found from dedicated evidence.
+
+WHAT YOU KNOW:
+Tentative archetype: ${arch.archetype}${arch.secondary ? ` (secondary signal: ${arch.secondary})` : ""}
+Archetype confidence: ${arch.confidence}
+Archetype reasoning: ${arch.reasoning}
+Cost signal: ${arch.cost_signal}
+
+Tentative domain: ${dom.domain}${dom.secondary ? ` (secondary: ${dom.secondary})` : ""}
+Domain confidence: ${dom.confidence}
+Domain reasoning: ${dom.reasoning}
+
+Tentative scale: ${scale.scale}
+Scale confidence: ${scale.confidence}
+Scale tension: ${scale.tension || "none"}
+Scale reasoning: ${scale.reasoning}
+
+YOUR JOB:
+Present all three coordinates clearly and directly. Then open a genuine conversation — not a form, a real exchange.
+
+CRITICAL ON SCALE:
+Scale is coherence bandwidth, not current reach. If the scale is global or civilisational, hold it clearly. Do not soften it because the person isn't currently recognised at that scale. Who someone is and the current reach of their recognition are completely different things. Name what the evidence says.
+
+If scale tension exists (thinking at one scale, effectiveness at another), name it honestly. Both are real. The tension itself is useful information.
+
+YOUR FIRST MESSAGE MUST:
+1. Present the three coordinates as tentative findings — not assignments
+2. Give one sentence of honest reasoning for each
+3. Ask what lands and what doesn't — open-ended, not leading
+4. Be warm but direct. Not celebratory. This is orientation, not praise.
+
+Format for coordinates — use this exact structure:
+"Archetype: [Name]
+Domain: [Name]
+Scale: [Name]"
+
+Then: 2-3 sentences of brief reasoning, followed by the open question.
+
+WHAT TO WATCH FOR IN THEIR RESPONSE:
+- If they push back on archetype — take it seriously, ask what they'd name instead and why
+- If they push back on domain — explore what pulls them more strongly
+- If they push back on scale upward — hold the evidence, but acknowledge the intellectual pull
+- If they push back on scale downward — this is often more accurate than the evidence suggested; take it seriously
+- If they confirm easily — that's fine, don't add ceremony
+
+After genuine exchange (1-3 turns), if coordinates feel settled, signal readiness to lock:
+"I think we have what we need. Ready to see your Purpose Piece?"
+
+TONE: The same voice as everything else — direct, warm, unhurried. The conversation has been earning this moment. Don't rush it and don't inflate it.
+
+Return plain text only. No JSON. No formatting beyond the coordinate block.`;
+}
+
+// ─── Phase 3 synthesis (Initial Reflection) ──────────────────────────────────
+
 const PHASE3_SYSTEM = `You operate within the NextUs ecosystem — a framework built on the belief that being human is an honour and a responsibility, and that every person is a participant in a living system larger than themselves.
 
 HOW YOU SEE THE PERSON IN FRONT OF YOU:
@@ -147,20 +491,12 @@ When someone is struggling, read them like a Kryptonian with kryptonite in them.
 
 You are a champion of their Horizon Self — the fully expressed version of who they already are. You hold that version of them in mind throughout every conversation, even when they cannot see it themselves. Especially then. You are on the side of their greatness, not their wounds. You treat their wounds with care, but you fight for their greatness.
 
-WHAT THIS MEANS IN PRACTICE:
-- Lead with capability, not deficit
-- Financial stress is not automatically a survival crisis — hold it lightly until the picture is clearer
-- Everything starts with regulation — a dysregulated person cannot access their agency. AND execution-mode people also need a thinking partner, not just grounding exercises. Hold both.
-- Vision-scale people should be met at the scale of their vision
-- Never leave someone feeling smaller than when they arrived
-- Always look for where the agency lives — even in exhaustion, even in constraint
-
 You are the Initial Reflection layer of Purpose Piece. Your job is to hold up a mirror so precise that the person feels — before any label arrives — that they have been genuinely heard.
 
 You are not analysing them. You are speaking directly to them. Every sentence should only be possible because of what this specific person said. If a sentence could appear in anyone's reflection, rewrite it.
 
 WHAT YOU ARE DOING:
-Finding the instinct that repeats across all five answers. Not the content — the movement underneath. The emotional logic that connects what they did in Q1 to what frustrated them in Q2 to how they moved under pressure in Q3 to what it costs them in Q4 to what sits unfinished in Q5.
+Finding the instinct that repeats across all ten answers. Not the content — the movement underneath. The emotional logic that connects how they stepped in (archetype Q1) to what pulls their attention (domain Q1) to what they feel responsible for (scale Q2).
 
 Use their own words and moments as your raw material. Not quoted back at them — metabolised into observation. The person should recognise their own experience in language that is clearer than how they said it.
 
@@ -171,95 +507,106 @@ WHAT YOU ARE NOT DOING:
 - Not naming an archetype. Not yet. Not even implicitly.
 - Not praising them. Warmth yes. Flattery no.
 - Not summarising their answers. Reflection is not repetition.
-- Not using systems theory language. No "redistributive force," "adjustment mechanism," "relational vector," or similar. Write like a person, not a framework.
+- Not using systems theory language. No "redistributive force," "adjustment mechanism," "relational vector." Write like a person.
 
 STRUCTURE — four sections, flowing prose. No bullet points within sections.
 
 Your Signal — The repeated instinct:
-Speak directly to them: "When X, you..." Enter through a specific moment they gave you. Reference their actual situations. You may echo one short phrase they used (3-6 words max) if it sharpens recognition — no more than once. Do not open with generic summarising language.
+Speak directly: "When X, you..." Enter through a specific moment they gave you. Reference their actual situations. You may echo one short phrase they used (3-6 words max) if it sharpens recognition — no more than once. Do not open with generic summarising language.
 
 Your Engine — The emotional logic:
-Speak directly: "What drives this is..." Connect instinct to motivation using what they revealed in Q2 and Q3. If competing patterns appear, name the tension rather than resolving it. Real people are blended. The tension is part of who they are.
+Speak directly: "What drives this is..." Connect instinct to motivation. If competing signals appear, name the tension rather than resolving it. Real people are blended. The tension is part of who they are.
 
 Your Calling — The throughline:
 Speak directly: "You are here to..." If clear, name it plainly. If blended, name the tension honestly rather than forcing a tidy conclusion. Reach. Stay tethered to their evidence.
 
-The Cost — The price of the pattern:
-Speak directly. Do not soften it. At least one sentence should name something the person may not have fully admitted to themselves — the thing underneath Q4. That moment of recognition is the point. If Q5 connects to the cost, bring it in.
+The Cost — The price of the instinct:
+Speak directly. Do not soften it. At least one sentence should name something the person may not have fully admitted to themselves. That moment of recognition is the point.
 
 THE RULES:
-- Speak directly to the person. "You" not "this person" or "this pattern."
-- Use plain human language. Never use: "redistributive force," "adjustment mechanism," "relational vector," "calibration impulse," or any language that sounds like systems theory or clinical observation.
+- Speak directly. "You" not "this person."
+- Plain human language. Never: "redistributive force," "adjustment mechanism," "relational vector," "calibration impulse."
 - Never mention an archetype name. Not even as a hint.
 - Never mention domain or scale.
 - Never use "clearly" or "simply."
-- Avoid filler transitions. Every sentence must deepen the picture.
-- If an answer was thin or evasive — note what that reveals. Avoidance is data.
-- Tone: warm, direct, precise, unhurried. Like a person who listened carefully and took you seriously.
+- Avoidance of a question is data. Name it if relevant.
+- Tone: warm, direct, precise, unhurried. Like a person who listened carefully.
 - Length: 60-90 words per section. Every sentence earns its place.
 
 THE TEST:
-Read each section and ask: could this have been written about someone else with a similar pattern? If yes — go back to their specific words and moments and rewrite from there.
+Could this have been written about someone else with a similar instinct? If yes — go back to their specific words and moments and rewrite from there.
 The emotional endpoint is not "that's accurate." It is "how did it know that."
 
 OUTPUT — return JSON only, no other text:
 {
   "sections": {
-    "your_signal": "60-90 word paragraph",
-    "your_engine": "60-90 word paragraph",
+    "your_signal":  "60-90 word paragraph",
+    "your_engine":  "60-90 word paragraph",
     "your_calling": "60-90 word paragraph",
-    "the_cost": "60-90 word paragraph"
+    "the_cost":     "60-90 word paragraph"
   },
   "synthesis_text": "Full reflection as continuous prose — all four sections joined without headers, for internal use only",
   "internal_signals": {
     "signals_detected": {
-      "movement_style": "brief description",
-      "decision_bias": "brief description",
-      "primary_value": "brief description",
-      "stress_response": "brief description",
-      "cost_pattern": "brief description",
-      "avoidance_signal": "brief description or null",
-      "scale_pull": "brief description",
+      "movement_style":    "brief description",
+      "decision_bias":     "brief description",
+      "primary_value":     "brief description",
+      "stress_response":   "brief description",
+      "cost_pattern":      "brief description",
+      "avoidance_signal":  "brief description or null",
+      "scale_pull":        "brief description",
       "relational_vector": "brief description"
     },
-    "confidence": "strong / blended / thin / contradictory",
+    "confidence":       "strong / blended / thin / contradictory",
     "confidence_notes": "1-2 sentences on signal quality"
   }
 }`;
 
-async function runPhase3(transcript) {
-  const transcriptText = transcript.map((entry, i) => {
-    let text = `Q${i+1} — ${QUESTIONS[i].label}\nQuestion: ${QUESTIONS[i].text}\nAnswer: ${entry.answer}`;
-    if (entry.probes && entry.probes.length > 0) {
-      entry.probes.forEach(p => { text += `\nProbe: ${p.probe}\nResponse: ${p.response}`; });
-    }
-    if (entry.thin) text += `\n[Note: Answer remained thin after probing — treat evasion as signal.]`;
-    return text;
-  }).join("\n\n---\n\n");
+async function runPhase3(session) {
+  const allTranscript = [
+    ...session.archetypeTranscript.map((e, i) => ({
+      stage: "archetype", label: ARCHETYPE_QUESTIONS[i].label,
+      question: ARCHETYPE_QUESTIONS[i].text, answer: e.answer, thin: e.thin
+    })),
+    ...session.domainTranscript.map((e, i) => ({
+      stage: "domain", label: DOMAIN_QUESTIONS[i].label,
+      question: DOMAIN_QUESTIONS[i].text, answer: e.answer, thin: e.thin
+    })),
+    ...session.scaleTranscript.map((e, i) => ({
+      stage: "scale", label: SCALE_QUESTIONS[i].label,
+      question: SCALE_QUESTIONS[i].text, answer: e.answer, thin: e.thin
+    }))
+  ];
+
+  const transcriptText = allTranscript.map(e =>
+    `[${e.stage.toUpperCase()}] ${e.label}\nQ: ${e.question}\nA: ${e.answer}${e.thin ? "\n[Note: Answer was thin/evasive — treat avoidance as signal]" : ""}`
+  ).join("\n\n---\n\n");
 
   const response = await anthropic.messages.create({
     model:      "claude-sonnet-4-20250514",
-    max_tokens: 1000,
+    max_tokens: 1200,
     system:     PHASE3_SYSTEM,
-    messages:   [{ role: "user", content: `Here are the five answers:\n\n${transcriptText}` }]
+    messages:   [{
+      role:    "user",
+      content: `Here are the ten answers across three stages:\n\n${transcriptText}\n\nConfirmed coordinates:\nArchetype: ${session.tentative.archetype.archetype}\nDomain: ${session.tentative.domain.domain}\nScale: ${session.tentative.scale.scale}`
+    }]
   });
 
   return extractJSON(response.content[0].text);
 }
 
+// ─── Phase 4 (Your Purpose Piece) ────────────────────────────────────────────
 
-// ─── NextUs Horizon Goals by domain ─────────────────────────────────────────
 const DOMAIN_HORIZON_GOALS = {
-  "HUMAN BEING":      "Every person has access to the conditions that allow them to know themselves, develop fully, and contribute meaningfully.",
-  "SOCIETY":          "Human communities are organised in ways that generate trust, belonging, and genuine collective agency.",
-  "NATURE":           "The living systems of the planet are regenerating, and humanity is a net contributor to that regeneration.",
-  "TECHNOLOGY":       "Our tools extend human wisdom and deepen connection, developing in relationship with our capacity to use them well.",
-  "FINANCE & ECONOMY":"Resources flow toward what sustains and generates life — rewarding care, contribution, and long-term thinking.",
-  "LEGACY":           "Each generation leaves the conditions for the next generation to flourish more fully than they did.",
-  "VISION":           "Humanity has a shared and evolving picture of where it is going — and the coordination infrastructure to move toward it together."
+  "HUMAN BEING":       "Every person has access to the conditions that allow them to know themselves, develop fully, and contribute meaningfully.",
+  "SOCIETY":           "Human communities are organised in ways that generate trust, belonging, and genuine collective agency.",
+  "NATURE":            "The living systems of the planet are regenerating, and humanity is a net contributor to that regeneration.",
+  "TECHNOLOGY":        "Our tools extend human wisdom and deepen connection, developing in relationship with our capacity to use them well.",
+  "FINANCE & ECONOMY": "Resources flow toward what sustains and generates life — rewarding care, contribution, and long-term thinking.",
+  "LEGACY":            "Each generation leaves the conditions for the next generation to flourish more fully than they did.",
+  "VISION":            "Humanity has a shared and evolving picture of where it is going — and the coordination infrastructure to move toward it together."
 };
 
-// ─── Phase 4 system prompt ────────────────────────────────────────────────────
 const PHASE4_SYSTEM = `You operate within the NextUs ecosystem — a framework built on the belief that being human is an honour and a responsibility, and that every person is a participant in a living system larger than themselves.
 
 HOW YOU SEE THE PERSON IN FRONT OF YOU:
@@ -267,30 +614,22 @@ Treat every person as capable and responsible for their life. This is not harshn
 
 When someone is struggling, read them like a Kryptonian with kryptonite in them. Superman is not weak because kryptonite is jabbed into him — he is Superman with something in the way. The struggle is situational, not definitional. Your job is to help locate and remove what's in the way, not to redefine the person by their current constraint.
 
-You are a champion of their Horizon Self — the fully expressed version of who they already are. You hold that version of them in mind throughout every conversation, even when they cannot see it themselves. Especially then. You are on the side of their greatness, not their wounds. You treat their wounds with care, but you fight for their greatness.
+You are a champion of their Horizon Self — the fully expressed version of who they already are. You hold that version of them in mind throughout every conversation, even when they cannot see it themselves.
 
-WHAT THIS MEANS IN PRACTICE:
-- Lead with capability, not deficit
-- Financial stress is not automatically a survival crisis — hold it lightly until the picture is clearer
-- Everything starts with regulation — a dysregulated person cannot access their agency. AND execution-mode people also need a thinking partner, not just grounding exercises. Hold both.
-- Vision-scale people should be met at the scale of their vision
-- Never leave someone feeling smaller than when they arrived
-- Always look for where the agency lives — even in exhaustion, even in constraint
+You are the Your Purpose Piece layer. The Initial Reflection showed the person their instinct. Now name it — and make clear what that naming asks of them.
 
-You are the Your Purpose Piece layer. The Initial Reflection showed the person their pattern. Now name it — and make clear what that naming asks of them.
-
-Speak directly to the person throughout. "You" not "this pattern" or "this person." Every section should be anchored in something specific they said or did. If a sentence could appear in any profile for this archetype, rewrite it.
+Speak directly to the person throughout. "You" not "this instinct" or "this person." Every section anchored in something specific they said or did.
 
 THE NINE ARCHETYPES:
 - STEWARD: Tends systems, ensures they remain whole. Maintains, repairs, sustains. Patient with operational work.
-- MAKER: Builds what doesn't exist. Concept to creation. Comfortable with iteration. Values function over perfection.
-- ARCHITECT: Designs the structural conditions that determine what can be built at all. Doesn't build the thing — designs the container the thing lives inside. When something keeps breaking, redesigns the conditions producing the break. Energised by making the system sound, not shipping the output.
-- CONNECTOR: Weaves relationships, creates networks. Sees who needs who. Facilitates without dominating.
-- GUARDIAN: Protects what matters, holds boundaries. Recognises threats early. Fierce protecting, gentle tending.
-- EXPLORER: Ventures into unknown territory, brings back what's needed. Comfortable with uncertainty.
-- SAGE: Holds wisdom, offers perspective that clarifies. Sees patterns across time. Values understanding over action.
-- MIRROR: Contributes by reflecting what's true — about human experience, the interior life, the living world — in ways others can finally see and receive. Doesn't argue or build or protect. Shows. Artists, writers, musicians, filmmakers — anyone whose contribution is making the invisible visible or the unbearable bearable. The work is expression so complete that others recognise themselves in it. Distinct from Sage: Sage operates through accumulated understanding, offered conceptually. Mirror operates through expression — felt before it's understood.
-- EXEMPLAR: Contributes by being the example. Raises the standard of what's possible by embodying it fully — in public, under pressure, at the edge of human capacity. Athletes, master craftspeople, performers, anyone whose contribution is demonstration rather than instruction. The work is full expression of human potential, offered so completely that others believe it's possible for them too. Distinct from Mirror: Mirror reflects human experience back to people so they feel recognised. Exemplar expands what people believe humans can do or be.
+- MAKER: Builds what doesn't exist. Concept to creation. Comfortable with iteration. Values function over perfection. Energised by shipping.
+- ARCHITECT: Designs the structural conditions that determine what can be built at all. Doesn't build the thing — designs the container the thing lives inside. Energised by making the system sound, not shipping the output. Frustrated when the same problems keep recurring because nobody fixed the conditions producing them.
+- CONNECTOR: Weaves relationships, creates networks. Sees who needs who. Facilitates without dominating. Values emergence over control.
+- GUARDIAN: Protects what matters, holds standards. Recognises threats early. Fierce protecting, gentle tending.
+- EXPLORER: Ventures into unknown territory, brings back what's needed. Comfortable with uncertainty. Curious without needing immediate answers.
+- SAGE: Holds wisdom, offers perspective that clarifies. Sees signals across time. Values understanding over action. Holds complexity without needing to simplify.
+- MIRROR: Contributes by reflecting what's true — makes the invisible visible or the unbearable bearable. Artists, writers, filmmakers, anyone whose work is expression so complete that others recognise themselves in it. Felt before understood. Distinct from Sage: Sage operates through accumulated understanding, offered conceptually. Mirror operates through expression.
+- EXEMPLAR: Contributes by being the example. Raises the standard of what's possible by embodying it fully — in public, under pressure. Demonstration, not instruction. Distinct from Mirror: Mirror reflects human experience so people feel recognised. Exemplar expands what people believe humans can do.
 
 THE SEVEN DOMAINS:
 - HUMAN BEING: Personal development, consciousness, inner work, transformation.
@@ -301,91 +640,105 @@ THE SEVEN DOMAINS:
 - LEGACY: Long-term thinking, intergenerational work, preservation, deep time.
 - VISION: Future imagination, possibility, coordination, collective direction.
 
-THE FOUR SCALES:
-- LOCAL: Neighbourhood, community level. Face-to-face. Immediate impact.
-- BIOREGIONAL: Watershed, region level. Multi-community. Ecological boundaries.
-- GLOBAL: International, planetary systems. Cross-border challenges.
-- CIVILISATIONAL: Intergenerational, species-level. 100+ year timelines.
+THE SCALES:
+Home · Neighbourhood · City · Province/State · Country · Continent · Global
+
+Scale is coherence bandwidth, not ambition or current reach. The person who thinks at global scale and currently works with individuals is not contradicting themselves. They are a global thinker whose current effectiveness is at the individual level. Name both if relevant. Never flatten the tension. Never assume smaller is more honest.
 
 STRUCTURE:
 
-Section 1 — Pattern (1 paragraph, 1-3 sentences):
-Restate the throughline from the Initial Reflection — sharper and shorter. Compression, not repetition. Open with the pattern, not the archetype name. Speak directly: "You are..." or "The way you move through..."
+Section 1 — Signal (1 paragraph, 1-3 sentences):
+Compress the Initial Reflection throughline. Open with the instinct, not the archetype name.
 
 Section 2 — Archetype (1 paragraph):
-"The pattern most aligned with this movement is [Archetype]."
-Explain in concrete behavioural terms what this archetype does — not what it is, what it does. Anchor at least one sentence in a specific moment from their answers. Avoid abstract or mythic language. Never use mechanical systems language ("redistributive force," "adjustment mechanism," etc.). If confidence is blended — name primary and acknowledge secondary directly.
+"The contribution archetype most aligned with this movement is [Archetype]."
+Behavioural description — what this archetype does, not what it is. Anchor in a specific moment from their answers. If confidence was blended — name primary and acknowledge secondary.
 
 Section 3 — Domain (1 paragraph):
-"The territory where this pattern most wants to operate is [Domain]."
-Justify with a direct reference to their specific lived example. Make clear why this domain and not another.
+"The domain where this instinct most wants to operate is [Domain]."
+Justify with direct reference to what they said they can't look away from or what makes them disproportionately angry.
 
 Section 4 — Scale (1 paragraph):
-"The scale where this pattern is most coherent right now is [Scale]."
-Scale is coherence bandwidth, not ambition. Do not assume larger is better. Reference their actual life context — where they are now, not where they might aspire to be.
+"The scale where this instinct is most coherent is [Scale]."
+Scale is bandwidth. If tension exists between intellectual scale and current effectiveness — name both. Do not resolve the tension. Do not soften a large scale because it hasn't yet been externally validated. Who someone is and what they're currently recognised for are different things.
 
 Section 5 — Responsibility (2-4 sentences):
-Name what this pattern asks of them in plain language. Not a warning — a weight. Include one line grounding this in capacity: this exists in them because something in them is built for it. That is not praise. That is why the responsibility is real.
+Name what this asks of them. Not a warning — a weight. Include one line grounding in capacity: this exists in them because something in them is built for it.
 
 Section 5b — The Civilisational Statement (1 sentence, exact format):
-State: "I am a [Archetype] in [Domain] at the [Scale] scale, working toward [Horizon Goal for their domain]."
-This is the locked NextUs identity statement. Use the exact Horizon Goal text provided. This is not aspirational — it is a statement of orientation.
+"I am a [Archetype] in [Domain] at the [Scale] scale, working toward [Horizon Goal]."
+Use the exact Horizon Goal text. This is orientation, not aspiration.
 
 Section 6 — Actions:
-Three tiers — each specific to this person's actual context, not generic archetype actions:
-Light (this week): 30-60 minutes. No special resources. Something they could start today.
-Medium (ongoing): A few hours, recurring. Builds over time.
-Deep (structural): Weeks to months. The thing their pattern is genuinely built for.
+Three tiers — specific to this person's context, not generic archetype actions:
+Light (this week): 30-60 minutes. Something they could start today.
+Medium (ongoing): Recurring, builds over time.
+Deep (structural): Weeks to months. What their instinct is genuinely built for.
 
 Section 7 — Resources (3-5 items):
-Chosen for this specific person's pattern, tension, and texture. Not a generic reading list.
-Each: title + author/source + one sentence explaining why it is specifically for them — referencing their actual situation where possible.
-At least one must address the tension or cost from the Initial Reflection.
-At least one must be immediately accessible today.
-Mix formats: books, essays, talks, organisations, communities.
-CRITICAL: Only include resources you are certain exist. Verify title and author are real before including. If uncertain, omit entirely. Three accurate items are better than five where one is invented or misattributed.
+Chosen for this specific person's instinct, tension, and texture.
+Each: title + author/source + one sentence specific to them.
+At least one addresses the cost or tension from Initial Reflection.
+At least one immediately accessible today.
+Mix formats: books, essays, talks, organisations.
+CRITICAL: Only include resources you are certain exist. Three accurate items better than five where one is invented.
 
 THE RULES:
-- Speak directly throughout. "You" not "this pattern" or "this type."
-- Never say "You are a [Archetype]." Say "The pattern most aligned with this movement is [Archetype]."
-- Never use mechanical or systems theory language: "redistributive force," "adjustment mechanism," "relational vector," "calibration," or similar.
-- Never smooth over blended or contradictory signals. Name the tension.
-- Never motivate or celebrate. Responsibility carries weight, not energy.
-- Never produce generic actions or resources. Every item must be specific to this person.
-- Tone: warm, direct, plain. The same register as the Initial Reflection — not louder, just clearer.
+- Speak directly. "You" not "this type."
+- Never say "You are a [Archetype]." Say "The contribution archetype most aligned with this movement is [Archetype]."
+- Never use systems theory language.
+- Never smooth over tension. Name it.
+- Never motivate or celebrate. Responsibility carries weight.
+- Every section anchored in something specific they said.
 
 THE TEST:
-Could any sentence in Sections 2-5 appear in a generic profile for this archetype? If yes — add their specific words, moments, or decisions until it couldn't.
+Could any sentence in Sections 2-5 appear in a generic archetype profile? If yes — add their specific words and moments until it couldn't.
 
 OUTPUT — return JSON only, no other text:
 {
-  "pattern_restatement": "1 paragraph",
-  "archetype_frame": "1 paragraph",
-  "domain_frame": "1 paragraph",
-  "scale_frame": "1 paragraph",
-  "responsibility": "2-4 sentences",
+  "signal_restatement":    "1 paragraph",
+  "archetype_frame":       "1 paragraph",
+  "domain_frame":          "1 paragraph",
+  "scale_frame":           "1 paragraph",
+  "responsibility":        "2-4 sentences",
   "civilisational_statement": "I am a [Archetype] in [Domain] at the [Scale] scale, working toward [Horizon Goal].",
   "actions": {
-    "light": "specific action with brief context",
-    "medium": "specific action with brief context",
-    "deep": "specific action with brief context"
+    "light":    "specific action",
+    "medium":   "specific action",
+    "deep":     "specific action"
   },
   "resources": [
-    {"title": "Title — Author or Source", "why": "one sentence specific to this person"}
+    { "title": "Title — Author or Source", "why": "one sentence specific to this person" }
   ]
 }`;
 
-async function runPhase4(transcript, synthesis) {
-  const transcriptText = transcript.map((entry, i) =>
-    `Q${i+1} — ${QUESTIONS[i].label}\nAnswer: ${entry.answer}${entry.thin ? " [thin/evasive]" : ""}`
-  ).join("\n\n");
+async function runPhase4(session) {
+  const arch  = session.tentative.archetype;
+  const dom   = session.tentative.domain;
+  const scale = session.tentative.scale;
 
-  // Determine domain from synthesis to pass Horizon Goal
-  const domainHint = synthesis.internal_signals?.domain_pull || "";
-  const domainKey  = Object.keys(DOMAIN_HORIZON_GOALS).find(k => domainHint.toUpperCase().includes(k)) || "VISION";
+  const domainKey   = Object.keys(DOMAIN_HORIZON_GOALS)
+    .find(k => dom.domain.toUpperCase().includes(k)) || "VISION";
   const horizonGoal = DOMAIN_HORIZON_GOALS[domainKey];
 
-  const payload = `PHASE 3 SYNTHESIS:\n${synthesis.synthesis_text}\n\nINTERNAL SIGNALS:\n${JSON.stringify(synthesis.internal_signals, null, 2)}\n\nORIGINAL ANSWERS:\n${transcriptText}\n\nHORIZON GOAL FOR THEIR DOMAIN:\n"${horizonGoal}"\n\nUse this exact text in the civilisational_statement field.`;
+  const allTranscript = [
+    ...session.archetypeTranscript.map((e, i) => `[ARCHETYPE] ${ARCHETYPE_QUESTIONS[i].label}: ${e.answer}${e.thin ? " [thin]" : ""}`),
+    ...session.domainTranscript.map((e, i)    => `[DOMAIN] ${DOMAIN_QUESTIONS[i].label}: ${e.answer}${e.thin ? " [thin]" : ""}`),
+    ...session.scaleTranscript.map((e, i)     => `[SCALE] ${SCALE_QUESTIONS[i].label}: ${e.answer}${e.thin ? " [thin]" : ""}`)
+  ].join("\n\n");
+
+  const payload = `INITIAL REFLECTION:\n${session.synthesis.synthesis_text}
+
+INTERNAL SIGNALS:\n${JSON.stringify(session.synthesis.internal_signals, null, 2)}
+
+CONFIRMED COORDINATES:
+Archetype: ${arch.archetype}${arch.secondary ? ` (blended with ${arch.secondary})` : ""}
+Domain: ${dom.domain}
+Scale: ${scale.scale}${scale.tension ? `\nScale tension: ${scale.tension}` : ""}
+
+ALL ANSWERS:\n${allTranscript}
+
+HORIZON GOAL FOR THEIR DOMAIN:\n"${horizonGoal}"\n\nUse this exact text in the civilisational_statement field.`;
 
   const response = await anthropic.messages.create({
     model:      "claude-sonnet-4-20250514",
@@ -397,28 +750,16 @@ async function runPhase4(transcript, synthesis) {
   return extractJSON(response.content[0].text);
 }
 
-// ─── Sanitise text for safe HTML insertion ───────────────────────────────────
-function esc(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
+// ─── Render Phase 4 HTML ──────────────────────────────────────────────────────
 
-// ─── Render Phase 4 as structured HTML ───────────────────────────────────────
 function renderPhase4(p4) {
+  const archetypeMatch = p4.archetype_frame.match(/archetype most aligned with this (?:movement )?is ([\w]+)/i);
+  const archetypeName  = archetypeMatch ? archetypeMatch[1] : "Your Archetype";
 
-  // Extract archetype / domain / scale from frame text
-  const archetypeMatch = p4.archetype_frame.match(/pattern most aligned with this (?:movement )?is ([\w]+)/i);
-  const archetypeName  = archetypeMatch ? archetypeMatch[1] : "Your Pattern";
-
-  const domainMatch = p4.domain_frame.match(/territory.*?is ([A-Z][a-z]+(?: ?[&A-Z][a-z]+)*)/); 
+  const domainMatch = p4.domain_frame.match(/domain.*?is ([A-Z][a-z &]+)/i);
   const domainName  = domainMatch ? domainMatch[1].trim() : "";
 
-  const scaleMatch = p4.scale_frame.match(/scale.*?is ([A-Z][a-z]+)/);
+  const scaleMatch = p4.scale_frame.match(/scale.*?is ([A-Z][a-zA-Z/\s]+?)[\.\,]/);
   const scaleName  = scaleMatch ? scaleMatch[1].trim() : "";
 
   const resourcesHtml = p4.resources.map(r =>
@@ -433,12 +774,12 @@ function renderPhase4(p4) {
     <div class="profile-hero">
       <div class="profile-card-heading">Your Purpose Piece</div>
       <div class="profile-archetype-name">${esc(archetypeName)}</div>
-      <div class="profile-meta">${esc(domainName)}<span class="profile-meta-divider"></span>${esc(scaleName)}</div>
+      <div class="profile-meta">${esc(domainName)}<span class="profile-meta-divider">·</span>${esc(scaleName)}</div>
     </div>
 
     <div class="profile-section">
-      <div class="profile-section-label">Pattern</div>
-      <p>${esc(p4.pattern_restatement)}</p>
+      <div class="profile-section-label">Signal</div>
+      <p>${esc(p4.signal_restatement)}</p>
     </div>
 
     <div class="profile-section">
@@ -448,7 +789,6 @@ function renderPhase4(p4) {
 
     <div class="profile-section">
       <div class="profile-section-label">Domain</div>
-      <p class="profile-domain-context">There are seven domains of collective work. Yours is <strong>${esc(domainName)}</strong>.</p>
       <p>${esc(p4.domain_frame)}</p>
     </div>
 
@@ -496,7 +836,6 @@ function renderPhase4(p4) {
 
     <div class="profile-personal-note-section">
       <div class="profile-section-label">In Your Own Words</div>
-
       <textarea
         id="ppPersonalNote"
         class="pp-note-textarea"
@@ -504,17 +843,15 @@ function renderPhase4(p4) {
         oninput="App.onPpNoteInput(this.value)"
       ></textarea>
       <p class="pp-note-hint">When you've written your own version, it leads. The profile sits behind it.</p>
-
       <div id="ppToolOutputToggle" style="margin-top:14px;">
         <button class="pp-expand-btn" onclick="App.togglePpProfile()" id="ppExpandBtn">
           See your Purpose Piece profile →
         </button>
         <div id="ppProfileSummary" style="display:none;" class="pp-profile-summary">
           <p><strong>${esc(archetypeName)}</strong> · ${esc(domainName)} · ${esc(scaleName)}</p>
-          <p style="margin-top:8px;font-style:italic;color:rgba(15,21,35,0.55);">${esc(p4.pattern_restatement || "")}</p>
+          <p style="margin-top:8px;font-style:italic;color:rgba(15,21,35,0.55);">${esc(p4.signal_restatement || "")}</p>
         </div>
       </div>
-
       <button class="pp-lock-btn" id="ppLockBtn" onclick="App.lockPpNote()" style="display:none;">
         Lock this as my statement ✓
       </button>
@@ -525,25 +862,323 @@ function renderPhase4(p4) {
 
     <div class="profile-threshold">
       <div class="profile-threshold-eyebrow">First Look</div>
-      <p class="profile-threshold-body">This is your pattern as it reads from the outside. The shape is here. What isn't here yet is the tension — what this costs you at the bone, where the instinct breaks, and what it has been asking of you that you haven't fully faced. That's the second conversation.</p>
+      <p class="profile-threshold-body">This is your instinct as it reads from the outside. The shape is here. What isn't here yet is the tension — what this costs you at the bone, where the instinct breaks, and what it has been asking of you that you haven't fully faced. That's the second conversation.</p>
       <button class="btn-go-deeper" onclick="App.goDeeper()">Go deeper &rarr;</button>
     </div>
 
   </div>`;
 }
 
-// ─── Welcome message ──────────────────────────────────────────────────────────
-const WELCOME = `Every group, team, and community needs different people in different roles to function well. These roles map to nine Contribution Archetypes: Steward, Maker, Architect, Connector, Guardian, Explorer, Sage, Mirror, and Exemplar. The same job can — and often should — draw from multiple archetypes.
+// ─── Question phase handler ───────────────────────────────────────────────────
+// Shared across archetype, domain, and scale stages.
 
-The world can be understood as an interlocking system of seven domains, each with its own subdomains, challenges, and people working inside it. Everyone is suited to some domains more than others.
+async function handleQuestionPhase(session, latestInput, res) {
+  const stage     = session.stage;
+  const qi        = session.questionIndex;
+  const questions = getStageQuestions(stage);
+  const probes    = getStageProbes(stage);
+  const transcript = getStageTranscript(session);
+  const total     = getStageTotalQuestions(stage);
 
-The third dimension is scale. Some people operate at the level of a neighbourhood or community — close, immediate, relational. Others are oriented toward the planetary or civilisational. Neither is better. All are needed.
+  const entry = transcript[qi];
 
-Your Contribution Archetype, your domain, and your scale — together, those three things are your Purpose Piece.
+  // ── First answer to this question ──────────────────────────────────────────
+  if (!entry) {
+    const thin = isThin(latestInput, stage, qi);
 
-Ready to find where you fit?`;
+    if (!thin) {
+      transcript.push({ question: questions[qi].text, answer: latestInput, probes: [], thin: false });
+      session.probeCount  = 0;
+      session.questionIndex++;
+
+      // Stage complete
+      if (session.questionIndex >= total) {
+        return await handleStageComplete(session, res);
+      }
+
+      return res.status(200).json({
+        message:       questions[session.questionIndex].text,
+        questionLabel: `${capitalise(stage)} · ${session.questionIndex + 1} of ${total}`,
+        session,
+        stage,
+        questionIndex: session.questionIndex,
+        inputMode:     "text"
+      });
+    }
+
+    // Thin — probe 1
+    transcript.push({ question: questions[qi].text, answer: latestInput, probes: [], thin: false });
+    session.probeCount = 1;
+    return res.status(200).json({
+      message:   probes[qi][0],
+      session,
+      stage,
+      inputMode: "text",
+      isProbe:   true
+    });
+  }
+
+  // ── Responding to a probe ───────────────────────────────────────────────────
+  const probeIndex = Math.min(session.probeCount - 1, probes[qi].length - 1);
+  entry.probes.push({ probe: probes[qi][probeIndex], response: latestInput });
+  const combined = entry.answer + " " + entry.probes.map(p => p.response).join(" ");
+  const thin     = isThin(combined, stage, qi);
+
+  if (!thin || session.probeCount >= 2) {
+    if (session.probeCount >= 2 && thin) {
+      const check = await claudeSignalCheck(questions[qi].text, combined);
+      entry.thin  = !check.has_signal;
+
+      if (!check.has_signal && session.probeCount === 2) {
+        session.probeCount = 3;
+        return res.status(200).json({
+          message:   "I want to make sure I'm reading this clearly. Can you give me one specific example — a real moment, even a small one?",
+          session,
+          stage,
+          inputMode: "text",
+          isProbe:   true
+        });
+      }
+
+      if (session.probeCount >= 3) {
+        entry.thin           = true;
+        session.probeCount   = 0;
+        session.questionIndex++;
+
+        if (session.questionIndex >= total) {
+          return await handleStageComplete(session, res, "Let's keep moving. I'll work with what's here.");
+        }
+
+        return res.status(200).json({
+          message:       "Let's keep moving. I'll work with what's here.",
+          questionLabel: `${capitalise(stage)} · ${session.questionIndex + 1} of ${total}`,
+          session,
+          stage,
+          questionIndex: session.questionIndex,
+          inputMode:     "text"
+        });
+      }
+    }
+
+    session.probeCount = 0;
+    session.questionIndex++;
+
+    if (session.questionIndex >= total) {
+      return await handleStageComplete(session, res);
+    }
+
+    return res.status(200).json({
+      message:       questions[session.questionIndex].text,
+      questionLabel: `${capitalise(stage)} · ${session.questionIndex + 1} of ${total}`,
+      session,
+      stage,
+      questionIndex: session.questionIndex,
+      inputMode:     "text"
+    });
+  }
+
+  // Still thin — probe 2
+  session.probeCount = 2;
+  return res.status(200).json({
+    message:   probes[qi][Math.min(1, probes[qi].length - 1)],
+    session,
+    stage,
+    inputMode: "text",
+    isProbe:   true
+  });
+}
+
+function capitalise(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// ─── Stage complete handler ───────────────────────────────────────────────────
+// Called when all questions in a stage are answered.
+// Extracts tentative coordinate, then either opens next stage or confirmation.
+
+async function handleStageComplete(session, res, prefixMessage = null) {
+  const completedStage = session.stage;
+
+  // Extract tentative coordinate for completed stage
+  try {
+    if (completedStage === "archetype") {
+      session.tentative = session.tentative || {};
+      session.tentative.archetype = await extractTentativeArchetype(session.archetypeTranscript);
+    } else if (completedStage === "domain") {
+      session.tentative.domain = await extractTentativeDomain(session.domainTranscript);
+    } else if (completedStage === "scale") {
+      session.tentative.scale = await extractTentativeScale(session.scaleTranscript);
+    }
+  } catch (e) {
+    console.error(`Tentative extraction failed for ${completedStage}:`, e);
+    // Non-fatal — confirmation will still run
+  }
+
+  const nextStage = getNextStage(completedStage);
+
+  // Advance to next stage
+  session.stage         = nextStage;
+  session.questionIndex = 0;
+  session.probeCount    = 0;
+
+  // Opening next question stage
+  if (nextStage === "domain" || nextStage === "scale") {
+    const opening  = STAGE_OPENINGS[nextStage];
+    const questions = getStageQuestions(nextStage);
+    const total    = getStageTotalQuestions(nextStage);
+
+    return res.status(200).json({
+      message:       opening,
+      questionLabel: `${capitalise(nextStage)} · 1 of ${total}`,
+      session,
+      stage:         nextStage,
+      questionIndex: 0,
+      inputMode:     "none",
+      autoAdvance:   true,
+      advanceDelay:  2500,
+      stageComplete: completedStage
+    });
+  }
+
+  // Moving to confirmation
+  if (nextStage === "confirmation") {
+    let confirmationOpening;
+    try {
+      const confirmPrompt = buildConfirmationPrompt(session);
+      const response = await anthropic.messages.create({
+        model:      "claude-sonnet-4-20250514",
+        max_tokens: 500,
+        messages:   [{
+          role:    "user",
+          content: "Present the three tentative coordinates and open the confirmation conversation."
+        }],
+        system: confirmPrompt
+      });
+      confirmationOpening = response.content[0].text.trim();
+    } catch (e) {
+      console.error("Confirmation opening failed:", e);
+      const t = session.tentative;
+      confirmationOpening = `Here's what emerged across the three conversations.\n\nArchetype: ${t.archetype?.archetype || "unclear"}\nDomain: ${t.domain?.domain || "unclear"}\nScale: ${t.scale?.scale || "unclear"}\n\nDoes this land? What feels right, and what doesn't?`;
+    }
+
+    session.confirmationHistory = [{ role: "assistant", content: confirmationOpening }];
+
+    return res.status(200).json({
+      message:       confirmationOpening,
+      session,
+      stage:         "confirmation",
+      inputMode:     "text",
+      stageComplete: completedStage
+    });
+  }
+
+  return res.status(500).json({ error: "Unexpected stage transition" });
+}
+
+// ─── Confirmation phase handler ───────────────────────────────────────────────
+
+async function handleConfirmation(session, latestInput, res) {
+  session.confirmationHistory = session.confirmationHistory || [];
+  session.confirmationHistory.push({ role: "user", content: latestInput });
+
+  // Client-driven lock: the "Yes, lock it in" button sends this exact phrase.
+  // This is the single authoritative lock trigger — no freetext inference.
+  if (latestInput.trim().toLowerCase() === "yes, lock it in.") {
+    session.stage = "thinking";
+    return res.status(200).json({
+      message:      "Reading everything together now.\n\nThis takes a moment.",
+      session,
+      stage:        "thinking",
+      inputMode:    "none",
+      autoAdvance:  true,
+      advanceDelay: 2000
+    });
+  }
+
+  // Continue confirmation conversation
+  try {
+    const confirmPrompt = buildConfirmationPrompt(session);
+    const apiMessages   = session.confirmationHistory.map(m => ({ role: m.role, content: m.content }));
+
+    const response = await anthropic.messages.create({
+      model:      "claude-sonnet-4-20250514",
+      max_tokens: 500,
+      system:     confirmPrompt,
+      messages:   apiMessages
+    });
+
+    const reply = response.content[0].text.trim();
+    session.confirmationHistory.push({ role: "assistant", content: reply });
+
+    // AI signals readiness — front-end shows the explicit "Yes, lock it in" button.
+    const readySignals = ["ready to see", "ready to lock", "shall we", "want to proceed", "good to go"];
+    const aiReadyNow   = readySignals.some(s => reply.toLowerCase().includes(s));
+
+    return res.status(200).json({
+      message:     reply,
+      session,
+      stage:       "confirmation",
+      inputMode:   aiReadyNow ? "confirm" : "text",
+      readyToLock: aiReadyNow
+    });
+
+  } catch (e) {
+    console.error("Confirmation conversation error:", e);
+    return res.status(500).json({ error: "Confirmation failed", details: e.message });
+  }
+}
+
+// ─── Synthesis pipeline ───────────────────────────────────────────────────────
+
+async function runSynthesis(session, res) {
+  let synthesis;
+  try {
+    synthesis = await runPhase3(session);
+  } catch (e) {
+    console.error("Phase 3 error:", e);
+    return res.status(500).json({ error: "Reflection failed", details: e.message });
+  }
+
+  session.synthesis = synthesis;
+  session.stage     = "framing";
+
+  return res.status(200).json({
+    message:      synthesis.synthesis_text,
+    sections:     synthesis.sections,
+    session,
+    stage:        "synthesis",
+    inputMode:    "none",
+    autoAdvance:  true,
+    advanceDelay: 6000
+  });
+}
+
+async function runFraming(session, res) {
+  let p4;
+  try {
+    p4 = await runPhase4(session);
+  } catch (e) {
+    console.error("Phase 4 error:", e);
+    return res.status(500).json({ error: "Framing failed", details: e.message });
+  }
+
+  session.status = "complete";
+  session.stage  = "complete";
+
+  return res.status(200).json({
+    message:                   renderPhase4(p4),
+    isHtml:                    true,
+    session,
+    stage:                     "complete",
+    inputMode:                 "none",
+    complete:                  true,
+    profile:                   p4,
+    identity_statement_system: p4.civilisational_statement || null
+  });
+}
 
 // ─── Main handler ─────────────────────────────────────────────────────────────
+
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Credentials", true);
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -552,207 +1187,71 @@ module.exports = async (req, res) => {
 
   if (req.method === "OPTIONS") { res.status(200).end(); return; }
 
-  // ── Parse body ──────────────────────────────────────────────────────────────
   const { messages, session: clientSession } = req.body || {};
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: "Messages array required" });
   }
 
   try {
-    // ── New session (no session sent, or first call) ──────────────────────────
     let session = clientSession || null;
 
+    // ── New session ───────────────────────────────────────────────────────────
     if (!session || session.status === undefined) {
       session = createSession();
-      // Send welcome first — client auto-advances into Q1
-      // Previously jumped straight to questions, leaving WELCOME as dead code
       return res.status(200).json({
         message:      WELCOME,
         session,
-        phase:        "welcome",
-        phaseLabel:   "Signal Reading",
+        stage:        "welcome",
         inputMode:    "none",
         autoAdvance:  true,
-        advanceDelay: 2200
+        advanceDelay: 2500
       });
     }
 
     // ── Complete ──────────────────────────────────────────────────────────────
     if (session.status === "complete") {
       return res.status(200).json({
-        message:   "Your Purpose Piece has been delivered. Refresh to begin again.",
+        message:   "Your Purpose Piece has been delivered.",
         session,
-        phase:     "complete",
+        stage:     "complete",
         inputMode: "none"
       });
     }
 
     const userMessages = messages.filter(m => m.role === "user");
     const latestInput  = userMessages[userMessages.length - 1]?.content?.trim() || "";
-    const qi           = session.questionIndex;
 
-    // ── Welcome → Q1 ─────────────────────────────────────────────────────────
-    if (session.phase === "welcome") {
-      session.phase = "questions";
+    // ── Welcome → first archetype question ───────────────────────────────────
+    if (session.stage === "welcome") {
+      session.stage = "archetype";
       return res.status(200).json({
-        message:       QUESTIONS[0].text,
-        questionLabel: `Question 1 of 5 — ${QUESTIONS[0].label}`,
+        message:       ARCHETYPE_QUESTIONS[0].text,
+        questionLabel: `Archetype · 1 of ${ARCHETYPE_QUESTIONS.length}`,
         session,
-        phase:         "questions",
-        phaseLabel:    "Behavioural Evidence",
+        stage:         "archetype",
         questionIndex: 0,
         inputMode:     "text"
       });
     }
 
-    // ── Question phase ────────────────────────────────────────────────────────
-    if (session.phase === "questions") {
-      const entry = session.transcript[qi];
-
-      // No entry yet — first answer to this question
-      if (!entry) {
-        const thin = isThin(latestInput, qi);
-
-        if (!thin) {
-          session.transcript.push({ question: QUESTIONS[qi].text, answer: latestInput, probes: [], thin: false });
-          session.probeCount = 0;
-          session.questionIndex++;
-
-          if (session.questionIndex >= 5) {
-          // Return thinking state first — client will autoAdvance into synthesis
-          session.phase = "thinking";
-          return res.status(200).json({
-            message:      "Reading the pattern in your answers.\n\nThis takes a moment...",
-            session,
-            phase:        "thinking",
-            phaseLabel:   "Signal Reading",
-            inputMode:    "none",
-            autoAdvance:  true,
-            advanceDelay: 2000
-          });
-        }
-
-          return res.status(200).json({
-            message:       QUESTIONS[session.questionIndex].text,
-            questionLabel: `Question ${session.questionIndex + 1} of 5 — ${QUESTIONS[session.questionIndex].label}`,
-            session,
-            phase:         "questions",
-            phaseLabel:    "Behavioural Evidence",
-            questionIndex: session.questionIndex,
-            inputMode:     "text"
-          });
-        }
-
-        // Thin — probe 1
-        session.transcript.push({ question: QUESTIONS[qi].text, answer: latestInput, probes: [], thin: false });
-        session.probeCount = 1;
-        return res.status(200).json({
-          message: PROBES[qi][0], session, phase: "questions",
-          phaseLabel: "Behavioural Evidence", inputMode: "text", isProbe: true
-        });
-      }
-
-      // Responding to a probe
-      const probeIndex = Math.min(session.probeCount - 1, PROBES[qi].length - 1);
-      entry.probes.push({ probe: PROBES[qi][probeIndex], response: latestInput });
-      const combined = entry.answer + " " + entry.probes.map(p => p.response).join(" ");
-      const thin     = isThin(combined, qi);
-
-      if (!thin || session.probeCount >= 2) {
-        if (session.probeCount >= 2 && thin) {
-          const check = await claudeSignalCheck(QUESTIONS[qi].text, combined);
-          entry.thin = !check.has_signal;
-
-          // Still no signal after two probes — hold one more time with a direct ask
-          if (!check.has_signal && session.probeCount === 2) {
-            session.probeCount = 3;
-            return res.status(200).json({
-              message: "I want to make sure I'm reading this accurately. Can you give me one specific example — a real moment, even a small one?",
-              session,
-              phase: "questions",
-              phaseLabel: "Behavioural Evidence",
-              inputMode: "text",
-              isProbe: true
-            });
-          }
-
-          // After probe 3 — acknowledge and move on
-          if (session.probeCount >= 3) {
-            entry.thin = true;
-            session.probeCount = 0;
-            session.questionIndex++;
-
-            const acknowledgment = "Let's keep moving. I'll work with what's here.";
-
-            if (session.questionIndex >= 5) {
-              session.phase = "thinking";
-              return res.status(200).json({
-                message:      acknowledgment,
-                session,
-                phase:        "thinking",
-                phaseLabel:   "Signal Reading",
-                inputMode:    "none",
-                autoAdvance:  true,
-                advanceDelay: 2000
-              });
-            }
-
-            return res.status(200).json({
-              message:       acknowledgment,
-              questionLabel: `Question ${session.questionIndex + 1} of 5 — ${QUESTIONS[session.questionIndex].label}`,
-              nextMessage:   QUESTIONS[session.questionIndex].text,
-              session,
-              phase:         "questions",
-              phaseLabel:    "Behavioural Evidence",
-              questionIndex: session.questionIndex,
-              inputMode:     "text"
-            });
-          }
-        }
-
-        session.probeCount = 0;
-        session.questionIndex++;
-
-        if (session.questionIndex >= 5) {
-          session.phase = "thinking";
-          return res.status(200).json({
-            message:      "Reading the pattern in your answers.",
-            session,
-            phase:        "thinking",
-            phaseLabel:   "Signal Reading",
-            inputMode:    "none",
-            autoAdvance:  true,
-            advanceDelay: 500
-          });
-        }
-
-        return res.status(200).json({
-          message:       QUESTIONS[session.questionIndex].text,
-          questionLabel: `Question ${session.questionIndex + 1} of 5 — ${QUESTIONS[session.questionIndex].label}`,
-          session,
-          phase:         "questions",
-          phaseLabel:    "Behavioural Evidence",
-          questionIndex: session.questionIndex,
-          inputMode:     "text"
-        });
-      }
-
-      // Still thin — probe 2
-      session.probeCount = 2;
-      return res.status(200).json({
-        message: PROBES[qi][1], session, phase: "questions",
-        phaseLabel: "Behavioural Evidence", inputMode: "text", isProbe: true
-      });
+    // ── Question stages ───────────────────────────────────────────────────────
+    if (["archetype", "domain", "scale"].includes(session.stage)) {
+      return await handleQuestionPhase(session, latestInput, res);
     }
 
-    // ── Thinking phase → trigger synthesis ───────────────────────────────────
-    if (session.phase === "thinking") {
-      return await synthesiseAndFrame(session, res);
+    // ── Confirmation ──────────────────────────────────────────────────────────
+    if (session.stage === "confirmation") {
+      return await handleConfirmation(session, latestInput, res);
     }
 
-    // ── Framing phase (Phase 4) ───────────────────────────────────────────────
-    if (session.phase === "framing") {
-      return await frameAndDeliver(session, res);
+    // ── Thinking → synthesis ──────────────────────────────────────────────────
+    if (session.stage === "thinking") {
+      return await runSynthesis(session, res);
+    }
+
+    // ── Framing ───────────────────────────────────────────────────────────────
+    if (session.stage === "framing") {
+      return await runFraming(session, res);
     }
 
     return res.status(200).json({ message: "Something went wrong. Please refresh.", session, inputMode: "text" });
@@ -762,56 +1261,3 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: "Internal server error", details: error.message });
   }
 };
-
-// ─── Synthesis → framing pipeline ────────────────────────────────────────────
-async function synthesiseAndFrame(session, res) {
-  session.phase = "synthesis";
-
-  let synthesis;
-  try {
-    synthesis = await runPhase3(session.transcript);
-  } catch (e) {
-    console.error("Phase 3 error:", e);
-    return res.status(500).json({ error: "Synthesis failed", details: e.message });
-  }
-
-  session.synthesis = synthesis;
-  session.phase     = "framing";
-
-  return res.status(200).json({
-    message:      synthesis.synthesis_text,
-    sections:     synthesis.sections,
-    session,
-    phase:        "synthesis",
-    phaseLabel:   "Signal Reading",
-    inputMode:    "none",
-    autoAdvance:  true,
-    advanceDelay: 6000
-  });
-}
-
-async function frameAndDeliver(session, res) {
-  let p4;
-  try {
-    p4 = await runPhase4(session.transcript, session.synthesis);
-  } catch (e) {
-    console.error("Phase 4 error:", e);
-    return res.status(500).json({ error: "Framing failed", details: e.message });
-  }
-
-  session.status = "complete";
-
-  // Extract the civilisational identity statement for DB storage
-  const identityStatementSystem = p4.civilisational_statement || null;
-
-  return res.status(200).json({
-    message:                  renderPhase4(p4),
-    session,
-    phase:                    "complete",
-    phaseLabel:               "Your Purpose Piece",
-    inputMode:                "none",
-    complete:                 true,
-    profile:                  p4,
-    identity_statement_system: identityStatementSystem
-  });
-}
