@@ -45,7 +45,7 @@ body {
   background: var(--bg);
   color: var(--text-meta);
   font-family: var(--font-body);
-  font-size: 1.0625rem;
+  font-size: 1.1875rem;
   line-height: 1.65;
   min-height: 100dvh;
 }
@@ -125,7 +125,7 @@ button {
 
 .auth-card h2 {
   font-family: var(--font-sc);
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 400;
   color: var(--text);
   margin-bottom: 0.5rem;
@@ -141,7 +141,7 @@ button {
 .auth-card a {
   display: inline-block;
   font-family: var(--font-sc);
-  font-size: 0.8125rem;
+  font-size: 0.9375rem;
   letter-spacing: 0.06em;
   color: var(--gold-dk);
   border: 1px solid var(--gold-line);
@@ -280,7 +280,7 @@ button {
 .bubble {
   max-width: 88%;
   line-height: 1.65;
-  font-size: 1.0625rem;
+  font-size: 1.1875rem;
 }
 
 .bubble-assistant {
@@ -393,17 +393,17 @@ button {
 
   /* Tool header */
   .tool-eyebrow {
-    font-size: 0.8125rem;
+    font-size: 0.9375rem;
     letter-spacing: 0.16em;
   }
 
   .tool-title {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
   }
 
   /* Chat bubbles — slightly larger for readability */
   .bubble {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     max-width: 96%;
   }
 
@@ -418,12 +418,12 @@ button {
   }
 
   .input-area textarea {
-    font-size: 1.0625rem;
+    font-size: 1.1875rem;
     padding: 0.75rem 1rem;
   }
 
   .btn-send {
-    font-size: 0.875rem;
+    font-size: 1rem;
     padding: 0.75rem 1rem;
     height: 48px;
   }
