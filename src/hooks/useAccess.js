@@ -4,8 +4,10 @@ import { useAuth } from './useAuth'
 
 const TIER_RANK = { full: 3, beta: 2, preview: 1, none: 0 }
 
-// Founder UUID — always gets full access regardless of database state
-const FOUNDER_UUID = '304f778f-f859-4c06-972c-f37ae8042457'
+// Founder check — matches AdminConsole and ContentEditor pattern
+function isFounder(user) {
+  return user?.user_metadata?.role === 'founder'
+}
 
 export function useAccess(productKey) {
   const { user, loading: authLoading } = useAuth()
@@ -18,7 +20,7 @@ export function useAccess(productKey) {
     if (authLoading) return
 
     // Founder always gets full access — no database check needed
-    if (user?.id === FOUNDER_UUID) {
+    if (isFounder(user)) {
       setTier('full')
       setDiscountPct(0)
       setLoading(false)

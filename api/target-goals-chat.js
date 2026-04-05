@@ -9,13 +9,13 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 // ── Domain definitions ────────────────────────────────────────────────────────
 
 const DOMAINS = {
-  path:          { label: "Path",          frame: "purpose, calling, contribution — the work you're here to do" },
-  spark:         { label: "Spark",         frame: "vitality, aliveness, creative fire — the internal engine" },
-  body:          { label: "Body",          frame: "physical health, energy, and the living system" },
-  finances:      { label: "Finances",      frame: "financial health, agency, and freedom to act on what matters" },
-  relationships: { label: "Relationships", frame: "depth of connection, being truly known, love and belonging" },
-  inner_game:    { label: "Inner Game",    frame: "psychology, self-talk, the stories running beneath the surface" },
-  outer_game:    { label: "Outer Game",    frame: "how you show up in the world — presence, expression, identity" },
+  path:          { label: "Path",          frame: "contribution, calling, and life's mission — the work you're here to do" },
+  spark:         { label: "Spark",         frame: "the animating fire — aliveness, regeneration, the things that make you genuinely alive" },
+  body:          { label: "Body",          frame: "your physical instrument — honouring the vessel through which everything else operates" },
+  finances:      { label: "Finances",      frame: "the currency that gives you capacity to act — resources, agency, and freedom" },
+  relationships: { label: "Relationships", frame: "the quality of connection — being truly known and truly knowing others" },
+  inner_game:    { label: "Inner Game",    frame: "the source code — beliefs, stories, and what you carry about who you are and what's possible" },
+  outer_game:    { label: "Outer Game",    frame: "your external world — where inner alignment meets the world's perception of you" },
 };
 
 // ── Shared voice preamble ─────────────────────────────────────────────────────

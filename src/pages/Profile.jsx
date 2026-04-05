@@ -1,17 +1,24 @@
-
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Nav } from '../components/Nav'
 import { useAuth } from '../hooks/useAuth'
-import { ScalePanel } from '../components/ScalePanel'
 import { supabase } from '../hooks/useSupabase'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const DOMAIN_LABELS = ['Path', 'Spark', 'Body', 'Finances', 'Relationships', 'Inner Game', 'Outer Game']
 const DOMAIN_KEYS   = ['path', 'spark', 'body', 'finances', 'relationships', 'inner_game', 'outer_game']
-const TIER_LABELS = { 10:'World-Class',9:'Exemplar',8:'Fluent',7:'Capable',6:'Functional',5:'Threshold',4:'Friction',3:'Strain',2:'Crisis',1:'Emergency',0:'Ground Zero' }
+
+const TIER_LABELS = {
+  10:'World-Class', 9:'Exemplar', 8:'Fluent', 7:'Capable', 6:'Functional',
+  5:'Threshold',    4:'Friction', 3:'Strain', 2:'Crisis',  1:'Emergency', 0:'Ground Zero'
+}
+
+function getTierLabel(n) {
+  const floor = Math.floor(n)
+  return TIER_LABELS[floor] ?? TIER_LABELS[Math.round(n)] ?? ''
+}
 
 function getTierColor(n) {
   if (n >= 9) return '#3B6B9E'
@@ -21,40 +28,64 @@ function getTierColor(n) {
   return '#8A3030'
 }
 
-function ScoreBar({ label, score }) {
-  const color = getTierColor(score)
+function Eyebrow({ children, style = {} }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-      <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)', width: '96px', flexShrink: 0 }}>{label}</div>
-      <div style={{ flex: 1, position: 'relative', height: '20px', display: 'flex', alignItems: 'center' }}>
-        <div style={{ position: 'absolute', left: 0, right: 0, height: '4px', background: 'rgba(200,146,42,0.12)', borderRadius: '2px' }} />
-        <div style={{ position: 'absolute', left: 0, width: `${(score/10)*100}%`, height: '4px', background: color, borderRadius: '2px', transition: 'width 0.6s ease' }} />
-        <div style={{ position: 'absolute', left: `calc(${(score/10)*100}% - 7px)`, width: '14px', height: '14px', borderRadius: '50%', background: '#FAFAF7', border: `2px solid ${color}`, zIndex: 1 }} />
-      </div>
-      <div style={{ width: '80px', flexShrink: 0, textAlign: 'right' }}>
-        <span style={{ ...sc, fontSize: '1.125rem', fontWeight: 600, color, lineHeight: 1 }}>{score}</span>
-        <span style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>/10</span>
-        <div style={{ ...serif, fontSize: '15px', color, marginTop: '2px', opacity: 0.8 }}>{TIER_LABELS[score]}</div>
-      </div>
+    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A',
+      textTransform: 'uppercase', display: 'block', marginBottom: '8px', ...style }}>
+      {children}
+    </span>
+  )
+}
+
+function Rule() {
+  return <div style={{ height: '1px', background: 'rgba(200,146,42,0.15)', margin: '20px 0' }} />
+}
+
+function EmptySlot({ cta, ctaUrl }) {
+  return (
+    <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+      color: 'rgba(15,21,35,0.72)', marginBottom: '8px' }}>
+      Not yet completed.{' '}
+      {cta && ctaUrl && (
+        <a href={ctaUrl} style={{ color: '#A8721A', textDecoration: 'none' }}>
+          {cta} {'\u2192'}
+        </a>
+      )}
     </div>
   )
 }
 
-function Slot({ title, tip, linkLabel, linkUrl, children, defaultOpen = true }) {
+function Slot({ title, eyebrow, linkLabel, linkUrl, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div style={{ border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', marginBottom: '10px', overflow: 'hidden' }}>
-      <div onClick={() => setOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', cursor: 'pointer', background: open ? 'rgba(200,146,42,0.03)' : 'transparent' }}>
-        <span style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: '#0F1523' }}>{title}</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px',
+      marginBottom: '12px', overflow: 'hidden', background: '#FFFFFF' }}>
+      <div onClick={() => setOpen(o => !o)}
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '18px 24px', cursor: 'pointer',
+          background: open ? 'rgba(200,146,42,0.03)' : 'transparent' }}>
+        <div>
+          {eyebrow && <Eyebrow style={{ marginBottom: '2px' }}>{eyebrow}</Eyebrow>}
+          <span style={{ ...sc, fontSize: '16px', letterSpacing: '0.08em',
+            color: '#0F1523', fontWeight: 600 }}>{title}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px',
+          flexShrink: 0, marginLeft: '16px' }}>
           {linkLabel && linkUrl && (
-            <a href={linkUrl} onClick={e => e.stopPropagation()} style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: '#A8721A', textDecoration: 'none' }}>{linkLabel} {'\u2192'}</a>
+            <a href={linkUrl} onClick={e => e.stopPropagation()}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
+                color: '#A8721A', textDecoration: 'none' }}>
+              {linkLabel} {'\u2192'}
+            </a>
           )}
-          <span style={{ color: '#A8721A', fontSize: '18px', transform: open ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s', lineHeight: 1 }}>{'\u203A'}</span>
+          <span style={{ color: '#A8721A', fontSize: '18px', lineHeight: 1,
+            transform: open ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }}>
+            {'\u203A'}
+          </span>
         </div>
       </div>
       {open && (
-        <div style={{ borderTop: '1px solid rgba(200,146,42,0.20)', padding: '24px 22px' }}>
+        <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', padding: '24px' }}>
           {children}
         </div>
       )}
@@ -62,11 +93,366 @@ function Slot({ title, tip, linkLabel, linkUrl, children, defaultOpen = true }) 
   )
 }
 
-function EmptySlot({ cta, ctaUrl }) {
+function ScoreBar({ label, score, horizonScore }) {
+  const color = getTierColor(score)
+  const pct   = (score / 10) * 100
   return (
-    <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginBottom: '16px' }}>
-      Not yet populated.{' '}
-      {cta && ctaUrl && <a href={ctaUrl} style={{ color: '#A8721A', textDecoration: 'none' }}>{cta} {'\u2192'}</a>}
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px',
+      padding: '9px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em',
+        color: 'rgba(15,21,35,0.72)', width: '100px', flexShrink: 0 }}>{label}</div>
+      <div style={{ flex: 1, position: 'relative', height: '20px', display: 'flex', alignItems: 'center' }}>
+        <div style={{ position: 'absolute', left: 0, right: 0, height: '3px',
+          background: 'rgba(200,146,42,0.10)', borderRadius: '2px' }} />
+        <div style={{ position: 'absolute', left: 0, width: `${pct}%`, height: '3px',
+          background: color, borderRadius: '2px', transition: 'width 0.6s ease' }} />
+        <div style={{ position: 'absolute', left: `calc(${pct}% - 7px)`,
+          width: '14px', height: '14px', borderRadius: '50%',
+          background: '#FAFAF7', border: `2px solid ${color}`, zIndex: 1 }} />
+        {horizonScore !== undefined && (
+          <div style={{
+            position: 'absolute', left: `calc(${(horizonScore/10)*100}% - 4px)`,
+            width: '8px', height: '8px', borderRadius: '50%',
+            background: 'transparent', border: `1.5px solid ${color}`, opacity: 0.45,
+          }} />
+        )}
+      </div>
+      <div style={{ width: '88px', flexShrink: 0, textAlign: 'right' }}>
+        <span style={{ ...sc, fontSize: '1rem', fontWeight: 600, color, lineHeight: 1 }}>{score}</span>
+        <span style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>/10</span>
+        <div style={{ ...serif, fontSize: '12px', color, marginTop: '1px', opacity: 0.85 }}>
+          {getTierLabel(score)}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function MapSlot({ mapData }) {
+  if (!mapData) return <EmptySlot cta="Begin The Map" ctaUrl="/tools/map" />
+
+  const dd       = mapData.session?.domainData ?? {}
+  const mapMeta  = mapData.map_data ?? {}
+  const horizon  = mapData.horizon_goal_user || mapMeta.life_horizon_draft
+  const focus    = mapMeta.focus_domains ?? []
+  const stage    = mapMeta.stage
+  const nextStep = mapMeta.next_step
+  const overall  = mapMeta.overall_reflection
+
+  const scores = DOMAIN_KEYS.map((k, i) => ({
+    key: k, label: DOMAIN_LABELS[i],
+    score: dd[k]?.currentScore, horizon: dd[k]?.horizonScore,
+  })).filter(d => d.score !== undefined)
+
+  return (
+    <div>
+      {stage && (
+        <div style={{ marginBottom: '20px', padding: '14px 18px',
+          background: 'rgba(200,146,42,0.04)', borderRadius: '10px',
+          border: '1px solid rgba(200,146,42,0.18)' }}>
+          <Eyebrow>Stage</Eyebrow>
+          <div style={{ ...serif, fontSize: '18px', fontWeight: 300, color: '#0F1523' }}>{stage}</div>
+          {nextStep && (
+            <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+              color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.6 }}>{nextStep}</div>
+          )}
+        </div>
+      )}
+
+      {scores.length > 0 && (
+        <div style={{ marginBottom: '20px' }}>
+          <Eyebrow>Seven domains</Eyebrow>
+          {scores.map(d => (
+            <ScoreBar key={d.key} label={d.label} score={d.score} horizonScore={d.horizon} />
+          ))}
+          {focus.length > 0 && (
+            <div style={{ marginTop: '14px', display: 'flex', flexWrap: 'wrap', gap: '8px',
+              alignItems: 'center' }}>
+              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
+                color: 'rgba(15,21,35,0.55)' }}>Focus:</span>
+              {focus.map(f => {
+                const idx = DOMAIN_KEYS.indexOf(f)
+                return (
+                  <span key={f} style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em',
+                    color: '#A8721A', background: 'rgba(200,146,42,0.07)',
+                    border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px',
+                    padding: '3px 12px' }}>
+                    {idx >= 0 ? DOMAIN_LABELS[idx] : f}
+                  </span>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {horizon && (
+        <>
+          <Rule />
+          <Eyebrow>Horizon Goal</Eyebrow>
+          <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', paddingLeft: '16px' }}>
+            <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic',
+              color: '#0F1523', lineHeight: 1.75, margin: 0 }}>{horizon}</p>
+          </div>
+        </>
+      )}
+
+      {overall && (
+        <>
+          <Rule />
+          <Eyebrow>Reflection</Eyebrow>
+          <p style={{ ...serif, fontSize: '15px', fontWeight: 300,
+            color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, margin: 0 }}>
+            {overall.split('\n\n')[0]}
+          </p>
+        </>
+      )}
+
+      {mapData.completed_at && (
+        <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+          color: 'rgba(15,21,35,0.55)', marginTop: '16px' }}>
+          Completed {new Date(mapData.completed_at).toLocaleDateString('en-GB',
+            { day: 'numeric', month: 'long', year: 'numeric' })}
+        </p>
+      )}
+    </div>
+  )
+}
+
+function PurposePieceSlot({ purposeData }) {
+  if (!purposeData) return <EmptySlot cta="Begin Purpose Piece" ctaUrl="/tools/purpose-piece" />
+
+  const tentative      = purposeData.session?.tentative ?? {}
+  const profile        = purposeData.profile ?? {}
+  const archetype      = tentative.archetype?.archetype
+  const secondary      = tentative.archetype?.secondary
+  const domain         = tentative.domain?.domain
+  const scale          = tentative.scale?.scale
+  const statement      = profile.civilisational_statement
+  const responsibility = profile.responsibility
+  const actions        = profile.actions
+
+  return (
+    <div>
+      {(archetype || domain || scale) && (
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '20px' }}>
+          {archetype && (
+            <div style={{ padding: '14px 18px', background: 'rgba(200,146,42,0.05)',
+              border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', flex: '1 1 130px' }}>
+              <Eyebrow>Archetype</Eyebrow>
+              <div style={{ ...serif, fontSize: '20px', fontWeight: 300, color: '#0F1523' }}>
+                {archetype}
+                {secondary && (
+                  <span style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)',
+                    fontStyle: 'italic', marginLeft: '8px' }}>+ {secondary}</span>
+                )}
+              </div>
+            </div>
+          )}
+          {domain && (
+            <div style={{ padding: '14px 18px', background: 'rgba(200,146,42,0.05)',
+              border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', flex: '1 1 130px' }}>
+              <Eyebrow>Domain</Eyebrow>
+              <div style={{ ...serif, fontSize: '20px', fontWeight: 300, color: '#0F1523' }}>{domain}</div>
+            </div>
+          )}
+          {scale && (
+            <div style={{ padding: '14px 18px', background: 'rgba(200,146,42,0.05)',
+              border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', flex: '1 1 130px' }}>
+              <Eyebrow>Scale</Eyebrow>
+              <div style={{ ...serif, fontSize: '20px', fontWeight: 300, color: '#0F1523' }}>{scale}</div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {statement && (
+        <>
+          <Eyebrow>Your Purpose Piece</Eyebrow>
+          <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', paddingLeft: '16px',
+            marginBottom: '20px' }}>
+            <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', fontWeight: 300,
+              color: '#0F1523', lineHeight: 1.75, margin: 0 }}>{statement}</p>
+          </div>
+        </>
+      )}
+
+      {responsibility && (
+        <>
+          <Rule />
+          <Eyebrow>The responsibility</Eyebrow>
+          <p style={{ ...serif, fontSize: '15px', fontWeight: 300,
+            color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, margin: 0 }}>{responsibility}</p>
+        </>
+      )}
+
+      {actions && (actions.light || actions.medium || actions.deep) && (
+        <>
+          <Rule />
+          <Eyebrow>Actions</Eyebrow>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            {[
+              { label: 'Light',  value: actions.light  },
+              { label: 'Medium', value: actions.medium },
+              { label: 'Deep',   value: actions.deep   },
+            ].filter(a => a.value).map(a => (
+              <div key={a.label} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: '#A8721A',
+                  background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.25)',
+                  borderRadius: '40px', padding: '3px 10px', flexShrink: 0, marginTop: '2px' }}>
+                  {a.label}
+                </span>
+                <span style={{ ...serif, fontSize: '15px', color: '#0F1523', lineHeight: 1.6 }}>
+                  {a.value}
+                </span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {purposeData.completed_at && (
+        <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+          color: 'rgba(15,21,35,0.55)', marginTop: '16px' }}>
+          Completed {new Date(purposeData.completed_at).toLocaleDateString('en-GB',
+            { day: 'numeric', month: 'long', year: 'numeric' })}
+        </p>
+      )}
+    </div>
+  )
+}
+
+function TargetSprintSlot({ sprintData }) {
+  if (!sprintData) return <EmptySlot cta="Begin Target Sprint" ctaUrl="/tools/target-goals" />
+
+  const dd       = sprintData.domain_data ?? {}
+  const domains  = sprintData.domains ?? []
+  const endLabel = sprintData.end_date_label
+  const targetDate = sprintData.target_date
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px',
+        marginBottom: '20px', flexWrap: 'wrap' }}>
+        <Eyebrow style={{ marginBottom: 0 }}>90-day sprint</Eyebrow>
+        {(endLabel || targetDate) && (
+          <span style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
+            color: 'rgba(15,21,35,0.72)' }}>
+            {endLabel || new Date(targetDate).toLocaleDateString('en-GB',
+              { day: 'numeric', month: 'long', year: 'numeric' })}
+          </span>
+        )}
+      </div>
+
+      {domains.map(domainId => {
+        const d          = dd[domainId] ?? {}
+        const idx        = DOMAIN_KEYS.indexOf(domainId)
+        const label      = idx >= 0 ? DOMAIN_LABELS[idx] : domainId
+        const goal       = d.targetGoal
+        const horizon    = d.horizonText
+        const milestones = d.milestones ?? []
+        const checked    = d.milestoneChecked ?? {}
+        const doneCount  = Object.values(checked).filter(Boolean).length
+
+        return (
+          <div key={domainId} style={{ marginBottom: '12px', padding: '16px 18px',
+            background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)',
+            borderRadius: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              marginBottom: '10px', gap: '10px' }}>
+              <span style={{ ...sc, fontSize: '14px', letterSpacing: '0.10em', color: '#A8721A' }}>
+                {label}
+              </span>
+              {milestones.length > 0 && (
+                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em',
+                  color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.08)',
+                  border: '1px solid rgba(200,146,42,0.18)', borderRadius: '40px',
+                  padding: '3px 10px', flexShrink: 0 }}>
+                  {doneCount}/{milestones.length} milestones
+                </span>
+              )}
+            </div>
+            {goal && (
+              <div style={{ marginBottom: '8px' }}>
+                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                  color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>Target goal</div>
+                <p style={{ ...serif, fontSize: '15px', fontWeight: 300,
+                  color: '#0F1523', lineHeight: 1.65, margin: 0 }}>{goal}</p>
+              </div>
+            )}
+            {horizon && (
+              <div>
+                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                  color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>Horizon</div>
+                <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
+                  color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: 0 }}>{horizon}</p>
+              </div>
+            )}
+          </div>
+        )
+      })}
+
+      {sprintData.created_at && (
+        <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+          color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
+          Started {new Date(sprintData.created_at).toLocaleDateString('en-GB',
+            { day: 'numeric', month: 'long', year: 'numeric' })}
+        </p>
+      )}
+    </div>
+  )
+}
+
+function NextUsSlot({ purposeData }) {
+  const profile   = purposeData?.profile ?? {}
+  const tentative = purposeData?.session?.tentative ?? {}
+  const statement = profile.civilisational_statement
+  const archetype = tentative.archetype?.archetype
+  const domain    = tentative.domain?.domain
+  const scale     = tentative.scale?.scale
+
+  if (!statement && !archetype) {
+    return (
+      <div>
+        <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+          color: 'rgba(15,21,35,0.72)', marginBottom: '16px', lineHeight: 1.7 }}>
+          Complete Purpose Piece to see where your contribution belongs in the larger work.
+        </p>
+        <a href="/tools/purpose-piece"
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
+            color: '#A8721A', textDecoration: 'none' }}>
+          Begin Purpose Piece {'\u2192'}
+        </a>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      {statement && (
+        <>
+          <Eyebrow>Your civilisational statement</Eyebrow>
+          <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', paddingLeft: '16px',
+            marginBottom: '20px' }}>
+            <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', fontWeight: 300,
+              color: '#0F1523', lineHeight: 1.75, margin: 0 }}>{statement}</p>
+          </div>
+        </>
+      )}
+      {(archetype || domain || scale) && (
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
+          {[archetype, domain, scale].filter(Boolean).map((v, i) => (
+            <span key={i} style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em',
+              color: '#A8721A', background: 'rgba(200,146,42,0.07)',
+              border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px',
+              padding: '5px 14px' }}>{v}</span>
+          ))}
+        </div>
+      )}
+      <a href="/nextus" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
+        color: '#A8721A', textDecoration: 'none' }}>
+        Explore NextUs {'\u2192'}
+      </a>
     </div>
   )
 }
@@ -74,8 +460,10 @@ function EmptySlot({ cta, ctaUrl }) {
 export function ProfilePage() {
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
+
   const [mapData,     setMapData]     = useState(null)
   const [purposeData, setPurposeData] = useState(null)
+  const [sprintData,  setSprintData]  = useState(null)
   const [dataLoading, setDataLoading] = useState(true)
 
   useEffect(() => {
@@ -87,12 +475,34 @@ export function ProfilePage() {
   async function loadData() {
     setDataLoading(true)
     try {
-      const [mapRes, ppRes] = await Promise.all([
-        supabase.from('map_results').select('session,completed_at').eq('user_id', user.id).eq('complete', true).order('updated_at', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('purpose_piece_results').select('*').eq('user_id', user.id).order('completed_at', { ascending: false }).limit(1).maybeSingle(),
+      const [mapRes, ppRes, sprintRes] = await Promise.all([
+        supabase
+          .from('map_results')
+          .select('session, completed_at, map_data, horizon_goal_user, horizon_goal_system')
+          .eq('user_id', user.id)
+          .eq('complete', true)
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from('purpose_piece_results')
+          .select('profile, session, completed_at')
+          .eq('user_id', user.id)
+          .order('completed_at', { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+        supabase
+          .from('target_goal_sessions')
+          .select('domains, domain_data, target_date, end_date_label, quarter_type, created_at, status')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .maybeSingle(),
       ])
-      if (mapRes.data) setMapData(mapRes.data)
-      if (ppRes.data) setPurposeData(ppRes.data)
+      if (mapRes.data)    setMapData(mapRes.data)
+      if (ppRes.data)     setPurposeData(ppRes.data)
+      if (sprintRes.data) setSprintData(sprintRes.data)
     } catch {}
     setDataLoading(false)
   }
@@ -103,83 +513,58 @@ export function ProfilePage() {
   }
 
   if (authLoading || dataLoading) return (
-    <div style={{ minHeight: '100vh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)' }}>Loading{'\u2026'}</div>
+    <div style={{ minHeight: '100vh', background: '#FAFAF7', display: 'flex',
+      alignItems: 'center', justifyContent: 'center' }}>
+      <div className="loading" />
     </div>
   )
 
   if (!user) return null
 
-  const name = user.email?.split('@')[0] || 'You'
-  const scores = mapData?.session?.domainData
-    ? Object.fromEntries(Object.entries(mapData.session.domainData).filter(([,d]) => d?.score !== undefined).map(([id,d]) => [id, d.score]))
-    : null
+  const name = user.user_metadata?.full_name
+    || user.email?.split('@')[0]
+    || 'You'
 
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
       <Nav />
-      <ScalePanel side="right" />
-
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '112px 40px 160px' }}>
 
-        <div style={{ marginBottom: '72px' }}>
-          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Your Profile</span>
-          <h1 style={{ ...serif, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '10px' }}>{name}.</h1>
-          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{user.email}</p>
+        <div style={{ marginBottom: '64px' }}>
+          <Eyebrow>Your profile</Eyebrow>
+          <h1 style={{ ...serif, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 300,
+            color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '8px' }}>
+            {name}.
+          </h1>
+          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+            color: 'rgba(15,21,35,0.72)' }}>{user.email}</p>
         </div>
 
-        <Slot title="The Map" tip="Seven domain scores." linkLabel="The Map" linkUrl="/tools/map">
-          {scores ? (
-            <div>
-              {DOMAIN_KEYS.map((key, i) => scores[key] !== undefined && (
-                <ScoreBar key={key} label={DOMAIN_LABELS[i]} score={scores[key]} />
-              ))}
-              {mapData?.completed_at && (
-                <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginTop: '16px' }}>
-                  Completed {new Date(mapData.completed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
-                </p>
-              )}
-            </div>
-          ) : (
-            <EmptySlot cta="Begin The Map" ctaUrl="/tools/map" />
-          )}
+        <Slot title="The Map" eyebrow="Life OS" linkLabel="Open" linkUrl="/tools/map">
+          <MapSlot mapData={mapData} />
         </Slot>
 
-        <Slot title="Purpose Piece" tip="Your contribution archetype." linkLabel="Purpose Piece" linkUrl="/tools/purpose-piece">
-          {purposeData ? (
-            <div>
-              {purposeData.archetype && (
-                <div style={{ marginBottom: '16px' }}>
-                  <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>Archetype</div>
-                  <div style={{ ...serif, fontSize: '22px', fontWeight: 300, color: '#0F1523' }}>{purposeData.archetype}</div>
-                </div>
-              )}
-              {purposeData.domain && (
-                <div style={{ marginBottom: '16px' }}>
-                  <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>Primary Domain</div>
-                  <div style={{ ...serif, fontSize: '16px', color: '#0F1523' }}>{purposeData.domain}</div>
-                </div>
-              )}
-              {purposeData.scale && (
-                <div>
-                  <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>Scale</div>
-                  <div style={{ ...serif, fontSize: '16px', color: '#0F1523' }}>{purposeData.scale}</div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <EmptySlot cta="Begin Purpose Piece" ctaUrl="/tools/purpose-piece" />
-          )}
+        <Slot title="Purpose Piece" eyebrow="Life OS"
+          linkLabel="Open" linkUrl="/tools/purpose-piece">
+          <PurposePieceSlot purposeData={purposeData} />
         </Slot>
 
-        <Slot title="NextUs" tip="Seven civilisational domains." linkLabel="NextUs" linkUrl="/nextus">
-          <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)' }}>
-            This is where your contribution to the larger project lives. Building now.
-          </div>
+        <Slot title="Target Sprint" eyebrow="Life OS"
+          linkLabel="Open" linkUrl="/tools/target-goals">
+          <TargetSprintSlot sprintData={sprintData} />
         </Slot>
 
-        <div style={{ textAlign: 'center', paddingTop: '48px', borderTop: '1px solid rgba(200,146,42,0.20)', marginTop: '24px' }}>
-          <button onClick={signOut} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.20em', color: 'rgba(15,21,35,0.72)', padding: '8px 0' }}>
+        <Slot title="NextUs" eyebrow="The larger work"
+          linkLabel="Explore" linkUrl="/nextus" defaultOpen={false}>
+          <NextUsSlot purposeData={purposeData} />
+        </Slot>
+
+        <div style={{ textAlign: 'center', paddingTop: '48px',
+          borderTop: '1px solid rgba(200,146,42,0.15)', marginTop: '24px' }}>
+          <button onClick={signOut}
+            style={{ background: 'none', border: 'none', cursor: 'pointer',
+              ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em',
+              color: 'rgba(15,21,35,0.72)', padding: '8px 0', textTransform: 'uppercase' }}>
             Sign out
           </button>
         </div>

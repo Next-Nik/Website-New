@@ -4,9 +4,11 @@ import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
 import { Nav } from '../components/Nav'
 
-// ── YOUR UUID — replace with your actual Supabase user ID ─────
-// Find it: Supabase Dashboard → Authentication → Users → your email
-const FOUNDER_UUID = '304f778f-f859-4c06-972c-f37ae8042457'
+// ── Founder check — uses user_metadata.role set in Supabase ──
+// Resilient to project changes. Set via: supabase.auth.updateUser({ data: { role: 'founder' } })
+function isFounder(user) {
+  return user?.user_metadata?.role === 'founder'
+}
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -47,9 +49,10 @@ function Btn({ onClick, children, variant = 'primary', small, disabled }) {
   )
 }
 
-function Input({ value, onChange, placeholder, type = 'text', style }) {
+function Input({ value, onChange, placeholder, type = 'text', style, onKeyDown }) {
   return (
     <input type={type} value={value} onChange={e => onChange(e.target.value)}
+      onKeyDown={onKeyDown}
       placeholder={placeholder}
       style={{
         ...serif, fontSize: '15px', color: '#0F1523',
@@ -123,7 +126,7 @@ function Toast({ message, onClose }) {
 
 // ── Tab navigation ────────────────────────────────────────────
 
-const TABS = ['Groups', 'Members', 'Entitlements', 'Users', 'Grants']
+const TABS = ['Now', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
 
 function TabBar({ active, setActive }) {
   return (
@@ -142,6 +145,126 @@ function TabBar({ active, setActive }) {
           {tab}
         </button>
       ))}
+    </div>
+  )
+}
+
+// ── NOW TAB ───────────────────────────────────────────────────
+
+function NowTab() {
+  const [stats, setStats]     = useState(null)
+  const [recent, setRecent]   = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true)
+      try {
+        const [
+          { count: totalUsers },
+          { count: mapCount },
+          { count: ppCount },
+          { count: sprintCount },
+          { data: recentUsers },
+          { data: recentGrants },
+        ] = await Promise.all([
+          supabase.from('users').select('*', { count: 'exact', head: true }),
+          supabase.from('map_results').select('*', { count: 'exact', head: true }).eq('complete', true),
+          supabase.from('purpose_piece_results').select('*', { count: 'exact', head: true }),
+          supabase.from('target_goal_sessions').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+          supabase.from('users').select('id, email, first_name, last_name, created_at, status')
+            .order('created_at', { ascending: false }).limit(8),
+          supabase.from('access').select('*, users(email)')
+            .order('granted_at', { ascending: false }).limit(5),
+        ])
+        setStats({ totalUsers, mapCount, ppCount, sprintCount })
+        setRecent({ users: recentUsers ?? [], grants: recentGrants ?? [] })
+      } catch {}
+      setLoading(false)
+    }
+    load()
+  }, [])
+
+  if (loading) return <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p>
+
+  return (
+    <div>
+      <h2 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: '#0F1523', marginBottom: '28px' }}>
+        Live snapshot
+      </h2>
+
+      {/* Stats grid */}
+      {stats && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+          gap: '12px', marginBottom: '36px' }}>
+          {[
+            { label: 'Total users',      value: stats.totalUsers  ?? 0 },
+            { label: 'Maps completed',   value: stats.mapCount    ?? 0 },
+            { label: 'Purpose Pieces',   value: stats.ppCount     ?? 0 },
+            { label: 'Active sprints',   value: stats.sprintCount ?? 0 },
+          ].map(s => (
+            <Card key={s.label} style={{ textAlign: 'center', padding: '20px 16px' }}>
+              <div style={{ ...serif, fontSize: '36px', fontWeight: 300,
+                color: gold, lineHeight: 1, marginBottom: '6px' }}>{s.value}</div>
+              <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase' }}>{s.label}</div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+        {/* Recent signups */}
+        <div>
+          <Eyebrow>Recent signups</Eyebrow>
+          {recent.users?.length === 0
+            ? <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)' }}>No users yet.</p>
+            : recent.users?.map(u => {
+              const name = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.email?.split('@')[0]
+              return (
+                <div key={u.id} style={{ display: 'flex', alignItems: 'center',
+                  gap: '10px', padding: '9px 0',
+                  borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ ...serif, fontSize: '14px', color: '#0F1523' }}>{name}</div>
+                    <div style={{ ...serif, fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>{u.email}</div>
+                  </div>
+                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em',
+                    color: 'rgba(15,21,35,0.55)', flexShrink: 0 }}>
+                    {new Date(u.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                  </div>
+                </div>
+              )
+            })
+          }
+        </div>
+
+        {/* Recent access grants */}
+        <div>
+          <Eyebrow>Recent grants</Eyebrow>
+          {recent.grants?.length === 0
+            ? <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)' }}>No grants yet.</p>
+            : recent.grants?.map(g => (
+              <div key={g.id} style={{ display: 'flex', alignItems: 'center',
+                gap: '10px', padding: '9px 0',
+                borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ ...serif, fontSize: '14px', color: '#0F1523' }}>
+                    {g.users?.email}
+                  </div>
+                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: gold }}>
+                    {g.product} · {g.tier}
+                  </div>
+                </div>
+                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em',
+                  color: 'rgba(15,21,35,0.55)', flexShrink: 0 }}>
+                  {new Date(g.granted_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
     </div>
   )
 }
@@ -251,7 +374,7 @@ function GroupsTab({ toast }) {
         </Card>
       )}
 
-      {loading ? <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>Loading...</p> : (
+      {loading ? <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p> : (
         groups.map(g => (
           <Card key={g.id}>
             <div style={{ display: 'flex', alignItems: 'flex-start',
@@ -282,9 +405,9 @@ function GroupsTab({ toast }) {
                     Join URL ↗
                   </a>
                   <span style={{ color: '#A8721A' }}>·</span>
-                  <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.45)',
+                  <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
                     letterSpacing: '0.10em' }}>
-                    {g.group_members?.[0]?.count ?? 0} members
+                    {g.group_members?.[0]?.count ?? 0} member{(g.group_members?.[0]?.count ?? 0) !== 1 ? "s" : ""}
                   </span>
                 </div>
               </div>
@@ -416,7 +539,7 @@ function MembersTab({ toast }) {
             <Btn onClick={addMember}>Add</Btn>
           </Card>
 
-          {loading ? <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>Loading...</p> : (
+          {loading ? <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p> : (
             <>
               {pending.length > 0 && (
                 <div style={{ marginBottom: '24px' }}>
@@ -427,14 +550,14 @@ function MembersTab({ toast }) {
               <div style={{ marginBottom: '24px' }}>
                 <Eyebrow>Active ({active.length})</Eyebrow>
                 {active.length === 0
-                  ? <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.45)' }}>No active members.</p>
+                  ? <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)' }}>No active members.</p>
                   : active.map(m => <MemberRow key={m.id} m={m} />)
                 }
               </div>
               {removed.length > 0 && (
                 <details>
                   <summary style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em',
-                    color: 'rgba(15,21,35,0.45)', cursor: 'pointer', marginBottom: '8px' }}>
+                    color: 'rgba(15,21,35,0.72)', cursor: 'pointer', marginBottom: '8px' }}>
                     Removed ({removed.length})
                   </summary>
                   {removed.map(m => <MemberRow key={m.id} m={m} />)}
@@ -595,7 +718,7 @@ function EntitlementsTab({ toast }) {
           )}
 
           {entitlements.length === 0
-            ? <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.45)' }}>
+            ? <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)' }}>
                 No entitlements yet for this group.
               </p>
             : entitlements.map(e => (
@@ -621,7 +744,7 @@ function EntitlementsTab({ toast }) {
                         : `${e.expires_after_days}d from grant`}
                     </div>
                     {e.notes && (
-                      <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.45)',
+                      <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
                         marginTop: '4px' }}>{e.notes}</div>
                     )}
                   </div>
@@ -717,7 +840,9 @@ function UsersTab({ toast }) {
         <div style={{ flex: 1 }}>
           <Eyebrow>Search by email, first name, or last name</Eyebrow>
           <Input value={query} onChange={setQuery} placeholder="Search…"
-            style={{}} />
+            style={{}}
+            onKeyDown={e => e.key === 'Enter' && search()}
+          />
         </div>
         <Btn onClick={search} disabled={searching}>
           {searching ? 'Searching…' : 'Search'}
@@ -806,7 +931,7 @@ function UsersTab({ toast }) {
             <div style={{ marginBottom: '16px' }}>
               <Eyebrow>Individual access</Eyebrow>
               {userAccess.length === 0
-                ? <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.45)' }}>
+                ? <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)' }}>
                     No individual grants.
                   </p>
                 : userAccess.map(a => (
@@ -883,7 +1008,7 @@ function GrantsTab() {
         Recent Grants
       </h2>
       {loading
-        ? <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>Loading...</p>
+        ? <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p>
         : grants.map(g => {
           const u = g.users
           const name = [u?.first_name, u?.last_name].filter(Boolean).join(' ') || u?.email
@@ -892,7 +1017,7 @@ function GrantsTab() {
               padding: '12px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
               <div style={{ flex: 1 }}>
                 <span style={{ ...serif, fontSize: '15px', color: '#0F1523' }}>{name}</span>
-                <span style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.45)',
+                <span style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
                   marginLeft: '10px' }}>{u?.email}</span>
               </div>
               <Badge label={g.product} />
@@ -928,12 +1053,12 @@ export function AdminConsolePage() {
   const showToast = useCallback((msg) => setToast(msg), [])
 
   useEffect(() => {
-    if (!loading && (!user || user.id !== FOUNDER_UUID)) {
+    if (!loading && (!user || !isFounder(user))) {
       navigate('/')
     }
   }, [user, loading, navigate])
 
-  if (loading || !user || user.id !== FOUNDER_UUID) {
+  if (loading || !user || !isFounder(user)) {
     return <div className="loading" />
   }
 
@@ -953,6 +1078,7 @@ export function AdminConsolePage() {
 
         <TabBar active={tab} setActive={setTab} />
 
+        {tab === 'Now'          && <NowTab />}
         {tab === 'Groups'       && <GroupsTab       toast={showToast} />}
         {tab === 'Members'      && <MembersTab      toast={showToast} />}
         {tab === 'Entitlements' && <EntitlementsTab toast={showToast} />}
