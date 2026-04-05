@@ -1468,9 +1468,8 @@ export function MapPage() {
         <div className="tool-header">
           <span className="tool-eyebrow">Life OS · The Map</span>
           <h1 className="tool-title">The Map</h1>
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.0625rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.6 }}>
-            From where you are,<br />
-            to where you want to be.
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.0625rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.75, maxWidth: '520px' }}>
+            You can't live your full-yes life if you're not clear about where you're starting from and where you want to go.
           </p>
         </div>
 
