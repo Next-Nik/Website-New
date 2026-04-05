@@ -259,7 +259,7 @@ function FlameSlider({ value, onChange, ghostValue = null }) {
       {/* Label */}
       <div style={{
         fontFamily: "'Cormorant Garamond',Georgia,serif",
-        fontSize: '0.875rem', fontStyle: 'italic',
+        fontSize: '1.3125rem', fontStyle: 'italic',
         color: getFlameProps(value).color,
         transition: 'color 0.4s ease',
         textAlign: 'center', minHeight: '20px',
@@ -337,7 +337,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
 
       <p style={{
         fontFamily: "'Cormorant Garamond',Georgia,serif",
-        fontSize: '1rem', fontStyle: 'italic',
+        fontSize: '1.25rem', fontStyle: 'italic',
         color: 'rgba(15,21,35,0.6)', lineHeight: 1.7,
         textAlign: 'center', marginBottom: '24px',
       }}>
@@ -361,7 +361,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
         style={{
           width: '100%', padding: '10px 14px',
           fontFamily: "'Cormorant Garamond',Georgia,serif",
-          fontSize: '0.9375rem', fontStyle: 'italic',
+          fontSize: '1.125rem', fontStyle: 'italic',
           color: 'rgba(15,21,35,0.75)',
           background: 'rgba(200,146,42,0.025)',
           border: '1px solid rgba(200,146,42,0.2)',
@@ -380,7 +380,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
           style={{
             flex: 1, padding: '13px',
             fontFamily: "'Cormorant SC',Georgia,serif",
-            fontSize: '0.875rem', letterSpacing: '0.14em',
+            fontSize: '1.3125rem', letterSpacing: '0.14em',
             color: locked ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.9)',
             background: 'rgba(200,146,42,0.05)',
             border: '1.5px solid rgba(200,146,42,0.78)',
@@ -395,7 +395,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
         {onSkip && !locked && (
           <button onClick={onSkip} style={{
             fontFamily: "'Cormorant Garamond',Georgia,serif",
-            fontSize: '0.875rem', fontStyle: 'italic',
+            fontSize: '1.3125rem', fontStyle: 'italic',
             color: 'rgba(15,21,35,0.35)',
             background: 'none', border: 'none',
             cursor: 'pointer', padding: '10px',

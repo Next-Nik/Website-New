@@ -112,7 +112,7 @@ function GateCard({ toolName, variant, discountPct = 0 }) {
         textAlign: 'center',
       }}>
         <span style={{
-          ...sc, fontSize: '13px', letterSpacing: '0.2em',
+          ...sc, fontSize: '15px', letterSpacing: '0.2em',
           color: '#A8721A', display: 'block', marginBottom: '14px',
           textTransform: 'uppercase',
         }}>

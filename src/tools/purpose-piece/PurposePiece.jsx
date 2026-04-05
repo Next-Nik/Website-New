@@ -108,11 +108,11 @@ function ProgressBar({ act, totalActs = 3 }) {
               border: `1.5px solid ${act >= i ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.2)'}`,
               background: act > i ? 'rgba(200,146,42,0.15)' : act === i ? 'rgba(200,146,42,0.08)' : 'transparent',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              ...sc, fontSize: '13px', letterSpacing: '0.1em',
+              ...sc, fontSize: '15px', letterSpacing: '0.1em',
               color: act >= i ? '#A8721A' : 'rgba(200,146,42,0.4)',
               transition: 'all 0.4s ease',
             }}>{act > i ? '✓' : i}</div>
-            <span className="pp-step-label" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: act >= i ? '#A8721A' : 'rgba(200,146,42,0.4)', textTransform: 'uppercase' }}>{labels[i]}</span>
+            <span className="pp-step-label" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: act >= i ? '#A8721A' : 'rgba(200,146,42,0.4)', textTransform: 'uppercase' }}>{labels[i]}</span>
           </div>
         ))}
       </div>
@@ -130,10 +130,10 @@ function AuthModal() {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px 32px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
-        <span style={{ display: 'block', ...sc, fontSize: '13px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
-        <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>Sign in to begin.</h2>
-        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>Your archetype and contribution pattern are saved to your profile.</p>
-        <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '14px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
+        <span style={{ display: 'block', ...sc, fontSize: '15px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
+        <h2 style={{ ...sc, fontSize: '1.625rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>Sign in to begin.</h2>
+        <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>Your archetype and contribution pattern are saved to your profile.</p>
+        <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '14px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '1.3125rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
           Sign in or create account {'→'}
         </a>
       </div>
@@ -147,11 +147,11 @@ function DeepGateModal({ onUnlock, onDismiss }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px 32px', maxWidth: '440px', width: '100%' }}>
-        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Go Deeper</div>
-        <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', marginBottom: '12px', lineHeight: 1.2 }}>The tension. The shadow. The full picture.</h2>
-        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.75, marginBottom: '24px' }}>The First Look gave you the shape. The Deep Dive is a real conversation {'—'} into what this pattern costs you, where it breaks, and what it{'’'}s been asking of you.</p>
-        <button onClick={onUnlock} style={{ display: 'block', width: '100%', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', ...gold, ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', cursor: 'pointer', marginBottom: '12px' }}>Unlock the Deep Dive</button>
-        <button onClick={onDismiss} style={{ display: 'block', width: '100%', background: 'none', border: 'none', ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: '6px' }}>Not now</button>
+        <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Go Deeper</div>
+        <h2 style={{ ...sc, fontSize: '1.625rem', fontWeight: 400, color: '#0F1523', marginBottom: '12px', lineHeight: 1.2 }}>The tension. The shadow. The full picture.</h2>
+        <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...meta, lineHeight: 1.75, marginBottom: '24px' }}>The First Look gave you the shape. The Deep Dive is a real conversation {'—'} into what this pattern costs you, where it breaks, and what it{'’'}s been asking of you.</p>
+        <button onClick={onUnlock} style={{ display: 'block', width: '100%', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', ...gold, ...sc, fontSize: '1.3125rem', letterSpacing: '0.14em', cursor: 'pointer', marginBottom: '12px' }}>Unlock the Deep Dive</button>
+        <button onClick={onDismiss} style={{ display: 'block', width: '100%', background: 'none', border: 'none', ...serif, fontSize: '1.3125rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: '6px' }}>Not now</button>
       </div>
     </div>
   )
@@ -261,15 +261,15 @@ function ActArchetype({ user, onComplete }) {
         <SpinningHeptagon opacity={0.08} speed="50s" />
         <style>{`@keyframes archetypeIn { from { opacity:0; transform:scale(0.88) translateY(12px); } to { opacity:1; transform:scale(1) translateY(0); } }`}</style>
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', animation: 'archetypeIn 0.7s ease-out forwards' }}>
-          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '20px' }}>Your archetype</div>
+          <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '20px' }}>Your archetype</div>
           <div style={{ fontSize: '52px', marginBottom: '16px', lineHeight: 1, filter: 'drop-shadow(0 0 12px rgba(200,146,42,0.4))' }}>{glyph}</div>
-          <h1 style={{ ...sc, fontSize: 'clamp(2rem,6vw,3.5rem)', fontWeight: 400, color: '#0F1523', lineHeight: 1.05, marginBottom: '16px' }}>{result.archetype}</h1>
+          <h1 style={{ ...sc, fontSize: 'clamp(2.5rem,7vw,4.5rem)', fontWeight: 400, color: '#0F1523', lineHeight: 1.05, marginBottom: '16px' }}>{result.archetype}</h1>
           {result.synthesis?.your_signal && (
-            <p style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', ...meta, lineHeight: 1.8, maxWidth: '480px', margin: '0 auto 32px' }}>
+            <p style={{ ...serif, fontSize: '1.25rem', fontStyle: 'italic', ...meta, lineHeight: 1.8, maxWidth: '480px', margin: '0 auto 32px' }}>
               {result.synthesis.your_signal}
             </p>
           )}
-          <button onClick={() => onComplete(result)} style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '13px 32px', cursor: 'pointer', transition: 'all 0.2s' }}
+          <button onClick={() => onComplete(result)} style={{ ...sc, fontSize: '1.3125rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '13px 32px', cursor: 'pointer', transition: 'all 0.2s' }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
             onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
             Now find your domain {'→'}
@@ -282,11 +282,11 @@ function ActArchetype({ user, onComplete }) {
   // ── Conversation ───────────────────────────────────────────────────────────
   return (
     <div>
-      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 1 {'·'} Archetype</div>
-      <h2 style={{ ...serif, fontSize: 'clamp(1.5rem,4vw,2.25rem)', fontWeight: 300, color: '#0F1523', lineHeight: 1.1, marginBottom: '8px' }}>
+      <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 1 {'·'} Archetype</div>
+      <h2 style={{ ...serif, fontSize: 'clamp(1.875rem,5vw,2.75rem)', fontWeight: 300, color: '#0F1523', lineHeight: 1.1, marginBottom: '8px' }}>
         What did life ask you to bring?
       </h2>
-      <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, marginBottom: '24px', lineHeight: 1.65 }}>
+      <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, marginBottom: '24px', lineHeight: 1.65 }}>
         Not what you chose. What kept showing up anyway.
       </p>
       <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.2)', marginBottom: '24px' }} />
@@ -300,8 +300,8 @@ function ActArchetype({ user, onComplete }) {
                 <button key={opt.id} onClick={() => handleOptionSelect(opt.id)} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)'; e.currentTarget.style.background = 'rgba(200,146,42,0.04)' }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.25)'; e.currentTarget.style.background = '#FFFFFF' }}>
-                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', ...gold, flexShrink: 0, width: '16px' }}>{opt.id.toUpperCase()}</span>
-                  <span style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.5 }}>{opt.text}</span>
+                  <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', ...gold, flexShrink: 0, width: '16px' }}>{opt.id.toUpperCase()}</span>
+                  <span style={{ ...serif, fontSize: '1.125rem', ...meta, lineHeight: 1.5 }}>{opt.text}</span>
                 </button>
               ))}
             </div>
@@ -349,15 +349,15 @@ function ActDomain({ archetype, session, onComplete }) {
 
   return (
     <div>
-      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 2 {'·'} Domain</div>
-      <h2 style={{ ...serif, fontSize: 'clamp(1.5rem,4vw,2.25rem)', fontWeight: 300, color: '#0F1523', lineHeight: 1.1, marginBottom: '8px' }}>
+      <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 2 {'·'} Domain</div>
+      <h2 style={{ ...serif, fontSize: 'clamp(1.875rem,5vw,2.75rem)', fontWeight: 300, color: '#0F1523', lineHeight: 1.1, marginBottom: '8px' }}>
         Where does your work land hardest?
       </h2>
-      <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, marginBottom: '8px', lineHeight: 1.65 }}>
+      <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, marginBottom: '8px', lineHeight: 1.65 }}>
         The {archetype} pattern shows up in every domain. But one is where your effort compounds most.
       </p>
       {suggested && (
-        <p style={{ ...serif, fontSize: '0.875rem', ...meta, marginBottom: '24px', lineHeight: 1.6 }}>
+        <p style={{ ...serif, fontSize: '1.3125rem', ...meta, marginBottom: '24px', lineHeight: 1.6 }}>
           <span style={{ ...gold }}>{glyph}</span> Based on what emerged, {' '}
           <span style={{ ...gold }}>{NEXUS_DOMAINS.find(d => d.id === suggested)?.label}</span> may be your strongest signal. Trust your instinct.
         </p>
@@ -379,8 +379,8 @@ function ActDomain({ archetype, session, onComplete }) {
                 onMouseEnter={e => { if (!isSel) { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)'; e.currentTarget.style.transform = 'translateY(-2px)' } }}
                 onMouseLeave={e => { if (!isSel) { e.currentTarget.style.borderColor = isSug ? 'rgba(200,146,42,0.4)' : 'rgba(200,146,42,0.18)'; e.currentTarget.style.transform = '' } }}>
                 <div style={{ fontSize: '22px', marginBottom: '8px', filter: isSel ? 'drop-shadow(0 0 6px rgba(200,146,42,0.5))' : 'none' }}>{d.glyph}</div>
-                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: isSel ? '#A8721A' : '#0F1523', marginBottom: '4px' }}>{d.label}</div>
-                {isSug && <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#C8922A', textTransform: 'uppercase' }}>suggested</div>}
+                <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: isSel ? '#A8721A' : '#0F1523', marginBottom: '4px' }}>{d.label}</div>
+                {isSug && <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#C8922A', textTransform: 'uppercase' }}>suggested</div>}
               </div>
             )
           })}
@@ -388,7 +388,7 @@ function ActDomain({ archetype, session, onComplete }) {
       </div>
 
       <button onClick={confirm} disabled={!selected || confirming}
-        style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '13px 32px', cursor: !selected ? 'not-allowed' : 'pointer', opacity: !selected ? 0.4 : 1, transition: 'all 0.2s' }}>
+        style={{ ...sc, fontSize: '1.3125rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '13px 32px', cursor: !selected ? 'not-allowed' : 'pointer', opacity: !selected ? 0.4 : 1, transition: 'all 0.2s' }}>
         {confirming ? 'Confirming…' : 'This is my domain →'}
       </button>
     </div>
@@ -410,11 +410,11 @@ function ActScale({ archetype, domain, onComplete }) {
 
   return (
     <div>
-      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 3 {'·'} Scale</div>
-      <h2 style={{ ...serif, fontSize: 'clamp(1.5rem,4vw,2.25rem)', fontWeight: 300, color: '#0F1523', lineHeight: 1.1, marginBottom: '8px' }}>
+      <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Act 3 {'·'} Scale</div>
+      <h2 style={{ ...serif, fontSize: 'clamp(1.875rem,5vw,2.75rem)', fontWeight: 300, color: '#0F1523', lineHeight: 1.1, marginBottom: '8px' }}>
         At what level does your work want to operate?
       </h2>
-      <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, marginBottom: '24px', lineHeight: 1.65 }}>
+      <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, marginBottom: '24px', lineHeight: 1.65 }}>
         A {archetype} working in {domainLabel} can operate at every level. Which one pulls?
       </p>
       <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.2)', marginBottom: '24px' }} />
@@ -429,17 +429,17 @@ function ActScale({ archetype, domain, onComplete }) {
               onMouseLeave={e => { if (!isSel) { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.2)'; e.currentTarget.style.transform = '' } }}>
               <div style={{ fontSize: '28px', flexShrink: 0, filter: isSel ? 'drop-shadow(0 0 8px rgba(200,146,42,0.45))' : 'none', transition: 'filter 0.3s' }}>{s.glyph}</div>
               <div>
-                <div style={{ ...sc, fontSize: '0.9375rem', letterSpacing: '0.08em', color: isSel ? '#A8721A' : '#0F1523', marginBottom: '4px' }}>{s.label}</div>
-                <div style={{ ...serif, fontSize: '0.9rem', fontStyle: 'italic', ...muted, lineHeight: 1.55 }}>{s.desc}</div>
+                <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.08em', color: isSel ? '#A8721A' : '#0F1523', marginBottom: '4px' }}>{s.label}</div>
+                <div style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, lineHeight: 1.55 }}>{s.desc}</div>
               </div>
-              {isSel && <div style={{ marginLeft: 'auto', ...sc, fontSize: '1rem', ...gold }}>{'✓'}</div>}
+              {isSel && <div style={{ marginLeft: 'auto', ...sc, fontSize: '1.25rem', ...gold }}>{'✓'}</div>}
             </div>
           )
         })}
       </div>
 
       <button onClick={confirm} disabled={!selected || confirming}
-        style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '13px 32px', cursor: !selected ? 'not-allowed' : 'pointer', opacity: !selected ? 0.4 : 1, transition: 'all 0.2s' }}>
+        style={{ ...sc, fontSize: '1.3125rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '13px 32px', cursor: !selected ? 'not-allowed' : 'pointer', opacity: !selected ? 0.4 : 1, transition: 'all 0.2s' }}>
         {confirming ? 'Confirming…' : 'This is my scale →'}
       </button>
     </div>
@@ -476,18 +476,18 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
         <style>{`@keyframes revealIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }`}</style>
 
         <div style={{ position: 'relative', zIndex: 1, animation: 'revealIn 0.8s ease-out forwards' }}>
-          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '24px' }}>Purpose Piece</div>
+          <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '24px' }}>Purpose Piece</div>
 
           {/* Archetype */}
           <div style={{ fontSize: '48px', marginBottom: '8px', filter: 'drop-shadow(0 0 16px rgba(200,146,42,0.45))' }}>{glyph}</div>
-          <h1 style={{ ...sc, fontSize: 'clamp(2.5rem,7vw,4rem)', fontWeight: 400, color: '#0F1523', lineHeight: 1, marginBottom: '6px' }}>{archetype}</h1>
+          <h1 style={{ ...sc, fontSize: 'clamp(3rem,8vw,5rem)', fontWeight: 400, color: '#0F1523', lineHeight: 1, marginBottom: '6px' }}>{archetype}</h1>
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '32px', flexWrap: 'wrap' }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', ...gold }}>the {archetype?.toLowerCase()}</span>
-            <span style={{ ...sc, fontSize: '13px', color: '#C8922A' }}>{'·'}</span>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#0F1523' }}>{domainObj?.label}</span>
-            <span style={{ ...sc, fontSize: '13px', color: '#C8922A' }}>{'·'}</span>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#0F1523' }}>{scaleObj?.label}</span>
+            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold }}>the {archetype?.toLowerCase()}</span>
+            <span style={{ ...sc, fontSize: '15px', color: '#C8922A' }}>{'·'}</span>
+            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#0F1523' }}>{domainObj?.label}</span>
+            <span style={{ ...sc, fontSize: '15px', color: '#C8922A' }}>{'·'}</span>
+            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#0F1523' }}>{scaleObj?.label}</span>
           </div>
 
           {/* Three coordinates */}
@@ -498,10 +498,10 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
               { label: 'Scale',     value: scaleObj?.label,  glyph: scaleObj?.glyph,  sublabel: 'The level you operate at' },
             ].map(c => (
               <div key={c.label} style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '12px', padding: '16px 12px' }}>
-                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', marginBottom: '8px' }}>{c.label}</div>
+                <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', marginBottom: '8px' }}>{c.label}</div>
                 <div style={{ fontSize: '22px', marginBottom: '6px' }}>{c.glyph}</div>
-                <div style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.06em', color: '#0F1523', marginBottom: '4px', lineHeight: 1.2 }}>{c.value}</div>
-                <div style={{ ...serif, fontSize: '13px', fontStyle: 'italic', ...muted, lineHeight: 1.4 }}>{c.sublabel}</div>
+                <div style={{ ...sc, fontSize: '1.25rem', letterSpacing: '0.06em', color: '#0F1523', marginBottom: '4px', lineHeight: 1.2 }}>{c.value}</div>
+                <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic', ...muted, lineHeight: 1.4 }}>{c.sublabel}</div>
               </div>
             ))}
           </div>
@@ -509,11 +509,11 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
           {/* Synthesis */}
           {synthesis && (
             <div style={{ textAlign: 'left', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '10px', padding: '24px 24px 20px', marginBottom: '28px' }}>
-              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>The Pattern</div>
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>The Pattern</div>
               {SYNTHESIS_SECTIONS.map(({ key, label }) => synthesis[key] && (
                 <div key={key} style={{ marginBottom: '16px' }}>
-                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '8px' }}>{label}</div>
-                  <p style={{ ...serif, fontSize: '0.9375rem', lineHeight: 1.85, ...meta, margin: 0 }}>{synthesis[key]}</p>
+                  <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '8px' }}>{label}</div>
+                  <p style={{ ...serif, fontSize: '1.125rem', lineHeight: 1.85, ...meta, margin: 0 }}>{synthesis[key]}</p>
                 </div>
               ))}
             </div>
@@ -521,12 +521,12 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
 
           {/* Actions */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', alignItems: 'center' }}>
-            <button onClick={onDeepDive} style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '14px 36px', cursor: 'pointer', transition: 'all 0.2s' }}
+            <button onClick={onDeepDive} style={{ ...sc, fontSize: '1.3125rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '14px 36px', cursor: 'pointer', transition: 'all 0.2s' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
               onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
               Go deeper {'→'}
             </button>
-            <a href="/profile" style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, textDecoration: 'none' }}>View in your profile</a>
+            <a href="/profile" style={{ ...serif, fontSize: '1.3125rem', fontStyle: 'italic', ...muted, textDecoration: 'none' }}>View in your profile</a>
           </div>
         </div>
       </div>
@@ -626,10 +626,7 @@ export function PurposePiecePage() {
       <div className="tool-wrap">
         <div className="tool-header" style={{ marginBottom: '24px' }}>
           <span className="tool-eyebrow">Life OS {'·'} Purpose Piece</span>
-          <h1 className="tool-title">Find your fit.</h1>
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.0625rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.75, maxWidth: '520px' }}>
-            Each of us has a distinct role in shaping the future of life on earth. We each map to a Contribution Archetype, lean towards a domain, and prefer operating at a specific scale. Together, this is your Purpose Piece.
-          </p>
+          <h1 className="tool-title">The First Look</h1>
         </div>
 
         {act < 4 && <ProgressBar act={act} />}
@@ -775,7 +772,7 @@ export function PurposePieceDeepPage() {
           {firstLook && (
             <div style={{ marginTop: '8px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               {[firstLook.archetype, NEXUS_DOMAINS.find(d=>d.id===firstLook.domain)?.label, SCALES.find(s=>s.id===firstLook.scale)?.label].filter(Boolean).map(v => (
-                <span key={v} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', ...gold, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '20px', padding: '4px 12px' }}>{v}</span>
+                <span key={v} style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '20px', padding: '4px 12px' }}>{v}</span>
               ))}
             </div>
           )}
@@ -784,12 +781,12 @@ export function PurposePieceDeepPage() {
         <div style={{ height: '2px', background: 'rgba(200,146,42,0.12)', borderRadius: '1px', overflow: 'hidden', marginBottom: '6px' }}>
           <div style={{ height: '100%', width: `${progressPct}%`, background: '#C8922A', transition: 'width 0.6s ease' }} />
         </div>
-        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '20px' }}>{progressLabel}</div>
+        <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '20px' }}>{progressLabel}</div>
 
         {noFirstLook && (
           <div>
             <div className="bubble bubble-assistant">The Deep Dive begins after the First Look. Complete Purpose Piece first, then return here.</div>
-            <button onClick={() => navigate('/tools/purpose-piece')} style={{ marginTop: '16px', background: 'none', border: 'none', ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...gold, cursor: 'pointer', padding: 0 }}>
+            <button onClick={() => navigate('/tools/purpose-piece')} style={{ marginTop: '16px', background: 'none', border: 'none', ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...gold, cursor: 'pointer', padding: 0 }}>
               {'←'} Start the First Look
             </button>
           </div>
@@ -797,11 +794,11 @@ export function PurposePieceDeepPage() {
 
         <div className="chat-thread">
           {messages.map(m => {
-            if (m.type === 'label') return <div key={m.id} style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', padding: '8px 0 4px' }}>{m.content}</div>
+            if (m.type === 'label') return <div key={m.id} style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', padding: '8px 0 4px' }}>{m.content}</div>
             if (m.type === 'user') return <div key={m.id} className="bubble bubble-user">{m.content}</div>
             if (m.type === 'profile-html') return <div key={m.id} className="bubble bubble-assistant" dangerouslySetInnerHTML={{ __html: m.content }} />
             if (m.type === 'deep-opening') return (
-              <div key={m.id} style={{ maxWidth: '92%', padding: '24px 28px', borderRadius: '10px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderLeft: '3px solid rgba(200,146,42,0.55)', ...serif, fontSize: '1.05rem', lineHeight: 1.9, ...meta, animation: 'fadeUp 0.4s ease-out' }}>{m.content}</div>
+              <div key={m.id} style={{ maxWidth: '92%', padding: '24px 28px', borderRadius: '10px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderLeft: '3px solid rgba(200,146,42,0.55)', ...serif, fontSize: '1.3rem', lineHeight: 1.9, ...meta, animation: 'fadeUp 0.4s ease-out' }}>{m.content}</div>
             )
             return <div key={m.id} className="bubble bubble-assistant">{m.content}</div>
           })}
@@ -811,7 +808,7 @@ export function PurposePieceDeepPage() {
 
         {complete && (
           <div style={{ textAlign: 'center', padding: '32px 0 80px' }}>
-            <button onClick={() => navigate('/tools/purpose-piece')} style={{ background: 'none', border: 'none', ...gold, cursor: 'pointer', ...serif, fontSize: '0.875rem', fontStyle: 'italic' }}>
+            <button onClick={() => navigate('/tools/purpose-piece')} style={{ background: 'none', border: 'none', ...gold, cursor: 'pointer', ...serif, fontSize: '1.3125rem', fontStyle: 'italic' }}>
               {'←'} Return to Purpose Piece
             </button>
           </div>

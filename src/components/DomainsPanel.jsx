@@ -79,7 +79,7 @@ export function DomainsPanel() {
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
           fontFamily: "'Cormorant SC', Georgia, serif",
-          fontSize: '13px',
+          fontSize: '15px',
           letterSpacing: '0.18em',
           color: '#A8721A',
           textTransform: 'uppercase',
@@ -126,13 +126,13 @@ export function DomainsPanel() {
               justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   Life OS
                 </span>
                 <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
                   The Seven Domains
                 </h2>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
                   Stewardship questions for each domain
                 </p>
               </div>
@@ -157,7 +157,7 @@ export function DomainsPanel() {
 
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
                 Life OS maps seven domains of a full life. Each domain has a stewardship question {'\u2014'} the honest question to sit with when assessing where you actually are.
               </p>
             </div>
@@ -194,28 +194,28 @@ export function DomainsPanel() {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.72)', minWidth: '18px' }}>
+                        <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', minWidth: '18px' }}>
                           {String(i + 1).padStart(2, '0')}
                         </span>
-                        <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1rem', color: '#A8721A', lineHeight: 1.2 }}>
+                        <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: '#A8721A', lineHeight: 1.2 }}>
                           {domain.name}
                         </span>
                       </div>
-                      <span style={{ color: '#A8721A', fontSize: '0.875rem', flexShrink: 0, transition: 'transform 0.2s', transform: isOpen ? 'rotate(90deg)' : '' }}>
+                      <span style={{ color: '#A8721A', fontSize: '1.3125rem', flexShrink: 0, transition: 'transform 0.2s', transform: isOpen ? 'rotate(90deg)' : '' }}>
                         →
                       </span>
                     </button>
 
                     {isOpen && (
                       <div style={{ padding: '0 18px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55 }}>
+                        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55 }}>
                           {domain.description}
                         </p>
                         <div style={{ padding: '10px 14px', background: 'rgba(200,146,42,0.06)', borderLeft: '2px solid rgba(200,146,42,0.55)', borderRadius: '0 6px 6px 0' }}>
-                          <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '5px' }}>
+                          <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '5px' }}>
                             Stewardship question
                           </div>
-                          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.65 }}>
+                          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.65 }}>
                             {domain.question}
                           </p>
                         </div>
@@ -228,7 +228,7 @@ export function DomainsPanel() {
 
             {/* Footer */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(200,146,42,0.12)', marginTop: 'auto' }}>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 Seven domains, seven honest questions. The Map scores them. Orienteering starts with whichever one is most alive right now.
               </p>
             </div>
@@ -258,7 +258,7 @@ export function DomainsPanel() {
               borderRadius: '0 12px 12px 0',
             }}
           >
-            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', color: '#A8721A' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', color: '#A8721A' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

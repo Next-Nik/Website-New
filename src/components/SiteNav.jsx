@@ -46,7 +46,7 @@ export function SiteNav() {
             {links.map(l => (
               <Link key={l.to} to={l.to} style={{
                 fontFamily: "'Cormorant SC', Georgia, serif",
-                fontSize: '13px', letterSpacing: '0.10em',
+                fontSize: '15px', letterSpacing: '0.10em',
                 color: isActive(l.to) ? '#0F1523' : 'rgba(15,21,35,0.78)',
                 textDecoration: 'none',
                 fontWeight: isActive(l.to) ? 600 : 400,
@@ -62,7 +62,7 @@ export function SiteNav() {
                 border: '1.5px solid rgba(200,146,42,1)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontFamily: "'Cormorant SC', Georgia, serif",
-                fontSize: '13px', fontWeight: 600, color: '#A8721A',
+                fontSize: '15px', fontWeight: 600, color: '#A8721A',
                 textDecoration: 'none', flexShrink: 0,
               }}>{initial}</Link>
             ) : (
@@ -72,7 +72,7 @@ export function SiteNav() {
                 border: '1.5px solid rgba(200,146,42,0.78)',
                 background: 'rgba(200,146,42,0.05)',
                 fontFamily: "'Cormorant SC', Georgia, serif",
-                fontSize: '13px', fontWeight: 600,
+                fontSize: '15px', fontWeight: 600,
                 letterSpacing: '0.16em', color: '#A8721A',
                 textDecoration: 'none',
               }}>Sign in</Link>
@@ -104,15 +104,15 @@ export function SiteNav() {
           {links.map(l => (
             <Link key={l.to} to={l.to} onClick={() => setMobileOpen(false)} style={{
               fontFamily: "'Cormorant SC', Georgia, serif",
-              fontSize: '13px', letterSpacing: '0.10em',
+              fontSize: '15px', letterSpacing: '0.10em',
               color: '#0F1523', textDecoration: 'none',
               padding: '14px 32px',
               borderBottom: '1px solid rgba(200,146,42,0.08)',
             }}>{l.label}</Link>
           ))}
           {user
-            ? <Link to="/profile" onClick={() => setMobileOpen(false)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.10em', color: '#A8721A', textDecoration: 'none', padding: '14px 32px' }}>Profile</Link>
-            : <Link to="/login" onClick={() => setMobileOpen(false)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.10em', color: '#A8721A', textDecoration: 'none', padding: '14px 32px' }}>Sign in {'\u2192'}</Link>
+            ? <Link to="/profile" onClick={() => setMobileOpen(false)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.10em', color: '#A8721A', textDecoration: 'none', padding: '14px 32px' }}>Profile</Link>
+            : <Link to="/login" onClick={() => setMobileOpen(false)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.10em', color: '#A8721A', textDecoration: 'none', padding: '14px 32px' }}>Sign in {'\u2192'}</Link>
           }
         </div>
       )}

@@ -35,7 +35,7 @@ function Featured({ children, right = false }) {
 function ToolRow({ name, desc }) {
   return (
     <div style={{ display: 'flex', gap: '20px', padding: '16px 0', borderBottom: '1px solid rgba(200,146,42,0.09)', alignItems: 'baseline' }}>
-      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, minWidth: '160px', flexShrink: 0 }}>{name}</span>
+      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, minWidth: '160px', flexShrink: 0 }}>{name}</span>
       <span style={{ ...serif, fontSize: '16px', fontStyle: 'italic', ...meta, lineHeight: 1.6 }}>{desc}</span>
     </div>
   )
@@ -44,7 +44,7 @@ function ToolRow({ name, desc }) {
 function Value({ name, desc }) {
   return (
     <div style={{ borderRight: '3px solid rgba(200,146,42,0.20)', padding: '14px 24px 14px 0', textAlign: 'right' }}>
-      <strong style={{ display: 'block', ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, marginBottom: '4px' }}>{name}</strong>
+      <strong style={{ display: 'block', ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, marginBottom: '4px' }}>{name}</strong>
       <p style={{ margin: 0, ...serif, fontSize: '16px', fontStyle: 'italic', ...meta }}>{desc}</p>
     </div>
   )
@@ -61,7 +61,7 @@ export function AboutPage() {
 
       {/* ── SECTION ONE — NEXTUS ── */}
       <div className="about-section" style={page}>
-        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '14px' }}>NextUs · Life OS</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '14px' }}>NextUs · Life OS</span>
         <h1 style={{ ...serif, fontSize: 'clamp(40px,5.5vw,64px)', fontWeight: 300, ...gold, lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '16px' }}>
           A life worth living,<br />a future worth building.
         </h1>
@@ -111,8 +111,8 @@ export function AboutPage() {
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', marginTop: '52px', paddingTop: '44px', borderTop: '1px solid rgba(200,146,42,0.20)', alignItems: 'center' }}>
-          <a href="/tools/orienteering" style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Find your entry point →</a>
-          <a href="/life-os" style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Explore Life OS →</a>
+          <a href="/tools/orienteering" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Find your entry point →</a>
+          <a href="/life-os" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Explore Life OS →</a>
         </div>
       </div>
 
@@ -127,7 +127,7 @@ export function AboutPage() {
 
       {/* ── SECTION TWO — NIK (right-aligned) ── */}
       <div className="about-section" style={pageRight}>
-        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '14px' }}>Nik Wood · Founder</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '14px' }}>Nik Wood · Founder</span>
         <h1 style={{ ...serif, fontSize: 'clamp(40px,5.5vw,64px)', fontWeight: 300, ...gold, lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '16px' }}>
           The person<br />behind the work.
         </h1>
@@ -201,8 +201,8 @@ export function AboutPage() {
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', marginTop: '52px', paddingTop: '44px', borderTop: '1px solid rgba(200,146,42,0.20)', alignItems: 'center', justifyContent: 'flex-end' }}>
-          <a href="/work-with-nik" style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Work directly with Nik →</a>
-          <a href="/podcast" style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Listen to the podcast →</a>
+          <a href="/work-with-nik" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Work directly with Nik →</a>
+          <a href="/podcast" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Listen to the podcast →</a>
         </div>
       </div>
 

@@ -53,7 +53,7 @@ export function LoginPage() {
     <div style={{ minHeight: '100vh', background: '#FAFAF7', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '48px' }}>
         <img src="/logo_nav.png" alt="NextUs" style={{ width: '52px', height: '52px', objectFit: 'contain', marginBottom: '12px' }} />
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.45)' }}>NextUs</span>
+        <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.45)' }}>NextUs</span>
       </div>
 
       <div style={{ width: '100%', maxWidth: '400px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 36px 36px' }}>
@@ -70,11 +70,11 @@ export function LoginPage() {
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '24px 0' }}>
               <div style={{ flex: 1, height: '1px', background: 'rgba(200,146,42,0.20)' }} />
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.35)' }}>or</span>
+              <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.35)' }}>or</span>
               <div style={{ flex: 1, height: '1px', background: 'rgba(200,146,42,0.20)' }} />
             </div>
 
-            <label style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Email</label>
+            <label style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Email</label>
             <input
               type="email" value={email} onChange={e => setEmail(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleEmail()}
@@ -84,7 +84,7 @@ export function LoginPage() {
             <button onClick={handleEmail} disabled={sending} style={{ width: '100%', padding: '16px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', color: '#A8721A', cursor: 'pointer', opacity: sending ? 0.5 : 1 }}>
               {sending ? 'Sending...' : 'Continue with email \u2192'}
             </button>
-            {error && <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', marginTop: '8px', padding: '10px 14px', background: 'rgba(200,146,42,0.05)', borderRadius: '14px', border: '1.5px solid rgba(200,146,42,0.35)' }}>{error}</p>}
+            {error && <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', marginTop: '8px', padding: '10px 14px', background: 'rgba(200,146,42,0.05)', borderRadius: '14px', border: '1.5px solid rgba(200,146,42,0.35)' }}>{error}</p>}
           </>
         ) : (
           <div style={{ textAlign: 'center' }}>
@@ -99,7 +99,7 @@ export function LoginPage() {
         )}
       </div>
 
-      <p style={{ marginTop: '32px', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.3)' }}>
+      <p style={{ marginTop: '32px', ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.3)' }}>
         <a href="/" style={{ color: '#C8922A', textDecoration: 'none' }}>nextus.world</a>
       </p>
     </div>

@@ -62,7 +62,7 @@ export function TestimonialsPanel() {
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
           ...sc,
-          fontSize: '0.8125rem',
+          fontSize: '1.25rem',
           letterSpacing: '0.18em',
           color: '#A8721A',
           textTransform: 'uppercase',
@@ -109,13 +109,13 @@ export function TestimonialsPanel() {
               justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   What people say
                 </span>
                 <h2 style={{ ...sc, fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
                   Voices
                 </h2>
-                <p style={{ ...serif, fontSize: '0.8125rem', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>
+                <p style={{ ...serif, fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>
                   {TESTIMONIALS.length} people · coaching, courses, and programmes
                 </p>
               </div>
@@ -125,24 +125,24 @@ export function TestimonialsPanel() {
             {/* Featured testimonial */}
             <div style={{ padding: '24px 24px 16px' }}>
               <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', padding: '16px 0 16px 20px', marginBottom: '12px' }}>
-                <p style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', color: '#0F1523', lineHeight: 1.75, margin: '0 0 12px' }}>
+                <p style={{ ...serif, fontSize: '1.25rem', fontStyle: 'italic', color: '#0F1523', lineHeight: 1.75, margin: '0 0 12px' }}>
                   "{t.quote}"
                 </p>
-                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A' }}>{t.name}</span>
+                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#A8721A' }}>{t.name}</span>
               </div>
 
               {/* Navigation */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0' }}>
                 <button
                   onClick={() => setIdx(i => (i - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}
-                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}
+                  style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}
                 >← Prev</button>
                 <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.35)' }}>
                   {idx + 1} / {TESTIMONIALS.length}
                 </span>
                 <button
                   onClick={() => setIdx(i => (i + 1) % TESTIMONIALS.length)}
-                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}
+                  style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}
                 >Next →</button>
               </div>
             </div>
@@ -165,8 +165,8 @@ export function TestimonialsPanel() {
                   onMouseEnter={e => { if (i !== idx) e.currentTarget.style.background = 'rgba(200,146,42,0.04)' }}
                   onMouseLeave={e => { if (i !== idx) e.currentTarget.style.background = 'transparent' }}
                 >
-                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: i === idx ? '#A8721A' : 'rgba(15,21,35,0.72)', marginBottom: '3px' }}>{t.name}</div>
-                  <div style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                  <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: i === idx ? '#A8721A' : 'rgba(15,21,35,0.72)', marginBottom: '3px' }}>{t.name}</div>
+                  <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                     "{t.quote.substring(0, 80)}..."
                   </div>
                 </button>
@@ -197,7 +197,7 @@ export function TestimonialsPanel() {
               borderRadius: '0 12px 12px 0',
             }}
           >
-            <span style={{ ...sc, fontSize: '13px', color: '#A8721A' }}>×</span>
+            <span style={{ ...sc, fontSize: '15px', color: '#A8721A' }}>×</span>
           </button>
         </div>
       )}

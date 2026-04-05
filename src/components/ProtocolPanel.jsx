@@ -68,7 +68,7 @@ export function ProtocolPanel() {
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
           fontFamily: "'Cormorant SC', Georgia, serif",
-          fontSize: '13px',
+          fontSize: '15px',
           letterSpacing: '0.18em',
           color: '#A8721A',
           textTransform: 'uppercase',
@@ -115,13 +115,13 @@ export function ProtocolPanel() {
               justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   Foundation
                 </span>
                 <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
                   The Protocol
                 </h2>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
                   Three phases {'\u00B7'} Why the order matters
                 </p>
               </div>
@@ -146,7 +146,7 @@ export function ProtocolPanel() {
 
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
                 Foundation follows a non-negotiable sequence. Each phase creates the conditions the next requires. You cannot skip to Embodying from a dysregulated state and expect it to hold.
               </p>
             </div>
@@ -187,28 +187,28 @@ export function ProtocolPanel() {
                       </span>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: '3px' }}>
-                          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1rem', color: '#A8721A', lineHeight: 1.2 }}>
+                          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: '#A8721A', lineHeight: 1.2 }}>
                             {phase.name}
                           </span>
-                          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase', flexShrink: 0 }}>
+                          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase', flexShrink: 0 }}>
                             {phase.duration}
                           </span>
                         </div>
-                        <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.4 }}>
+                        <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.4 }}>
                           {phase.tagline}
                         </div>
                       </div>
                     </div>
 
-                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.6, marginBottom: '10px' }}>
+                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.6, marginBottom: '10px' }}>
                       {phase.description}
                     </p>
 
                     <div style={{ padding: '9px 12px', background: 'rgba(200,146,42,0.06)', borderLeft: '2px solid rgba(200,146,42,0.45)', borderRadius: '0 6px 6px 0' }}>
-                      <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>
+                      <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>
                         Why this comes here
                       </div>
-                      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
+                      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
                         {phase.why}
                       </p>
                     </div>
@@ -219,7 +219,7 @@ export function ProtocolPanel() {
 
             {/* Footer */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(200,146,42,0.12)', marginTop: 'auto' }}>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 The sequence is the practice. Run it in order, every time. Consistency of sequence matters more than consistency of duration.
               </p>
             </div>
@@ -249,7 +249,7 @@ export function ProtocolPanel() {
               borderRadius: '0 12px 12px 0',
             }}
           >
-            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', color: '#A8721A' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', color: '#A8721A' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

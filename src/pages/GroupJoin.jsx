@@ -275,7 +275,7 @@ function Card({ children }) {
 
 function Eyebrow({ children }) {
   return (
-    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: gold,
+    <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', color: gold,
       textTransform: 'uppercase', display: 'block', marginBottom: '12px' }}>
       {children}
     </span>

@@ -89,8 +89,8 @@ export function OrienteeringPage() {
         <div className="tool-header">
           <span className="tool-eyebrow">Life OS</span>
           <h1 className="tool-title">Orienteering</h1>
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.0625rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.75, maxWidth: '520px' }}>
-            If you don't know where to begin, start here. Share your current state and be guided to an appropriate starting point.
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginTop: '6px', lineHeight: 1.65, maxWidth: '420px' }}>
+            Not sure where to start? Begin here. A conversation to find your direction.
           </p>
         </div>
 
@@ -128,7 +128,7 @@ export function OrienteeringPage() {
         {!user && (
           <p style={{
             marginTop: '1.25rem',
-            fontSize: '0.875rem',
+            fontSize: '1.3125rem',
             color: 'rgba(15,21,35,0.55)',
             textAlign: 'center'
           }}>

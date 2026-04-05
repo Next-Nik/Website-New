@@ -54,7 +54,7 @@
 /* Idle instruction — below the heptagon */
 .instruction {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 300;
   font-style: normal;
   color: var(--text-meta);
@@ -88,7 +88,7 @@
 
 .idleLabel {
   font-family: 'Cormorant SC', serif;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.2em;
   color: var(--gold-dk);
@@ -114,7 +114,7 @@
   width: 100%;
   text-align: left;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(17px, 2.2vw, 22px);
+  font-size: clamp(19px, 2.6vw, 26px);
   font-weight: 300;
   color: var(--text-body);
   letter-spacing: 0.01em;
@@ -145,7 +145,7 @@
 
 .overviewEyebrow {
   font-family: 'Cormorant SC', serif;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.22em;
   color: var(--gold-dk);
@@ -155,7 +155,7 @@
 
 .overviewTitle {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(32px, 4.5vw, 48px);
+  font-size: clamp(36px, 5.2vw, 54px);
   font-weight: 300;
   color: var(--text-head);
   line-height: 1.1;
@@ -172,7 +172,7 @@
 
 .overviewBody {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(16px, 2vw, 18px);
+  font-size: clamp(18px, 2.4vw, 22px);
   font-weight: 300;
   color: var(--text-body);
   line-height: 1.85;
@@ -182,7 +182,7 @@
 /* The civilisational vision statement — it should land with weight */
 .overviewGoal {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(17px, 2.4vw, 21px);
+  font-size: clamp(19px, 2.8vw, 25px);
   font-style: normal;
   font-weight: 400;
   color: var(--text-head);
@@ -197,7 +197,7 @@
   border: none;
   cursor: pointer;
   font-family: 'Cormorant SC', serif;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.14em;
   color: var(--text-meta);

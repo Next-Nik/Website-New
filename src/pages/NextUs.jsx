@@ -23,7 +23,7 @@ function DomainModal({ domain, onClose }) {
     <div onClick={e => e.target === e.currentTarget && onClose()} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', zIndex: 100 }}>
       <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '32px', maxWidth: '420px', width: '100%', position: 'relative', ...serif }}>
         <button onClick={onClose} style={{ position: 'absolute', top: '14px', right: '18px', fontSize: '18px', cursor: 'pointer', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', lineHeight: 1 }}>{'\u00D7'}</button>
-        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '8px' }}>NextUs Domain</div>
+        <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '8px' }}>NextUs Domain</div>
         <div style={{ fontSize: '24px', fontWeight: 300, color: '#0F1523', marginBottom: '12px', lineHeight: 1.1 }}>{domain.label}</div>
         <div style={{ fontSize: '16px', fontWeight: 300, lineHeight: 1.75, color: 'rgba(15,21,35,0.78)', marginBottom: '16px' }}>{domain.desc}</div>
         <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', borderTop: '1px solid rgba(200,146,42,0.20)', paddingTop: '12px' }}>Part of the NextUs vocabulary.</div>
@@ -47,7 +47,7 @@ export function NextUsPage() {
       `}</style>
 
       <div className="nextus-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 0' }}>
-        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>NextUs</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>NextUs</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           The future is not something<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>that happens to us.</em>
         </h1>
@@ -80,7 +80,7 @@ export function NextUsPage() {
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,146,42,0.02)'}
               onMouseLeave={e => e.currentTarget.style.background = ''}
             >
-              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', minWidth: '170px', flexShrink: 0 }}>{d.label}</div>
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', minWidth: '170px', flexShrink: 0 }}>{d.label}</div>
               <div style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.6 }}>{d.tip}</div>
             </div>
           ))}

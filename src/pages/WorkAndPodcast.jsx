@@ -9,7 +9,7 @@ function Quote({ text, cite }) {
   return (
     <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '14px 0 14px 28px', margin: '0 0 28px', maxWidth: '600px' }}>
       <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '10px' }}>{text}</p>
-      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {cite}</span>
+      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {cite}</span>
     </div>
   )
 }
@@ -17,7 +17,7 @@ function Quote({ text, cite }) {
 function Card({ label, body }) {
   return (
     <div style={{ background: 'rgba(200,146,42,0.05)', borderRadius: '14px', padding: '26px 28px', marginBottom: '10px', border: '1.5px solid rgba(200,146,42,0.78)' }}>
-      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', display: 'block', marginBottom: '10px' }}>{label}</span>
+      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', display: 'block', marginBottom: '10px' }}>{label}</span>
       <div style={{ ...serif, fontSize: '16px', color: '#0F1523', lineHeight: 1.7 }}>{body}</div>
     </div>
   )
@@ -29,7 +29,7 @@ export function WorkWithNikPage() {
       <style>{`@media (max-width: 640px) { .wap-main { padding-left: 24px !important; padding-right: 24px !important; } .wap-dark { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
       <SiteNav active="work-with-nik" />
       <div className="wap-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
-        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Work with Nik</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Work with Nik</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           From processing<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>to building.</em>
         </h1>
@@ -56,13 +56,13 @@ export function WorkWithNikPage() {
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '40px 0' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>How it works.</h2>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '40px', maxWidth: '600px' }}>Start with a discovery call. No commitment, no obligation {'\u2014'} just an honest conversation about where you are and whether this is the right container for the work.</p>
-        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '20px' }}>Book a time</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '20px' }}>Book a time</span>
 
         {/* Calendly embed */}
         <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
         <div className="calendly-inline-widget" data-url="https://calendly.com/nikwood/talk-to-nik" style={{ minWidth: '280px', height: '700px', borderRadius: '14px', overflow: 'hidden', border: '1.5px solid rgba(200,146,42,0.78)' }} />
         <script src="https://assets.calendly.com/assets/external/widget.js" async />
-        <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginTop: '14px' }}>30 minutes · no cost · no obligation</p>
+        <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginTop: '14px' }}>30 minutes · no cost · no obligation</p>
       </div>
       <ScalePanel side="right" />
       <SiteFooter />
@@ -85,7 +85,7 @@ export function PodcastPage() {
       <style>{`@media (max-width: 640px) { .pod-main { padding-left: 24px !important; padding-right: 24px !important; } .pod-dark { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
       <SiteNav active="podcast" />
       <div className="pod-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
-        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>The Podcast</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>The Podcast</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           NextUs.<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>The conversation.</em>
         </h1>
@@ -96,7 +96,7 @@ export function PodcastPage() {
         </div>
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 32px' }} />
-        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Listen on</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Listen on</span>
         {platforms.map(p => (
           <a key={p.label} href={p.url} target="_blank" rel="noopener" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 22px', borderRadius: '14px', marginBottom: '8px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', textDecoration: 'none', transition: 'all 0.15s' }}
             onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}

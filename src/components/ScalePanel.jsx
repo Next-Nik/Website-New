@@ -74,7 +74,7 @@ export function ScalePanel({ side = 'left' }) {
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
           fontFamily: "'Cormorant SC', Georgia, serif",
-          fontSize: '0.8125rem',
+          fontSize: '1.25rem',
           letterSpacing: '0.18em',
           color: '#A8721A',
           textTransform: 'uppercase',
@@ -123,13 +123,13 @@ export function ScalePanel({ side = 'left' }) {
               justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   Life OS
                 </span>
                 <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
                   The Horizon Scale
                 </h2>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.8125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
                   Fulfilment calibration {'\u00B7'} 0{'\u2013'}10
                 </p>
               </div>
@@ -154,20 +154,20 @@ export function ScalePanel({ side = 'left' }) {
 
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, marginBottom: '8px' }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, marginBottom: '8px' }}>
                 Each domain of your life is scored against this scale. The scale has two zones separated by The Line at 5. Development sits above {'\u2014'} growing, building, expressing. Healing sits below {'\u2014'} restoration, repair, return.
               </p>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 The Line is yours. You build the character who represents 10. You name where you actually are.
               </p>
             </div>
 
             {/* Zone label: Development */}
             <div style={{ padding: '16px 24px 8px' }}>
-              <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>
+              <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>
                 Development
               </div>
-              <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.72)' }}>
+              <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>
                 above The Line {'\u2014'} growing, building, expressing
               </div>
             </div>
@@ -183,10 +183,10 @@ export function ScalePanel({ side = 'left' }) {
                   <div key={row.score}>
                     {isHealingStart && (
                       <div style={{ padding: '16px 8px 8px' }}>
-                        <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.18em', color: '#6B5040', textTransform: 'uppercase', marginBottom: '4px' }}>
+                        <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.18em', color: '#6B5040', textTransform: 'uppercase', marginBottom: '4px' }}>
                           Healing
                         </div>
-                        <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.72)' }}>
+                        <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>
                           below The Line {'\u2014'} restoration, repair, return
                         </div>
                       </div>
@@ -203,12 +203,12 @@ export function ScalePanel({ side = 'left' }) {
                         alignItems: 'center',
                         gap: '12px',
                       }}>
-                        <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1rem', fontWeight: 600, color: '#A8721A', minWidth: '28px' }}>5</span>
+                        <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 600, color: '#A8721A', minWidth: '28px' }}>5</span>
                         <div>
-                          <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', textTransform: 'uppercase' }}>
+                          <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textTransform: 'uppercase' }}>
                             The Line
                           </div>
-                          <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginTop: '2px' }}>
+                          <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', marginTop: '2px' }}>
                             {row.meaning}
                           </div>
                         </div>
@@ -225,7 +225,7 @@ export function ScalePanel({ side = 'left' }) {
                       }}>
                         <span style={{
                           fontFamily: "'Cormorant SC', Georgia, serif",
-                          fontSize: '0.875rem',
+                          fontSize: '1.3125rem',
                           fontWeight: 600,
                           color: colors.tier,
                           paddingTop: '1px',
@@ -234,16 +234,16 @@ export function ScalePanel({ side = 'left' }) {
                         </span>
                         <div>
                           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '2px', flexWrap: 'wrap' }}>
-                            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.08em', color: colors.tier }}>
+                            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.08em', color: colors.tier }}>
                               {row.tier}
                             </span>
                             {row.label && (
-                              <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.72)' }}>
+                              <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>
                                 {row.label}
                               </span>
                             )}
                           </div>
-                          <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: colors.meaning, lineHeight: 1.55 }}>
+                          <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: colors.meaning, lineHeight: 1.55 }}>
                             {row.meaning}
                           </div>
                         </div>
@@ -256,7 +256,7 @@ export function ScalePanel({ side = 'left' }) {
 
             {/* Footer note */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(200,146,42,0.12)', marginTop: 'auto' }}>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 Any score below 5 means this domain is actively creating friction {'\u2014'} consuming more than it generates. Stabilise before optimising.
               </p>
             </div>
@@ -291,7 +291,7 @@ export function ScalePanel({ side = 'left' }) {
               borderRadius: isRight ? '12px 0 0 12px' : '0 12px 12px 0',
             }}
           >
-            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', color: '#A8721A' }}>{'\u00D7'}</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', color: '#A8721A' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

@@ -54,12 +54,12 @@ function getNodeLabel(name) {
 function getNodeSizing(lines) {
   const maxLen = Math.max(...lines.map(l => l.length))
   const n = lines.length
-  const BASE = 40
-  const perLine = 7       // px added per extra line
-  const perChar = 0.6     // px added per char over 9 on longest line
+  const BASE = 44
+  const perLine = 8       // px added per extra line
+  const perChar = 0.7     // px added per char over 9 on longest line
   const charExtra = Math.max(0, maxLen - 9) * perChar
   const radius = Math.round(BASE + (n - 1) * perLine + charExtra)
-  return { fontSize: 15, radius, lineHeight: 1.28 }
+  return { fontSize: 17, radius, lineHeight: 1.28 }
 }
 
 export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centreLabel, onCentreClick }) {
@@ -149,6 +149,13 @@ export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centr
         // Vertical centering: offset to keep block centred in circle
         const blockHeight = (words.length - 1) * lineHeight
         const startDy = words.length === 1 ? '0.35em' : `-${(blockHeight / 2).toFixed(2)}em`
+
+        // Background rect dimensions — wraps the text block snugly
+        const maxWordLen = Math.max(...words.map(w => w.length))
+        const rectW = Math.round(maxWordLen * fontSize * 0.58 + 14)
+        const rectH = Math.round(words.length * fontSize * lineHeight + 10)
+        const rectFill = isSpinning ? 'rgba(255,255,255,0.95)' : isActive ? 'rgba(200,146,42,0.06)' : '#FFFFFF'
+
         return (
           <g key={domain.id} className={styles.nodeGroup}
             onClick={() => isSpinning ? cancelSpinAndSelect(i) : onSelect(i)}
@@ -160,6 +167,13 @@ export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centr
               fill={isSpinning ? 'rgba(255,255,255,0.95)' : isActive ? 'rgba(200,146,42,0.06)' : '#FFFFFF'}
               stroke={isSpinning ? 'rgba(200,146,42,0.78)' : isActive ? 'rgba(200,146,42,1)' : 'rgba(200,146,42,0.78)'}
               strokeWidth={isActive ? 1.5 : 1}
+            />
+            <rect
+              x={p.x - rectW / 2} y={p.y - rectH / 2}
+              width={rectW} height={rectH}
+              rx={5} ry={5}
+              fill={rectFill}
+              style={{ pointerEvents: 'none' }}
             />
             <text x={p.x} y={p.y} textAnchor="middle" dominantBaseline="middle"
               fill={isActive ? '#A8721A' : '#0F1523'} fontSize={fontSize}
@@ -190,7 +204,7 @@ export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centr
         <circle cx={CX} cy={CY} r={76} fill="#FFFFFF" stroke="rgba(200,146,42,0.78)" strokeWidth="1.5" className={styles.centreCircle} />
         {centreLabel && (
           <text x={CX} y={CY} textAnchor="middle" dominantBaseline="middle"
-            fill="#A8721A" fontSize="20" fontFamily="'Cormorant Garamond', Georgia, serif"
+            fill="#A8721A" fontSize="22" fontFamily="'Cormorant Garamond', Georgia, serif"
             fontWeight="300" fontStyle="normal" style={{ pointerEvents: 'none', userSelect: 'none' }}
           >
             {centreLabel.split(' ').map((word, wi, arr) => (
