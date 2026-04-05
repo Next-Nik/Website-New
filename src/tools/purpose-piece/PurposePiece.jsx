@@ -626,7 +626,10 @@ export function PurposePiecePage() {
       <div className="tool-wrap">
         <div className="tool-header" style={{ marginBottom: '24px' }}>
           <span className="tool-eyebrow">Life OS {'·'} Purpose Piece</span>
-          <h1 className="tool-title">The First Look</h1>
+          <h1 className="tool-title">Find your fit.</h1>
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.0625rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.75, maxWidth: '520px' }}>
+            Each of us has a distinct role in shaping the future of life on earth. We each map to a Contribution Archetype, lean towards a domain, and prefer operating at a specific scale. Together, this is your Purpose Piece.
+          </p>
         </div>
 
         {act < 4 && <ProgressBar act={act} />}
