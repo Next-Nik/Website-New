@@ -22,8 +22,8 @@ function useIsMobile() {
 
 function useFontScale() {
   const mobile = typeof window !== 'undefined' && window.innerWidth <= 640
-  const [m, setM] = React.useState(mobile)
-  React.useEffect(() => {
+  const [m, setM] = useState(mobile)
+  useEffect(() => {
     const check = () => setM(window.innerWidth <= 640)
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
