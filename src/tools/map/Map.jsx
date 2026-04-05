@@ -18,35 +18,6 @@ function useIsMobile() {
   return mobile
 }
 
-// ─── Font scale — driven by useIsMobile in each component ───────────────────
-
-function useFontScale() {
-  const mobile = typeof window !== 'undefined' && window.innerWidth <= 640
-  const [m, setM] = useState(mobile)
-  useEffect(() => {
-    const check = () => setM(window.innerWidth <= 640)
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
-  return {
-    // Labels, eyebrows, tags
-    xs:   m ? '13px'      : '10px',
-    sm:   m ? '15px'      : '11px',
-    base: m ? '17px'      : '13px',
-    // Body copy
-    body: m ? '1.125rem'  : '0.9375rem',
-    bodyLg: m ? '1.25rem' : '1.0625rem',
-    // Scale picker numbers
-    num:  m ? '1.25rem'   : '1rem',
-    // Tab labels
-    tab:  m ? '15px'      : '11px',
-    // Input / textarea
-    input: m ? '1.125rem' : '1rem',
-    // Buttons
-    btn:  m ? '0.875rem'  : '0.75rem',
-  }
-}
-
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const DOMAINS = [
@@ -193,7 +164,6 @@ function getRotationToTop(index, currentRot) {
 }
 
 function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreClick, triggerSpin = 0 }) {
-  const fs = useFontScale()
   const [phase,      setPhase]      = useState('spinning')
   const [displayRot, setDisplayRot] = useState(0)
   const rotRef      = useRef(0)
@@ -331,7 +301,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
             {stage === 3 && score !== undefined ? (
               <>
                 <text x={p.x} y={p.y - 7} textAnchor="middle" dominantBaseline="middle"
-                  fill={getScoreColor(score)} fontSize={fs.num} fontFamily="'Cormorant SC', Georgia, serif" fontWeight="600"
+                  fill={getScoreColor(score)} fontSize="17" fontFamily="'Cormorant SC', Georgia, serif" fontWeight="600"
                   style={{ pointerEvents: 'none', userSelect: 'none' }}>
                   {score}
                 </text>
@@ -340,7 +310,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
                   fill="#FFFFFF" fillOpacity="0.96"
                   style={{ pointerEvents: 'none' }} />
                 <text x={p.x} y={p.y + 15} textAnchor="middle" dominantBaseline="middle"
-                  fill="rgba(200,146,42,0.8)" fontSize={fs.base} fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.06em"
+                  fill="rgba(200,146,42,0.8)" fontSize="15" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.06em"
                   style={{ pointerEvents: 'none', userSelect: 'none' }}>
                   {domain.label.toUpperCase()}
                 </text>
@@ -360,7 +330,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
                   style={{ pointerEvents: 'none' }} />
                 <text x={p.x} y={p.y + 1} textAnchor="middle" dominantBaseline="middle"
                   fill={isActive ? '#A8721A' : stage > 0 ? 'rgba(200,146,42,0.7)' : 'rgba(15,21,35,0.72)'}
-                  fontSize={fs.base} fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.04em"
+                  fontSize="15" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.04em"
                   style={{ pointerEvents: 'none', userSelect: 'none' }}>
                   {domain.label.toUpperCase()}
                 </text>
@@ -425,7 +395,6 @@ strokeWidth="0.5"
 // ─── Domain Thread Panel (left-edge slider) ───────────────────────────────────
 
 export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen = false }) {
-  const fs = useFontScale()
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -455,7 +424,7 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
           paddingTop: '72px',
         }}>
           <div style={{ padding: '0 20px 20px' }}>
-            <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: fs.sm, letterSpacing: '0.2em', color: '#A8721A', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
+            <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', letterSpacing: '0.2em', color: '#A8721A', marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
               DOMAIN STATUS
             </div>
 
@@ -483,17 +452,17 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
                     <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', color: stage === 3 ? 'rgba(200,146,42,0.9)' : stage > 0 ? 'rgba(200,146,42,0.6)' : 'rgba(15,21,35,0.72)' }}>
                       {STAGE_ICONS[stage]}
                     </span>
-                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: fs.sm, letterSpacing: '0.08em', color: isActive ? '#A8721A' : 'rgba(15,21,35,0.72)' }}>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.08em', color: isActive ? '#A8721A' : 'rgba(15,21,35,0.72)' }}>
                       {domain.label}
                     </span>
                     {score !== undefined && (
-                      <span style={{ marginLeft: 'auto', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: fs.base, fontWeight: 600, color: getScoreColor(score) }}>
+                      <span style={{ marginLeft: 'auto', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', fontWeight: 600, color: getScoreColor(score) }}>
                         {score}
                       </span>
                     )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: fs.sm, fontStyle: 'italic', color: 'rgba(15,21,35,0.4)' }}>
+                    <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '11px', fontStyle: 'italic', color: 'rgba(15,21,35,0.4)' }}>
                       {STAGE_LABELS[stage]}
                     </span>
                     {horizon !== undefined && (
@@ -844,7 +813,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           placeholder={placeholder}
           rows={2}
           disabled={disabled}
-          style={{ flex: 1, padding: '10px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: fs.body, color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', outline: 'none', resize: 'none', lineHeight: 1.55 }}
+          style={{ flex: 1, padding: '10px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', outline: 'none', resize: 'none', lineHeight: 1.55 }}
         />
         <button onClick={() => onSend(value)} disabled={!value.trim() || disabled} style={{ ...btnStyle, padding: '10px 16px', alignSelf: 'flex-end', opacity: !value.trim() || disabled ? 0.4 : 1, fontSize: '0.75rem', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>Update draft</button>
       </div>
@@ -905,7 +874,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           return (
             <button key={s} onClick={() => reachable && setStep(s)}
               style={{
-                fontFamily: "'Cormorant SC', Georgia, serif", fontSize: fs.sm, letterSpacing: '0.12em',
+                fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.12em',
                 padding: '8px 14px', background: 'none', border: 'none',
                 borderBottom: active ? '2px solid #A8721A' : '2px solid transparent',
                 marginBottom: '-1px', cursor: reachable ? 'pointer' : 'default',
@@ -922,7 +891,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
         <div>
           {!avatarLocked || editingAvatar ? (
             <>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: fs.body, color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '20px' }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '20px' }}>
                 Create a construct of "Best in the World" for you in {domain.label}. Think of it like you're creating a character for a movie or a video game. Feel free to reference real people, fictional characters, or make elements up from scratch.
               </p>
 
@@ -931,13 +900,13 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                 <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '10px', overflow: 'hidden', marginBottom: '16px', boxShadow: '0 1px 8px rgba(15,21,35,0.04)' }}>
                   {/* Doc header bar */}
                   <div style={{ background: 'rgba(200,146,42,0.04)', borderBottom: '1px solid rgba(200,146,42,0.12)', padding: '10px 18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: fs.sm, letterSpacing: '0.16em', color: '#A8721A' }}>AVATAR DRAFT</span>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.16em', color: '#A8721A' }}>AVATAR DRAFT</span>
                     <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '11px', color: 'rgba(15,21,35,0.35)', fontStyle: 'italic' }}>· {domain.label}</span>
                   </div>
 
                   {/* Section 1 */}
                   <div style={{ padding: '16px 18px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-                    <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: fs.sm, letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', display: 'block', marginBottom: '6px' }}>
                       BEST IN THE WORLD IN THE AREA OF {domain.label.toUpperCase()} LOOKS LIKE...
                     </label>
                     <textarea
@@ -951,7 +920,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
 
                   {/* Section 2 */}
                   <div style={{ padding: '16px 18px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-                    <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: fs.sm, letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', display: 'block', marginBottom: '6px' }}>
                       PEOPLE AND CHARACTERS FOR REFERENCE
                     </label>
                     <textarea
@@ -965,7 +934,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
 
                   {/* Section 3 */}
                   <div style={{ padding: '16px 18px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-                    <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: fs.sm, letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', display: 'block', marginBottom: '6px' }}>
+                    <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', display: 'block', marginBottom: '6px' }}>
                       OTHER CHARACTERISTICS
                     </label>
                     <textarea
@@ -1030,8 +999,8 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
             // Avatar locked — show summary
             <div>
               <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '12px' }}>
-                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: fs.sm, letterSpacing: '0.14em', color: '#A8721A', marginBottom: '8px' }}>YOUR AVATAR</div>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: fs.body, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7 }}>{avatarFinal}</p>
+                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '8px' }}>YOUR AVATAR</div>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7 }}>{avatarFinal}</p>
               </div>
               <button onClick={startEditAvatar} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                 Edit avatar ↗
