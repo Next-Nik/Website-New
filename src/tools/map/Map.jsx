@@ -306,11 +306,11 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
                   {score}
                 </text>
                 {/* Pill + label centred in circle */}
-                <rect x={p.x - 30} y={p.y + 6} width="60" height="16" rx="8"
+                <rect x={p.x - 34} y={p.y + 6} width="68" height="16" rx="8"
                   fill="#FFFFFF" fillOpacity="0.96"
                   style={{ pointerEvents: 'none' }} />
                 <text x={p.x} y={p.y + 15} textAnchor="middle" dominantBaseline="middle"
-                  fill="rgba(200,146,42,0.8)" fontSize="13" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.06em"
+                  fill="rgba(200,146,42,0.8)" fontSize="15" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.06em"
                   style={{ pointerEvents: 'none', userSelect: 'none' }}>
                   {domain.label.toUpperCase()}
                 </text>
@@ -319,18 +319,18 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
               <>
                 {stage > 0 && (
                   <text x={p.x} y={p.y - 6} textAnchor="middle" dominantBaseline="middle"
-                    fill="rgba(200,146,42,0.5)" fontSize="10" fontFamily="'Cormorant SC', Georgia, serif"
+                    fill="rgba(200,146,42,0.5)" fontSize="12" fontFamily="'Cormorant SC', Georgia, serif"
                     style={{ pointerEvents: 'none', userSelect: 'none' }}>
                     {stage === 1 ? '◎' : stage === 2 ? '◑' : ''}
                   </text>
                 )}
                 {/* Pill + label centred in circle */}
-                <rect x={p.x - 36} y={p.y - 8} width="72" height="16" rx="8"
+                <rect x={p.x - 40} y={p.y - 8} width="80" height="16" rx="8"
                   fill="#FFFFFF" fillOpacity="0.96"
                   style={{ pointerEvents: 'none' }} />
                 <text x={p.x} y={p.y + 1} textAnchor="middle" dominantBaseline="middle"
                   fill={isActive ? '#A8721A' : stage > 0 ? 'rgba(200,146,42,0.7)' : 'rgba(15,21,35,0.72)'}
-                  fontSize="13" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.04em"
+                  fontSize="15" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.04em"
                   style={{ pointerEvents: 'none', userSelect: 'none' }}>
                   {domain.label.toUpperCase()}
                 </text>
@@ -1517,7 +1517,7 @@ export function MapPage() {
               <div>
                 {/* Wheel — centred, scaled for mobile */}
                 <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
-                  <div style={{ width: '280px', height: '280px' }}>
+                  <div style={{ width: '300px', height: '300px', overflow: 'hidden', flexShrink: 0 }}>
                     <MapWheel
                       domainData={domainData}
                       activeIndex={activeIndex}
