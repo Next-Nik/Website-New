@@ -1510,7 +1510,7 @@ export function MapPage() {
 
         {/* Mapping phase */}
         {phase === 'mapping' && (
-          <div style={{ marginTop: '83px' }}>
+          <div style={{ marginTop: '229px' }}>
             {isMobile ? (
               /* ── Mobile layout: wheel centred above card ── */
               <div>
@@ -1596,7 +1596,7 @@ export function MapPage() {
                   <div style={{
                     position: 'absolute',
                     right: '-60px',
-                    top: '-270px',
+                    top: '-124px',
                     width: '520px',
                     height: '520px',
                     zIndex: 0,
