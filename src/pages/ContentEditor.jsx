@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { SiteNav } from '../components/SiteNav'
+import { Nav } from '../components/Nav'
 import { useAuth } from '../hooks/useAuth'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -29,7 +29,7 @@ export function ContentEditorPage() {
 
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
-      <SiteNav />
+      <Nav />
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Content Editor</span>
         <h1 style={{ ...serif, fontSize: 'clamp(32px,4vw,48px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.1, marginBottom: '24px' }}>

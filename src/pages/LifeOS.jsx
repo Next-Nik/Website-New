@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { SiteNav } from '../components/SiteNav'
+import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import { GlossaryPanel } from '../components/GlossaryPanel'
 
@@ -24,7 +24,7 @@ const TOOLS = [
     label: 'The map',
     desc: 'You can\'t live your full-yes life if you\'re not clear about where you\'re starting from and where you want to go.',
     detail: 'This process is simple, challenging, and has transformed lives. If you\'re ready to be firmly on your path and actively levelling up towards your full-yes life, start charting your course today. When would now be a good time to start?',
-    meta: '10 minutes · free · no account needed',
+    meta: '10 minutes · sign in to save results',
     primary: { label: 'Begin The Map →', url: '/tools/map' },
     secondary: { label: 'Go deeper with Nik', url: '/work-with-nik' },
   },
@@ -131,20 +131,20 @@ export function LifeOSPage() {
 
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
-      <SiteNav active="life-os" />
+      <Nav activePath="life-os" />
 
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Life OS</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           From where you are<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>to your Horizon Life.</em>
         </h1>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '64px', maxWidth: '520px' }}>Six tools. Start anywhere. Each one does its own work {'—'} and they compound when you{'’'}re ready.</p>
+        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '64px', maxWidth: '520px' }}>Five tools. Start anywhere. Each one does its own work {'—'} and they compound when you{'’'}re ready.</p>
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 32px' }} />
 
         {/* Orienteering CTA */}
         <div style={{ marginBottom: '32px', padding: '24px 28px', background: 'rgba(200,146,42,0.03)', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '16px', maxWidth: '520px' }}>
-            If you don't know where to begin, start with Orienteering — share your current state and be guided to an appropriate starting point.
+            If you don't know where to begin, start with Orienteering — a short conversation that reads where you are and points you somewhere real.
           </p>
           <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '12px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
             Begin with Orienteering →

@@ -11,7 +11,7 @@ export function AuthGate({ toolName, children }) {
         <span className="auth-eyebrow">{toolName}</span>
         <h2>Sign in to begin.</h2>
         <p>Your results are saved to your profile.</p>
-        <a href={`/login.html?redirect=${encodeURIComponent(window.location.href)}`}>
+        <a href={`/login?redirect=${encodeURIComponent(window.location.href)}`}>
           Sign in or create account {'\u2192'}
         </a>
       </div>

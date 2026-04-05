@@ -1,4 +1,4 @@
-import { SiteNav } from '../components/SiteNav'
+import { Nav } from '../components/Nav'
 import { ScalePanel } from '../components/ScalePanel'
 import { SiteFooter } from '../components/SiteFooter'
 
@@ -27,14 +27,14 @@ export function WorkWithNikPage() {
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
       <style>{`@media (max-width: 640px) { .wap-main { padding-left: 24px !important; padding-right: 24px !important; } .wap-dark { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
-      <SiteNav active="work-with-nik" />
+      <Nav activePath="work-with-nik" />
       <div className="wap-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Work with Nik</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           From processing<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>to building.</em>
         </h1>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '520px' }}>One-on-one work for people who are done with the loop they{'\u2019'}re in.</p>
-        <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none', marginBottom: '64px' }}>Book a discovery call {'\u2192'}</a>
+        <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none', marginBottom: '64px' }}>Book a discovery call {'\u2192'}</a>
 
         <Quote text="Someone who will shift you out of emotional processing, analysis, or healing mode and into 'what's next, what are you building, what does your future look like' — and who treats you as someone capable of operating at a high level." cite="B.G.B." />
 
@@ -83,7 +83,7 @@ export function PodcastPage() {
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
       <style>{`@media (max-width: 640px) { .pod-main { padding-left: 24px !important; padding-right: 24px !important; } .pod-dark { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
-      <SiteNav active="podcast" />
+      <Nav activePath="podcast" />
       <div className="pod-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>The Podcast</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>

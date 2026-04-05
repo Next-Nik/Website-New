@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { CivilisationalFramePanel } from '../components/CivilisationalFramePanel'
-import { SiteNav } from '../components/SiteNav'
+import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import DomainExplorer from '../components/domain-explorer/DomainExplorer'
 
@@ -20,7 +20,7 @@ const DOMAINS = [
 function DomainModal({ domain, onClose }) {
   if (!domain) return null
   return (
-    <div onClick={e => e.target === e.currentTarget && onClose()} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', zIndex: 100 }}>
+    <div onClick={e => e.target === e.currentTarget && onClose()} style={{ position: 'fixed', inset: 0, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', zIndex: 100 }}>
       <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '32px', maxWidth: '420px', width: '100%', position: 'relative', ...serif }}>
         <button onClick={onClose} style={{ position: 'absolute', top: '14px', right: '18px', fontSize: '18px', cursor: 'pointer', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', lineHeight: 1 }}>{'\u00D7'}</button>
         <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '8px' }}>NextUs Domain</div>
@@ -37,7 +37,7 @@ export function NextUsPage() {
 
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
-      <SiteNav active="nextus" />
+      <Nav activePath="nextus" />
       <DomainModal domain={modal} onClose={() => setModal(null)} />
       <style>{`
         @media (max-width: 640px) {

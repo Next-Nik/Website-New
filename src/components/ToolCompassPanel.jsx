@@ -29,7 +29,7 @@ const TOOLS = [
   {
     path: '/tools/target-goals',
     name: 'Target Sprint',
-    hook: 'One domain. Ninety days. A sprint goal with identity, milestones, and weekly structure built in.',
+    hook: 'Three domains. Ninety days. A sprint goal with identity, milestones, and weekly structure built in.',
     eyebrow: 'Build momentum',
   },
 ]

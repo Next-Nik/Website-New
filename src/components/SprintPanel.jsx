@@ -150,7 +150,7 @@ export function SprintPanel({ context = 'default' }) {
           ...sc,
           fontSize: '15px',
           letterSpacing: '0.18em',
-          color: '#C8922A',
+          color: '#A8721A',
           textTransform: 'uppercase',
           userSelect: 'none',
         }}>
@@ -189,7 +189,7 @@ export function SprintPanel({ context = 'default' }) {
               display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
             }}>
               <div>
-                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
+                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
                   Life OS
                 </span>
                 <h2 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1 }}>
@@ -219,13 +219,13 @@ export function SprintPanel({ context = 'default' }) {
                     borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)',
                     background: 'rgba(200,146,42,0.05)',
                     ...sc, fontSize: '1.25rem', letterSpacing: '0.12em',
-                    color: '#C8922A', textDecoration: 'none',
+                    color: '#A8721A', textDecoration: 'none',
                   }}>
                     Begin Target Sprint {'\u2192'}
                   </a>
 
                   <div style={{ marginTop: '36px', paddingTop: '24px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
-                    <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', marginBottom: '12px' }}>
+                    <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '12px' }}>
                       How it works
                     </div>
                     {[
@@ -235,7 +235,7 @@ export function SprintPanel({ context = 'default' }) {
                       { n: '4', t: 'Monthly milestones', d: 'Reverse-engineered from your destination. Export to calendar.' },
                     ].map(s => (
                       <div key={s.n} style={{ display: 'flex', gap: '12px', marginBottom: '14px' }}>
-                        <span style={{ ...sc, fontSize: '15px', color: '#C8922A', flexShrink: 0, paddingTop: '2px' }}>{s.n}.</span>
+                        <span style={{ ...sc, fontSize: '15px', color: '#A8721A', flexShrink: 0, paddingTop: '2px' }}>{s.n}.</span>
                         <div>
                           <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.06em', color: '#0F1523', marginBottom: '2px' }}>{s.t}</div>
                           <div style={{ ...serif, fontSize: '1.3125rem', color: 'rgba(15,21,35,0.65)', lineHeight: 1.6 }}>{s.d}</div>
@@ -251,7 +251,7 @@ export function SprintPanel({ context = 'default' }) {
                   {/* Countdown */}
                   {days !== null && (
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
-                      <span style={{ ...sc, fontSize: '2rem', fontWeight: 600, color: '#C8922A', lineHeight: 1 }}>{days}</span>
+                      <span style={{ ...sc, fontSize: '2rem', fontWeight: 600, color: '#A8721A', lineHeight: 1 }}>{days}</span>
                       <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>days remaining</span>
                       <span style={{ ...serif, fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.4)', marginLeft: 'auto' }}>{sprint.end_date_label?.split('\u2014')[0]?.trim()}</span>
                     </div>
@@ -265,7 +265,7 @@ export function SprintPanel({ context = 'default' }) {
                   )}
 
                   {/* Goals */}
-                  <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', marginBottom: '12px' }}>
+                  <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '12px' }}>
                     Active Goals
                   </div>
                   {sprint.goals?.map((g, i) => {
@@ -306,14 +306,14 @@ export function SprintPanel({ context = 'default' }) {
                     const key   = now < m1 ? 'month1' : now < m2 ? 'month2' : 'month3'
                     return (
                       <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
-                        <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', marginBottom: '12px' }}>
+                        <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '12px' }}>
                           {label} {'\u00B7'} Right Now
                         </div>
                         {sprint.goals.map((g, i) => {
                           const dl = DOMAINS.find(d => d.id === g.domain)
                           return g[key] ? (
                             <div key={i} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                              <span style={{ ...sc, fontSize: '15px', color: '#C8922A', flexShrink: 0, paddingTop: '2px', width: '72px' }}>{dl?.label}</span>
+                              <span style={{ ...sc, fontSize: '15px', color: '#A8721A', flexShrink: 0, paddingTop: '2px', width: '72px' }}>{dl?.label}</span>
                               <span style={{ ...serif, fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55 }}>{g[key]}</span>
                             </div>
                           ) : null
@@ -324,7 +324,7 @@ export function SprintPanel({ context = 'default' }) {
 
                   {/* Actions */}
                   <div style={{ marginTop: '24px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                    <a href="/tools/target-goals" style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#C8922A', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '9px 18px', textDecoration: 'none', background: 'rgba(200,146,42,0.05)' }}>
+                    <a href="/tools/target-goals" style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#A8721A', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '9px 18px', textDecoration: 'none', background: 'rgba(200,146,42,0.05)' }}>
                       View full sprint {'\u2192'}
                     </a>
                     <a href="/profile" style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '40px', padding: '9px 18px', textDecoration: 'none' }}>
@@ -354,7 +354,7 @@ export function SprintPanel({ context = 'default' }) {
             clipPath: 'polygon(28% 12%, 28% 88%, 30% 100%, 100% 100%, 100% 0%, 30% 0%)',
             borderRadius: '0 12px 12px 0',
           }}>
-            <span style={{ ...sc, fontSize: '15px', color: '#C8922A' }}>{'\u00D7'}</span>
+            <span style={{ ...sc, fontSize: '15px', color: '#A8721A' }}>{'\u00D7'}</span>
           </button>
         </div>
       )}

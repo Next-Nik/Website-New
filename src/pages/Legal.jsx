@@ -1,4 +1,4 @@
-import { SiteNav } from '../components/SiteNav'
+import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -7,7 +7,7 @@ const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 function LegalWrap({ title, eyebrow, subtitle, active, children }) {
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
-      <SiteNav active={active} />
+      <Nav activePath={active} />
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>{eyebrow}</span>
         <h1 style={{ ...serif, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '24px' }} dangerouslySetInnerHTML={{ __html: title }} />

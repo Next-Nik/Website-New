@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { SiteNav } from '../components/SiteNav'
+import { Nav } from '../components/Nav'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { SiteFooter } from '../components/SiteFooter'
 
@@ -230,7 +230,7 @@ export function HomePage() {
 
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
-      <SiteNav active="home" />
+      <Nav activePath="home" />
 
       <style>{`
         @media (max-width: 640px) {

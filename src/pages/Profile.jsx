@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { SiteNav } from '../components/SiteNav'
+import { Nav } from '../components/Nav'
 import { useAuth } from '../hooks/useAuth'
 import { ScalePanel } from '../components/ScalePanel'
 import { supabase } from '../hooks/useSupabase'
@@ -43,7 +43,7 @@ function ScoreBar({ label, score }) {
 function Slot({ title, tip, linkLabel, linkUrl, children, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen)
   return (
-    <div style={{ border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px', marginBottom: '10px', overflow: 'hidden' }}>
+    <div style={{ border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', marginBottom: '10px', overflow: 'hidden' }}>
       <div onClick={() => setOpen(o => !o)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', cursor: 'pointer', background: open ? 'rgba(200,146,42,0.03)' : 'transparent' }}>
         <span style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: '#0F1523' }}>{title}</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -117,10 +117,10 @@ export function ProfilePage() {
 
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
-      <SiteNav />
+      <Nav />
       <ScalePanel side="right" />
 
-      <div style={{ maxWidth: '680px', margin: '0 auto', padding: '64px 40px 160px' }}>
+      <div style={{ maxWidth: '680px', margin: '0 auto', padding: '112px 40px 160px' }}>
 
         <div style={{ marginBottom: '72px' }}>
           <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Your Profile</span>

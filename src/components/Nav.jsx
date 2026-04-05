@@ -29,50 +29,56 @@ export function Nav({ activePath }) {
   return (
     <>
       <nav className="site-nav">
-        <Link to="/" className="nav-logo">
-          <img src="/logo_nav.png" alt="NextUs" />
-        </Link>
+        <div style={{ maxWidth: '1040px', width: '100%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Link to="/" className="nav-logo">
+            <img src="/logo_nav.png" alt="NextUs" />
+          </Link>
 
-        <ul className="nav-links">
-          {links.map(l => (
-            <li key={l.key}>
-              <Link
-                to={l.to}
-                className={isActive(l.key) ? 'active' : ''}
-              >
-                {l.label}
+          <ul className="nav-links">
+            {links.map(l => (
+              <li key={l.key}>
+                <Link to={l.to} className={isActive(l.key) ? 'active' : ''}>
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {user ? (
+              <Link to="/profile" className="nav-profile-dot" title="Your profile">
+                {initial}
               </Link>
-            </li>
-          ))}
-        </ul>
+            ) : (
+              <Link to="/login" style={{
+                padding: '10px 22px',
+                borderRadius: '40px',
+                border: '1.5px solid rgba(200,146,42,0.78)',
+                background: 'rgba(200,146,42,0.05)',
+                fontFamily: "'Cormorant SC', Georgia, serif",
+                fontSize: '15px', fontWeight: 600,
+                letterSpacing: '0.16em', color: '#A8721A',
+                textDecoration: 'none',
+              }}>Sign in</Link>
+            )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {user ? (
-            <Link to="/profile" className="nav-profile-dot" title="Your profile">
-              {initial}
-            </Link>
-          ) : (
-            <Link to="/login" className="nav-profile-dot" title="Sign in">
-              {'\u2192'}
-            </Link>
-          )}
-
-          <button
-            onClick={() => setMobileOpen(o => !o)}
-            aria-label="Menu"
-            className="site-hamburger"
-            style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer', flexDirection: 'column', gap: '5px', display: 'none' }}
-          >
-            <span style={{ display: 'block', width: '22px', height: '1.5px', background: 'rgba(15,21,35,0.78)', borderRadius: '1px' }} />
-            <span style={{ display: 'block', width: '22px', height: '1.5px', background: 'rgba(15,21,35,0.78)', borderRadius: '1px' }} />
-            <span style={{ display: 'block', width: '22px', height: '1.5px', background: 'rgba(15,21,35,0.78)', borderRadius: '1px' }} />
-          </button>
+            <button
+              onClick={() => setMobileOpen(o => !o)}
+              aria-label="Menu"
+              className="site-hamburger"
+              style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer', flexDirection: 'column', gap: '5px', display: 'none' }}
+            >
+              <span style={{ display: 'block', width: '22px', height: '1.5px', background: 'rgba(15,21,35,0.78)', borderRadius: '1px' }} />
+              <span style={{ display: 'block', width: '22px', height: '1.5px', background: 'rgba(15,21,35,0.78)', borderRadius: '1px' }} />
+              <span style={{ display: 'block', width: '22px', height: '1.5px', background: 'rgba(15,21,35,0.78)', borderRadius: '1px' }} />
+            </button>
+          </div>
         </div>
       </nav>
 
       {mobileOpen && (
         <div style={{
-          position: 'fixed', top: '56px', left: 0, right: 0, zIndex: 999,
+          position: 'fixed', top: '64px', left: 0, right: 0, zIndex: 999,
           background: '#FAFAF7', borderBottom: '1px solid rgba(200,146,42,0.20)',
           display: 'flex', flexDirection: 'column', padding: '8px 0',
         }}>
@@ -93,9 +99,10 @@ export function Nav({ activePath }) {
       )}
 
       <style>{`
-        @media (max-width: 600px) {
+        @media (max-width: 640px) {
           .site-hamburger { display: flex !important; }
           .nav-links { display: none !important; }
+          .site-nav { padding: 0 24px !important; }
         }
       `}</style>
     </>

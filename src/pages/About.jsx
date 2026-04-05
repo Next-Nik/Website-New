@@ -1,11 +1,11 @@
-import { SiteNav } from '../components/SiteNav'
+import { Nav } from '../components/Nav'
 import { CivilisationalFramePanel } from '../components/CivilisationalFramePanel'
 import { TestimonialsPanel } from '../components/TestimonialsPanel'
 import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const gold = { color: '#C8922A' }
+const gold = { color: '#A8721A' }
 const meta = { color: 'rgba(15,21,35,0.55)' }
 const dark = { color: '#0F1523' }
 
@@ -56,7 +56,7 @@ export function AboutPage() {
 
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
-      <SiteNav active="about" />
+      <Nav activePath="about" />
       <style>{`@media (max-width: 640px) { .about-section { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
 
       {/* ── SECTION ONE — NEXTUS ── */}
@@ -81,7 +81,7 @@ export function AboutPage() {
 
         <Rule />
 
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 600, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Two scales. One architecture.</h2>
+        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Two scales. One architecture.</h2>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px' }}>
           NextUs operates at the civilisational scale — a coordination layer for the people working across the domains of the future. Sense-making, orientation, and visibility for a fragmented world.
         </p>
@@ -97,17 +97,17 @@ export function AboutPage() {
 
         <Rule />
 
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 600, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>The tools.</h2>
+        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>The tools.</h2>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px' }}>
           Life OS is the personal navigation layer. Each tool is built for a specific stage of the journey.
         </p>
 
         <div style={{ margin: '28px 0' }}>
           <ToolRow name="Foundation" desc="The nervous system layer. Capacity before content — the floor that makes everything else sustainable." />
-          <ToolRow name="Orienteering" desc="A diagnostic map across all seven domains of life. Where you actually are, honestly placed." />
+          <ToolRow name="Orienteering" desc="The front door. A short conversation that reads where you are and points you to the right starting point." />
           <ToolRow name="Purpose Piece" desc="The pattern beneath how you're naturally built to contribute. Not a personality test — recognition." />
           <ToolRow name="The Map" desc="Seven domains. Three steps each. An honest picture of where you are and where you want to be." />
-          <ToolRow name="Target Goals" desc="Focused sprint planning across your three most urgent domains. From horizon to next action." />
+          <ToolRow name="Target Sprint" desc="Focused sprint planning across your three most urgent domains. From horizon to next action." />
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', marginTop: '52px', paddingTop: '44px', borderTop: '1px solid rgba(200,146,42,0.20)', alignItems: 'center' }}>
@@ -147,7 +147,7 @@ export function AboutPage() {
 
         <Rule />
 
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 600, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>The long arm.</h2>
+        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>The long arm.</h2>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
           Nik's mother was a naturopathic doctor, a shaman, and an adventurer. She surrounded him with healers, teachers, and practitioners — people who understood that the work of becoming a full human being was serious, worth doing, and worth doing well.
         </p>
@@ -160,7 +160,7 @@ export function AboutPage() {
 
         <Rule />
 
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 600, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Cracked open.</h2>
+        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Cracked open.</h2>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
           In 2019, Nik broke his skull. What followed — recovery, cancer, the loss of his mother, and the loss of the friend who had saved his life — was not a detour from the work. It was the work, lived at full intensity.
         </p>
@@ -173,7 +173,7 @@ export function AboutPage() {
 
         <Rule />
 
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 600, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>What drives this.</h2>
+        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>What drives this.</h2>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
           Humanity as a whole is mostly operating the way a person operates when they have no clear direction and are carrying unresolved trauma — because that's mostly what humanity is made of.
         </p>
@@ -186,7 +186,7 @@ export function AboutPage() {
 
         <Rule />
 
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 600, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Values.</h2>
+        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Values.</h2>
         <div style={{ display: 'grid', gap: '4px', margin: '28px 0' }}>
           {[
             ['Nikhedonia', 'The particular joy that comes from watching others thrive.'],

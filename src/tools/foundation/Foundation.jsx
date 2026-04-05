@@ -328,7 +328,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
       <div>
         <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
           <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', opacity: 0.35 }}>
-            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase' }}>Before</span>
+            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase' }}>Before</span>
             <FlameGlyph value={5} size={64} ghost />
           </div>
           <div style={{ flex: 1, minWidth: '220px' }}>
@@ -341,7 +341,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
             </div>
           </div>
           <div style={{ flex: '0 0 auto', opacity: 0.18 }}>
-            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
+            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
             <FlameGlyph value={5} size={64} ghost />
           </div>
         </div>
@@ -385,7 +385,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
           opacity: beforeResult ? 0.35 : 1,
           transition: 'opacity 0.6s ease',
         }} className="baseline-before">
-          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>Before</span>
+          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>Before</span>
           <FlamePicker
             audioPhase="baseline"
             stage="before"
@@ -416,7 +416,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
           transition: 'opacity 0.8s ease',
           pointerEvents: afterUnlocked ? 'auto' : 'none',
         }} className="baseline-after">
-          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
+          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
           <FlamePicker
             audioPhase="baseline"
             stage="after"

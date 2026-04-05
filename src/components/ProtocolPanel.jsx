@@ -178,7 +178,7 @@ export function ProtocolPanel() {
                         fontFamily: "'Cormorant SC', Georgia, serif",
                         fontSize: '1.125rem',
                         fontWeight: 600,
-                        color: '#C8922A',
+                        color: '#A8721A',
                         lineHeight: 1,
                         minWidth: '24px',
                         marginTop: '2px',

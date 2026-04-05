@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
-import { SiteNav } from '../components/SiteNav'
+import { Nav } from '../components/Nav'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -125,7 +125,7 @@ export function GroupJoinPage() {
 
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
-      <SiteNav />
+      <Nav />
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
         minHeight: 'calc(100vh - 64px)', padding: '40px 24px' }}>
         <div style={{ width: '100%', maxWidth: '420px' }}>

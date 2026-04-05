@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
-import { SiteNav } from '../components/SiteNav'
+import { Nav } from '../components/Nav'
 
 // ── YOUR UUID — replace with your actual Supabase user ID ─────
 // Find it: Supabase Dashboard → Authentication → Users → your email
@@ -281,7 +281,7 @@ function GroupsTab({ toast }) {
                       letterSpacing: '0.10em' }}>
                     Join URL ↗
                   </a>
-                  <span style={{ color: '#C8922A' }}>·</span>
+                  <span style={{ color: '#A8721A' }}>·</span>
                   <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.45)',
                     letterSpacing: '0.10em' }}>
                     {g.group_members?.[0]?.count ?? 0} members
@@ -939,7 +939,7 @@ export function AdminConsolePage() {
 
   return (
     <div style={{ background: bg, minHeight: '100vh' }}>
-      <SiteNav />
+      <Nav />
       <div style={{ maxWidth: '1040px', margin: '0 auto', padding: '96px 40px 120px' }}>
         <Eyebrow>Admin</Eyebrow>
         <h1 style={{ ...serif, fontSize: 'clamp(32px,4vw,48px)', fontWeight: 300,

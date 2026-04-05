@@ -16,7 +16,7 @@
 
   --radius:       6px;
   --max-w:        680px;
-  --nav-h:        56px;
+  --nav-h:        64px;
 }
 
 /* ─── Type scale ────────────────────────────────────────────── */
@@ -105,8 +105,8 @@ button {
 
 .auth-card {
   background: var(--bg);
-  border: 1px solid var(--gold-line);
-  border-radius: var(--radius);
+  border: 1.5px solid rgba(200,146,42,0.78);
+  border-radius: 14px;
   padding: 2.5rem 2rem;
   max-width: 380px;
   width: 100%;
@@ -164,69 +164,74 @@ button {
   left: 0;
   right: 0;
   height: var(--nav-h);
-  background: var(--bg);
-  border-bottom: 1px solid var(--gold-line);
+  background: rgba(250, 250, 247, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(200, 146, 42, 0.20);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 1.5rem;
-  z-index: 100;
+  padding: 0 40px;
+  z-index: 1000;
+  max-width: 100%;
 }
 
 .nav-logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   text-decoration: none;
 }
 
 .nav-logo img {
-  height: 28px;
+  height: 34px;
   width: auto;
+  display: block;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 1.75rem;
+  gap: 28px;
   list-style: none;
 }
 
 .nav-links a {
   font-family: var(--font-sc);
-  font-size: 0.875rem;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  text-transform: uppercase;
+  font-size: 15px;
+  letter-spacing: 0.10em;
+  color: rgba(15, 21, 35, 0.78);
   text-decoration: none;
+  font-weight: 400;
   transition: color 0.2s;
 }
 
 .nav-links a:hover,
 .nav-links a.active {
-  color: var(--gold-dk);
+  color: #0F1523;
+  font-weight: 600;
 }
 
 .nav-profile-dot {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--gold-faint);
-  border: 1px solid var(--gold-line);
+  background: rgba(200, 146, 42, 0.10);
+  border: 1.5px solid rgba(200, 146, 42, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-sc);
-  font-size: 0.75rem;
-  color: var(--gold-dk);
+  font-size: 15px;
+  font-weight: 600;
+  color: #A8721A;
   text-decoration: none;
   transition: background 0.2s, border-color 0.2s;
   flex-shrink: 0;
 }
 
 .nav-profile-dot:hover {
-  background: var(--gold-faint);
-  border-color: var(--gold);
+  background: rgba(200, 146, 42, 0.15);
+  border-color: rgba(200, 146, 42, 1);
   text-decoration: none;
 }
 

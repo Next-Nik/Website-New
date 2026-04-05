@@ -5,11 +5,7 @@ import { TypingIndicator } from '../../components/TypingIndicator'
 import { useAuth } from '../../hooks/useAuth'
 import { DomainsPanel } from '../../components/DomainsPanel'
 
-const OPENING_MESSAGE = `Welcome. I’m here to help you find your direction.
-
-Orienteering is about navigating toward what matters — not optimising a path that isn’t yours.
-
-Where are you right now? Tell me what’s present for you.`
+const OPENING_MESSAGE = `Welcome. Tell me where you are right now — what’s present, what’s on your mind, or just how things feel. I’ll point you somewhere real.`
 
 export function OrienteeringPage() {
   const { user, loading } = useAuth()

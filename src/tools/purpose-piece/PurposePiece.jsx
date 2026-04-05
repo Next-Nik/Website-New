@@ -61,7 +61,7 @@ const PLACEHOLDERS = {
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const gold  = { color: '#A8721A' }
-const muted = { color: 'rgba(15,21,35,0.5)' }
+const muted = { color: 'rgba(15,21,35,0.72)' }
 const meta  = { color: 'rgba(15,21,35,0.78)' }
 
 const btnStyle = {
