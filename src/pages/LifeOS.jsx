@@ -90,7 +90,9 @@ function ToolAccordion({ tool }) {
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.15)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)' }}
           >
-            {'▶'}
+            <svg width="11" height="12" viewBox="0 0 11 12" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', marginLeft: '2px' }}>
+              <path d="M2 1.5L9.5 6L2 10.5V1.5Z" fill="#A8721A"/>
+            </svg>
           </a>
           <div onClick={() => setOpen(o => !o)} style={{ fontSize: '22px', color: '#A8721A', transform: open ? 'rotate(45deg)' : 'none', transition: 'transform 0.25s', lineHeight: 1, cursor: 'pointer' }}>+</div>
         </div>
