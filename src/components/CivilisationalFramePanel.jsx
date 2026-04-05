@@ -7,8 +7,13 @@ export function CivilisationalFramePanel() {
 
   useEffect(() => {
     function onKey(e) { if (e.key === 'Escape') setOpen(false) }
+    function onOpen()  { setOpen(true) }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    window.addEventListener('pp:open-domains', onOpen)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('pp:open-domains', onOpen)
+    }
   }, [])
 
   return (

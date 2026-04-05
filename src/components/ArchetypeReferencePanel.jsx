@@ -54,8 +54,13 @@ export function ArchetypeReferencePanel() {
 
   useEffect(() => {
     function onKey(e) { if (e.key === 'Escape') setOpen(false) }
+    function onOpen()  { setOpen(true) }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    window.addEventListener('pp:open-archetypes', onOpen)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('pp:open-archetypes', onOpen)
+    }
   }, [])
 
   return (
