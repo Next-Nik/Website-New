@@ -84,10 +84,15 @@ function useIsMobile() {
 }
 
 // ─── PurposeDisc ─────────────────────────────────────────────────────────────
-// Three 120° wedges. Same navigation role as MapWheel.
+// Three 120° wedges. Spins on mount, settles on active stage.
 // wedgeStates: { archetype: 0|1|2, domain: 0|1|2, scale: 0|1|2 }
 // 0=empty, 1=active/pulsing, 2=complete/filled
-// allDone: glows, entire disc is clickable to open output
+
+const WEDGE_LABELS = {
+  archetype: ['Contribution', 'Archetype'],
+  domain:    ['Global', 'Domain'],
+  scale:     ['Engagement', 'Scale'],
+}
 
 function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allDone = false, size = 200 }) {
   const R   = size * 0.44
@@ -96,9 +101,55 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
   const cy  = size / 2
   const GAP = 2.8
 
-  function wedgePath(idx) {
-    const s = (-90 + idx * 120 + GAP) * Math.PI / 180
-    const e = (-90 + idx * 120 + 120 - GAP) * Math.PI / 180
+  // Spin state
+  const [rot,     setRot]     = useState(0)
+  const [settled, setSettled] = useState(false)
+  const rotRef    = useRef(0)
+  const targetRef = useRef(null)
+  const animRef   = useRef(null)
+  const lastRef   = useRef(null)
+  const phase     = useRef('spinning')
+
+  useEffect(() => {
+    // Spin for 1.4s then settle at 0°
+    const SPIN_MS  = 1400
+    const SPIN_DPS = 280
+    const startT   = Date.now()
+
+    function animate(time) {
+      if (lastRef.current === null) lastRef.current = time
+      const dt = Math.min((time - lastRef.current) / 1000, 0.05)
+      lastRef.current = time
+
+      if (phase.current === 'spinning') {
+        rotRef.current += SPIN_DPS * dt
+        setRot(rotRef.current)
+        if (Date.now() - startT >= SPIN_MS) {
+          targetRef.current = Math.ceil(rotRef.current / 360) * 360
+          phase.current = 'landing'
+        }
+      } else if (phase.current === 'landing') {
+        const diff = targetRef.current - rotRef.current
+        if (Math.abs(diff) < 0.3) {
+          rotRef.current = targetRef.current
+          setRot(rotRef.current)
+          phase.current = 'settled'
+          setSettled(true)
+        } else {
+          rotRef.current += diff * Math.min(1, dt * 3.5)
+          setRot(rotRef.current)
+        }
+      }
+      animRef.current = requestAnimationFrame(animate)
+    }
+    animRef.current = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(animRef.current)
+  }, [])
+
+  function wedgePath(idx, rotDeg = 0) {
+    const base = rotDeg * Math.PI / 180
+    const s = (-90 + idx * 120 + GAP) * Math.PI / 180 + base
+    const e = (-90 + idx * 120 + 120 - GAP) * Math.PI / 180 + base
     const x1 = cx + R * Math.cos(s), y1 = cy + R * Math.sin(s)
     const x2 = cx + R * Math.cos(e), y2 = cy + R * Math.sin(e)
     const xi1 = cx + r * Math.cos(s), yi1 = cy + r * Math.sin(s)
@@ -106,13 +157,25 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
     return `M ${xi1} ${yi1} L ${x1} ${y1} A ${R} ${R} 0 0 1 ${x2} ${y2} L ${xi2} ${yi2} A ${r} ${r} 0 0 0 ${xi1} ${yi1} Z`
   }
 
-  function wedgeIconPos(idx) {
-    const mid = (-90 + idx * 120 + 60) * Math.PI / 180
-    const mr  = (R + r) / 2 + size * 0.018
+  function wedgeLabelPos(idx, rotDeg = 0) {
+    const base = rotDeg * Math.PI / 180
+    const mid  = (-90 + idx * 120 + 60) * Math.PI / 180 + base
+    const mr   = (R + r) / 2 + size * 0.012
     return { x: cx + mr * Math.cos(mid), y: cy + mr * Math.sin(mid) }
   }
 
-  const rimR = R + size * 0.038
+  function tickPos(i, rotDeg = 0) {
+    const base = rotDeg * Math.PI / 180
+    const a = (i * 30) * Math.PI / 180 + base
+    const rimR = R + size * 0.038
+    return {
+      x1: cx + (R + size * 0.015) * Math.cos(a), y1: cy + (R + size * 0.015) * Math.sin(a),
+      x2: cx + rimR * Math.cos(a),                y2: cy + rimR * Math.sin(a),
+    }
+  }
+
+  const rimR    = R + size * 0.038
+  const displayRot = rot % 360
 
   return (
     <svg
@@ -139,26 +202,23 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
       {/* Rim */}
       <circle cx={cx} cy={cy} r={rimR} fill="#F0EDE6" stroke="rgba(200,146,42,0.45)" strokeWidth="1.5" />
 
-      {/* Tick marks */}
+      {/* Tick marks — rotate with disc */}
       {Array.from({ length: 12 }, (_, i) => {
-        const a = (i * 30) * Math.PI / 180
-        return <line key={i}
-          x1={cx + (R + size * 0.015) * Math.cos(a)} y1={cy + (R + size * 0.015) * Math.sin(a)}
-          x2={cx + rimR * Math.cos(a)}                y2={cy + rimR * Math.sin(a)}
-          stroke="rgba(200,146,42,0.4)" strokeWidth="0.8"
-        />
+        const t = tickPos(i, displayRot)
+        return <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke="rgba(200,146,42,0.4)" strokeWidth="0.8" />
       })}
 
-      {/* Three wedges */}
+      {/* Three wedges — rotate with disc */}
       {WEDGE_KEYS.map((key, i) => {
         const st       = wedgeStates[key] || 0
         const w        = WEDGE[key]
-        const isActive = activeStage === key
+        const isActive = settled && activeStage === key
         const isDone   = st === 2
         const fill     = isDone ? w.fill : isActive ? w.fillActive : '#FAFAF7'
         const stroke   = isDone || isActive ? w.stroke : w.strokeWeak
-        const pos      = wedgeIconPos(i)
-        const canClick = isDone
+        const pos      = wedgeLabelPos(i, displayRot)
+        const lines    = WEDGE_LABELS[key]
+        const canClick = isDone && settled
 
         return (
           <g key={key}
@@ -166,19 +226,38 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
             style={{ cursor: canClick && !allDone ? 'pointer' : 'default' }}
             className={isActive && !isDone ? 'pp-pulse' : ''}
           >
-            <path d={wedgePath(i)} fill={fill} stroke={stroke}
+            <path d={wedgePath(i, displayRot)} fill={fill} stroke={stroke}
               strokeWidth={isDone || isActive ? 1.5 : 1}
               style={{ transition: 'fill 0.5s cubic-bezier(0.16,1,0.3,1), stroke 0.3s' }}
             />
-            <text x={pos.x} y={pos.y}
-              textAnchor="middle" dominantBaseline="middle"
-              fontSize={isDone ? size * 0.075 : size * 0.058}
-              fontFamily="'Cormorant SC', Georgia, serif"
-              fill={isDone ? '#FFFFFF' : isActive ? w.stroke.replace('0.85','1') : 'rgba(200,146,42,0.22)'}
-              style={{ pointerEvents: 'none', userSelect: 'none', transition: 'all 0.3s' }}
-            >
-              {isDone ? '\u2713' : key.charAt(0).toUpperCase()}
-            </text>
+            {isDone ? (
+              <text x={pos.x} y={pos.y}
+                textAnchor="middle" dominantBaseline="middle"
+                fontSize={size * 0.075} fontFamily="'Cormorant SC', Georgia, serif"
+                fill="#FFFFFF"
+                style={{ pointerEvents: 'none', userSelect: 'none' }}>
+                {'\u2713'}
+              </text>
+            ) : (
+              <>
+                <text x={pos.x} y={pos.y - size * 0.035}
+                  textAnchor="middle" dominantBaseline="middle"
+                  fontSize={size * 0.048} fontFamily="'Cormorant SC', Georgia, serif"
+                  fill={isActive ? w.stroke.replace('0.85','1') : 'rgba(200,146,42,0.3)'}
+                  letterSpacing="0.04em"
+                  style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill 0.3s' }}>
+                  {lines[0]}
+                </text>
+                <text x={pos.x} y={pos.y + size * 0.035}
+                  textAnchor="middle" dominantBaseline="middle"
+                  fontSize={size * 0.048} fontFamily="'Cormorant SC', Georgia, serif"
+                  fill={isActive ? w.stroke.replace('0.85','1') : 'rgba(200,146,42,0.3)'}
+                  letterSpacing="0.04em"
+                  style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill 0.3s' }}>
+                  {lines[1]}
+                </text>
+              </>
+            )}
           </g>
         )
       })}
@@ -198,10 +277,10 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
 
 function StageBreadcrumb({ activeStage }) {
   const stages = [
-    { key: 'archetype',    label: 'Archetype'    },
-    { key: 'domain',       label: 'Domain'       },
-    { key: 'scale',        label: 'Scale'        },
-    { key: 'confirmation', label: 'Confirmation' },
+    { key: 'archetype',    label: 'Contribution Archetype' },
+    { key: 'domain',       label: 'Global Domain'          },
+    { key: 'scale',        label: 'Engagement Scale'       },
+    { key: 'confirmation', label: 'Confirmation'           },
   ]
   const activeIdx = stages.findIndex(s => s.key === activeStage)
 
@@ -345,6 +424,50 @@ function ThinkingDots() {
   )
 }
 
+// ─── Centre status modal ──────────────────────────────────────────────────────
+// Shows when centre is clicked and not all stages are complete.
+
+function CentreModal({ wedgeStates, onClose, onGoToStage }) {
+  const stages = [
+    { key: 'archetype', label: 'Contribution Archetype' },
+    { key: 'domain',    label: 'Global Domain'          },
+    { key: 'scale',     label: 'Engagement Scale'       },
+  ]
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '36px 32px', maxWidth: '380px', width: '100%' }}>
+        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>Purpose Piece</span>
+        <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.1 }}>Three coordinates to find.</h2>
+        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '24px' }}>
+          Complete all three to reveal your Purpose Piece.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
+          {stages.map(s => {
+            const done = wedgeStates[s.key] === 2
+            return (
+              <button key={s.key} onClick={() => { onGoToStage(s.key); onClose() }}
+                style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', border: `1px solid ${done ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.2)'}`, borderRadius: '10px', background: done ? 'rgba(200,146,42,0.06)' : '#FFFFFF', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.6)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = done ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.2)' }}
+              >
+                <span style={{ width: '22px', height: '22px', borderRadius: '50%', border: `1.5px solid ${done ? '#C8922A' : 'rgba(200,146,42,0.3)'}`, background: done ? '#C8922A' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.3s' }}>
+                  {done && <span style={{ color: '#FFFFFF', fontSize: '12px', lineHeight: 1 }}>✓</span>}
+                </span>
+                <span style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.1em', color: done ? '#A8721A' : 'rgba(15,21,35,0.6)', textTransform: 'uppercase' }}>{s.label}</span>
+                {!done && <span style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, marginLeft: 'auto' }}>Go →</span>}
+              </button>
+            )
+          })}
+        </div>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: 0 }}>
+          Continue where I am
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ─── Auth modal ───────────────────────────────────────────────────────────────
 
 function AuthModal() {
@@ -407,6 +530,7 @@ export function PurposePiecePage() {
   const [showReveal,    setShowReveal]    = useState(false)
   const [readyToLock,   setReadyToLock]   = useState(false)
   const [showDeepGate,  setShowDeepGate]  = useState(false)
+  const [showCentreModal, setShowCentreModal] = useState(false)
   // Reference panels manage their own open state internally.
   // Trigger via custom events so the ReferenceTrigger buttons actually work.
   function openArchetypePanel() { window.dispatchEvent(new CustomEvent('pp:open-archetypes')) }
@@ -459,6 +583,25 @@ export function PurposePiecePage() {
 
   const allWedgesDone = WEDGE_KEYS.every(k => wedgeStates[k] === 2)
   const breadcrumb    = ['archetype','domain','scale','confirmation'].includes(stage) ? stage : null
+
+  // Cycle stages with prev/next buttons — free navigation, editable in any order
+  const STAGE_ORDER = ['archetype', 'domain', 'scale', 'confirmation']
+  function handleWedgeNav(dir) {
+    const current = STAGE_ORDER.includes(stage) ? stage : 'archetype'
+    const idx = STAGE_ORDER.indexOf(current)
+    const next = dir === 'next'
+      ? STAGE_ORDER[(idx + 1) % STAGE_ORDER.length]
+      : STAGE_ORDER[(idx - 1 + STAGE_ORDER.length) % STAGE_ORDER.length]
+    if (session) setSession(prev => ({ ...prev, stage: next }))
+  }
+
+  function handleCentreClick() {
+    if (allWedgesDone) {
+      setShowReveal(true)
+    } else {
+      setShowCentreModal(true)
+    }
+  }
 
   // API
   async function callAPI(msgs) {
@@ -687,6 +830,13 @@ export function PurposePiecePage() {
       <Nav activePath="life-os" />
       {!user && <AuthModal />}
       {showDeepGate && <DeepGateModal onUnlock={() => { localStorage.setItem('pp_deep_unlocked','true'); setShowDeepGate(false); navigate('/tools/purpose-piece/deep') }} onDismiss={() => setShowDeepGate(false)} />}
+      {showCentreModal && (
+        <CentreModal
+          wedgeStates={wedgeStates}
+          onClose={() => setShowCentreModal(false)}
+          onGoToStage={key => { if (session) setSession(prev => ({ ...prev, stage: key })) }}
+        />
+      )}
       <ArchetypeReferencePanel />
       <CivilisationalFramePanel />
 
@@ -719,14 +869,30 @@ export function PurposePiecePage() {
         {/* Layout */}
         {isMobile ? (
           <div>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-              <div style={{ width: `${discSize}px` }}>
-                <PurposeDisc
-                  wedgeStates={wedgeStates} activeStage={breadcrumb}
-                  onWedgeClick={() => {}} onDiscClick={() => setShowReveal(true)}
-                  allDone={allWedgesDone && showReveal} size={discSize}
-                />
+            {/* Mobile: disc centred above, 3/4 visible, card below */}
+            <div style={{ position: 'relative', height: '120px', marginBottom: '8px' }}>
+              <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '-30px', width: `${discSize}px`, zIndex: 0, pointerEvents: 'none' }}>
+                <div style={{ pointerEvents: 'auto' }}>
+                  <PurposeDisc
+                    wedgeStates={wedgeStates} activeStage={breadcrumb}
+                    onWedgeClick={handleWedgeNav} onDiscClick={handleCentreClick}
+                    allDone={allWedgesDone} size={discSize}
+                  />
+                </div>
               </div>
+              {/* Mobile prev/next */}
+              {breadcrumb && !showReveal && (
+                <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '16px', zIndex: 2 }}>
+                  <button onClick={() => handleWedgeNav('prev')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.5 }}
+                    onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.5'}>
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><polyline points="12,2 4,9 12,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </button>
+                  <button onClick={() => handleWedgeNav('next')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.5 }}
+                    onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.5'}>
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><polyline points="6,2 14,9 6,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </button>
+                </div>
+              )}
             </div>
             {breadcrumb && !showReveal && <StageBreadcrumb activeStage={breadcrumb} />}
             {renderContent()}
@@ -734,25 +900,56 @@ export function PurposePiecePage() {
         ) : (
           <div>
             {breadcrumb && !showReveal && <StageBreadcrumb activeStage={breadcrumb} />}
+            {/* Disc is 440px. 3/4 = 330px visible above card top.
+                Disc container top: 0. Card marginTop: 330px.
+                Disc right-bleeds off canvas like MapWheel. */}
             <div style={{ position: 'relative', minHeight: '300px' }}>
 
-              {/* Disc — large, right-behind, like MapWheel */}
+              {/* Disc — 3/4 above card top */}
               <div style={{
-                position: 'absolute', right: '-80px', top: '-160px',
-                width: '480px', height: '480px', zIndex: 0, pointerEvents: 'none',
+                position: 'absolute', right: '-60px', top: '0px',
+                width: '520px', height: '520px', zIndex: 0, pointerEvents: 'none',
               }}>
                 <div style={{ pointerEvents: 'auto', width: '100%' }}>
                   <PurposeDisc
                     wedgeStates={wedgeStates} activeStage={breadcrumb}
-                    onWedgeClick={() => {}} onDiscClick={() => setShowReveal(true)}
-                    allDone={allWedgesDone && showReveal} size={440}
+                    onWedgeClick={handleWedgeNav} onDiscClick={handleCentreClick}
+                    allDone={allWedgesDone} size={440}
                   />
                 </div>
               </div>
 
-              {/* Content card — in front of disc */}
+              {/* Prev / Next — sit at card top, right of card */}
+              {breadcrumb && !showReveal && (
+                <div style={{
+                  position: 'absolute', top: '358px', right: '-52px',
+                  display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px', zIndex: 2,
+                }}>
+                  <button onClick={() => handleWedgeNav('prev')} title="Previous"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: 0.4, transition: 'opacity 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                    onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                      <polyline points="12,2 4,9 12,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                  <button onClick={() => handleWedgeNav('next')} title="Next"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: 0.4, transition: 'opacity 0.2s' }}
+                    onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                    onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                      <polyline points="6,2 14,9 6,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
+              )}
+
+              {/* Content card — top of card at 3/4 of disc height (330px) */}
               <div style={{
                 position: 'relative', zIndex: 1,
+                marginTop: '330px',
                 background: '#FAFAF7',
                 border: '1.5px solid rgba(200,146,42,0.22)',
                 borderRadius: '14px', padding: '28px 32px',
