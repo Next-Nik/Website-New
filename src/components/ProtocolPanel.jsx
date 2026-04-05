@@ -42,6 +42,7 @@ export function ProtocolPanel() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Open Protocol"
+        className="protocol-tab"
         style={{
           position: 'fixed',
           left: open ? '-60px' : '-14px',
@@ -257,6 +258,9 @@ export function ProtocolPanel() {
         @keyframes slideInLeft {
           from { transform: translateX(-100%); opacity: 0; }
           to   { transform: translateX(0);    opacity: 1; }
+        }
+        @media (max-width: 640px) {
+          .protocol-tab { left: -8px !important; }
         }
       `}</style>
     </>

@@ -39,8 +39,14 @@ export function NextUsPage() {
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
       <SiteNav active="nextus" />
       <DomainModal domain={modal} onClose={() => setModal(null)} />
+      <style>{`
+        @media (max-width: 640px) {
+          .nextus-main { padding-left: 24px !important; padding-right: 24px !important; }
+          .nextus-dark { padding-left: 24px !important; padding-right: 24px !important; }
+        }
+      `}</style>
 
-      <div style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 0' }}>
+      <div className="nextus-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 0' }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>NextUs</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           The future is not something<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>that happens to us.</em>
@@ -54,7 +60,7 @@ export function NextUsPage() {
         <DomainExplorer />
       </div>
 
-      <div style={{ maxWidth: '820px', margin: '0 auto', padding: '0 40px 120px' }}>
+      <div className="nextus-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '0 40px 120px' }}>
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '72px 0 40px' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>The problem is not effort.</h2>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Someone is restoring soil carbon and does not know about the financing mechanism that could fund their work. Someone is building a governance framework that addresses exactly the problem another person is trying to solve. The person with capital has no map showing where the real gaps are.</p>
@@ -82,7 +88,7 @@ export function NextUsPage() {
       </div>
 
       {/* Dark section */}
-      <section style={{ background: '#0F1523', borderTop: '1.5px solid rgba(200,146,42,0.78)', padding: '96px 40px', textAlign: 'center' }}>
+      <section className="nextus-dark" style={{ background: '#0F1523', borderTop: '1.5px solid rgba(200,146,42,0.78)', padding: '96px 40px', textAlign: 'center' }}>
         <div style={{ maxWidth: '820px', margin: '0 auto' }}>
           <div style={{ marginBottom: '24px' }}><img src="/logo_nav.png" alt="NextUs" style={{ height: '40px', width: 'auto', display: 'inline-block', opacity: 0.78 }} /></div>
           <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.4, margin: '0 auto 36px' }} />

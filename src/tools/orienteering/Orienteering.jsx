@@ -140,6 +140,13 @@ export function OrienteeringPage() {
         )}
       </div>
       <DomainsPanel />
+      <style>{`
+        @media (max-width: 640px) {
+          .tool-wrap { padding-left: 24px; padding-right: 24px; }
+          .input-area { flex-direction: column; }
+          .input-area textarea, .btn-send { width: 100%; box-sizing: border-box; }
+        }
+      `}</style>
     </div>
   )
 }

@@ -26,8 +26,9 @@ function Card({ label, body }) {
 export function WorkWithNikPage() {
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+      <style>{`@media (max-width: 640px) { .wap-main { padding-left: 24px !important; padding-right: 24px !important; } .wap-dark { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
       <SiteNav active="work-with-nik" />
-      <div style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
+      <div className="wap-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Work with Nik</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           From processing<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>to building.</em>
@@ -81,8 +82,9 @@ export function PodcastPage() {
 
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+      <style>{`@media (max-width: 640px) { .pod-main { padding-left: 24px !important; padding-right: 24px !important; } .pod-dark { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
       <SiteNav active="podcast" />
-      <div style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
+      <div className="pod-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>The Podcast</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           NextUs.<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>The conversation.</em>
@@ -107,7 +109,7 @@ export function PodcastPage() {
       </div>
 
       {/* Dark signup section */}
-      <section style={{ background: '#0F1523', borderTop: '1.5px solid rgba(200,146,42,0.78)', padding: '96px 40px', textAlign: 'center' }}>
+      <section className="pod-dark" style={{ background: '#0F1523', borderTop: '1.5px solid rgba(200,146,42,0.78)', padding: '96px 40px', textAlign: 'center' }}>
         <div style={{ maxWidth: '820px', margin: '0 auto' }}>
           <div style={{ marginBottom: '24px' }}><img src="/logo_nav.png" alt="NextUs" style={{ height: '40px', width: 'auto', display: 'inline-block', opacity: 0.78 }} /></div>
           <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.4, margin: '0 auto 36px' }} />

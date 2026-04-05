@@ -179,11 +179,11 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
 
       {hasMapData && Object.keys(scores).length > 0 && (
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
-          <SprintWheel currentScores={scores} horizonScores={horizonScores} size={240} />
+          <div className="tg-wheel-wrap"><SprintWheel currentScores={scores} horizonScores={horizonScores} size={240} /></div>
         </div>
       )}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: '10px', marginBottom: '24px' }}>
+      <div className="tg-domain-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: '10px', marginBottom: '24px' }}>
         {DOMAINS.map(d => {
           const sel = selectedDomains.includes(d.id)
           const isRec = recommendation?.recommended?.includes(d.id)
@@ -471,7 +471,7 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
       {/* Wheel */}
       {hasMapData && Object.keys(scores).length > 0 && (
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
-          <SprintWheel currentScores={scores} sprintScores={sprintScores} horizonScores={horizonScores} size={260} selectedDomains={selectedDomains} />
+          <div className="tg-wheel-wrap"><SprintWheel currentScores={scores} sprintScores={sprintScores} horizonScores={horizonScores} size={260} selectedDomains={selectedDomains} /></div>
         </div>
       )}
 
@@ -482,7 +482,7 @@ function PhaseComplete({ completedDomains, scores, sprintScores, horizonScores, 
         const s = scores[d.domain]
         const col = s !== undefined ? getColor(s) : '#A8721A'
         return (
-          <div key={d.domain} style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '14px', padding: '22px 24px', marginBottom: '16px', boxShadow: '0 2px 12px rgba(15,21,35,0.04)' }}>
+          <div key={d.domain} className="tg-goal-card" style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '14px', padding: '22px 24px', marginBottom: '16px', boxShadow: '0 2px 12px rgba(15,21,35,0.04)' }}>
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
               <div>
@@ -740,6 +740,16 @@ export function TargetGoalsPage() {
 
   return (
     <div className="page-shell">
+      <style>{`
+        @media (max-width: 640px) {
+          .tool-wrap { padding-left: 24px; padding-right: 24px; }
+          .tg-wheel-wrap { overflow: hidden; max-width: 300px; margin: 0 auto; }
+          .tg-domain-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important; }
+          .tg-goal-card { padding: 18px !important; }
+          .input-area { flex-direction: column; }
+          .input-area textarea, .btn-send { width: 100%; box-sizing: border-box; }
+        }
+      `}</style>
       <Nav activePath="life-os" />
       <SprintPanel />
       <ScalePanel side="right" />

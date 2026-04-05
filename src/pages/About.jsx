@@ -57,9 +57,10 @@ export function AboutPage() {
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
       <SiteNav active="about" />
+      <style>{`@media (max-width: 640px) { .about-section { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
 
       {/* ── SECTION ONE — NEXTUS ── */}
-      <div style={page}>
+      <div className="about-section" style={page}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '14px' }}>NextUs · Life OS</span>
         <h1 style={{ ...serif, fontSize: 'clamp(40px,5.5vw,64px)', fontWeight: 300, ...gold, lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '16px' }}>
           A life worth living,<br />a future worth building.
@@ -125,7 +126,7 @@ export function AboutPage() {
       </div>
 
       {/* ── SECTION TWO — NIK (right-aligned) ── */}
-      <div style={pageRight}>
+      <div className="about-section" style={pageRight}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '14px' }}>Nik Wood · Founder</span>
         <h1 style={{ ...serif, fontSize: 'clamp(40px,5.5vw,64px)', fontWeight: 300, ...gold, lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '16px' }}>
           The person<br />behind the work.

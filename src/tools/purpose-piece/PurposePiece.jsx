@@ -112,7 +112,7 @@ function ProgressBar({ act, totalActs = 3 }) {
               color: act >= i ? '#A8721A' : 'rgba(200,146,42,0.4)',
               transition: 'all 0.4s ease',
             }}>{act > i ? '✓' : i}</div>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: act >= i ? '#A8721A' : 'rgba(200,146,42,0.4)', textTransform: 'uppercase' }}>{labels[i]}</span>
+            <span className="pp-step-label" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: act >= i ? '#A8721A' : 'rgba(200,146,42,0.4)', textTransform: 'uppercase' }}>{labels[i]}</span>
           </div>
         ))}
       </div>
@@ -469,7 +469,7 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
   return (
     <div>
       {/* The three-coordinate card */}
-      <div style={{ position: 'relative', overflow: 'hidden', background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '20px', padding: '48px 36px 40px', marginBottom: '24px', textAlign: 'center' }}>
+      <div className="pp-reveal-card" style={{ position: 'relative', overflow: 'hidden', background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '20px', padding: '48px 36px 40px', marginBottom: '24px', textAlign: 'center' }}>
         <SpinningHeptagon opacity={0.05} speed="80s" />
         <SpinningHeptagon opacity={0.03} speed="120s" reverse />
 
@@ -491,7 +491,7 @@ function TheReveal({ archetype, domain, scale, synthesis, onDeepDive, onSave }) 
           </div>
 
           {/* Three coordinates */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '12px', marginBottom: '32px' }}>
+          <div className="pp-coord-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '12px', marginBottom: '32px' }}>
             {[
               { label: 'Archetype', value: archetype, glyph, sublabel: 'How you contribute' },
               { label: 'Domain',    value: domainObj?.label, glyph: domainObj?.glyph, sublabel: 'Where it lands hardest' },
@@ -613,6 +613,16 @@ export function PurposePiecePage() {
       {!user && <AuthModal />}
       {showDeepGate && <DeepGateModal onUnlock={unlockDeep} onDismiss={() => setShowDeepGate(false)} />}
 
+      <style>{`
+        @media (max-width: 640px) {
+          .tool-wrap { padding-left: 24px; padding-right: 24px; }
+          .pp-step-label { display: none; }
+          .pp-reveal-card { padding: 20px !important; }
+          .pp-coord-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)) !important; }
+          .input-area { flex-direction: column; }
+          .input-area textarea, .btn-send { width: 100%; box-sizing: border-box; }
+        }
+      `}</style>
       <div className="tool-wrap">
         <div className="tool-header" style={{ marginBottom: '24px' }}>
           <span className="tool-eyebrow">Life OS {'·'} Purpose Piece</span>
