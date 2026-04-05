@@ -106,20 +106,71 @@ function AuthModal() {
 // Clicking centre opens summary of all three target goals.
 // Clicking a wedge navigates to that domain.
 
-function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, onCentreClick, size = 200 }) {
+function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, onCentreClick, size = 440 }) {
   const cx = size / 2, cy = size / 2
   const R  = size * 0.42
-  const r  = size * 0.14
+  const r  = size * 0.10
   const GAP = 3.5
   const n = domains.length || 3
 
   const WEDGE_COLORS = ['#C8922A', '#2D6A4F', '#2D4A6A']
   const WEDGE_FILLS  = ['rgba(200,146,42,0.12)', 'rgba(45,106,79,0.12)', 'rgba(45,74,106,0.12)']
 
-  function wedgePath(idx) {
+  // Spin state — matches PurposeDisc pattern
+  const [rot,     setRot]     = useState(0)
+  const [settled, setSettled] = useState(false)
+  const rotRef    = useRef(0)
+  const targetRef = useRef(null)
+  const animRef   = useRef(null)
+  const lastRef   = useRef(null)
+  const phase     = useRef('spinning')
+
+  useEffect(() => {
+    const SPIN_MS  = 1400
+    const SPIN_DPS = 280
+    const startT   = Date.now()
+    function animate(time) {
+      if (lastRef.current === null) lastRef.current = time
+      const dt = Math.min((time - lastRef.current) / 1000, 0.05)
+      lastRef.current = time
+      if (phase.current === 'spinning') {
+        rotRef.current += SPIN_DPS * dt
+        setRot(rotRef.current)
+        if (Date.now() - startT >= SPIN_MS) {
+          targetRef.current = Math.ceil(rotRef.current / 360) * 360
+          phase.current = 'landing'
+        }
+      } else if (phase.current === 'landing') {
+        const diff = targetRef.current - rotRef.current
+        if (Math.abs(diff) < 0.3) {
+          rotRef.current = targetRef.current
+          setRot(rotRef.current)
+          phase.current = 'settled'
+          setSettled(true)
+        } else {
+          rotRef.current += diff * Math.min(1, dt * 3.5)
+          setRot(rotRef.current)
+        }
+      }
+      animRef.current = requestAnimationFrame(animate)
+    }
+    animRef.current = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(animRef.current)
+  }, [])
+
+  // Navigate to domain — spin to that wedge
+  function navigateTo(domainId) {
+    if (!settled) return
+    const idx = domains.findIndex(d => d.id === domainId)
+    if (idx < 0) return
+    onDomainClick(domainId)
+  }
+
+  function wedgePath(idx, rotDeg = 0) {
+    const base = rotDeg * Math.PI / 180
     const sweep = 360 / n
-    const s = (-90 + idx * sweep + GAP) * Math.PI / 180
-    const e = (-90 + idx * sweep + sweep - GAP) * Math.PI / 180
+    const s = (-90 + idx * sweep + GAP) * Math.PI / 180 + base
+    const e = (-90 + idx * sweep + sweep - GAP) * Math.PI / 180 + base
     const x1 = cx + R * Math.cos(s), y1 = cy + R * Math.sin(s)
     const x2 = cx + R * Math.cos(e), y2 = cy + R * Math.sin(e)
     const xi1 = cx + r * Math.cos(s), yi1 = cy + r * Math.sin(s)
@@ -127,14 +178,14 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
     return `M ${xi1} ${yi1} L ${x1} ${y1} A ${R} ${R} 0 0 1 ${x2} ${y2} L ${xi2} ${yi2} A ${r} ${r} 0 0 0 ${xi1} ${yi1} Z`
   }
 
-  function labelPos(idx) {
+  function labelPos(idx, rotDeg = 0) {
+    const base = rotDeg * Math.PI / 180
     const sweep = 360 / n
-    const mid = (-90 + idx * sweep + sweep / 2) * Math.PI / 180
-    const mr = (R + r) / 2 + size * 0.015
+    const mid = (-90 + idx * sweep + sweep / 2) * Math.PI / 180 + base
+    const mr = (R + r) / 2 + size * 0.012
     return { x: cx + mr * Math.cos(mid), y: cy + mr * Math.sin(mid) }
   }
 
-  // Count completed steps per domain
   function stepsComplete(domainId) {
     const dd = domainData[domainId] || {}
     return STEPS.filter(s => {
@@ -148,6 +199,16 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
   }
 
   const allComplete = domains.every(d => stepsComplete(d.id) >= STEPS.length)
+  const rimR = R + size * 0.038
+  const displayRot = rot % 360
+
+  // Split domain label into two lines if needed
+  function labelLines(label) {
+    const words = label.split(' ')
+    if (words.length === 1) return [label, '']
+    const mid = Math.ceil(words.length / 2)
+    return [words.slice(0, mid).join(' '), words.slice(mid).join(' ')]
+  }
 
   return (
     <svg viewBox={`0 0 ${size} ${size}`} style={{ width: '100%', maxWidth: `${size}px`, display: 'block', overflow: 'visible' }}>
@@ -159,70 +220,159 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
       `}</style>
 
       {allComplete && (
-        <circle cx={cx} cy={cy} r={R + size * 0.06} fill="none" stroke="rgba(200,146,42,0.35)" strokeWidth="1.2" className="tg-glow" />
+        <circle cx={cx} cy={cy} r={rimR + size * 0.055} fill="none" stroke="rgba(200,146,42,0.35)" strokeWidth="1.2" className="tg-glow" />
       )}
 
       {/* Rim */}
-      <circle cx={cx} cy={cy} r={R + size * 0.038} fill="#F0EDE6" stroke="rgba(200,146,42,0.35)" strokeWidth="1.2" />
+      <circle cx={cx} cy={cy} r={rimR} fill="#F0EDE6" stroke="rgba(200,146,42,0.35)" strokeWidth="1.5" />
 
-      {/* Wedges */}
+      {/* Tick marks — rotate with disc */}
+      {Array.from({ length: 12 }, (_, i) => {
+        const base = displayRot * Math.PI / 180
+        const a = (i * 30) * Math.PI / 180 + base
+        return <line key={i}
+          x1={cx + (R + size * 0.015) * Math.cos(a)} y1={cy + (R + size * 0.015) * Math.sin(a)}
+          x2={cx + rimR * Math.cos(a)} y2={cy + rimR * Math.sin(a)}
+          stroke="rgba(200,146,42,0.4)" strokeWidth="0.8"
+        />
+      })}
+
+      {/* Wedges — rotate with disc */}
       {domains.map((d, i) => {
-        const done  = stepsComplete(d.id)
-        const total = STEPS.length
-        const isActive = d.id === activeDomainId
-        const pct = done / total
-        const col = WEDGE_COLORS[i % WEDGE_COLORS.length]
-        const fill = done >= total ? col : isActive ? WEDGE_FILLS[i % WEDGE_FILLS.length] : '#FAFAF7'
-        const stroke = done > 0 || isActive ? col : 'rgba(200,146,42,0.2)'
-        const pos = labelPos(i)
+        const done    = stepsComplete(d.id)
+        const total   = STEPS.length
+        const isActive = settled && d.id === activeDomainId
+        const pct     = done / total
+        const col     = WEDGE_COLORS[i % WEDGE_COLORS.length]
+        const fill    = done >= total ? col : isActive ? WEDGE_FILLS[i % WEDGE_FILLS.length] : '#FAFAF7'
+        const stroke  = done > 0 || isActive ? col : 'rgba(200,146,42,0.2)'
+        const pos     = labelPos(i, displayRot)
+        const lines   = labelLines(d.label)
 
         return (
-          <g key={d.id} onClick={() => onDomainClick(d.id)} style={{ cursor: 'pointer' }}
+          <g key={d.id} onClick={() => navigateTo(d.id)} style={{ cursor: 'pointer' }}
             className={isActive && done < total ? 'tg-pulse' : ''}>
-            <path d={wedgePath(i)} fill={fill} stroke={stroke}
+            <path d={wedgePath(i, displayRot)} fill={fill} stroke={stroke}
               strokeWidth={isActive ? 2 : 1.2}
               style={{ transition: 'fill 0.4s ease, stroke 0.3s' }}
             />
-            {/* Progress arc overlay */}
-            {done > 0 && done < total && (() => {
-              const sweep = 360 / n
-              const s = (-90 + i * sweep + GAP) * Math.PI / 180
-              const arcEnd = (-90 + i * sweep + GAP + (sweep - GAP * 2) * pct) * Math.PI / 180
-              const x1 = cx + R * Math.cos(s), y1 = cy + R * Math.sin(s)
-              const x2 = cx + R * Math.cos(arcEnd), y2 = cy + R * Math.sin(arcEnd)
-              const lg = (sweep - GAP * 2) * pct > 180 ? 1 : 0
-              return <path d={`M ${cx + r * Math.cos(s)} ${cy + r * Math.sin(s)} L ${x1} ${y1} A ${R} ${R} 0 ${lg} 1 ${x2} ${y2} L ${cx + r * Math.cos(arcEnd)} ${cy + r * Math.sin(arcEnd)} A ${r} ${r} 0 ${lg} 0 ${cx + r * Math.cos(s)} ${cy + r * Math.sin(s)} Z`}
-                fill={col} opacity={0.35} style={{ pointerEvents: 'none' }} />
-            })()}
-            <text x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="middle"
-              fontSize={size * 0.065} fontFamily="'Cormorant SC', Georgia, serif"
-              fill={done >= total ? '#FFFFFF' : isActive ? col : 'rgba(200,146,42,0.35)'}
-              style={{ pointerEvents: 'none', userSelect: 'none' }}>
-              {done >= total ? '✓' : d.label.charAt(0).toUpperCase()}
-            </text>
+            {done >= total ? (
+              <text x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="middle"
+                fontSize={size * 0.075} fontFamily="'Cormorant SC', Georgia, serif"
+                fill="#FFFFFF" style={{ pointerEvents: 'none', userSelect: 'none' }}>✓</text>
+            ) : (
+              <>
+                <text x={pos.x} y={lines[1] ? pos.y - size * 0.032 : pos.y}
+                  textAnchor="middle" dominantBaseline="middle"
+                  fontSize={size * 0.048} fontFamily="'Cormorant SC', Georgia, serif"
+                  fill={isActive ? col : 'rgba(200,146,42,0.35)'} letterSpacing="0.04em"
+                  style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill 0.3s' }}>
+                  {lines[0]}
+                </text>
+                {lines[1] && (
+                  <text x={pos.x} y={pos.y + size * 0.032}
+                    textAnchor="middle" dominantBaseline="middle"
+                    fontSize={size * 0.048} fontFamily="'Cormorant SC', Georgia, serif"
+                    fill={isActive ? col : 'rgba(200,146,42,0.35)'} letterSpacing="0.04em"
+                    style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill 0.3s' }}>
+                    {lines[1]}
+                  </text>
+                )}
+              </>
+            )}
           </g>
         )
       })}
 
-      {/* Centre — clickable to open all-three summary */}
-      <circle cx={cx} cy={cy} r={r - 1} fill={allComplete ? '#C8922A' : '#FAFAF7'}
+      {/* Centre */}
+      <circle cx={cx} cy={cy} r={r - 1}
+        fill={allComplete ? '#C8922A' : '#FAFAF7'}
         stroke={allComplete ? 'rgba(200,146,42,1)' : 'rgba(200,146,42,0.4)'} strokeWidth="1"
         style={{ cursor: 'pointer', transition: 'all 0.4s' }}
         onClick={onCentreClick}
       />
-      <text x={cx} y={cy - size * 0.022} textAnchor="middle" dominantBaseline="middle"
-        fontSize={size * 0.052} fontFamily="'Cormorant SC', Georgia, serif"
+      <text x={cx} y={cy - size * 0.018} textAnchor="middle" dominantBaseline="middle"
+        fontSize={size * 0.042} fontFamily="'Cormorant SC', Georgia, serif"
         fill={allComplete ? '#FFFFFF' : 'rgba(200,146,42,0.65)'}
-        style={{ pointerEvents: 'none', userSelect: 'none' }}>
-        Your
-      </text>
-      <text x={cx} y={cy + size * 0.022} textAnchor="middle" dominantBaseline="middle"
-        fontSize={size * 0.052} fontFamily="'Cormorant SC', Georgia, serif"
+        style={{ pointerEvents: 'none', userSelect: 'none' }}>Your</text>
+      <text x={cx} y={cy + size * 0.018} textAnchor="middle" dominantBaseline="middle"
+        fontSize={size * 0.042} fontFamily="'Cormorant SC', Georgia, serif"
         fill={allComplete ? '#FFFFFF' : 'rgba(200,146,42,0.65)'}
-        style={{ pointerEvents: 'none', userSelect: 'none' }}>
-        Sprint
-      </text>
+        style={{ pointerEvents: 'none', userSelect: 'none' }}>Sprint</text>
     </svg>
+  )
+}
+
+// ─── Sprint Centre Modal ─────────────────────────────────────────────────────
+// Shows incomplete status when centre is clicked before all steps are done.
+
+function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoToDomain }) {
+  const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const gold  = { color: '#A8721A' }
+  const muted = { color: 'rgba(15,21,35,0.55)' }
+  const meta  = { color: 'rgba(15,21,35,0.78)' }
+
+  const STEP_LABELS = { current_state: 'Where you are', horizon: 'Horizon', target_goal: 'Target Goal', milestones: 'Milestones', tasks: 'Tasks' }
+
+  function stepsComplete(domainId) {
+    const dd = domainData[domainId] || {}
+    return {
+      current_state: !!dd.currentStateSummary,
+      horizon:       !!dd.horizonText,
+      target_goal:   !!dd.targetGoal,
+      milestones:    dd.milestones?.length > 0,
+      tasks:         dd.tasks?.length > 0,
+    }
+  }
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '36px 32px', maxWidth: '440px', width: '100%', maxHeight: '80vh', overflowY: 'auto' }}>
+        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>Target Sprint</span>
+        <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.1 }}>What's still to do.</h2>
+        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '24px' }}>
+          Complete all three areas to unlock your full sprint.
+        </p>
+        {domains.map(d => {
+          const steps = stepsComplete(d.id)
+          const allDone = Object.values(steps).every(Boolean)
+          return (
+            <div key={d.id} style={{ marginBottom: '16px', padding: '14px 16px', border: `1px solid ${allDone ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.18)'}`, borderRadius: '10px', background: allDone ? 'rgba(200,146,42,0.04)' : '#FFFFFF' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: allDone ? 0 : '10px' }}>
+                <span style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.12em', color: allDone ? '#A8721A' : '#0F1523', textTransform: 'uppercase' }}>
+                  {allDone ? '✓ ' : ''}{d.label}
+                </span>
+                {!allDone && (
+                  <button onClick={() => { onGoToDomain(d.id); onClose() }}
+                    style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', ...gold, background: 'none', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '20px', padding: '4px 12px', cursor: 'pointer' }}>
+                    Go →
+                  </button>
+                )}
+              </div>
+              {!allDone && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {Object.entries(steps).map(([key, done]) => (
+                    <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ width: '16px', height: '16px', borderRadius: '50%', border: `1px solid ${done ? '#C8922A' : 'rgba(200,146,42,0.25)'}`, background: done ? '#C8922A' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                        {done && <span style={{ color: '#FFFFFF', fontSize: '9px' }}>✓</span>}
+                      </span>
+                      <span style={{ ...serif, fontSize: '0.875rem', color: done ? 'rgba(15,21,35,0.4)' : meta.color, textDecoration: done ? 'line-through' : 'none' }}>
+                        {STEP_LABELS[key]}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )
+        })}
+        <button onClick={onClose} style={{ background: 'none', border: 'none', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0, marginTop: '8px' }}>
+          Continue where I am
+        </button>
+      </div>
+    </div>
   )
 }
 
@@ -990,6 +1140,7 @@ export function TargetGoalsPage() {
   const [sessionId,        setSessionId]        = useState(null)
   const [activeDomainId,   setActiveDomainId]   = useState(null)
   const [showSummary,      setShowSummary]      = useState(false)
+  const [showCentreModal,  setShowCentreModal]  = useState(false)
   // domainData: { [domainId]: { currentStateSummary, horizonText, targetGoal, milestones, tasks, tea, ... } }
   const [domainData,       setDomainData]       = useState({})
   const loadedRef = useRef(false)
@@ -1096,6 +1247,28 @@ export function TargetGoalsPage() {
     }
   }, [domainData])
 
+  // Cycle domains with prev/next buttons
+  function handleWheelNav(dir) {
+    const idx = sprintDomains.findIndex(d => d.id === activeDomainId)
+    if (idx < 0) return
+    const next = dir === 'next'
+      ? sprintDomains[(idx + 1) % sprintDomains.length].id
+      : sprintDomains[(idx - 1 + sprintDomains.length) % sprintDomains.length].id
+    setActiveDomainId(next)
+  }
+
+  function handleCentreClick() {
+    const allDone = sprintDomains.every(d => {
+      const dd = domainData[d.id] || {}
+      return !!dd.currentStateSummary && !!dd.horizonText && !!dd.targetGoal && dd.milestones?.length > 0 && dd.tasks?.length > 0
+    })
+    if (allDone) {
+      setShowSummary(true)
+    } else {
+      setShowCentreModal(true)
+    }
+  }
+
   const sprintDomains = DOMAINS.filter(d => selectedDomains.includes(d.id))
   const completedDomains = sprintDomains
     .filter(d => domainData[d.id]?.targetGoal)
@@ -1124,6 +1297,15 @@ export function TargetGoalsPage() {
           domains={sprintDomains}
           domainData={domainData}
           onClose={() => setShowSummary(false)}
+        />
+      )}
+      {showCentreModal && (
+        <SprintCentreModal
+          domains={sprintDomains}
+          domainData={domainData}
+          activeDomainId={activeDomainId}
+          onClose={() => setShowCentreModal(false)}
+          onGoToDomain={id => setActiveDomainId(id)}
         />
       )}
 
@@ -1164,32 +1346,55 @@ export function TargetGoalsPage() {
 
             <SetupStatusBar domains={sprintDomains} domainData={domainData} />
 
-            <div className="tg-layout" style={{ display: 'flex', gap: '40px', alignItems: 'flex-start' }}>
+            {/* Wheel above, card below — 3/4 of wheel (330px) above card top.
+                Wheel is 440px. Container top: 0. Card marginTop: 330px. */}
+            <div style={{ position: 'relative', minHeight: '300px' }}>
 
-              {/* Left: wheel + tally */}
-              <div className="tg-wheel-col" style={{ flexShrink: 0, width: '200px' }}>
-                <SprintWheelMini
-                  domains={sprintDomains}
-                  domainData={domainData}
-                  activeDomainId={activeDomainId}
-                  onDomainClick={id => setActiveDomainId(id)}
-                  onCentreClick={() => setShowSummary(true)}
-                  size={200}
-                />
-                {completedDomains.length > 0 && (
-                  <AccomplishmentTally
+              {/* Wheel — right-bleed, 3/4 above card */}
+              <div style={{
+                position: 'absolute', right: '-60px', top: '0px',
+                width: '520px', height: '520px', zIndex: 0, pointerEvents: 'none',
+              }}>
+                <div style={{ pointerEvents: 'auto', width: '100%' }}>
+                  <SprintWheelMini
                     domains={sprintDomains}
                     domainData={domainData}
-                    onCheck={handleCheck}
+                    activeDomainId={activeDomainId}
+                    onDomainClick={id => setActiveDomainId(id)}
+                    onCentreClick={handleCentreClick}
+                    size={440}
                   />
-                )}
+                </div>
               </div>
 
-              {/* Right: active domain panel */}
-              <div style={{ flex: 1, minWidth: 0 }}>
+              {/* Prev / Next — sit at card top, right of card */}
+              <div style={{
+                position: 'absolute', top: '358px', right: '-52px',
+                display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px', zIndex: 2,
+              }}>
+                <button onClick={() => handleWheelNav('prev')} title="Previous domain"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: 0.4, transition: 'opacity 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <polyline points="12,2 4,9 12,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+                <button onClick={() => handleWheelNav('next')} title="Next domain"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: 0.4, transition: 'opacity 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}>
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <polyline points="6,2 14,9 6,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+
+              {/* Domain panel card — top at 3/4 of wheel */}
+              <div style={{ position: 'relative', zIndex: 1, marginTop: '330px' }}>
                 {activeDomainId && (
                   <div key={activeDomainId} className="tg-fade-up"
-                    style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', padding: '26px 28px' }}>
+                    style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', padding: '26px 28px', maxWidth: '560px' }}>
                     <DomainPanel
                       domainId={activeDomainId}
                       domainData={domainData}
@@ -1198,6 +1403,15 @@ export function TargetGoalsPage() {
                       mapData={mapData}
                       targetDate={targetDate}
                       completedDomains={completedDomains}
+                    />
+                  </div>
+                )}
+                {completedDomains.length > 0 && (
+                  <div style={{ maxWidth: '560px', marginTop: '20px' }}>
+                    <AccomplishmentTally
+                      domains={sprintDomains}
+                      domainData={domainData}
+                      onCheck={handleCheck}
                     />
                   </div>
                 )}
