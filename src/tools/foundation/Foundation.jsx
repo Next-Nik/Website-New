@@ -512,10 +512,10 @@ export function FoundationPage() {
         <div className="tool-header">
           <span className="tool-eyebrow">Life OS {'\u00B7'} Foundation</span>
           <h1 style={{ ...serif, fontSize: 'clamp(2.25rem, 5.5vw, 3.25rem)', fontWeight: 300, color: '#0F1523', lineHeight: 1.06, letterSpacing: '-0.01em', marginBottom: '16px' }}>
-            The layer beneath<br /><em style={{ ...gold }}>everything else.</em>
+            Capacity infrastructure.
           </h1>
-          <p style={{ ...serif, fontSize: '1.0625rem', fontWeight: 300, fontStyle: 'italic', ...meta, lineHeight: 1.65, maxWidth: '480px' }}>
-            Most frameworks begin after baseline stability is already online. Foundation builds it.
+          <p style={{ ...serif, fontSize: '1.0625rem', fontWeight: 300, fontStyle: 'italic', ...meta, lineHeight: 1.65, maxWidth: '520px' }}>
+            There is an order of operations to healing and development. A solid foundation is needed for all of it.
           </p>
         </div>
 
