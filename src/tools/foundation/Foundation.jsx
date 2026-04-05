@@ -379,7 +379,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
         </div>
 
         {/* CENTRE — Audio */}
-        <div style={{ flex: 1, minWidth: '220px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div style={{ flex: 1, minWidth: '220px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '540px' }}>
           {audioLoading && <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted }}>Loading audio...</p>}
           {audioError   && <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
           {!audioLoading && !audioError && audioUrl && (
