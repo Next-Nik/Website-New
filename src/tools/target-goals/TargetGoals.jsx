@@ -746,7 +746,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
                 renderItem={() => null}
                 itemKey="text"
               />
-              <Btn onClick={() => setViewStep('milestones')} style={{ marginTop: '60px' }}>
+              <Btn onClick={() => setViewStep('milestones')} style={{ marginTop: '-760px' }}>
                 Set milestones →
               </Btn>
             </div>
