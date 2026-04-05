@@ -1511,7 +1511,7 @@ export function MapPage() {
 
         {/* Mapping phase */}
         {phase === 'mapping' && (
-          <div>
+          <div style={{ marginTop: '83px' }}>
             {isMobile ? (
               /* ── Mobile layout: wheel centred above card ── */
               <div>
