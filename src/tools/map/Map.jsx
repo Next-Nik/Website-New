@@ -6,6 +6,18 @@ import { AccessGate } from '../../components/AccessGate'
 import { supabase } from '../../hooks/useSupabase'
 import { ScalePanel } from '../../components/ScalePanel'
 
+// ─── Mobile hook ─────────────────────────────────────────────────────────────
+
+function useIsMobile() {
+  const [mobile, setMobile] = useState(typeof window !== 'undefined' && window.innerWidth <= 640)
+  useEffect(() => {
+    function check() { setMobile(window.innerWidth <= 640) }
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+  return mobile
+}
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const DOMAINS = [
@@ -1288,6 +1300,7 @@ export function MapPage() {
   const { user, loading: authLoading }    = useAuth()
   const { tier, loading: accessLoading }  = useAccess('map')
 
+  const isMobile = useIsMobile()
   const [activeIndex,  setActiveIndex]  = useState(null)
   const [domainData,   setDomainData]   = useState({})
   const [threadPanelOpen, setThreadPanelOpen] = useState(false)
@@ -1496,105 +1509,181 @@ export function MapPage() {
           </div>
         )}
 
-        {/* Mapping phase — wheel behind card */}
+        {/* Mapping phase */}
         {phase === 'mapping' && (
           <div>
-            {/* Hero header: wheel behind card, right-aligned */}
-            <div style={{ position: 'relative', marginBottom: '32px', minHeight: '280px' }}>
+            {isMobile ? (
+              /* ── Mobile layout: wheel centred above card ── */
+              <div>
+                {/* Wheel — centred, scaled for mobile */}
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px' }}>
+                  <div style={{ width: '280px', height: '280px' }}>
+                    <MapWheel
+                      domainData={domainData}
+                      activeIndex={activeIndex}
+                      onSelect={i => { setActiveIndex(i) }}
+                      totalSteps={Object.values(domainData).reduce((sum, d) => sum + getDomainStage(d), 0)}
+                      onCentreClick={() => setThreadPanelOpen(p => !p)}
+                      triggerSpin={spinCount}
+                    />
+                  </div>
+                </div>
 
-              {/* Wheel — positioned behind card, right-aligned, large */}
-              {/* Centre orb sits at height of Outer Game label */}
-              <div style={{
-                position: 'absolute',
-                right: '-60px',
-                top: '-270px',
-                width: '520px',
-                height: '520px',
-                zIndex: 0,
-                pointerEvents: 'none',
-              }}>
-                <div style={{ pointerEvents: 'auto' }}>
-                  <MapWheel
-                    domainData={domainData}
-                    activeIndex={activeIndex}
-                    onSelect={setActiveIndex}
-                    totalSteps={Object.values(domainData).reduce((sum, d) => sum + getDomainStage(d), 0)}
-                    onCentreClick={() => setThreadPanelOpen(p => !p)}
-                    triggerSpin={spinCount}
-                  />
+                {/* Prev / Next inline */}
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginBottom: '16px' }}>
+                  <button
+                    onClick={() => setActiveIndex(i => i === null ? DOMAINS.length - 1 : (i - 1 + DOMAINS.length) % DOMAINS.length)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.5 }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                      <polyline points="12,2 4,9 12,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                  {activeDomain && (
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', alignSelf: 'center' }}>
+                      {activeDomain.label}
+                    </span>
+                  )}
+                  <button
+                    onClick={() => setActiveIndex(i => i === null ? 0 : (i + 1) % DOMAINS.length)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.5 }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                      <polyline points="6,2 14,9 6,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
 
+                {/* Domain card — full width */}
+                <div style={{
+                  background: '#FAFAF7',
+                  border: '1.5px solid rgba(200,146,42,0.25)',
+                  borderRadius: '14px',
+                  padding: '24px 20px',
+                  marginBottom: '24px',
+                }}>
+                  {activeDomain ? (
+                    <DomainStep
+                      key={activeDomain.id}
+                      domain={activeDomain}
+                      existingData={domainData[activeDomain.id]}
+                      onUpdate={handleDomainUpdate}
+                      onComplete={handleDomainComplete}
+                    />
+                  ) : (
+                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', textAlign: 'center', padding: '20px 0' }}>
+                      Tap a domain to begin.
+                    </p>
+                  )}
+                  {allComplete && (
+                    <div style={{ marginTop: '24px', padding: '20px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', textAlign: 'center' }}>
+                      <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.75rem', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>ALL SEVEN DOMAINS COMPLETE</p>
+                      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginBottom: '14px' }}>
+                        Take your time. Edit anything you want. When you're ready —
+                      </p>
+                      <button onClick={runSynthesis} style={{ ...btnStyle, fontSize: '0.9375rem', padding: '14px 28px' }}>
+                        Review your map →
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
+            ) : (
+              /* ── Desktop layout: wheel behind card, right-aligned ── */
+              <div>
+                <div style={{ position: 'relative', marginBottom: '32px', minHeight: '280px' }}>
 
-              {/* Prev / Next arrows — level with domain eyebrow, right of card */}
-              <div style={{
-                position: 'absolute',
-                top: '28px',
-                right: '-56px',
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: '6px',
-                zIndex: 2,
-              }}>
-                <button
-                  onClick={() => setActiveIndex(i => i === null ? DOMAINS.length - 1 : (i - 1 + DOMAINS.length) % DOMAINS.length)}
-                  title="Previous domain"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: 0.4, transition: 'opacity 0.2s' }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-                  onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
-                >
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <polyline points="12,2 4,9 12,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
-                <button
-                  onClick={() => setActiveIndex(i => i === null ? 0 : (i + 1) % DOMAINS.length)}
-                  title="Next domain"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: 0.4, transition: 'opacity 0.2s' }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-                  onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
-                >
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <polyline points="6,2 14,9 6,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
-              </div>
+                  {/* Wheel — positioned behind card, right-aligned, large */}
+                  <div style={{
+                    position: 'absolute',
+                    right: '-60px',
+                    top: '-270px',
+                    width: '520px',
+                    height: '520px',
+                    zIndex: 0,
+                    pointerEvents: 'none',
+                  }}>
+                    <div style={{ pointerEvents: 'auto' }}>
+                      <MapWheel
+                        domainData={domainData}
+                        activeIndex={activeIndex}
+                        onSelect={setActiveIndex}
+                        totalSteps={Object.values(domainData).reduce((sum, d) => sum + getDomainStage(d), 0)}
+                        onCentreClick={() => setThreadPanelOpen(p => !p)}
+                        triggerSpin={spinCount}
+                      />
+                    </div>
+                  </div>
 
-              {/* Content card — sits in front of wheel, masks lower portion */}
-              <div style={{
-                position: 'relative',
-                zIndex: 1,
-                background: '#FAFAF7',
-                border: '1.5px solid rgba(200,146,42,0.25)',
-                borderRadius: '14px',
-                padding: '28px 32px',
-                maxWidth: '560px',
-              }}>
-                {activeDomain ? (
-                  <DomainStep
-                    key={activeDomain.id}
-                    domain={activeDomain}
-                    existingData={domainData[activeDomain.id]}
-                    onUpdate={handleDomainUpdate}
-                    onComplete={handleDomainComplete}
-                  />
-                ) : null}
-
-                {/* All complete CTA — inside card */}
-                {allComplete && (
-                  <div style={{ marginTop: '24px', padding: '20px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', textAlign: 'center' }}>
-                    <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.75rem', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>ALL SEVEN DOMAINS COMPLETE</p>
-                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginBottom: '14px' }}>
-                      Take your time. Edit anything you want. When you're ready —
-                    </p>
-                    <button onClick={runSynthesis} style={{ ...btnStyle, fontSize: '0.9375rem', padding: '14px 28px' }}>
-                      Review your map →
+                  {/* Prev / Next arrows — level with domain eyebrow, right of card */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '28px',
+                    right: '-56px',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: '6px',
+                    zIndex: 2,
+                  }}>
+                    <button
+                      onClick={() => setActiveIndex(i => i === null ? DOMAINS.length - 1 : (i - 1 + DOMAINS.length) % DOMAINS.length)}
+                      title="Previous domain"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: 0.4, transition: 'opacity 0.2s' }}
+                      onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                      onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <polyline points="12,2 4,9 12,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => setActiveIndex(i => i === null ? 0 : (i + 1) % DOMAINS.length)}
+                      title="Next domain"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: 0.4, transition: 'opacity 0.2s' }}
+                      onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                      onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <polyline points="6,2 14,9 6,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
                     </button>
                   </div>
-                )}
+
+                  {/* Content card — sits in front of wheel */}
+                  <div style={{
+                    position: 'relative',
+                    zIndex: 1,
+                    background: '#FAFAF7',
+                    border: '1.5px solid rgba(200,146,42,0.25)',
+                    borderRadius: '14px',
+                    padding: '28px 32px',
+                    maxWidth: '560px',
+                  }}>
+                    {activeDomain ? (
+                      <DomainStep
+                        key={activeDomain.id}
+                        domain={activeDomain}
+                        existingData={domainData[activeDomain.id]}
+                        onUpdate={handleDomainUpdate}
+                        onComplete={handleDomainComplete}
+                      />
+                    ) : null}
+                    {allComplete && (
+                      <div style={{ marginTop: '24px', padding: '20px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', textAlign: 'center' }}>
+                        <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.75rem', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>ALL SEVEN DOMAINS COMPLETE</p>
+                        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginBottom: '14px' }}>
+                          Take your time. Edit anything you want. When you're ready —
+                        </p>
+                        <button onClick={runSynthesis} style={{ ...btnStyle, fontSize: '0.9375rem', padding: '14px 28px' }}>
+                          Review your map →
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
 
