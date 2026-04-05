@@ -157,9 +157,12 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
     <div>
       <Eyebrow>Target Sprint</Eyebrow>
       <h1 style={{ ...sc, fontSize: 'clamp(1.75rem,4vw,2.5rem)', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '12px' }}>
-        Three areas. Three months.
+        A three-month sprint towards a clear level-up in three areas of your life.
       </h1>
       <Rule />
+      <p style={{ ...serif, fontSize: '0.9375rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
+        Start any time. Supercharged when combined with The Map.
+      </p>
       <p style={{ ...serif, fontSize: '1.0625rem', fontWeight: 300, fontStyle: 'italic', color: '#0F1523', lineHeight: 1.8, marginBottom: '6px' }}>
         {hasMapData
           ? 'Your Map scores are loaded.'
