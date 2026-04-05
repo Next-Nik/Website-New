@@ -52,6 +52,23 @@ function periodLabel(type, id) {
   return id
 }
 
+// ─── Mobile styles ───────────────────────────────────────────────────────────
+
+const MOBILE_STYLES = `
+  @media (max-width: 640px) {
+    .baseline-layout {
+      flex-direction: column !important;
+      gap: 32px !important;
+    }
+    .baseline-before  { order: 1; width: 100% !important; opacity: 1 !important; }
+    .baseline-audio   { order: 2; width: 100% !important; min-height: auto !important; }
+    .baseline-after   { order: 3; width: 100% !important; }
+    .baseline-audio .audio-player-inner {
+      min-height: auto !important;
+    }
+  }
+`
+
 // ─── Audio Player ─────────────────────────────────────────────────────────────
 
 function AudioPlayer({ url, onEnded, onNearEnd, locked }) {
@@ -360,14 +377,14 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
   // Active session
   return (
     <div>
-      <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+      <div className="baseline-layout" style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
 
         {/* LEFT — Before flame */}
         <div style={{
           flex: '0 0 auto', minWidth: '120px',
           opacity: beforeResult ? 0.35 : 1,
           transition: 'opacity 0.6s ease',
-        }}>
+        }} className="baseline-before">
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>Before</span>
           <FlamePicker
             audioPhase="baseline"
@@ -379,7 +396,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
         </div>
 
         {/* CENTRE — Audio */}
-        <div style={{ flex: 1, minWidth: '220px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '540px' }}>
+        <div className="baseline-audio" style={{ flex: 1, minWidth: '220px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '540px' }}>
           {audioLoading && <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted }}>Loading audio...</p>}
           {audioError   && <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
           {!audioLoading && !audioError && audioUrl && (
@@ -398,7 +415,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
           opacity: afterUnlocked ? 1 : 0.18,
           transition: 'opacity 0.8s ease',
           pointerEvents: afterUnlocked ? 'auto' : 'none',
-        }}>
+        }} className="baseline-after">
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
           <FlamePicker
             audioPhase="baseline"
@@ -489,6 +506,7 @@ export function FoundationPage() {
 
   return (
     <div className="page-shell">
+      <style>{MOBILE_STYLES}</style>
       <Nav activePath="life-os" />
       <div className="tool-wrap">
         <div className="tool-header">
