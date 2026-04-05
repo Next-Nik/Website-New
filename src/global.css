@@ -384,10 +384,47 @@ button {
 
 /* ─── Mobile ────────────────────────────────────────────────── */
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .nav-links { display: none; }
 
   .tool-wrap {
-    padding: 2rem 1rem 3rem;
+    padding: 2rem 1.5rem 3rem;
+  }
+
+  /* Tool header */
+  .tool-eyebrow {
+    font-size: 0.8125rem;
+    letter-spacing: 0.16em;
+  }
+
+  .tool-title {
+    font-size: 1.5rem;
+  }
+
+  /* Chat bubbles — slightly larger for readability */
+  .bubble {
+    font-size: 1.125rem;
+    max-width: 96%;
+  }
+
+  .bubble-user {
+    padding: 0.875rem 1.125rem;
+  }
+
+  /* Input area */
+  .input-area {
+    padding-top: 1rem;
+    gap: 0.5rem;
+  }
+
+  .input-area textarea {
+    font-size: 1.0625rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .btn-send {
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    height: 48px;
   }
 }
