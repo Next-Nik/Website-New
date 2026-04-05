@@ -129,10 +129,21 @@ export function FlameGlyph({ value = 5, size = 64, ghost = false }) {
 
 // ─── Vertical slider ──────────────────────────────────────────────────────────
 
+function useIsMobile() {
+  const [mobile, setMobile] = useState(typeof window !== 'undefined' && window.innerWidth <= 640)
+  useEffect(() => {
+    function check() { setMobile(window.innerWidth <= 640) }
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+  return mobile
+}
+
 function FlameSlider({ value, onChange, ghostValue = null }) {
   const trackRef  = useRef(null)
   const dragging  = useRef(false)
-  const TRACK_H   = 300
+  const isMobile  = useIsMobile()
+  const TRACK_H   = isMobile ? 180 : 300
 
   function posToValue(clientY) {
     const rect = trackRef.current?.getBoundingClientRect()
