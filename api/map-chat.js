@@ -1,7 +1,7 @@
 // LIFE OS — CHAT ENGINE v3
 // Seven domains + Brain as synthesis question
 // Domains: Path, Spark, Body, Finances, Relationships, Inner Game, Outer Game
-// Stewardship frame throughout. Behavioural evidence over self-report.
+// Life's mission frame throughout. Behavioural evidence over self-report.
 // Corpus upgrades: Avatar theatre framing, character synthesis step, thinness named not routed,
 // Horizon Goal calibration probe, permission for partial models, job/path distinction,
 // Spark permission-first, Finances dual-track (objective + emotional), Brain as closing synthesis.
@@ -51,9 +51,9 @@ Some people want the full expression of the character. Most want something more 
   {
     id: "spark",
     label: "Spark",
-    stewardshipQuestion: "Is the fire on?",
+    stewardshipQuestion: "When did I last feel genuinely alive — and what's been costing me that?",
     fractal: "Human Being",
-    avatarPrompt: `Spark holds the animating force — the thing that makes you specifically alive. Not fun or relaxation, though those can be expressions of it. The real question this domain asks is: is the fire on?
+    avatarPrompt: `Spark is the animating fire — the things that make you feel genuinely alive, not just occupied. Not fun or relaxation, though those can be expressions of it. Spark is regeneration: soul nourishment that sends you back into the world more alive than you arrived.
 
 To set your scale — who or what represents 10/10 in Spark for someone like you? Someone whose aliveness is unmistakable. Whose fire is clearly on. This might be a person, a way of being, a specific quality of presence.
 
@@ -78,9 +78,9 @@ Be specific about what's actually present and what's actually absent.`,
   {
     id: "body",
     label: "Body",
-    stewardshipQuestion: "How is this living system doing?",
+    stewardshipQuestion: "Am I honouring this instrument — or running it into the ground?",
     fractal: "Nature",
-    avatarPrompt: `Body holds the living ecology — you're not maintaining a vessel, you're in relationship with a living system. The stewardship question is: how is this system doing?
+    avatarPrompt: `Body is your physical instrument — the vessel through which everything else operates, and the one thing you cannot outsource, replace, or defer indefinitely. Body is not about aesthetics. It is about whether the instrument you're using to do your life's work is being honoured, maintained, and brought to its full capacity.
 
 To set your scale — who represents 10/10 in Body for someone like you specifically? Your age, your context, your history. Not a generic fitness ideal. The best physical expression of what's actually possible and meaningful for someone with your specific life.
 
@@ -90,7 +90,7 @@ Composites welcome. Partial models welcome — someone whose energy you want wit
 
     placementPrompt: `Where is your Body right now — honestly?
 
-Describe the living system: energy levels, sleep, how you move, how you eat, how you feel inside your physical life day to day. Include what you're minimising or glossing over. Injuries count. Fatigue counts. Post-burnout recovery counts. The gap between what you intend and what you actually do counts.`,
+Describe the instrument: energy levels, sleep, how you move, how you eat, how you feel inside your physical life day to day. Include what you're minimising or glossing over. Injuries count. Fatigue counts. Post-burnout recovery counts. The gap between what you intend and what you actually do counts.`,
 
     horizonPrompt: `If a genie granted your wish in Body — what would it be? Not the Avatar. What would genuinely thriving in your body feel like for your actual life? What would you be able to do, how would you feel, what would be different about how you inhabit your days?`
   },
@@ -120,7 +120,7 @@ Tell me both. They're both real data.`,
   {
     id: "relationships",
     label: "Relationships",
-    stewardshipQuestion: "Am I truly known by anyone?",
+    stewardshipQuestion: "Am I truly known by anyone — and am I truly knowing them?",
     fractal: "Society",
     avatarPrompt: `Relationships holds the depth of human connection — the question isn't how many people you know, it's whether anyone truly knows you.
 
@@ -139,9 +139,9 @@ The quality of your closest connections, your sense of belonging, what's genuine
   {
     id: "inner_game",
     label: "Inner Game",
-    stewardshipQuestion: "Are my stories tending me, or running me?",
+    stewardshipQuestion: "What story about myself is quietly running the room — and is that story still true?",
     fractal: "Legacy",
-    avatarPrompt: `Inner Game holds the stories you carry — not beliefs in the abstract, but the specific narrative inheritance from your history, your family, your culture, your inner critic. The stewardship question is: are these stories tending you, or running you?
+    avatarPrompt: `Inner Game is the source code — everything else runs on it. The beliefs, stories, values, and emotional patterns you carry about who you are and what you're capable of. Not beliefs in the abstract, but the specific narrative inheritance from your history, your family, your culture, your inner critic.
 
 To set your scale — who represents 10/10 in Inner Game for someone like you? Someone with a genuinely healthy, grounded, honest internal life. Not someone who has it all figured out — someone who has a real relationship with their own interior.`,
 
@@ -221,7 +221,7 @@ function thinnessResponse(step, probeCount) {
 function placementInferencePrompt(session, domain) {
   return `You are the Life OS assessment engine. Infer honest placement for ${domain.label}.
 
-Stewardship question: "${domain.stewardshipQuestion}"
+Life's mission question: "${domain.stewardshipQuestion}"
 Avatar character: ${session.domainData[domain.id]?.characterBrief || session.domainData[domain.id]?.avatarList || "not captured"}
 Current reality: ${session.currentPlacement}
 

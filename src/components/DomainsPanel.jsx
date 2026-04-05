@@ -3,38 +3,38 @@ import { useState, useEffect } from 'react'
 const DOMAINS = [
   {
     name: 'Path',
-    question: 'What is this life actually for? Am I moving toward work that feels genuinely mine, or carrying someone else\'s idea of what I should be doing?',
-    description: 'Contribution, calling, and the work you\'re here to do. Not job title — the through-line of meaningful contribution beneath whatever you\'re currently doing.',
+    question: 'Am I walking my path \u2014 or just walking?',
+    description: 'Your contribution, calling, and the work you\'re here to do. Not your job title \u2014 the thread of purpose running beneath whatever you\'re currently doing. Life\'s mission: the gift you came to bring, the role that belongs to you specifically.',
   },
   {
     name: 'Spark',
-    question: 'When did I last feel genuinely alive? What has been draining it — and is there anything I\'m not admitting is costing me more than it gives?',
-    description: 'The animating fire. Aliveness, joy, play, and the godspark. When Spark is low, everything else runs on fumes.',
+    question: 'When did I last feel genuinely alive \u2014 and what\'s been costing me that?',
+    description: 'The animating fire. The things that make you feel genuinely alive \u2014 not just occupied. Spark is regeneration: soul nourishment that sends you back into the world more alive than you arrived. When Spark is low, everything else runs on fumes.',
   },
   {
     name: 'Body',
-    question: 'What is my body asking for that I keep deferring? Is the way I\'m living in this vessel sustainable for the long arc I\'m building toward?',
-    description: 'Physical health, energy, and embodied experience. The vessel through which everything else operates.',
+    question: 'Am I honouring this instrument \u2014 or running it into the ground?',
+    description: 'Your physical instrument. The vessel through which everything else operates \u2014 and the one thing you cannot outsource, replace, or defer indefinitely. Not about aesthetics. About whether the instrument is being honoured.',
   },
   {
     name: 'Finances',
-    question: 'Am I making decisions from sufficiency or scarcity? Does money move with intention, or does anxiety make most of the calls?',
-    description: 'Your relationship with resources — whether money flows with intention or anxiety, whether decisions come from sufficiency or scarcity.',
+    question: 'Do I have the agency to act on what matters?',
+    description: 'The currency that gives you the capacity to act. Not just money \u2014 the resources, mobility, and agency to convert your visions into reality and your desires into choices. When it flows, things move. When it\'s blocked, everything stalls.',
   },
   {
     name: 'Relationships',
-    question: 'Are the people closest to me genuinely known to me — and am I genuinely known to them? Is there connection here, or just proximity?',
-    description: 'Intimacy, friendship, community, and belonging. The quality of connection, not just its presence.',
+    question: 'Am I truly known by anyone \u2014 and am I truly knowing them?',
+    description: 'How you inhabit connection across the full range of your relational life. Not just the presence of people \u2014 the quality of the connection. Intimate partnership, friendship, family, collaborators, community. Are you genuinely known?',
   },
   {
     name: 'Inner Game',
-    question: 'What story about myself is quietly running the room? Is that story still true — or just familiar?',
-    description: 'Your internal world. Mindset, beliefs, emotional patterns, and the quality of your relationship with yourself.',
+    question: 'What story about myself is quietly running the room \u2014 and is that story still true?',
+    description: 'Your relationship with yourself. The beliefs, stories, values, and emotional patterns you carry about who you are and what you\'re capable of. The source code \u2014 everything else runs on it. Inner Game shapes the floor and ceiling of every other domain.',
   },
   {
     name: 'Outer Game',
-    question: 'Do my daily structures support the life I\'m trying to build, or are they left over from a version of me that no longer exists?',
-    description: 'How you show up in the world. Habits, systems, environment, and the structures that support or hinder your life.',
+    question: 'Is what I\'m broadcasting aligned with who I actually am?',
+    description: 'Your external world: environment, appearance, presence, and public-facing persona. Where inner alignment meets the world\'s perception of you \u2014 and the two need to match. Not as performance. As honest expression.',
   },
 ]
 
@@ -133,7 +133,7 @@ export function DomainsPanel() {
                   The Seven Domains
                 </h2>
                 <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
-                  Stewardship questions for each domain
+                  Life's mission questions for each domain
                 </p>
               </div>
               <button
@@ -158,7 +158,7 @@ export function DomainsPanel() {
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
-                Life OS maps seven domains of a full life. Each domain has a stewardship question {'\u2014'} the honest question to sit with when assessing where you actually are.
+                Life OS maps seven domains of a full life. Each domain holds a life's mission question {'\u2014'} the honest question to sit with, not once, but again and again.
               </p>
             </div>
 
@@ -213,7 +213,7 @@ export function DomainsPanel() {
                         </p>
                         <div style={{ padding: '10px 14px', background: 'rgba(200,146,42,0.06)', borderLeft: '2px solid rgba(200,146,42,0.55)', borderRadius: '0 6px 6px 0' }}>
                           <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '5px' }}>
-                            Stewardship question
+                            Life's mission question
                           </div>
                           <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.65 }}>
                             {domain.question}
@@ -229,7 +229,7 @@ export function DomainsPanel() {
             {/* Footer */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(200,146,42,0.12)', marginTop: 'auto' }}>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
-                Seven domains, seven honest questions. The Map scores them. Orienteering starts with whichever one is most alive right now.
+                Seven domains, seven life's mission questions. The Map scores them. Orienteering starts with whichever one is most alive right now.
               </p>
             </div>
           </div>

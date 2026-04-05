@@ -10,13 +10,13 @@ import { supabase } from '../../hooks/useSupabase'
 const SS_KEY = 'tg_session_v2'
 
 const DOMAINS = [
-  { id: 'path',          label: 'Path',          description: 'Your calling, contribution, and the work you\'re here to do.',              question: 'Am I walking my path — or just walking?' },
-  { id: 'spark',         label: 'Spark',         description: 'Vitality, aliveness, creative fire — the internal engine that powers everything else.', question: 'Is the fire on?' },
-  { id: 'body',          label: 'Body',          description: 'Physical health, energy, and how well this living system is functioning.',   question: 'How is this living system doing?' },
-  { id: 'finances',      label: 'Finances',      description: 'Your relationship with money, resources, and the freedom to act on what matters.', question: 'Do I have the agency to act on what matters?' },
-  { id: 'relationships', label: 'Relationships', description: 'Depth of connection, intimacy, friendship, community, and belonging.',       question: 'Am I truly known by anyone?' },
-  { id: 'inner_game',    label: 'Inner Game',    description: 'Your relationship with yourself — beliefs, self-talk, and the stories running beneath the surface.', question: 'Are my stories tending me, or running me?' },
-  { id: 'outer_game',    label: 'Outer Game',    description: 'How you show up in the world — presence, expression, and alignment between inside and outside.', question: 'Is what I\'m broadcasting aligned with who I actually am?' },
+  { id: 'path',          label: 'Path',          description: 'Your contribution, calling, and the work you\'re here to do. Not your job title — the thread of purpose running beneath whatever you\'re currently doing. Life\'s mission.',              question: 'Am I walking my path \u2014 or just walking?' },
+  { id: 'spark',         label: 'Spark',         description: 'The animating fire. The things that make you feel genuinely alive — not just occupied. When Spark is low, everything else runs on fumes.', question: 'When did I last feel genuinely alive \u2014 and what\'s been costing me that?' },
+  { id: 'body',          label: 'Body',          description: 'Your physical instrument. The vessel through which everything else operates — and the one thing you cannot outsource, replace, or defer indefinitely.',   question: 'Am I honouring this instrument \u2014 or running it into the ground?' },
+  { id: 'finances',      label: 'Finances',      description: 'The currency that gives you the capacity to act. Resources, mobility, and agency to convert your visions into reality and your desires into choices.', question: 'Do I have the agency to act on what matters?' },
+  { id: 'relationships', label: 'Relationships', description: 'How you inhabit connection across the full range of your relational life. Not just the presence of people — the quality of the connection. Are you genuinely known?',       question: 'Am I truly known by anyone \u2014 and am I truly knowing them?' },
+  { id: 'inner_game',    label: 'Inner Game',    description: 'Your relationship with yourself. The beliefs, stories, values, and emotional patterns you carry about who you are and what you\'re capable of. The source code — everything else runs on it.', question: 'What story about myself is quietly running the room \u2014 and is that story still true?' },
+  { id: 'outer_game',    label: 'Outer Game',    description: 'Your external world: environment, appearance, presence, and public-facing persona. Where inner alignment meets the world\'s perception of you — and the two need to match.', question: 'Is what I\'m broadcasting aligned with who I actually am?' },
 ]
 
 const DOMAIN_BY_ID = Object.fromEntries(DOMAINS.map(d => [d.id, d]))
