@@ -3,7 +3,7 @@ import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
 import { supabase } from '../../hooks/useSupabase'
-import { FlameCheckIn, FlameGlyph } from '../../components/FlameCheckIn'
+import { FlamePicker, FlameGlyph } from '../../components/FlameCheckIn'
 import { ProtocolPanel } from '../../components/ProtocolPanel'
 import { AccessGate } from '../../components/AccessGate'
 
@@ -16,8 +16,11 @@ const gold  = { color: '#A8721A' }
 const muted = { color: 'rgba(15,21,35,0.72)' }
 const meta  = { color: 'rgba(15,21,35,0.78)' }
 
-// ─── Date helpers (same pattern as Pulse) ────────────────────────────────────
+// ─── Date helpers ─────────────────────────────────────────────────────────────
 
+function getLocalDateStr(date = new Date()) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`
+}
 function getWeekId(date = new Date()) {
   const d = new Date(date); d.setHours(0,0,0,0)
   const day = d.getDay()
@@ -38,7 +41,7 @@ function periodLabel(type, id) {
     const mon = new Date(+y, +m-1, +d)
     const sun = new Date(mon); sun.setDate(mon.getDate() + 6)
     const fmt = dt => `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dt.getMonth()]} ${dt.getDate()}`
-    return `${fmt(mon)} – ${fmt(sun)}`
+    return `${fmt(mon)} \u2013 ${fmt(sun)}`
   }
   if (type === 'monthly') {
     const [y, m] = id.split('-')
@@ -66,7 +69,6 @@ function AudioPlayer({ url, onEnded, onNearEnd, locked }) {
     a.addEventListener('loadedmetadata', () => { setDuration(a.duration); setLoaded(true) })
     a.addEventListener('timeupdate', () => {
       setCurrent(a.currentTime)
-      // Fire onNearEnd when 60 seconds remain, once per session
       if (!nearEndFiredRef.current && a.duration > 0 && (a.duration - a.currentTime) <= 60) {
         nearEndFiredRef.current = true
         onNearEnd?.()
@@ -98,10 +100,12 @@ function AudioPlayer({ url, onEnded, onNearEnd, locked }) {
       borderRadius: '14px',
       transition: 'all 0.4s ease',
       opacity: locked ? 0.55 : 1,
+      minHeight: '360px',
+      display: 'flex', flexDirection: 'column', justifyContent: 'center',
     }}>
       {locked && (
         <p style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, marginBottom: '14px', lineHeight: 1.6 }}>
-          Check in before you begin {'\u2014'} then the audio unlocks.
+          Check-in to unlock the audio.
         </p>
       )}
       <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>
@@ -198,17 +202,14 @@ function FoundationReview({ user, sessions }) {
   const [error,      setError]      = useState('')
   const [saved,      setSaved]      = useState(null)
 
-  const now         = new Date()
-  const weekId      = getWeekId(now)
+  const now              = new Date()
+  const weekId           = getWeekId(now)
   const sessionsThisWeek = sessions.filter(s => s.week_id === weekId)
-
-  // Cadence: weekly review available after 3+ sessions this week
-  const weeklyAvailable = sessionsThisWeek.length >= 3
+  const weeklyAvailable  = sessionsThisWeek.length >= 3
 
   async function requestReview(type) {
     setLoading(true); setError(''); setReviewText('')
     try {
-      // Load previous reviews from Supabase for context
       let previousReviews = []
       if (user?.id && supabase) {
         const { data } = await supabase
@@ -219,46 +220,32 @@ function FoundationReview({ user, sessions }) {
           .limit(4)
         previousReviews = data || []
       }
-
-      const periodId    = type === 'weekly' ? weekId : type === 'monthly' ? getMonthId(now) : type === 'quarterly' ? getQuarterId(now) : getYearId(now)
-      const label       = periodLabel(type, periodId)
-      const relevant    = type === 'weekly'
-        ? sessions.filter(s => s.week_id === weekId)
-        : type === 'monthly'
-        ? sessions.filter(s => s.month_id === getMonthId(now))
-        : type === 'quarterly'
-        ? sessions.filter(s => s.quarter_id === getQuarterId(now))
-        : sessions.filter(s => s.year_id === getYearId(now))
-
+      const periodId = type === 'weekly' ? weekId : type === 'monthly' ? getMonthId(now) : type === 'quarterly' ? getQuarterId(now) : getYearId(now)
+      const label    = periodLabel(type, periodId)
+      const relevant = sessions.filter(s =>
+        type === 'weekly' ? s.week_id === weekId :
+        type === 'monthly' ? s.month_id === getMonthId(now) :
+        type === 'quarterly' ? s.quarter_id === getQuarterId(now) :
+        s.year_id === getYearId(now)
+      )
       const res = await fetch('/tools/foundation/api/review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          period: { type, id: periodId, label },
-          sessions: relevant,
-          previousReviews,
-        }),
+        body: JSON.stringify({ period: { type, id: periodId, label }, sessions: relevant, previousReviews }),
       })
       if (!res.ok) throw new Error('API error')
       const data = await res.json()
       const text = data.review || ''
       setReviewText(text)
-
-      // Save review to Supabase
       if (user?.id && supabase && text) {
         await supabase.from('foundation_reviews').upsert({
-          user_id:      user.id,
-          period_type:  type,
-          period_id:    periodId,
-          period_label: label,
-          session_count: relevant.length,
-          review_text:  text,
-          created_at:   now.toISOString(),
-          updated_at:   now.toISOString(),
+          user_id: user.id, period_type: type, period_id: periodId, period_label: label,
+          session_count: relevant.length, review_text: text,
+          created_at: now.toISOString(), updated_at: now.toISOString(),
         }, { onConflict: 'user_id,period_type,period_id' })
         setSaved({ type, label })
       }
-    } catch (e) {
+    } catch {
       setError('Review unavailable. Please try again shortly.')
     }
     setLoading(false)
@@ -272,32 +259,17 @@ function FoundationReview({ user, sessions }) {
       <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '20px' }}>
         {sessionsThisWeek.length} sessions this week. A reflection is available.
       </p>
-
       {!reviewText && !loading && (
-        <button
-          onClick={() => requestReview('weekly')}
-          style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '12px 28px', cursor: 'pointer' }}
-        >
+        <button onClick={() => requestReview('weekly')} style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '12px 28px', cursor: 'pointer' }}>
           Request weekly reflection {'\u2192'}
         </button>
       )}
-
-      {loading && (
-        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted }}>Reading your practice{'\u2026'}</p>
-      )}
-
-      {error && (
-        <p style={{ ...serif, fontSize: '0.875rem', color: 'rgba(138,48,48,0.7)' }}>{error}</p>
-      )}
-
+      {loading && <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted }}>Reading your practice{'\u2026'}</p>}
+      {error && <p style={{ ...serif, fontSize: '0.875rem', color: 'rgba(138,48,48,0.7)' }}>{error}</p>}
       {reviewText && (
         <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', padding: '16px 0 16px 20px' }}>
           <p style={{ ...serif, fontSize: '1rem', lineHeight: 1.85, ...meta, margin: 0 }}>{reviewText}</p>
-          {saved && (
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(200,146,42,0.5)', display: 'block', marginTop: '12px' }}>
-              Saved to your profile
-            </span>
-          )}
+          {saved && <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(200,146,42,0.5)', display: 'block', marginTop: '12px' }}>Saved to your profile</span>}
         </div>
       )}
     </div>
@@ -307,25 +279,33 @@ function FoundationReview({ user, sessions }) {
 // ─── Baseline Card ────────────────────────────────────────────────────────────
 
 function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
-  // flow: 'before' | 'listening' | 'after' | 'done'
-  const [flow,           setFlow]           = useState('before')
-  const [beforeResult,   setBeforeResult]   = useState(null)
-  const [afterResult,    setAfterResult]    = useState(null)
-  const [showModal,      setShowModal]      = useState(false)
-  const [afterUnlocked,  setAfterUnlocked]  = useState(false)
+  const today = getLocalDateStr()
 
-  function handleBeforeComplete(data) {
-    setBeforeResult(data)
-    setFlow('listening')
-  }
+  // Derive today's before/after from session history
+  const todayBefore = sessions.find(s => s.checkin_stage === 'before' && s.completed_at?.startsWith(today))
+  const todayAfter  = sessions.find(s => s.checkin_stage === 'after'  && s.completed_at?.startsWith(today))
 
+  // Local state — pre-filled from today's data if it exists
+  const [beforeResult,  setBeforeResult]  = useState(todayBefore ? { value: todayBefore.value, note: todayBefore.note } : null)
+  const [afterResult,   setAfterResult]   = useState(todayAfter  ? { value: todayAfter.value,  note: todayAfter.note  } : null)
+  const [afterUnlocked, setAfterUnlocked] = useState(!!todayAfter)
+  const [showModal,     setShowModal]     = useState(false)
 
-  function handleAfterComplete(data) {
-    setAfterResult(data)
-    setFlow('done')
-  }
+  // Resync if sessions loads after mount
+  useEffect(() => {
+    if (!beforeResult) {
+      const b = sessions.find(s => s.checkin_stage === 'before' && s.completed_at?.startsWith(today))
+      if (b) setBeforeResult({ value: b.value, note: b.note })
+    }
+    if (!afterResult) {
+      const a = sessions.find(s => s.checkin_stage === 'after' && s.completed_at?.startsWith(today))
+      if (a) { setAfterResult({ value: a.value, note: a.note }); setAfterUnlocked(true) }
+    }
+  }, [sessions])
 
-  // Unauth — show locked player, gate on play
+  const isDone = !!afterResult
+
+  // Unauth
   if (!user) {
     return (
       <div>
@@ -343,121 +323,92 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
               </div>
             </div>
           </div>
+          <div style={{ flex: '0 0 auto', opacity: 0.18 }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
+            <FlameGlyph value={5} size={64} ghost />
+          </div>
         </div>
         {showModal && <AuthModal onDismiss={() => setShowModal(false)} />}
       </div>
     )
   }
 
-  // ── BEFORE + AUDIO ───────────────────────────────────────────────────────────
-  if (flow === 'before' || flow === 'listening') {
+  // Done for today
+  if (isDone) {
     return (
       <div>
-        <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-
-          {/* LEFT — Before flame (active until completed) */}
-          <div style={{
-            flex: '0 0 auto', minWidth: '120px',
-            opacity: beforeResult ? 0.35 : 1,
-            transition: 'opacity 0.6s ease',
-            pointerEvents: beforeResult ? 'none' : 'auto',
-          }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>Before</span>
-            {!beforeResult ? (
-              <FlameCheckIn
-                audioPhase="baseline"
-                onBeforeComplete={handleBeforeComplete}
-                onSkip={() => { setBeforeResult({ beforeValue: 5 }); setFlow('listening') }}
-              />
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                <FlameGlyph value={beforeResult?.beforeValue ?? 5} size={72} ghost />
-                <span style={{ ...serif, fontSize: '13px', fontStyle: 'italic', ...muted, textAlign: 'center' }}>noted</span>
-              </div>
-            )}
-          </div>
-
-          {/* CENTRE — Audio player */}
-          <div style={{ flex: 1, minWidth: '220px', paddingTop: '0' }}>
-            {audioLoading && <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted }}>Loading audio...</p>}
-            {audioError  && <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
-            {!audioLoading && !audioError && audioUrl && (
-              <AudioPlayer
-                url={audioUrl}
-                locked={!beforeResult}
-                onNearEnd={() => setAfterUnlocked(true)}
-                onEnded={() => { setAfterUnlocked(true); if (flow === 'listening') setFlow('after') }}
-              />
-            )}
-            {beforeResult && flow !== 'done' && flow !== 'after' && (
-              <button onClick={() => setFlow('after')} style={{ display: 'block', width: '100%', marginTop: '14px', padding: '11px', textAlign: 'center', ...sc, fontSize: '0.8125rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', cursor: 'pointer' }}>
-                Check in after {'\u2192'}
-              </button>
-            )}
-          </div>
-
-          {/* RIGHT — After flame (always visible, faint until 1 min remaining) */}
-          <div style={{
-            flex: '0 0 auto', minWidth: '120px',
-            opacity: afterUnlocked ? 1 : 0.18,
-            transition: 'opacity 0.8s ease',
-            pointerEvents: afterUnlocked ? 'auto' : 'none',
-          }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
-            <FlameCheckIn
-              audioPhase="baseline"
-              ghostValue={beforeResult?.beforeValue ?? null}
-              onBeforeComplete={() => {}}
-              onComplete={handleAfterComplete}
-            />
-          </div>
-
+        <FlameDelta before={beforeResult.value} after={afterResult.value} />
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.75, marginBottom: '16px' }}>
+            {afterResult.value > beforeResult.value
+              ? "The audio did something. That's the data."
+              : afterResult.value < beforeResult.value
+              ? "Honest is what matters here. The pattern shows over time."
+              : "The ground holds even when nothing shifts. That's sometimes the work."}
+          </p>
+          <button
+            onClick={() => { setBeforeResult(null); setAfterResult(null); setAfterUnlocked(false) }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', ...gold, background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            Listen again {'\u2192'}
+          </button>
         </div>
       </div>
     )
   }
 
-  // ── AFTER (audio ended, after not yet done) ───────────────────────────────
-  if (flow === 'after') {
-    return (
-      <div>
-        <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-          <div style={{ flex: '0 0 auto', minWidth: '120px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', textAlign: 'center' }}>Before</span>
-            <FlameGlyph value={beforeResult?.beforeValue ?? 5} size={72} ghost />
-          </div>
-          <div style={{ flex: 1, minWidth: '180px' }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
-            <FlameCheckIn
-              audioPhase="baseline"
-              ghostValue={beforeResult?.beforeValue ?? null}
-              onBeforeComplete={() => {}}
-              onComplete={handleAfterComplete}
-            />
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  // ── DONE ─────────────────────────────────────────────────────────────────────
+  // Active session
   return (
     <div>
-      {beforeResult && afterResult && (
-        <FlameDelta before={beforeResult.beforeValue} after={afterResult.afterValue} />
-      )}
-      <div style={{ textAlign: 'center', marginTop: '20px' }}>
-        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.75, marginBottom: '16px' }}>
-          {afterResult && afterResult.afterValue > (beforeResult?.beforeValue ?? 5)
-            ? 'The audio did something. That\'s the data.'
-            : afterResult && afterResult.afterValue < (beforeResult?.beforeValue ?? 5)
-            ? 'Honest is what matters here. The pattern shows over time.'
-            : 'The ground holds even when nothing shifts. That\'s sometimes the work.'}
-        </p>
-        <button onClick={() => { setFlow('before'); setBeforeResult(null); setAfterResult(null); setAfterUnlocked(false) }}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', ...gold, background: 'none', border: 'none', cursor: 'pointer' }}>
-          Listen again {'\u2192'}
-        </button>
+      <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+
+        {/* LEFT — Before flame */}
+        <div style={{
+          flex: '0 0 auto', minWidth: '120px',
+          opacity: beforeResult ? 0.35 : 1,
+          transition: 'opacity 0.6s ease',
+        }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>Before</span>
+          <FlamePicker
+            audioPhase="baseline"
+            stage="before"
+            locked={!!beforeResult}
+            onComplete={data => { setBeforeResult(data) }}
+            onSkip={() => setBeforeResult({ value: 5, note: '' })}
+          />
+        </div>
+
+        {/* CENTRE — Audio */}
+        <div style={{ flex: 1, minWidth: '220px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          {audioLoading && <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted }}>Loading audio...</p>}
+          {audioError   && <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
+          {!audioLoading && !audioError && audioUrl && (
+            <AudioPlayer
+              url={audioUrl}
+              locked={!beforeResult}
+              onNearEnd={() => setAfterUnlocked(true)}
+              onEnded={() => setAfterUnlocked(true)}
+            />
+          )}
+        </div>
+
+        {/* RIGHT — After flame */}
+        <div style={{
+          flex: '0 0 auto', minWidth: '120px',
+          opacity: afterUnlocked ? 1 : 0.18,
+          transition: 'opacity 0.8s ease',
+          pointerEvents: afterUnlocked ? 'auto' : 'none',
+        }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#C8922A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
+          <FlamePicker
+            audioPhase="baseline"
+            stage="after"
+            locked={!afterUnlocked}
+            ghostValue={beforeResult?.value ?? null}
+            onComplete={data => setAfterResult(data)}
+          />
+        </div>
+
       </div>
     </div>
   )
@@ -502,14 +453,13 @@ function QuoteBlock({ text, cite }) {
 export function FoundationPage() {
   const { user, loading: authLoading } = useAuth()
   const { tier, loading: accessLoading } = useAccess('foundation')
-  const [audioUrl,     setAudioUrl]    = useState(null)
+  const [audioUrl,     setAudioUrl]     = useState(null)
   const [audioLoading, setAudioLoading] = useState(false)
-  const [audioError,   setAudioError]  = useState(null)
-  const [sessions,     setSessions]    = useState([])
+  const [audioError,   setAudioError]   = useState(null)
+  const [sessions,     setSessions]     = useState([])
 
   useEffect(() => {
     if (!user) return
-    // Load audio
     setAudioLoading(true)
     try {
       const { data } = supabase.storage.from(BUCKET).getPublicUrl(AUDIO_FILE)
@@ -520,14 +470,14 @@ export function FoundationPage() {
     } finally {
       setAudioLoading(false)
     }
-    // Load session history
+    // Load session history — includes both before/after check-ins and full sessions
     supabase
       .from('pulse_entries')
       .select('*')
       .eq('user_id', user.id)
       .eq('source', 'foundation')
       .order('completed_at', { ascending: false })
-      .limit(100)
+      .limit(200)
       .then(({ data }) => { if (data) setSessions(data) })
   }, [user])
 
