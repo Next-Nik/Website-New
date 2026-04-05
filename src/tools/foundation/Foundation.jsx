@@ -522,11 +522,11 @@ export function FoundationPage() {
         )}
 
         <PhaseBlock number="Phase 2" name="Calibration" desc="Agency, temporal clarity, and directional awareness — the heading you face. Complete Baseline first.">
-          <PhasePlaceholder title="Foundation \u00B7 Calibration" />
+          <PhasePlaceholder title="Foundation · Calibration" />
         </PhaseBlock>
 
         <PhaseBlock number="Phase 3" name="Embodying" desc="Action from the Horizon orientation — the accomplished, resourced stance you act from.">
-          <PhasePlaceholder title="Foundation \u00B7 Embodying" />
+          <PhasePlaceholder title="Foundation · Embodying" />
         </PhaseBlock>
 
         <QuoteBlock text="It has helped me reset my baseline in the middle of the day — to relax, let go, and create space for a more supportive inner story. One that naturally inspires aligned action rather than effort or striving." cite="David William Pierce" />
