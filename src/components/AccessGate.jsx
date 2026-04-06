@@ -137,7 +137,7 @@ function GateCard({ toolName, variant, discountPct = 0 }) {
             borderRadius: '40px',
             border: '1px solid rgba(168,114,26,0.8)',
             background: '#C8922A',
-            ...sc, fontSize: '14px', fontWeight: 600,
+            ...sc, fontSize: '17px', fontWeight: 600,
             letterSpacing: '0.14em', color: '#FFFFFF',
             textDecoration: 'none',
           }}>

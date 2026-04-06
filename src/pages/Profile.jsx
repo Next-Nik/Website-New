@@ -141,7 +141,7 @@ function ScoreBar({ label, score, horizonScore }) {
       <div style={{ width: '88px', flexShrink: 0, textAlign: 'right' }}>
         <span style={{ ...sc, fontSize: '1.25rem', fontWeight: 600, color, lineHeight: 1 }}>{score}</span>
         <span style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.55)' }}>/10</span>
-        <div style={{ ...serif, fontSize: '12px', color, marginTop: '1px', opacity: 0.85 }}>
+        <div style={{ ...serif, fontSize: '15px', color, marginTop: '1px', opacity: 0.85 }}>
           {getTierLabel(score)}
         </div>
       </div>
@@ -196,7 +196,7 @@ function MapWeb({ domains, currentScores, horizonScores }) {
         const color = s !== undefined ? getTierColor(s) : 'rgba(15,21,35,0.28)'
         return (
           <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
-            fontFamily="'Cormorant SC',Georgia,serif" fontSize="15" fontWeight="600"
+            fontFamily="'Cormorant SC',Georgia,serif" fontSize="19" fontWeight="600"
             letterSpacing="0.5" fill={color}>
             {d.label.substring(0, 3).toUpperCase()}
           </text>
@@ -232,7 +232,7 @@ function MapSlot({ mapData, sprintData }) {
             {doneCount} of 7 domains scored
           </span>
           {activeDomainLabel && (
-            <span style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>
+            <span style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>
               Currently: {activeDomainLabel}
             </span>
           )}
@@ -307,7 +307,7 @@ function MapSlot({ mapData, sprintData }) {
           background: 'rgba(138,48,48,0.04)', border: '1px solid rgba(138,48,48,0.2)',
           borderRadius: '10px' }}>
           {dragDomains.map(d => (
-            <div key={d.key} style={{ ...serif, fontSize: '14px', color: '#8A3030',
+            <div key={d.key} style={{ ...serif, fontSize: '17px', color: '#8A3030',
               lineHeight: 1.6 }}>
               {d.label} ({d.score}) is pulling on everything else.
             </div>
@@ -379,7 +379,7 @@ function MapSlot({ mapData, sprintData }) {
         <div style={{ padding: '14px 16px', marginBottom: '20px',
           background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)',
           borderRadius: '10px' }}>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: '#A8721A',
+          <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A',
             textTransform: 'uppercase', marginBottom: '6px' }}>Your map is ready</div>
           <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
             color: 'rgba(15,21,35,0.72)', margin: '0 0 10px' }}>
@@ -624,7 +624,7 @@ function SprintProgressBar({ done, total, color = '#A8721A' }) {
         <div style={{ width: `${pct}%`, height: '100%', background: color,
           borderRadius: '2px', transition: 'width 0.6s ease' }} />
       </div>
-      <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.08em',
+      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em',
         color: 'rgba(15,21,35,0.55)', flexShrink: 0 }}>{done}/{total}</span>
     </div>
   )
@@ -721,7 +721,7 @@ function TargetSprintSlot({ sprintData }) {
         <div>
           <Eyebrow style={{ marginBottom: '2px' }}>90-day sprint</Eyebrow>
           {(endLabel || targetDate) && (
-            <span style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
+            <span style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
               color: 'rgba(15,21,35,0.55)' }}>
               {endLabel || new Date(targetDate).toLocaleDateString('en-GB',
                 { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -746,9 +746,9 @@ function TargetSprintSlot({ sprintData }) {
           {totalTasks > 0 && (
             <div style={{ marginBottom: totalMilestones > 0 ? '10px' : 0 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em',
+                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em',
                   color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>Tasks</span>
-                <span style={{ ...sc, fontSize: '12px', color: doneTasks === totalTasks ? '#2D6A4F' : '#A8721A' }}>
+                <span style={{ ...sc, fontSize: '15px', color: doneTasks === totalTasks ? '#2D6A4F' : '#A8721A' }}>
                   {doneTasks === totalTasks ? 'All done' : `${Math.round((doneTasks/totalTasks)*100)}%`}
                 </span>
               </div>
@@ -759,9 +759,9 @@ function TargetSprintSlot({ sprintData }) {
           {totalMilestones > 0 && (
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em',
+                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em',
                   color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>Milestones</span>
-                <span style={{ ...sc, fontSize: '12px', color: doneMilestones === totalMilestones ? '#2D6A4F' : '#A8721A' }}>
+                <span style={{ ...sc, fontSize: '15px', color: doneMilestones === totalMilestones ? '#2D6A4F' : '#A8721A' }}>
                   {doneMilestones === totalMilestones ? 'All done' : `${Math.round((doneMilestones/totalMilestones)*100)}%`}
                 </span>
               </div>
@@ -785,7 +785,7 @@ function TargetSprintSlot({ sprintData }) {
             color: '#0F1523', lineHeight: 1.6, margin: 0 }}>
             {nextMove.task}
           </p>
-          <a href="/tools/target-goals" style={{ ...sc, fontSize: '12px',
+          <a href="/tools/target-goals" style={{ ...sc, fontSize: '15px',
             letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none',
             display: 'inline-block', marginTop: '10px' }}>
             Open sprint {'→'}
@@ -823,7 +823,7 @@ function TargetSprintSlot({ sprintData }) {
             {/* Domain header */}
             <div style={{ display: 'flex', alignItems: 'center',
               justifyContent: 'space-between', marginBottom: goal ? '10px' : 0, gap: '10px' }}>
-              <span style={{ ...sc, fontSize: '14px', letterSpacing: '0.10em',
+              <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.10em',
                 color: domainComplete ? '#2D6A4F' : '#A8721A' }}>
                 {domainComplete ? '✓ ' : ''}{label}
               </span>
@@ -897,7 +897,7 @@ function FlameBar({ value, color = '#A8721A', size = 14 }) {
           transition: 'background 0.3s',
         }} />
       ))}
-      <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.08em',
+      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em',
         color, marginLeft: '6px' }}>{value}</span>
     </div>
   )
@@ -978,7 +978,7 @@ function FoundationSlot({ foundationData }) {
               )}
             </div>
           ) : (
-            <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
+            <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
               color: 'rgba(15,21,35,0.55)', margin: 0 }}>Session complete.</p>
           )}
         </div>
@@ -991,7 +991,7 @@ function FoundationSlot({ foundationData }) {
             color: 'rgba(15,21,35,0.72)', margin: 0 }}>
             {sessions_total > 0 ? 'Ready when you are.' : 'Start your first session.'}
           </p>
-          <a href="/tools/foundation" style={{ ...sc, fontSize: '12px',
+          <a href="/tools/foundation" style={{ ...sc, fontSize: '15px',
             letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none',
             flexShrink: 0 }}>
             Practice {'→'}
@@ -1071,7 +1071,7 @@ function FoundationSlot({ foundationData }) {
         <div style={{ marginBottom: '16px', padding: '12px 14px',
           background: 'rgba(200,146,42,0.03)', borderLeft: '2px solid rgba(200,146,42,0.3)',
           borderRadius: '0 8px 8px 0' }}>
-          <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
+          <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
             color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
             {latest_review}
           </p>
@@ -1135,7 +1135,7 @@ function NextUsSlot({ purposeData }) {
       {(archetype || domain || scale) && (
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
           {[archetype, domain, scale].filter(Boolean).map((v, i) => (
-            <span key={i} style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em',
+            <span key={i} style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em',
               color: '#A8721A', background: 'rgba(200,146,42,0.07)',
               border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px',
               padding: '5px 14px' }}>{v}</span>

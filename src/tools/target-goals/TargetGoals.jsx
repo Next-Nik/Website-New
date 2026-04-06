@@ -286,13 +286,13 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
             />
             {done >= total ? (
               <text x={pos.x} y={pos.y} textAnchor="middle" dominantBaseline="middle"
-                fontSize={size * 0.075} fontFamily="'Cormorant SC', Georgia, serif"
+                fontSize={size * 0.094} fontFamily="'Cormorant SC', Georgia, serif"
                 fill="#FFFFFF" style={{ pointerEvents: 'none', userSelect: 'none' }}>✓</text>
             ) : (
               <>
                 <text x={pos.x} y={lines[1] ? pos.y - size * 0.032 : pos.y}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={size * 0.048} fontFamily="'Cormorant SC', Georgia, serif"
+                  fontSize={size * 0.060} fontFamily="'Cormorant SC', Georgia, serif"
                   fill={isActive ? col : 'rgba(200,146,42,0.75)'} letterSpacing="0.04em"
                   style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill 0.3s' }}>
                   {lines[0]}
@@ -300,7 +300,7 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
                 {lines[1] && (
                   <text x={pos.x} y={pos.y + size * 0.032}
                     textAnchor="middle" dominantBaseline="middle"
-                    fontSize={size * 0.048} fontFamily="'Cormorant SC', Georgia, serif"
+                    fontSize={size * 0.060} fontFamily="'Cormorant SC', Georgia, serif"
                     fill={isActive ? col : 'rgba(200,146,42,0.75)'} letterSpacing="0.04em"
                     style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill 0.3s' }}>
                     {lines[1]}
@@ -320,11 +320,11 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
         onClick={onCentreClick}
       />
       <text x={cx} y={cy - size * 0.018} textAnchor="middle" dominantBaseline="middle"
-        fontSize={size * 0.042} fontFamily="'Cormorant SC', Georgia, serif"
+        fontSize={size * 0.053} fontFamily="'Cormorant SC', Georgia, serif"
         fill={allComplete ? '#FFFFFF' : 'rgba(200,146,42,0.65)'}
         style={{ pointerEvents: 'none', userSelect: 'none' }}>Your</text>
       <text x={cx} y={cy + size * 0.018} textAnchor="middle" dominantBaseline="middle"
-        fontSize={size * 0.042} fontFamily="'Cormorant SC', Georgia, serif"
+        fontSize={size * 0.053} fontFamily="'Cormorant SC', Georgia, serif"
         fill={allComplete ? '#FFFFFF' : 'rgba(200,146,42,0.65)'}
         style={{ pointerEvents: 'none', userSelect: 'none' }}>Sprint</text>
     </svg>
@@ -384,7 +384,7 @@ function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoT
                   {Object.entries(steps).map(([key, done]) => (
                     <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span style={{ width: '16px', height: '16px', borderRadius: '50%', border: `1px solid ${done ? '#C8922A' : 'rgba(200,146,42,0.25)'}`, background: done ? '#C8922A' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                        {done && <span style={{ color: '#FFFFFF', fontSize: '9px' }}>✓</span>}
+                        {done && <span style={{ color: '#FFFFFF', fontSize: '15px' }}>✓</span>}
                       </span>
                       <span style={{ ...serif, fontSize: '1.125rem', color: done ? 'rgba(15,21,35,0.4)' : meta.color, textDecoration: done ? 'line-through' : 'none' }}>
                         {STEP_LABELS[key]}

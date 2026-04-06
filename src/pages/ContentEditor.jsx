@@ -55,7 +55,7 @@ function Toast({ message, onClose }) {
     <div style={{
       position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
       background: '#0F1523', color: '#FAFAF7',
-      ...serif, fontSize: '14px',
+      ...serif, fontSize: '17px',
       padding: '12px 20px', borderRadius: '10px',
       boxShadow: '0 8px 28px rgba(15,21,35,0.3)',
     }}>{message}</div>
@@ -191,7 +191,7 @@ function ProductsTab({ toast }) {
             <input type="checkbox" id="prod_active" checked={form.active}
               onChange={e => setForm(f => ({ ...f, active: e.target.checked }))}
               style={{ width: '16px', height: '16px', accentColor: gold }} />
-            <label htmlFor="prod_active" style={{ ...serif, fontSize: '14px', color: '#0F1523' }}>
+            <label htmlFor="prod_active" style={{ ...serif, fontSize: '17px', color: '#0F1523' }}>
               Active (visible to access system)
             </label>
           </div>
@@ -229,7 +229,7 @@ function ProductsTab({ toast }) {
                 )}
               </div>
               {p.description && (
-                <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)' }}>
+                <div style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
                   {p.description}
                 </div>
               )}
@@ -299,7 +299,7 @@ function AnnouncementsTab({ toast }) {
           <h2 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: '#0F1523', marginBottom: '4px' }}>
             Announcements
           </h2>
-          <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>
+          <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>
             Broadcasts shown in user profiles and tool headers.
           </p>
         </div>
@@ -334,7 +334,7 @@ function AnnouncementsTab({ toast }) {
             <input type="checkbox" id="ann_active" checked={form.active}
               onChange={e => setForm(f => ({ ...f, active: e.target.checked }))}
               style={{ width: '16px', height: '16px', accentColor: gold }} />
-            <label htmlFor="ann_active" style={{ ...serif, fontSize: '14px', color: '#0F1523' }}>
+            <label htmlFor="ann_active" style={{ ...serif, fontSize: '17px', color: '#0F1523' }}>
               Active (visible to users immediately)
             </label>
           </div>
@@ -462,7 +462,7 @@ function AskTab() {
       <h2 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: '#0F1523', marginBottom: '6px' }}>
         Ask
       </h2>
-      <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)',
+      <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)',
         marginBottom: '28px' }}>
         Next-1 — your AI observer. Ask anything about the platform.
       </p>

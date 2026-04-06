@@ -69,7 +69,7 @@ function ToolAccordion({ tool }) {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '22px 26px', userSelect: 'none' }}>
         <div onClick={() => setOpen(o => !o)} style={{ flex: 1, cursor: 'pointer' }}>
           <div style={{ ...serif, fontSize: '19px', fontWeight: 400, color: '#A8721A', marginBottom: '4px' }}>{tool.name}</div>
-          <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.88)' }}>{tool.hook}</div>
+          <div style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.88)' }}>{tool.hook}</div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0, marginLeft: '16px' }}>
           <a
@@ -84,7 +84,7 @@ function ToolAccordion({ tool }) {
               border: '1.5px solid rgba(200,146,42,0.55)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               textDecoration: 'none', color: '#A8721A',
-              fontSize: '14px', lineHeight: 1,
+              fontSize: '17px', lineHeight: 1,
               transition: 'all 0.2s', flexShrink: 0,
             }}
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.15)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
@@ -111,11 +111,11 @@ function ToolAccordion({ tool }) {
           ))}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
             <a href={tool.primary.url} target={tool.primary.external ? '_blank' : undefined} rel={tool.primary.external ? 'noopener' : undefined}
-              style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
+              style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '17px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
               {tool.primary.label}
             </a>
             {tool.secondary && (
-              <a href={tool.secondary.url} style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
+              <a href={tool.secondary.url} style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', ...sc, fontSize: '17px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
                 {tool.secondary.label}
               </a>
             )}
@@ -147,7 +147,7 @@ export function LifeOSPage() {
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '16px', maxWidth: '520px' }}>
             If you don't know where to begin, start with Orienteering — a short conversation that reads where you are and points you somewhere real.
           </p>
-          <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '12px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
+          <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '12px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '17px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
             Begin with Orienteering →
           </a>
         </div>
@@ -184,7 +184,7 @@ export function LifeOSPage() {
               <div style={{ fontSize: '20px', flexShrink: 0, marginTop: '2px', color: '#A8721A' }}>{q.icon}</div>
               <div>
                 <div style={{ ...serif, fontSize: '17px', fontWeight: 400, color: '#A8721A', marginBottom: '4px' }}>{q.title}</div>
-                <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.5 }}>{q.sub}</div>
+                <div style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.5 }}>{q.sub}</div>
               </div>
             </div>
           ))}
@@ -195,7 +195,7 @@ export function LifeOSPage() {
               <h4 style={{ ...serif, fontSize: '20px', fontWeight: 400, color: '#A8721A', marginBottom: '10px' }}>{SHARE_RECS[shareRec].tool}</h4>
               <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '520px' }}>{SHARE_RECS[shareRec].desc}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center' }}>
-                <a href={SHARE_RECS[shareRec].url} style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>Open {SHARE_RECS[shareRec].tool} {'→'}</a>
+                <a href={SHARE_RECS[shareRec].url} style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '17px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>Open {SHARE_RECS[shareRec].tool} {'→'}</a>
               </div>
             </div>
           )}

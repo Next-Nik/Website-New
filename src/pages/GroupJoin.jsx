@@ -289,7 +289,7 @@ function Cta({ onClick, children }) {
       borderRadius: '40px',
       border: '1.5px solid rgba(200,146,42,0.78)',
       background: 'rgba(200,146,42,0.05)',
-      ...sc, fontSize: '14px', fontWeight: 600,
+      ...sc, fontSize: '17px', fontWeight: 600,
       letterSpacing: '0.14em', color: gold,
       cursor: 'pointer',
     }}>

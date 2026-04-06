@@ -115,7 +115,7 @@ function Toast({ message, onClose }) {
     <div style={{
       position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
       background: '#0F1523', color: '#FAFAF7',
-      ...serif, fontSize: '14px',
+      ...serif, fontSize: '17px',
       padding: '12px 20px', borderRadius: '10px',
       boxShadow: '0 8px 28px rgba(15,21,35,0.3)',
     }}>
@@ -218,7 +218,7 @@ function NowTab() {
         <div>
           <Eyebrow>Recent signups</Eyebrow>
           {recent.users?.length === 0
-            ? <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)' }}>No users yet.</p>
+            ? <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>No users yet.</p>
             : recent.users?.map(u => {
               const name = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.email?.split('@')[0]
               return (
@@ -226,8 +226,8 @@ function NowTab() {
                   gap: '10px', padding: '9px 0',
                   borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ ...serif, fontSize: '14px', color: '#0F1523' }}>{name}</div>
-                    <div style={{ ...serif, fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>{u.email}</div>
+                    <div style={{ ...serif, fontSize: '17px', color: '#0F1523' }}>{name}</div>
+                    <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>{u.email}</div>
                   </div>
                   <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em',
                     color: 'rgba(15,21,35,0.55)', flexShrink: 0 }}>
@@ -243,13 +243,13 @@ function NowTab() {
         <div>
           <Eyebrow>Recent grants</Eyebrow>
           {recent.grants?.length === 0
-            ? <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)' }}>No grants yet.</p>
+            ? <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>No grants yet.</p>
             : recent.grants?.map(g => (
               <div key={g.id} style={{ display: 'flex', alignItems: 'center',
                 gap: '10px', padding: '9px 0',
                 borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ ...serif, fontSize: '14px', color: '#0F1523' }}>
+                  <div style={{ ...serif, fontSize: '17px', color: '#0F1523' }}>
                     {g.users?.email}
                   </div>
                   <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: gold }}>
@@ -366,7 +366,7 @@ function GroupsTab({ toast }) {
               checked={form.requires_approval}
               onChange={e => setForm(f => ({ ...f, requires_approval: e.target.checked }))}
               style={{ width: '16px', height: '16px', accentColor: gold }} />
-            <label htmlFor="req_approval" style={{ ...serif, fontSize: '14px', color: '#0F1523' }}>
+            <label htmlFor="req_approval" style={{ ...serif, fontSize: '17px', color: '#0F1523' }}>
               Requires approval to join
             </label>
           </div>
@@ -394,7 +394,7 @@ function GroupsTab({ toast }) {
                   {g.grace_period_days > 0 && ` · ${g.grace_period_days}d grace period`}
                 </div>
                 {g.description && (
-                  <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)' }}>
+                  <div style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
                     {g.description}
                   </div>
                 )}
@@ -550,7 +550,7 @@ function MembersTab({ toast }) {
               <div style={{ marginBottom: '24px' }}>
                 <Eyebrow>Active ({active.length})</Eyebrow>
                 {active.length === 0
-                  ? <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)' }}>No active members.</p>
+                  ? <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>No active members.</p>
                   : active.map(m => <MemberRow key={m.id} m={m} />)
                 }
               </div>
@@ -718,7 +718,7 @@ function EntitlementsTab({ toast }) {
           )}
 
           {entitlements.length === 0
-            ? <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)' }}>
+            ? <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
                 No entitlements yet for this group.
               </p>
             : entitlements.map(e => (
@@ -916,7 +916,7 @@ function UsersTab({ toast }) {
                   <div key={gm.id} style={{ display: 'flex', alignItems: 'center',
                     gap: '10px', padding: '8px 0',
                     borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-                    <span style={{ ...serif, fontSize: '14px', color: '#0F1523', flex: 1 }}>
+                    <span style={{ ...serif, fontSize: '17px', color: '#0F1523', flex: 1 }}>
                       {gm.groups?.name}
                     </span>
                     <Badge label={gm.status}
@@ -931,14 +931,14 @@ function UsersTab({ toast }) {
             <div style={{ marginBottom: '16px' }}>
               <Eyebrow>Individual access</Eyebrow>
               {userAccess.length === 0
-                ? <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)' }}>
+                ? <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
                     No individual grants.
                   </p>
                 : userAccess.map(a => (
                   <div key={a.id} style={{ display: 'flex', alignItems: 'center',
                     gap: '10px', padding: '8px 0',
                     borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-                    <span style={{ ...serif, fontSize: '14px', color: '#0F1523', flex: 1 }}>
+                    <span style={{ ...serif, fontSize: '17px', color: '#0F1523', flex: 1 }}>
                       {products.find(p => p.key === a.product)?.name ?? a.product}
                     </span>
                     <Badge label={a.tier} color="#3B6B4A" />

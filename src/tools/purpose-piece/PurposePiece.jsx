@@ -286,7 +286,7 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
             {isDone ? (
               <text x={pos.x} y={pos.y}
                 textAnchor="middle" dominantBaseline="middle"
-                fontSize={size * 0.075} fontFamily="'Cormorant SC', Georgia, serif"
+                fontSize={size * 0.094} fontFamily="'Cormorant SC', Georgia, serif"
                 fill="#FFFFFF"
                 style={{ pointerEvents: 'none', userSelect: 'none' }}>
                 {'\u2713'}
@@ -295,7 +295,7 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
               <>
                 <text x={pos.x} y={pos.y - size * 0.035}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={size * 0.048} fontFamily="'Cormorant SC', Georgia, serif"
+                  fontSize={size * 0.060} fontFamily="'Cormorant SC', Georgia, serif"
                   fill={isActive ? w.stroke.replace('0.85','1') : 'rgba(200,146,42,0.75)'}
                   letterSpacing="0.04em"
                   style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill 0.3s' }}>
@@ -303,7 +303,7 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
                 </text>
                 <text x={pos.x} y={pos.y + size * 0.035}
                   textAnchor="middle" dominantBaseline="middle"
-                  fontSize={size * 0.048} fontFamily="'Cormorant SC', Georgia, serif"
+                  fontSize={size * 0.060} fontFamily="'Cormorant SC', Georgia, serif"
                   fill={isActive ? w.stroke.replace('0.85','1') : 'rgba(200,146,42,0.75)'}
                   letterSpacing="0.04em"
                   style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill 0.3s' }}>
@@ -505,7 +505,7 @@ function CentreModal({ wedgeStates, onClose, onGoToStage }) {
                 onMouseLeave={e => { e.currentTarget.style.borderColor = done ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.2)' }}
               >
                 <span style={{ width: '22px', height: '22px', borderRadius: '50%', border: `1.5px solid ${done ? '#C8922A' : 'rgba(200,146,42,0.3)'}`, background: done ? '#C8922A' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.3s' }}>
-                  {done && <span style={{ color: '#FFFFFF', fontSize: '12px', lineHeight: 1 }}>✓</span>}
+                  {done && <span style={{ color: '#FFFFFF', fontSize: '15px', lineHeight: 1 }}>✓</span>}
                 </span>
                 <span style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: done ? '#A8721A' : 'rgba(15,21,35,0.6)', textTransform: 'uppercase' }}>{s.label}</span>
                 {!done && <span style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, marginLeft: 'auto' }}>Go →</span>}
@@ -1244,7 +1244,7 @@ export function PurposePieceDeepPage() {
                 { v: firstLook.domain,    c: '#1E4D38', bg: 'rgba(45,106,79,0.07)',   b: 'rgba(45,106,79,0.22)'   },
                 { v: firstLook.scale,     c: '#1E3550', bg: 'rgba(45,74,106,0.07)',   b: 'rgba(45,74,106,0.22)'   },
               ].filter(x => x.v).map(x => (
-                <span key={x.v} style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: x.c, background: x.bg, border: `1px solid ${x.b}`, borderRadius: '20px', padding: '4px 12px' }}>
+                <span key={x.v} style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: x.c, background: x.bg, border: `1px solid ${x.b}`, borderRadius: '20px', padding: '4px 12px' }}>
                   {x.v}
                 </span>
               ))}

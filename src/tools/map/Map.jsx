@@ -301,7 +301,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
             {stage === 3 && score !== undefined ? (
               <>
                 <text x={p.x} y={p.y - 7} textAnchor="middle" dominantBaseline="middle"
-                  fill={getScoreColor(score)} fontSize="17" fontFamily="'Cormorant SC', Georgia, serif" fontWeight="600"
+                  fill={getScoreColor(score)} fontSize="21" fontFamily="'Cormorant SC', Georgia, serif" fontWeight="600"
                   style={{ pointerEvents: 'none', userSelect: 'none' }}>
                   {score}
                 </text>
@@ -310,7 +310,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
                   fill="#FFFFFF" fillOpacity="0.96"
                   style={{ pointerEvents: 'none' }} />
                 <text x={p.x} y={p.y + 15} textAnchor="middle" dominantBaseline="middle"
-                  fill="rgba(200,146,42,0.8)" fontSize="15" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.06em"
+                  fill="rgba(200,146,42,0.8)" fontSize="19" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.06em"
                   style={{ pointerEvents: 'none', userSelect: 'none' }}>
                   {domain.label.toUpperCase()}
                 </text>
@@ -319,7 +319,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
               <>
                 {stage > 0 && (
                   <text x={p.x} y={p.y - 6} textAnchor="middle" dominantBaseline="middle"
-                    fill="rgba(200,146,42,0.5)" fontSize="12" fontFamily="'Cormorant SC', Georgia, serif"
+                    fill="rgba(200,146,42,0.5)" fontSize="19" fontFamily="'Cormorant SC', Georgia, serif"
                     style={{ pointerEvents: 'none', userSelect: 'none' }}>
                     {stage === 1 ? '◎' : stage === 2 ? '◑' : ''}
                   </text>
@@ -330,7 +330,7 @@ function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreC
                   style={{ pointerEvents: 'none' }} />
                 <text x={p.x} y={p.y + 1} textAnchor="middle" dominantBaseline="middle"
                   fill={isActive ? '#A8721A' : stage > 0 ? 'rgba(200,146,42,0.7)' : 'rgba(15,21,35,0.72)'}
-                  fontSize="15" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.04em"
+                  fontSize="19" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.04em"
                   style={{ pointerEvents: 'none', userSelect: 'none' }}>
                   {domain.label.toUpperCase()}
                 </text>
@@ -381,7 +381,7 @@ strokeWidth="0.5"
             {/* Label */}
             <text x={CX} y={CY} textAnchor="middle" dominantBaseline="middle"
               fill="#FAFAF7"
-              fontSize="14" stroke="#FFFFFF" strokeWidth="0.4" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.14em"
+              fontSize="18" stroke="#FFFFFF" strokeWidth="0.4" fontFamily="'Cormorant SC', Georgia, serif" letterSpacing="0.14em"
               style={{ pointerEvents: 'none', userSelect: 'none' }}>
               YOUR LIFE
             </text>
@@ -449,14 +449,14 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
                   onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
-                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', color: stage === 3 ? 'rgba(200,146,42,0.9)' : stage > 0 ? 'rgba(200,146,42,0.6)' : 'rgba(15,21,35,0.72)' }}>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', color: stage === 3 ? 'rgba(200,146,42,0.9)' : stage > 0 ? 'rgba(200,146,42,0.6)' : 'rgba(15,21,35,0.72)' }}>
                       {STAGE_ICONS[stage]}
                     </span>
                     <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.08em', color: isActive ? '#A8721A' : 'rgba(15,21,35,0.72)' }}>
                       {domain.label}
                     </span>
                     {score !== undefined && (
-                      <span style={{ marginLeft: 'auto', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', fontWeight: 600, color: getScoreColor(score) }}>
+                      <span style={{ marginLeft: 'auto', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', fontWeight: 600, color: getScoreColor(score) }}>
                         {score}
                       </span>
                     )}
@@ -519,7 +519,7 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
           <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', writingMode: 'vertical-rl', textOrientation: 'mixed', transform: 'rotate(180deg)' }}>
             DOMAINS
           </span>
-          <span style={{ color: '#A8721A', fontSize: '12px', marginTop: '4px' }}>
+          <span style={{ color: '#A8721A', fontSize: '15px', marginTop: '4px' }}>
             {open ? '‹' : '›'}
           </span>
         </button>
@@ -1202,7 +1202,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
           return (
             <div key={d.id} style={{ padding: '8px 0', borderBottom: '1px solid rgba(200,146,42,0.07)', background: isFocus ? 'rgba(200,146,42,0.03)' : 'transparent', paddingLeft: isFocus ? '8px' : 0, borderLeft: isFocus ? '2px solid rgba(200,146,42,0.4)' : 'none', marginLeft: isFocus ? '-8px' : 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.6875rem', letterSpacing: '0.06em', color: isFocus ? '#A8721A' : '#0F1523', minWidth: '90px' }}>{isFocus ? '▸ ' : ''}{d.label}</span>
+                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.9375rem', letterSpacing: '0.06em', color: isFocus ? '#A8721A' : '#0F1523', minWidth: '90px' }}>{isFocus ? '▸ ' : ''}{d.label}</span>
                 <div style={{ flex: 1, height: '3px', background: 'rgba(200,146,42,0.1)', borderRadius: '2px', position: 'relative' }}>
                   <div style={{ position: 'absolute', left: 0, width: `${(s / 10) * 100}%`, height: '100%', background: col, borderRadius: '2px', transition: 'width 0.8s ease' }} />
                   {h && <div style={{ position: 'absolute', left: `${(h / 10) * 100}%`, top: '-4px', width: '2px', height: '11px', background: 'rgba(200,146,42,0.55)', borderRadius: '1px', transform: 'translateX(-1px)' }} />}
@@ -1212,7 +1212,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
                   {h && <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(200,146,42,0.55)', marginLeft: '4px' }}>→{h}</span>}
                 </div>
               </div>
-              {isFocus && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.6875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>{d.question}</div>}
+              {isFocus && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>{d.question}</div>}
             </div>
           )
         })}

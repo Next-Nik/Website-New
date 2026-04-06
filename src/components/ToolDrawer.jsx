@@ -215,11 +215,11 @@ export function ToolDrawer({ open, onClose }) {
                   >
                     <div style={{ display: 'flex', alignItems: 'flex-start',
                       justifyContent: 'space-between', marginBottom: '6px', gap: '8px' }}>
-                      <span style={{ ...sc, fontSize: '14px', letterSpacing: '0.08em',
+                      <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.08em',
                         color: '#0F1523', fontWeight: 600 }}>{tool.label}</span>
                       {status && <StatusPill status={status} />}
                     </div>
-                    <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
+                    <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
                       color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, margin: 0 }}>
                       {tool.desc}
                     </p>
