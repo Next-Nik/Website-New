@@ -612,7 +612,17 @@ export function PurposePiecePage() {
   const [readyToLock,   setReadyToLock]   = useState(false)
   const [showDeepGate,  setShowDeepGate]  = useState(false)
   const [showCentreModal, setShowCentreModal] = useState(false)
-  const [showWelcome,   setShowWelcome]   = useState(true)
+  const [showWelcome, setShowWelcome] = useState(() => {
+    // Skip welcome modal if a valid session already exists
+    try {
+      const raw = sessionStorage.getItem(SS_KEY)
+      if (raw) {
+        const s = JSON.parse(raw)
+        if (s.session?.currentQuestion && s.messages?.length > 0) return false
+      }
+    } catch {}
+    return true
+  })
   // Reference panels manage their own open state internally.
   // Trigger via custom events so the ReferenceTrigger buttons actually work.
   function openArchetypePanel() { window.dispatchEvent(new CustomEvent('pp:open-archetypes')) }
