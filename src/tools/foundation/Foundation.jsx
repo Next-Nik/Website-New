@@ -35,6 +35,102 @@ function getQuarterId(date = new Date()) {
 }
 function getYearId(date = new Date()) { return String(date.getFullYear()) }
 
+// ─── Summary writer ───────────────────────────────────────────────────────────
+// Called after every after check-in. Computes and upserts foundation_summary.
+
+async function writeSummary(user, allSessions, afterResult, beforeResult) {
+  if (!user?.id) return
+  try {
+    const now     = new Date()
+    const today   = getLocalDateStr(now)
+
+    // Pair up before/after by date
+    const pairs = []
+    const befores = allSessions.filter(s => s.checkin_stage === 'before')
+    const afters  = allSessions.filter(s => s.checkin_stage === 'after')
+    afters.forEach(a => {
+      const dateStr = a.completed_at?.slice(0, 10)
+      const b = befores.find(b => b.completed_at?.slice(0, 10) === dateStr)
+      if (b) pairs.push({
+        date:         dateStr,
+        before:       b.value,
+        after:        a.value,
+        note_before:  b.note || null,
+        note_after:   a.note || null,
+      })
+    })
+    // Sort newest first
+    pairs.sort((a, b) => b.date.localeCompare(a.date))
+
+    // Average delta (all pairs)
+    const avgDelta = pairs.length > 0
+      ? parseFloat((pairs.reduce((sum, p) => sum + (p.after - p.before), 0) / pairs.length).toFixed(2))
+      : 0
+
+    // Streak — consecutive days with at least one after check-in
+    const afterDates = [...new Set(afters.map(s => s.completed_at?.slice(0, 10)).filter(Boolean))].sort().reverse()
+    let streak = 0
+    let cursor = new Date(today)
+    for (const d of afterDates) {
+      const expected = getLocalDateStr(cursor)
+      if (d === expected) {
+        streak++
+        cursor.setDate(cursor.getDate() - 1)
+      } else {
+        break
+      }
+    }
+
+    // Sessions this week
+    const weekId = getWeekId(now)
+    const sessionsWeek = afters.filter(s => s.week_id === weekId).length
+
+    // Spark data — last 14 pairs for sparkline
+    const sparkData = pairs.slice(0, 14).map(p => ({
+      date:        p.date,
+      before:      p.before,
+      after:       p.after,
+      note_before: p.note_before,
+      note_after:  p.note_after,
+    }))
+
+    // Last session
+    const last = pairs[0] || null
+
+    // Latest review — fetch most recent
+    const { data: reviewData } = await supabase
+      .from('foundation_reviews')
+      .select('review_text, period_label, period_type')
+      .eq('user_id', user.id)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    const latestReview = reviewData?.review_text
+      ? reviewData.review_text.split('\n\n')[0].slice(0, 300)
+      : null
+
+    await supabase.from('foundation_summary').upsert({
+      user_id:          user.id,
+      streak_days:      streak,
+      sessions_total:   pairs.length,
+      sessions_week:    sessionsWeek,
+      avg_delta:        avgDelta,
+      last_session_at:  last ? `${last.date}T00:00:00Z` : null,
+      last_before:      last?.before ?? null,
+      last_after:       last?.after  ?? null,
+      last_before_note: last?.note_before ?? null,
+      last_after_note:  last?.note_after  ?? null,
+      latest_review:    latestReview,
+      phase:            'baseline',
+      spark_data:       sparkData,
+      updated_at:       now.toISOString(),
+    }, { onConflict: 'user_id' })
+  } catch(e) {
+    console.warn('[Foundation] Summary write failed:', e)
+  }
+}
+
+
 function periodLabel(type, id) {
   if (type === 'weekly') {
     const [y, m, d] = id.split('-')
@@ -261,6 +357,8 @@ function FoundationReview({ user, sessions }) {
           created_at: now.toISOString(), updated_at: now.toISOString(),
         }, { onConflict: 'user_id,period_type,period_id' })
         setSaved({ type, label })
+        // Refresh summary so profile picks up new review text
+        writeSummary(user, sessions, null, null).catch(() => {})
       }
     } catch {
       setError('Review unavailable. Please try again shortly.')
@@ -295,7 +393,7 @@ function FoundationReview({ user, sessions }) {
 
 // ─── Baseline Card ────────────────────────────────────────────────────────────
 
-function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
+function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAfterComplete }) {
   const today = getLocalDateStr()
 
   // Derive today's before/after from session history
@@ -422,7 +520,16 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions }) {
             stage="after"
             locked={!afterUnlocked}
             ghostValue={beforeResult?.value ?? null}
-            onComplete={data => setAfterResult(data)}
+            onComplete={data => {
+              setAfterResult(data)
+              // Build updated sessions list with new after entry for summary computation
+              const updatedSessions = [
+                ...sessions.filter(s => !(s.checkin_stage === 'after' && s.completed_at?.startsWith(today))),
+                { checkin_stage: 'after',  value: data.value, note: data.note, completed_at: new Date().toISOString(), week_id: getWeekId(), month_id: getMonthId(), quarter_id: getQuarterId(), year_id: getYearId() },
+              ]
+              const currentBefore = beforeResult || sessions.find(s => s.checkin_stage === 'before' && s.completed_at?.startsWith(today))
+              onAfterComplete?.(data, currentBefore, updatedSessions)
+            }}
           />
         </div>
 
@@ -532,6 +639,9 @@ export function FoundationPage() {
             audioLoading={audioLoading}
             audioError={audioError}
             sessions={sessions}
+            onAfterComplete={async (afterData, beforeData, updatedSessions) => {
+              await writeSummary(user, updatedSessions, afterData, beforeData)
+            }}
           />
         </PhaseBlock>
 
