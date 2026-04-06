@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
+import { BottomTabs } from './components/BottomTabs'
 
 // Site pages
 import { HomePage }          from './pages/Home'
@@ -41,9 +42,9 @@ function ComingSoon({ name }) {
   )
 }
 
-export default function App() {
+function AppInner() {
   return (
-    <BrowserRouter>
+    <>
       <ScrollToTop />
       <Routes>
         {/* ── Site pages ── */}
@@ -74,6 +75,17 @@ export default function App() {
         {/* ── Fallback ── */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
+      {/* Mobile bottom tabs — hidden on desktop via CSS */}
+      <BottomTabs />
+    </>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppInner />
     </BrowserRouter>
   )
 }

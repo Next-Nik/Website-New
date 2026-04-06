@@ -396,3 +396,26 @@ button {
     padding: 2rem 1rem 3rem;
   }
 }
+
+/* ─── Bottom tabs (mobile only) ────────────────────────────────── */
+
+.bottom-tabs-spacer {
+  height: 60px;
+}
+
+@media (min-width: 641px) {
+  /* Hide bottom tabs on desktop */
+  [data-bottom-tabs] {
+    display: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Add bottom padding so content clears the tab bar */
+  .page-shell {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+  .tool-wrap {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+}
