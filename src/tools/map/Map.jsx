@@ -1507,7 +1507,7 @@ export function MapPage() {
           <span className="tool-eyebrow">Life OS · The Map</span>
           <h1 className="tool-title">From where you are<br />to where you want to be.</h1>
           <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.6 }}>
-            Walk your path.
+            Find your path.
           </p>
         </div>
 
