@@ -883,6 +883,219 @@ function TargetSprintSlot({ sprintData }) {
   )
 }
 
+// ─── Foundation slot ──────────────────────────────────────────────────────────
+
+function FlameBar({ value, color = '#C8922A', size = 14 }) {
+  if (!value) return null
+  const filled = Math.round(Math.min(Math.max(value, 0), 10))
+  return (
+    <div style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
+      {Array.from({ length: 10 }, (_, i) => (
+        <div key={i} style={{
+          width: size, height: size * 1.4, borderRadius: '2px',
+          background: i < filled ? color : 'rgba(200,146,42,0.12)',
+          transition: 'background 0.3s',
+        }} />
+      ))}
+      <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.08em',
+        color, marginLeft: '6px' }}>{value}</span>
+    </div>
+  )
+}
+
+function Sparkline({ data }) {
+  // data: [{ before, after, date }] newest first
+  const pts = [...data].reverse().slice(-14)
+  if (pts.length < 2) return null
+  const w = 160, h = 36, pad = 2
+  const xStep = (w - pad * 2) / (pts.length - 1)
+  function y(v) { return h - pad - ((Math.min(v, 10) / 10) * (h - pad * 2)) }
+  const beforePath = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${pad + i * xStep},${y(p.before)}`).join(' ')
+  const afterPath  = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${pad + i * xStep},${y(p.after)}`).join(' ')
+  return (
+    <svg width={w} height={h} style={{ display: 'block' }}>
+      <path d={beforePath} fill="none" stroke="rgba(200,146,42,0.5)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={afterPath}  fill="none" stroke="rgba(45,106,79,0.7)"  strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="none" />
+    </svg>
+  )
+}
+
+function FoundationSlot({ foundationData }) {
+  if (!foundationData) return <EmptySlot cta="Begin Foundation" ctaUrl="/tools/foundation" />
+
+  const {
+    streak_days, sessions_total, sessions_week,
+    avg_delta, last_before, last_after,
+    last_before_note, last_after_note,
+    last_session_at, latest_review,
+    spark_data = [], phase = 'baseline',
+  } = foundationData
+
+  const today        = new Date().toISOString().slice(0, 10)
+  const lastDate     = last_session_at?.slice(0, 10)
+  const practicedToday = lastDate === today
+  const deltaSign    = avg_delta > 0 ? '+' : ''
+  const lastDelta    = last_before != null && last_after != null ? last_after - last_before : null
+  const lastDeltaSign = lastDelta > 0 ? '+' : ''
+
+  const phases = [
+    { key: 'baseline',   label: 'Baseline',   active: true  },
+    { key: 'calibrating', label: 'Calibrating', active: false },
+    { key: 'embodying',  label: 'Embodying',  active: false },
+  ]
+
+  return (
+    <div>
+      <StatusBadge status="active" />
+
+      {/* ── Today nudge or today's delta ────────────────────────────────── */}
+      {practicedToday ? (
+        <div style={{ padding: '12px 16px', marginBottom: '16px',
+          background: 'rgba(45,106,79,0.04)', border: '1px solid rgba(45,106,79,0.2)',
+          borderRadius: '10px' }}>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
+            color: '#2D6A4F', textTransform: 'uppercase', marginBottom: '8px' }}>
+            Today
+          </div>
+          {last_before != null && last_after != null ? (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                <FlameBar value={last_before} color="rgba(200,146,42,0.7)" size={12} />
+                <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.4)' }}>{'→'}</span>
+                <FlameBar value={last_after} color="#2D6A4F" size={12} />
+                <span style={{ ...sc, fontSize: '13px', fontWeight: 600,
+                  color: lastDelta >= 0 ? '#2D6A4F' : '#8A3030' }}>
+                  {lastDeltaSign}{lastDelta}
+                </span>
+              </div>
+              {(last_before_note || last_after_note) && (
+                <div style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+                  color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, marginTop: '4px' }}>
+                  {last_before_note && <span>'{last_before_note}'</span>}
+                  {last_before_note && last_after_note && <span style={{ margin: '0 6px', color: 'rgba(15,21,35,0.3)' }}>→</span>}
+                  {last_after_note  && <span>'{last_after_note}'</span>}
+                </div>
+              )}
+            </div>
+          ) : (
+            <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
+              color: 'rgba(15,21,35,0.55)', margin: 0 }}>Session complete.</p>
+          )}
+        </div>
+      ) : (
+        <div style={{ padding: '12px 16px', marginBottom: '16px',
+          background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)',
+          borderRadius: '10px', display: 'flex', alignItems: 'center',
+          justifyContent: 'space-between', gap: '12px' }}>
+          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+            color: 'rgba(15,21,35,0.72)', margin: 0 }}>
+            {sessions_total > 0 ? 'Ready when you are.' : 'Start your first session.'}
+          </p>
+          <a href="/tools/foundation" style={{ ...sc, fontSize: '12px',
+            letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none',
+            flexShrink: 0 }}>
+            Practice {'→'}
+          </a>
+        </div>
+      )}
+
+      {/* ── Stats row ─────────────────────────────────────────────────────── */}
+      {sessions_total > 0 && (
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '16px' }}>
+          {streak_days > 0 && (
+            <div style={{ padding: '10px 14px', background: 'rgba(200,146,42,0.05)',
+              border: '1px solid rgba(200,146,42,0.2)', borderRadius: '10px', flex: '1 1 80px',
+              textAlign: 'center' }}>
+              <div style={{ ...sc, fontSize: '20px', fontWeight: 600, color: '#A8721A',
+                lineHeight: 1 }}>{streak_days}</div>
+              <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
+                color: 'rgba(15,21,35,0.45)', marginTop: '3px' }}>
+                DAY{streak_days !== 1 ? 'S' : ''} STREAK
+              </div>
+            </div>
+          )}
+          {sessions_week > 0 && (
+            <div style={{ padding: '10px 14px', background: 'rgba(200,146,42,0.05)',
+              border: '1px solid rgba(200,146,42,0.2)', borderRadius: '10px', flex: '1 1 80px',
+              textAlign: 'center' }}>
+              <div style={{ ...sc, fontSize: '20px', fontWeight: 600, color: '#A8721A',
+                lineHeight: 1 }}>{sessions_week}</div>
+              <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
+                color: 'rgba(15,21,35,0.45)', marginTop: '3px' }}>THIS WEEK</div>
+            </div>
+          )}
+          {avg_delta !== null && avg_delta !== 0 && (
+            <div style={{ padding: '10px 14px', background: 'rgba(200,146,42,0.05)',
+              border: '1px solid rgba(200,146,42,0.2)', borderRadius: '10px', flex: '1 1 80px',
+              textAlign: 'center' }}>
+              <div style={{ ...sc, fontSize: '20px', fontWeight: 600,
+                color: avg_delta >= 0 ? '#2D6A4F' : '#8A3030', lineHeight: 1 }}>
+                {deltaSign}{avg_delta}
+              </div>
+              <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
+                color: 'rgba(15,21,35,0.45)', marginTop: '3px' }}>AVG LIFT</div>
+            </div>
+          )}
+          <div style={{ padding: '10px 14px', background: 'rgba(200,146,42,0.05)',
+            border: '1px solid rgba(200,146,42,0.2)', borderRadius: '10px', flex: '1 1 80px',
+            textAlign: 'center' }}>
+            <div style={{ ...sc, fontSize: '20px', fontWeight: 600, color: '#A8721A',
+              lineHeight: 1 }}>{sessions_total}</div>
+            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
+              color: 'rgba(15,21,35,0.45)', marginTop: '3px' }}>TOTAL</div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Sparkline ─────────────────────────────────────────────────────── */}
+      {spark_data.length >= 2 && (
+        <div style={{ marginBottom: '16px' }}>
+          <Sparkline data={spark_data} />
+          <div style={{ display: 'flex', gap: '16px', marginTop: '6px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <div style={{ width: '16px', height: '2px', background: 'rgba(200,146,42,0.5)' }} />
+              <span style={{ ...sc, fontSize: '10px', color: 'rgba(15,21,35,0.45)',
+                letterSpacing: '0.1em' }}>BEFORE</span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <div style={{ width: '16px', height: '2px', background: 'rgba(45,106,79,0.7)' }} />
+              <span style={{ ...sc, fontSize: '10px', color: 'rgba(15,21,35,0.45)',
+                letterSpacing: '0.1em' }}>AFTER</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Latest review ─────────────────────────────────────────────────── */}
+      {latest_review && (
+        <div style={{ marginBottom: '16px', padding: '12px 14px',
+          background: 'rgba(200,146,42,0.03)', borderLeft: '2px solid rgba(200,146,42,0.3)',
+          borderRadius: '0 8px 8px 0' }}>
+          <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
+            color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
+            {latest_review}
+          </p>
+        </div>
+      )}
+
+      {/* ── Phase progress ────────────────────────────────────────────────── */}
+      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+        {phases.map(p => (
+          <span key={p.key} style={{
+            ...sc, fontSize: '11px', letterSpacing: '0.1em',
+            padding: '3px 10px', borderRadius: '40px',
+            background: p.active ? 'rgba(200,146,42,0.08)' : 'rgba(15,21,35,0.03)',
+            border: `1px solid ${p.active ? 'rgba(200,146,42,0.35)' : 'rgba(15,21,35,0.1)'}`,
+            color: p.active ? '#A8721A' : 'rgba(15,21,35,0.3)',
+          }}>
+            {p.active ? '● ' : '○ '}{p.label}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function NextUsSlot({ purposeData }) {
   const profile   = purposeData?.profile ?? {}
   const tentative = purposeData?.session?.tentative ?? {}
@@ -941,10 +1154,11 @@ export function ProfilePage() {
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
-  const [mapData,     setMapData]     = useState(null)
-  const [purposeData, setPurposeData] = useState(null)
-  const [sprintData,  setSprintData]  = useState(null)
-  const [dataLoading, setDataLoading] = useState(true)
+  const [mapData,         setMapData]         = useState(null)
+  const [purposeData,     setPurposeData]     = useState(null)
+  const [sprintData,      setSprintData]      = useState(null)
+  const [foundationData,  setFoundationData]  = useState(null)
+  const [dataLoading,     setDataLoading]     = useState(true)
 
   useEffect(() => {
     if (authLoading) return
@@ -955,7 +1169,7 @@ export function ProfilePage() {
   async function loadData() {
     setDataLoading(true)
     try {
-      const [mapRes, ppRes, sprintRes] = await Promise.all([
+      const [mapRes, ppRes, sprintRes, foundationRes] = await Promise.all([
         supabase
           .from('map_results')
           .select('session, completed_at, map_data, horizon_goal_user, horizon_goal_system, complete')
@@ -978,10 +1192,16 @@ export function ProfilePage() {
           .order('updated_at', { ascending: false })
           .limit(1)
           .maybeSingle(),
+        supabase
+          .from('foundation_summary')
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle(),
       ])
-      if (mapRes.data)    setMapData(mapRes.data)
-      if (ppRes.data)     setPurposeData(ppRes.data)
-      if (sprintRes.data) setSprintData(sprintRes.data)
+      if (mapRes.data)        setMapData(mapRes.data)
+      if (ppRes.data)         setPurposeData(ppRes.data)
+      if (sprintRes.data)     setSprintData(sprintRes.data)
+      if (foundationRes.data) setFoundationData(foundationRes.data)
     } catch {}
     setDataLoading(false)
   }
@@ -1031,6 +1251,11 @@ export function ProfilePage() {
         <Slot title="Target Sprint" eyebrow="Life OS"
           linkLabel="Open" linkUrl="/tools/target-goals">
           <TargetSprintSlot sprintData={sprintData} />
+        </Slot>
+
+        <Slot title="Foundation" eyebrow="Life OS"
+          linkLabel="Open" linkUrl="/tools/foundation">
+          <FoundationSlot foundationData={foundationData} />
         </Slot>
 
         <Slot title="NextUs" eyebrow="The larger work"
