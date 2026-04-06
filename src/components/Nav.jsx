@@ -13,6 +13,7 @@ export function Nav({ activePath }) {
     : null
 
   const links = [
+    { to: '/',              label: 'Home',          key: 'home' },
     { to: '/nextus',        label: 'NextUs',        key: 'nextus' },
     { to: '/work-with-nik', label: 'Work with Nik', key: 'work-with-nik' },
     { to: '/about',         label: 'About',         key: 'about' },
@@ -39,51 +40,7 @@ export function Nav({ activePath }) {
           </Link>
 
           {/* Desktop centre — Tools + nav links */}
-          <div className="nav-centre" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-
-            {/* Tools trigger */}
-            <button
-              onClick={() => setDrawerOpen(o => !o)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '6px',
-                padding: '8px 16px', borderRadius: '40px',
-                border: `1.5px solid ${drawerOpen ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.35)'}`,
-                background: drawerOpen ? 'rgba(200,146,42,0.08)' : 'transparent',
-                fontFamily: "'Cormorant SC', Georgia, serif",
-                fontSize: '13px', letterSpacing: '0.12em',
-                color: drawerOpen ? '#A8721A' : 'rgba(15,21,35,0.78)',
-                cursor: 'pointer', transition: 'all 0.18s',
-              }}
-              onMouseEnter={e => {
-                if (!drawerOpen) {
-                  e.currentTarget.style.borderColor = 'rgba(200,146,42,0.6)'
-                  e.currentTarget.style.color = '#A8721A'
-                }
-              }}
-              onMouseLeave={e => {
-                if (!drawerOpen) {
-                  e.currentTarget.style.borderColor = 'rgba(200,146,42,0.35)'
-                  e.currentTarget.style.color = 'rgba(15,21,35,0.78)'
-                }
-              }}
-            >
-              {/* Grid icon */}
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-                <rect x="8" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-                <rect x="1" y="8" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-                <rect x="8" y="8" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-              </svg>
-              Tools
-              {/* Chevron */}
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"
-                style={{ transform: drawerOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-                <polyline points="2,3 5,7 8,3" stroke="currentColor" strokeWidth="1.3"
-                  strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-
-            {/* Nav links */}
+          <div className="nav-centre" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <ul className="nav-links" style={{ margin: 0, padding: 0 }}>
               {links.map(l => (
                 <li key={l.key}>
@@ -92,6 +49,46 @@ export function Nav({ activePath }) {
                   </Link>
                 </li>
               ))}
+              <li>
+                <button
+                  onClick={() => setDrawerOpen(o => !o)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    padding: '8px 16px', borderRadius: '40px',
+                    border: `1.5px solid ${drawerOpen ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.35)'}`,
+                    background: drawerOpen ? 'rgba(200,146,42,0.08)' : 'transparent',
+                    fontFamily: "'Cormorant SC', Georgia, serif",
+                    fontSize: '13px', letterSpacing: '0.12em',
+                    color: drawerOpen ? '#A8721A' : 'rgba(15,21,35,0.78)',
+                    cursor: 'pointer', transition: 'all 0.18s',
+                  }}
+                  onMouseEnter={e => {
+                    if (!drawerOpen) {
+                      e.currentTarget.style.borderColor = 'rgba(200,146,42,0.6)'
+                      e.currentTarget.style.color = '#A8721A'
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (!drawerOpen) {
+                      e.currentTarget.style.borderColor = 'rgba(200,146,42,0.35)'
+                      e.currentTarget.style.color = 'rgba(15,21,35,0.78)'
+                    }
+                  }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+                    <rect x="8" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+                    <rect x="1" y="8" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+                    <rect x="8" y="8" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+                  </svg>
+                  Tools
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none"
+                    style={{ transform: drawerOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                    <polyline points="2,3 5,7 8,3" stroke="currentColor" strokeWidth="1.3"
+                      strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </button>
+              </li>
             </ul>
           </div>
 
