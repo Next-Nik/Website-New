@@ -896,6 +896,7 @@ async function handleQuestionPhase(session, latestInput, res) {
         return await handleStageComplete(session, res);
       }
 
+      session.currentQuestion = questions[session.questionIndex].text;
       return res.status(200).json({
         message:       questions[session.questionIndex].text,
         questionLabel: `${capitalise(stage)} · ${session.questionIndex + 1} of ${total}`,
@@ -949,6 +950,7 @@ async function handleQuestionPhase(session, latestInput, res) {
           return await handleStageComplete(session, res, "Let's keep moving. I'll work with what's here.");
         }
 
+        session.currentQuestion = questions[session.questionIndex].text;
         return res.status(200).json({
           message:       "Let's keep moving. I'll work with what's here.",
           questionLabel: `${capitalise(stage)} · ${session.questionIndex + 1} of ${total}`,
@@ -1198,13 +1200,14 @@ module.exports = async (req, res) => {
     // ── New session ───────────────────────────────────────────────────────────
     if (!session || session.status === undefined) {
       session = createSession();
+      session.stage = "archetype";
+      session.currentQuestion = ARCHETYPE_QUESTIONS[0].text;
       return res.status(200).json({
-        message:      WELCOME,
+        message:       ARCHETYPE_QUESTIONS[0].text,
+        questionLabel: `Archetype · 1 of ${ARCHETYPE_QUESTIONS.length}`,
         session,
-        stage:        "welcome",
-        inputMode:    "none",
-        autoAdvance:  true,
-        advanceDelay: 2500
+        stage:         "archetype",
+        inputMode:     "text"
       });
     }
 
