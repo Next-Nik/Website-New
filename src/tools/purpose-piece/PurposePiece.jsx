@@ -800,15 +800,28 @@ export function PurposePiecePage() {
     setInput('')
     if (textareaRef.current) textareaRef.current.style.height = 'auto'
     setThinking(true)
-    try { const d = await callAPI([{ role: 'user', content: text }]); setThinking(false); handleResponse(d) }
-    catch { setThinking(false); addMsg('assistant', 'Something went wrong. Please try again.') }
+    // Minimum 800ms delay so responses feel conversational not instantaneous
+    const [d] = await Promise.allSettled([
+      callAPI([{ role: 'user', content: text }]),
+      new Promise(r => setTimeout(r, 800))
+    ])
+    setThinking(false)
+    if (d.status === 'fulfilled') {
+      handleResponse(d.value)
+    } else {
+      // Error recovery — restore last question so user isn't stuck
+      const lastQ = sessionRef.current?.currentQuestion
+      addMsg('assistant', lastQ
+        ? `Lost my thread for a second — still with you.\n\n${lastQ}`
+        : 'Lost my thread for a second. Please try again.')
+    }
   }
 
   async function handleLock() {
     setReadyToLock(false)
     setThinking(true)
     try { const d = await callAPI([{ role: 'user', content: 'Yes, lock it in.' }]); setThinking(false); handleResponse(d) }
-    catch { setThinking(false); addMsg('assistant', 'Something went wrong. Please try again.') }
+    catch { setThinking(false); const lastQ = sessionRef.current?.currentQuestion; addMsg('assistant', lastQ ? `Lost my thread for a second — still with you.\n\n${lastQ}` : 'Lost my thread for a second. Please try again.') }
   }
 
   async function continueToNextStage() {
@@ -861,15 +874,20 @@ export function PurposePiecePage() {
 
     return (
       <div>
-        {/* Pinned question text — stays visible while answering */}
+        {/* Pinned question + progress */}
         {activeQuestionStage && session?.currentQuestion && (
-          <div style={{
-            ...serif, fontSize: '1.125rem', color: '#0F1523', lineHeight: 1.7,
-            marginBottom: '20px', paddingBottom: '16px',
-            borderBottom: '1px solid rgba(200,146,42,0.15)',
-            whiteSpace: 'pre-line',
-          }}>
-            {session.currentQuestion}
+          <div style={{ marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>
+                {activeQuestionStage.charAt(0).toUpperCase() + activeQuestionStage.slice(1)}
+              </span>
+              <span style={{ ...sc, fontSize: '13px', color: 'rgba(200,146,42,0.55)', letterSpacing: '0.08em' }}>
+                {qIdx + 1} of {stageTotal}
+              </span>
+            </div>
+            <div style={{ ...serif, fontSize: '1.125rem', color: '#0F1523', lineHeight: 1.7, whiteSpace: 'pre-line' }}>
+              {session.currentQuestion}
+            </div>
           </div>
         )}
 
@@ -914,15 +932,23 @@ export function PurposePiecePage() {
 
         {/* Input */}
         {!showReveal && !readyToLock && (
-          <div className="input-area">
-            <textarea ref={textareaRef} value={input}
-              onChange={e => { setInput(e.target.value); resizeTextarea() }}
-              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-              placeholder={PLACEHOLDERS[stage] || 'Type your answer\u2026'}
-              rows={1} disabled={thinking}
-            />
-            <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
-          </div>
+          <>
+            <div className="input-area" id="pp-input-area">
+              <textarea ref={textareaRef} value={input}
+                onChange={e => { setInput(e.target.value); resizeTextarea() }}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
+                onFocus={() => { setTimeout(() => document.getElementById('pp-input-area')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 300) }}
+                placeholder={PLACEHOLDERS[stage] || 'Type your answer\u2026'}
+                rows={1} disabled={thinking}
+              />
+              <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '12px' }}>
+              <button onClick={() => {}} style={{ background: 'none', border: 'none', ...serif, fontSize: '0.8125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.35)', cursor: 'default', padding: 0 }}>
+                Your progress is saved automatically.
+              </button>
+            </div>
+          </>
         )}
       </div>
     )
