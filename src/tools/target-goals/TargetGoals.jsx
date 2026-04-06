@@ -94,7 +94,7 @@ function WelcomeModal({ onBegin }) {
         <span style={{ display: 'block', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '17px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>Target Sprint</span>
         <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>Three months. Three areas.</h2>
         <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
-          Ninety days. Three areas. A clear level-up.<br />Powerful on its own, supercharged when you've done The Map.
+          Ninety days. Three domains. Moving from one level of your life to a meaningfully fuller one.<br />Powerful on its own, supercharged when you’ve done The Map.
         </p>
         <button onClick={onBegin} style={{
           display: 'block', width: '100%', padding: '15px 24px', borderRadius: '40px',
