@@ -920,9 +920,9 @@ export function PurposePiecePage() {
         {/* Layout */}
         {isMobile ? (
           <div>
-            {/* Mobile: disc centred above, 3/4 visible, card below */}
-            <div style={{ position: 'relative', height: '180px', marginBottom: '8px' }}>
-              <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '-60px', width: `${discSize}px`, zIndex: 0, pointerEvents: 'none' }}>
+            {/* Mobile: disc large, centred, bleeds sides, sits below heading */}
+            <div style={{ position: 'relative', height: '280px', marginBottom: '0px', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '-20px', width: `${discSize}px`, zIndex: 0, pointerEvents: 'none' }}>
                 <div style={{ pointerEvents: 'auto' }}>
                   <PurposeDisc
                     wedgeStates={wedgeStates} activeStage={breadcrumb}
@@ -931,21 +931,26 @@ export function PurposePiecePage() {
                   />
                 </div>
               </div>
-              {/* Mobile prev/next */}
-              {breadcrumb && !showReveal && (
-                <div style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '16px', zIndex: 2 }}>
-                  <button onClick={() => handleWedgeNav('prev')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.5 }}
-                    onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.5'}>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><polyline points="12,2 4,9 12,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </button>
-                  <button onClick={() => handleWedgeNav('next')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.5 }}
-                    onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.5'}>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><polyline points="6,2 14,9 6,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </button>
-                </div>
-              )}
             </div>
-            {renderContent()}
+
+            {/* Mobile prev/next — below wheel, centered */}
+            {breadcrumb && !showReveal && (
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginBottom: '16px' }}>
+                <button onClick={() => handleWedgeNav('prev')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.5 }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.5'}>
+                  <svg width="22" height="22" viewBox="0 0 18 18" fill="none"><polyline points="12,2 4,9 12,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
+                <button onClick={() => handleWedgeNav('next')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', opacity: 0.5 }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '1'} onMouseLeave={e => e.currentTarget.style.opacity = '0.5'}>
+                  <svg width="22" height="22" viewBox="0 0 18 18" fill="none"><polyline points="6,2 14,9 6,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
+              </div>
+            )}
+
+            {/* Content — padded to clear DOMAINS panel */}
+            <div style={{ paddingLeft: '40px' }}>
+              {renderContent()}
+            </div>
           </div>
         ) : (
           <div>
