@@ -532,7 +532,7 @@ function WelcomeModal({ onBegin }) {
         <span style={{ display: 'block', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '17px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
         <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>Find your fit.</h2>
         <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
-          Each of us maps onto a contribution archetype, leans toward a domain, and operates at a natural scale. Together those three things are your Purpose Piece. Knowing yours helps you find your fit.
+          Most people are capable of far more than they’re currently expressing. Usually the missing piece isn’t effort — it’s fit. This finds your fit.
         </p>
         <button onClick={onBegin} style={{
           display: 'block', width: '100%', padding: '15px 24px', borderRadius: '40px',
@@ -1022,7 +1022,7 @@ export function PurposePiecePage() {
           </h1>
           {!showReveal && !session && (
             <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, maxWidth: '440px' }}>
-              Each of us maps onto a contribution archetype, leans toward a domain, and operates at a natural scale. Together those three things are your Purpose Piece. Knowing yours helps you find your fit.
+              Most people are capable of far more than they’re currently expressing. Usually the missing piece isn’t effort — it’s fit. This finds your fit.
             </p>
           )}
         </div>
