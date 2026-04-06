@@ -204,7 +204,7 @@ export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centr
         <circle cx={CX} cy={CY} r={76} fill="#FFFFFF" stroke="rgba(200,146,42,0.78)" strokeWidth="1.5" className={styles.centreCircle} />
         {centreLabel && (
           <text x={CX} y={CY} textAnchor="middle" dominantBaseline="middle"
-            fill="rgba(200,146,42,0.78)" fontSize="25" fontFamily="'Cormorant Garamond', Georgia, serif"
+            fill="rgba(200,146,42,0.78)" fontSize="31" fontFamily="'Cormorant Garamond', Georgia, serif"
             fontWeight="300" fontStyle="normal" style={{ pointerEvents: 'none', userSelect: 'none' }}
           >
             {centreLabel.split(' ').map((word, wi, arr) => (
