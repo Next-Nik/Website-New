@@ -1,10 +1,17 @@
 export function SiteFooter() {
   return (
-    <footer style={{
+    <footer data-site-footer style={{
       borderTop: '1px solid rgba(200,146,42,0.20)',
       padding: '64px 40px 48px',
       background: '#F5F2EC',
     }}>
+      <style>{`
+        @media (max-width: 640px) {
+          footer[data-site-footer] {
+            padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)) !important;
+          }
+        }
+      `}</style>
       <div style={{ maxWidth: '820px', margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px', gap: '24px', flexWrap: 'wrap' }}>
           <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.88)' }}>
