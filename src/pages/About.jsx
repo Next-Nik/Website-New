@@ -251,7 +251,17 @@ export function AboutPage() {
           ].map(([name, desc]) => <Value key={name} name={name} desc={desc} />)}
         </div>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', marginTop: '52px', paddingTop: '44px', borderTop: '1px solid rgba(200,146,42,0.20)', alignItems: 'center', justifyContent: 'flex-end' }}>
+        {/* Purpose statement */}
+        <div style={{ margin: '64px 0 0', paddingTop: '52px', borderTop: '1px solid rgba(200,146,42,0.20)', textAlign: 'right' }}>
+          <p style={{ ...serif, fontSize: 'clamp(20px,2.6vw,28px)', fontWeight: 300, fontStyle: 'italic', ...dark, lineHeight: 1.6, margin: '0 0 16px', maxWidth: '640px', marginLeft: 'auto' }}>
+            To live into a world where everyone is fully on their path and actively levelling up towards their full-yes life.
+          </p>
+          <p style={{ ...serif, fontSize: 'clamp(18px,2.2vw,24px)', fontWeight: 300, fontStyle: 'italic', color: '#A8721A', lineHeight: 1.6, margin: '0 0 48px', maxWidth: '560px', marginLeft: 'auto' }}>
+            To awaken and amplify the God-Spark of humanity.
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', paddingTop: '44px', borderTop: '1px solid rgba(200,146,42,0.20)', alignItems: 'center', justifyContent: 'flex-end' }}>
           <a href="/work-with-nik" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Work directly with Nik →</a>
           <a href="/podcast" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Listen to the podcast →</a>
         </div>
