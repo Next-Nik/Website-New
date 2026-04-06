@@ -252,7 +252,7 @@ export function HomePage() {
             <em style={{ fontStyle: 'italic', color: '#A8721A' }}>A future worth building.</em>
           </h1>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '52px', maxWidth: '460px', marginLeft: 'auto', marginRight: 'auto' }}>
-            Life asked something of you. This is where you find out what.
+            Step towards the horizon.
           </p>
           <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Begin with Orienteering →</a>
         </div>
