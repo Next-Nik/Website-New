@@ -874,7 +874,7 @@ export function PurposePiecePage() {
     )
   }
 
-  const discSize = isMobile ? 140 : 200
+  const discSize = isMobile ? 320 : 200
 
   return (
     <div className="page-shell">
@@ -921,8 +921,8 @@ export function PurposePiecePage() {
         {isMobile ? (
           <div>
             {/* Mobile: disc centred above, 3/4 visible, card below */}
-            <div style={{ position: 'relative', height: '120px', marginBottom: '8px' }}>
-              <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '-30px', width: `${discSize}px`, zIndex: 0, pointerEvents: 'none' }}>
+            <div style={{ position: 'relative', height: '180px', marginBottom: '8px' }}>
+              <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '-60px', width: `${discSize}px`, zIndex: 0, pointerEvents: 'none' }}>
                 <div style={{ pointerEvents: 'auto' }}>
                   <PurposeDisc
                     wedgeStates={wedgeStates} activeStage={breadcrumb}
