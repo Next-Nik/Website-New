@@ -255,7 +255,7 @@ export function HomePage() {
             A personal development ecosystem for people who are done with the loop they're in. Tools for self-knowledge, clarity, and building a life that actually fits you.
           </p>
           <p style={{ ...serif, fontSize: '15px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '52px', maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
-            Free to use. No account required to begin.
+            Sign in to save your work and track your progress.
           </p>
           <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Find your starting point →</a>
         </div>
