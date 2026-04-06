@@ -11,6 +11,8 @@ import { CivilisationalFramePanel } from '../../components/CivilisationalFramePa
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const SS_KEY = 'pp_session_v3'
+// Clear any stale sessions from previous versions
+;['pp_session', 'pp_session_v1', 'pp_session_v2'].forEach(k => sessionStorage.removeItem(k))
 
 // Wedge colours — intentional design system additions
 // Gold:   Archetype — primary brand colour, most important coordinate
@@ -632,7 +634,12 @@ export function PurposePiecePage() {
       const raw = sessionStorage.getItem(SS_KEY)
       if (raw) {
         const saved = JSON.parse(raw)
-        if (saved.session && saved.session.status !== 'complete') {
+        if (
+          saved.session &&
+          saved.session.status !== 'complete' &&
+          saved.session.currentQuestion &&
+          saved.messages?.length > 0
+        ) {
           setSession(saved.session)
           setMessages(saved.messages || [])
           return
@@ -667,6 +674,7 @@ export function PurposePiecePage() {
   // Cycle stages with prev/next buttons — sequential by default, clamped at ends
   const STAGE_ORDER = ['archetype', 'domain', 'scale', 'confirmation']
   function handleWedgeNav(dir) {
+    if (!session) return
     const current = STAGE_ORDER.includes(stage) ? stage : 'archetype'
     const idx = STAGE_ORDER.indexOf(current)
     const nextIdx = dir === 'next'
@@ -916,7 +924,14 @@ export function PurposePiecePage() {
     <div className="page-shell">
       <Nav activePath="life-os" />
       {!user && <AuthModal />}
-      {user && showWelcome && !sessionStorage.getItem(SS_KEY) && <WelcomeModal onBegin={() => setShowWelcome(false)} />}
+      {user && showWelcome && (() => {
+        try {
+          const raw = sessionStorage.getItem(SS_KEY)
+          if (!raw) return true
+          const s = JSON.parse(raw)
+          return !(s.session?.currentQuestion && s.messages?.length > 0)
+        } catch { return true }
+      })() && <WelcomeModal onBegin={() => setShowWelcome(false)} />}
       {showDeepGate && <DeepGateModal onUnlock={() => { localStorage.setItem('pp_deep_unlocked','true'); setShowDeepGate(false); navigate('/tools/purpose-piece/deep') }} onDismiss={() => setShowDeepGate(false)} />}
       {showCentreModal && (
         <CentreModal
