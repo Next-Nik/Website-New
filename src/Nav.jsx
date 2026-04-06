@@ -39,7 +39,7 @@ export function Nav({ activePath }) {
           </Link>
 
           {/* Desktop centre — Tools + nav links */}
-          <div className="nav-centre" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div className="nav-centre" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
 
             {/* Nav links */}
             <ul className="nav-links" style={{ margin: 0, padding: 0 }}>
