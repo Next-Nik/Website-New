@@ -46,45 +46,45 @@ const ARCHETYPE_QUESTIONS = [
   },
   {
     label: "The Frustration",
-    text:  "What keeps going wrong in the world around you that bothers you even when it has nothing to do with you personally?\n\nSomething that just shouldn't be that way. Name a specific example."
+    text:  "What keeps going wrong around you that bothers you, even when it's not your problem?\n\nName one specific example."
   },
   {
     label: "The Pressure",
-    text:  "Describe a moment where you had to make a real call with incomplete information and something genuinely at stake.\n\nWhat did you do — and what did you deliberately not do?"
+    text:  "Describe a moment where you had to make a real decision with no clear right answer and something actually at stake.\n\nWhat did you do?"
   },
   {
     label: "The Cost",
-    text:  "This one asks for honesty. Take your time.\n\nWhat does your particular way of moving through the world cost you? Not what you find hard in general — what specifically does your instinct ask of you that others don't seem to pay?"
+    text:  "What does your way of operating cost you that others don't seem to pay?\n\nBe specific."
   },
   {
     label: "The Shadow",
-    text:  "When has your greatest strength become the problem?\n\nA specific moment where your instinct went further than it should have — or where the way you operate made things harder, not easier."
+    text:  "When has your biggest strength made things worse?\n\nGive me a specific moment."
   }
 ];
 
 const DOMAIN_QUESTIONS = [
   {
     label: "The Pull",
-    text:  "What's broken in the world that you can't look away from — even when it has nothing to do with you and nobody's asking you to care?\n\nBe specific. What is it exactly?"
+    text:  "What's broken in the world that you can't stop thinking about, even though nobody's asking you to care?\n\nWhat is it specifically?"
   },
   {
     label: "The Anger",
-    text:  "What kind of wrong makes you disproportionately angry?\n\nThe thing that bothers you more than it seems to bother everyone else. What is it, and what does it look like when you see it?"
+    text:  "What makes you angrier than it seems to make everyone else?\n\nWhat does it look like when you see it?"
   },
   {
     label: "The Unpaid Work",
-    text:  "Where have you found yourself doing work nobody asked for and nobody paid for — the thing you kept doing because you couldn't not?\n\nWhat was the work, and what kept pulling you back to it?"
+    text:  "What do you keep doing just because you love it, even though nobody asked for it and nobody's paying you?\n\nWhat is it, and what keeps pulling you back?"
   }
 ];
 
 const SCALE_QUESTIONS = [
   {
     label: "The Scene",
-    text:  "When you imagine your work actually mattering — really landing — what does that scene look like?\n\nWho's there, what's the relationship between you, how many people?"
+    text:  "Picture your work actually making a difference. What does that scene look like?\n\nWho's there and how many people?"
   },
   {
     label: "The Responsibility",
-    text:  "What's the largest unit of change you can hold in your head and still feel genuinely responsible for?\n\nNot just interested in — responsible for. There's a difference. What is it?"
+    text:  "What's the biggest problem you feel personally responsible for doing something about, not just interested in, but actually on the hook for?\n\nWhat is it?"
   }
 ];
 
@@ -134,10 +134,47 @@ const SCALE_PROBES = [
     "Is there a real moment from your life that looks like that scene? What happened?"
   ],
   [
-    "Where does felt responsibility actually live for you right now — not where you think it should, where it actually does?",
-    "What's the difference, for you, between being interested in a problem and feeling responsible for it?"
+    "What problem keeps you up at night because you feel like it's on you to do something about it?",
+    "Give me an example of something you care about but don't feel responsible for. Now give me something you actually feel on the hook for. What's different?"
   ]
 ];
+
+
+// ─── Confusion reframes ───────────────────────────────────────────────────────
+// Fire when user signals they don't understand the question rather than giving a thin answer.
+
+const CONFUSION_SIGNALS = [
+  "don't know what that means", "dont know what that means",
+  "what does that mean", "i don't understand", "i dont understand",
+  "not sure what you mean", "can you explain", "what do you mean",
+  "confused", "don't get it", "dont get it", "what are you asking",
+  "can you rephrase", "rephrase", "clarify", "what does this mean"
+];
+
+function isConfused(answer) {
+  const lower = answer.toLowerCase().trim();
+  return CONFUSION_SIGNALS.some(s => lower.includes(s));
+}
+
+// One reframe per question, indexed [stage][questionIndex]
+const CONFUSION_REFRAMES = {
+  archetype: [
+    null, // Q1 is clear
+    "Think of something that keeps happening around you that you wish someone would fix. Even something small. What is it?",
+    "Think of a moment where you had to make a call and you weren't sure you were right. What did you do?",
+    "What's something about how you operate that costs you, that other people around you don't seem to have to deal with? Even something small.",
+    "Think of a time your best quality caused a problem. What happened?"
+  ],
+  domain: [
+    "Think of something broken in the world that you find yourself thinking about even when you're not trying to. What is it?",
+    "What's something that happens in the world that makes you angrier than it seems to make other people? What is it?",
+    "What do you keep doing just for the love of it, with no reward? What is it?"
+  ],
+  scale: [
+    "When you imagine your work really mattering to people, what does that look like? How many people are in the room?",
+    "Is there a problem in the world where, if nobody fixed it, you'd feel like you personally had failed? What is it?"
+  ]
+};
 
 // ─── Thin answer detection ────────────────────────────────────────────────────
 
@@ -882,8 +919,39 @@ async function handleQuestionPhase(session, latestInput, res) {
 
   const entry = transcript[qi];
 
+  // ── Duplicate message guard ──────────────────────────────────────────────────
+  // Two identical consecutive messages — treat as re-send, not a new answer
+  const lastMsg = session.lastUserMessage || null;
+  if (latestInput === lastMsg && entry) {
+    // Already processed this answer — just re-send the last probe or current question
+    const currentQ = session.currentQuestion || questions[qi].text;
+    return res.status(200).json({
+      message:   currentQ,
+      session,
+      stage,
+      inputMode: "text",
+      isProbe:   !!entry
+    });
+  }
+  session.lastUserMessage = latestInput;
+
   // ── First answer to this question ──────────────────────────────────────────
   if (!entry) {
+    // Confusion detection — user doesn't understand the question
+    if (isConfused(latestInput)) {
+      const reframe = CONFUSION_REFRAMES[stage]?.[qi];
+      if (reframe) {
+        return res.status(200).json({
+          message:   reframe,
+          session,
+          stage,
+          inputMode: "text",
+          isProbe:   true,
+          isReframe: true
+        });
+      }
+    }
+
     const thin = isThin(latestInput, stage, qi);
 
     if (!thin) {
@@ -920,6 +988,21 @@ async function handleQuestionPhase(session, latestInput, res) {
   }
 
   // ── Responding to a probe ───────────────────────────────────────────────────
+  // Confusion mid-probe — offer reframe
+  if (isConfused(latestInput)) {
+    const reframe = CONFUSION_REFRAMES[stage]?.[qi];
+    if (reframe) {
+      return res.status(200).json({
+        message:   reframe,
+        session,
+        stage,
+        inputMode: "text",
+        isProbe:   true,
+        isReframe: true
+      });
+    }
+  }
+
   const probeIndex = Math.min(session.probeCount - 1, probes[qi].length - 1);
   entry.probes.push({ probe: probes[qi][probeIndex], response: latestInput });
   const combined = entry.answer + " " + entry.probes.map(p => p.response).join(" ");
