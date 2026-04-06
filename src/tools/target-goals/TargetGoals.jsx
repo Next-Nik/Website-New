@@ -85,6 +85,34 @@ function ThinkingDots() {
   return <div className="bubble bubble-assistant"><div className="typing-indicator"><span /><span /><span /></div></div>
 }
 
+// ─── Welcome modal ────────────────────────────────────────────────────────────
+
+function WelcomeModal({ onBegin }) {
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
+      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '460px', width: '100%', textAlign: 'center' }}>
+        <span style={{ display: 'block', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>Target Sprint</span>
+        <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>Three months. Three areas.</h2>
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
+          Ninety days. Three areas. A clear level-up.<br />Powerful on its own, supercharged when you've done The Map.
+        </p>
+        <button onClick={onBegin} style={{
+          display: 'block', width: '100%', padding: '15px 24px', borderRadius: '40px',
+          border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)',
+          color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif",
+          fontSize: '0.875rem', letterSpacing: '0.14em', cursor: 'pointer',
+          transition: 'all 0.2s',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
+        >
+          Begin {'\u2192'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function AuthModal() {
   const r = encodeURIComponent(window.location.href)
   return (
@@ -1141,6 +1169,16 @@ export function TargetGoalsPage() {
   const [activeDomainId,   setActiveDomainId]   = useState(null)
   const [showSummary,      setShowSummary]      = useState(false)
   const [showCentreModal,  setShowCentreModal]  = useState(false)
+  const [showWelcome,      setShowWelcome]      = useState(() => {
+    try {
+      const raw = sessionStorage.getItem(SS_KEY)
+      if (raw) {
+        const s = JSON.parse(raw)
+        if (s.phase && s.phase !== 'select') return false
+      }
+    } catch {}
+    return true
+  })
   // domainData: { [domainId]: { currentStateSummary, horizonText, targetGoal, milestones, tasks, tea, ... } }
   const [domainData,       setDomainData]       = useState({})
   const loadedRef = useRef(false)
@@ -1292,6 +1330,7 @@ export function TargetGoalsPage() {
       `}</style>
       <Nav activePath="life-os" />
       {!user && <AuthModal />}
+      {user && showWelcome && <WelcomeModal onBegin={() => setShowWelcome(false)} />}
       {showSummary && (
         <SprintSummaryModal
           domains={sprintDomains}
