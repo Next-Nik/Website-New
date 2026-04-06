@@ -29,12 +29,39 @@ export function WorkWithNikPage() {
       <style>{`@media (max-width: 640px) { .wap-main { padding-left: 24px !important; padding-right: 24px !important; } .wap-dark { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
       <Nav activePath="work-with-nik" />
       <div className="wap-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Work with Nik</span>
-        <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          From processing<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>to building.</em>
-        </h1>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '520px' }}>One-on-one work for people who are done with the loop they{'\u2019'}re in.</p>
-        <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none', marginBottom: '64px' }}>Book a discovery call {'\u2192'}</a>
+        {/* Two-column hero: text left, photo right */}
+        <div style={{ display: 'flex', gap: '56px', alignItems: 'flex-start', marginBottom: '64px', flexWrap: 'wrap' }}>
+          <div style={{ flex: '1 1 320px' }}>
+            <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Work with Nik</span>
+            <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
+              From processing<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>to building.</em>
+            </h1>
+            <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '40px', maxWidth: '480px' }}>One-on-one work for people who are done with the loop they{'\u2019'}re in.</p>
+            <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Book a discovery call {'\u2192'}</a>
+          </div>
+          {/* Photo — drop /nik.jpg into your /public folder. Graceful fallback until then. */}
+          <div style={{ flex: '0 0 auto', width: 'clamp(160px, 28vw, 260px)' }}>
+            <div style={{
+              width: '100%', aspectRatio: '3/4',
+              borderRadius: '4px', overflow: 'hidden',
+              border: '1.5px solid rgba(200,146,42,0.20)',
+              background: 'rgba(200,146,42,0.04)',
+            }}>
+              <img
+                src="/nik.jpg"
+                alt="Nik Wood"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
+                onError={e => {
+                  e.currentTarget.style.display = 'none'
+                  e.currentTarget.parentNode.style.display = 'flex'
+                  e.currentTarget.parentNode.style.alignItems = 'center'
+                  e.currentTarget.parentNode.style.justifyContent = 'center'
+                  e.currentTarget.parentNode.innerHTML = '<span style="font-family: Cormorant SC, Georgia, serif; font-size: 13px; letter-spacing: 0.14em; color: rgba(168,114,26,0.4); padding: 20px; text-align: center;">Photo coming</span>'
+                }}
+              />
+            </div>
+          </div>
+        </div>
 
         <Quote text="Someone who will shift you out of emotional processing, analysis, or healing mode and into 'what's next, what are you building, what does your future look like' — and who treats you as someone capable of operating at a high level." cite="B.G.B." />
 

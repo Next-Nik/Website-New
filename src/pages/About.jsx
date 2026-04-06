@@ -127,6 +127,38 @@ export function AboutPage() {
 
       {/* ── SECTION TWO — NIK (right-aligned) ── */}
       <div className="about-section" style={pageRight}>
+
+        {/* Photograph — replace /nik.jpg with your actual image file in /public */}
+        <div style={{ marginBottom: '52px', display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{
+            width: 'clamp(200px, 40vw, 340px)',
+            aspectRatio: '3/4',
+            borderRadius: '4px',
+            overflow: 'hidden',
+            border: '1.5px solid rgba(200,146,42,0.20)',
+            background: 'rgba(200,146,42,0.04)',
+            position: 'relative',
+          }}>
+            <img
+              src="/nik.jpg"
+              alt="Nik Wood"
+              style={{
+                width: '100%', height: '100%',
+                objectFit: 'cover', objectPosition: 'center top',
+                display: 'block',
+              }}
+              onError={e => {
+                // Graceful fallback if photo not yet added
+                e.currentTarget.style.display = 'none'
+                e.currentTarget.parentNode.style.display = 'flex'
+                e.currentTarget.parentNode.style.alignItems = 'center'
+                e.currentTarget.parentNode.style.justifyContent = 'center'
+                e.currentTarget.parentNode.innerHTML = '<span style="font-family: Cormorant SC, Georgia, serif; font-size: 13px; letter-spacing: 0.14em; color: rgba(168,114,26,0.5); padding: 24px; text-align: center;">Photo coming</span>'
+              }}
+            />
+          </div>
+        </div>
+
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '14px' }}>Nik Wood · Founder</span>
         <h1 style={{ ...serif, fontSize: 'clamp(40px,5.5vw,64px)', fontWeight: 300, ...gold, lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '16px' }}>
           The person<br />behind the work.

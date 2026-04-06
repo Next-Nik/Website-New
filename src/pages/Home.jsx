@@ -251,8 +251,11 @@ export function HomePage() {
             A life worth living.<br />
             <em style={{ fontStyle: 'italic', color: '#A8721A' }}>A future worth building.</em>
           </h1>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '52px', maxWidth: '460px', marginLeft: 'auto', marginRight: 'auto' }}>
-            Step towards the horizon.
+          <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '16px', maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto' }}>
+            A personal development ecosystem for people who are done with the loop they're in. Tools for self-knowledge, clarity, and building a life that actually fits you.
+          </p>
+          <p style={{ ...serif, fontSize: '15px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '52px', maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
+            Free to use. No account required to begin.
           </p>
           <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Begin with Orienteering →</a>
         </div>
@@ -292,6 +295,27 @@ export function HomePage() {
           })}
         </div>
         <div ref={panelRef}><StagePanel stage={activeStage} /></div>
+      </section>
+
+      {/* Testimonials inline — three quotes surfaced from the panel */}
+      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px', textAlign: 'center' }}>What people say</span>
+        <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '56px', textAlign: 'center' }}>Real words from real people.</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
+          {[
+            { q: 'Working with Nik definitely changed my life. He has the ability to build up the right foundation and the right container to actually be vulnerable and go straight to where you need to.', name: 'S.H.' },
+            { q: 'Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being \u2014 what I really wanted out of life \u2014 and how to live as the best version of myself.', name: 'O.W.H.' },
+            { q: 'I came to Nik apologising for not doing my homework \u2014 and started telling him I\u2019d met someone and gone on wonderful adventures, my work was expanding. He said: look at what you wrote in week one. I was already living it.', name: 'J.M.' },
+          ].map(({ q, name }) => (
+            <div key={name} style={{ borderLeft: '2px solid rgba(200,146,42,0.30)', padding: '20px 0 20px 24px' }}>
+              <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.85)', lineHeight: 1.75, marginBottom: '16px' }}>{q}</p>
+              <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {name}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ textAlign: 'center', marginTop: '40px' }}>
+          <a href="/work-with-nik" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', opacity: 0.78 }}>More on working with Nik {'\u2192'}</a>
+        </div>
       </section>
 
       {/* Dark section */}
