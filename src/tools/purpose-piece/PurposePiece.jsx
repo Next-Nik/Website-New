@@ -907,7 +907,7 @@ export function PurposePiecePage() {
 
               {/* Disc — 3/4 above card top */}
               <div style={{
-                position: 'absolute', right: '-200px', top: '-35
+                position: 'absolute', right: '-200px', top: '-350
                   0px',
                 width: '520px', height: '520px', zIndex: 0, pointerEvents: 'none',
               }}>
