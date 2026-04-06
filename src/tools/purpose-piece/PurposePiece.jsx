@@ -381,7 +381,7 @@ function QuestionLabel({ stage, index, total, label }) {
       {label && (
         <>
           <span style={{ ...sc, fontSize: '17px', color: 'rgba(200,146,42,0.3)' }}>{'\u00b7'}</span>
-          <span style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{label}</span>
+          <span style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)' }}>{label}</span>
         </>
       )}
     </div>
