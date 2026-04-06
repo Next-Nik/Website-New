@@ -4,31 +4,36 @@ import { Link } from 'react-router-dom'
 const TOOLS = [
   {
     path: '/tools/orienteering',
-    name: 'Orienteering',
-    hook: 'Not sure where to start? Start here. A short conversation that reads where you are and points you somewhere real.',
+    name: 'Find your starting point',
+    hook: 'A short conversation that reads where you are and points you somewhere real. No sign-up needed.',
     eyebrow: 'Start here',
+    subtitle: 'Site guide',
   },
   {
     path: '/tools/foundation',
     name: 'Foundation',
+    subtitle: 'Daily regulation practice',
     hook: 'Regulated nervous system first. A guided audio practice that builds the internal floor everything else runs on.',
     eyebrow: 'Ground first',
   },
   {
     path: '/tools/map',
     name: 'The Map',
+    subtitle: 'See where you are. Set where you're going.',
     hook: 'A scored picture of your life across seven domains. See where you are. Set where you\'re going.',
     eyebrow: 'See the whole',
   },
   {
     path: '/tools/purpose-piece',
     name: 'Purpose Piece',
+    subtitle: 'Your role, your domain, your scale',
     hook: 'Surfaces the natural role you\'re built to play — archetype, domain, scale. The contribution coordinates.',
     eyebrow: 'Know your role',
   },
   {
     path: '/tools/target-goals',
     name: 'Target Sprint',
+    subtitle: '90-day focused goal plan',
     hook: 'Three domains. Ninety days. A sprint goal with identity, milestones, and weekly structure built in.',
     eyebrow: 'Build momentum',
   },

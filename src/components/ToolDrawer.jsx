@@ -10,6 +10,7 @@ const TOOLS = [
   {
     key:   'foundation',
     label: 'Foundation',
+    subtitle: 'Daily regulation practice',
     path:  '/tools/foundation',
     desc:  'Regulated baseline. The floor beneath everything.',
     color: '#A8721A',
@@ -17,6 +18,7 @@ const TOOLS = [
   {
     key:   'map',
     label: 'The Map',
+    subtitle: 'See where you are. Set where you're going.',
     path:  '/tools/map',
     desc:  'Seven domains. An honest read of where you are.',
     color: '#5A8AB8',
@@ -24,6 +26,7 @@ const TOOLS = [
   {
     key:   'purpose-piece',
     label: 'Purpose Piece',
+    subtitle: 'Your role, your domain, your scale',
     path:  '/tools/purpose-piece',
     desc:  'Your contribution archetype, domain, and scale.',
     color: '#A8721A',
@@ -31,15 +34,17 @@ const TOOLS = [
   {
     key:   'target-goals',
     label: 'Target Sprint',
+    subtitle: '90-day focused goal plan',
     path:  '/tools/target-goals',
     desc:  'Ninety days. Three areas. A clear level-up.',
     color: '#2D6A4F',
   },
   {
     key:   'orienteering',
-    label: 'Orienteering',
+    label: 'Find your starting point',
+    subtitle: 'Site guide',
     path:  '/tools/orienteering',
-    desc:  'Not sure where to start? Begin here.',
+    desc:  'A short conversation that reads where you are and points you somewhere real. No sign-up needed.',
     color: '#A8721A',
     noAuth: true,
   },
@@ -219,6 +224,10 @@ export function ToolDrawer({ open, onClose }) {
                         color: '#0F1523', fontWeight: 600 }}>{tool.label}</span>
                       {status && <StatusPill status={status} />}
                     </div>
+                    {tool.subtitle && (
+                      <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em',
+                        color: 'rgba(15,21,35,0.38)', marginBottom: '6px' }}>{tool.subtitle}</div>
+                    )}
                     <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
                       color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, margin: 0 }}>
                       {tool.desc}
