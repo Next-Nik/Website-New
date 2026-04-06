@@ -1,19 +1,18 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { ToolDrawer } from './ToolDrawer'
 
 export function Nav({ activePath }) {
   const { user } = useAuth()
   const { pathname } = useLocation()
-  const [mobileOpen, setMobileOpen] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const initial = user?.email
     ? (user.email.split('@')[0].charAt(0) || '?').toUpperCase()
     : null
 
   const links = [
-    { to: '/',              label: 'Home',          key: 'home' },
-    { to: '/life-os',       label: 'Life OS',       key: 'life-os' },
     { to: '/nextus',        label: 'NextUs',        key: 'nextus' },
     { to: '/work-with-nik', label: 'Work with Nik', key: 'work-with-nik' },
     { to: '/about',         label: 'About',         key: 'about' },
@@ -26,24 +25,77 @@ export function Nav({ activePath }) {
     return pathname.startsWith('/' + key)
   }
 
+  const isInTool = pathname.startsWith('/tools')
+
   return (
     <>
       <nav className="site-nav">
-        <div style={{ maxWidth: '1040px', width: '100%', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ maxWidth: '1040px', width: '100%', margin: '0 auto',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+
+          {/* Logo */}
           <Link to="/" className="nav-logo">
             <img src="/logo_nav.png" alt="NextUs" />
           </Link>
 
-          <ul className="nav-links">
-            {links.map(l => (
-              <li key={l.key}>
-                <Link to={l.to} className={isActive(l.key) ? 'active' : ''}>
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {/* Desktop centre — Tools + nav links */}
+          <div className="nav-centre" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
 
+            {/* Tools trigger */}
+            <button
+              onClick={() => setDrawerOpen(o => !o)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                padding: '8px 16px', borderRadius: '40px',
+                border: `1.5px solid ${drawerOpen ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.35)'}`,
+                background: drawerOpen ? 'rgba(200,146,42,0.08)' : 'transparent',
+                fontFamily: "'Cormorant SC', Georgia, serif",
+                fontSize: '13px', letterSpacing: '0.12em',
+                color: drawerOpen ? '#A8721A' : 'rgba(15,21,35,0.78)',
+                cursor: 'pointer', transition: 'all 0.18s',
+              }}
+              onMouseEnter={e => {
+                if (!drawerOpen) {
+                  e.currentTarget.style.borderColor = 'rgba(200,146,42,0.6)'
+                  e.currentTarget.style.color = '#A8721A'
+                }
+              }}
+              onMouseLeave={e => {
+                if (!drawerOpen) {
+                  e.currentTarget.style.borderColor = 'rgba(200,146,42,0.35)'
+                  e.currentTarget.style.color = 'rgba(15,21,35,0.78)'
+                }
+              }}
+            >
+              {/* Grid icon */}
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+                <rect x="8" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+                <rect x="1" y="8" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+                <rect x="8" y="8" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
+              </svg>
+              Tools
+              {/* Chevron */}
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none"
+                style={{ transform: drawerOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
+                <polyline points="2,3 5,7 8,3" stroke="currentColor" strokeWidth="1.3"
+                  strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+
+            {/* Nav links */}
+            <ul className="nav-links" style={{ margin: 0, padding: 0 }}>
+              {links.map(l => (
+                <li key={l.key}>
+                  <Link to={l.to} className={isActive(l.key) ? 'active' : ''}>
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Right — profile / sign in */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             {user ? (
               <Link to="/profile" className="nav-profile-dot" title="Your profile">
@@ -51,57 +103,24 @@ export function Nav({ activePath }) {
               </Link>
             ) : (
               <Link to="/login" style={{
-                padding: '10px 22px',
-                borderRadius: '40px',
+                padding: '10px 22px', borderRadius: '40px',
                 border: '1.5px solid rgba(200,146,42,0.78)',
                 background: 'rgba(200,146,42,0.05)',
                 fontFamily: "'Cormorant SC', Georgia, serif",
-                fontSize: '15px', fontWeight: 600,
+                fontSize: '13px', fontWeight: 600,
                 letterSpacing: '0.16em', color: '#A8721A',
                 textDecoration: 'none',
               }}>Sign in</Link>
             )}
-
-            <button
-              onClick={() => setMobileOpen(o => !o)}
-              aria-label="Menu"
-              className="site-hamburger"
-              style={{ background: 'none', border: 'none', padding: '4px', cursor: 'pointer', flexDirection: 'column', gap: '5px', display: 'none' }}
-            >
-              <span style={{ display: 'block', width: '22px', height: '1.5px', background: 'rgba(15,21,35,0.78)', borderRadius: '1px' }} />
-              <span style={{ display: 'block', width: '22px', height: '1.5px', background: 'rgba(15,21,35,0.78)', borderRadius: '1px' }} />
-              <span style={{ display: 'block', width: '22px', height: '1.5px', background: 'rgba(15,21,35,0.78)', borderRadius: '1px' }} />
-            </button>
           </div>
         </div>
       </nav>
 
-      {mobileOpen && (
-        <div style={{
-          position: 'fixed', top: '64px', left: 0, right: 0, zIndex: 999,
-          background: '#FAFAF7', borderBottom: '1px solid rgba(200,146,42,0.20)',
-          display: 'flex', flexDirection: 'column', padding: '8px 0',
-        }}>
-          {links.map(l => (
-            <Link key={l.key} to={l.to} onClick={() => setMobileOpen(false)} style={{
-              fontFamily: "'Cormorant SC', Georgia, serif",
-              fontSize: '15px', letterSpacing: '0.10em',
-              color: '#0F1523', textDecoration: 'none',
-              padding: '14px 32px',
-              borderBottom: '1px solid rgba(200,146,42,0.08)',
-            }}>{l.label}</Link>
-          ))}
-          {user
-            ? <Link to="/profile" onClick={() => setMobileOpen(false)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.10em', color: '#A8721A', textDecoration: 'none', padding: '14px 32px' }}>Profile</Link>
-            : <Link to="/login" onClick={() => setMobileOpen(false)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.10em', color: '#A8721A', textDecoration: 'none', padding: '14px 32px' }}>Sign in {'\u2192'}</Link>
-          }
-        </div>
-      )}
+      <ToolDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <style>{`
         @media (max-width: 640px) {
-          .site-hamburger { display: flex !important; }
-          .nav-links { display: none !important; }
+          .nav-centre { display: none !important; }
           .site-nav { padding: 0 24px !important; }
         }
       `}</style>

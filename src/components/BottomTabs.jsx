@@ -1,0 +1,198 @@
+import { useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
+import { ToolDrawer } from './ToolDrawer'
+
+const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
+
+function HomeIcon({ active }) {
+  const c = active ? '#A8721A' : 'rgba(15,21,35,0.4)'
+  return (
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <path d="M3 9.5L11 3L19 9.5V19C19 19.55 18.55 20 18 20H14V14H8V20H4C3.45 20 3 19.55 3 19V9.5Z"
+        stroke={c} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+    </svg>
+  )
+}
+
+function GridIcon({ active }) {
+  const c = active ? '#A8721A' : 'rgba(15,21,35,0.4)'
+  return (
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <rect x="3" y="3" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.5" fill="none"/>
+      <rect x="12" y="3" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.5" fill="none"/>
+      <rect x="3" y="12" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.5" fill="none"/>
+      <rect x="12" y="12" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.5" fill="none"/>
+    </svg>
+  )
+}
+
+function ProfileIcon({ active, initial }) {
+  const c = active ? '#A8721A' : 'rgba(15,21,35,0.4)'
+  if (initial) {
+    return (
+      <div style={{
+        width: 24, height: 24, borderRadius: '50%',
+        background: active ? 'rgba(200,146,42,0.15)' : 'rgba(200,146,42,0.08)',
+        border: `1.5px solid ${active ? 'rgba(200,146,42,1)' : 'rgba(200,146,42,0.4)'}`,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        ...sc, fontSize: '11px', fontWeight: 600, color: active ? '#A8721A' : 'rgba(15,21,35,0.5)',
+      }}>{initial}</div>
+    )
+  }
+  return (
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <circle cx="11" cy="8" r="3.5" stroke={c} strokeWidth="1.5" fill="none"/>
+      <path d="M4 19C4 15.7 7.1 13 11 13C14.9 13 18 15.7 18 19"
+        stroke={c} strokeWidth="1.5" strokeLinecap="round" fill="none"/>
+    </svg>
+  )
+}
+
+function MoreIcon({ active }) {
+  const c = active ? '#A8721A' : 'rgba(15,21,35,0.4)'
+  return (
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <circle cx="5"  cy="11" r="1.5" fill={c}/>
+      <circle cx="11" cy="11" r="1.5" fill={c}/>
+      <circle cx="17" cy="11" r="1.5" fill={c}/>
+    </svg>
+  )
+}
+
+function MoreMenu({ onClose }) {
+  const links = [
+    { label: 'NextUs',        path: '/nextus' },
+    { label: 'Work with Nik', path: '/work-with-nik' },
+    { label: 'Podcast',       path: '/podcast' },
+    { label: 'About',         path: '/about' },
+  ]
+  return (
+    <>
+      <div onClick={onClose} style={{
+        position: 'fixed', inset: 0, zIndex: 1098,
+        background: 'rgba(15,21,35,0.3)',
+        backdropFilter: 'blur(2px)',
+      }} />
+      <div style={{
+        position: 'fixed', bottom: '72px', left: '16px', right: '16px', zIndex: 1099,
+        background: 'rgba(250,250,247,0.98)',
+        border: '1px solid rgba(200,146,42,0.22)',
+        borderRadius: '16px',
+        backdropFilter: 'blur(20px)',
+        overflow: 'hidden',
+        animation: 'moreSlideUp 0.22s cubic-bezier(0.16,1,0.3,1) both',
+      }}>
+        {links.map((l, i) => (
+          <Link key={l.path} to={l.path} onClick={onClose} style={{
+            display: 'block', padding: '16px 20px',
+            ...sc, fontSize: '15px', letterSpacing: '0.1em',
+            color: '#0F1523', textDecoration: 'none',
+            borderBottom: i < links.length - 1 ? '1px solid rgba(200,146,42,0.10)' : 'none',
+          }}>{l.label}</Link>
+        ))}
+      </div>
+      <style>{`@keyframes moreSlideUp { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }`}</style>
+    </>
+  )
+}
+
+export function BottomTabs() {
+  const { user } = useAuth()
+  const { pathname } = useLocation()
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const [moreOpen,   setMoreOpen]   = useState(false)
+
+  const initial = user?.email
+    ? (user.email.split('@')[0].charAt(0) || '?').toUpperCase()
+    : null
+
+  const isHome    = pathname === '/'
+  const isTools   = pathname.startsWith('/tools')
+  const isProfile = pathname === '/profile'
+  const isMore    = ['/nextus','/work-with-nik','/podcast','/about'].some(p => pathname.startsWith(p))
+
+  const tabs = [
+    {
+      key:   'home',
+      label: 'Home',
+      icon:  <HomeIcon active={isHome} />,
+      active: isHome,
+      action: null,
+      to:    '/',
+    },
+    {
+      key:    'tools',
+      label:  'Tools',
+      icon:   <GridIcon active={isTools || drawerOpen} />,
+      active: isTools || drawerOpen,
+      action: () => { setMoreOpen(false); setDrawerOpen(o => !o) },
+      to:     null,
+    },
+    {
+      key:    'profile',
+      label:  user ? 'Profile' : 'Sign in',
+      icon:   <ProfileIcon active={isProfile} initial={initial} />,
+      active: isProfile,
+      action: null,
+      to:     user ? '/profile' : '/login',
+    },
+    {
+      key:    'more',
+      label:  'More',
+      icon:   <MoreIcon active={isMore || moreOpen} />,
+      active: isMore || moreOpen,
+      action: () => { setDrawerOpen(false); setMoreOpen(o => !o) },
+      to:     null,
+    },
+  ]
+
+  return (
+    <>
+      {moreOpen && <MoreMenu onClose={() => setMoreOpen(false)} />}
+      <ToolDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
+
+      <nav data-bottom-tabs style={{
+        position: 'fixed', bottom: 0, left: 0, right: 0,
+        height: '60px', zIndex: 1097,
+        background: 'rgba(250,250,247,0.97)',
+        borderTop: '1px solid rgba(200,146,42,0.18)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        display: 'flex', alignItems: 'stretch',
+        paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+      }}>
+        {tabs.map(tab => {
+          const inner = (
+            <div style={{
+              display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center',
+              gap: '3px', padding: '8px 0', width: '100%',
+            }}>
+              {tab.icon}
+              <span style={{
+                ...sc, fontSize: '10px', letterSpacing: '0.10em',
+                color: tab.active ? '#A8721A' : 'rgba(15,21,35,0.4)',
+                lineHeight: 1,
+              }}>{tab.label}</span>
+            </div>
+          )
+          if (tab.action) {
+            return (
+              <button key={tab.key} onClick={tab.action} style={{
+                flex: 1, background: 'none', border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>{inner}</button>
+            )
+          }
+          return (
+            <Link key={tab.key} to={tab.to} style={{
+              flex: 1, display: 'flex', alignItems: 'center',
+              justifyContent: 'center', textDecoration: 'none',
+            }}>{inner}</Link>
+          )
+        })}
+      </nav>
+    </>
+  )
+}
