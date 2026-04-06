@@ -1276,6 +1276,33 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
 
 // ─── Auth Modal ───────────────────────────────────────────────────────────────
 
+function MapWelcomeModal({ onBegin }) {
+  const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
+      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '460px', width: '100%', textAlign: 'center' }}>
+        <span style={{ display: 'block', ...sc, fontSize: '17px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>The Map</span>
+        <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>An honest read.</h2>
+        <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
+          Seven domains of your life. Where you are, where you want to be, and what the gap is telling you. Takes about ten minutes. Answer honestly — not aspirationally.
+        </p>
+        <button onClick={onBegin} style={{
+          display: 'block', width: '100%', padding: '15px 24px', borderRadius: '40px',
+          border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)',
+          color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif",
+          fontSize: '15px', letterSpacing: '0.14em', cursor: 'pointer', transition: 'all 0.2s',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
+        >
+          Begin {'\u2192'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function AuthModal() {
   const returnUrl = encodeURIComponent(window.location.href)
   return (
@@ -1312,6 +1339,16 @@ export function MapPage() {
   const [mapData,      setMapData]      = useState(null)
   const [thinking,     setThinking]     = useState(false)
   const [sessionId,    setSessionId]    = useState(null)
+  const [showWelcome,  setShowWelcome]  = useState(() => {
+    try {
+      const saved = localStorage.getItem('lifeos_themap_v4')
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed.domainData && Object.keys(parsed.domainData).length > 0) return false
+      }
+    } catch {}
+    return true
+  })
   const hasLoadedRef = useRef(false)
 
   // Load saved data from localStorage + Supabase on mount
@@ -1450,6 +1487,7 @@ export function MapPage() {
   return (
     <div className="page-shell">
       <Nav activePath="life-os" />
+      {user && showWelcome && <MapWelcomeModal onBegin={() => setShowWelcome(false)} />}
 
       {/* Left — domain thread panel */}
       <DomainThreadPanel

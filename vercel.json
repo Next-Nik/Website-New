@@ -22,6 +22,9 @@
     },
     "api/foundation-review-chat.js": {
       "maxDuration": 60
+    },
+    "api/stripe-webhook.js": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
@@ -52,6 +55,10 @@
     {
       "source": "/tools/foundation/api/review",
       "destination": "/api/foundation-review-chat"
+    },
+    {
+      "source": "/api/stripe-webhook",
+      "destination": "/api/stripe-webhook"
     },
     {
       "source": "/(.*)",

@@ -649,13 +649,9 @@ export function FoundationPage() {
           <FoundationReview user={user} sessions={sessions} />
         )}
 
-        <PhaseBlock number="Phase 2" name="Calibration" desc="Agency, temporal clarity, and directional awareness — the heading you face. Complete Baseline first.">
-          <PhasePlaceholder title="Foundation · Calibration" />
-        </PhaseBlock>
+        {/* Phase 2 — Calibration: coming in next release */}
 
-        <PhaseBlock number="Phase 3" name="Embodying" desc="Action from the Horizon orientation — the accomplished, resourced stance you act from.">
-          <PhasePlaceholder title="Foundation · Embodying" />
-        </PhaseBlock>
+        {/* Phase 3 — Embodying: coming in next release */}
 
         <QuoteBlock text="It has helped me reset my baseline in the middle of the day — to relax, let go, and create space for a more supportive inner story. One that naturally inspires aligned action rather than effort or striving." cite="David William Pierce" />
         <QuoteBlock text="There was this sense of feeling held throughout. His presence is unmistakably there." cite="David William Pierce" />

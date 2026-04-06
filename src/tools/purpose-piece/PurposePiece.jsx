@@ -10,9 +10,9 @@ import { CivilisationalFramePanel } from '../../components/CivilisationalFramePa
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const SS_KEY = 'pp_session_v3'
+const SS_KEY = 'pp_session_v4'
 // Clear any stale sessions from previous versions
-;['pp_session', 'pp_session_v1', 'pp_session_v2'].forEach(k => sessionStorage.removeItem(k))
+;['pp_session', 'pp_session_v1', 'pp_session_v2', 'pp_session_v3'].forEach(k => sessionStorage.removeItem(k))
 
 // Wedge colours — intentional design system additions
 // Gold:   Archetype — primary brand colour, most important coordinate
