@@ -24,7 +24,7 @@ export function CivilisationalFramePanel() {
         aria-label="Open Civilisational Frame"
         style={{
           position: 'fixed',
-          left: open ? '-60px' : '-14px',
+          right: open ? '-60px' : '-14px',
           top: '50%',
           transform: 'translateY(-50%)',
           zIndex: 1500,
@@ -38,8 +38,8 @@ export function CivilisationalFramePanel() {
           justifyContent: 'center',
           padding: 0,
           transition: 'all 0.25s ease',
-          clipPath: 'polygon(0% 12%, 0% 88%, 30% 100%, 100% 100%, 100% 0%, 30% 0%)',
-          borderRadius: '0 12px 12px 0',
+          clipPath: 'polygon(100% 12%, 100% 88%, 70% 100%, 0% 100%, 0% 0%, 70% 0%)',
+          borderRadius: '12px 0 0 12px',
         }}
       >
         <span style={{
@@ -75,7 +75,8 @@ export function CivilisationalFramePanel() {
             width: 'min(520px, 92vw)',
             height: '100%',
             background: '#FAFAF7',
-            borderRight: '1.5px solid rgba(200,146,42,0.3)',
+            borderLeft: '1.5px solid rgba(200,146,42,0.3)',
+            marginLeft: 'auto',
             overflowY: 'auto',
             display: 'flex',
             flexDirection: 'column',
@@ -208,13 +209,13 @@ export function CivilisationalFramePanel() {
             aria-label="Close domains"
             style={{
               position: 'fixed',
-              left: 'min(520px, 92vw)',
+              right: 'min(520px, 92vw)',
               top: '50%',
               transform: 'translateY(-50%)',
               zIndex: 2100,
               background: '#FAFAF7',
               border: '1.5px solid rgba(200,146,42,0.78)',
-              borderLeft: 'none',
+              borderRight: 'none',
               width: '44px',
               height: '88px',
               cursor: 'pointer',
@@ -222,8 +223,8 @@ export function CivilisationalFramePanel() {
               alignItems: 'center',
               justifyContent: 'center',
               padding: 0,
-              clipPath: 'polygon(28% 12%, 28% 88%, 30% 100%, 100% 100%, 100% 0%, 30% 0%)',
-              borderRadius: '0 12px 12px 0',
+              clipPath: 'polygon(70% 12%, 70% 88%, 72% 100%, 0% 100%, 0% 0%, 72% 0%)',
+              borderRadius: '12px 0 0 12px',
             }}
           >
             <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', color: '#A8721A' }}>{'\u00D7'}</span>
