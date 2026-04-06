@@ -63,7 +63,7 @@ const btnStyle = {
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
 function Eyebrow({ children }) {
-  return <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>{children}</span>
+  return <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>{children}</span>
 }
 
 function Rule() {
@@ -90,7 +90,7 @@ function AuthModal() {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
-        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '12px' }}>Target Sprint</span>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '12px' }}>Target Sprint</span>
         <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>Sign in to begin.</h2>
         <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>Your sprint saves to your profile.</p>
         <a href={`/login?redirect=${r}`} style={{ display: 'block', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
@@ -265,7 +265,7 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
                 <text x={pos.x} y={lines[1] ? pos.y - size * 0.032 : pos.y}
                   textAnchor="middle" dominantBaseline="middle"
                   fontSize={size * 0.048} fontFamily="'Cormorant SC', Georgia, serif"
-                  fill={isActive ? col : 'rgba(200,146,42,0.35)'} letterSpacing="0.04em"
+                  fill={isActive ? col : 'rgba(200,146,42,0.75)'} letterSpacing="0.04em"
                   style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill 0.3s' }}>
                   {lines[0]}
                 </text>
@@ -273,7 +273,7 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
                   <text x={pos.x} y={pos.y + size * 0.032}
                     textAnchor="middle" dominantBaseline="middle"
                     fontSize={size * 0.048} fontFamily="'Cormorant SC', Georgia, serif"
-                    fill={isActive ? col : 'rgba(200,146,42,0.35)'} letterSpacing="0.04em"
+                    fill={isActive ? col : 'rgba(200,146,42,0.75)'} letterSpacing="0.04em"
                     style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill 0.3s' }}>
                     {lines[1]}
                   </text>
@@ -330,7 +330,7 @@ function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoT
     <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '36px 32px', maxWidth: '440px', width: '100%', maxHeight: '80vh', overflowY: 'auto' }}>
-        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>Target Sprint</span>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>Target Sprint</span>
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.1 }}>What's still to do.</h2>
         <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '24px' }}>
           Complete all three areas to unlock your full sprint.
@@ -346,7 +346,7 @@ function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoT
                 </span>
                 {!allDone && (
                   <button onClick={() => { onGoToDomain(d.id); onClose() }}
-                    style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', ...gold, background: 'none', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '20px', padding: '4px 12px', cursor: 'pointer' }}>
+                    style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', ...gold, background: 'none', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '20px', padding: '4px 12px', cursor: 'pointer' }}>
                     Go →
                   </button>
                 )}
@@ -396,8 +396,8 @@ function SetupStatusBar({ domains, domainData }) {
   return (
     <div style={{ marginBottom: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase' }}>Sprint Setup</span>
-        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', ...muted }}>{complete} / {total}</span>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase' }}>Sprint Setup</span>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', ...muted }}>{complete} / {total}</span>
       </div>
       <div style={{ height: '3px', background: 'rgba(200,146,42,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: '#C8922A', transition: 'width 0.6s ease', borderRadius: '2px' }} />
@@ -517,7 +517,7 @@ function AccomplishmentTally({ domains, domainData, onCheck }) {
                           style={{ marginTop: '3px', accentColor: '#C8922A', flexShrink: 0 }}
                         />
                         <div>
-                          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', color: 'rgba(200,146,42,0.6)', textTransform: 'uppercase', marginBottom: '1px' }}>Month {mi + 1}</div>
+                          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(200,146,42,0.6)', textTransform: 'uppercase', marginBottom: '1px' }}>Month {mi + 1}</div>
                           <div style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.55, textDecoration: mDone ? 'line-through' : 'none', opacity: mDone ? 0.5 : 1 }}>
                             {m.text}
                           </div>
@@ -567,13 +567,13 @@ function SprintSummaryModal({ domains, domainData, onClose }) {
           const dd = domainData[d.id] || {}
           if (!dd.targetGoal) return (
             <div key={d.id} style={{ padding: '14px 0', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
-              <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', ...gold, textTransform: 'uppercase', marginBottom: '4px' }}>{d.label}</div>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '4px' }}>{d.label}</div>
               <div style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted }}>Not yet set.</div>
             </div>
           )
           return (
             <div key={d.id} style={{ padding: '14px 0', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
-              <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>{d.label}</div>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>{d.label}</div>
               {dd.horizonText && (
                 <div style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, lineHeight: 1.6, marginBottom: '6px' }}>
                   Horizon: {dd.horizonText}
@@ -1000,7 +1000,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
                       addLabel="+ Add task"
                     />
                     <button onClick={() => generateTasks(mi)} disabled={generating}
-                      style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', ...muted, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginTop: '6px', opacity: generating ? 0.5 : 1 }}>
+                      style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', ...muted, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginTop: '6px', opacity: generating ? 0.5 : 1 }}>
                       {generating ? 'Regenerating…' : 'Regenerate tasks'}
                     </button>
                   </div>
@@ -1367,34 +1367,30 @@ export function TargetGoalsPage() {
                 </div>
               </div>
 
-              {/* Prev / Next — sit at card top, right of card */}
-              <div style={{
-                position: 'absolute', top: '358px', right: '-52px',
-                display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px', zIndex: 2,
-              }}>
-                <button onClick={() => handleWheelNav('prev')} title="Previous domain"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: 0.4, transition: 'opacity 0.2s' }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-                  onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <polyline points="12,2 4,9 12,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
-                <button onClick={() => handleWheelNav('next')} title="Next domain"
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: 0.4, transition: 'opacity 0.2s' }}
-                  onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-                  onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}>
-                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <polyline points="6,2 14,9 6,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </button>
-              </div>
-
               {/* Domain panel card — top at 3/4 of wheel */}
               <div style={{ position: 'relative', zIndex: 1, marginTop: '330px' }}>
                 {activeDomainId && (
                   <div key={activeDomainId} className="tg-fade-up"
                     style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', padding: '26px 28px', maxWidth: '560px' }}>
+                    {/* Prev / Next — inside card, top right */}
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px', float: 'right', marginTop: '-4px', marginRight: '-8px' }}>
+                      <button onClick={() => handleWheelNav('prev')} title="Previous domain"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', opacity: 0.4, transition: 'opacity 0.2s' }}
+                        onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                        onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}>
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                          <polyline points="12,2 4,9 12,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                      <button onClick={() => handleWheelNav('next')} title="Next domain"
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', opacity: 0.4, transition: 'opacity 0.2s' }}
+                        onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                        onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}>
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                          <polyline points="6,2 14,9 6,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </button>
+                    </div>
                     <DomainPanel
                       domainId={activeDomainId}
                       domainData={domainData}
@@ -1421,7 +1417,7 @@ export function TargetGoalsPage() {
             {/* Path B nudge */}
             {!hasMapData && (
               <div style={{ padding: '18px 20px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '12px', marginTop: '32px' }}>
-                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>Want the full picture?</div>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>Want the full picture?</div>
                 <p style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.7, marginBottom: '12px' }}>
                   The Map gives you an honest read across all seven domains — and loads your scores directly into your next sprint.
                 </p>
