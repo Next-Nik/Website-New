@@ -50,7 +50,7 @@ function getColor(n) {
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const gold  = { color: '#A8721A' }
-const muted = { color: 'rgba(15,21,35,0.55)' }
+const muted = { color: 'rgba(15,21,35,0.78)' }
 const meta  = { color: 'rgba(15,21,35,0.78)' }
 
 const btnStyle = {
@@ -338,7 +338,7 @@ function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoT
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
   const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
   const gold  = { color: '#A8721A' }
-  const muted = { color: 'rgba(15,21,35,0.55)' }
+  const muted = { color: 'rgba(15,21,35,0.78)' }
   const meta  = { color: 'rgba(15,21,35,0.78)' }
 
   const STEP_LABELS = { current_state: 'Where you are', horizon: 'Horizon', target_goal: 'Target Goal', milestones: 'Milestones', tasks: 'Tasks' }
@@ -386,7 +386,7 @@ function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoT
                       <span style={{ width: '16px', height: '16px', borderRadius: '50%', border: `1px solid ${done ? '#C8922A' : 'rgba(200,146,42,0.25)'}`, background: done ? '#C8922A' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         {done && <span style={{ color: '#FFFFFF', fontSize: '15px' }}>✓</span>}
                       </span>
-                      <span style={{ ...serif, fontSize: '1.125rem', color: done ? 'rgba(15,21,35,0.4)' : meta.color, textDecoration: done ? 'line-through' : 'none' }}>
+                      <span style={{ ...serif, fontSize: '1.125rem', color: done ? 'rgba(15,21,35,0.72)' : meta.color, textDecoration: done ? 'line-through' : 'none' }}>
                         {STEP_LABELS[key]}
                       </span>
                     </div>
@@ -910,7 +910,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
           </p>
           {dd.horizonText && (
             <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, textTransform: 'uppercase', marginBottom: '14px' }}>
-              Toward: <span style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', textTransform: 'none', letterSpacing: 0, color: 'rgba(15,21,35,0.6)' }}>{dd.horizonText}</span>
+              Toward: <span style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', textTransform: 'none', letterSpacing: 0, color: 'rgba(15,21,35,0.78)' }}>{dd.horizonText}</span>
             </div>
           )}
           {dd.targetGoal ? (
