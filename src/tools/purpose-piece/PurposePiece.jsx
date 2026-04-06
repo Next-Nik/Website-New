@@ -529,7 +529,7 @@ function AuthModal() {
         <span style={{ display: 'block', ...sc, fontSize: '13px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
         <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px', lineHeight: 1.1 }}>Sign in to begin.</h2>
         <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '28px' }}>
-          Your Purpose Piece saves to your profile and carries across the ecosystem.
+          Each of us has a distinct role in shaping the future of life on earth. An archetype, a domain, a scale — three coordinates that together make your Purpose Piece. Find your fit.
         </p>
         <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '15px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
           Sign in or create account {'\u2192'}
@@ -912,7 +912,7 @@ export function PurposePiecePage() {
           </h1>
           {!showReveal && !session && (
             <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, maxWidth: '440px' }}>
-              You have a specific role in the future of humanity. Let{'\u2019'}s find it.
+              Each of us maps onto a contribution archetype, leans toward a domain, and operates at a natural scale. Together those three things are your Purpose Piece. Knowing yours helps you find your fit.
             </p>
           )}
         </div>
@@ -921,7 +921,7 @@ export function PurposePiecePage() {
         {isMobile ? (
           <div>
             {/* Mobile: disc large, centred, bleeds sides, sits below heading */}
-            <div style={{ position: 'relative', height: '280px', marginBottom: '0px', overflow: 'hidden' }}>
+            <div style={{ position: 'relative', height: '280px', marginBottom: '0px' }}>
               <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: '-20px', width: `${discSize}px`, zIndex: 0, pointerEvents: 'none' }}>
                 <div style={{ pointerEvents: 'auto' }}>
                   <PurposeDisc
