@@ -52,7 +52,7 @@
 
 .eyebrow {
   font-family: 'Cormorant SC', serif;
-  font-size: 9px;
+  font-size: 17px;
   font-weight: 300;
   letter-spacing: 0.18em;
   color: var(--meta);
@@ -82,7 +82,7 @@
 
 .body {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 300;
   color: var(--body);
   line-height: 1.7;
@@ -97,7 +97,7 @@
 .label {
   display: block;
   font-family: 'Cormorant SC', serif;
-  font-size: 9px;
+  font-size: 17px;
   font-weight: 300;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -117,7 +117,7 @@
   background: var(--white);
   padding: 11px 14px;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 300;
   color: var(--dark);
   outline: none;
@@ -138,7 +138,7 @@
   border: 1px solid var(--dark);
   color: var(--bg);
   font-family: 'Cormorant SC', serif;
-  font-size: 15px;
+  font-size: 19px;
   font-weight: 400;
   letter-spacing: 0.1em;
   text-transform: uppercase;

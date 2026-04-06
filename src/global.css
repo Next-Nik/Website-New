@@ -116,7 +116,7 @@ button {
 .auth-eyebrow {
   display: block;
   font-family: var(--font-sc);
-  font-size: 0.85rem;
+  font-size: 1.0625rem;
   letter-spacing: 0.12em;
   color: var(--gold-dk);
   text-transform: uppercase;
@@ -132,7 +132,7 @@ button {
 }
 
 .auth-card p {
-  font-size: 1.125rem;
+  font-size: 1.375rem;
   color: var(--text-muted);
   margin-bottom: 1.75rem;
   line-height: 1.55;
@@ -141,7 +141,7 @@ button {
 .auth-card a {
   display: inline-block;
   font-family: var(--font-sc);
-  font-size: 0.9375rem;
+  font-size: 1.1875rem;
   letter-spacing: 0.06em;
   color: var(--gold-dk);
   border: 1px solid var(--gold-line);
@@ -199,7 +199,7 @@ button {
 
 .nav-links a {
   font-family: var(--font-sc);
-  font-size: 15px;
+  font-size: 17px;
   letter-spacing: 0.10em;
   color: rgba(15, 21, 35, 0.78);
   text-decoration: none;
@@ -223,7 +223,7 @@ button {
   align-items: center;
   justify-content: center;
   font-family: var(--font-sc);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   color: #A8721A;
   text-decoration: none;
@@ -260,7 +260,7 @@ button {
 
 .tool-eyebrow {
   font-family: var(--font-sc);
-  font-size: 0.85rem;
+  font-size: 1.0625rem;
   letter-spacing: 0.12em;
   color: var(--gold-dk);
   text-transform: uppercase;
@@ -367,7 +367,7 @@ button {
 
 .btn-send {
   font-family: var(--font-sc);
-  font-size: 0.875rem;
+  font-size: 1.125rem;
   letter-spacing: 0.06em;
   color: var(--gold-dk);
   background: transparent;

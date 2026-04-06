@@ -54,7 +54,7 @@
 /* Idle instruction — below the heptagon */
 .instruction {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 300;
   font-style: normal;
   color: var(--text-meta);
