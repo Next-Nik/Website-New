@@ -8,7 +8,8 @@ const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const TOOLS = [
   {
-    id: 'foundation', name: 'Foundation', hook: 'The floor everything else stands on.',
+    id: 'foundation',
+    subtitle: 'Daily regulation practice', name: 'Foundation', hook: 'The floor everything else stands on.',
     label: 'Capacity infrastructure',
     desc: 'There is an order of operations to healing and development. A solid foundation is needed for all of it.',
     detail: 'Three phases — Baseline, Calibration, Embodying. Build on one until you\'re ready for the next. Daily check-ins and a guided audio practice, about 20 minutes a day. Restores your internal system so you can access clear, congruent thoughts, feelings, actions, and creativity. Not therapy. Not really meditation. The layer beneath insight, growth, and strategy — your foundation.',
@@ -20,7 +21,8 @@ const TOOLS = [
     primary: { label: 'Begin Foundation →', url: '/tools/foundation' },
   },
   {
-    id: 'map', name: 'The Map', hook: 'An honest picture of where you are across every domain.',
+    id: 'map',
+    subtitle: 'See where you are. Set where you're going.', name: 'The Map', hook: 'An honest picture of where you are across every domain.',
     label: 'The map',
     desc: 'You can\'t live your full-yes life if you\'re not clear about where you\'re starting from and where you want to go.',
     detail: 'This process is simple, challenging, and has transformed lives. If you\'re ready to be firmly on your path and actively levelling up towards your full-yes life, start charting your course today. When would now be a good time to start?',
@@ -29,7 +31,8 @@ const TOOLS = [
     secondary: { label: 'Go deeper with Nik', url: '/work-with-nik' },
   },
   {
-    id: 'purpose-piece', name: 'Purpose Piece', hook: 'Find your fit.',
+    id: 'purpose-piece',
+    subtitle: 'Your role, your domain, your scale', name: 'Purpose Piece', hook: 'Find your fit.',
     label: 'The contribution pattern',
     desc: 'Each of us has a distinct role in shaping the future of life on earth. We each map to a Contribution Archetype, lean towards a domain, and prefer operating at a specific scale. Together, this is your Purpose Piece.',
     detail: 'Knowing yours will help you find your fit — where your intelligence lands hardest, where your effort compounds most, and where you belong in the larger work.',
@@ -38,7 +41,8 @@ const TOOLS = [
     secondary: { label: 'Debrief with Nik', url: '/work-with-nik' },
   },
   {
-    id: 'target-goals', name: 'Target Sprint', hook: 'A three-month sprint towards a clear level-up in three areas of your life.',
+    id: 'target-goals',
+    subtitle: '90-day focused goal plan', name: 'Target Sprint', hook: 'A three-month sprint towards a clear level-up in three areas of your life.',
     label: 'The operational layer',
     desc: 'The bridge between knowing where you are and arriving somewhere different.',
     detail: 'Start any time. Supercharged when combined with The Map. A 90-day sprint reverse-engineered from where you want to be — with monthly milestones, weekly focus, and daily TEA anchors so the work compounds.',
@@ -46,7 +50,8 @@ const TOOLS = [
     primary: { label: 'Begin Target Sprint →', url: '/tools/target-goals' },
   },
   {
-    id: 'horizon-leap', name: 'Horizon Leap', hook: 'Leap from who you\'ve been to who you truly are.',
+    id: 'horizon-leap',
+    subtitle: 'Identity-level work with Nik', name: 'Horizon Leap', hook: 'Leap from who you\'ve been to who you truly are.',
     label: 'The crossing',
     desc: 'For people ready to dive deep and transform who they\'re being.',
     detail: 'As far forward as you can see from where you are now is your Horizon Life. Your Horizon Self is the you who is already living that life — the you who already got there. Together we bring that version of you to life, invite them to take the controls, and watch your life transform in the process.',
@@ -68,7 +73,8 @@ function ToolAccordion({ tool }) {
     <div id={tool.id} style={{ border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', marginBottom: '10px', overflow: 'hidden', background: 'rgba(200,146,42,0.05)' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '22px 26px', userSelect: 'none' }}>
         <div onClick={() => setOpen(o => !o)} style={{ flex: 1, cursor: 'pointer' }}>
-          <div style={{ ...serif, fontSize: '19px', fontWeight: 400, color: '#A8721A', marginBottom: '4px' }}>{tool.name}</div>
+          <div style={{ ...serif, fontSize: '19px', fontWeight: 400, color: '#A8721A', marginBottom: '2px' }}>{tool.name}</div>
+          {tool.subtitle && <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', marginBottom: '6px' }}>{tool.subtitle}</div>}
           <div style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.88)' }}>{tool.hook}</div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0, marginLeft: '16px' }}>
@@ -139,16 +145,36 @@ export function LifeOSPage() {
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           From where you are<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>to your Horizon Life.</em>
         </h1>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '64px', maxWidth: '520px' }}>Six tools. Start anywhere. Each one does its own work {'—'} and they compound when you{'’'}re ready.</p>
+        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '560px' }}>
+          Life has a shape to it — a set of needs that are true for everyone, and a spark that is entirely your own. The Life OS tools are built to give that spark its best chance: to move from where you are to where you know you could be, without skipping the layers that actually matter.
+        </p>
+        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '48px', maxWidth: '520px' }}>
+          You don’t need to know where to start. That’s what the first tool is for.
+        </p>
+
+        {/* Is this for you */}
+        <div style={{ marginBottom: '40px', padding: '28px 32px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '14px' }}>
+          <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>Is this for you?</span>
+          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, margin: '0 0 8px', maxWidth: '520px' }}>
+            You’re not in crisis and you’re not broken — but something is off. A gap between who you are and what you sense you could be. You’ve probably done some work already. Something still isn’t moving.
+          </p>
+          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, margin: '0', maxWidth: '520px' }}>
+            This is exactly the terrain these tools are built for.
+          </p>
+        </div>
+
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 32px' }} />
 
-        {/* Orienteering CTA */}
+        {/* Find your starting point CTA */}
         <div style={{ marginBottom: '32px', padding: '24px 28px', background: 'rgba(200,146,42,0.03)', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '16px', maxWidth: '520px' }}>
-            If you don't know where to begin, start with Orienteering — a short conversation that reads where you are and points you somewhere real.
+          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '4px', maxWidth: '520px' }}>
+            Not sure where to start?
+          </p>
+          <p style={{ ...serif, fontSize: '15px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.6)', lineHeight: 1.6, marginBottom: '16px', maxWidth: '520px' }}>
+            A short conversation that reads where you are and points you somewhere real. No sign-up needed.
           </p>
           <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '12px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '17px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
-            Begin with Orienteering →
+            Find your starting point →
           </a>
         </div>
 
