@@ -45,13 +45,34 @@ function EmptySlot({ cta, ctaUrl }) {
   return (
     <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
       color: 'rgba(15,21,35,0.72)', marginBottom: '8px' }}>
-      Not yet completed.{' '}
+      Not yet started.{' '}
       {cta && ctaUrl && (
         <a href={ctaUrl} style={{ color: '#A8721A', textDecoration: 'none' }}>
           {cta} {'\u2192'}
         </a>
       )}
     </div>
+  )
+}
+
+function StatusBadge({ status }) {
+  const configs = {
+    started:  { label: 'Started',     bg: 'rgba(200,146,42,0.08)', border: 'rgba(200,146,42,0.35)', color: '#A8721A' },
+    active:   { label: 'In progress', bg: 'rgba(200,146,42,0.08)', border: 'rgba(200,146,42,0.35)', color: '#A8721A' },
+    complete: { label: 'Complete',    bg: 'rgba(45,106,79,0.08)',  border: 'rgba(45,106,79,0.35)',  color: '#2D6A4F' },
+  }
+  const cfg = configs[status] || configs.started
+  return (
+    <span style={{
+      fontFamily: "'Cormorant SC', Georgia, serif",
+      fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase',
+      color: cfg.color, background: cfg.bg,
+      border: `1px solid ${cfg.border}`,
+      borderRadius: '40px', padding: '3px 10px',
+      display: 'inline-block', marginBottom: '16px',
+    }}>
+      {cfg.label}
+    </span>
   )
 }
 
@@ -131,6 +152,59 @@ function ScoreBar({ label, score, horizonScore }) {
 function MapSlot({ mapData }) {
   if (!mapData) return <EmptySlot cta="Begin The Map" ctaUrl="/tools/map" />
 
+  if (!mapData.complete) {
+    const dd = mapData.session?.domainData ?? {}
+    const domainLabels = ['Path','Spark','Body','Finances','Relationships','Inner Game','Outer Game']
+    const domainKeys   = ['path','spark','body','finances','relationships','inner_game','outer_game']
+    const doneCount = domainKeys.filter(k => {
+      const d = dd[k]
+      return d?.currentScore !== undefined
+    }).length
+    const activeDomain = domainKeys.find(k => {
+      const d = dd[k]
+      return d?.avatarFinal && d?.currentScore === undefined
+    })
+    const activeDomainLabel = activeDomain ? domainLabels[domainKeys.indexOf(activeDomain)] : null
+
+    return (
+      <div>
+        <StatusBadge status="active" />
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#0F1523' }}>
+            {doneCount} of 7 domains scored
+          </span>
+          {activeDomainLabel && (
+            <span style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>
+              Currently: {activeDomainLabel}
+            </span>
+          )}
+        </div>
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
+          {domainKeys.map((k, i) => {
+            const d = dd[k]
+            const done = d?.currentScore !== undefined
+            const inProgress = d?.avatarFinal && !done
+            return (
+              <span key={k} style={{
+                ...sc, fontSize: '11px', letterSpacing: '0.1em',
+                padding: '3px 10px', borderRadius: '40px',
+                background: done ? 'rgba(45,106,79,0.08)' : inProgress ? 'rgba(200,146,42,0.08)' : 'rgba(15,21,35,0.04)',
+                border: `1px solid ${done ? 'rgba(45,106,79,0.35)' : inProgress ? 'rgba(200,146,42,0.35)' : 'rgba(15,21,35,0.12)'}`,
+                color: done ? '#2D6A4F' : inProgress ? '#A8721A' : 'rgba(15,21,35,0.4)',
+              }}>
+                {done ? '✓ ' : ''}{domainLabels[i]}
+              </span>
+            )
+          })}
+        </div>
+        <a href="/tools/map" style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
+          color: '#A8721A', textDecoration: 'none' }}>
+          Continue The Map {'→'}
+        </a>
+      </div>
+    )
+  }
+
   const dd       = mapData.session?.domainData ?? {}
   const mapMeta  = mapData.map_data ?? {}
   const horizon  = mapData.horizon_goal_user || mapMeta.life_horizon_draft
@@ -146,6 +220,7 @@ function MapSlot({ mapData }) {
 
   return (
     <div>
+      <StatusBadge status="complete" />
       {stage && (
         <div style={{ marginBottom: '20px', padding: '14px 18px',
           background: 'rgba(200,146,42,0.04)', borderRadius: '10px',
@@ -222,6 +297,49 @@ function MapSlot({ mapData }) {
 function PurposePieceSlot({ purposeData }) {
   if (!purposeData) return <EmptySlot cta="Begin Purpose Piece" ctaUrl="/tools/purpose-piece" />
 
+  const status = purposeData.status || 'started'
+
+  if (status !== 'complete') {
+    const session = purposeData.session ?? {}
+    const archetypeDone = (session.archetypeTranscript?.length ?? 0) >= 5
+    const domainDone    = (session.domainTranscript?.length    ?? 0) >= 3
+    const scaleDone     = (session.scaleTranscript?.length     ?? 0) >= 2
+    const stages = [
+      { label: 'Archetype', done: archetypeDone },
+      { label: 'Domain',    done: domainDone    },
+      { label: 'Scale',     done: scaleDone     },
+    ]
+    const doneCount = stages.filter(s => s.done).length
+
+    return (
+      <div>
+        <StatusBadge status="started" />
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '12px' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#0F1523' }}>
+            {doneCount} of 3 stages complete
+          </span>
+        </div>
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
+          {stages.map(s => (
+            <span key={s.label} style={{
+              ...sc, fontSize: '11px', letterSpacing: '0.1em',
+              padding: '3px 10px', borderRadius: '40px',
+              background: s.done ? 'rgba(45,106,79,0.08)' : 'rgba(200,146,42,0.08)',
+              border: `1px solid ${s.done ? 'rgba(45,106,79,0.35)' : 'rgba(200,146,42,0.35)'}`,
+              color: s.done ? '#2D6A4F' : '#A8721A',
+            }}>
+              {s.done ? '✓ ' : ''}{s.label}
+            </span>
+          ))}
+        </div>
+        <a href="/tools/purpose-piece" style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
+          color: '#A8721A', textDecoration: 'none' }}>
+          Continue Purpose Piece {'→'}
+        </a>
+      </div>
+    )
+  }
+
   const tentative      = purposeData.session?.tentative ?? {}
   const profile        = purposeData.profile ?? {}
   const archetype      = tentative.archetype?.archetype
@@ -234,6 +352,7 @@ function PurposePieceSlot({ purposeData }) {
 
   return (
     <div>
+      <StatusBadge status="complete" />
       {(archetype || domain || scale) && (
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '20px' }}>
           {archetype && (
@@ -325,13 +444,31 @@ function PurposePieceSlot({ purposeData }) {
 function TargetSprintSlot({ sprintData }) {
   if (!sprintData) return <EmptySlot cta="Begin Target Sprint" ctaUrl="/tools/target-goals" />
 
+  const status = sprintData.status || 'started'
+
   const dd       = sprintData.domain_data ?? {}
   const domains  = sprintData.domains ?? []
+
+  if (status === 'started' && domains.length === 0) {
+    return (
+      <div>
+        <StatusBadge status="started" />
+        <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+          color: 'rgba(15,21,35,0.72)', margin: 0 }}>
+          Your sprint is being set up.{' '}
+          <a href="/tools/target-goals" style={{ color: '#A8721A', textDecoration: 'none' }}>
+            Continue {'→'}
+          </a>
+        </p>
+      </div>
+    )
+  }
   const endLabel = sprintData.end_date_label
   const targetDate = sprintData.target_date
 
   return (
     <div>
+      <StatusBadge status={status === 'complete' ? 'complete' : 'active'} />
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px',
         marginBottom: '20px', flexWrap: 'wrap' }}>
         <Eyebrow style={{ marginBottom: 0 }}>90-day sprint</Eyebrow>
@@ -478,24 +615,23 @@ export function ProfilePage() {
       const [mapRes, ppRes, sprintRes] = await Promise.all([
         supabase
           .from('map_results')
-          .select('session, completed_at, map_data, horizon_goal_user, horizon_goal_system')
+          .select('session, completed_at, map_data, horizon_goal_user, horizon_goal_system, complete')
           .eq('user_id', user.id)
-          .eq('complete', true)
           .order('updated_at', { ascending: false })
           .limit(1)
           .maybeSingle(),
         supabase
           .from('purpose_piece_results')
-          .select('profile, session, completed_at')
+          .select('profile, session, completed_at, status')
           .eq('user_id', user.id)
-          .order('completed_at', { ascending: false })
+          .order('updated_at', { ascending: false })
           .limit(1)
           .maybeSingle(),
         supabase
           .from('target_goal_sessions')
           .select('domains, domain_data, target_date, end_date_label, quarter_type, created_at, status')
           .eq('user_id', user.id)
-          .eq('status', 'active')
+          .in('status', ['started', 'active', 'complete'])
           .order('updated_at', { ascending: false })
           .limit(1)
           .maybeSingle(),
