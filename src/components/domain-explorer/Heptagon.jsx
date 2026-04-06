@@ -54,12 +54,12 @@ function getNodeLabel(name) {
 function getNodeSizing(lines) {
   const maxLen = Math.max(...lines.map(l => l.length))
   const n = lines.length
-  const BASE = 44
-  const perLine = 8       // px added per extra line
-  const perChar = 0.7     // px added per char over 9 on longest line
+  const BASE = 46
+  const perLine = 9       // px added per extra line
+  const perChar = 0.8     // px added per char over 9 on longest line
   const charExtra = Math.max(0, maxLen - 9) * perChar
   const radius = Math.round(BASE + (n - 1) * perLine + charExtra)
-  return { fontSize: 17, radius, lineHeight: 1.28 }
+  return { fontSize: 20, radius, lineHeight: 1.28 }
 }
 
 export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centreLabel, onCentreClick }) {
@@ -130,7 +130,7 @@ export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centr
   }).join(' ')
 
   return (
-    <svg className={styles.svg} viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg" aria-label="NextUs Seven Domains Heptagon">
+    <svg className={styles.svg} viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg" aria-label="NextUs Seven Domains Heptagon">
       <circle cx={CX} cy={CY} r={RADIUS + 48} fill="none" stroke="rgba(200,146,42,0.05)" strokeWidth="1" />
       <circle cx={CX} cy={CY} r={RADIUS + 24} fill="none" stroke="rgba(200,146,42,0.08)" strokeWidth="0.5" />
       <polygon points={polygonPoints} fill="rgba(200,146,42,0.03)" stroke="rgba(200,146,42,0.18)" strokeWidth="1" />
@@ -204,7 +204,7 @@ export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centr
         <circle cx={CX} cy={CY} r={76} fill="#FFFFFF" stroke="rgba(200,146,42,0.78)" strokeWidth="1.5" className={styles.centreCircle} />
         {centreLabel && (
           <text x={CX} y={CY} textAnchor="middle" dominantBaseline="middle"
-            fill="#A8721A" fontSize="22" fontFamily="'Cormorant Garamond', Georgia, serif"
+            fill="rgba(200,146,42,0.78)" fontSize="25" fontFamily="'Cormorant Garamond', Georgia, serif"
             fontWeight="300" fontStyle="normal" style={{ pointerEvents: 'none', userSelect: 'none' }}
           >
             {centreLabel.split(' ').map((word, wi, arr) => (

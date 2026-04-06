@@ -420,4 +420,13 @@ button {
   .tool-wrap {
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
+
+  /* Mobile font boosts — ensure minimum readable sizes */
+  .bubble            { font-size: 1.25rem !important; line-height: 1.7 !important; }
+  .bubble-user       { font-size: 1.125rem !important; }
+  .tool-eyebrow      { font-size: 1.0625rem !important; }
+  .auth-eyebrow      { font-size: 1.0625rem !important; }
+  .btn-send          { font-size: 1.125rem !important; }
+  .input-area textarea { font-size: 1.125rem !important; }
+  .nav-links a       { font-size: 17px !important; }
 }
