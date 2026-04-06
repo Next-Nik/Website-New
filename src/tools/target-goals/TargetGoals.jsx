@@ -1269,9 +1269,13 @@ export function TargetGoalsPage() {
         status: 'active', updated_at: new Date().toISOString(),
       }
       if (sessionId) {
-        await supabase.from('target_goal_sessions').update({ domain_data: domainData, updated_at: new Date().toISOString() }).eq('id', sessionId)
+        await supabase.from('target_goal_sessions').update({
+          ...payload, updated_at: new Date().toISOString()
+        }).eq('id', sessionId)
       } else {
-        const { data } = await supabase.from('target_goal_sessions').insert({ ...payload, created_at: new Date().toISOString() }).select('id').single()
+        const { data } = await supabase.from('target_goal_sessions')
+          .insert({ ...payload, created_at: new Date().toISOString() })
+          .select('id').single()
         if (data?.id) setSessionId(data.id)
       }
     } catch {}
@@ -1330,7 +1334,21 @@ export function TargetGoalsPage() {
       `}</style>
       <Nav activePath="life-os" />
       {!user && <AuthModal />}
-      {user && showWelcome && <WelcomeModal onBegin={() => setShowWelcome(false)} />}
+      {user && showWelcome && <WelcomeModal onBegin={() => {
+        if (user?.id) {
+          supabase.from('target_goal_sessions').insert({
+            user_id: user.id,
+            status: 'started',
+            domains: [],
+            domain_data: {},
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }).then(({ data }) => {
+            if (data?.[0]?.id) setSessionId(data[0].id)
+          }).catch(() => {})
+        }
+        setShowWelcome(false)
+      }} />}
       {showSummary && (
         <SprintSummaryModal
           domains={sprintDomains}
