@@ -8,7 +8,7 @@ const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 const STAGES = {
   baseline: {
-    name: 'Baseline', question: 'Am I allowed to exist?',
+    name: 'Baseline', question: 'Am I functioning?',
     desc: 'The floor everything else stands on. Safety and permission to exist at a nervous-system, body level. Without it, everything feels like threat, growth feels dangerous, and insight destabilises rather than liberates. The work here is regulation, containment, and finding ground.',
     primary: { title: 'Foundation', sub: 'A guided audio practice to settle and re-establish ground.', url: '/tools/foundation', badge: 'Life OS Tool' },
     above: { title: 'The Map', sub: 'When you have a little more ground, see where you actually are.', url: '/tools/map', badge: 'Life OS Tool' },
@@ -16,7 +16,7 @@ const STAGES = {
     external: ['somatic therapy', 'trauma-informed support', 'nervous system regulation', 'polyvagal therapy']
   },
   autonomy: {
-    name: 'Autonomy', question: 'Am I allowed to want?',
+    name: 'Autonomy', question: 'Do I know what I want?',
     desc: 'Where the self starts moving again — not goals, not strategy, but desire. The work here is reclaiming the right to direct oneself and meeting the shame around wanting.',
     primary: { title: 'Foundation', sub: 'Build the internal stability that makes self-direction possible.', url: '/tools/foundation', badge: 'Life OS Tool' },
     above: { title: 'The Map', sub: 'An honest picture of where you are once you can see clearly.', url: '/tools/map', badge: 'Life OS Tool' },
@@ -24,7 +24,7 @@ const STAGES = {
     external: ['inner child work', 'parts work / IFS', 'shame resilience', 'self-compassion practices']
   },
   calibration: {
-    name: 'Calibration', question: 'Where am I actually?',
+    name: 'Calibration', question: 'Am I being honest with myself?',
     desc: 'Reality contact — honest self-assessment, mapping life domains, seeing patterns without collapse. This is where the picture becomes clear enough to navigate from.',
     primary: { title: 'The Map', sub: 'Seven domains. One honest picture of where you are right now.', url: '/tools/map', badge: 'Life OS Tool' },
     above: { title: 'Purpose Piece', sub: 'Find your contribution pattern — the role you are built to play.', url: '/tools/purpose-piece', badge: 'Life OS Tool' },
@@ -32,7 +32,7 @@ const STAGES = {
     external: ['journalling practices', 'life audit frameworks', 'values clarification', 'honest self-assessment']
   },
   integration: {
-    name: 'Integration', question: 'Can I hold all of myself?',
+    name: 'Integration', question: 'Am I whole?',
     desc: 'Metabolising past experience, reconciling contradictions, reducing internal fragmentation. This is where energy stops leaking and becomes available for something new.',
     primary: { title: 'Purpose Piece', sub: 'Surface the contribution pattern that has been there all along.', url: '/tools/purpose-piece', badge: 'Life OS Tool' },
     above: { title: 'Work with Nik', sub: 'Identity-level work for people ready to do something with what they find.', url: '/work-with-nik', badge: 'Facilitated' },
@@ -40,7 +40,7 @@ const STAGES = {
     external: ['parts work / IFS', 'shadow work', 'narrative therapy', 'Jungian approaches']
   },
   agency: {
-    name: 'Agency', question: 'Can I act from self?',
+    name: 'Agency', question: 'Am I living by my own choices?',
     desc: 'Action becomes possible — not reactive effort, not proving, but true choice. Behaviour stabilises, discipline emerges naturally, self-trust begins to build.',
     primary: { title: 'Target Sprint', sub: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.', url: '/tools/target-goals', badge: 'Life OS Tool' },
     above: { title: 'Work with Nik', sub: 'For people ready to act on what they have found.', url: '/work-with-nik', badge: 'Facilitated' },
@@ -48,7 +48,7 @@ const STAGES = {
     external: ['implementation intentions', 'habit architecture', 'values-based goal setting', 'accountability structures']
   },
   embodiment: {
-    name: 'Embodiment', question: 'Can I be who I really am?',
+    name: 'Embodiment', question: 'Am I becoming who I actually am?',
     desc: 'Identity stops being conceptual — behaviour aligns with values, the nervous system tolerates expansion, relationships reorganise around who you actually are.',
     primary: { title: 'Work with Nik', sub: 'Identity-level work. The crossing from who you have been to who you are becoming.', url: '/work-with-nik', badge: 'Facilitated' },
     above: { title: 'NextUs', sub: 'Find where your fully expressed self belongs in the larger project.', url: '/nextus', badge: 'NextUs' },
