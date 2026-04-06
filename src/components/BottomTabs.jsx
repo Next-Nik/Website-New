@@ -36,7 +36,7 @@ function ProfileIcon({ active, initial }) {
         background: active ? 'rgba(200,146,42,0.15)' : 'rgba(200,146,42,0.08)',
         border: `1.5px solid ${active ? 'rgba(200,146,42,1)' : 'rgba(200,146,42,0.4)'}`,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        ...sc, fontSize: '11px', fontWeight: 600, color: active ? '#A8721A' : 'rgba(15,21,35,0.5)',
+        ...sc, fontSize: '15px', fontWeight: 600, color: active ? '#A8721A' : 'rgba(15,21,35,0.5)',
       }}>{initial}</div>
     )
   }
@@ -171,7 +171,7 @@ export function BottomTabs() {
             }}>
               {tab.icon}
               <span style={{
-                ...sc, fontSize: '10px', letterSpacing: '0.10em',
+                ...sc, fontSize: '15px', letterSpacing: '0.10em',
                 color: tab.active ? '#A8721A' : 'rgba(15,21,35,0.4)',
                 lineHeight: 1,
               }}>{tab.label}</span>

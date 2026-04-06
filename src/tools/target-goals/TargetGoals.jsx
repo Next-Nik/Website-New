@@ -54,7 +54,7 @@ const muted = { color: 'rgba(15,21,35,0.55)' }
 const meta  = { color: 'rgba(15,21,35,0.78)' }
 
 const btnStyle = {
-  ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', color: '#A8721A',
+  ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', color: '#A8721A',
   background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)',
   borderRadius: '40px', padding: '12px 28px', cursor: 'pointer',
   transition: 'all 0.2s', minHeight: '44px',
@@ -63,7 +63,7 @@ const btnStyle = {
 // ─── Primitives ───────────────────────────────────────────────────────────────
 
 function Eyebrow({ children }) {
-  return <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>{children}</span>
+  return <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>{children}</span>
 }
 
 function Rule() {
@@ -91,16 +91,16 @@ function WelcomeModal({ onBegin }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '460px', width: '100%', textAlign: 'center' }}>
-        <span style={{ display: 'block', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>Target Sprint</span>
+        <span style={{ display: 'block', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '17px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>Target Sprint</span>
         <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>Three months. Three areas.</h2>
-        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
           Ninety days. Three areas. A clear level-up.<br />Powerful on its own, supercharged when you've done The Map.
         </p>
         <button onClick={onBegin} style={{
           display: 'block', width: '100%', padding: '15px 24px', borderRadius: '40px',
           border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)',
           color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif",
-          fontSize: '0.875rem', letterSpacing: '0.14em', cursor: 'pointer',
+          fontSize: '1.125rem', letterSpacing: '0.14em', cursor: 'pointer',
           transition: 'all 0.2s',
         }}
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
@@ -118,10 +118,10 @@ function AuthModal() {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '12px' }}>Target Sprint</span>
+        <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '12px' }}>Target Sprint</span>
         <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>Sign in to begin.</h2>
-        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>Your sprint saves to your profile.</p>
-        <a href={`/login?redirect=${r}`} style={{ display: 'block', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
+        <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>Your sprint saves to your profile.</p>
+        <a href={`/login?redirect=${r}`} style={{ display: 'block', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
           Sign in or create account →
         </a>
       </div>
@@ -358,9 +358,9 @@ function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoT
     <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '36px 32px', maxWidth: '440px', width: '100%', maxHeight: '80vh', overflowY: 'auto' }}>
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>Target Sprint</span>
+        <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>Target Sprint</span>
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.1 }}>What's still to do.</h2>
-        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '24px' }}>
+        <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '24px' }}>
           Complete all three areas to unlock your full sprint.
         </p>
         {domains.map(d => {
@@ -369,12 +369,12 @@ function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoT
           return (
             <div key={d.id} style={{ marginBottom: '16px', padding: '14px 16px', border: `1px solid ${allDone ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.18)'}`, borderRadius: '10px', background: allDone ? 'rgba(200,146,42,0.04)' : '#FFFFFF' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: allDone ? 0 : '10px' }}>
-                <span style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.12em', color: allDone ? '#A8721A' : '#0F1523', textTransform: 'uppercase' }}>
+                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: allDone ? '#A8721A' : '#0F1523', textTransform: 'uppercase' }}>
                   {allDone ? '✓ ' : ''}{d.label}
                 </span>
                 {!allDone && (
                   <button onClick={() => { onGoToDomain(d.id); onClose() }}
-                    style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', ...gold, background: 'none', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '20px', padding: '4px 12px', cursor: 'pointer' }}>
+                    style={{ ...sc, fontSize: '17px', letterSpacing: '0.1em', ...gold, background: 'none', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '20px', padding: '4px 12px', cursor: 'pointer' }}>
                     Go →
                   </button>
                 )}
@@ -386,7 +386,7 @@ function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoT
                       <span style={{ width: '16px', height: '16px', borderRadius: '50%', border: `1px solid ${done ? '#C8922A' : 'rgba(200,146,42,0.25)'}`, background: done ? '#C8922A' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                         {done && <span style={{ color: '#FFFFFF', fontSize: '9px' }}>✓</span>}
                       </span>
-                      <span style={{ ...serif, fontSize: '0.875rem', color: done ? 'rgba(15,21,35,0.4)' : meta.color, textDecoration: done ? 'line-through' : 'none' }}>
+                      <span style={{ ...serif, fontSize: '1.125rem', color: done ? 'rgba(15,21,35,0.4)' : meta.color, textDecoration: done ? 'line-through' : 'none' }}>
                         {STEP_LABELS[key]}
                       </span>
                     </div>
@@ -396,7 +396,7 @@ function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoT
             </div>
           )
         })}
-        <button onClick={onClose} style={{ background: 'none', border: 'none', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0, marginTop: '8px' }}>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.1875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0, marginTop: '8px' }}>
           Continue where I am
         </button>
       </div>
@@ -424,8 +424,8 @@ function SetupStatusBar({ domains, domainData }) {
   return (
     <div style={{ marginBottom: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase' }}>Sprint Setup</span>
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', ...muted }}>{complete} / {total}</span>
+        <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase' }}>Sprint Setup</span>
+        <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.1em', ...muted }}>{complete} / {total}</span>
       </div>
       <div style={{ height: '3px', background: 'rgba(200,146,42,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: '#C8922A', transition: 'width 0.6s ease', borderRadius: '2px' }} />
@@ -471,9 +471,9 @@ function StepStrip({ domainId, domainData, activeStep, onStepClick }) {
               onClick={() => unlocked && onStepClick(step)}
               disabled={!unlocked}
               style={{
-                ...sc, fontSize: '10px', letterSpacing: '0.14em', textTransform: 'uppercase',
+                ...sc, fontSize: '15px', letterSpacing: '0.14em', textTransform: 'uppercase',
                 background: 'none', border: 'none', padding: '4px 0', cursor: unlocked ? 'pointer' : 'default',
-                color: done ? '#A8721A' : active ? '#C8922A' : unlocked ? 'rgba(200,146,42,0.5)' : 'rgba(200,146,42,0.18)',
+                color: done ? '#A8721A' : active ? '#A8721A' : unlocked ? 'rgba(200,146,42,0.5)' : 'rgba(200,146,42,0.18)',
                 whiteSpace: 'nowrap', flexShrink: 0,
                 borderBottom: active ? '1.5px solid #C8922A' : 'none',
               }}>
@@ -511,8 +511,8 @@ function AccomplishmentTally({ domains, domainData, onCheck }) {
           <div key={d.id} style={{ marginBottom: '12px', borderBottom: '1px solid rgba(200,146,42,0.1)', paddingBottom: '12px' }}>
             <button onClick={() => setOpenDomain(isOpen ? null : d.id)}
               style={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'space-between', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0' }}>
-              <span style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.12em', color: '#A8721A', textTransform: 'uppercase' }}>{d.label}</span>
-              <span style={{ ...sc, fontSize: '10px', ...muted, letterSpacing: '0.1em' }}>
+              <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textTransform: 'uppercase' }}>{d.label}</span>
+              <span style={{ ...sc, fontSize: '15px', ...muted, letterSpacing: '0.1em' }}>
                 {taskDone}/{tasks.length} tasks · {milestoneDone}/{milestones.length} milestones
               </span>
             </button>
@@ -526,8 +526,8 @@ function AccomplishmentTally({ domains, domainData, onCheck }) {
                     style={{ marginTop: '3px', accentColor: '#C8922A', flexShrink: 0 }}
                   />
                   <div>
-                    <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '2px' }}>Target Goal</div>
-                    <div style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.6, textDecoration: goalDone ? 'line-through' : 'none', opacity: goalDone ? 0.5 : 1 }}>
+                    <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '2px' }}>Target Goal</div>
+                    <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.6, textDecoration: goalDone ? 'line-through' : 'none', opacity: goalDone ? 0.5 : 1 }}>
                       {dd.targetGoal}
                     </div>
                   </div>
@@ -545,8 +545,8 @@ function AccomplishmentTally({ domains, domainData, onCheck }) {
                           style={{ marginTop: '3px', accentColor: '#C8922A', flexShrink: 0 }}
                         />
                         <div>
-                          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(200,146,42,0.6)', textTransform: 'uppercase', marginBottom: '1px' }}>Month {mi + 1}</div>
-                          <div style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.55, textDecoration: mDone ? 'line-through' : 'none', opacity: mDone ? 0.5 : 1 }}>
+                          <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.1em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '1px' }}>Month {mi + 1}</div>
+                          <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.55, textDecoration: mDone ? 'line-through' : 'none', opacity: mDone ? 0.5 : 1 }}>
                             {m.text}
                           </div>
                         </div>
@@ -562,7 +562,7 @@ function AccomplishmentTally({ domains, domainData, onCheck }) {
                               onChange={e => onCheck(d.id, 'task', mi, globalIdx, e.target.checked)}
                               style={{ marginTop: '3px', accentColor: '#C8922A', flexShrink: 0 }}
                             />
-                            <span style={{ ...serif, fontSize: '0.875rem', ...muted, lineHeight: 1.55, textDecoration: tDone ? 'line-through' : 'none', opacity: tDone ? 0.45 : 1 }}>
+                            <span style={{ ...serif, fontSize: '1.125rem', ...muted, lineHeight: 1.55, textDecoration: tDone ? 'line-through' : 'none', opacity: tDone ? 0.45 : 1 }}>
                               {t.text}
                             </span>
                           </label>
@@ -595,19 +595,19 @@ function SprintSummaryModal({ domains, domainData, onClose }) {
           const dd = domainData[d.id] || {}
           if (!dd.targetGoal) return (
             <div key={d.id} style={{ padding: '14px 0', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
-              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '4px' }}>{d.label}</div>
-              <div style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted }}>Not yet set.</div>
+              <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '4px' }}>{d.label}</div>
+              <div style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted }}>Not yet set.</div>
             </div>
           )
           return (
             <div key={d.id} style={{ padding: '14px 0', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
-              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>{d.label}</div>
+              <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>{d.label}</div>
               {dd.horizonText && (
-                <div style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, lineHeight: 1.6, marginBottom: '6px' }}>
+                <div style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, lineHeight: 1.6, marginBottom: '6px' }}>
                   Horizon: {dd.horizonText}
                 </div>
               )}
-              <div style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.65 }}>{dd.targetGoal}</div>
+              <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.65 }}>{dd.targetGoal}</div>
             </div>
           )
         })}
@@ -707,7 +707,7 @@ function EditableList({ items, onSave, renderItem, addLabel = '+ Add', itemKey =
   if (!editing) return (
     <div>
       {items.map((item, i) => renderItem(item, i))}
-      <button onClick={() => setEditing(true)} style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...gold, background: 'none', border: 'none', cursor: 'pointer', padding: '6px 0', marginTop: '6px' }}>
+      <button onClick={() => setEditing(true)} style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...gold, background: 'none', border: 'none', cursor: 'pointer', padding: '6px 0', marginTop: '6px' }}>
         Edit →
       </button>
     </div>
@@ -721,19 +721,19 @@ function EditableList({ items, onSave, renderItem, addLabel = '+ Add', itemKey =
             value={item[itemKey]}
             onChange={e => update(i, e.target.value)}
             rows={2}
-            style={{ flex: 1, padding: '8px 12px', ...serif, fontSize: '0.9375rem', ...meta, background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', resize: 'vertical', lineHeight: 1.55 }}
+            style={{ flex: 1, padding: '8px 12px', ...serif, fontSize: '1.1875rem', ...meta, background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', resize: 'vertical', lineHeight: 1.55 }}
           />
-          <button onClick={() => remove(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...muted, fontSize: '1rem', padding: '8px 4px', flexShrink: 0 }}>×</button>
+          <button onClick={() => remove(i)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...muted, fontSize: '1.25rem', padding: '8px 4px', flexShrink: 0 }}>×</button>
         </div>
       ))}
       <div style={{ display: 'flex', gap: '10px', marginTop: '8px', flexWrap: 'wrap' }}>
-        <button onClick={add} style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', ...gold, background: 'none', border: '1px solid rgba(200,146,42,0.3)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}>
+        <button onClick={add} style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, background: 'none', border: '1px solid rgba(200,146,42,0.3)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}>
           {addLabel}
         </button>
-        <Btn onClick={() => { onSave(draft); setEditing(false) }} style={{ padding: '8px 20px', fontSize: '0.8125rem' }}>
+        <Btn onClick={() => { onSave(draft); setEditing(false) }} style={{ padding: '8px 20px', fontSize: '15px' }}>
           Save
         </Btn>
-        <button onClick={() => setEditing(false)} style={{ background: 'none', border: 'none', ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: '6px 0' }}>
+        <button onClick={() => setEditing(false)} style={{ background: 'none', border: 'none', ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: '6px 0' }}>
           Cancel
         </button>
       </div>
@@ -813,7 +813,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
       {/* Domain header */}
       <div style={{ marginBottom: '18px' }}>
         <Eyebrow>{d.label}</Eyebrow>
-        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.65, margin: 0 }}>
+        <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.65, margin: 0 }}>
           {d.description}
         </p>
       </div>
@@ -824,12 +824,12 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
       {viewStep === 'current_state' && (
         <div>
           <h3 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px' }}>Where you are</h3>
-          <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
             Where are you right now in {d.label}, and why is this a pivotal area for you this quarter?
           </p>
           {dd.currentStateSummary ? (
             <div>
-              <div style={{ padding: '14px 16px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '8px', ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
+              <div style={{ padding: '14px 16px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '8px', ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
                 {dd.currentStateSummary}
               </div>
               <EditableList
@@ -860,21 +860,21 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
       {viewStep === 'horizon' && (
         <div>
           <h3 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px' }}>Horizon</h3>
-          <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
             Where do you wish you were in this area? Not a 90-day target — the honest version of your best life here.
           </p>
           {hasMapData && mapDomain.horizonText && !dd.horizonText && (
             <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '14px' }}>
-              <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>From your Map</div>
-              <div style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.65, marginBottom: '10px' }}>{mapDomain.horizonText}</div>
-              <Btn onClick={() => update({ horizonText: mapDomain.horizonText, horizonFromMap: true })} style={{ padding: '8px 18px', fontSize: '0.8125rem' }}>
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>From your Map</div>
+              <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.65, marginBottom: '10px' }}>{mapDomain.horizonText}</div>
+              <Btn onClick={() => update({ horizonText: mapDomain.horizonText, horizonFromMap: true })} style={{ padding: '8px 18px', fontSize: '15px' }}>
                 Use this →
               </Btn>
             </div>
           )}
           {dd.horizonText ? (
             <div>
-              <div style={{ padding: '14px 16px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '8px', ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
+              <div style={{ padding: '14px 16px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '8px', ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
                 {dd.horizonText}
               </div>
               <EditableList
@@ -905,17 +905,17 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
       {viewStep === 'target_goal' && (
         <div>
           <h3 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px' }}>Target Goal</h3>
-          <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '4px' }}>
+          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '4px' }}>
             Where can you realistically get to in 90 days on the way to that horizon?
           </p>
           {dd.horizonText && (
-            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', ...muted, textTransform: 'uppercase', marginBottom: '14px' }}>
-              Toward: <span style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', textTransform: 'none', letterSpacing: 0, color: 'rgba(15,21,35,0.6)' }}>{dd.horizonText}</span>
+            <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, textTransform: 'uppercase', marginBottom: '14px' }}>
+              Toward: <span style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', textTransform: 'none', letterSpacing: 0, color: 'rgba(15,21,35,0.6)' }}>{dd.horizonText}</span>
             </div>
           )}
           {dd.targetGoal ? (
             <div>
-              <div style={{ padding: '14px 16px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '8px', ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
+              <div style={{ padding: '14px 16px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '8px', ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
                 {dd.targetGoal}
               </div>
               <EditableList
@@ -959,7 +959,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
       {viewStep === 'milestones' && (
         <div>
           <h3 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px' }}>Milestones</h3>
-          <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
             The three monthly waypoints on the way to your target.
           </p>
           {dd.milestones?.length > 0 ? (
@@ -969,10 +969,10 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
                 onSave={items => update({ milestones: items })}
                 renderItem={(item, i) => (
                   <div key={i} style={{ display: 'flex', gap: '12px', padding: '10px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(200,146,42,0.08)' }}>
-                    <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em', ...gold, flexShrink: 0, paddingTop: '3px', width: '48px', textTransform: 'uppercase' }}>Month {i + 1}</span>
+                    <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', ...gold, flexShrink: 0, paddingTop: '3px', width: '48px', textTransform: 'uppercase' }}>Month {i + 1}</span>
                     <div>
-                      <div style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.6 }}>{item.text}</div>
-                      {item.why && <div style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, marginTop: '2px' }}>{item.why}</div>}
+                      <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.6 }}>{item.text}</div>
+                      {item.why && <div style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, marginTop: '2px' }}>{item.why}</div>}
                     </div>
                   </div>
                 )}
@@ -980,10 +980,10 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
               />
               <div style={{ display: 'flex', gap: '10px', marginTop: '14px', flexWrap: 'wrap' }}>
                 <button onClick={generateMilestones} disabled={generating}
-                  style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', ...muted, background: 'none', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer', opacity: generating ? 0.5 : 1 }}>
+                  style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, background: 'none', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer', opacity: generating ? 0.5 : 1 }}>
                   {generating ? 'Regenerating…' : 'Regenerate'}
                 </button>
-                <Btn onClick={() => setViewStep('tasks')} style={{ padding: '8px 20px', fontSize: '0.8125rem' }}>
+                <Btn onClick={() => setViewStep('tasks')} style={{ padding: '8px 20px', fontSize: '15px' }}>
                   Set tasks →
                 </Btn>
               </div>
@@ -1002,15 +1002,15 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
       {viewStep === 'tasks' && (
         <div>
           <h3 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px' }}>Tasks</h3>
-          <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
             The specific actions that move each milestone forward.
           </p>
           {(dd.milestones || []).map((m, mi) => {
             const mTasks = (dd.tasks || []).filter(t => t.milestone === mi)
             return (
               <div key={mi} style={{ marginBottom: '20px', padding: '14px 16px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '10px' }}>
-                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>Month {mi + 1}</div>
-                <div style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.6, marginBottom: '12px' }}>{m.text}</div>
+                <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>Month {mi + 1}</div>
+                <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.6, marginBottom: '12px' }}>{m.text}</div>
                 {mTasks.length > 0 ? (
                   <div>
                     <EditableList
@@ -1021,19 +1021,19 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
                       }}
                       renderItem={(task, i) => (
                         <div key={i} style={{ padding: '6px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(200,146,42,0.06)' }}>
-                          <div style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.55 }}>{task.text}</div>
+                          <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.55 }}>{task.text}</div>
                         </div>
                       )}
                       itemKey="text"
                       addLabel="+ Add task"
                     />
                     <button onClick={() => generateTasks(mi)} disabled={generating}
-                      style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', ...muted, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginTop: '6px', opacity: generating ? 0.5 : 1 }}>
+                      style={{ ...sc, fontSize: '17px', letterSpacing: '0.1em', ...muted, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginTop: '6px', opacity: generating ? 0.5 : 1 }}>
                       {generating ? 'Regenerating…' : 'Regenerate tasks'}
                     </button>
                   </div>
                 ) : (
-                  <Btn onClick={() => generateTasks(mi)} disabled={generating} style={{ padding: '8px 18px', fontSize: '0.8125rem' }}>
+                  <Btn onClick={() => generateTasks(mi)} disabled={generating} style={{ padding: '8px 18px', fontSize: '15px' }}>
                     {generating ? 'Generating…' : 'Generate tasks →'}
                   </Btn>
                 )}
@@ -1056,14 +1056,14 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
         Three areas. Three months.
       </h1>
       <Rule />
-      <p style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', ...muted, lineHeight: 1.75, marginBottom: '20px' }}>
+      <p style={{ ...serif, fontSize: '1.25rem', fontStyle: 'italic', ...muted, lineHeight: 1.75, marginBottom: '20px' }}>
         {hasMapData
           ? 'Your Map scores are loaded. The ☆ shows where the most leverage is right now. You have the final say.'
           : 'Choose the three areas where focused effort this quarter would matter most. Trust your instinct.'}
       </p>
 
       {recommendation?.soft_observation && (
-        <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, marginBottom: '20px', lineHeight: 1.65 }}>
+        <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...meta, marginBottom: '20px', lineHeight: 1.65 }}>
           {recommendation.soft_observation}
         </div>
       )}
@@ -1082,10 +1082,10 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
               style={{ padding: '14px', border: `1.5px solid ${sel ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.2)'}`, borderRadius: '10px', background: sel ? 'rgba(200,146,42,0.06)' : '#FFFFFF', cursor: dis ? 'not-allowed' : 'pointer', opacity: dis ? 0.45 : 1, transition: 'all 0.2s' }}
               onMouseEnter={e => { if (!dis) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,21,35,0.06)' } }}
               onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
-              <div style={{ ...sc, fontSize: '1rem', letterSpacing: '0.08em', color: sel ? '#A8721A' : '#0F1523', marginBottom: '4px' }}>
+              <div style={{ ...sc, fontSize: '1.25rem', letterSpacing: '0.08em', color: sel ? '#A8721A' : '#0F1523', marginBottom: '4px' }}>
                 {d.label}{isRec ? ' ☆' : ''}
               </div>
-              <div style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, lineHeight: 1.55, marginBottom: s !== undefined ? '10px' : 0 }}>
+              <div style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, lineHeight: 1.55, marginBottom: s !== undefined ? '10px' : 0 }}>
                 {rat || d.description}
               </div>
               {s !== undefined && (
@@ -1093,7 +1093,7 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
                   <div style={{ height: '2px', background: 'rgba(200,146,42,0.1)', borderRadius: '1px', overflow: 'hidden', marginBottom: '4px' }}>
                     <div style={{ height: '100%', width: `${s * 10}%`, background: col, borderRadius: '1px' }} />
                   </div>
-                  <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em', color: col }}>{s} · {getTierLabel(s)}</div>
+                  <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: col }}>{s} · {getTierLabel(s)}</div>
                 </>
               )}
             </div>
@@ -1130,7 +1130,7 @@ function PhaseQuarter({ quarterType, setQuarterType, setTargetDate, setEndDateLa
       <Eyebrow>Target Sprint · Timeline</Eyebrow>
       <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.15, marginBottom: '10px' }}>When does this sprint end?</h2>
       <Rule />
-      <p style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.75, marginBottom: '16px' }}>Both work. Choose the rhythm that fits your life.</p>
+      <p style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.75, marginBottom: '16px' }}>Both work. Choose the rhythm that fits your life.</p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
         {[
           { type: 'rolling',  title: 'Rolling 90 days',   date: fmt(rolling), desc: 'Starts today. 90 days of focused movement.' },
@@ -1138,9 +1138,9 @@ function PhaseQuarter({ quarterType, setQuarterType, setTargetDate, setEndDateLa
         ].map(o => (
           <div key={o.type} onClick={() => select(o.type)}
             style={{ padding: '18px 20px', border: `1.5px solid ${quarterType === o.type ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.2)'}`, borderRadius: '10px', background: quarterType === o.type ? 'rgba(200,146,42,0.06)' : '#FFFFFF', cursor: 'pointer', transition: 'all 0.2s' }}>
-            <div style={{ ...sc, fontSize: '1rem', letterSpacing: '0.08em', color: quarterType === o.type ? '#A8721A' : '#0F1523', marginBottom: '3px' }}>{o.title}</div>
-            <div style={{ ...sc, fontSize: '0.875rem', ...gold, marginBottom: '3px' }}>{o.date}</div>
-            <div style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted }}>{o.desc}</div>
+            <div style={{ ...sc, fontSize: '1.25rem', letterSpacing: '0.08em', color: quarterType === o.type ? '#A8721A' : '#0F1523', marginBottom: '3px' }}>{o.title}</div>
+            <div style={{ ...sc, fontSize: '1.125rem', ...gold, marginBottom: '3px' }}>{o.date}</div>
+            <div style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted }}>{o.desc}</div>
           </div>
         ))}
       </div>
@@ -1474,11 +1474,11 @@ export function TargetGoalsPage() {
             {/* Path B nudge */}
             {!hasMapData && (
               <div style={{ padding: '18px 20px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '12px', marginTop: '32px' }}>
-                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>Want the full picture?</div>
-                <p style={{ ...serif, fontSize: '0.9375rem', ...meta, lineHeight: 1.7, marginBottom: '12px' }}>
+                <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>Want the full picture?</div>
+                <p style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.7, marginBottom: '12px' }}>
                   The Map gives you an honest read across all seven domains — and loads your scores directly into your next sprint.
                 </p>
-                <a href="/tools/map" style={{ ...sc, fontSize: '0.8125rem', letterSpacing: '0.12em', ...gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 18px', display: 'inline-block' }}>
+                <a href="/tools/map" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 18px', display: 'inline-block' }}>
                   Begin The Map →
                 </a>
               </div>

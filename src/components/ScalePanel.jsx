@@ -307,7 +307,7 @@ export function ScalePanel({ side = 'left' }) {
         }
         #scale-tab:hover {
           background: rgba(200,146,42,0.06);
-          border-color: rgba(200,146,42,1);
+          border-color: #A8721A;
         }
       `}</style>
     </>

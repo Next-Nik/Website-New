@@ -16,7 +16,7 @@ const gold  = '#A8721A'
 
 function Eyebrow({ children }) {
   return (
-    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: gold,
+    <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.20em', color: gold,
       textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
       {children}
     </span>
@@ -32,7 +32,7 @@ function Btn({ onClick, children, variant = 'primary', small, disabled, style = 
   }
   return (
     <button onClick={onClick} disabled={disabled} style={{
-      ...sc, fontSize: small ? '11px' : '13px', letterSpacing: '0.12em',
+      ...sc, fontSize: small ? '15px' : '17px', letterSpacing: '0.12em',
       padding: small ? '6px 14px' : '10px 22px',
       borderRadius: '40px', cursor: disabled ? 'not-allowed' : 'pointer',
       opacity: disabled ? 0.5 : 1, transition: 'all 0.2s',
@@ -156,7 +156,7 @@ function ProductsTab({ toast }) {
           <Eyebrow>{editing ? 'Edit product' : 'New product'}</Eyebrow>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
             <div>
-              <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.72)',
+              <label style={{ ...sc, fontSize: '17px', color: 'rgba(15,21,35,0.72)',
                 display: 'block', marginBottom: '4px' }}>Key (unique, lowercase)</label>
               <input value={form.key} disabled={!!editing}
                 onChange={e => setForm(f => ({ ...f, key: e.target.value.toLowerCase().replace(/\s/g, '_') }))}
@@ -167,7 +167,7 @@ function ProductsTab({ toast }) {
                   outline: 'none', width: '100%' }} />
             </div>
             <div>
-              <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.72)',
+              <label style={{ ...sc, fontSize: '17px', color: 'rgba(15,21,35,0.72)',
                 display: 'block', marginBottom: '4px' }}>Display name</label>
               <input value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
@@ -178,7 +178,7 @@ function ProductsTab({ toast }) {
             </div>
           </div>
           <div style={{ marginBottom: '14px' }}>
-            <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.72)',
+            <label style={{ ...sc, fontSize: '17px', color: 'rgba(15,21,35,0.72)',
               display: 'block', marginBottom: '4px' }}>Description</label>
             <input value={form.description}
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
@@ -215,13 +215,13 @@ function ProductsTab({ toast }) {
                 <span style={{ ...serif, fontSize: '16px', fontWeight: 400, color: '#0F1523' }}>
                   {p.name}
                 </span>
-                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em',
+                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em',
                   color: 'rgba(15,21,35,0.55)', background: 'rgba(200,146,42,0.06)',
                   border: '1px solid rgba(200,146,42,0.18)', borderRadius: '40px', padding: '2px 9px' }}>
                   {p.key}
                 </span>
                 {!p.active && (
-                  <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em',
+                  <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em',
                     color: '#8A2020', background: 'rgba(138,32,32,0.06)',
                     border: '1px solid rgba(138,32,32,0.25)', borderRadius: '40px', padding: '2px 9px' }}>
                     inactive
@@ -311,7 +311,7 @@ function AnnouncementsTab({ toast }) {
           borderRadius: '14px', padding: '24px', marginBottom: '20px' }}>
           <Eyebrow>New announcement</Eyebrow>
           <div style={{ marginBottom: '12px' }}>
-            <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.72)',
+            <label style={{ ...sc, fontSize: '17px', color: 'rgba(15,21,35,0.72)',
               display: 'block', marginBottom: '4px' }}>Title</label>
             <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
               placeholder="Short, direct headline"
@@ -320,7 +320,7 @@ function AnnouncementsTab({ toast }) {
                 background: '#FFFFFF', outline: 'none', width: '100%' }} />
           </div>
           <div style={{ marginBottom: '12px' }}>
-            <label style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.72)',
+            <label style={{ ...sc, fontSize: '17px', color: 'rgba(15,21,35,0.72)',
               display: 'block', marginBottom: '4px' }}>Body</label>
             <textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
               placeholder="One to two sentences. Direct and specific."
@@ -369,7 +369,7 @@ function AnnouncementsTab({ toast }) {
                     {a.title}
                   </span>
                   {!a.active && (
-                    <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em',
+                    <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em',
                       color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.05)',
                       borderRadius: '40px', padding: '2px 9px', border: '1px solid rgba(15,21,35,0.12)' }}>
                       inactive
@@ -378,7 +378,7 @@ function AnnouncementsTab({ toast }) {
                 </div>
                 <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.88)',
                   lineHeight: 1.65, margin: '0 0 8px' }}>{a.body}</p>
-                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em',
+                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em',
                   color: 'rgba(15,21,35,0.55)' }}>
                   {new Date(a.created_at).toLocaleDateString('en-GB',
                     { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -539,7 +539,7 @@ export function ContentEditorPage() {
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
       <Nav />
       <div style={{ maxWidth: '1040px', margin: '0 auto', padding: '96px 40px 120px' }}>
-        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em',
+        <span style={{ ...sc, fontSize: '17px', fontWeight: 600, letterSpacing: '0.20em',
           color: gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>
           Founder
         </span>

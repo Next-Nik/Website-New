@@ -39,7 +39,7 @@ function Btn({ onClick, children, variant = 'primary', small, disabled }) {
   }
   return (
     <button onClick={onClick} disabled={disabled} style={{
-      ...sc, fontSize: small ? '11px' : '13px', letterSpacing: '0.12em',
+      ...sc, fontSize: small ? '15px' : '17px', letterSpacing: '0.12em',
       padding: small ? '6px 14px' : '10px 20px',
       borderRadius: '40px', cursor: disabled ? 'not-allowed' : 'pointer',
       opacity: disabled ? 0.5 : 1, ...styles[variant],
@@ -206,7 +206,7 @@ function NowTab() {
             <Card key={s.label} style={{ textAlign: 'center', padding: '20px 16px' }}>
               <div style={{ ...serif, fontSize: '36px', fontWeight: 300,
                 color: gold, lineHeight: 1, marginBottom: '6px' }}>{s.value}</div>
-              <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em',
                 color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase' }}>{s.label}</div>
             </Card>
           ))}
@@ -229,7 +229,7 @@ function NowTab() {
                     <div style={{ ...serif, fontSize: '14px', color: '#0F1523' }}>{name}</div>
                     <div style={{ ...serif, fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>{u.email}</div>
                   </div>
-                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em',
+                  <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em',
                     color: 'rgba(15,21,35,0.55)', flexShrink: 0 }}>
                     {new Date(u.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                   </div>
@@ -252,11 +252,11 @@ function NowTab() {
                   <div style={{ ...serif, fontSize: '14px', color: '#0F1523' }}>
                     {g.users?.email}
                   </div>
-                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: gold }}>
+                  <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: gold }}>
                     {g.product} · {g.tier}
                   </div>
                 </div>
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em',
+                <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em',
                   color: 'rgba(15,21,35,0.55)', flexShrink: 0 }}>
                   {new Date(g.granted_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                 </div>

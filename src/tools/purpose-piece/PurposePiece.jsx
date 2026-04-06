@@ -67,7 +67,7 @@ const muted = { color: 'rgba(15,21,35,0.72)' }
 const meta  = { color: 'rgba(15,21,35,0.78)' }
 
 const btnStyle = {
-  ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', color: '#A8721A',
+  ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', color: '#A8721A',
   background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)',
   borderRadius: '40px', padding: '13px 32px', cursor: 'pointer',
   transition: 'all 0.2s', minHeight: '44px',
@@ -345,7 +345,7 @@ function StageBreadcrumb({ activeStage }) {
         return (
           <div key={s.key} style={{ display: 'flex', alignItems: 'center', flex: i < stages.length - 1 ? 1 : 'none', minWidth: 0 }}>
             <span className="pp-breadcrumb-label" style={{
-              ...sc, fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase',
+              ...sc, fontSize: '15px', letterSpacing: '0.16em', textTransform: 'uppercase',
               color: isCurrent ? '#A8721A' : isPast ? 'rgba(200,146,42,0.5)' : 'rgba(200,146,42,0.2)',
               whiteSpace: 'nowrap', paddingRight: i < stages.length - 1 ? '8px' : '0',
               flexShrink: 0,
@@ -371,16 +371,16 @@ function StageBreadcrumb({ activeStage }) {
 function QuestionLabel({ stage, index, total, label }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
-      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase' }}>
+      <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase' }}>
         {stage.charAt(0).toUpperCase() + stage.slice(1)}
       </span>
-      <span style={{ ...sc, fontSize: '13px', color: 'rgba(200,146,42,0.3)' }}>{'\u00b7'}</span>
-      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(200,146,42,0.5)' }}>
+      <span style={{ ...sc, fontSize: '17px', color: 'rgba(200,146,42,0.3)' }}>{'\u00b7'}</span>
+      <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.1em', color: 'rgba(200,146,42,0.5)' }}>
         {index + 1} of {total}
       </span>
       {label && (
         <>
-          <span style={{ ...sc, fontSize: '13px', color: 'rgba(200,146,42,0.3)' }}>{'\u00b7'}</span>
+          <span style={{ ...sc, fontSize: '17px', color: 'rgba(200,146,42,0.3)' }}>{'\u00b7'}</span>
           <span style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{label}</span>
         </>
       )}
@@ -449,13 +449,13 @@ function StageTransition({ nextStage, onContinue }) {
       borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '12px',
       padding: '28px 24px', animation: 'ppFadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both',
     }}>
-      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '10px' }}>
+      <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '10px' }}>
         {c.eyebrow}
       </div>
       <h3 style={{ ...sc, fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>
         {c.heading}
       </h3>
-      <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.75, marginBottom: '24px' }}>
+      <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.75, marginBottom: '24px' }}>
         {c.body}
       </p>
       <button onClick={onContinue} style={btnStyle}
@@ -490,9 +490,9 @@ function CentreModal({ wedgeStates, onClose, onGoToStage }) {
     <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '36px 32px', maxWidth: '380px', width: '100%' }}>
-        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>Purpose Piece</span>
+        <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>Purpose Piece</span>
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.1 }}>Three coordinates to find.</h2>
-        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '24px' }}>
+        <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '24px' }}>
           Complete all three to reveal your Purpose Piece.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
@@ -507,13 +507,13 @@ function CentreModal({ wedgeStates, onClose, onGoToStage }) {
                 <span style={{ width: '22px', height: '22px', borderRadius: '50%', border: `1.5px solid ${done ? '#C8922A' : 'rgba(200,146,42,0.3)'}`, background: done ? '#C8922A' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.3s' }}>
                   {done && <span style={{ color: '#FFFFFF', fontSize: '12px', lineHeight: 1 }}>✓</span>}
                 </span>
-                <span style={{ ...sc, fontSize: '0.875rem', letterSpacing: '0.1em', color: done ? '#A8721A' : 'rgba(15,21,35,0.6)', textTransform: 'uppercase' }}>{s.label}</span>
-                {!done && <span style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', ...muted, marginLeft: 'auto' }}>Go →</span>}
+                <span style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: done ? '#A8721A' : 'rgba(15,21,35,0.6)', textTransform: 'uppercase' }}>{s.label}</span>
+                {!done && <span style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, marginLeft: 'auto' }}>Go →</span>}
               </button>
             )
           })}
         </div>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: 0 }}>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: 0 }}>
           Continue where I am
         </button>
       </div>
@@ -529,16 +529,16 @@ function WelcomeModal({ onBegin }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '460px', width: '100%', textAlign: 'center' }}>
-        <span style={{ display: 'block', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
+        <span style={{ display: 'block', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '17px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
         <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>Find your fit.</h2>
-        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
           Each of us maps onto a contribution archetype, leans toward a domain, and operates at a natural scale. Together those three things are your Purpose Piece. Knowing yours helps you find your fit.
         </p>
         <button onClick={onBegin} style={{
           display: 'block', width: '100%', padding: '15px 24px', borderRadius: '40px',
           border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)',
           color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif",
-          fontSize: '0.875rem', letterSpacing: '0.14em', cursor: 'pointer',
+          fontSize: '1.125rem', letterSpacing: '0.14em', cursor: 'pointer',
           transition: 'all 0.2s',
         }}
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
@@ -556,12 +556,12 @@ function AuthModal() {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
-        <span style={{ display: 'block', ...sc, fontSize: '13px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
+        <span style={{ display: 'block', ...sc, fontSize: '17px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
         <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px', lineHeight: 1.1 }}>Sign in to begin.</h2>
-        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '28px' }}>
+        <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '28px' }}>
           Each of us has a distinct role in shaping the future of life on earth. An archetype, a domain, a scale — three coordinates that together make your Purpose Piece. Find your fit.
         </p>
-        <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '15px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '0.875rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
+        <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '15px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
           Sign in or create account {'\u2192'}
         </a>
       </div>
@@ -575,11 +575,11 @@ function DeepGateModal({ onUnlock, onDismiss }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '460px', width: '100%' }}>
-        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '16px' }}>Go Deeper</div>
+        <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '16px' }}>Go Deeper</div>
         <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '14px', lineHeight: 1.15 }}>
           The tension. The shadow.<br />The full picture.
         </h2>
-        <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...meta, lineHeight: 1.8, marginBottom: '28px' }}>
+        <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...meta, lineHeight: 1.8, marginBottom: '28px' }}>
           The First Look gave you the shape. The Deep Dive is a real conversation {'\u2014'} into what this costs you at the bone, where the instinct breaks, and what it{'\u2019'}s been asking of you.
         </p>
         <button onClick={onUnlock} style={{ ...btnStyle, display: 'block', width: '100%', textAlign: 'center', marginBottom: '12px' }}
@@ -587,7 +587,7 @@ function DeepGateModal({ onUnlock, onDismiss }) {
           onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
           Unlock the Deep Dive
         </button>
-        <button onClick={onDismiss} style={{ display: 'block', width: '100%', background: 'none', border: 'none', ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: '8px' }}>
+        <button onClick={onDismiss} style={{ display: 'block', width: '100%', background: 'none', border: 'none', ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: '8px' }}>
           Not now
         </button>
       </div>
@@ -866,7 +866,7 @@ export function PurposePiecePage() {
         <div className="pp-fade-up">
           {outputMsg
             ? <div dangerouslySetInnerHTML={{ __html: outputMsg.content }} />
-            : <div style={{ ...serif, fontSize: '1rem', ...muted, fontStyle: 'italic' }}>Building your Purpose Piece…</div>
+            : <div style={{ ...serif, fontSize: '1.25rem', ...muted, fontStyle: 'italic' }}>Building your Purpose Piece…</div>
           }
           <div style={{ marginTop: '24px', textAlign: 'center', paddingBottom: '40px' }}>
             <button onClick={goDeeper} style={btnStyle}
@@ -891,10 +891,10 @@ export function PurposePiecePage() {
         {activeQuestionStage && session?.currentQuestion && (
           <div style={{ marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>
+              <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>
                 {activeQuestionStage.charAt(0).toUpperCase() + activeQuestionStage.slice(1)}
               </span>
-              <span style={{ ...sc, fontSize: '13px', color: 'rgba(200,146,42,0.55)', letterSpacing: '0.08em' }}>
+              <span style={{ ...sc, fontSize: '17px', color: 'rgba(200,146,42,0.55)', letterSpacing: '0.08em' }}>
                 {qIdx + 1} of {stageTotal}
               </span>
             </div>
@@ -914,7 +914,7 @@ export function PurposePiecePage() {
 
         {/* Confirmation label */}
         {stage === 'confirmation' && (
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>
+          <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>
             Confirmation
           </div>
         )}
@@ -925,7 +925,7 @@ export function PurposePiecePage() {
             if (m.type === 'user')      return <div key={m.id} className="bubble bubble-user">{m.content}</div>
             if (m.type === 'assistant') return <div key={m.id} className="bubble bubble-assistant">{m.content}</div>
             if (m.type === 'html')      return <div key={m.id} className="bubble bubble-assistant" dangerouslySetInnerHTML={{ __html: m.content }} />
-            if (m.type === 'label')     return <div key={m.id} style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', padding: '8px 0 4px' }}>{m.content}</div>
+            if (m.type === 'label')     return <div key={m.id} style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', padding: '8px 0 4px' }}>{m.content}</div>
             return null
           })}
           {thinking && <ThinkingDots />}
@@ -957,7 +957,7 @@ export function PurposePiecePage() {
               <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
             </div>
             <div style={{ textAlign: 'center', marginTop: '12px' }}>
-              <button onClick={() => {}} style={{ background: 'none', border: 'none', ...serif, fontSize: '0.8125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.35)', cursor: 'default', padding: 0 }}>
+              <button onClick={() => {}} style={{ background: 'none', border: 'none', ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.35)', cursor: 'default', padding: 0 }}>
                 Your progress is saved automatically.
               </button>
             </div>
@@ -1006,7 +1006,7 @@ export function PurposePiecePage() {
           .tool-wrap { padding-left: 24px !important; padding-right: 24px !important; }
           .input-area { flex-direction: column; }
           .input-area textarea, .btn-send { width: 100%; box-sizing: border-box; }
-          .pp-breadcrumb-label { font-size: 10px !important; }
+          .pp-breadcrumb-label { font-size: 15px !important; }
         }
         @keyframes ppFadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
         .pp-fade-up { animation: ppFadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both; }
@@ -1021,7 +1021,7 @@ export function PurposePiecePage() {
             {showReveal ? 'Your Purpose Piece' : 'Find your fit.'}
           </h1>
           {!showReveal && !session && (
-            <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, maxWidth: '440px' }}>
+            <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, maxWidth: '440px' }}>
               Each of us maps onto a contribution archetype, leans toward a domain, and operates at a natural scale. Together those three things are your Purpose Piece. Knowing yours helps you find your fit.
             </p>
           )}
@@ -1256,13 +1256,13 @@ export function PurposePieceDeepPage() {
           <div style={{ height: '2px', background: 'rgba(200,146,42,0.1)', borderRadius: '1px', overflow: 'hidden', marginBottom: '8px' }}>
             <div style={{ height: '100%', width: `${progressPct}%`, background: '#C8922A', transition: 'width 0.7s ease', borderRadius: '1px' }} />
           </div>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase' }}>{progressLabel}</div>
+          <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase' }}>{progressLabel}</div>
         </div>
 
         {noFirstLook && (
           <div>
             <div className="bubble bubble-assistant">The Deep Dive begins after the First Look. Complete Purpose Piece first, then return here.</div>
-            <button onClick={() => navigate('/tools/purpose-piece')} style={{ marginTop: '16px', background: 'none', border: 'none', ...serif, fontSize: '0.9375rem', fontStyle: 'italic', ...gold, cursor: 'pointer', padding: 0 }}>
+            <button onClick={() => navigate('/tools/purpose-piece')} style={{ marginTop: '16px', background: 'none', border: 'none', ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...gold, cursor: 'pointer', padding: 0 }}>
               {'\u2190'} Start the First Look
             </button>
           </div>
@@ -1270,7 +1270,7 @@ export function PurposePieceDeepPage() {
 
         <div className="chat-thread">
           {messages.map(m => {
-            if (m.type === 'label')        return <div key={m.id} style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', padding: '8px 0 4px' }}>{m.content}</div>
+            if (m.type === 'label')        return <div key={m.id} style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', padding: '8px 0 4px' }}>{m.content}</div>
             if (m.type === 'user')         return <div key={m.id} className="bubble bubble-user">{m.content}</div>
             if (m.type === 'html')         return <div key={m.id} className="bubble bubble-assistant" dangerouslySetInnerHTML={{ __html: m.content }} />
             if (m.type === 'deep-opening') return <div key={m.id} style={{ maxWidth:'92%', padding:'24px 28px', borderRadius:'10px', background:'#FFFFFF', border:'1px solid rgba(200,146,42,0.2)', borderLeft:'3px solid rgba(200,146,42,0.55)', ...serif, fontSize:'1.05rem', lineHeight:1.9, ...meta }}>{m.content}</div>
@@ -1282,7 +1282,7 @@ export function PurposePieceDeepPage() {
 
         {complete && (
           <div style={{ textAlign: 'center', padding: '32px 0 80px' }}>
-            <button onClick={() => navigate('/tools/purpose-piece')} style={{ background: 'none', border: 'none', ...gold, cursor: 'pointer', ...serif, fontSize: '0.875rem', fontStyle: 'italic' }}>
+            <button onClick={() => navigate('/tools/purpose-piece')} style={{ background: 'none', border: 'none', ...gold, cursor: 'pointer', ...serif, fontSize: '1.125rem', fontStyle: 'italic' }}>
               {'\u2190'} Return to Purpose Piece
             </button>
           </div>

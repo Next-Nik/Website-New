@@ -9,12 +9,12 @@ function getFlameProps(v) {
   if (v <= 2)  return { color: '#8B7355', glow: 'rgba(139,115,85,0.18)',  scale: 0.60, label: 'low and cool' }
   if (v <= 3)  return { color: '#A0845C', glow: 'rgba(160,132,92,0.22)',  scale: 0.68, label: 'something still alive' }
   if (v <= 4)  return { color: '#B8923A', glow: 'rgba(184,146,58,0.28)',  scale: 0.76, label: 'wanting to catch' }
-  if (v <= 5)  return { color: '#C8922A', glow: 'rgba(200,146,42,0.35)',  scale: 0.84, label: 'present' }
+  if (v <= 5)  return { color: '#A8721A', glow: 'rgba(200,146,42,0.35)',  scale: 0.84, label: 'present' }
   if (v <= 6)  return { color: '#D4821A', glow: 'rgba(212,130,26,0.42)',  scale: 0.88, label: 'warming up' }
   if (v <= 7)  return { color: '#C8721A', glow: 'rgba(200,114,26,0.48)',  scale: 0.92, label: 'lit' }
   if (v <= 8)  return { color: '#C05A10', glow: 'rgba(192,90,16,0.55)',   scale: 0.96, label: 'burning well' }
   if (v <= 9)  return { color: '#A8721A', glow: 'rgba(168,114,26,0.62)',  scale: 1.00, label: 'bright and steady' }
-  return         { color: '#C8922A', glow: 'rgba(200,146,42,0.72)',  scale: 1.08, label: 'going' }
+  return         { color: '#A8721A', glow: 'rgba(200,146,42,0.72)',  scale: 1.08, label: 'going' }
 }
 
 function flickerIntensity(v) {
@@ -329,7 +329,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
       <span style={{
         fontFamily: "'Cormorant SC',Georgia,serif",
         fontSize: '0.5625rem', letterSpacing: '0.2em',
-        color: 'rgba(200,146,42,0.75)', textTransform: 'uppercase',
+        color: '#A8721A', textTransform: 'uppercase',
         marginBottom: '6px',
       }}>
         {isBefore ? `Before \u00B7 ${audioPhase}` : `After \u00B7 ${audioPhase}`}

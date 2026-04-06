@@ -137,7 +137,7 @@ export function TestimonialsPanel() {
                   onClick={() => setIdx(i => (i - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}
                   style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}
                 >← Prev</button>
-                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.35)' }}>
+                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.35)' }}>
                   {idx + 1} / {TESTIMONIALS.length}
                 </span>
                 <button
@@ -149,7 +149,7 @@ export function TestimonialsPanel() {
 
             {/* All testimonials list */}
             <div style={{ padding: '0 16px 32px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
-              <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', padding: '16px 8px 12px' }}>All voices</div>
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', padding: '16px 8px 12px' }}>All voices</div>
               {TESTIMONIALS.map((t, i) => (
                 <button
                   key={i}

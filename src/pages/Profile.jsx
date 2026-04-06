@@ -30,7 +30,7 @@ function getTierColor(n) {
 
 function Eyebrow({ children, style = {} }) {
   return (
-    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A',
+    <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.20em', color: '#A8721A',
       textTransform: 'uppercase', display: 'block', marginBottom: '8px', ...style }}>
       {children}
     </span>
@@ -65,7 +65,7 @@ function StatusBadge({ status }) {
   return (
     <span style={{
       fontFamily: "'Cormorant SC', Georgia, serif",
-      fontSize: '11px', letterSpacing: '0.16em', textTransform: 'uppercase',
+      fontSize: '15px', letterSpacing: '0.16em', textTransform: 'uppercase',
       color: cfg.color, background: cfg.bg,
       border: `1px solid ${cfg.border}`,
       borderRadius: '40px', padding: '3px 10px',
@@ -94,7 +94,7 @@ function Slot({ title, eyebrow, linkLabel, linkUrl, children, defaultOpen = true
           flexShrink: 0, marginLeft: '16px' }}>
           {linkLabel && linkUrl && (
             <a href={linkUrl} onClick={e => e.stopPropagation()}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
+              style={{ ...sc, fontSize: '17px', letterSpacing: '0.12em',
                 color: '#A8721A', textDecoration: 'none' }}>
               {linkLabel} {'\u2192'}
             </a>
@@ -120,7 +120,7 @@ function ScoreBar({ label, score, horizonScore }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '12px',
       padding: '9px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em',
+      <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.06em',
         color: 'rgba(15,21,35,0.72)', width: '100px', flexShrink: 0 }}>{label}</div>
       <div style={{ flex: 1, position: 'relative', height: '20px', display: 'flex', alignItems: 'center' }}>
         <div style={{ position: 'absolute', left: 0, right: 0, height: '3px',
@@ -139,8 +139,8 @@ function ScoreBar({ label, score, horizonScore }) {
         )}
       </div>
       <div style={{ width: '88px', flexShrink: 0, textAlign: 'right' }}>
-        <span style={{ ...sc, fontSize: '1rem', fontWeight: 600, color, lineHeight: 1 }}>{score}</span>
-        <span style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>/10</span>
+        <span style={{ ...sc, fontSize: '1.25rem', fontWeight: 600, color, lineHeight: 1 }}>{score}</span>
+        <span style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.55)' }}>/10</span>
         <div style={{ ...serif, fontSize: '12px', color, marginTop: '1px', opacity: 0.85 }}>
           {getTierLabel(score)}
         </div>
@@ -196,7 +196,7 @@ function MapWeb({ domains, currentScores, horizonScores }) {
         const color = s !== undefined ? getTierColor(s) : 'rgba(15,21,35,0.28)'
         return (
           <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
-            fontFamily="'Cormorant SC',Georgia,serif" fontSize="11" fontWeight="600"
+            fontFamily="'Cormorant SC',Georgia,serif" fontSize="15" fontWeight="600"
             letterSpacing="0.5" fill={color}>
             {d.label.substring(0, 3).toUpperCase()}
           </text>
@@ -228,7 +228,7 @@ function MapSlot({ mapData, sprintData }) {
       <div>
         <StatusBadge status="active" />
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '12px', flexWrap: 'wrap' }}>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#0F1523' }}>
+          <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.1em', color: '#0F1523' }}>
             {doneCount} of 7 domains scored
           </span>
           {activeDomainLabel && (
@@ -244,7 +244,7 @@ function MapSlot({ mapData, sprintData }) {
             const inProgress = d?.avatarFinal && !done
             return (
               <span key={k} style={{
-                ...sc, fontSize: '11px', letterSpacing: '0.1em',
+                ...sc, fontSize: '15px', letterSpacing: '0.1em',
                 padding: '3px 10px', borderRadius: '40px',
                 background: done ? 'rgba(45,106,79,0.08)' : inProgress ? 'rgba(200,146,42,0.08)' : 'rgba(15,21,35,0.04)',
                 border: `1px solid ${done ? 'rgba(45,106,79,0.35)' : inProgress ? 'rgba(200,146,42,0.35)' : 'rgba(15,21,35,0.12)'}`,
@@ -255,7 +255,7 @@ function MapSlot({ mapData, sprintData }) {
             )
           })}
         </div>
-        <a href="/tools/map" style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
+        <a href="/tools/map" style={{ ...sc, fontSize: '17px', letterSpacing: '0.12em',
           color: '#A8721A', textDecoration: 'none' }}>
           Continue The Map {'→'}
         </a>
@@ -324,11 +324,11 @@ function MapSlot({ mapData, sprintData }) {
             <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <div style={{ width: '24px', height: '2px', background: 'rgba(200,146,42,0.72)' }} />
-                <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)', letterSpacing: '0.1em' }}>Now</span>
+                <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.55)', letterSpacing: '0.1em' }}>Now</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <div style={{ width: '24px', height: '0', borderTop: '2px dashed rgba(90,138,184,0.6)' }} />
-                <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)', letterSpacing: '0.1em' }}>Horizon</span>
+                <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.55)', letterSpacing: '0.1em' }}>Horizon</span>
               </div>
             </div>
           )}
@@ -342,12 +342,12 @@ function MapSlot({ mapData, sprintData }) {
           {scores.map(d => (
             <div key={d.key} style={{ display: 'flex', alignItems: 'center', gap: '10px',
               padding: '8px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em',
+              <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.06em',
                 color: 'rgba(15,21,35,0.72)', width: '100px', flexShrink: 0 }}>{d.label}</div>
               <div style={{ flex: 1 }}>
                 <ScoreBar label="" score={d.score} horizonScore={d.horizon} />
               </div>
-              <div style={{ ...sc, fontSize: '13px', flexShrink: 0, minWidth: '70px', textAlign: 'right' }}>
+              <div style={{ ...sc, fontSize: '17px', flexShrink: 0, minWidth: '70px', textAlign: 'right' }}>
                 <span style={{ color: getTierColor(d.score), fontWeight: 600 }}>{d.score}</span>
                 {d.horizon !== undefined && (
                   <span style={{ color: 'rgba(90,138,184,0.8)', marginLeft: '4px' }}>
@@ -385,7 +385,7 @@ function MapSlot({ mapData, sprintData }) {
             color: 'rgba(15,21,35,0.72)', margin: '0 0 10px' }}>
             You have your map. Now choose your focus.
           </p>
-          <a href="/tools/target-goals" style={{ ...sc, fontSize: '13px',
+          <a href="/tools/target-goals" style={{ ...sc, fontSize: '17px',
             letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>
             Begin Target Sprint {'→'}
           </a>
@@ -393,7 +393,7 @@ function MapSlot({ mapData, sprintData }) {
       )}
 
       {mapData.completed_at && (
-        <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+        <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
           color: 'rgba(15,21,35,0.45)', marginTop: '16px' }}>
           Completed {new Date(mapData.completed_at).toLocaleDateString('en-GB',
             { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -455,7 +455,7 @@ function PPActionChecklist({ userId, actions }) {
           </div>
           {/* Label + text */}
           <div style={{ flex: 1 }}>
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: '#A8721A',
+            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A',
               background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.25)',
               borderRadius: '40px', padding: '2px 8px', marginRight: '8px',
               textDecoration: checked[a.key] ? 'line-through' : 'none' }}>
@@ -493,14 +493,14 @@ function PurposePieceSlot({ purposeData, userId }) {
       <div>
         <StatusBadge status="started" />
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '12px' }}>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#0F1523' }}>
+          <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.1em', color: '#0F1523' }}>
             {doneCount} of 3 stages complete
           </span>
         </div>
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '16px' }}>
           {stages.map(s => (
             <span key={s.label} style={{
-              ...sc, fontSize: '11px', letterSpacing: '0.1em',
+              ...sc, fontSize: '15px', letterSpacing: '0.1em',
               padding: '3px 10px', borderRadius: '40px',
               background: s.done ? 'rgba(45,106,79,0.08)' : 'rgba(200,146,42,0.08)',
               border: `1px solid ${s.done ? 'rgba(45,106,79,0.35)' : 'rgba(200,146,42,0.35)'}`,
@@ -510,7 +510,7 @@ function PurposePieceSlot({ purposeData, userId }) {
             </span>
           ))}
         </div>
-        <a href="/tools/purpose-piece" style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
+        <a href="/tools/purpose-piece" style={{ ...sc, fontSize: '17px', letterSpacing: '0.12em',
           color: '#A8721A', textDecoration: 'none' }}>
           Continue Purpose Piece {'→'}
         </a>
@@ -551,7 +551,7 @@ function PurposePieceSlot({ purposeData, userId }) {
               <div style={{ ...serif, fontSize: '18px', fontWeight: 300, color: '#0F1523' }}>
                 {archetype}
                 {secondary && (
-                  <span style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
+                  <span style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.55)',
                     fontStyle: 'italic', marginLeft: '6px' }}>+ {secondary}</span>
                 )}
               </div>
@@ -605,7 +605,7 @@ function PurposePieceSlot({ purposeData, userId }) {
       )}
 
       {purposeData.completed_at && (
-        <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+        <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
           color: 'rgba(15,21,35,0.45)', marginTop: '16px' }}>
           Completed {new Date(purposeData.completed_at).toLocaleDateString('en-GB',
             { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -729,7 +729,7 @@ function TargetSprintSlot({ sprintData }) {
           )}
         </div>
         {daysLabel && (
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em',
+          <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.1em',
             color: daysUrgent ? '#8A3030' : '#A8721A',
             background: daysUrgent ? 'rgba(138,48,48,0.06)' : 'rgba(200,146,42,0.08)',
             border: `1px solid ${daysUrgent ? 'rgba(138,48,48,0.25)' : 'rgba(200,146,42,0.25)'}`,
@@ -777,7 +777,7 @@ function TargetSprintSlot({ sprintData }) {
         <div style={{ padding: '14px 16px', marginBottom: '16px',
           background: 'rgba(200,146,42,0.04)',
           border: '1.5px solid rgba(200,146,42,0.35)', borderRadius: '10px' }}>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A',
+          <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A',
             textTransform: 'uppercase', marginBottom: '6px' }}>
             Next move — {nextMove.domain}
           </div>
@@ -828,7 +828,7 @@ function TargetSprintSlot({ sprintData }) {
                 {domainComplete ? '✓ ' : ''}{label}
               </span>
               {tasks.length > 0 && (
-                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em',
+                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em',
                   color: domainComplete ? '#2D6A4F' : 'rgba(15,21,35,0.55)',
                   flexShrink: 0 }}>
                   {tDone}/{tasks.length} tasks
@@ -852,7 +852,7 @@ function TargetSprintSlot({ sprintData }) {
 
             {/* Setup gaps */}
             {missing.length > 0 && !goal && (
-              <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+              <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
                 color: 'rgba(15,21,35,0.45)', margin: '6px 0 0' }}>
                 Still needed: {missing.join(', ')}.{' '}
                 <a href="/tools/target-goals" style={{ color: '#A8721A', textDecoration: 'none' }}>
@@ -863,7 +863,7 @@ function TargetSprintSlot({ sprintData }) {
 
             {/* Milestone count */}
             {milestones.length > 0 && (
-              <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em',
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em',
                 color: 'rgba(15,21,35,0.45)', marginTop: '8px' }}>
                 {mDone}/{milestones.length} milestones
               </div>
@@ -873,7 +873,7 @@ function TargetSprintSlot({ sprintData }) {
       })}
 
       {sprintData.created_at && (
-        <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+        <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
           color: 'rgba(15,21,35,0.45)', marginTop: '8px' }}>
           Started {new Date(sprintData.created_at).toLocaleDateString('en-GB',
             { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -885,7 +885,7 @@ function TargetSprintSlot({ sprintData }) {
 
 // ─── Foundation slot ──────────────────────────────────────────────────────────
 
-function FlameBar({ value, color = '#C8922A', size = 14 }) {
+function FlameBar({ value, color = '#A8721A', size = 14 }) {
   if (!value) return null
   const filled = Math.round(Math.min(Math.max(value, 0), 10))
   return (
@@ -953,7 +953,7 @@ function FoundationSlot({ foundationData }) {
         <div style={{ padding: '12px 16px', marginBottom: '16px',
           background: 'rgba(45,106,79,0.04)', border: '1px solid rgba(45,106,79,0.2)',
           borderRadius: '10px' }}>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
+          <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em',
             color: '#2D6A4F', textTransform: 'uppercase', marginBottom: '8px' }}>
             Today
           </div>
@@ -961,15 +961,15 @@ function FoundationSlot({ foundationData }) {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                 <FlameBar value={last_before} color="rgba(200,146,42,0.7)" size={12} />
-                <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.4)' }}>{'→'}</span>
+                <span style={{ ...sc, fontSize: '17px', color: 'rgba(15,21,35,0.4)' }}>{'→'}</span>
                 <FlameBar value={last_after} color="#2D6A4F" size={12} />
-                <span style={{ ...sc, fontSize: '13px', fontWeight: 600,
+                <span style={{ ...sc, fontSize: '17px', fontWeight: 600,
                   color: lastDelta >= 0 ? '#2D6A4F' : '#8A3030' }}>
                   {lastDeltaSign}{lastDelta}
                 </span>
               </div>
               {(last_before_note || last_after_note) && (
-                <div style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+                <div style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
                   color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, marginTop: '4px' }}>
                   {last_before_note && <span>'{last_before_note}'</span>}
                   {last_before_note && last_after_note && <span style={{ margin: '0 6px', color: 'rgba(15,21,35,0.3)' }}>→</span>}
@@ -1008,7 +1008,7 @@ function FoundationSlot({ foundationData }) {
               textAlign: 'center' }}>
               <div style={{ ...sc, fontSize: '20px', fontWeight: 600, color: '#A8721A',
                 lineHeight: 1 }}>{streak_days}</div>
-              <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em',
                 color: 'rgba(15,21,35,0.45)', marginTop: '3px' }}>
                 DAY{streak_days !== 1 ? 'S' : ''} STREAK
               </div>
@@ -1020,7 +1020,7 @@ function FoundationSlot({ foundationData }) {
               textAlign: 'center' }}>
               <div style={{ ...sc, fontSize: '20px', fontWeight: 600, color: '#A8721A',
                 lineHeight: 1 }}>{sessions_week}</div>
-              <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em',
                 color: 'rgba(15,21,35,0.45)', marginTop: '3px' }}>THIS WEEK</div>
             </div>
           )}
@@ -1032,7 +1032,7 @@ function FoundationSlot({ foundationData }) {
                 color: avg_delta >= 0 ? '#2D6A4F' : '#8A3030', lineHeight: 1 }}>
                 {deltaSign}{avg_delta}
               </div>
-              <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em',
                 color: 'rgba(15,21,35,0.45)', marginTop: '3px' }}>AVG LIFT</div>
             </div>
           )}
@@ -1041,7 +1041,7 @@ function FoundationSlot({ foundationData }) {
             textAlign: 'center' }}>
             <div style={{ ...sc, fontSize: '20px', fontWeight: 600, color: '#A8721A',
               lineHeight: 1 }}>{sessions_total}</div>
-            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
+            <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em',
               color: 'rgba(15,21,35,0.45)', marginTop: '3px' }}>TOTAL</div>
           </div>
         </div>
@@ -1054,12 +1054,12 @@ function FoundationSlot({ foundationData }) {
           <div style={{ display: 'flex', gap: '16px', marginTop: '6px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
               <div style={{ width: '16px', height: '2px', background: 'rgba(200,146,42,0.5)' }} />
-              <span style={{ ...sc, fontSize: '10px', color: 'rgba(15,21,35,0.45)',
+              <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.45)',
                 letterSpacing: '0.1em' }}>BEFORE</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
               <div style={{ width: '16px', height: '2px', background: 'rgba(45,106,79,0.7)' }} />
-              <span style={{ ...sc, fontSize: '10px', color: 'rgba(15,21,35,0.45)',
+              <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.45)',
                 letterSpacing: '0.1em' }}>AFTER</span>
             </div>
           </div>
@@ -1082,7 +1082,7 @@ function FoundationSlot({ foundationData }) {
       <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
         {phases.map(p => (
           <span key={p.key} style={{
-            ...sc, fontSize: '11px', letterSpacing: '0.1em',
+            ...sc, fontSize: '15px', letterSpacing: '0.1em',
             padding: '3px 10px', borderRadius: '40px',
             background: p.active ? 'rgba(200,146,42,0.08)' : 'rgba(15,21,35,0.03)',
             border: `1px solid ${p.active ? 'rgba(200,146,42,0.35)' : 'rgba(15,21,35,0.1)'}`,
@@ -1112,7 +1112,7 @@ function NextUsSlot({ purposeData }) {
           Complete Purpose Piece to see where your contribution belongs in the larger work.
         </p>
         <a href="/tools/purpose-piece"
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
+          style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em',
             color: '#A8721A', textDecoration: 'none' }}>
           Begin Purpose Piece {'\u2192'}
         </a>
@@ -1142,7 +1142,7 @@ function NextUsSlot({ purposeData }) {
           ))}
         </div>
       )}
-      <a href="/nextus" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
+      <a href="/nextus" style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em',
         color: '#A8721A', textDecoration: 'none' }}>
         Explore NextUs {'\u2192'}
       </a>
@@ -1267,7 +1267,7 @@ export function ProfilePage() {
           borderTop: '1px solid rgba(200,146,42,0.15)', marginTop: '24px' }}>
           <button onClick={signOut}
             style={{ background: 'none', border: 'none', cursor: 'pointer',
-              ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em',
+              ...sc, fontSize: '17px', fontWeight: 600, letterSpacing: '0.18em',
               color: 'rgba(15,21,35,0.72)', padding: '8px 0', textTransform: 'uppercase' }}>
             Sign out
           </button>

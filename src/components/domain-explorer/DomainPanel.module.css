@@ -18,7 +18,7 @@
 /* Breadcrumb */
 .breadcrumb {
   font-family: 'Cormorant SC', serif;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 400;
   letter-spacing: 0.12em;
   color: var(--text-meta);
@@ -41,7 +41,7 @@
   gap: 7px;
   margin-bottom: 12px;
   font-family: 'Cormorant SC', serif;
-  font-size: 10px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.1em;
   color: var(--gold-dk);
@@ -116,7 +116,7 @@
   font-style: normal;
   font-weight: 600;
   color: var(--gold-dk);
-  font-size: 11px;
+  font-size: 15px;
   font-family: 'Cormorant SC', serif;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -126,7 +126,7 @@
   font-style: normal;
   font-weight: 400;
   color: var(--text-meta);
-  font-size: 13px;
+  font-size: 17px;
   font-family: 'Cormorant SC', serif;
   letter-spacing: 0.08em;
 }
@@ -156,7 +156,7 @@
   padding: 0;
   cursor: pointer;
   font-family: 'Cormorant SC', serif;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -194,7 +194,7 @@
 
 .exploreBtnTop:hover {
   background: rgba(200,146,42,0.05);
-  border-color: rgba(200,146,42,1);
+  border-color: #A8721A;
   color: var(--gold-dk);
   transform: translateY(-2px);
   box-shadow: 0 8px 28px rgba(15,21,35,0.08);
@@ -205,7 +205,7 @@
 
 .comingSoonTop {
   font-family: 'Cormorant SC', serif;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 400;
   letter-spacing: 0.1em;
   color: var(--text-meta);
@@ -224,7 +224,7 @@
   display: flex;
   justify-content: space-between;
   font-family: 'Cormorant SC', serif;
-  font-size: 10px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.1em;
   color: var(--text-meta);
@@ -274,7 +274,7 @@
 }
 
 .actorChipHighlighted {
-  border-color: rgba(200,146,42,0.78);
+  border-color: #A8721A;
   background: var(--gold-faint);
 }
 
@@ -293,14 +293,14 @@
 
 .actorName {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 300;
   color: var(--text-body);
 }
 
 .actorScale {
   font-family: 'Cormorant SC', serif;
-  font-size: 10px;
+  font-size: 15px;
   font-weight: 400;
   letter-spacing: 0.08em;
   color: var(--text-meta);
@@ -309,7 +309,7 @@
 
 .actorSlot {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 300;
   color: var(--text-meta);
 }
@@ -339,7 +339,7 @@
   padding: 0;
   cursor: pointer;
   font-family: 'Cormorant SC', serif;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.12em;
   color: var(--gold-dk);
@@ -361,7 +361,7 @@
 
 .previewEyebrow {
   font-family: 'Cormorant SC', serif;
-  font-size: 10px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.16em;
   color: var(--text-meta);
@@ -386,7 +386,7 @@
 
 .previewSectionLabel {
   font-family: 'Cormorant SC', serif;
-  font-size: 10px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.12em;
   color: var(--text-meta);
@@ -405,14 +405,14 @@
 
 .previewIndicatorSlot {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 300;
   color: var(--text-meta);
 }
 
 .previewIndicatorBlank {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 300;
   color: var(--text-meta);
 }
@@ -421,7 +421,7 @@
 
 .previewNote {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 300;
   color: var(--text-meta);
   margin-bottom: 4px;
@@ -446,7 +446,7 @@
 
 .gapSignalLabel {
   font-family: 'Cormorant SC', serif;
-  font-size: 10px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.12em;
   color: var(--gold-dk);
@@ -455,7 +455,7 @@
 
 .gapSignalReason {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 300;
   color: var(--text-meta);
 }
@@ -482,7 +482,7 @@
 
 .scoreLabel {
   font-family: 'Cormorant SC', serif;
-  font-size: 10px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.12em;
   color: var(--text-meta);
@@ -531,7 +531,7 @@
   white-space: nowrap;
 }
 
-.trendArrow { font-family: Georgia, serif; font-size: 11px; }
+.trendArrow { font-family: Georgia, serif; font-size: 15px; }
 
 .trend_up   { color: #4A7C59; }
 .trend_down { color: #8A4A4A; }
@@ -550,7 +550,7 @@
 
 .inFieldLabel {
   font-family: 'Cormorant SC', serif;
-  font-size: 10px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.12em;
   color: var(--text-meta);
@@ -560,7 +560,7 @@
 
 .inFieldPersonalised {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 300;
   color: var(--gold-dk);
   margin-bottom: 8px;
@@ -574,7 +574,7 @@
   padding: 0;
   cursor: pointer;
   font-family: 'Cormorant Garamond', serif;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 300;
   color: var(--text-meta);
   transition: color 0.2s ease;
@@ -609,7 +609,7 @@
   transition: border-color 0.2s ease;
 }
 
-.mailingInput:focus { border-color: rgba(200,146,42,0.78); }
+.mailingInput:focus { border-color: #A8721A; }
 
 .mailingInput::placeholder {
   color: var(--text-ghost);
@@ -621,7 +621,7 @@
   border: 1px solid var(--text-head);
   color: var(--white);
   font-family: 'Cormorant SC', serif;
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -663,6 +663,6 @@
 
 .navBtn:hover {
   background: rgba(200,146,42,0.05);
-  border-color: rgba(200,146,42,1);
+  border-color: #A8721A;
   transform: translateY(-1px);
 }

@@ -21,13 +21,13 @@
 
 /* ─── Type scale ────────────────────────────────────────────── */
 :root {
-  --text-xs:    13px;       /* UI labels, metadata, badges (+2) */
-  --text-sm:    15px;       /* Eyebrows, captions, nav links (+2) */
-  --text-base:  1.125rem;   /* 18px — standard body copy (+2) */
-  --text-md:    1.25rem;    /* 20px — tool body copy (+2) */
-  --text-lg:    1.5rem;     /* 24px — subheadings, lead copy (+2) */
-  --text-xl:    1.75rem;    /* 28px — section headings (+2) */
-  --text-2xl:   2.125rem;   /* 34px — tool titles (+2) */
+  --text-xs:    15px;       /* UI labels, metadata, badges */
+  --text-sm:    17px;       /* Eyebrows, captions, nav labels */
+  --text-base:  1.25rem;    /* 20px — standard body copy */
+  --text-md:    1.375rem;   /* 22px — tool body copy */
+  --text-lg:    1.625rem;   /* 26px — subheadings, lead copy */
+  --text-xl:    1.875rem;   /* 30px — section headings */
+  --text-2xl:   2.25rem;    /* 36px — tool titles */
 }
 
 *, *::before, *::after {
@@ -233,7 +233,7 @@ button {
 
 .nav-profile-dot:hover {
   background: rgba(200, 146, 42, 0.15);
-  border-color: rgba(200, 146, 42, 1);
+  border-color: #A8721A;
   text-decoration: none;
 }
 

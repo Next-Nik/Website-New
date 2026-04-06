@@ -12,7 +12,7 @@ const TOOLS = [
     label: 'Foundation',
     path:  '/tools/foundation',
     desc:  'Regulated baseline. The floor beneath everything.',
-    color: '#C8922A',
+    color: '#A8721A',
   },
   {
     key:   'map',
@@ -26,7 +26,7 @@ const TOOLS = [
     label: 'Purpose Piece',
     path:  '/tools/purpose-piece',
     desc:  'Your contribution archetype, domain, and scale.',
-    color: '#C8922A',
+    color: '#A8721A',
   },
   {
     key:   'target-goals',
@@ -61,7 +61,7 @@ function StatusPill({ status }) {
   }[status] || { label: status, color: '#A8721A', bg: 'rgba(200,146,42,0.10)' }
   return (
     <span style={{
-      ...sc, fontSize: '10px', letterSpacing: '0.14em', textTransform: 'uppercase',
+      ...sc, fontSize: '15px', letterSpacing: '0.14em', textTransform: 'uppercase',
       color: cfg.color, background: cfg.bg,
       borderRadius: '40px', padding: '2px 8px', flexShrink: 0,
     }}>{cfg.label}</span>
@@ -178,7 +178,7 @@ export function ToolDrawer({ open, onClose }) {
 
           {/* Life OS tools grid */}
           <div style={{ marginBottom: '32px' }}>
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
+            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em',
               color: '#A8721A', textTransform: 'uppercase', display: 'block',
               marginBottom: '16px' }}>Life OS</span>
             <div style={{
@@ -234,13 +234,13 @@ export function ToolDrawer({ open, onClose }) {
 
           {/* Discover row */}
           <div>
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
+            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em',
               color: 'rgba(15,21,35,0.4)', textTransform: 'uppercase',
               display: 'block', marginBottom: '12px' }}>Discover</span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {DISCOVER.map(d => (
                 <Link key={d.path} to={d.path} onClick={onClose} style={{
-                  ...sc, fontSize: '13px', letterSpacing: '0.1em',
+                  ...sc, fontSize: '17px', letterSpacing: '0.1em',
                   color: 'rgba(15,21,35,0.65)', textDecoration: 'none',
                   padding: '8px 16px',
                   border: '1px solid rgba(200,146,42,0.18)',

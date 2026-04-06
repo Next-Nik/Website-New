@@ -67,7 +67,7 @@ function MiniWheel({ domains, currentScores, sprintScores }) {
         const s = currentScores[d.id]
         return (
           <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
-            fontFamily="'Cormorant SC',Georgia,serif" fontSize="13" fontWeight="600" letterSpacing="0.5"
+            fontFamily="'Cormorant SC',Georgia,serif" fontSize="17" fontWeight="600" letterSpacing="0.5"
             fill={s !== undefined ? getColor(s) : 'rgba(15,21,35,0.28)'}>
             {d.label.substring(0, 3).toUpperCase()}
           </text>

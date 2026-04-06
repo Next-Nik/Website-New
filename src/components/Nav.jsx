@@ -58,7 +58,7 @@ export function Nav({ activePath }) {
                     border: `1.5px solid ${drawerOpen ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.35)'}`,
                     background: drawerOpen ? 'rgba(200,146,42,0.08)' : 'transparent',
                     fontFamily: "'Cormorant SC', Georgia, serif",
-                    fontSize: '13px', letterSpacing: '0.12em',
+                    fontSize: '17px', letterSpacing: '0.12em',
                     color: drawerOpen ? '#A8721A' : 'rgba(15,21,35,0.78)',
                     cursor: 'pointer', transition: 'all 0.18s',
                   }}
@@ -104,7 +104,7 @@ export function Nav({ activePath }) {
                 border: '1.5px solid rgba(200,146,42,0.78)',
                 background: 'rgba(200,146,42,0.05)',
                 fontFamily: "'Cormorant SC', Georgia, serif",
-                fontSize: '13px', fontWeight: 600,
+                fontSize: '17px', fontWeight: 600,
                 letterSpacing: '0.16em', color: '#A8721A',
                 textDecoration: 'none',
               }}>Sign in</Link>
