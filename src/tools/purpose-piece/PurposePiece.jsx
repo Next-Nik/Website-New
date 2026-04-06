@@ -726,9 +726,21 @@ export function PurposePiecePage() {
       else addMsg('assistant', data.message)
     }
 
-    // Stage complete — show transition, hold next question
+    // Stage complete — save progress to Supabase so profile shows current stage
     if (data.stageComplete) {
       setStageComplete(true)
+      if (user?.id && data.session) {
+        const completedStages = []
+        if (data.session.archetypeTranscript?.length > 0) completedStages.push('archetype')
+        if (data.session.domainTranscript?.length > 0) completedStages.push('domain')
+        if (data.session.scaleTranscript?.length > 0) completedStages.push('scale')
+        supabase.from('purpose_piece_results').upsert({
+          user_id: user.id,
+          status: 'started',
+          session: data.session,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id', ignoreDuplicates: false }).catch(() => {})
+      }
       return
     }
 
@@ -761,6 +773,7 @@ export function PurposePiecePage() {
       if (user?.id && data.profile) {
         supabase.from('purpose_piece_results').upsert({
           user_id: user.id, profile: data.profile, session: data.session,
+          status: 'complete',
           completed_at: new Date().toISOString(), updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id' }).catch(() => {})
       }
@@ -967,7 +980,16 @@ export function PurposePiecePage() {
           const s = JSON.parse(raw)
           return !(s.session?.currentQuestion && s.messages?.length > 0)
         } catch { return true }
-      })() && <WelcomeModal onBegin={() => setShowWelcome(false)} />}
+      })() && <WelcomeModal onBegin={() => {
+        if (user?.id) {
+          supabase.from('purpose_piece_results').upsert({
+            user_id: user.id,
+            status: 'started',
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'user_id', ignoreDuplicates: false }).catch(() => {})
+        }
+        setShowWelcome(false)
+      }} />}
       {showDeepGate && <DeepGateModal onUnlock={() => { localStorage.setItem('pp_deep_unlocked','true'); setShowDeepGate(false); navigate('/tools/purpose-piece/deep') }} onDismiss={() => setShowDeepGate(false)} />}
       {showCentreModal && (
         <CentreModal
