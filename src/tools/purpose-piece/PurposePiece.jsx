@@ -1191,8 +1191,16 @@ export function PurposePieceDeepPage() {
     addMsg('user', text); setInput('')
     if (textareaRef.current) textareaRef.current.style.height = 'auto'
     setThinking(true)
-    try { const d = await deepCall([{ role: 'user', content: text }]); setThinking(false); handleResponse(d) }
-    catch { setThinking(false); addMsg('assistant', 'Something went wrong. Please try again.') }
+    const [d] = await Promise.allSettled([
+      deepCall([{ role: 'user', content: text }]),
+      new Promise(r => setTimeout(r, 800))
+    ])
+    setThinking(false)
+    if (d.status === 'fulfilled') {
+      handleResponse(d.value)
+    } else {
+      addMsg('assistant', 'Lost my thread for a second — still with you. What were you saying?')
+    }
   }
 
   if (authLoading) return <div className="loading" />
