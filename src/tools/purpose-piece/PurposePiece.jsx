@@ -10,7 +10,7 @@ import { CivilisationalFramePanel } from '../../components/CivilisationalFramePa
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const SS_KEY = 'pp_session_v2'
+const SS_KEY = 'pp_session_v3'
 
 // Wedge colours — intentional design system additions
 // Gold:   Archetype — primary brand colour, most important coordinate
@@ -521,6 +521,34 @@ function CentreModal({ wedgeStates, onClose, onGoToStage }) {
 
 // ─── Auth modal ───────────────────────────────────────────────────────────────
 
+// ─── Welcome modal ────────────────────────────────────────────────────────────
+
+function WelcomeModal({ onBegin }) {
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
+      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '460px', width: '100%', textAlign: 'center' }}>
+        <span style={{ display: 'block', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
+        <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>Find your fit.</h2>
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
+          Each of us maps onto a contribution archetype, leans toward a domain, and operates at a natural scale. Together those three things are your Purpose Piece. Knowing yours helps you find your fit.
+        </p>
+        <button onClick={onBegin} style={{
+          display: 'block', width: '100%', padding: '15px 24px', borderRadius: '40px',
+          border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)',
+          color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif",
+          fontSize: '0.875rem', letterSpacing: '0.14em', cursor: 'pointer',
+          transition: 'all 0.2s',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
+        >
+          Begin {'\u2192'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function AuthModal() {
   const returnUrl = encodeURIComponent(window.location.href)
   return (
@@ -582,6 +610,7 @@ export function PurposePiecePage() {
   const [readyToLock,   setReadyToLock]   = useState(false)
   const [showDeepGate,  setShowDeepGate]  = useState(false)
   const [showCentreModal, setShowCentreModal] = useState(false)
+  const [showWelcome,   setShowWelcome]   = useState(true)
   // Reference panels manage their own open state internally.
   // Trigger via custom events so the ReferenceTrigger buttons actually work.
   function openArchetypePanel() { window.dispatchEvent(new CustomEvent('pp:open-archetypes')) }
@@ -595,9 +624,9 @@ export function PurposePiecePage() {
   useEffect(() => { sessionRef.current = session }, [session])
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }) }, [messages, thinking])
 
-  // Restore or start session
+  // Restore or start session — only after welcome dismissed
   useEffect(() => {
-    if (!user || startedRef.current) return
+    if (!user || startedRef.current || showWelcome) return
     startedRef.current = true
     try {
       const raw = sessionStorage.getItem(SS_KEY)
@@ -611,7 +640,7 @@ export function PurposePiecePage() {
       }
     } catch {}
     startTool()
-  }, [user])
+  }, [user, showWelcome])
 
   // Persist to sessionStorage
   useEffect(() => {
@@ -814,9 +843,16 @@ export function PurposePiecePage() {
 
     return (
       <div>
-        {/* Question label */}
-        {activeQuestionStage && stageTotal && (
-          <QuestionLabel stage={activeQuestionStage} index={qIdx} total={stageTotal} label={currentLabel} />
+        {/* Pinned question text — stays visible while answering */}
+        {activeQuestionStage && session?.currentQuestion && (
+          <div style={{
+            ...serif, fontSize: '1.125rem', color: '#0F1523', lineHeight: 1.7,
+            marginBottom: '20px', paddingBottom: '16px',
+            borderBottom: '1px solid rgba(200,146,42,0.15)',
+            whiteSpace: 'pre-line',
+          }}>
+            {session.currentQuestion}
+          </div>
         )}
 
         {/* Reference trigger */}
@@ -880,6 +916,7 @@ export function PurposePiecePage() {
     <div className="page-shell">
       <Nav activePath="life-os" />
       {!user && <AuthModal />}
+      {user && showWelcome && !sessionStorage.getItem(SS_KEY) && <WelcomeModal onBegin={() => setShowWelcome(false)} />}
       {showDeepGate && <DeepGateModal onUnlock={() => { localStorage.setItem('pp_deep_unlocked','true'); setShowDeepGate(false); navigate('/tools/purpose-piece/deep') }} onDismiss={() => setShowDeepGate(false)} />}
       {showCentreModal && (
         <CentreModal
