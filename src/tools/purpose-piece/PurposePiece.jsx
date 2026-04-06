@@ -94,6 +94,12 @@ const WEDGE_LABELS = {
   scale:     ['Engagement', 'Scale'],
 }
 
+// Target rotation so each wedge lands at top-left (midpoint at -150°)
+// Wedge midpoints at rot=0: archetype=-30°, domain=90°, scale=210°
+// rotation needed = -150 - midpoint, then keep spinning forward by adding full rotations
+// 'welcome' maps to archetype so disc always opens showing archetype top-left
+const STAGE_TARGET_ROT = { welcome: -120, archetype: -120, domain: -240, scale: -360, confirmation: -360 }
+
 function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allDone = false, size = 200 }) {
   const R   = size * 0.44
   const r   = size * 0.058
@@ -109,9 +115,10 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
   const animRef   = useRef(null)
   const lastRef   = useRef(null)
   const phase     = useRef('spinning')
+  const prevStage = useRef(activeStage)
 
+  // Initial mount spin
   useEffect(() => {
-    // Spin for 1.4s then settle at 0°
     const SPIN_MS  = 1400
     const SPIN_DPS = 280
     const startT   = Date.now()
@@ -125,7 +132,11 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
         rotRef.current += SPIN_DPS * dt
         setRot(rotRef.current)
         if (Date.now() - startT >= SPIN_MS) {
-          targetRef.current = Math.ceil(rotRef.current / 360) * 360
+          // Settle to the active stage position
+          const baseTarget = STAGE_TARGET_ROT[activeStage] ?? -120
+          // Find nearest multiple of 360 above current rot that lands on target
+          const fullTurns = Math.ceil((rotRef.current - baseTarget) / 360)
+          targetRef.current = baseTarget + fullTurns * 360
           phase.current = 'landing'
         }
       } else if (phase.current === 'landing') {
@@ -144,7 +155,47 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
     }
     animRef.current = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(animRef.current)
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Spin to new stage when activeStage changes after settle
+  useEffect(() => {
+    if (!settled) return
+    if (activeStage === prevStage.current) return
+    prevStage.current = activeStage
+
+    const baseTarget = STAGE_TARGET_ROT[activeStage]
+    if (baseTarget === undefined) return
+
+    // Always spin forward (positive direction) to next target
+    const fullTurns = Math.ceil((rotRef.current - baseTarget) / 360)
+    targetRef.current = baseTarget + fullTurns * 360
+
+    // If we'd barely move, add a full extra turn for a satisfying spin
+    if (targetRef.current - rotRef.current < 60) {
+      targetRef.current += 360
+    }
+
+    phase.current = 'landing'
+    lastRef.current = null
+
+    function animate(time) {
+      if (lastRef.current === null) lastRef.current = time
+      const dt = Math.min((time - lastRef.current) / 1000, 0.05)
+      lastRef.current = time
+      const diff = targetRef.current - rotRef.current
+      if (Math.abs(diff) < 0.3) {
+        rotRef.current = targetRef.current
+        setRot(rotRef.current)
+        phase.current = 'settled'
+      } else {
+        rotRef.current += diff * Math.min(1, dt * 4)
+        setRot(rotRef.current)
+        animRef.current = requestAnimationFrame(animate)
+      }
+    }
+    cancelAnimationFrame(animRef.current)
+    animRef.current = requestAnimationFrame(animate)
+  }, [activeStage, settled])
 
   function wedgePath(idx, rotDeg = 0) {
     const base = rotDeg * Math.PI / 180
@@ -218,12 +269,12 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
         const stroke   = isDone || isActive ? w.stroke : w.strokeWeak
         const pos      = wedgeLabelPos(i, displayRot)
         const lines    = WEDGE_LABELS[key]
-        const canClick = isDone && settled
+        const canClick = settled && !allDone
 
         return (
           <g key={key}
-            onClick={canClick && !allDone ? (e) => { e.stopPropagation(); onWedgeClick(key) } : undefined}
-            style={{ cursor: canClick && !allDone ? 'pointer' : 'default' }}
+            onClick={canClick ? (e) => { e.stopPropagation(); onWedgeClick(key) } : undefined}
+            style={{ cursor: canClick ? 'pointer' : 'default' }}
             className={isActive && !isDone ? 'pp-pulse' : ''}
           >
             <path d={wedgePath(i, displayRot)} fill={fill} stroke={stroke}
@@ -243,7 +294,7 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
                 <text x={pos.x} y={pos.y - size * 0.035}
                   textAnchor="middle" dominantBaseline="middle"
                   fontSize={size * 0.048} fontFamily="'Cormorant SC', Georgia, serif"
-                  fill={isActive ? w.stroke.replace('0.85','1') : 'rgba(200,146,42,0.3)'}
+                  fill={isActive ? w.stroke.replace('0.85','1') : 'rgba(200,146,42,0.75)'}
                   letterSpacing="0.04em"
                   style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill 0.3s' }}>
                   {lines[0]}
@@ -251,7 +302,7 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
                 <text x={pos.x} y={pos.y + size * 0.035}
                   textAnchor="middle" dominantBaseline="middle"
                   fontSize={size * 0.048} fontFamily="'Cormorant SC', Georgia, serif"
-                  fill={isActive ? w.stroke.replace('0.85','1') : 'rgba(200,146,42,0.3)'}
+                  fill={isActive ? w.stroke.replace('0.85','1') : 'rgba(200,146,42,0.75)'}
                   letterSpacing="0.04em"
                   style={{ pointerEvents: 'none', userSelect: 'none', transition: 'fill 0.3s' }}>
                   {lines[1]}
@@ -318,17 +369,17 @@ function StageBreadcrumb({ activeStage }) {
 function QuestionLabel({ stage, index, total, label }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
-      <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase' }}>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase' }}>
         {stage.charAt(0).toUpperCase() + stage.slice(1)}
       </span>
-      <span style={{ ...sc, fontSize: '11px', color: 'rgba(200,146,42,0.3)' }}>{'\u00b7'}</span>
-      <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(200,146,42,0.5)' }}>
+      <span style={{ ...sc, fontSize: '13px', color: 'rgba(200,146,42,0.3)' }}>{'\u00b7'}</span>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(200,146,42,0.5)' }}>
         {index + 1} of {total}
       </span>
       {label && (
         <>
-          <span style={{ ...sc, fontSize: '11px', color: 'rgba(200,146,42,0.3)' }}>{'\u00b7'}</span>
-          <span style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.4)' }}>{label}</span>
+          <span style={{ ...sc, fontSize: '13px', color: 'rgba(200,146,42,0.3)' }}>{'\u00b7'}</span>
+          <span style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{label}</span>
         </>
       )}
     </div>
@@ -340,10 +391,10 @@ function QuestionLabel({ stage, index, total, label }) {
 function ReferenceTrigger({ stage, onOpenArchetypes, onOpenDomains }) {
   if (stage === 'archetype') return (
     <button onClick={onOpenArchetypes} style={{
-      background: 'none', border: 'none', ...sc, fontSize: '11px', letterSpacing: '0.14em',
-      color: 'rgba(200,146,42,0.5)', cursor: 'pointer', padding: 0,
+      background: 'none', border: 'none', ...sc, fontSize: '15px', letterSpacing: '0.14em',
+      color: '#A8721A', cursor: 'pointer', padding: 0,
       textTransform: 'uppercase', textDecoration: 'underline',
-      textDecorationColor: 'rgba(200,146,42,0.2)', marginBottom: '18px',
+      textDecorationColor: 'rgba(200,146,42,0.4)', marginBottom: '18px',
       display: 'block', transition: 'color 0.2s',
     }}>
       Nine Archetypes {'\u2192'}
@@ -351,10 +402,10 @@ function ReferenceTrigger({ stage, onOpenArchetypes, onOpenDomains }) {
   )
   if (stage === 'domain') return (
     <button onClick={onOpenDomains} style={{
-      background: 'none', border: 'none', ...sc, fontSize: '11px', letterSpacing: '0.14em',
-      color: 'rgba(45,106,79,0.6)', cursor: 'pointer', padding: 0,
+      background: 'none', border: 'none', ...sc, fontSize: '15px', letterSpacing: '0.14em',
+      color: '#A8721A', cursor: 'pointer', padding: 0,
       textTransform: 'uppercase', textDecoration: 'underline',
-      textDecorationColor: 'rgba(45,106,79,0.2)', marginBottom: '18px',
+      textDecorationColor: 'rgba(200,146,42,0.4)', marginBottom: '18px',
       display: 'block', transition: 'color 0.2s',
     }}>
       Seven Domains {'\u2192'}
@@ -584,15 +635,15 @@ export function PurposePiecePage() {
   const allWedgesDone = WEDGE_KEYS.every(k => wedgeStates[k] === 2)
   const breadcrumb    = ['archetype','domain','scale','confirmation'].includes(stage) ? stage : null
 
-  // Cycle stages with prev/next buttons — free navigation, editable in any order
+  // Cycle stages with prev/next buttons — sequential by default, clamped at ends
   const STAGE_ORDER = ['archetype', 'domain', 'scale', 'confirmation']
   function handleWedgeNav(dir) {
     const current = STAGE_ORDER.includes(stage) ? stage : 'archetype'
     const idx = STAGE_ORDER.indexOf(current)
-    const next = dir === 'next'
-      ? STAGE_ORDER[(idx + 1) % STAGE_ORDER.length]
-      : STAGE_ORDER[(idx - 1 + STAGE_ORDER.length) % STAGE_ORDER.length]
-    if (session) setSession(prev => ({ ...prev, stage: next }))
+    const nextIdx = dir === 'next'
+      ? Math.min(idx + 1, STAGE_ORDER.length - 1)
+      : Math.max(idx - 1, 0)
+    if (session) setSession(prev => ({ ...prev, stage: STAGE_ORDER[nextIdx] }))
   }
 
   function handleCentreClick() {
@@ -894,12 +945,10 @@ export function PurposePiecePage() {
                 </div>
               )}
             </div>
-            {breadcrumb && !showReveal && <StageBreadcrumb activeStage={breadcrumb} />}
             {renderContent()}
           </div>
         ) : (
           <div>
-            {breadcrumb && !showReveal && <StageBreadcrumb activeStage={breadcrumb} />}
             {/* Disc is 440px. 3/4 = 330px visible above card top.
                 Disc container top: 0. Card marginTop: 330px.
                 Disc right-bleeds off canvas like MapWheel. */}
@@ -907,7 +956,7 @@ export function PurposePiecePage() {
 
               {/* Disc — 3/4 above card top */}
               <div style={{
-                position: 'absolute', right: '-280px', top: '-300px',
+                position: 'absolute', right: '-360px', top: '-300px',
                 width: '520px', height: '520px', zIndex: 0, pointerEvents: 'none',
               }}>
                 <div style={{ pointerEvents: 'auto', width: '100%' }}>
@@ -919,33 +968,6 @@ export function PurposePiecePage() {
                 </div>
               </div>
 
-              {/* Prev / Next — sit at card top, right of card */}
-              {breadcrumb && !showReveal && (
-                <div style={{
-                  position: 'absolute', top: '358px', right: '-52px',
-                  display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px', zIndex: 2,
-                }}>
-                  <button onClick={() => handleWedgeNav('prev')} title="Previous"
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: 0.4, transition: 'opacity 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-                    onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                      <polyline points="12,2 4,9 12,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                  <button onClick={() => handleWedgeNav('next')} title="Next"
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', opacity: 0.4, transition: 'opacity 0.2s' }}
-                    onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
-                    onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                      <polyline points="6,2 14,9 6,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </button>
-                </div>
-              )}
-
               {/* Content card — top of card at 3/4 of disc height (330px) */}
               <div style={{
                 position: 'relative', zIndex: 1,
@@ -955,6 +977,32 @@ export function PurposePiecePage() {
                 borderRadius: '14px', padding: '28px 32px',
                 maxWidth: '560px',
               }}>
+                {/* Prev / Next — inside card, top right */}
+                {breadcrumb && !showReveal && (
+                  <div style={{
+                    display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '4px',
+                    float: 'right', marginTop: '-4px', marginRight: '-8px',
+                  }}>
+                    <button onClick={() => handleWedgeNav('prev')} title="Previous"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', opacity: 0.4, transition: 'opacity 0.2s' }}
+                      onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                      onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <polyline points="12,2 4,9 12,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                    <button onClick={() => handleWedgeNav('next')} title="Next"
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '6px', opacity: 0.4, transition: 'opacity 0.2s' }}
+                      onMouseEnter={e => e.currentTarget.style.opacity = '0.9'}
+                      onMouseLeave={e => e.currentTarget.style.opacity = '0.4'}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <polyline points="6,2 14,9 6,16" stroke="#C8922A" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                )}
                 {renderContent()}
               </div>
             </div>
