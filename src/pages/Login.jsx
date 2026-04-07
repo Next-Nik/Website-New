@@ -26,8 +26,27 @@ export function LoginPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) window.location.href = getRedirectUrl()
+      if (session?.user) {
+        // Check localStorage first (covers magic link flow)
+        let dest = null
+        try { dest = localStorage.getItem('auth_redirect') } catch {}
+        if (!dest) dest = getRedirectUrl()
+        try { localStorage.removeItem('auth_redirect') } catch {}
+        window.location.href = dest
+      }
     })
+
+    // Also listen for auth state changes (covers OAuth and magic link callback)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session?.user) {
+        let dest = null
+        try { dest = localStorage.getItem('auth_redirect') } catch {}
+        if (!dest) dest = getRedirectUrl()
+        try { localStorage.removeItem('auth_redirect') } catch {}
+        window.location.href = dest
+      }
+    })
+    return () => subscription.unsubscribe()
   }, [])
 
   async function handleGoogle() {
@@ -41,9 +60,12 @@ export function LoginPage() {
   async function handleEmail() {
     if (!email || !email.includes('@')) { setError('Please enter a valid email address.'); return }
     setSending(true); setError('')
+    // Store redirect so we can use it after magic link auth
+    const dest = getRedirectUrl()
+    try { localStorage.setItem('auth_redirect', dest) } catch {}
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: getRedirectUrl(), shouldCreateUser: true }
+      options: { emailRedirectTo: dest, shouldCreateUser: true }
     })
     if (error) { setError(error.message); setSending(false); return }
     setSent(true); setSending(false)
