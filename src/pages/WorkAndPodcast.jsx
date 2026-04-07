@@ -49,7 +49,7 @@ export function WorkWithNikPage() {
               background: 'rgba(200,146,42,0.04)',
             }}>
               <img
-                src="/nik.png"
+                src="/nik.jpeg"
                 alt="Nik Wood"
                 style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
                 onError={e => {

@@ -141,7 +141,7 @@ export function AboutPage() {
             position: 'relative',
           }}>
             <img
-              src="/nik.png"
+              src="/nik.jpeg"
               alt="Nik Wood"
               style={{
                 width: '100%', height: '100%',
