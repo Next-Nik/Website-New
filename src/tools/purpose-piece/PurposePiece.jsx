@@ -1019,6 +1019,11 @@ export function PurposePiecePage() {
         {/* Header */}
         <div style={{ marginBottom: '28px' }}>
           <span className="tool-eyebrow">Life OS {'\u00b7'} Purpose Piece</span>
+          {!showReveal && !session && (
+            <p style={{ ...serif, fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '8px 0 12px', maxWidth: '520px' }}>
+              Organisational Archetype, Global Domain, Scale of Focus = your Purpose Piece.
+            </p>
+          )}
           <h1 style={{ ...sc, fontSize: 'clamp(26px,6vw,34px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.05, margin: '8px 0 10px' }}>
             {showReveal ? 'Your Purpose Piece' : 'Find your fit.'}
           </h1>

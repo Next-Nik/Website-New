@@ -619,6 +619,9 @@ export function FoundationPage() {
       <div className="tool-wrap">
         <div className="tool-header">
           <span className="tool-eyebrow">Life OS {'\u00B7'} Foundation</span>
+          <p style={{ ...serif, fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '8px 0 12px', maxWidth: '520px' }}>
+            Build the regulated ground that makes everything else possible.
+          </p>
           <h1 style={{ ...serif, fontSize: 'clamp(2.25rem, 5.5vw, 3.25rem)', fontWeight: 300, color: '#0F1523', lineHeight: 1.06, letterSpacing: '-0.01em', marginBottom: '16px' }}>
             The layer beneath<br /><em style={{ ...gold }}>everything else.</em>
           </h1>

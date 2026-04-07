@@ -261,6 +261,37 @@ function DomainInputRow({ domain, value, onChange, serif, sc }) {
   )
 }
 
+
+// ─── Horizon Self tooltip ─────────────────────────────────────────────────────
+
+function HorizonSelfTooltip() {
+  const [show, setShow] = useState(false)
+  const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  return (
+    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+      <button
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        onFocus={() => setShow(true)}
+        onBlur={() => setShow(false)}
+        style={{ background: 'none', border: '1px solid rgba(200,146,42,0.45)', borderRadius: '50%', width: '14px', height: '14px', padding: 0, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+        aria-label="What is the Horizon Self?"
+      >
+        <span style={{ ...sc, fontSize: '9px', color: '#A8721A', fontStyle: 'italic', lineHeight: 1 }}>i</span>
+      </button>
+      {show && (
+        <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: 'calc(100% + 8px)', zIndex: 9999, background: '#0F1523', borderRadius: '10px', padding: '12px 16px', width: '260px', boxShadow: '0 8px 32px rgba(15,21,35,0.30)', pointerEvents: 'none', display: 'block' }}>
+          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: '#A8721A', display: 'block', marginBottom: '5px', textTransform: 'uppercase' }}>Horizon Self</span>
+          <span style={{ ...serif, fontSize: '13px', fontWeight: 300, color: 'rgba(255,255,255,0.85)', lineHeight: 1.65, display: 'block' }}>
+            The version of you already living your Horizon Life — the you who got there. Not an aspiration. A real person you are becoming. The practice is about closing the gap between who you are now and who that person already is.
+          </span>
+        </span>
+      )}
+    </span>
+  )
+}
+
 // ─── Setup Phase ──────────────────────────────────────────────────────────────
 
 function SetupPhase({ mapData, onComplete }) {
@@ -1187,6 +1218,13 @@ export function ExpansionPage() {
             <div style={{ maxWidth: '820px', margin: '0 auto', padding: 'clamp(88px,10vw,112px) clamp(20px,5vw,40px) 0' }}>
               <div className="tool-header" style={{ marginBottom: '40px' }}>
                 <span className="tool-eyebrow">Life OS · Expansion</span>
+                <p style={{ ...serif, fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '8px 0 12px', maxWidth: '520px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                  A daily practical practice for becoming your{' '}
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    Horizon Self
+                    <HorizonSelfTooltip />
+                  </span>.
+                </p>
                 <h1 className="tool-title">Who are you becoming?</h1>
                 <p style={{ ...serif, fontSize: '1.1875rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.65, maxWidth: '480px' }}>
                   One day at a time. Imperceptible daily. Unstoppable over time.

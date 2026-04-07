@@ -1056,6 +1056,9 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
   return (
     <div>
       <Eyebrow>Target Sprint</Eyebrow>
+      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '8px 0 12px', maxWidth: '520px' }}>
+        Three key areas, 90 days, level up.
+      </p>
       <h1 style={{ ...sc, fontSize: 'clamp(1.75rem,4vw,2.5rem)', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '10px' }}>
         Three areas. Three months.
       </h1>
