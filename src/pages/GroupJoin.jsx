@@ -68,7 +68,7 @@ export function GroupJoinPage() {
       .eq('active', true)
       .maybeSingle()
 
-    if (!data) { setState('notfound'); setMsg('That code doesn\'t match any active group.'); return }
+    if (!data) { setState('notfound'); setMsg('That code doesn’t match any active group.'); return }
     setGroup(data)
     if (user) {
       await attemptJoin(data, user.id)
@@ -232,7 +232,7 @@ export function GroupJoinPage() {
               </h1>
               <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
                 lineHeight: 1.65, marginBottom: '24px' }}>
-                {message || 'That link doesn\'t match an active group. Check the code and try again.'}
+                {message || 'That link doesn’t match an active group. Check the code and try again.'}
               </p>
               <Cta onClick={() => { setState('idle'); setGroup(null); setCode('') }}>
                 Try again

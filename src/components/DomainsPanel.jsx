@@ -4,11 +4,11 @@ const DOMAINS = [
   {
     name: 'Path',
     question: 'Am I walking my path \u2014 or just walking?',
-    description: 'Your contribution, calling, and the work you\'re here to do. Not your job title \u2014 the thread of purpose running beneath whatever you\'re currently doing. Life\'s mission: the gift you came to bring, the role that belongs to you specifically.',
+    description: "Your contribution, calling, and the work you're here to do. Not your job title \u2014 the thread of purpose running beneath whatever you're currently doing. Life's mission: the gift you came to bring, the role that belongs to you specifically.",
   },
   {
     name: 'Spark',
-    question: 'When did I last feel genuinely alive \u2014 and what\'s been costing me that?',
+    question: "When did I last feel genuinely alive \u2014 and what's been costing me that?",
     description: 'The animating fire. The things that make you feel genuinely alive \u2014 not just occupied. Spark is regeneration: soul nourishment that sends you back into the world more alive than you arrived. When Spark is low, everything else runs on fumes.',
   },
   {
@@ -19,7 +19,7 @@ const DOMAINS = [
   {
     name: 'Finances',
     question: 'Do I have the agency to act on what matters?',
-    description: 'The currency that gives you the capacity to act. Not just money \u2014 the resources, mobility, and agency to convert your visions into reality and your desires into choices. When it flows, things move. When it\'s blocked, everything stalls.',
+    description: "The currency that gives you the capacity to act. Not just money \u2014 the resources, mobility, and agency to convert your visions into reality and your desires into choices. When it flows, things move. When it's blocked, everything stalls.",
   },
   {
     name: 'Connection',
@@ -29,12 +29,12 @@ const DOMAINS = [
   {
     name: 'Inner Game',
     question: 'What story about myself is quietly running the room \u2014 and is that story still true?',
-    description: 'Your relationship with yourself. The beliefs, stories, values, and emotional patterns you carry about who you are and what you\'re capable of. The source code \u2014 everything else runs on it. Inner Game shapes the floor and ceiling of every other domain.',
+    description: "Your relationship with yourself. The beliefs, stories, values, and emotional patterns you carry about who you are and what you're capable of. The source code \u2014 everything else runs on it. Inner Game shapes the floor and ceiling of every other domain.",
   },
   {
     name: 'Signal',
-    question: 'Is what I\'m broadcasting aligned with who I actually am?',
-    description: 'Your external world: environment, appearance, presence, and public-facing persona. Where inner alignment meets the world\'s perception of you \u2014 and the two need to match. Not as performance. As honest expression.',
+    question: "Is what I'm broadcasting aligned with who I actually am?",
+    description: "Your external world: environment, appearance, presence, and public-facing persona. Where inner alignment meets the world's perception of you \u2014 and the two need to match. Not as performance. As honest expression.",
   },
 ]
 

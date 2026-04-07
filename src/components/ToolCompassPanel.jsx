@@ -26,15 +26,15 @@ const TOOLS = [
   {
     path: '/tools/map',
     name: 'The Map',
-    subtitle: 'See where you are. Set where you're going.',
-    hook: 'A scored picture of your life across seven domains. See where you are. Set where you\'re going.',
+    subtitle: "See where you are. Set where you're going.",
+    hook: "A scored picture of your life across seven domains. See where you are. Set where you're going.",
     eyebrow: 'See the whole',
   },
   {
     path: '/tools/purpose-piece',
     name: 'Purpose Piece',
     subtitle: 'Your role, your domain, your scale',
-    hook: 'Surfaces the natural role you\'re built to play — archetype, domain, scale. The contribution coordinates.',
+    hook: "Surfaces the natural role you're built to play — archetype, domain, scale. The contribution coordinates.",
     eyebrow: 'Know your role',
   },
   {

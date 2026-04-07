@@ -18,7 +18,7 @@ const TOOLS = [
   {
     key:   'map',
     label: 'The Map',
-    subtitle: 'See where you are. Set where you're going.',
+    subtitle: "See where you are. Set where you're going.",
     path:  '/tools/map',
     desc:  'Seven domains. An honest read of where you are.',
     color: '#5A8AB8',

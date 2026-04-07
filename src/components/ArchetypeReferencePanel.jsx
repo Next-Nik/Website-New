@@ -8,12 +8,12 @@ const ARCHETYPES = [
   },
   {
     name: 'Maker',
-    signal: 'Builds what doesn\'t exist yet. Concept to creation. Comfortable with iteration and the mess of making.',
+    signal: "Builds what doesn't exist yet. Concept to creation. Comfortable with iteration and the mess of making.",
     shadow: 'Can chase the next build before fully completing the current one. Restlessness as identity rather than genuine forward motion.',
   },
   {
     name: 'Architect',
-    signal: 'Designs the structural conditions that determine what can be built. Doesn\'t build the thing — designs the container the thing lives inside.',
+    signal: "Designs the structural conditions that determine what can be built. Doesn't build the thing — designs the container the thing lives inside.",
     shadow: 'Can become abstract. Systems thinking without ground contact. Designing for elegance rather than lived reality.',
   },
   {
@@ -28,7 +28,7 @@ const ARCHETYPES = [
   },
   {
     name: 'Explorer',
-    signal: 'Ventures into unknown territory and brings back what\'s needed. Comfortable with uncertainty and first principles.',
+    signal: "Ventures into unknown territory and brings back what's needed. Comfortable with uncertainty and first principles.",
     shadow: 'Can disappear into the frontier and never return. Discovery as a way of avoiding the harder work of integration and delivery.',
   },
   {
@@ -39,7 +39,7 @@ const ARCHETYPES = [
   {
     name: 'Mirror',
     signal: 'Contributes by reflecting what is true — about human experience, the interior life, the living world — in ways others can finally see and receive.',
-    shadow: 'Can lose themselves in reflection. So attuned to others\' experience that their own disappears. The invisible presence.',
+    shadow: "Can lose themselves in reflection. So attuned to others' experience that their own disappears. The invisible presence.",
   },
   {
     name: 'Exemplar',

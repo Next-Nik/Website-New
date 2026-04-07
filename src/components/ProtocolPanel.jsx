@@ -6,7 +6,7 @@ const PHASES = [
     name: 'Baseline',
     tagline: 'Where are you right now?',
     description: 'The practice opens with a check-in — not to fix anything, but to register the current state honestly. Baseline is about contact: meeting yourself where you actually are before anything else happens. The flame slider captures this moment.',
-    why: 'You can\'t navigate from a false position. Most practices skip this step and build on an assumed state that doesn\'t match reality. Baseline closes that gap.',
+    why: "You can't navigate from a false position. Most practices skip this step and build on an assumed state that doesn't match reality. Baseline closes that gap.",
     duration: '2 \u2013 3 min',
   },
   {
@@ -22,7 +22,7 @@ const PHASES = [
     name: 'Embodying',
     tagline: 'Land it. Carry it forward.',
     description: 'The final phase integrates what has moved during the practice. This is not a wind-down \u2014 it is a deliberate transition back to life, bringing the regulated state with you rather than leaving it behind in the session.',
-    why: 'Practices that don\'t close properly tend not to transfer. Embodying is the mechanism by which the Foundation session becomes a living resource rather than a moment that disappears on re-entry to the day.',
+    why: "Practices that don't close properly tend not to transfer. Embodying is the mechanism by which the Foundation session becomes a living resource rather than a moment that disappears on re-entry to the day.",
     duration: '3 \u2013 5 min',
   },
 ]
