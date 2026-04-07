@@ -40,7 +40,7 @@ export function WorkWithNikPage() {
             <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '40px', maxWidth: '480px' }}>One-on-one work for people who are done with the loop they{'\u2019'}re in.</p>
             <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Book a discovery call {'\u2192'}</a>
           </div>
-          {/* Photo — drop /nik.jpg into your /public folder. Graceful fallback until then. */}
+          {/* Photo — drop /nik.png into your /public folder. Graceful fallback until then. */}
           <div style={{ flex: '0 0 auto', width: 'clamp(160px, 28vw, 260px)' }}>
             <div style={{
               width: '100%', aspectRatio: '3/4',
@@ -49,7 +49,7 @@ export function WorkWithNikPage() {
               background: 'rgba(200,146,42,0.04)',
             }}>
               <img
-                src="/nik.jpg"
+                src="/nik.png"
                 alt="Nik Wood"
                 style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block' }}
                 onError={e => {

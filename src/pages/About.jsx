@@ -129,7 +129,7 @@ export function AboutPage() {
       {/* ── SECTION TWO — NIK (right-aligned) ── */}
       <div className="about-section" style={pageRight}>
 
-        {/* Photograph — replace /nik.jpg with your actual image file in /public */}
+        {/* Photograph — replace /nik.png with your actual image file in /public */}
         <div style={{ marginBottom: '52px', display: 'flex', justifyContent: 'flex-end' }}>
           <div style={{
             width: 'clamp(200px, 40vw, 340px)',
@@ -141,7 +141,7 @@ export function AboutPage() {
             position: 'relative',
           }}>
             <img
-              src="/nik.jpg"
+              src="/nik.png"
               alt="Nik Wood"
               style={{
                 width: '100%', height: '100%',
