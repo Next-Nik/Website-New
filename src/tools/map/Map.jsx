@@ -23,12 +23,12 @@ function useIsMobile() {
 
 const DOMAINS = [
   { id: 'path',          label: 'Path',          question: 'Am I walking my path — or just walking?',                    fractal: 'Vision' },
-  { id: 'spark',         label: 'Spark',         question: 'When did I last feel genuinely alive \u2014 and what\'s been costing me that?',           fractal: 'Human Being' },
-  { id: 'body',          label: 'Body',          question: 'Am I honouring this instrument \u2014 or running it into the ground?',                  fractal: 'Nature' },
+  { id: 'spark',         label: 'Spark',         question: "When did I last feel genuinely alive — and what's been costing me that?",           fractal: 'Human Being' },
+  { id: 'body',          label: 'Body',          question: "Am I honouring this instrument — or running it into the ground?",                  fractal: 'Nature' },
   { id: 'finances',      label: 'Finances',      question: 'Do I have the agency to act on what matters?',              fractal: 'Finance & Economy' },
-  { id: 'connection', label: 'Connection', question: 'Am I truly known by anyone \u2014 and am I truly knowing them?',                        fractal: 'Society' },
-  { id: 'inner_game',    label: 'Inner Game',    question: 'What story about myself is quietly running the room \u2014 and is that story still true?', fractal: 'Legacy' },
-  { id: 'signal',    label: 'Signal',    question: 'Is what I\'m broadcasting aligned with who I actually am?', fractal: 'Technology' },
+  { id: 'connection', label: 'Connection', question: "Am I truly known by anyone — and am I truly knowing them?",                        fractal: 'Society' },
+  { id: 'inner_game',    label: 'Inner Game',    question: "What story about myself is quietly running the room — and is that story still true?", fractal: 'Legacy' },
+  { id: 'signal',    label: 'Signal',    question: "Is what I'm broadcasting aligned with who I actually am?", fractal: 'Technology' },
 ]
 
 const N         = DOMAINS.length
@@ -1350,18 +1350,10 @@ function AuthModal() {
 // Each is individually activatable and goes through the same three-step process.
 // North Star synthesises across all active sub-domains at the end.
 
-const DEFAULT_CONNECTION_SUBDOMAINS = [
-  { id: 'intimate',     label: 'Intimate / Romantic', defaultActive: true },
-  { id: 'family',       label: 'Family',              defaultActive: true },
-  { id: 'friendship',   label: 'Friendship',          defaultActive: true },
-  { id: 'collaborators',label: 'Collaborators',       defaultActive: true },
-  { id: 'community',    label: 'Community',           defaultActive: false },
-]
-
 // ─── Connection Sub-Domain Step ─────────────────────────────────────────────
 
 const DEFAULT_CONNECTION_SUBDOMAINS = [
-  { id: 'intimate',      label: 'Intimate / Romantic', defaultActive: true },
+  { id: 'intimate',      label: 'Romantic Partner', defaultActive: true },
   { id: 'family',        label: 'Family',              defaultActive: true },
   { id: 'friendship',    label: 'Friendship',          defaultActive: true },
   { id: 'collaborators', label: 'Collaborators',       defaultActive: true },
@@ -1881,7 +1873,7 @@ export function MapPage() {
                       onUpdate={handleDomainUpdate}
                       onComplete={handleDomainComplete}
                     />
-                    ))
+                    )
                   ) : (
                     <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', textAlign: 'center', padding: '20px 0' }}>
                       Tap a domain to begin.

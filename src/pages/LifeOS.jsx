@@ -13,7 +13,7 @@ const TOOLS = [
     subtitle: 'Daily regulation practice', name: 'Foundation', hook: 'The floor everything else stands on.',
     label: 'Capacity infrastructure',
     desc: 'There is an order of operations to healing and development. A solid foundation is needed for all of it.',
-    detail: 'Three phases — Baseline, Calibration, Embodying. Build on one until you\'re ready for the next. Daily check-ins and a guided audio practice, about 20 minutes a day. Restores your internal system so you can access clear, congruent thoughts, feelings, actions, and creativity. Not therapy. Not really meditation. The layer beneath insight, growth, and strategy — your foundation.',
+    detail: "Three phases — Baseline, Calibration, Embodying. Build on one until you're ready for the next. Daily check-ins and a guided audio practice, about 20 minutes a day. Restores your internal system so you can access clear, congruent thoughts, feelings, actions, and creativity. Not therapy. Not really meditation. The layer beneath insight, growth, and strategy — your foundation.",
     meta: '20 min · guided audio · 3 phases · available any time of day',
     quotes: [
       { text: 'It has helped me reset my baseline in the middle of the day — to relax, let go, and create space for a more supportive inner story. One that naturally inspires aligned action rather than effort or striving.', cite: 'David William Pierce' },
@@ -52,9 +52,9 @@ const TOOLS = [
   },
   {
     id: 'horizon-leap',
-    subtitle: 'Identity-level work with Nik', name: 'Horizon Leap', hook: 'Leap from who you\'ve been to who you truly are.',
+    subtitle: 'Identity-level work with Nik', name: 'Horizon Leap', hook: "Leap from who you've been to who you truly are.",
     label: 'The crossing',
-    desc: 'For people ready to dive deep and transform who they\'re being.',
+    desc: "For people ready to dive deep and transform who they're being.",
     detail: 'As far forward as you can see from where you are now is your Horizon Life. Your Horizon Self is the you who is already living that life — the you who already got there. Together we bring that version of you to life, invite them to take the controls, and watch your life transform in the process.',
     meta: 'Facilitated · with Nik · by application',
     primary: { label: 'Book a conversation →', url: 'https://calendly.com/nikwood/talk-to-nik', external: true },
@@ -226,8 +226,8 @@ export function LifeOSPage() {
           {[
             { key: 'foundation', icon: '◎', title: 'Running on empty', sub: 'Stressed, depleted, or going through something hard' },
             { key: 'map', icon: '◈', title: 'Stuck or searching', sub: 'Not sure what they want — or where their life is actually at' },
-            { key: 'purpose', icon: '◉', title: 'Capable but not fully alive', sub: 'Functioning well, but something important isn\'t being expressed' },
-            { key: 'leap', icon: '◐', title: 'Hitting the same ceiling', sub: 'They\'ve done the work. The pattern keeps returning' },
+            { key: 'purpose', icon: '◉', title: 'Capable but not fully alive', sub: "Functioning well, but something important isn't being expressed" },
+            { key: 'leap', icon: '◐', title: 'Hitting the same ceiling', sub: "They've done the work. The pattern keeps returning" },
           ].map(q => (
             <div key={q.key} onClick={() => setShareRec(q.key)} style={{ display: 'flex', gap: '16px', padding: '20px 22px', borderRadius: '14px', marginBottom: '10px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', cursor: 'pointer', transition: 'all 0.2s' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}

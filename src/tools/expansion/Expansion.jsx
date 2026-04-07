@@ -118,7 +118,7 @@ function Btn({ children, onClick, primary, disabled, style = {} }) {
       background: primary ? '#C8922A' : 'rgba(200,146,42,0.05)',
       color: primary ? '#FFFFFF' : '#A8721A',
       ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.14em',
-      cursor: disabled ? 'not-allowed', opacity: disabled ? 0.5 : 1,
+      cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.5 : 1,
       transition: 'all 0.2s', ...style,
     }}
       onMouseEnter={e => { if (!disabled) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}}
