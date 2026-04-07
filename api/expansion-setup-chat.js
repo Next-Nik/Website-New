@@ -87,7 +87,7 @@ Be honest. Be specific. Name the logic. The person can override your recommendat
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const { messages, mode, mapData } = req.body;
+  const { messages, mode, mapData, customGoals } = req.body;
 
   if (!messages || !mode) {
     return res.status(400).json({ error: "Missing messages or mode" });
@@ -112,6 +112,16 @@ module.exports = async (req, res) => {
       : "";
 
     systemWithContext += `\n\nMAP DATA FOR THIS PERSON:\nDevelopmental stage: ${mapData.stage || "unknown"}\nFocus domains: ${(mapData.focusDomains || []).join(", ")}\n\nDomain scores and horizon goals:\n${domainSummary}\n\nLife horizon: ${mapData.lifeHorizon || "not yet set"}`;
+  }
+
+  if (customGoals && !mapData) {
+    const goalLines = Object.entries(customGoals)
+      .filter(([, v]) => v && v.trim())
+      .map(([domain, goal]) => `${domain}: "${goal}"`)
+      .join("\n");
+    if (goalLines) {
+      systemWithContext += `\n\nHORIZON GOALS (entered manually, no Map yet):\n${goalLines}\n\nThis person has not done The Map. Work with these horizon goals as their stated destinations. Do not reference domain scores or developmental stages — that data doesn't exist yet.`;
+    }
   }
 
   try {
