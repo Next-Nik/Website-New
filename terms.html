@@ -208,4 +208,20 @@
           dot.href = "/login.html";
           dot.title = "Sign in";
           dot.style.borderColor = "";
-        
+                }
+      }
+
+      const { data: { session } } = await sb.auth.getSession();
+      updateDot(session?.user ?? null);
+
+      sb.auth.onAuthStateChange((_event, session) => {
+        updateDot(session?.user ?? null);
+      });
+
+    } catch (e) {
+      console.warn('Auth dot error:', e);
+    }
+  })();
+</script>
+</body>
+</html>
