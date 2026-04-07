@@ -152,8 +152,8 @@ export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centr
 
         // Background rect dimensions — wraps the text block snugly
         const maxWordLen = Math.max(...words.map(w => w.length))
-        const rectW = Math.round(maxWordLen * fontSize * 0.58 + 14)
-        const rectH = Math.round(words.length * fontSize * lineHeight + 10)
+        const rectW = Math.round(maxWordLen * fontSize * 0.58 + 6)
+        const rectH = Math.round(words.length * fontSize * lineHeight + 4)
         const rectFill = isSpinning ? 'rgba(255,255,255,0.95)' : isActive ? 'rgba(200,146,42,0.06)' : '#FFFFFF'
 
         return (
@@ -171,7 +171,7 @@ export default function Heptagon({ domains, activeIndex, onSelect, isIdle, centr
             <rect
               x={p.x - rectW / 2} y={p.y - rectH / 2}
               width={rectW} height={rectH}
-              rx={5} ry={5}
+              rx={8} ry={8}
               fill={rectFill}
               style={{ pointerEvents: 'none' }}
             />
