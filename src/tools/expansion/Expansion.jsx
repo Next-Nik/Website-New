@@ -199,6 +199,68 @@ function MapRedirect({ onSkip }) {
   )
 }
 
+
+// ─── Domain tooltip copy ───────────────────────────────────────────────────────
+const DOMAIN_TIPS = {
+  'Path':       'Life’s Mission · Purpose · Dharma · Soul Alignment. The work you were built to do — not your job title, your gift.',
+  'Spark':      'Vitality · Energy · Recharge · Joy · Passion. Is the fire on? When Spark is low, everything else runs on fumes.',
+  'Body':       'Health · Fitness · The Physical. The instrument through which everything else operates. The only one you get.',
+  'Finances':   'Agency · Money · Currency. Do you have the charge to act? This is about agency, not wealth.',
+  'Connection': 'Your relationships with others. Not just the presence of people — the quality of what actually passes between you.',
+  'Inner Game': 'Your relationship to yourself. The source code — everything else runs on it.',
+  'Signal':     'Your relationship to the world. Your public-facing persona and your personal environment.',
+}
+
+
+// ─── Domain input row with tooltip ────────────────────────────────────────────
+
+function DomainInputRow({ domain, value, onChange, serif, sc }) {
+  const [showTip, setShowTip] = useState(false)
+
+  return (
+    <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', position: 'relative' }}>
+      {/* Label + tooltip trigger */}
+      <div style={{ minWidth: '100px', flexShrink: 0, paddingTop: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A' }}>{domain}</span>
+        <button
+          onMouseEnter={() => setShowTip(true)}
+          onMouseLeave={() => setShowTip(false)}
+          onFocus={() => setShowTip(true)}
+          onBlur={() => setShowTip(false)}
+          style={{ background: 'none', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '50%', width: '14px', height: '14px', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+          aria-label={`What is ${domain}?`}
+        >
+          <span style={{ ...sc, fontSize: '10px', color: '#A8721A', lineHeight: 1 }}>?</span>
+        </button>
+
+        {/* Tooltip */}
+        {showTip && (
+          <div style={{
+            position: 'absolute', left: 0, top: '36px', zIndex: 100,
+            background: '#0F1523', borderRadius: '10px',
+            padding: '12px 16px', width: '280px',
+            boxShadow: '0 8px 32px rgba(15,21,35,0.25)',
+            pointerEvents: 'none',
+          }}>
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '5px', textTransform: 'uppercase' }}>{domain}</div>
+            <p style={{ ...serif, fontSize: '14px', fontWeight: 300, color: 'rgba(255,255,255,0.85)', lineHeight: 1.65, margin: 0 }}>
+              {DOMAIN_TIPS[domain]}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Input */}
+      <input
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={`Where do you want to be in ${domain.toLowerCase()}?`}
+        style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', border: '1px solid rgba(200,146,42,0.25)', background: '#FAFAF7', ...serif, fontSize: '15px', color: '#0F1523', outline: 'none', lineHeight: 1.5 }}
+      />
+    </div>
+  )
+}
+
 // ─── Setup Phase ──────────────────────────────────────────────────────────────
 
 function SetupPhase({ mapData, onComplete }) {
@@ -280,15 +342,14 @@ function SetupPhase({ mapData, onComplete }) {
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
                   {DOMAINS_LIST.map(domain => (
-                    <div key={domain} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', minWidth: '100px', flexShrink: 0, paddingTop: '10px' }}>{domain}</span>
-                      <input
-                        value={customGoals[domain]}
-                        onChange={e => setCustomGoals(prev => ({ ...prev, [domain]: e.target.value }))}
-                        placeholder={`Where do you want to be in ${domain.toLowerCase()}?`}
-                        style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', border: '1px solid rgba(200,146,42,0.25)', background: '#FAFAF7', ...serif, fontSize: '15px', color: '#0F1523', outline: 'none', lineHeight: 1.5 }}
-                      />
-                    </div>
+                    <DomainInputRow
+                      key={domain}
+                      domain={domain}
+                      value={customGoals[domain]}
+                      onChange={val => setCustomGoals(prev => ({ ...prev, [domain]: val }))}
+                      serif={serif}
+                      sc={sc}
+                    />
                   ))}
                 </div>
                 {!horizonConfirmed && (
