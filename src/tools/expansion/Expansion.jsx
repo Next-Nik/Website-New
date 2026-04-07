@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
@@ -209,14 +209,24 @@ function SetupPhase({ mapData, onComplete }) {
   const [firstSkill, setFirstSkill] = useState('')
   const [firstSkillType, setFirstSkillType] = useState('skill')
 
+  const DOMAINS_LIST = ['Path', 'Spark', 'Body', 'Finances', 'Connection', 'Inner Game', 'Signal']
+  const [customGoals, setCustomGoals] = useState(
+    DOMAINS_LIST.reduce((acc, d) => ({ ...acc, [d]: '' }), {})
+  )
+
+  // Build context: use Map data if available, otherwise use custom goals
+  const chatContext = mapData
+    ? { mapData }
+    : { customGoals }
+
   const setupChat = useChat('/tools/expansion/api/setup-chat', {
     mode: 'horizon_self',
-    mapData,
+    ...chatContext,
   })
 
   const skillChat = useChat('/tools/expansion/api/setup-chat', {
     mode: 'skills',
-    mapData,
+    ...chatContext,
   })
 
   return (
@@ -232,7 +242,7 @@ function SetupPhase({ mapData, onComplete }) {
         </p>
       </div>
 
-      {/* Step 1: Confirm horizon goals */}
+      {/* Step 1: Horizon goals — Map data or manual entry */}
       <GoldCard>
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', background: horizonConfirmed ? 'rgba(200,146,42,0.15)' : 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.30)', borderRadius: '40px', padding: '4px 12px', flexShrink: 0, marginTop: '2px' }}>
@@ -240,24 +250,57 @@ function SetupPhase({ mapData, onComplete }) {
           </span>
           <div style={{ flex: 1 }}>
             <div style={{ ...serif, fontSize: '19px', fontWeight: 400, ...dark, marginBottom: '8px' }}>Your horizon goals</div>
-            <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
-              These are pulled from your Map. Are they still pointing in the right direction?
-            </p>
-            {mapData?.domains && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
-                {Object.values(mapData.domains).filter(d => d.horizon).map(d => (
-                  <div key={d.id} style={{ display: 'flex', gap: '12px', alignItems: 'baseline' }}>
-                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', minWidth: '100px', flexShrink: 0 }}>{d.label}</span>
-                    <span style={{ ...serif, fontSize: '15px', fontStyle: 'italic', ...muted, lineHeight: 1.5 }}>{d.horizon}</span>
+
+            {mapData?.domains ? (
+              <>
+                <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+                  These are pulled from your Map. Are they still pointing in the right direction?
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+                  {Object.values(mapData.domains).map(d => (
+                    <div key={d.id} style={{ display: 'flex', gap: '12px', alignItems: 'baseline', opacity: d.horizon ? 1 : 0.4 }}>
+                      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', minWidth: '100px', flexShrink: 0 }}>{d.label}</span>
+                      <span style={{ ...serif, fontSize: '15px', fontStyle: 'italic', ...muted, lineHeight: 1.5 }}>
+                        {d.horizon || 'not yet set'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {!horizonConfirmed && (
+                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                    <Btn primary onClick={() => { setHorizonConfirmed(true); setStep('horizon_self') }}>Yes, these are right →</Btn>
+                    <Btn onClick={() => window.location.href = '/tools/map'}>Update in The Map →</Btn>
                   </div>
-                ))}
-              </div>
-            )}
-            {!horizonConfirmed && (
-              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                <Btn primary onClick={() => { setHorizonConfirmed(true); setStep('horizon_self') }}>Yes, these are right →</Btn>
-                <Btn onClick={() => window.location.href = '/tools/map'}>Update in The Map →</Btn>
-              </div>
+                )}
+              </>
+            ) : (
+              <>
+                <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.7, marginBottom: '20px' }}>
+                  For each area of life, write where you want to be. One sentence is enough — the honest destination, not a polished goal. If you do The Map later, these will still be here and you can refine them.
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+                  {DOMAINS_LIST.map(domain => (
+                    <div key={domain} style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', minWidth: '100px', flexShrink: 0, paddingTop: '10px' }}>{domain}</span>
+                      <input
+                        value={customGoals[domain]}
+                        onChange={e => setCustomGoals(prev => ({ ...prev, [domain]: e.target.value }))}
+                        placeholder={`Where do you want to be in ${domain.toLowerCase()}?`}
+                        style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', border: '1px solid rgba(200,146,42,0.25)', background: '#FAFAF7', ...serif, fontSize: '15px', color: '#0F1523', outline: 'none', lineHeight: 1.5 }}
+                      />
+                    </div>
+                  ))}
+                </div>
+                {!horizonConfirmed && (
+                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                    <Btn primary onClick={() => {
+                      setHorizonConfirmed(true)
+                      setStep('horizon_self')
+                    }}>These are my horizons →</Btn>
+                    <Btn onClick={() => window.location.href = '/tools/map'}>Do The Map first →</Btn>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -293,10 +336,16 @@ function SetupPhase({ mapData, onComplete }) {
                   />
 
                   {horizonSelfDraft && setupChat.messages.length === 0 && (
-                    <Btn primary onClick={() => {
-                      setupChat.setMessages([{ role: 'user', content: horizonSelfDraft }])
-                      setupChat.send(horizonSelfDraft)
-                    }}>Sharpen this with me →</Btn>
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                      <Btn primary onClick={() => {
+                        setupChat.setMessages([{ role: 'user', content: horizonSelfDraft }])
+                        setupChat.send(horizonSelfDraft)
+                      }}>Sharpen this with North Star →</Btn>
+                      <Btn onClick={() => {
+                        setHorizonSelf(horizonSelfDraft)
+                        setStep('skill_suggest')
+                      }}>This is it — lock it in</Btn>
+                    </div>
                   )}
 
                   {setupChat.messages.length > 0 && (
@@ -308,7 +357,9 @@ function SetupPhase({ mapData, onComplete }) {
                         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                           <Btn primary onClick={() => {
                             const lastAssistant = [...setupChat.messages].reverse().find(m => m.role === 'assistant')
-                            setHorizonSelf(lastAssistant?.content || horizonSelfDraft)
+                            const finalStatement = lastAssistant?.content || horizonSelfDraft
+                            if (!finalStatement.trim()) return
+                            setHorizonSelf(finalStatement)
                             setStep('skill_suggest')
                           }}>Lock it in →</Btn>
                           <Btn onClick={() => {
@@ -346,7 +397,12 @@ function SetupPhase({ mapData, onComplete }) {
               {!firstSkill ? (
                 <>
                   {skillChat.messages.length === 0 && (
-                    <Btn primary onClick={() => skillChat.send('Help me identify the right skill or knowledge to start with, given my horizon goals.')}>
+                    <Btn primary onClick={() => {
+                      const goalsContext = !mapData && customGoals
+                        ? '\n\nMy horizon goals: ' + Object.entries(customGoals).filter(([,v]) => v.trim()).map(([k,v]) => k + ': ' + v).join('; ')
+                        : ''
+                      skillChat.send('Help me identify the right skill or knowledge to start with, given my horizon goals.' + goalsContext)
+                    }}>
                       Help me find it →
                     </Btn>
                   )}
@@ -395,7 +451,7 @@ function SetupPhase({ mapData, onComplete }) {
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.75, marginBottom: '32px', maxWidth: '400px', margin: '0 auto 32px' }}>
             Imperceptible daily. Unstoppable over time.
           </p>
-          <Btn primary onClick={() => onComplete({ horizonSelf, firstSkill: { title: firstSkill, type: firstSkillType } })}>
+          <Btn primary onClick={() => onComplete({ horizonSelf, firstSkill: { title: firstSkill, type: firstSkillType }, customGoals: !mapData ? customGoals : null })}>
             Begin your first check-in →
           </Btn>
         </div>
@@ -406,7 +462,7 @@ function SetupPhase({ mapData, onComplete }) {
 
 // ─── Daily Check-in ───────────────────────────────────────────────────────────
 
-function DailyCheckin({ setupData, sprintData, onComplete }) {
+function DailyCheckin({ setupData, sprintData, mapData, onComplete }) {
   const [step, setStep] = useState('thoughts') // thoughts | emotions | actions | skill | done
   const [teaData, setTeaData] = useState({ thoughts: '', emotions: '', actions: '' })
   const [skillNote, setSkillNote] = useState('')
@@ -436,6 +492,8 @@ function DailyCheckin({ setupData, sprintData, onComplete }) {
       eyebrow: 'A',
       prompt: sprintData?.active
         ? `Your sprint domains are ${sprintData.domains?.join(', ')}. What would your Horizon Self do — and did you take action toward your sprint goals today?`
+        : mapData?.focusDomains?.length
+        ? `Your focus areas from The Map are ${mapData.focusDomains.map(id => id.charAt(0).toUpperCase() + id.slice(1).replace('_', ' ')).join(', ')}. What would your Horizon Self do? Where did you move in those areas today — and where did your old self show up?`
         : 'What would your Horizon Self do in the situations you faced today? Where did you act from your Horizon Self — and where did your old self show up?',
       next: 'skill',
     },
@@ -752,7 +810,7 @@ function LoopJournal({ loops, setupData, onSave }) {
 
 // ─── Dashboard ────────────────────────────────────────────────────────────────
 
-function Dashboard({ setupData, checkins, skills, sprintData, onCheckin }) {
+function Dashboard({ setupData, checkins, skills, sprintData, mapData, onCheckin }) {
   const today = getLocalDateStr()
   const checkedInToday = checkins.some(c => c.check_date === today)
   const streak = getStreakCount(checkins)
@@ -779,6 +837,21 @@ function Dashboard({ setupData, checkins, skills, sprintData, onCheckin }) {
         <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginBottom: '8px' }}>Your Horizon Self</div>
         <div style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: '#A8721A', lineHeight: 1.7 }}>"{setupData.horizonSelf}"</div>
       </Card>
+
+      {/* Map context — focus domains */}
+      {mapData?.focusDomains?.length > 0 && (
+        <Card style={{ marginBottom: '16px', background: 'rgba(200,146,42,0.02)' }}>
+          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginBottom: '6px' }}>Your Map · Focus areas</div>
+          <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#A8721A' }}>
+            {mapData.focusDomains.map(id => id.charAt(0).toUpperCase() + id.slice(1).replace('_', ' ')).join(' · ')}
+          </div>
+          {mapData.lifeHorizon && (
+            <div style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginTop: '6px', lineHeight: 1.6 }}>
+              "{mapData.lifeHorizon}"
+            </div>
+          )}
+        </Card>
+      )}
 
       {/* Today's check-in CTA */}
       {checkedInToday ? (
@@ -885,7 +958,7 @@ export function ExpansionPage() {
               ? Object.fromEntries(
                   Object.entries(mapRow.session.domainData).map(([id, d]) => [
                     id,
-                    { id, label: d.label || id, currentScore: d.currentScore, horizon: d.horizon }
+                    { id, label: d.label || id, currentScore: d.currentScore, horizon: d.horizonText || d.horizon }
                   ])
                 )
               : null,
@@ -953,11 +1026,12 @@ export function ExpansionPage() {
     load()
   }, [user])
 
-  async function handleSetupComplete({ horizonSelf, firstSkill }) {
+  async function handleSetupComplete({ horizonSelf, firstSkill, customGoals }) {
     try {
       const { data } = await supabase.from('expansion_setup').upsert({
         user_id: user.id,
         horizon_self: horizonSelf,
+        custom_goals: customGoals || null,
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id' }).select().maybeSingle()
 
@@ -1085,6 +1159,7 @@ export function ExpansionPage() {
                     checkins={checkins}
                     skills={skills}
                     sprintData={sprintData}
+                    mapData={mapData}
                     onCheckin={() => setView('checkin')}
                   />
 
@@ -1117,6 +1192,7 @@ export function ExpansionPage() {
                 <DailyCheckin
                   setupData={{ horizonSelf: setupData.horizon_self, nowSkill: skills.find(s => s.status === 'now') }}
                   sprintData={sprintData}
+                  mapData={mapData}
                   onComplete={handleCheckinComplete}
                 />
               )}
