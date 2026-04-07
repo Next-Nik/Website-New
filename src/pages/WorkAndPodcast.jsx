@@ -45,7 +45,9 @@ export function WorkWithNikPage() {
             <div style={{
               width: '100%', aspectRatio: '3/4',
               borderRadius: '4px', overflow: 'hidden',
-              border: '1.5px solid rgba(200,146,42,0.20)',
+              border: '1.5px solid rgba(200,146,42,0.70)',
+              outline: '1px solid rgba(200,146,42,0.35)',
+              outlineOffset: '5px',
               background: 'rgba(200,146,42,0.04)',
             }}>
               <img
