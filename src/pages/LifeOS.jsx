@@ -180,6 +180,31 @@ export function LifeOSPage() {
 
         {TOOLS.map(t => <ToolAccordion key={t.id} tool={t} />)}
 
+        {/* Expansion — coming tool */}
+        <div style={{ border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '14px', marginBottom: '10px', overflow: 'hidden', background: 'rgba(200,146,42,0.02)' }}>
+          <div style={{ padding: '22px 26px' }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px' }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ ...serif, fontSize: '19px', fontWeight: 400, color: '#A8721A', marginBottom: '2px' }}>Expansion</div>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', marginBottom: '6px' }}>Daily becoming practice</div>
+                <div style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.78)' }}>Who are you becoming, one day at a time?</div>
+              </div>
+              <a href="/tools/expansion" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.55)', textDecoration: 'none', color: '#A8721A', transition: 'all 0.2s', flexShrink: 0 }}>
+                <svg width="19" height="21" viewBox="0 0 11 12" fill="none" style={{ display: 'block', marginLeft: '2px' }}><path d="M2 1.5L9.5 6L2 10.5V1.5Z" fill="#A8721A"/></svg>
+              </a>
+            </div>
+            <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.10)' }}>
+              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.75, marginBottom: '10px', maxWidth: '540px' }}>
+                &ldquo;Most people overestimate what they can do in a day and underestimate what they can do in a year.&rdquo;
+              </p>
+              <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.35)', marginBottom: '16px' }}>Mike McCastle</p>
+              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.45)', lineHeight: 1.75, maxWidth: '540px' }}>
+                Expansion is built for the year. The skills and knowledge your horizon requires, practised daily — imperceptible each day, unstoppable over time. Like a glacier. Works alone, compounds when run alongside a Target Sprint.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '48px 0' }} />
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', alignItems: 'center' }}>
           <a href="/work-with-nik" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Work with Nik {'→'}</a>

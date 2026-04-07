@@ -7,8 +7,8 @@ import { supabase } from '../hooks/useSupabase'
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
-const DOMAIN_LABELS = ['Path', 'Spark', 'Body', 'Finances', 'Relationships', 'Inner Game', 'Outer Game']
-const DOMAIN_KEYS   = ['path', 'spark', 'body', 'finances', 'relationships', 'inner_game', 'outer_game']
+const DOMAIN_LABELS = ['Path', 'Spark', 'Body', 'Finances', 'Connection', 'Inner Game', 'Signal']
+const DOMAIN_KEYS   = ['path', 'spark', 'body', 'finances', 'connection', 'inner_game', 'signal']
 
 const TIER_LABELS = {
   10:'World-Class', 9:'Exemplar', 8:'Fluent', 7:'Capable', 6:'Functional',
@@ -212,8 +212,8 @@ function MapSlot({ mapData, sprintData }) {
 
   if (!mapData.complete) {
     const dd = mapData.session?.domainData ?? {}
-    const domainLabels = ['Path','Spark','Body','Finances','Relationships','Inner Game','Outer Game']
-    const domainKeys   = ['path','spark','body','finances','relationships','inner_game','outer_game']
+    const domainLabels = ['Path','Spark','Body','Finances','Connection','Inner Game','Signal']
+    const domainKeys   = ['path','spark','body','finances','connection','inner_game','signal']
     const doneCount = domainKeys.filter(k => {
       const d = dd[k]
       return d?.currentScore !== undefined

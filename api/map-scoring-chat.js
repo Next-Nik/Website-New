@@ -35,9 +35,9 @@ const DOMAIN_CONTEXT = {
   spark:         { label: 'Spark',         frame: 'vitality, aliveness, creative fire — the internal engine' },
   body:          { label: 'Body',          frame: 'physical health, energy, and the living system' },
   finances:      { label: 'Finances',      frame: 'financial health, agency, and freedom to act on what matters' },
-  relationships: { label: 'Relationships', frame: 'depth of connection, being truly known, love and belonging' },
+  relationships: { label: 'Connection', frame: 'depth of connection, being truly known, love and belonging' },
   inner_game:    { label: 'Inner Game',    frame: 'psychology, self-talk, the stories running beneath the surface' },
-  outer_game:    { label: 'Outer Game',    frame: 'how you show up in the world, alignment between inside and outside' },
+  signal:    { label: 'Signal',    frame: 'how you show up in the world, alignment between inside and outside' },
 }
 
 const SCORE_SYSTEM = (domain, avatarFinal) => {

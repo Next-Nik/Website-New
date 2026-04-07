@@ -45,6 +45,7 @@ import { MapPage }           from './tools/map/Map'
 import { FoundationPage }    from './tools/foundation/Foundation'
 import { PurposePiecePage, PurposePieceDeepPage } from './tools/purpose-piece/PurposePiece'
 import { TargetGoalsPage }   from './tools/target-goals/TargetGoals'
+import { ExpansionPage }     from './tools/expansion/Expansion'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -92,6 +93,7 @@ function AppInner() {
         <Route path="/tools/purpose-piece"      element={<PurposePiecePage />} />
         <Route path="/tools/purpose-piece/deep" element={<PurposePieceDeepPage />} />
         <Route path="/tools/target-goals"       element={<TargetGoalsPage />} />
+        <Route path="/tools/expansion"           element={<ExpansionPage />} />
 
         <Route path="/admin"           element={<AdminConsolePage />} />
         <Route path="/join/:slug"      element={<GroupJoinPage />} />

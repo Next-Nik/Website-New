@@ -13,9 +13,9 @@ const DOMAINS = {
   spark:         { label: "Spark",         frame: "the animating fire — aliveness, regeneration, the things that make you genuinely alive" },
   body:          { label: "Body",          frame: "your physical instrument — honouring the vessel through which everything else operates" },
   finances:      { label: "Finances",      frame: "the currency that gives you capacity to act — resources, agency, and freedom" },
-  relationships: { label: "Relationships", frame: "the quality of connection — being truly known and truly knowing others" },
+  relationships: { label: "Connection", frame: "the quality of connection — being truly known and truly knowing others" },
   inner_game:    { label: "Inner Game",    frame: "the source code — beliefs, stories, and what you carry about who you are and what's possible" },
-  outer_game:    { label: "Outer Game",    frame: "your external world — where inner alignment meets the world's perception of you" },
+  signal:    { label: "Signal",    frame: "your external world — where inner alignment meets the world's perception of you" },
 };
 
 // ── Shared voice preamble ─────────────────────────────────────────────────────

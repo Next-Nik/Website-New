@@ -40,6 +40,14 @@ const TOOLS = [
     color: '#2D6A4F',
   },
   {
+    key:   'expansion',
+    label: 'Expansion',
+    subtitle: 'Daily becoming practice',
+    path:  '/tools/expansion',
+    desc:  'Who are you becoming, one day at a time? T.E.A. practice, skill development, and thought loop work toward your Horizon Self.',
+    color: '#A8721A',
+  },
+  {
     key:   'orienteering',
     label: 'Find your starting point',
     subtitle: 'Site guide',

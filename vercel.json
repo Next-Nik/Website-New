@@ -25,6 +25,15 @@
     },
     "api/stripe-webhook.js": {
       "maxDuration": 30
+    },
+    "api/expansion-setup-chat.js": {
+      "maxDuration": 60
+    },
+    "api/expansion-daily-chat.js": {
+      "maxDuration": 60
+    },
+    "api/expansion-loop-chat.js": {
+      "maxDuration": 60
     }
   },
   "rewrites": [
@@ -59,6 +68,18 @@
     {
       "source": "/api/stripe-webhook",
       "destination": "/api/stripe-webhook"
+    },
+    {
+      "source": "/tools/expansion/api/setup-chat",
+      "destination": "/api/expansion-setup-chat"
+    },
+    {
+      "source": "/tools/expansion/api/daily-chat",
+      "destination": "/api/expansion-daily-chat"
+    },
+    {
+      "source": "/tools/expansion/api/loop-chat",
+      "destination": "/api/expansion-loop-chat"
     },
     {
       "source": "/(.*)",

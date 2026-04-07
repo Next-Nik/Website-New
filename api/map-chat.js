@@ -1,6 +1,6 @@
 // LIFE OS — CHAT ENGINE v3
 // Seven domains + Brain as synthesis question
-// Domains: Path, Spark, Body, Finances, Relationships, Inner Game, Outer Game
+// Domains: Path, Spark, Body, Finances, Connection, Inner Game, Signal
 // Life's mission frame throughout. Behavioural evidence over self-report.
 // Corpus upgrades: Avatar theatre framing, character synthesis step, thinness named not routed,
 // Horizon Goal calibration probe, permission for partial models, job/path distinction,
@@ -118,11 +118,11 @@ Tell me both. They're both real data.`,
     horizonPrompt: `If a genie granted your wish in Finances — what would it be? What would financial thriving actually look like for your specific life — not the ceiling, your actual wish?`
   },
   {
-    id: "relationships",
-    label: "Relationships",
+    id: "connection",
+    label: "Connection",
     stewardshipQuestion: "Am I truly known by anyone — and am I truly knowing them?",
     fractal: "Society",
-    avatarPrompt: `Relationships holds the depth of human connection — the question isn't how many people you know, it's whether anyone truly knows you.
+    avatarPrompt: `Connection holds the depth of human connection — the question isn't how many people you know, it's whether anyone truly knows you.
 
 To set your scale — who represents 10/10 here for someone like you? Someone whose depth of connection, quality of belonging, and health of bonds genuinely represents what's possible.
 
@@ -130,11 +130,11 @@ Think across the different layers: intimate partnership, close friendships, fami
 
     avatarSynthesisPrompt: `What's the essential quality in this character's relationships? Is it the depth, the safety, the being-known, the community — what's unmistakable about how they connect with people?`,
 
-    placementPrompt: `Where are your Relationships right now — honestly?
+    placementPrompt: `Where are your Connection right now — honestly?
 
 The quality of your closest connections, your sense of belonging, what's genuinely deep and what's lonely or frayed. Include what's circumstantial — if you've recently moved, if people are far away, if there's been rupture. Context matters here.`,
 
-    horizonPrompt: `If a genie granted your wish in Relationships — what would it be? What would your ideal relational life actually look like — not the perfect version, your genuine wish?`
+    horizonPrompt: `If a genie granted your wish in Connection — what would it be? What would your ideal relational life actually look like — not the perfect version, your genuine wish?`
   },
   {
     id: "inner_game",
@@ -156,21 +156,21 @@ If this domain is hard to answer — that's worth naming too.`,
     horizonPrompt: `If a genie granted your wish in Inner Game — what would it be? What would a genuinely healthy, grounded inner life feel like for you specifically?`
   },
   {
-    id: "outer_game",
-    label: "Outer Game",
+    id: "signal",
+    label: "Signal",
     stewardshipQuestion: "Is what I'm broadcasting aligned with who I actually am?",
     fractal: "Society",
-    avatarPrompt: `Outer Game holds the broadcast — the signal you send to the world about who you are and what you stand for, whether you're conscious of it or not. A low score here isn't an aesthetic problem. It's a gap between inner truth and outer transmission.
+    avatarPrompt: `Signal holds the broadcast — the signal you send to the world about who you are and what you stand for, whether you're conscious of it or not. A low score here isn't an aesthetic problem. It's a gap between inner truth and outer transmission.
 
-To set your scale — who represents 10/10 in Outer Game for someone like you? Someone whose external expression — how they present, how they carry themselves, what they put into the world — is genuinely aligned with who they are inside.`,
+To set your scale — who represents 10/10 in Signal for someone like you? Someone whose external expression — how they present, how they carry themselves, what they put into the world — is genuinely aligned with who they are inside.`,
 
     avatarSynthesisPrompt: `What's unmistakable about this character's broadcast? What do people immediately receive when they encounter them — online, in person, in their environment? What's the alignment you're pointing at?`,
 
-    placementPrompt: `Where are you right now in Outer Game — honestly?
+    placementPrompt: `Where are you right now in Signal — honestly?
 
 How you're actually showing up externally. Your appearance, your environment, your digital presence, the gap between how you want to be perceived and how you're actually coming across. Include what you've been meaning to change but haven't. The presence that's planned but not yet public.`,
 
-    horizonPrompt: `If a genie granted your wish in Outer Game — what would it be? What would genuine alignment between your inner truth and your outer broadcast look like for your actual life?`
+    horizonPrompt: `If a genie granted your wish in Signal — what would it be? What would genuine alignment between your inner truth and your outer broadcast look like for your actual life?`
   }
 ];
 
@@ -179,7 +179,7 @@ const BRAIN_PROMPT = `One final question — and this one is different from the 
 
 Brain isn't a domain to assess like the rest. It's a synthesis question that takes its shape from everything you've just shared.
 
-Given your Horizon Life across all seven domains — the life you've described wanting in Path, Spark, Body, Finances, Relationships, Inner Game, and Outer Game — what do you actually need to learn?
+Given your Horizon Life across all seven domains — the life you've described wanting in Path, Spark, Body, Finances, Connection, Inner Game, and Signal — what do you actually need to learn?
 
 Not what you think you should learn. Not what's interesting in the abstract. What knowledge, skill, or understanding would most directly close the gap between where you are and where you want to be?`;
 

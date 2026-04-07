@@ -22,7 +22,7 @@ const DOMAINS = [
     description: 'The currency that gives you the capacity to act. Not just money \u2014 the resources, mobility, and agency to convert your visions into reality and your desires into choices. When it flows, things move. When it\'s blocked, everything stalls.',
   },
   {
-    name: 'Relationships',
+    name: 'Connection',
     question: 'Am I truly known by anyone \u2014 and am I truly knowing them?',
     description: 'How you inhabit connection across the full range of your relational life. Not just the presence of people \u2014 the quality of the connection. Intimate partnership, friendship, family, collaborators, community. Are you genuinely known?',
   },
@@ -32,7 +32,7 @@ const DOMAINS = [
     description: 'Your relationship with yourself. The beliefs, stories, values, and emotional patterns you carry about who you are and what you\'re capable of. The source code \u2014 everything else runs on it. Inner Game shapes the floor and ceiling of every other domain.',
   },
   {
-    name: 'Outer Game',
+    name: 'Signal',
     question: 'Is what I\'m broadcasting aligned with who I actually am?',
     description: 'Your external world: environment, appearance, presence, and public-facing persona. Where inner alignment meets the world\'s perception of you \u2014 and the two need to match. Not as performance. As honest expression.',
   },

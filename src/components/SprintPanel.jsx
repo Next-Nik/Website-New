@@ -10,9 +10,9 @@ const DOMAINS = [
   { id: 'spark',         label: 'Spark' },
   { id: 'body',          label: 'Body' },
   { id: 'finances',      label: 'Finances' },
-  { id: 'relationships', label: 'Relationships' },
+  { id: 'connection', label: 'Connection' },
   { id: 'inner_game',    label: 'Inner Game' },
-  { id: 'outer_game',    label: 'Outer Game' },
+  { id: 'signal',    label: 'Signal' },
 ]
 
 const TIER = { 10:'World-Class',9.5:'Exemplar+',9:'Exemplar',8.5:'Fluent+',8:'Fluent',7.5:'Capable+',7:'Capable',6.5:'Functional+',6:'Functional',5.5:'Plateau+',5:'Threshold',4.5:'Friction+',4:'Friction',3.5:'Strain+',3:'Strain',2.5:'Crisis+',2:'Crisis',1.5:'Emergency+',1:'Emergency',0:'Ground Zero' }

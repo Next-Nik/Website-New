@@ -3,6 +3,13 @@ import { Link } from 'react-router-dom'
 
 const TOOLS = [
   {
+    path: '/tools/expansion',
+    name: 'Expansion',
+    subtitle: 'Daily becoming practice',
+    hook: 'T.E.A. daily practice, skill development, and thought loop work toward your Horizon Self.',
+    eyebrow: 'Become',
+  },
+  {
     path: '/tools/orienteering',
     name: 'Find your starting point',
     hook: 'A short conversation that reads where you are and points you somewhere real. No sign-up needed.',
