@@ -64,7 +64,7 @@ export function WorkWithNikPage() {
           </div>
         </div>
 
-        <Quote text="Someone who will shift you out of emotional processing, analysis, or healing mode and into 'what's next, what are you building, what does your future look like' — and who treats you as someone capable of operating at a high level." cite="B.G.B." />
+        <Quote text="Someone who will shift you out of emotional processing, analysis, or healing mode and into 'what's next, what are you building, what does your future look like' — and who treats you as someone capable of operating at a high level." cite="B.G.B. · coaching client" />
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 40px' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>What this is.</h2>
@@ -77,10 +77,10 @@ export function WorkWithNikPage() {
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '40px 0' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '28px' }}>What people say.</h2>
-        <Quote text="Working with Nik definitely changed my life. He has the ability to build up the right foundation and the right container to actually be vulnerable and go straight to where you need to." cite="S.H." />
-        <Quote text="The work we've done has peeled back the narrative that said 'I can't do that' and revealed another world of possibility. I feel like I've been liberated." cite="C.W." />
-        <Quote text="I think this is the best decision I've ever made — having you as my coach. You've helped me unlock things I thought were dead and buried long ago." cite="L.D." />
-        <Quote text="Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being — what I really wanted out of life — and how to live as the best version of myself." cite="O.W.H." />
+        <Quote text="Working with Nik definitely changed my life. He has the ability to build up the right foundation and the right container to actually be vulnerable and go straight to where you need to." cite="S.H. · programme participant" />
+        <Quote text="The work we've done has peeled back the narrative that said 'I can't do that' and revealed another world of possibility. I feel like I've been liberated." cite="C.W. · coaching client" />
+        <Quote text="I think this is the best decision I've ever made — having you as my coach. You've helped me unlock things I thought were dead and buried long ago." cite="L.D. · coaching client" />
+        <Quote text="Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being — what I really wanted out of life — and how to live as the best version of myself." cite="O.W.H. · programme participant" />
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '40px 0' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>How it works.</h2>

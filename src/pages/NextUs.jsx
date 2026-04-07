@@ -71,6 +71,48 @@ export function NextUsPage() {
         </div>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '56px', maxWidth: '600px' }}>NextUs is the perceptual layer. A living map of where humanity is trying to go {'\u2014'} across seven domains, at every scale {'\u2014'} so that the people already doing the work can find each other, aim at something worth building, and compound their effort rather than scatter it.</p>
 
+
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 48px' }} />
+
+        {/* Fractal connection */}
+        <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '16px' }}>The same seven domains. Two scales.</h2>
+        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '12px', maxWidth: '600px' }}>
+          What you develop in yourself, you contribute to the world. The seven domains of your life map directly onto the seven domains of civilisation. Your personal work is not a detour from the larger work. It is the larger work, at a different scale.
+        </p>
+        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '48px', maxWidth: '560px' }}>
+          We are connected. We are fractal. The state of the world is a reflection of how we are doing individually — and how we are doing individually is a reflection of how we are doing as a whole.
+        </p>
+
+        {/* Domain map */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 40px 1fr', marginBottom: '64px', maxWidth: '640px' }}>
+          <div style={{ borderBottom: '2px solid rgba(200,146,42,0.30)', paddingBottom: '12px', marginBottom: '0' }}>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A' }}>Life OS · Personal</span>
+          </div>
+          <div />
+          <div style={{ borderBottom: '2px solid rgba(200,146,42,0.30)', paddingBottom: '12px', marginBottom: '0' }}>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A' }}>NextUs · Civilisational</span>
+          </div>
+          {[
+            ['Path', 'Vision'],
+            ['Spark', 'Human Being'],
+            ['Body', 'Nature'],
+            ['Finances', 'Finance & Economy'],
+            ['Connection', 'Society'],
+            ['Inner Game', 'Legacy'],
+            ['Signal', 'Technology'],
+          ].map(([personal, civil], i) => [
+            <div key={personal} style={{ padding: '12px 0', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none' }}>
+              <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', fontWeight: 300, color: '#0F1523' }}>{personal}</span>
+            </div>,
+            <div key={personal + '-arrow'} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none' }}>
+              <span style={{ color: 'rgba(200,146,42,0.45)', fontSize: '16px' }}>→</span>
+            </div>,
+            <div key={civil} style={{ padding: '12px 0 12px 16px', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none' }}>
+              <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', fontWeight: 300, color: '#A8721A' }}>{civil}</span>
+            </div>,
+          ])}
+        </div>
+
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 32px' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '8px' }}>Seven domains.</h2>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '32px', maxWidth: '560px' }}>Click any domain to go deeper.</p>

@@ -276,6 +276,18 @@ export function HomePage() {
         </p>
       </section>
 
+      {/* Fractal connection */}
+      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '0 40px 64px' }}>
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '18px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, textAlign: 'center', maxWidth: '560px', margin: '0 auto' }}>
+          What you build in yourself, you contribute to the world.
+        </p>
+        <div style={{ textAlign: 'center', marginTop: '16px' }}>
+          <a href="/nextus" style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', opacity: 0.78 }}>
+            See how your life connects to the larger work →
+          </a>
+        </div>
+      </section>
+
       {/* Orienteering embed */}
       <section id="start" className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
         <div style={{ width: '1px', height: '52px', background: 'rgba(200,146,42,0.20)', margin: '0 auto 64px' }} />

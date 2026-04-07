@@ -1370,8 +1370,8 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, ac
   const [horizonScore, setHorizonScore] = useState(data?.horizonScore)
   const [context, setContext] = useState(data?.context || '')
   const [showContext, setShowContext] = useState(false)
-  const serif = { fontFamily: \"'Cormorant Garamond', Georgia, serif\" }
-  const sc    = { fontFamily: \"'Cormorant SC', Georgia, serif\" }
+  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
   function save(overrides = {}) {
     const updated = { id: sub.id, label: sub.label, active, currentScore, horizonText, horizonScore, context, ...overrides }
@@ -1447,8 +1447,8 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, ac
 }
 
 function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate }) {
-  const serif = { fontFamily: \"'Cormorant Garamond', Georgia, serif\" }
-  const sc    = { fontFamily: \"'Cormorant SC', Georgia, serif\" }
+  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
   const initSubDomains = () => {
     if (existingData?.subDomains) return existingData.subDomains
