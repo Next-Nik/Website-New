@@ -56,6 +56,10 @@ export function LoginPage() {
         <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.72)' }}>NextUs</span>
       </div>
 
+      <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '24px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
+        <span style={{ fontSize: '16px' }}>←</span> Back
+      </a>
+
       <div style={{ width: '100%', maxWidth: '400px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 36px 36px' }}>
         {!sent ? (
           <>
@@ -94,7 +98,7 @@ export function LoginPage() {
               We sent a sign-in link to<br />
               <span style={{ fontStyle: 'normal', color: '#A8721A' }}>{email}</span>
             </p>
-            <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '12px', lineHeight: 1.6 }}>Click the link to continue. You can close this tab.</p>
+            <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '12px', lineHeight: 1.6 }}>Open the link in your email to continue — you can close this tab in the meantime.</p>
           </div>
         )}
       </div>

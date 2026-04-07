@@ -34,6 +34,9 @@
     },
     "api/expansion-loop-chat.js": {
       "maxDuration": 60
+    },
+    "api/connection-synthesis-chat.js": {
+      "maxDuration": 60
     }
   },
   "rewrites": [
@@ -80,6 +83,10 @@
     {
       "source": "/tools/expansion/api/loop-chat",
       "destination": "/api/expansion-loop-chat"
+    },
+    {
+      "source": "/tools/map/api/connection-synthesis",
+      "destination": "/api/connection-synthesis-chat"
     },
     {
       "source": "/(.*)",

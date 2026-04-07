@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { CivilisationalFramePanel } from '../components/CivilisationalFramePanel'
 import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
@@ -105,6 +106,7 @@ export function NextUsPage() {
       </section>
 
       <CivilisationalFramePanel />
+      <ToolCompassPanel />
       <SiteFooter />
     </div>
   )

@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
+import { ToolCompassPanel } from '../../components/ToolCompassPanel'
 import { Nav } from '../../components/Nav'
 import { ChatBubble } from '../../components/ChatBubble'
 import { TypingIndicator } from '../../components/TypingIndicator'
 import { useAuth } from '../../hooks/useAuth'
-import { DomainsPanel } from '../../components/DomainsPanel'
 
-const OPENING_MESSAGE = `Welcome. Tell me where you are right now — what’s present, what’s on your mind, or just how things feel. I’ll point you somewhere real.`
+const OPENING_MESSAGE = `Hi — I’m North Star, your guide here. This usually takes three to five exchanges. At the end you’ll get a reflection on where you are and two or three specific places to start.
+
+Tell me where you are right now — what’s present, what’s on your mind, or just how things feel. I’ll point you somewhere real.`
 
 export function OrienteeringPage() {
   const { user, loading } = useAuth()
@@ -86,7 +88,7 @@ export function OrienteeringPage() {
           <span className="tool-eyebrow">Life OS</span>
           <h1 className="tool-title">Orienteering</h1>
           <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', marginTop: '6px', lineHeight: 1.65, maxWidth: '420px' }}>
-            Not sure where to start? Begin here. A conversation to find your direction.
+            A short conversation — three to five exchanges — that reads where you are and points you somewhere real. No jargon, no sign-up required.
           </p>
         </div>
 
@@ -122,20 +124,24 @@ export function OrienteeringPage() {
         </div>
 
         {!user && (
-          <p style={{
-            marginTop: '1.25rem',
-            fontSize: '1.3125rem',
-            color: 'rgba(15,21,35,0.78)',
-            textAlign: 'center'
+          <div style={{
+            marginTop: '1.5rem',
+            padding: '16px 20px',
+            background: 'rgba(200,146,42,0.04)',
+            border: '1px solid rgba(200,146,42,0.20)',
+            borderRadius: '12px',
+            textAlign: 'center',
           }}>
-            <a href={`/login?redirect=${encodeURIComponent(window.location.href)}`}>
-              Sign in
+            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.78)', margin: '0 0 8px', lineHeight: 1.6 }}>
+              North Star will remember where you are and what you’re working on — across every tool.
+            </p>
+            <a href={`/login?redirect=${encodeURIComponent(window.location.href)}`}
+              style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none' }}>
+              Sign in to save your results →
             </a>
-            {' '}to save your results.
-          </p>
+          </div>
         )}
       </div>
-      <DomainsPanel />
       <style>{`
         @media (max-width: 640px) {
           .tool-wrap { padding-left: 24px; padding-right: 24px; }
@@ -143,6 +149,7 @@ export function OrienteeringPage() {
           .input-area textarea, .btn-send { width: 100%; box-sizing: border-box; }
         }
       `}</style>
+      <ToolCompassPanel />
     </div>
   )
 }

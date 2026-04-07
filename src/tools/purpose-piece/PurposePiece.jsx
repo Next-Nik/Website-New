@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { ToolCompassPanel } from '../../components/ToolCompassPanel'
 import { useNavigate } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
@@ -362,6 +363,7 @@ function StageBreadcrumb({ activeStage }) {
           </div>
         )
       })}
+      <ToolCompassPanel />
     </div>
   )
 }

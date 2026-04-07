@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { ToolCompassPanel } from '../../components/ToolCompassPanel'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
@@ -663,6 +664,7 @@ export function FoundationPage() {
           </p>
         </div>
       </div>
+      <ToolCompassPanel />
       <ProtocolPanel />
     </div>
   )

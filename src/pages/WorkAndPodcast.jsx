@@ -1,4 +1,5 @@
 import { Nav } from '../components/Nav'
+import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { ScalePanel } from '../components/ScalePanel'
 import { SiteFooter } from '../components/SiteFooter'
 
@@ -56,7 +57,7 @@ export function WorkWithNikPage() {
                   e.currentTarget.parentNode.style.display = 'flex'
                   e.currentTarget.parentNode.style.alignItems = 'center'
                   e.currentTarget.parentNode.style.justifyContent = 'center'
-                  e.currentTarget.parentNode.innerHTML = '<span style="font-family: Cormorant SC, Georgia, serif; font-size: 13px; letter-spacing: 0.14em; color: rgba(168,114,26,0.4); padding: 20px; text-align: center;">Photo coming</span>'
+                  e.currentTarget.parentNode.style.background = 'rgba(200,146,42,0.06)'
                 }}
               />
             </div>
@@ -67,8 +68,9 @@ export function WorkWithNikPage() {
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 40px' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>What this is.</h2>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>One-on-one work built around where you actually are and what you{'\u2019'}re trying to build. Not a fixed programme. A real conversation and real support {'\u2014'} determined by the work, not a curriculum.</p>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '40px', maxWidth: '600px' }}>The work draws on the full ecosystem {'\u2014'} Life OS, Purpose Piece, Horizon Leap {'\u2014'} but what it draws on in any engagement is determined by what{'\u2019'}s actually needed.</p>
+        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>One-on-one work built around where you actually are and what you{'’'}re trying to build. Not a fixed programme. A real conversation and real support {'—'} determined by the work, not a curriculum.</p>
+        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>The work draws on the full ecosystem {'—'} Life OS, Purpose Piece, Horizon Leap {'—'} but what it draws on in any engagement is determined by what{'’'}s actually needed.</p>
+        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '40px', maxWidth: '600px' }}>One call per week, with focused work in between. We begin with The Map {'—'} an honest picture of where you are across all seven domains {'—'} then follow wherever the work needs to go from there.</p>
 
         <Card label="This is for you if" body="You're high-functioning and aware that functioning well isn't the same as living from what you're capable of · You've done work on yourself and something still isn't moving · You have a real horizon — something you're building — and a felt gap between where you are and what it requires · You're ready to be seen clearly and worked with honestly" />
         <Card label="This is not for you if" body="You're in active crisis or need stabilisation · You want a programme to follow · You're not ready to move" />
@@ -92,6 +94,7 @@ export function WorkWithNikPage() {
         <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginTop: '14px' }}>30 minutes · no cost · no obligation</p>
       </div>
       <ScalePanel side="right" />
+      <ToolCompassPanel />
       <SiteFooter />
     </div>
   )

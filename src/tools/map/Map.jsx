@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { ToolCompassPanel } from '../../components/ToolCompassPanel'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
@@ -146,6 +147,7 @@ function HourglassPicker({ onScore, horizonMode = false, currentScore }) {
           <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>{LABEL_MAP[hovered]}</span>
         </div>
       )}
+      <ToolCompassPanel />
     </div>
   )
 }
@@ -1218,6 +1220,25 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
         })}
       </div>
 
+      {/* System drag rule */}
+      {(() => {
+        const dragDomains = DOMAINS.filter(d => {
+          const s = domainData[d.id]?.currentScore
+          return s !== undefined && s < 5
+        })
+        if (dragDomains.length === 0) return null
+        return (
+          <div style={{ padding: '16px 28px', borderBottom: '1px solid rgba(200,146,42,0.07)', background: 'rgba(200,146,42,0.04)' }}>
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', background: 'rgba(200,146,42,0.12)', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '40px', padding: '3px 10px', flexShrink: 0, marginTop: '2px', whiteSpace: 'nowrap' }}>System drag</span>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, margin: 0 }}>
+                {dragDomains.map(d => d.label).join(', ')} {dragDomains.length === 1 ? 'is' : 'are'} pulling on the rest of your life. A domain below 5 creates drag across everything else. Address this first — before optimising anything above it.
+              </p>
+            </div>
+          </div>
+        )
+      })()}
+
       {/* Pattern */}
       {mapData?.overall_reflection && (
         <div style={{ padding: '18px 28px', borderBottom: '1px solid rgba(200,146,42,0.07)' }}>
@@ -1322,6 +1343,230 @@ function AuthModal() {
 }
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
+
+
+// ─── Connection Sub-Domain Step ────────────────────────────────────────────
+// The Connection domain has five default sub-domains plus user-defined ones.
+// Each is individually activatable and goes through the same three-step process.
+// North Star synthesises across all active sub-domains at the end.
+
+const DEFAULT_CONNECTION_SUBDOMAINS = [
+  { id: 'intimate',     label: 'Intimate / Romantic', defaultActive: true },
+  { id: 'family',       label: 'Family',              defaultActive: true },
+  { id: 'friendship',   label: 'Friendship',          defaultActive: true },
+  { id: 'collaborators',label: 'Collaborators',       defaultActive: true },
+  { id: 'community',    label: 'Community',           defaultActive: false },
+]
+
+function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, active }) {
+  const [step, setStep] = useState(() => {
+    if (!data) return 'idle'
+    if (data.horizonText) return 'done'
+    if (data.currentScore !== undefined) return 'horizon'
+    return 'score'
+  })
+  const [currentScore, setCurrentScore] = useState(data?.currentScore)
+  const [horizonText, setHorizonText] = useState(data?.horizonText || '')
+  const [horizonScore, setHorizonScore] = useState(data?.horizonScore)
+  const [context, setContext] = useState(data?.context || '')
+  const [showContext, setShowContext] = useState(false)
+  const serif = { fontFamily: \"'Cormorant Garamond', Georgia, serif\" }
+  const sc    = { fontFamily: \"'Cormorant SC', Georgia, serif\" }
+
+  function save(overrides = {}) {
+    const updated = { id: sub.id, label: sub.label, active, currentScore, horizonText, horizonScore, context, ...overrides }
+    onUpdate(updated)
+    if (updated.horizonText && updated.currentScore !== undefined) onComplete(updated)
+  }
+
+  return (
+    <div style={{ border: \`1px solid \${active ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.12)'}\`, borderRadius: '10px', marginBottom: '8px', overflow: 'hidden', opacity: active ? 1 : 0.6 }}>
+      {/* Header row */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 18px', cursor: 'pointer', background: active ? 'rgba(200,146,42,0.03)' : 'transparent' }}>
+        <button onClick={() => onToggle(sub.id)} style={{ width: '20px', height: '20px', borderRadius: '50%', border: \`2px solid \${active ? '#A8721A' : 'rgba(200,146,42,0.30)'}\`, background: active ? '#A8721A' : 'transparent', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {active && <span style={{ color: '#FFFFFF', fontSize: '12px', lineHeight: 1 }}>✓</span>}
+        </button>
+        <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: active ? '#0F1523' : 'rgba(15,21,35,0.45)', flex: 1 }}>{sub.label}</span>
+        {active && step === 'done' && <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: '#A8721A' }}>✓ Complete</span>}
+        {active && currentScore !== undefined && <span style={{ ...sc, fontSize: '13px', color: '#A8721A' }}>{currentScore}/10</span>}
+      </div>
+
+      {/* Active content */}
+      {active && (
+        <div style={{ padding: '0 18px 18px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
+          {/* Context field */}
+          <div style={{ marginTop: '14px', marginBottom: '16px' }}>
+            <button onClick={() => setShowContext(!showContext)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', padding: 0 }}>
+              {showContext ? '▾' : '▸'} What North Star should know about this area
+            </button>
+            {showContext && (
+              <textarea
+                value={context}
+                onChange={e => { setContext(e.target.value); save({ context: e.target.value }) }}
+                placeholder="Any context that matters here — relationship structure, family dynamics, anything that helps North Star give you relevant advice rather than assumptions..."
+                rows={3}
+                style={{ width: '100%', marginTop: '8px', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.22)', background: '#FAFAF7', ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.78)', resize: 'vertical', outline: 'none', lineHeight: 1.6, boxSizing: 'border-box' }}
+              />
+            )}
+          </div>
+
+          {/* Score */}
+          {(step === 'score' || step === 'horizon' || step === 'done') && (
+            <div style={{ marginBottom: '14px' }}>
+              <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>Where are you now? (0–10)</div>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {[0,1,2,3,4,5,6,7,8,9,10].map(n => (
+                  <button key={n} onClick={() => { setCurrentScore(n); setStep('horizon'); save({ currentScore: n }) }} style={{ width: '34px', height: '34px', borderRadius: '50%', border: \`1.5px solid \${currentScore === n ? '#A8721A' : 'rgba(200,146,42,0.25)'}\`, background: currentScore === n ? '#A8721A' : 'transparent', color: currentScore === n ? '#FFFFFF' : 'rgba(15,21,35,0.78)', ...sc, fontSize: '13px', cursor: 'pointer', transition: 'all 0.15s' }}>{n}</button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Horizon */}
+          {(step === 'horizon' || step === 'done') && currentScore !== undefined && (
+            <div>
+              <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>Horizon goal for this area</div>
+              <textarea
+                value={horizonText}
+                onChange={e => setHorizonText(e.target.value)}
+                placeholder="If this area was exactly where you want it — what would that look like?"
+                rows={2}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.22)', background: '#FAFAF7', ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.78)', resize: 'vertical', outline: 'none', lineHeight: 1.6, marginBottom: '8px', boxSizing: 'border-box' }}
+              />
+              {horizonText.trim() && step !== 'done' && (
+                <button onClick={() => { setStep('done'); save({ horizonText, currentScore }) }} style={{ padding: '8px 20px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '13px', letterSpacing: '0.12em', cursor: 'pointer' }}>
+                  Lock this in →
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate }) {
+  const serif = { fontFamily: \"'Cormorant Garamond', Georgia, serif\" }
+  const sc    = { fontFamily: \"'Cormorant SC', Georgia, serif\" }
+
+  const initSubDomains = () => {
+    if (existingData?.subDomains) return existingData.subDomains
+    return DEFAULT_CONNECTION_SUBDOMAINS.map(s => ({ ...s, active: s.defaultActive, currentScore: undefined, horizonText: '', horizonScore: undefined, context: '' }))
+  }
+
+  const [subDomains, setSubDomains] = useState(initSubDomains)
+  const [customLabel, setCustomLabel] = useState('')
+  const [addingCustom, setAddingCustom] = useState(false)
+  const [synthesis, setSynthesis] = useState(existingData?.synthesis || '')
+  const [synthesising, setSynthesising] = useState(false)
+  const [synthesisDone, setSynthesisDone] = useState(!!existingData?.synthesis)
+
+  const activeSubDomains = subDomains.filter(s => s.active)
+  const completedSubDomains = activeSubDomains.filter(s => s.horizonText && s.currentScore !== undefined)
+  const allActiveComplete = activeSubDomains.length > 0 && completedSubDomains.length === activeSubDomains.length
+
+  function toggleSubDomain(id) {
+    setSubDomains(prev => prev.map(s => s.id === id ? { ...s, active: !s.active } : s))
+  }
+
+  function updateSubDomain(updated) {
+    setSubDomains(prev => prev.map(s => s.id === updated.id ? { ...s, ...updated } : s))
+    const overallScore = subDomains.filter(s => s.active && s.currentScore !== undefined).reduce((sum, s) => sum + s.currentScore, 0) / Math.max(1, subDomains.filter(s => s.active && s.currentScore !== undefined).length)
+    onUpdate({ ...existingData, subDomains, currentScore: Math.round(overallScore * 10) / 10 })
+  }
+
+  function addCustomSubDomain() {
+    if (!customLabel.trim()) return
+    const id = 'custom_' + Date.now()
+    setSubDomains(prev => [...prev, { id, label: customLabel.trim(), active: true, currentScore: undefined, horizonText: '', context: '' }])
+    setCustomLabel('')
+    setAddingCustom(false)
+  }
+
+  async function synthesise() {
+    setSynthesising(true)
+    try {
+      const res = await fetch('/tools/map/api/connection-synthesis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subDomains: completedSubDomains }),
+      })
+      const data = await res.json()
+      setSynthesis(data.synthesis)
+      setSynthesisDone(true)
+      const avgScore = completedSubDomains.reduce((sum, s) => sum + s.currentScore, 0) / completedSubDomains.length
+      const finalData = { ...existingData, subDomains, synthesis: data.synthesis, currentScore: Math.round(avgScore * 10) / 10, horizonText: 'See sub-domain horizons', horizonLocked: true }
+      onUpdate(finalData)
+      onComplete(finalData)
+    } catch {
+      setSynthesis('Something went wrong. Please try again.')
+    } finally {
+      setSynthesising(false)
+    }
+  }
+
+  return (
+    <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '12px', padding: '24px 24px 20px', animation: 'fadeUp 0.3s ease-out' }}>
+      <div style={{ marginBottom: '20px' }}>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', marginBottom: '6px' }}>North Star · Connection</div>
+        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, margin: '0 0 4px' }}>
+          Connection holds your full relational landscape. Activate the areas that apply to your life — and add your own if needed.
+        </p>
+        <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.50)', lineHeight: 1.6, margin: 0 }}>
+          Use the "What North Star should know" field to share any context that would help give you relevant rather than generic guidance.
+        </p>
+      </div>
+
+      {/* Sub-domain list */}
+      {subDomains.map(sub => (
+        <ConnectionSubDomainCard
+          key={sub.id}
+          sub={sub}
+          data={subDomains.find(s => s.id === sub.id)}
+          active={sub.active}
+          onToggle={toggleSubDomain}
+          onUpdate={updateSubDomain}
+          onComplete={() => {}}
+        />
+      ))}
+
+      {/* Add custom */}
+      {addingCustom ? (
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+          <input value={customLabel} onChange={e => setCustomLabel(e.target.value)} placeholder="Name this relationship area" onKeyDown={e => e.key === 'Enter' && addCustomSubDomain()} style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.30)', background: '#FAFAF7', ...serif, fontSize: '15px', outline: 'none' }} />
+          <button onClick={addCustomSubDomain} style={{ padding: '10px 16px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '13px', cursor: 'pointer' }}>Add</button>
+          <button onClick={() => setAddingCustom(false)} style={{ padding: '10px 14px', borderRadius: '40px', border: '1px solid rgba(200,146,42,0.25)', background: 'transparent', ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}>Cancel</button>
+        </div>
+      ) : (
+        <button onClick={() => setAddingCustom(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', padding: '8px 0', display: 'block' }}>
+          + Add a relationship area
+        </button>
+      )}
+
+      {/* Synthesis */}
+      {allActiveComplete && !synthesisDone && (
+        <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.15)' }}>
+          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.65)', marginBottom: '14px', lineHeight: 1.65 }}>
+            All active areas complete. North Star can now reflect the whole picture back to you.
+          </p>
+          <button onClick={synthesise} disabled={synthesising} style={{ padding: '12px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', cursor: synthesising ? 'wait' : 'pointer', opacity: synthesising ? 0.7 : 1 }}>
+            {synthesising ? 'North Star is reflecting…' : 'Get North Star\'s reflection →'}
+          </button>
+        </div>
+      )}
+
+      {synthesisDone && synthesis && (
+        <div style={{ marginTop: '20px', padding: '20px 22px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.20)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '10px' }}>
+          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '10px' }}>North Star · Connection synthesis</div>
+          {synthesis.split('\n\n').map((p, i) => (
+            <p key={i} style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.8, margin: i > 0 ? '12px 0 0' : 0 }}>{p}</p>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export function MapPage() {
   const { user, loading: authLoading }    = useAuth()
@@ -1515,8 +1760,14 @@ export function MapPage() {
         {phase === 'welcome' && (
           <div style={{ animation: 'fadeUp 0.4s ease-out' }}>
             <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.18)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '12px', padding: '32px 32px 28px', marginBottom: '20px' }}>
+              <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', marginBottom: '16px' }}>
+                I’m North Star. I’ll be with you throughout this process.
+              </p>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(1.375rem, 3vw, 1.625rem)', fontWeight: 300, fontStyle: 'italic', color: '#0F1523', lineHeight: 1.9, marginBottom: '12px' }}>
-                The Map is a process through which you will connect to the version of your life on the other side of the things you've been wanting to fix, change, alter, improve, repair, and heal.
+                This is not a report card. It is a coherence map — showing you where the gaps exist between who you’re becoming and how you’re currently living.
+              </p>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '12px', fontStyle: 'italic' }}>
+                The Map takes you through the version of your life on the other side of the things you’ve been wanting to fix, change, alter, improve, repair, and heal.
               </p>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: '#A8721A', lineHeight: 1.7, marginBottom: '28px', fontStyle: 'italic' }}>
                 If that work was done — what life would you be living, and who would you be?
@@ -1600,6 +1851,15 @@ export function MapPage() {
                   marginBottom: '24px',
                 }}>
                   {activeDomain ? (
+                    activeDomain.id === 'connection' ? (
+                      <ConnectionDomainStep
+                        key={activeDomain.id}
+                        domain={activeDomain}
+                        existingData={domainData[activeDomain.id]}
+                        onUpdate={handleDomainUpdate}
+                        onComplete={handleDomainComplete}
+                      />
+                    ) : (
                     <DomainStep
                       key={activeDomain.id}
                       domain={activeDomain}
@@ -1607,6 +1867,7 @@ export function MapPage() {
                       onUpdate={handleDomainUpdate}
                       onComplete={handleDomainComplete}
                     />
+                    ))
                   ) : (
                     <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', textAlign: 'center', padding: '20px 0' }}>
                       Tap a domain to begin.
@@ -1698,6 +1959,15 @@ export function MapPage() {
                     maxWidth: '560px',
                   }}>
                     {activeDomain ? (
+                      activeDomain.id === 'connection' ? (
+                        <ConnectionDomainStep
+                          key={activeDomain.id}
+                          domain={activeDomain}
+                          existingData={domainData[activeDomain.id]}
+                          onUpdate={handleDomainUpdate}
+                          onComplete={handleDomainComplete}
+                        />
+                      ) : (
                       <DomainStep
                         key={activeDomain.id}
                         domain={activeDomain}
@@ -1705,6 +1975,7 @@ export function MapPage() {
                         onUpdate={handleDomainUpdate}
                         onComplete={handleDomainComplete}
                       />
+                      )
                     ) : null}
                     {allComplete && (
                       <div style={{ marginTop: '24px', padding: '20px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', textAlign: 'center' }}>

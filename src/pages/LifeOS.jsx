@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import { GlossaryPanel } from '../components/GlossaryPanel'
+import { ToolCompassPanel } from '../components/ToolCompassPanel'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
@@ -22,10 +23,10 @@ const TOOLS = [
   },
   {
     id: 'map',
-    subtitle: 'See where you are. Set where you're going.', name: 'The Map', hook: 'An honest picture of where you are across every domain.',
+    subtitle: "See where you are. Set where you're going.", name: 'The Map', hook: 'An honest picture of where you are across every domain.',
     label: 'The map',
-    desc: 'You can\'t live a life full of YES if you\'re not clear about where you\'re starting from and where you want to go.',
-    detail: 'This process is simple, challenging, and has transformed lives. If you\'re ready to be firmly on your path and actively levelling up towards a life full of YES — start charting your course today.',
+    desc: "You can't live a life full of YES if you're not clear about where you're starting from and where you want to go.",
+    detail: "This process is simple, challenging, and has transformed lives. If you're ready to be firmly on your path and actively levelling up towards a life full of YES — start charting your course today.",
     meta: '10 minutes · sign in to save results',
     primary: { label: 'Begin The Map →', url: '/tools/map' },
     secondary: { label: 'Go deeper with Nik', url: '/work-with-nik' },
@@ -180,8 +181,8 @@ export function LifeOSPage() {
 
         {TOOLS.map(t => <ToolAccordion key={t.id} tool={t} />)}
 
-        {/* Expansion — coming tool */}
-        <div style={{ border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '14px', marginBottom: '10px', overflow: 'hidden', background: 'rgba(200,146,42,0.02)' }}>
+        {/* Expansion */}
+        <div style={{ border: '1.5px solid rgba(200,146,42,0.35)', borderRadius: '14px', marginBottom: '10px', overflow: 'hidden', background: 'rgba(200,146,42,0.02)' }}>
           <div style={{ padding: '22px 26px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px' }}>
               <div style={{ flex: 1 }}>
@@ -194,12 +195,12 @@ export function LifeOSPage() {
               </a>
             </div>
             <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.10)' }}>
-              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.75, marginBottom: '10px', maxWidth: '540px' }}>
+              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, marginBottom: '10px', maxWidth: '540px' }}>
                 &ldquo;Most people overestimate what they can do in a day and underestimate what they can do in a year.&rdquo;
               </p>
               <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.35)', marginBottom: '16px' }}>Mike McCastle</p>
-              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.45)', lineHeight: 1.75, maxWidth: '540px' }}>
-                Expansion is built for the year. The skills and knowledge your horizon requires, practised daily — imperceptible each day, unstoppable over time. Like a glacier. Works alone, compounds when run alongside a Target Sprint.
+              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, maxWidth: '540px' }}>
+                Daily skill and knowledge practice toward your horizon. T.E.A. alignment check. Imperceptible daily. Unstoppable over time. Amplified when run alongside a Target Sprint.
               </p>
             </div>
           </div>
@@ -263,6 +264,7 @@ export function LifeOSPage() {
         </div>
       </section>
 
+      <ToolCompassPanel />
       <GlossaryPanel />
       <SiteFooter />
     </div>

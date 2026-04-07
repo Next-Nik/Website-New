@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { ToolCompassPanel } from '../../components/ToolCompassPanel'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
@@ -109,6 +110,7 @@ function WelcomeModal({ onBegin }) {
           Begin {'\u2192'}
         </button>
       </div>
+      <ToolCompassPanel />
     </div>
   )
 }

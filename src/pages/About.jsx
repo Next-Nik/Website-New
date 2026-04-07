@@ -1,4 +1,5 @@
 import { Nav } from '../components/Nav'
+import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { CivilisationalFramePanel } from '../components/CivilisationalFramePanel'
 import { TestimonialsPanel } from '../components/TestimonialsPanel'
 import { SiteFooter } from '../components/SiteFooter'
@@ -153,7 +154,7 @@ export function AboutPage() {
                 e.currentTarget.parentNode.style.display = 'flex'
                 e.currentTarget.parentNode.style.alignItems = 'center'
                 e.currentTarget.parentNode.style.justifyContent = 'center'
-                e.currentTarget.parentNode.innerHTML = '<span style="font-family: Cormorant SC, Georgia, serif; font-size: 13px; letter-spacing: 0.14em; color: rgba(168,114,26,0.5); padding: 24px; text-align: center;">Photo coming</span>'
+                e.currentTarget.parentNode.style.background = 'rgba(200,146,42,0.06)'
               }}
             />
           </div>
@@ -269,6 +270,7 @@ export function AboutPage() {
 
       <CivilisationalFramePanel />
       <TestimonialsPanel />
+      <ToolCompassPanel />
       <SiteFooter />
     </div>
   )
