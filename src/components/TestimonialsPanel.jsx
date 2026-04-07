@@ -124,15 +124,8 @@ export function TestimonialsPanel() {
 
             {/* Featured testimonial */}
             <div style={{ padding: '24px 24px 16px' }}>
-              <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', padding: '16px 0 16px 20px', marginBottom: '12px' }}>
-                <p style={{ ...serif, fontSize: '1.25rem', fontStyle: 'italic', color: '#0F1523', lineHeight: 1.75, margin: '0 0 12px' }}>
-                  "{t.quote}"
-                </p>
-                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#A8721A' }}>{t.name}</span>
-              </div>
-
-              {/* Navigation */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0' }}>
+              {/* Navigation — above the quote so it stays fixed as you read */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 0 16px' }}>
                 <button
                   onClick={() => setIdx(i => (i - 1 + TESTIMONIALS.length) % TESTIMONIALS.length)}
                   style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}
@@ -144,6 +137,13 @@ export function TestimonialsPanel() {
                   onClick={() => setIdx(i => (i + 1) % TESTIMONIALS.length)}
                   style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 8px' }}
                 >Next →</button>
+              </div>
+
+              <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', padding: '16px 0 16px 20px' }}>
+                <p style={{ ...serif, fontSize: '1.25rem', fontStyle: 'italic', color: '#0F1523', lineHeight: 1.75, margin: '0 0 12px' }}>
+                  "{t.quote}"
+                </p>
+                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#A8721A' }}>{t.name}</span>
               </div>
             </div>
 
