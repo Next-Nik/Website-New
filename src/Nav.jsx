@@ -16,6 +16,7 @@ export function Nav({ activePath }) {
   const links = [
     { to: '/',              label: 'Home',          key: 'home' },
     { to: '/nextus',        label: 'NextUs',        key: 'nextus' },
+    { to: '/life-os',       label: 'Life OS',       key: 'life-os' },
     { to: '/work-with-nik', label: 'Work with Nik', key: 'work-with-nik' },
     { to: '/about',         label: 'About',         key: 'about' },
     { to: '/podcast',       label: 'Podcast',       key: 'podcast' },

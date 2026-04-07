@@ -205,7 +205,10 @@ export function ToolDrawer({ open, onClose }) {
                   <Link
                     key={tool.key}
                     to={tool.path}
-                    onClick={onClose}
+                    onClick={() => {
+                      try { localStorage.setItem('auth_redirect', window.location.origin + tool.path) } catch {}
+                      onClose()
+                    }}
                     style={{
                       display: 'block', padding: '16px 18px',
                       background: '#FFFFFF',

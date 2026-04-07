@@ -177,19 +177,24 @@ function ChatThread({ chat, initialMessage }) {
 
 // ─── Map redirect ─────────────────────────────────────────────────────────────
 
-function MapRedirect() {
+function MapRedirect({ onSkip }) {
   return (
     <div style={{ maxWidth: '560px', margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
       <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>One step first</span>
-      <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,40px)', fontWeight: 300, ...dark, lineHeight: 1.1, marginBottom: '20px' }}>Expansion needs your Map.</h2>
+      <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,40px)', fontWeight: 300, ...dark, lineHeight: 1.1, marginBottom: '20px' }}>Expansion works best with your Map.</h2>
       <p style={{ ...serif, fontSize: '17px', fontWeight: 300, ...muted, lineHeight: 1.8, marginBottom: '16px' }}>
-        Expansion is built on your horizon goals — where you're going, what the gap is, who you're becoming on the way there.
+        Expansion is built on your horizon goals — where you're going, what the gap is, who you're becoming on the way there. The Map gives North Star everything it needs to work with you properly.
       </p>
       <p style={{ ...serif, fontSize: '17px', fontWeight: 300, ...muted, lineHeight: 1.8, marginBottom: '40px' }}>
-        The Map gives this tool everything it needs. It's a seven-domain honest picture of your life — where you are now and where you want to be. Most people work through it over several days. It's the foundation this practice is built on.
+        Most people work through The Map over several days. It's the foundation this practice is built on — and the difference between a generic practice and one that's genuinely yours.
       </p>
       <Btn primary onClick={() => window.location.href = '/tools/map'}>Begin The Map →</Btn>
-      <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', ...muted, marginTop: '20px', opacity: 0.7 }}>You can come back to Expansion once your Map is complete.</p>
+      <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', ...muted, marginTop: '28px', marginBottom: '8px', opacity: 0.7 }}>
+        Already done your Map elsewhere, or want to explore first?
+      </p>
+      <button onClick={onSkip} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', textDecoration: 'underline', padding: 0 }}>
+        Continue without Map data
+      </button>
     </div>
   )
 }
@@ -841,6 +846,7 @@ export function ExpansionPage() {
   const { tier, loading: accessLoading } = useAccess('expansion')
 
   const [view, setView] = useState('dashboard') // dashboard | checkin | skills | loops | patterns
+  const [skipMap, setSkipMap] = useState(false)
   const [setupData, setSetupData] = useState(null)
   const [mapData, setMapData] = useState(null)
   const [mapLoading, setMapLoading] = useState(true)
@@ -1032,15 +1038,15 @@ export function ExpansionPage() {
         <Nav activePath="life-os" />
 
         {/* Map redirect */}
-        {!mapData && <MapRedirect />}
+        {!mapData && !skipMap && <MapRedirect onSkip={() => setSkipMap(true)} />}
 
         {/* Setup */}
-        {mapData && !setupData && (
+        {(mapData || skipMap) && !setupData && (
           <SetupPhase mapData={mapData} onComplete={handleSetupComplete} />
         )}
 
         {/* Main tool */}
-        {mapData && setupData && (
+        {(mapData || skipMap) && setupData && (
           <>
             {/* Tool header */}
             <div style={{ maxWidth: '820px', margin: '0 auto', padding: 'clamp(88px,10vw,112px) clamp(20px,5vw,40px) 0' }}>
