@@ -109,6 +109,7 @@ export function AboutPage() {
           <ToolRow name="Purpose Piece" desc="The pattern beneath how you're naturally built to contribute. Not a personality test — recognition." />
           <ToolRow name="The Map" desc="Seven domains. Three steps each. An honest picture of where you are and where you want to be." />
           <ToolRow name="Target Sprint" desc="Focused sprint planning across your three most urgent domains. From horizon to next action." />
+          <ToolRow name="Expansion" desc="Daily becoming practice. T.E.A. alignment, skill development, and thought loop work toward your Horizon Self." />
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', marginTop: '52px', paddingTop: '44px', borderTop: '1px solid rgba(200,146,42,0.20)', alignItems: 'center' }}>
@@ -137,7 +138,7 @@ export function AboutPage() {
             borderRadius: '4px',
             overflow: 'hidden',
             border: '1.5px solid rgba(200,146,42,0.70)',
-            outline: '1px solid rgba(200,146,42,0.35)',
+            outline: '1.5px solid rgba(200,146,42,0.55)',
             outlineOffset: '5px',
             background: 'rgba(200,146,42,0.04)',
             position: 'relative',
