@@ -857,7 +857,7 @@ export function ExpansionPage() {
 
   // Load all data
   useEffect(() => {
-    if (!user) return
+    if (!user) { setMapLoading(false); return }
     async function load() {
       setMapLoading(true)
       try {
