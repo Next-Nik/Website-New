@@ -115,7 +115,6 @@ export function Nav({ activePath }) {
               onClick={() => setMobileMenuOpen(o => !o)}
               aria-label="Open menu"
               style={{
-                display: 'none',
                 background: 'none', border: 'none', cursor: 'pointer',
                 padding: '8px', color: '#0F1523',
               }}

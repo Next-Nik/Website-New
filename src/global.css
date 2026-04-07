@@ -391,6 +391,11 @@ button {
 
 /* ─── Mobile ────────────────────────────────────────────────── */
 
+/* Hide hamburger on desktop */
+.mobile-menu-btn {
+  display: none;
+}
+
 @media (max-width: 600px) {
   .nav-links { display: none; }
 
