@@ -109,7 +109,6 @@ export function BottomTabs() {
 
   const isHome    = pathname === '/'
   const isTools   = pathname.startsWith('/tools')
-  const isProfile = pathname === '/profile'
   const isMore    = ['/nextus','/work-with-nik','/podcast','/about'].some(p => pathname.startsWith(p))
 
   const tabs = [
@@ -128,14 +127,6 @@ export function BottomTabs() {
       active: isTools || drawerOpen,
       action: () => { setMoreOpen(false); setDrawerOpen(o => !o) },
       to:     null,
-    },
-    {
-      key:    'profile',
-      label:  user ? 'Profile' : 'Sign in',
-      icon:   <ProfileIcon active={isProfile} initial={initial} />,
-      active: isProfile,
-      action: null,
-      to:     user ? '/profile' : '/login',
     },
     {
       key:    'more',
