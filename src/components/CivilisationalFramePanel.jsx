@@ -166,8 +166,9 @@ export function CivilisationalFramePanel() {
                         <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', minWidth: '18px' }}>
                           {String(i + 1).padStart(2, '0')}
                         </span>
-                        <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: '#A8721A', lineHeight: 1.2 }}>
+                        <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: '#A8721A', lineHeight: 1.2, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                           {domain.name}
+                          <DomainTooltip domainKey={NEXTUS_LABEL_MAP[domain.name] || domain.id} system="nextus" position="below" />
                         </span>
                       </div>
                       <span style={{ color: '#A8721A', fontSize: '1.3125rem', flexShrink: 0, transition: 'transform 0.2s', transform: isOpen ? 'rotate(90deg)' : '' }}>

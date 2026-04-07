@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { CivilisationalFramePanel } from '../components/CivilisationalFramePanel'
+import { DomainTooltip, LIFEOS_LABEL_MAP, NEXTUS_LABEL_MAP } from '../components/DomainTooltip'
 import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import DomainExplorer from '../components/domain-explorer/DomainExplorer'
@@ -9,13 +10,13 @@ const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const DOMAINS = [
-  { key: 'human-being',     label: 'Human Being',      tip: 'Who we are becoming.', desc: 'What it means to be fully human. The conditions for knowing yourself, developing fully, and contributing meaningfully to life on earth.' },
-  { key: 'society',         label: 'Society',           tip: 'How we live together.', desc: 'The architecture of collective life. How communities govern themselves, trust each other, and create shared futures.' },
-  { key: 'nature',          label: 'Nature',            tip: 'The living systems we depend on.', desc: 'The living systems that make all life possible. Humanity as participant, not owner.' },
-  { key: 'technology',      label: 'Technology',        tip: 'What we build to extend our reach.', desc: 'The tools we build — and whether they extend our wisdom or outpace it.' },
-  { key: 'finance-economy', label: 'Finance & Economy', tip: 'How we move what matters.', desc: 'What we reward. How resources flow — and whether they move toward what sustains life or away from it.' },
-  { key: 'legacy',          label: 'Legacy',            tip: 'What we leave behind.', desc: "What we leave behind. Each generation's responsibility to the next seven." },
-  { key: 'vision',          label: 'Vision',            tip: 'Where we are going.', desc: 'The orienting capacity of civilisation. A shared picture of where we are going — and the infrastructure to move toward it together.' },
+  { key: 'human-being',     label: 'Human Being',      tip: 'Everything pertaining to the individual.', desc: 'Personal rights and needs. Development. Expression.' },
+  { key: 'society',         label: 'Society',           tip: 'Everyone together.', desc: 'Governance, structure, frameworks. The science and art of community building and collective well-being.' },
+  { key: 'nature',          label: 'Nature',            tip: 'Ecosystem Earth.', desc: 'Earth, air, water, flora, fauna, and everything else pertaining to the life on Earth.' },
+  { key: 'technology',      label: 'Technology',        tip: 'The tools we build for humanity and Earth.', desc: 'The tools we build to aid and amplify humanity and life on Earth.' },
+  { key: 'finance-economy', label: 'Finance & Economy', tip: 'Systems of exchange.', desc: 'The management and exchange of resources.' },
+  { key: 'legacy',          label: 'Legacy',            tip: 'The footprint of mankind.', desc: "What we leave behind for future generations. Each generation's responsibility to the next seven." },
+  { key: 'vision',          label: 'Vision',            tip: 'Where we are going.', desc: 'The orienting force of civilisation. A shared picture of where we are going — and the infrastructure to move toward it together.' },
 ]
 
 function DomainModal({ domain, onClose }) {
@@ -101,14 +102,16 @@ export function NextUsPage() {
             ['Inner Game', 'Legacy'],
             ['Signal', 'Technology'],
           ].map(([personal, civil], i) => [
-            <div key={personal} style={{ padding: '12px 0', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none' }}>
+            <div key={personal} style={{ padding: '12px 0', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', fontWeight: 300, color: '#0F1523' }}>{personal}</span>
+              <DomainTooltip domainKey={LIFEOS_LABEL_MAP[personal]} system="lifeos" position="below" />
             </div>,
             <div key={personal + '-arrow'} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none' }}>
               <span style={{ color: 'rgba(200,146,42,0.45)', fontSize: '16px' }}>→</span>
             </div>,
-            <div key={civil} style={{ padding: '12px 0 12px 16px', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none' }}>
+            <div key={civil} style={{ padding: '12px 0 12px 16px', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', fontWeight: 300, color: '#A8721A' }}>{civil}</span>
+              <DomainTooltip domainKey={NEXTUS_LABEL_MAP[civil]} system="nextus" position="below" />
             </div>,
           ])}
         </div>
@@ -123,7 +126,10 @@ export function NextUsPage() {
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,146,42,0.02)'}
               onMouseLeave={e => e.currentTarget.style.background = ''}
             >
-              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', minWidth: '170px', flexShrink: 0 }}>{d.label}</div>
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', minWidth: '170px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                {d.label}
+                <DomainTooltip domainKey={d.key} system="nextus" position="below" />
+              </div>
               <div style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.6 }}>{d.tip}</div>
             </div>
           ))}

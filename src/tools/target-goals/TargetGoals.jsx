@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { ToolCompassPanel } from '../../components/ToolCompassPanel'
 import { Nav } from '../../components/Nav'
+import { DomainTooltip } from '../../components/DomainTooltip'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
 import { AccessGate } from '../../components/AccessGate'
@@ -373,6 +374,7 @@ function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoT
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: allDone ? 0 : '10px' }}>
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: allDone ? '#A8721A' : '#0F1523', textTransform: 'uppercase' }}>
                   {allDone ? '✓ ' : ''}{d.label}
+                  <DomainTooltip domainKey={d.id} system="lifeos" position="below" />
                 </span>
                 {!allDone && (
                   <button onClick={() => { onGoToDomain(d.id); onClose() }}
