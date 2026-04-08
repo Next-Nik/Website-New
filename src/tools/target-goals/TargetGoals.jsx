@@ -1191,10 +1191,44 @@ export function TargetGoalsPage() {
   const [domainData,       setDomainData]       = useState({})
   const loadedRef = useRef(false)
 
-  // Restore session
+  // Reset loadedRef when user changes so a second user in the same session loads their data
+  useEffect(() => { loadedRef.current = false }, [user?.id])
+
+  // Restore session — check Supabase first, fall back to sessionStorage
   useEffect(() => {
     if (!user || loadedRef.current) return
     loadedRef.current = true
+    loadSprintData()
+    loadMapData()
+  }, [user])
+
+  async function loadSprintData() {
+    try {
+      const { data } = await supabase
+        .from('target_goal_sessions')
+        .select('id, domains, domain_data, quarter_type, target_date, end_date_label, has_map_data, scores_at_start, status')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
+      if (data?.domains?.length) {
+        setSessionId(data.id)
+        setSelectedDomains(data.domains)
+        setDomainData(data.domain_data || {})
+        setQuarterType(data.quarter_type || null)
+        setTargetDate(data.target_date || null)
+        setEndDateLabel(data.end_date_label || null)
+        setHasMapData(data.has_map_data || false)
+        if (data.scores_at_start) setScores(data.scores_at_start)
+        setActiveDomainId(data.domains[0] || null)
+        setPhase('sprint')
+        setShowWelcome(false)
+        return
+      }
+    } catch {}
+    // Fall back to sessionStorage if no Supabase record
     try {
       const raw = sessionStorage.getItem(SS_KEY)
       if (raw) {
@@ -1207,11 +1241,11 @@ export function TargetGoalsPage() {
           setEndDateLabel(saved.endDateLabel || null)
           setDomainData(saved.domainData || {})
           setActiveDomainId(saved.activeDomainId || saved.selectedDomains?.[0] || null)
+          setShowWelcome(false)
         }
       }
     } catch {}
-    loadMapData()
-  }, [user])
+  }
 
   // Persist session
   useEffect(() => {
@@ -1361,7 +1395,7 @@ export function TargetGoalsPage() {
             domain_data: {},
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
-          }).then(({ data }) => {
+          }).select('id').then(({ data }) => {
             if (data?.[0]?.id) setSessionId(data[0].id)
           }).catch(() => {})
         }
