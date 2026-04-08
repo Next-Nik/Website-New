@@ -1504,7 +1504,8 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate }) {
       setSynthesis(data.synthesis)
       setSynthesisDone(true)
       const avg = completedSubDomains.reduce((sum, s) => sum + s.currentScore, 0) / completedSubDomains.length
-      const final = { ...existingData, subDomains, synthesis: data.synthesis, currentScore: Math.round(avg * 10) / 10, horizonText: 'See sub-domain horizons', horizonLocked: true }
+      const avgScore = Math.round(avg * 10) / 10
+      const final = { ...existingData, subDomains, synthesis: data.synthesis, currentScore: avgScore, horizonScore: avgScore, horizonText: 'See sub-domain horizons', horizonLocked: true }
       onUpdate(final)
       onComplete(final)
     } catch {
@@ -1699,23 +1700,26 @@ export function MapPage() {
   async function runSynthesis() {
     setPhase('synthesis')
     setThinking(true)
+    setSynthesis(null)
     try {
-      const res = await fetch('/api/map-chat', {
+      const res = await fetch('/api/map-synthesis-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'synthesise', domainData, userId: user?.id }),
+        body: JSON.stringify({ domainData, userId: user?.id }),
       })
       const data = await res.json()
       setThinking(false)
       if (data.mapData) {
         setMapData(data.mapData)
-        setSynthesis(data.synthesis)
+        setSynthesis(data.synthesis || data.mapData.overall_reflection || '')
         setPhase('results')
         saveResults(domainData, data.mapData)
+      } else {
+        setSynthesis('error')
       }
     } catch {
       setThinking(false)
-      setSynthesis('Something went wrong. Please try again.')
+      setSynthesis('error')
     }
   }
 
@@ -2030,6 +2034,20 @@ export function MapPage() {
                 <>
                   <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '12px' }}>BUILDING YOUR MAP</p>
                   <div className="typing-indicator"><span /><span /><span /></div>
+                </>
+              ) : synthesis === 'error' || (!thinking && !synthesis) ? (
+                <>
+                  <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.1875rem', color: 'rgba(15,21,35,0.72)', marginBottom: '20px', lineHeight: 1.7 }}>
+                    Something went wrong building your map. Your domain work is saved.
+                  </p>
+                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <button onClick={runSynthesis} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', background: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '40px', padding: '10px 22px', cursor: 'pointer' }}>
+                      Try again
+                    </button>
+                    <button onClick={() => setPhase('mapping')} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                      ← Back to editing
+                    </button>
+                  </div>
                 </>
               ) : synthesis}
             </div>

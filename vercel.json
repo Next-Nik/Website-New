@@ -37,6 +37,12 @@
     },
     "api/connection-synthesis-chat.js": {
       "maxDuration": 60
+    },
+    "api/map-scoring-chat.js": {
+      "maxDuration": 60
+    },
+    "api/map-synthesis-chat.js": {
+      "maxDuration": 60
     }
   },
   "rewrites": [
@@ -47,6 +53,14 @@
     {
       "source": "/tools/map/api/avatar-chat",
       "destination": "/api/map-avatar-chat"
+    },
+    {
+      "source": "/api/map-scoring-chat",
+      "destination": "/api/map-scoring-chat"
+    },
+    {
+      "source": "/api/map-synthesis-chat",
+      "destination": "/api/map-synthesis-chat"
     },
     {
       "source": "/tools/orienteering/api/chat",
