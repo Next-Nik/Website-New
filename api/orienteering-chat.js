@@ -51,15 +51,15 @@ THE DEVELOPMENTAL MAP — use this to locate, not label:
 - Stabilisation: hard but manageable. Rhythm, gentleness, small anchors. Foundation if anything.
 - Healing / processing: working through something. Therapy, trusted relationships. Tools support, don't lead.
 - Functional / stuck: life intact, something muted or misaligned. The Map belongs here.
-- Growth / building: something alive and moving. Purpose Piece, Target Goals.
+- Growth / building: something alive and moving. Purpose Piece, Target Sprint.
 - Contributing / expressing: asking what their gift is for. NextUs. Work with Nik.
 
 THE LIFE OS TOOLS — only when genuinely appropriate:
 - Foundation: nervous system regulation, grounding audio. For: anyone who needs to get still first.
 - The Map: honest self-assessment across 7 life domains. For: people ready to see clearly where they are.
-- Pulse: daily/weekly rhythm tracking. For: people building honest self-witnessing.
 - Purpose Piece: contribution archetype and civilisational coordinates. For: people ready to name what they're here for.
-- Target Goals: 90 days, 3 domains, reverse-engineered plan. For: people in execution mode.
+- Target Sprint: 90 days, 3 domains, reverse-engineered plan. For: people in execution mode.
+- Expansion: daily Horizon Self practice, skill development, thought loop work. For: people actively closing the gap between who they are and who they're becoming.
 - Horizon Leap / Work with Nik: deep identity-level work, facilitated. For: people at the ceiling of what tools can do, or who need a thinking partner at the level of their vision.
 - NextUs: the civilisational map. For: people ready to locate their work in the larger picture.
 
@@ -114,7 +114,7 @@ module.exports = async (req, res) => {
   // Load cross-tool North Star context
   const northStarCtx = userId ? await getNorthStarContext(userId) : null
   const nsBlock = northStarCtx ? formatNorthStarContext(northStarCtx) : ''
-  const systemPrompt = nsBlock ? SYSTEM_PROMPT + '\n\n' + nsBlock : SYSTEM_PROMPT
+  const systemPrompt = NORTH_STAR_IDENTITY + '\n\n' + SYSTEM_PROMPT + (nsBlock ? '\n\n' + nsBlock : '')
 
   // First turn — generate the opening question
   const msgs = messages.length

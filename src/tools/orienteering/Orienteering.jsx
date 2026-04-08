@@ -4,19 +4,26 @@ import { Nav } from '../../components/Nav'
 import { ChatBubble } from '../../components/ChatBubble'
 import { TypingIndicator } from '../../components/TypingIndicator'
 import { useAuth } from '../../hooks/useAuth'
+import { supabase } from '../../hooks/useSupabase'
 
-const OPENING_MESSAGE = `Hi — I’m North Star, your guide here. This usually takes three to five exchanges. At the end you’ll get a reflection on where you are and two or three specific places to start.
+const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const gold  = { color: '#A8721A' }
+const meta  = { color: 'rgba(15,21,35,0.78)' }
 
-Tell me where you are right now — what’s present, what’s on your mind, or just how things feel. I’ll point you somewhere real.`
+const OPENING_MESSAGE = `Hi — I'm North Star, your guide here. This usually takes three to five exchanges. At the end you'll get a reflection on where you are and two or three specific places to start.
+
+Tell me where you are right now — what's present, what's on your mind, or just how things feel. I'll point you somewhere real.`
 
 export function OrienteeringPage() {
   const { user, loading } = useAuth()
   const [messages, setMessages] = useState([
     { role: 'assistant', content: OPENING_MESSAGE }
   ])
-  const [input, setInput] = useState('')
+  const [input, setInput]     = useState('')
   const [thinking, setThinking] = useState(false)
-  const bottomRef = useRef(null)
+  const [done, setDone]       = useState(false)
+  const bottomRef   = useRef(null)
   const textareaRef = useRef(null)
 
   useEffect(() => {
@@ -63,9 +70,33 @@ export function OrienteeringPage() {
       if (!res.ok) throw new Error(`API error ${res.status}`)
 
       const data = await res.json()
-      const reply = data.content?.[0]?.text ?? data.reply ?? ''
 
-      setMessages(prev => [...prev, { role: 'assistant', content: reply }])
+      // B2 fix: API returns { message }, not { content[0].text }
+      const raw = data.message || ''
+
+      // B3 fix: parse result JSON and render result card
+      let parsed = null
+      try { parsed = JSON.parse(raw.replace(/```json|```/g, '').trim()) } catch {}
+
+      if (parsed?.type === 'results') {
+        setMessages(prev => [...prev, { role: 'result', data: parsed }])
+        setDone(true)
+
+        // M1 fix: write North Star notes for signed-in full-page users
+        if (user?.id && parsed.stage) {
+          supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'orienteering').catch(() => {})
+          const oriNotes = [
+            parsed.stage       ? `Orienteering stage: ${parsed.stage}` : null,
+            parsed.stage_note  ? `Stage context: ${parsed.stage_note}` : null,
+            parsed.recommendations?.[0]?.title ? `Recommended entry point: ${parsed.recommendations[0].title}` : null,
+          ].filter(Boolean)
+          if (oriNotes.length) {
+            supabase.from('north_star_notes').insert(oriNotes.map(note => ({ user_id: user.id, tool: 'orienteering', note }))).catch(() => {})
+          }
+        }
+      } else {
+        setMessages(prev => [...prev, { role: 'assistant', content: raw }])
+      }
     } catch (err) {
       setMessages(prev => [
         ...prev,
@@ -87,15 +118,41 @@ export function OrienteeringPage() {
         <div className="tool-header">
           <span className="tool-eyebrow">Life OS</span>
           <h1 className="tool-title">Orienteering</h1>
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', marginTop: '6px', lineHeight: 1.65, maxWidth: '420px' }}>
+          <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', ...meta, marginTop: '6px', lineHeight: 1.65, maxWidth: '420px' }}>
             A short conversation — three to five exchanges — that reads where you are and points you somewhere real. No jargon, no sign-up required.
           </p>
         </div>
 
         <div className="chat-thread">
-          {messages.map((m, i) => (
-            <ChatBubble key={i} role={m.role} content={m.content} />
-          ))}
+          {messages.map((m, i) => {
+            if (m.role === 'result') {
+              const d = m.data
+              return (
+                <div key={i} style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', padding: '22px', alignSelf: 'flex-start', maxWidth: '92%', marginBottom: '8px' }}>
+                  {d.stage && <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, marginBottom: '8px' }}>{d.stage}</div>}
+                  <div style={{ ...serif, fontSize: '16px', lineHeight: 1.8, color: '#0F1523', marginBottom: '16px' }}>{d.reflection}</div>
+                  {(d.recommendations || []).map((r, ri) => (
+                    <div key={ri} style={{ borderTop: '1px solid rgba(200,146,42,0.20)', paddingTop: '14px', marginTop: '14px' }}>
+                      <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...meta, marginBottom: '4px' }}>{r.category}</div>
+                      <div style={{ ...serif, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>{r.title}</div>
+                      <div style={{ ...serif, fontSize: '17px', ...meta, lineHeight: 1.65, marginBottom: '8px' }}>{r.description}</div>
+                      {r.link && r.link !== 'null' && (
+                        <a href={r.link} style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold, textDecoration: 'none' }}>
+                          {r.link_text || 'Learn more \u2192'}
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                  {d.closing && (
+                    <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic', ...meta, marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
+                      {d.closing}
+                    </div>
+                  )}
+                </div>
+              )
+            }
+            return <ChatBubble key={i} role={m.role} content={m.content} />
+          })}
           {thinking && (
             <div className="bubble bubble-assistant">
               <TypingIndicator />
@@ -104,26 +161,8 @@ export function OrienteeringPage() {
           <div ref={bottomRef} />
         </div>
 
-        <div className="input-area">
-          <textarea
-            ref={textareaRef}
-            value={input}
-            onChange={handleInput}
-            onKeyDown={handleKeyDown}
-            placeholder={'Type your response…'}
-            rows={1}
-            disabled={thinking}
-          />
-          <button
-            className="btn-send"
-            onClick={send}
-            disabled={!input.trim() || thinking}
-          >
-            Send
-          </button>
-        </div>
-
-        {!user && (
+        {/* I2 fix: sign-in nudge only appears after results, not on page load */}
+        {done && !loading && !user && (
           <div style={{
             marginTop: '1.5rem',
             padding: '16px 20px',
@@ -132,13 +171,35 @@ export function OrienteeringPage() {
             borderRadius: '12px',
             textAlign: 'center',
           }}>
-            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.78)', margin: '0 0 8px', lineHeight: 1.6 }}>
-              North Star will remember where you are and what you’re working on — across every tool.
+            <p style={{ ...serif, fontSize: '1.125rem', fontWeight: 300, ...meta, margin: '0 0 8px', lineHeight: 1.6 }}>
+              North Star will remember where you are and what you're working on — across every tool.
             </p>
             <a href={`/login?redirect=${encodeURIComponent(window.location.href)}`}
-              style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none' }}>
+              style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none' }}>
               Sign in to save your results →
             </a>
+          </div>
+        )}
+
+        {/* M2 fix: hide input after results */}
+        {!done && (
+          <div className="input-area">
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={handleInput}
+              onKeyDown={handleKeyDown}
+              placeholder={'Type your response…'}
+              rows={1}
+              disabled={thinking}
+            />
+            <button
+              className="btn-send"
+              onClick={send}
+              disabled={!input.trim() || thinking}
+            >
+              Send
+            </button>
           </div>
         )}
       </div>
