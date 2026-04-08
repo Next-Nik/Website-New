@@ -638,6 +638,39 @@ export function PurposePiecePage() {
   useEffect(() => { sessionRef.current = session }, [session])
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }) }, [messages, thinking])
 
+  // Define window.App handlers for the injected Phase 4 HTML (B2 fix)
+  useEffect(() => {
+    if (!showReveal) return
+    window.App = {
+      onPpNoteInput(value) {
+        const lockBtn = document.getElementById('ppLockBtn')
+        if (lockBtn) lockBtn.style.display = value.trim() ? 'block' : 'none'
+      },
+      togglePpProfile() {
+        const summary = document.getElementById('ppProfileSummary')
+        const btn     = document.getElementById('ppExpandBtn')
+        if (!summary) return
+        const isHidden = summary.style.display === 'none'
+        summary.style.display = isHidden ? 'block' : 'none'
+        if (btn) btn.textContent = isHidden ? 'Hide profile ↑' : 'See your Purpose Piece profile →'
+      },
+      lockPpNote() {
+        const textarea  = document.getElementById('ppPersonalNote')
+        const lockBtn   = document.getElementById('ppLockBtn')
+        const lockedMsg = document.getElementById('ppLockedMsg')
+        if (textarea)  textarea.disabled = true
+        if (lockBtn)   lockBtn.style.display = 'none'
+        if (lockedMsg) lockedMsg.style.display = 'block'
+      },
+      goDeeper() {
+        const unlocked = localStorage.getItem('pp_deep_unlocked') === 'true'
+        if (!unlocked) { setShowDeepGate(true) }
+        else { navigate('/tools/purpose-piece/deep') }
+      },
+    }
+    return () => { if (window.App) delete window.App }
+  }, [showReveal])
+
   // Restore or start session — only after welcome dismissed
   useEffect(() => {
     if (!user || startedRef.current || showWelcome) return
@@ -660,6 +693,26 @@ export function PurposePiecePage() {
     } catch {}
     startTool()
   }, [user, showWelcome])
+
+  // Check Supabase for completed result on mount — restores returning users
+  useEffect(() => {
+    if (!user?.id || showReveal) return
+    supabase.from('purpose_piece_results')
+      .select('profile, session, status')
+      .eq('user_id', user.id)
+      .eq('status', 'complete')
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data?.profile) {
+          setMessages([{ role: 'assistant', type: 'html', content: data.profile }])
+          if (data.session) setSession(data.session)
+          setShowReveal(true)
+          setShowWelcome(false)
+          startedRef.current = true
+        }
+      })
+      .catch(() => {})
+  }, [user?.id])
 
   // Persist to sessionStorage
   useEffect(() => {
@@ -754,11 +807,11 @@ export function PurposePiecePage() {
 
       // Write to North Star cross-tool memory
       if (user?.id && session?.tentative) {
-        const { archetype, domain, scale } = session.tentative
+        const t = session.tentative
         const ppNotes = [
-          archetype ? `Organisational Archetype: ${archetype}` : null,
-          domain    ? `Global Domain: ${domain}` : null,
-          scale     ? `Scale of Focus: ${scale}` : null,
+          t.archetype?.archetype ? `Organisational Archetype: ${t.archetype.archetype}` : null,
+          t.domain?.domain       ? `Global Domain: ${t.domain.domain}` : null,
+          t.scale?.scale         ? `Scale of Focus: ${t.scale.scale}` : null,
         ].filter(Boolean)
         if (ppNotes.length) {
           await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'purpose-piece').catch(() => {})
