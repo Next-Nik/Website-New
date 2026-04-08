@@ -42,14 +42,16 @@ const DOMAIN_CONTEXT = {
   spark:         { label: 'Spark',         frame: 'vitality, aliveness, creative fire — the internal engine' },
   body:          { label: 'Body',          frame: 'physical health, energy, and the living system' },
   finances:      { label: 'Finances',      frame: 'financial health, agency, and freedom to act on what matters' },
-  relationships: { label: 'Connection', frame: 'depth of connection, being truly known, love and belonging' },
+  connection:    { label: 'Connection', frame: 'depth of connection, being truly known, love and belonging' },
   inner_game:    { label: 'Inner Game',    frame: 'psychology, self-talk, the stories running beneath the surface' },
   signal:    { label: 'Signal',    frame: 'how you show up in the world, alignment between inside and outside' },
 }
 
 const SCORE_SYSTEM = (domain, avatarFinal) => {
   const ctx = DOMAIN_CONTEXT[domain] || { label: domain, frame: domain }
-  return `You are a guide helping someone establish where they honestly are in the domain of ${ctx.label} — ${ctx.frame}.
+  return `${NORTH_STAR_IDENTITY}
+
+You are a guide helping someone establish where they honestly are in the domain of ${ctx.label} — ${ctx.frame}.
 
 THEIR AVATAR (the 10/10 calibration):
 ${avatarFinal || '(not provided)'}
@@ -91,7 +93,9 @@ Voice: warm, direct, Nik Wood register. Declarative. No hedging. Short paragraph
 const HORIZON_SYSTEM = (domain, avatarFinal, currentScore) => {
   const ctx = DOMAIN_CONTEXT[domain] || { label: domain, frame: domain }
   const tierLabel = TIER_STAGES[currentScore] || ''
-  return `You are a guide helping someone articulate their honest Horizon Goal in the domain of ${ctx.label} — ${ctx.frame}.
+  return `${NORTH_STAR_IDENTITY}
+
+You are a guide helping someone articulate their honest Horizon Goal in the domain of ${ctx.label} — ${ctx.frame}.
 
 THEIR AVATAR (10/10 calibration):
 ${avatarFinal || '(not provided)'}

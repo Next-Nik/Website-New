@@ -5,6 +5,7 @@
 
 const Anthropic = require("@anthropic-ai/sdk");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const { getNorthStarContext, formatNorthStarContext } = require('./_north-star');
 
 // ─── North Star Identity ───────────────────────────────────────────────────
 const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the NextUs Life OS ecosystem. You are consistent across every tool: The Map, Foundation, Orienteering, Purpose Piece, Target Sprint, and Expansion. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
@@ -18,14 +19,16 @@ const DOMAINS = {
   spark:         { label: "Spark",         frame: "the animating fire — aliveness, regeneration, the things that make you genuinely alive" },
   body:          { label: "Body",          frame: "your physical instrument — honouring the vessel through which everything else operates" },
   finances:      { label: "Finances",      frame: "the currency that gives you capacity to act — resources, agency, and freedom" },
-  relationships: { label: "Connection", frame: "the quality of connection — being truly known and truly knowing others" },
+  connection:    { label: "Connection", frame: "the quality of connection — being truly known and truly knowing others" },
   inner_game:    { label: "Inner Game",    frame: "the source code — beliefs, stories, and what you carry about who you are and what's possible" },
   signal:    { label: "Signal",    frame: "your external world — where inner alignment meets the world's perception of you" },
 };
 
 // ── Shared voice preamble ─────────────────────────────────────────────────────
 
-const VOICE = `You operate within the NextUs ecosystem — a framework built on the belief that being human is an honour and a responsibility, and that every person is a participant in a living system larger than themselves.
+const VOICE = `${NORTH_STAR_IDENTITY}
+
+You operate within the NextUs ecosystem — a framework built on the belief that being human is an honour and a responsibility, and that every person is a participant in a living system larger than themselves.
 
 HOW YOU SEE THE PERSON IN FRONT OF YOU:
 Treat every person as capable and responsible for their life. This is not harshness — it is the deepest form of respect. Your job is never to rescue. Your job is to find where their agency lives and point them toward it.
@@ -275,8 +278,8 @@ module.exports = async (req, res) => {
     mapHorizonText, mapHorizonScore,
     currentStateSummary, horizonText, targetGoal,
     targetDate, milestoneText, milestoneIndex,
-    completedDomains,
-  } = req.body || {, userId } = req.body || {};
+    completedDomains, userId,
+  } = req.body || {};
 
   const northStarCtx = userId ? await getNorthStarContext(userId) : null;
 
@@ -290,7 +293,8 @@ module.exports = async (req, res) => {
 
     // ── Current state conversation ────────────────────────────────────────────
     if (mode === "current_state") {
-      const system = buildCurrentStateSystem(domain);
+      const baseSystem = buildCurrentStateSystem(domain);
+      const system = northStarCtx ? baseSystem + '\n\n' + formatNorthStarContext(northStarCtx) : baseSystem;
       const apiMessages = (messages || []).map(m =>
         m.content === "START"
           ? { role: "user", content: `I'm ready to talk about my ${DOMAINS[domain]?.label || domain}.` }
@@ -305,7 +309,8 @@ module.exports = async (req, res) => {
 
     // ── Horizon conversation ──────────────────────────────────────────────────
     if (mode === "horizon") {
-      const system = buildHorizonSystem(domain, hasMapData, mapHorizonText, mapHorizonScore);
+      const baseSystem = buildHorizonSystem(domain, hasMapData, mapHorizonText, mapHorizonScore);
+      const system = northStarCtx ? baseSystem + '\n\n' + formatNorthStarContext(northStarCtx) : baseSystem;
       const apiMessages = (messages || []).map(m =>
         m.content === "START"
           ? { role: "user", content: hasMapData && mapHorizonText
@@ -322,9 +327,10 @@ module.exports = async (req, res) => {
 
     // ── Target goal conversation ──────────────────────────────────────────────
     if (mode === "target_goal") {
-      const system = buildTargetGoalSystem(
+      const baseSystem = buildTargetGoalSystem(
         domain, currentStateSummary, horizonText, targetDate, completedDomains || []
       );
+      const system = northStarCtx ? baseSystem + '\n\n' + formatNorthStarContext(northStarCtx) : baseSystem;
       const response = await anthropic.messages.create({
         model: "claude-sonnet-4-20250514", max_tokens: 1200, system, messages: messages || []
       });

@@ -867,7 +867,6 @@ export function PurposePiecePage() {
   }
 
   if (authLoading || accessLoading) return <div className="loading" />
-  if (tier !== 'full' && tier !== 'beta') return <AccessGate productKey="purpose_piece" toolName="Purpose Piece">{null}</AccessGate>
 
   const nextStageMap = { archetype: 'domain', domain: 'scale', scale: 'confirmation' }
   const currentLabel = STAGE_QUESTION_LABELS[stage]?.[qIdx] || ''
@@ -986,6 +985,7 @@ export function PurposePiecePage() {
   const discSize = isMobile ? 320 : 200
 
   return (
+    <AccessGate productKey="purpose_piece" toolName="Purpose Piece">
     <div className="page-shell">
       <Nav activePath="life-os" />
       {!user && <AuthModal />}
@@ -1146,6 +1146,7 @@ export function PurposePiecePage() {
         )}
       </div>
     </div>
+    </AccessGate>
   )
 }
 

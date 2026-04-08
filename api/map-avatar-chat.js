@@ -18,7 +18,7 @@ const DOMAIN_CONTEXT = {
   spark:         { label: 'Spark',         frame: 'vitality, aliveness, creative fire — the internal engine' },
   body:          { label: 'Body',          frame: 'physical health, energy, and the living system that carries everything else' },
   finances:      { label: 'Finances',      frame: 'financial health, agency, and the freedom to act on what matters' },
-  relationships: { label: 'Connection', frame: 'depth of connection, being truly known, love and belonging' },
+  connection:    { label: 'Connection', frame: 'depth of connection, being truly known, love and belonging' },
   inner_game:    { label: 'Inner Game',    frame: 'psychology, self-talk, the stories running beneath the surface' },
   signal:    { label: 'Signal',    frame: 'how you show up in the world, presence, alignment between inside and outside' },
 }
@@ -26,7 +26,9 @@ const DOMAIN_CONTEXT = {
 const SYSTEM_PROMPT = (domain) => {
   const ctx = DOMAIN_CONTEXT[domain] || { label: domain, frame: domain }
 
-  return `You are a guide helping someone build their "Best in the World" Avatar for the domain of ${ctx.label} — ${ctx.frame}.
+  return `${NORTH_STAR_IDENTITY}
+
+You are a guide helping someone build their "Best in the World" Avatar for the domain of ${ctx.label} — ${ctx.frame}.
 
 THE PURPOSE OF THE AVATAR
 The avatar is a calibration tool, not a motivational exercise. Once they've built a genuine 10/10 construct, their current score and horizon goal become meaningful — they're measured against something real, not a vague aspiration. A compressed avatar produces a compressed scale. The stretch is the point.

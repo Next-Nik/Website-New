@@ -608,11 +608,8 @@ export function FoundationPage() {
 
   if (authLoading || accessLoading) return <div className="loading" />
 
-  if (tier !== 'full' && tier !== 'beta' && tier !== 'preview') {
-    return <AccessGate productKey="foundation" toolName="Foundation">{null}</AccessGate>
-  }
-
   return (
+    <AccessGate productKey="foundation" toolName="Foundation">
     <div className="page-shell">
       <style>{MOBILE_STYLES}</style>
       <Nav activePath="life-os" />
@@ -670,5 +667,6 @@ export function FoundationPage() {
       <ToolCompassPanel />
       <ProtocolPanel />
     </div>
+    </AccessGate>
   )
 }

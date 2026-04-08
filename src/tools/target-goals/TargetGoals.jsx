@@ -622,7 +622,7 @@ function SprintSummaryModal({ domains, domainData, onClose }) {
 
 // ─── Chat panel ───────────────────────────────────────────────────────────────
 
-function ChatPanel({ mode, domainId, payload, onComplete, placeholder }) {
+function ChatPanel({ mode, domainId, payload, onComplete, placeholder, userId }) {
   const [msgs,     setMsgs]     = useState([])
   const [input,    setInput]    = useState('')
   const [thinking, setThinking] = useState(false)
@@ -641,7 +641,7 @@ function ChatPanel({ mode, domainId, payload, onComplete, placeholder }) {
   async function call(m) {
     const res = await fetch('/tools/target-goals/api/chat', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({  mode, domain: domainId, messages: m, ...payload, userId: user?.id })
+      body: JSON.stringify({  mode, domain: domainId, messages: m, ...payload, userId: userId })
     })
     if (!res.ok) throw new Error(`API ${res.status}`)
     return res.json()
@@ -747,7 +747,7 @@ function EditableList({ items, onSave, renderItem, addLabel = '+ Add', itemKey =
 
 // ─── Domain Panel ─────────────────────────────────────────────────────────────
 
-function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData, targetDate, completedDomains }) {
+function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData, targetDate, completedDomains, userId }) {
   const d  = DOMAIN_BY_ID[domainId]
   const dd = domainData[domainId] || {}
 
@@ -779,7 +779,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
         body: JSON.stringify({ 
           mode: 'milestones', domain: domainId,
           targetGoal: dd.targetGoal, horizonText: dd.horizonText,
-          currentStateSummary: dd.currentStateSummary, userId: user?.id })
+          currentStateSummary: dd.currentStateSummary, userId: userId })
       })
       const data = await res.json()
       if (data.milestones) update({ milestones: data.milestones })
@@ -796,7 +796,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
           mode: 'tasks', domain: domainId,
           targetGoal: dd.targetGoal,
           milestoneText: dd.milestones?.[milestoneIdx]?.text,
-          milestoneIndex: milestoneIdx, userId: user?.id })
+          milestoneIndex: milestoneIdx, userId: userId })
       })
       const data = await res.json()
       if (data.tasks) {
@@ -850,6 +850,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
               domainId={domainId}
               payload={{}}
               placeholder={`Where are you with ${d.label} right now?`}
+              userId={user?.id}
               onComplete={data => {
                 if (data.canLock && data.summary) update({ currentStateSummary: data.summary })
               }}
@@ -895,6 +896,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
               domainId={domainId}
               payload={{ hasMapData, mapHorizonText: mapDomain.horizonText, mapHorizonScore: mapDomain.horizonScore }}
               placeholder="Describe where you'd wish to be…"
+              userId={user?.id}
               onComplete={data => {
                 if (data.canLock && data.horizonText) update({ horizonText: data.horizonText })
               }}
@@ -941,6 +943,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
                 completedDomains,
               }}
               placeholder="What do you want to achieve this quarter?"
+              userId={user?.id}
               onComplete={data => {
                 if (data.complete && data.data) {
                   update({
@@ -1332,9 +1335,9 @@ export function TargetGoalsPage() {
     .map(d => ({ domain: d.id, targetGoal: domainData[d.id].targetGoal, conversationInsight: domainData[d.id].conversationInsight }))
 
   if (authLoading || accessLoading) return <div className="loading" />
-  if (tier !== 'full' && tier !== 'beta') return <AccessGate productKey="target_goals" toolName="Target Sprint">{null}</AccessGate>
 
   return (
+    <AccessGate productKey="target_goals" toolName="Target Sprint">
     <div className="page-shell">
       <style>{`
         @media (max-width: 640px) {
@@ -1471,6 +1474,7 @@ export function TargetGoalsPage() {
                       mapData={mapData}
                       targetDate={targetDate}
                       completedDomains={completedDomains}
+                      userId={user?.id}
                     />
                   </div>
                 )}
@@ -1502,5 +1506,6 @@ export function TargetGoalsPage() {
         )}
       </div>
     </div>
+    </AccessGate>
   )
 }

@@ -6,13 +6,16 @@
 
 const Anthropic = require("@anthropic-ai/sdk");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const { getNorthStarContext, formatNorthStarContext } = require('./_north-star');
 
 // ─── North Star Identity ───────────────────────────────────────────────────
 const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the NextUs Life OS ecosystem. You are consistent across every tool: The Map, Foundation, Orienteering, Purpose Piece, Target Sprint, and Expansion. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
 
 
 
-const SYSTEM = `You operate within the NextUs Life OS ecosystem. You are the Expansion daily practice guide — you help people close the gap between who they are now and who their Horizon Self already is, one day at a time.
+const SYSTEM = `${NORTH_STAR_IDENTITY}
+
+You operate within the NextUs Life OS ecosystem. You are the Expansion daily practice guide — you help people close the gap between who they are now and who their Horizon Self already is, one day at a time.
 
 THE HORIZON SELF:
 Every person using this tool has defined their Horizon Self — the fully expressed version of who they already are, not a fantasy future self but the person they are becoming. They have written a statement of how their Horizon Self thinks, feels, and acts. You hold this in mind throughout every check-in.
@@ -126,7 +129,7 @@ module.exports = async (req, res) => {
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 600,
-      system: systemWithContext,
+      system: northStarCtx ? systemWithContext + '\n\n' + formatNorthStarContext(northStarCtx) : systemWithContext,
       messages,
     });
 
