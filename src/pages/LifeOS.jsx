@@ -115,7 +115,7 @@ export function LifeOSPage() {
         <div style={{ marginBottom: '72px', padding: '32px', background: '#0F1523', borderRadius: '14px' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>Ready to use the tools?</span>
           <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#FAFAF7', lineHeight: 1.2, marginBottom: '16px' }}>
-            Six tools. One navigation system.
+            Five tools. One navigation system.
           </h3>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(250,250,247,0.65)', lineHeight: 1.75, marginBottom: '28px', maxWidth: '480px' }}>
             Each tool is built for a specific stage of the journey. You don\u2019t need all of them. Start where you are.

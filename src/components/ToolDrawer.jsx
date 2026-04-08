@@ -47,15 +47,6 @@ const TOOLS = [
     desc:  'Who are you becoming, one day at a time? T.E.A. practice, skill development, and thought loop work toward your Horizon Self.',
     color: '#A8721A',
   },
-  {
-    key:   'orienteering',
-    label: 'Find your starting point',
-    subtitle: 'Site guide',
-    path:  '/tools/orienteering',
-    desc:  'A short conversation that reads where you are and points you somewhere real. No sign-up needed.',
-    color: '#A8721A',
-    noAuth: true,
-  },
 ]
 
 const DISCOVER = [

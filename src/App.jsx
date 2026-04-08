@@ -38,6 +38,7 @@ import { ProfilePage }       from './pages/Profile'
 import { ContentEditorPage } from './pages/ContentEditor'
 import { AdminConsolePage }  from './pages/AdminConsole'
 import { GroupJoinPage }      from './pages/GroupJoin'
+import { ToolsPage }          from './pages/Tools'
 
 // Tools
 import { OrienteeringPage }  from './tools/orienteering/Orienteering'
@@ -84,6 +85,7 @@ function AppInner() {
         <Route path="/privacy"         element={<PrivacyPage />} />
         <Route path="/terms"           element={<TermsPage />} />
         <Route path="/profile"         element={<ProfilePage />} />
+        <Route path="/tools"           element={<ToolsPage />} />
         <Route path="/content-editor"  element={<ContentEditorPage />} />
 
         {/* ── Tools ── */}

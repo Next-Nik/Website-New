@@ -102,7 +102,7 @@ export function SprintPanel({ context = 'default' }) {
         .select('*')
         .eq('user_id', user.id)
         .eq('status', 'active')
-        .order('completed_at', { ascending: false })
+        .order('updated_at', { ascending: false })
         .limit(1)
         .maybeSingle()
       setSprint(data || null)

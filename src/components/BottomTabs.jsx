@@ -27,28 +27,6 @@ function GridIcon({ active }) {
   )
 }
 
-function ProfileIcon({ active, initial }) {
-  const c = active ? '#A8721A' : 'rgba(15,21,35,0.4)'
-  if (initial) {
-    return (
-      <div style={{
-        width: 24, height: 24, borderRadius: '50%',
-        background: active ? 'rgba(200,146,42,0.15)' : 'rgba(200,146,42,0.08)',
-        border: `1.5px solid ${active ? 'rgba(200,146,42,1)' : 'rgba(200,146,42,0.4)'}`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        ...sc, fontSize: '15px', fontWeight: 600, color: active ? '#A8721A' : 'rgba(15,21,35,0.5)',
-      }}>{initial}</div>
-    )
-  }
-  return (
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-      <circle cx="11" cy="8" r="3.5" stroke={c} strokeWidth="1.5" fill="none"/>
-      <path d="M4 19C4 15.7 7.1 13 11 13C14.9 13 18 15.7 18 19"
-        stroke={c} strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-    </svg>
-  )
-}
-
 function MoreIcon({ active }) {
   const c = active ? '#A8721A' : 'rgba(15,21,35,0.4)'
   return (

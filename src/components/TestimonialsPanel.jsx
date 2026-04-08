@@ -62,7 +62,7 @@ export function TestimonialsPanel() {
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
           ...sc,
-          fontSize: '1.25rem',
+          fontSize: '15px',
           letterSpacing: '0.18em',
           color: '#A8721A',
           textTransform: 'uppercase',

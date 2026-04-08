@@ -1228,7 +1228,7 @@ export function ProfilePage() {
 
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
-      <Nav />
+      <Nav activePath="" />
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '112px 40px 160px' }}>
 
         <div style={{ marginBottom: '64px' }}>

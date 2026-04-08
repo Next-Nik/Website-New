@@ -10,13 +10,6 @@ const TOOLS = [
     eyebrow: 'Become',
   },
   {
-    path: '/tools/orienteering',
-    name: 'Find your starting point',
-    hook: 'A short conversation that reads where you are and points you somewhere real. No sign-up needed.',
-    eyebrow: 'Start here',
-    subtitle: 'Site guide',
-  },
-  {
     path: '/tools/foundation',
     name: 'Foundation',
     subtitle: 'Daily regulation practice',

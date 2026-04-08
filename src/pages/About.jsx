@@ -105,7 +105,6 @@ export function AboutPage() {
 
         <div style={{ margin: '28px 0' }}>
           <ToolRow name="Foundation" desc="The nervous system layer. Capacity before content — the floor that makes everything else sustainable." />
-          <ToolRow name="Orienteering" desc="The front door. A short conversation that reads where you are and points you to the right starting point." />
           <ToolRow name="Purpose Piece" desc="The pattern beneath how you're naturally built to contribute. Not a personality test — recognition." />
           <ToolRow name="The Map" desc="Seven domains. Three steps each. An honest picture of where you are and where you want to be." />
           <ToolRow name="Target Sprint" desc="Focused sprint planning across your three most urgent domains. From horizon to next action." />
