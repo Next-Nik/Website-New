@@ -318,7 +318,7 @@ function FoundationReview({ user, sessions }) {
 
   const now              = new Date()
   const weekId           = getWeekId(now)
-  const sessionsThisWeek = sessions.filter(s => s.week_id === weekId)
+  const sessionsThisWeek = sessions.filter(s => s.week_id === weekId && s.checkin_stage === 'after')
   const weeklyAvailable  = sessionsThisWeek.length >= 3
 
   async function requestReview(type) {
@@ -345,7 +345,7 @@ function FoundationReview({ user, sessions }) {
       const res = await fetch('/tools/foundation/api/review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ period: { type, id: periodId, label }, sessions: relevant, previousReviews }),
+        body: JSON.stringify({ period: { type, id: periodId, label }, sessions: relevant, previousReviews, userId: user?.id }),
       })
       if (!res.ok) throw new Error('API error')
       const data = await res.json()
@@ -651,8 +651,22 @@ export function FoundationPage() {
         )}
 
         {/* Phase 2 — Calibration: coming in next release */}
+        <PhaseBlock
+          number="Phase 2"
+          name="Calibration"
+          desc="Developing the capacity to move your state deliberately — not just recover from it."
+        >
+          <PhasePlaceholder title="Calibration" />
+        </PhaseBlock>
 
         {/* Phase 3 — Embodying: coming in next release */}
+        <PhaseBlock
+          number="Phase 3"
+          name="Embodying"
+          desc="Living from a regulated ground — not as practice, but as your natural state."
+        >
+          <PhasePlaceholder title="Embodying" />
+        </PhaseBlock>
 
         <QuoteBlock text="It has helped me reset my baseline in the middle of the day — to relax, let go, and create space for a more supportive inner story. One that naturally inspires aligned action rather than effort or striving." cite="David William Pierce" />
         <QuoteBlock text="There was this sense of feeling held throughout. His presence is unmistakably there." cite="David William Pierce" />

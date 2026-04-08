@@ -47,20 +47,40 @@ Quarterly: 200–280 words. End with one orienting observation.
 Annual: 260–360 words. End with one horizon question.`
 
 function buildPrompt(period, sessions, previousReviews) {
-  const sessionLines = sessions.map(s => {
-    const delta = s.after_value - s.before_value
+  // sessions are raw pulse_entries rows with fields: value, checkin_stage, completed_at, note
+  // Pair before/after rows by date
+  const befores = sessions.filter(s => s.checkin_stage === 'before')
+  const afters  = sessions.filter(s => s.checkin_stage === 'after')
+
+  const pairs = []
+  afters.forEach(a => {
+    const dateStr = a.completed_at?.slice(0, 10)
+    const b = befores.find(b => b.completed_at?.slice(0, 10) === dateStr)
+    if (b) {
+      pairs.push({
+        date:        dateStr || 'unknown',
+        before:      b.value,
+        after:       a.value,
+        note_before: b.note || null,
+        note_after:  a.note  || null,
+      })
+    }
+  })
+
+  const sessionLines = pairs.map(p => {
+    const delta = (p.after || 0) - (p.before || 0)
     const sign  = delta > 0 ? '+' : ''
-    return `${s.completed_at?.slice(0,10) || 'unknown'} | before: ${s.before_value} → after: ${s.after_value} (${sign}${delta})${s.note ? ` — "${s.note}"` : ''}${s.before_note ? ` | walked in: "${s.before_note}"` : ''}`
+    return `${p.date} | before: ${p.before ?? '?'} → after: ${p.after ?? '?'} (${sign}${delta})${p.note_after ? ` — "${p.note_after}"` : ''}${p.note_before ? ` | walked in: "${p.note_before}"` : ''}`
   }).join('\n')
 
-  const avgBefore = sessions.length
-    ? (sessions.reduce((a, s) => a + (s.before_value || 0), 0) / sessions.length).toFixed(1)
+  const avgBefore = pairs.length
+    ? (pairs.reduce((a, p) => a + (p.before || 0), 0) / pairs.length).toFixed(1)
     : 'n/a'
-  const avgAfter = sessions.length
-    ? (sessions.reduce((a, s) => a + (s.after_value || 0), 0) / sessions.length).toFixed(1)
+  const avgAfter = pairs.length
+    ? (pairs.reduce((a, p) => a + (p.after || 0), 0) / pairs.length).toFixed(1)
     : 'n/a'
-  const avgDelta = sessions.length
-    ? (sessions.reduce((a, s) => a + ((s.after_value || 0) - (s.before_value || 0)), 0) / sessions.length).toFixed(1)
+  const avgDelta = pairs.length
+    ? (pairs.reduce((a, p) => a + ((p.after || 0) - (p.before || 0)), 0) / pairs.length).toFixed(1)
     : 'n/a'
 
   const prevLines = (previousReviews || []).slice(-2).map(r =>
@@ -68,7 +88,7 @@ function buildPrompt(period, sessions, previousReviews) {
   ).join('\n') || 'No previous reviews.'
 
   return `FOUNDATION ${period.type.toUpperCase()} REVIEW — ${period.label}
-Sessions: ${sessions.length}
+Sessions: ${pairs.length}
 Average before: ${avgBefore} | Average after: ${avgAfter} | Average delta: ${avgDelta}
 
 SESSION LOG:
