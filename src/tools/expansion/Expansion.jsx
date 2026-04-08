@@ -554,12 +554,16 @@ function SetupPhase({ mapData, onComplete, userId }) {
 
 // ─── Daily Check-in ───────────────────────────────────────────────────────────
 
-function DailyCheckin({ setupData, sprintData, mapData, onComplete }) {
-  const [step, setStep] = useState('thoughts') // thoughts | emotions | actions | skill | done
+function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId }) {
+  const [step, setStep] = useState('thoughts') // thoughts | emotions | actions | reflection | skill | done
   const [teaData, setTeaData] = useState({ thoughts: '', emotions: '', actions: '' })
   const [skillNote, setSkillNote] = useState('')
   const [loopFlagged, setLoopFlagged] = useState(false)
   const [pitfallFlagged, setPitfallFlagged] = useState(false)
+  const [reflectionMessages, setReflectionMessages] = useState([])
+  const [reflectionInput, setReflectionInput] = useState('')
+  const [reflectionThinking, setReflectionThinking] = useState(false)
+  const [reflectionDone, setReflectionDone] = useState(false)
 
   const today = getLocalDateStr()
 
@@ -587,7 +591,7 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete }) {
         : mapData?.focusDomains?.length
         ? `Your focus areas from The Map are ${mapData.focusDomains.map(id => id.charAt(0).toUpperCase() + id.slice(1).replace('_', ' ')).join(', ')}. What would your Horizon Self do? Where did you move in those areas today — and where did your old self show up?`
         : 'What would your Horizon Self do in the situations you faced today? Where did you act from your Horizon Self — and where did your old self show up?',
-      next: 'skill',
+      next: 'reflection',
     },
   ]
 
@@ -595,9 +599,77 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete }) {
   const [response, setResponse] = useState('')
 
   function submitStep() {
-    setTeaData(prev => ({ ...prev, [step]: response }))
+    const updatedTea = { ...teaData, [step]: response }
+    setTeaData(updatedTea)
     setResponse('')
-    setStep(currentStep.next)
+    if (currentStep.next === 'reflection') {
+      setStep('reflection')
+      startReflection(updatedTea)
+    } else {
+      setStep(currentStep.next)
+    }
+  }
+
+  async function startReflection(tea) {
+    setReflectionThinking(true)
+    const teaSummary = `T (Thoughts): ${tea.thoughts}\nE (Emotions): ${tea.emotions}\nA (Actions): ${tea.actions}`
+    const context = {
+      horizonSelf: setupData.horizonSelf,
+      mapData: mapData || null,
+      sprintActive: sprintData?.active || false,
+      sprintDomains: sprintData?.domains || [],
+      currentSkill: setupData.nowSkill || null,
+    }
+    try {
+      const res = await fetch('/tools/expansion/api/daily-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{ role: 'user', content: teaSummary }],
+          mode: 'daily',
+          context,
+          userId,
+        }),
+      })
+      const data = await res.json()
+      setReflectionMessages([
+        { role: 'user', content: teaSummary },
+        { role: 'assistant', content: data.message || '' },
+      ])
+    } catch {
+      setReflectionMessages([{ role: 'assistant', content: 'Something went wrong. You can continue to the next step.' }])
+    } finally {
+      setReflectionThinking(false)
+    }
+  }
+
+  async function sendReflectionReply() {
+    if (!reflectionInput.trim() || reflectionThinking) return
+    const next = [...reflectionMessages, { role: 'user', content: reflectionInput }]
+    setReflectionMessages(next)
+    setReflectionInput('')
+    setReflectionThinking(true)
+    const context = {
+      horizonSelf: setupData.horizonSelf,
+      mapData: mapData || null,
+      sprintActive: sprintData?.active || false,
+      sprintDomains: sprintData?.domains || [],
+      currentSkill: setupData.nowSkill || null,
+    }
+    try {
+      const res = await fetch('/tools/expansion/api/daily-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: next, mode: 'daily', context, userId }),
+      })
+      const data = await res.json()
+      setReflectionMessages(m => [...m, { role: 'assistant', content: data.message || '' }])
+    } catch {
+      setReflectionMessages(m => [...m, { role: 'assistant', content: 'Something went wrong. Please try again.' }])
+    } finally {
+      setReflectionThinking(false)
+      setReflectionDone(true)
+    }
   }
 
   function completeCheckin() {
@@ -656,6 +728,43 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete }) {
           <Btn primary onClick={submitStep} disabled={!response.trim()}>
             {currentStep.next === 'skill' ? 'Continue →' : 'Next →'}
           </Btn>
+        </div>
+      )}
+
+      {/* North Star reflection — post T.E.A. */}
+      {step === 'reflection' && (
+        <div style={{ animation: 'fadeIn 0.3s ease' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '20px' }}>North Star reflection</div>
+          {reflectionMessages.filter(m => m.role === 'assistant').map((m, i) => (
+            <div key={i} style={{ ...serif, fontSize: '17px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '20px', padding: '16px 20px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '12px' }}>
+              {m.content}
+            </div>
+          ))}
+          {reflectionThinking && (
+            <div style={{ display: 'flex', gap: '5px', alignItems: 'center', padding: '8px 0', marginBottom: '16px' }}>
+              {[0, 0.2, 0.4].map((d, i) => (
+                <div key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(200,146,42,0.45)', animation: `pulse 1.4s ease ${d}s infinite` }} />
+              ))}
+            </div>
+          )}
+          {!reflectionThinking && reflectionMessages.length > 0 && !reflectionDone && (
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', marginBottom: '20px' }}>
+              <textarea
+                value={reflectionInput}
+                onChange={e => setReflectionInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendReflectionReply() } }}
+                placeholder="Respond, or continue below…"
+                rows={2}
+                style={{ flex: 1, padding: '12px 14px', borderRadius: '10px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FAFAF7', resize: 'none', outline: 'none', ...serif, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.6 }}
+              />
+              <Btn primary onClick={sendReflectionReply} disabled={!reflectionInput.trim()}>Send</Btn>
+            </div>
+          )}
+          {!reflectionThinking && (
+            <Btn onClick={() => setStep('skill')} style={{ opacity: 0.7 }}>
+              {reflectionDone ? 'Continue →' : 'Skip →'}
+            </Btn>
+          )}
         </div>
       )}
 
@@ -1306,6 +1415,7 @@ export function ExpansionPage() {
                   sprintData={sprintData}
                   mapData={mapData}
                   onComplete={handleCheckinComplete}
+                  userId={user?.id}
                 />
               )}
 
