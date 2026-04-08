@@ -641,7 +641,7 @@ function ChatPanel({ mode, domainId, payload, onComplete, placeholder }) {
   async function call(m) {
     const res = await fetch('/tools/target-goals/api/chat', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mode, domain: domainId, messages: m, ...payload })
+      body: JSON.stringify({  mode, domain: domainId, messages: m, ...payload, userId: user?.id })
     })
     if (!res.ok) throw new Error(`API ${res.status}`)
     return res.json()
@@ -776,11 +776,10 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
     try {
       const res = await fetch('/tools/target-goals/api/chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body: JSON.stringify({ 
           mode: 'milestones', domain: domainId,
           targetGoal: dd.targetGoal, horizonText: dd.horizonText,
-          currentStateSummary: dd.currentStateSummary
-        })
+          currentStateSummary: dd.currentStateSummary, userId: user?.id })
       })
       const data = await res.json()
       if (data.milestones) update({ milestones: data.milestones })
@@ -793,12 +792,11 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
     try {
       const res = await fetch('/tools/target-goals/api/chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body: JSON.stringify({ 
           mode: 'tasks', domain: domainId,
           targetGoal: dd.targetGoal,
           milestoneText: dd.milestones?.[milestoneIdx]?.text,
-          milestoneIndex: milestoneIdx
-        })
+          milestoneIndex: milestoneIdx, userId: user?.id })
       })
       const data = await res.json()
       if (data.tasks) {
@@ -1248,7 +1246,7 @@ export function TargetGoalsPage() {
     try {
       const res = await fetch('/tools/target-goals/api/chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mode: 'recommend', scores: s, hasMapData: hmd })
+        body: JSON.stringify({  mode: 'recommend', scores: s, hasMapData: hmd, userId: user?.id })
       })
       const data = await res.json()
       if (data?.recommended) setRecommendation(data)
@@ -1284,6 +1282,16 @@ export function TargetGoalsPage() {
           .insert({ ...payload, created_at: new Date().toISOString() })
           .select('id').single()
         if (data?.id) setSessionId(data.id)
+      }
+
+      // Write to North Star cross-tool memory
+      if (selectedDomains?.length) {
+        const DOMAIN_LABELS = { path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances', connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal' }
+        const domainNames = selectedDomains.map(id => DOMAIN_LABELS[id] || id).join(', ')
+        await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'target-goals').catch(() => {})
+        await supabase.from('north_star_notes').insert([
+          { user_id: user.id, tool: 'target-goals', note: `Active 90-day sprint domains: ${domainNames}` }
+        ]).catch(() => {})
       }
     } catch {}
   }

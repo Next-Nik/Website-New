@@ -294,7 +294,7 @@ function HorizonSelfTooltip() {
 
 // ─── Setup Phase ──────────────────────────────────────────────────────────────
 
-function SetupPhase({ mapData, onComplete }) {
+function SetupPhase({ mapData, onComplete, userId }) {
   const [step, setStep] = useState('horizon_confirm') // horizon_confirm | horizon_self | skill_suggest | skill_confirm | done
   const [horizonConfirmed, setHorizonConfirmed] = useState(false)
   const [horizonSelf, setHorizonSelf] = useState('')
@@ -309,8 +309,8 @@ function SetupPhase({ mapData, onComplete }) {
 
   // Build context: use Map data if available, otherwise use custom goals
   const chatContext = mapData
-    ? { mapData }
-    : { customGoals }
+    ? { mapData, userId }
+    : { customGoals, userId }
 
   const setupChat = useChat('/tools/expansion/api/setup-chat', {
     mode: 'horizon_self',
@@ -1137,6 +1137,19 @@ export function ExpansionPage() {
         })
       }
 
+      // Write to North Star cross-tool memory
+      if (horizonSelf) {
+        await supabase.from('north_star_notes').upsert(
+          { user_id: user.id, tool: 'expansion', note: `Horizon Self: ${horizonSelf}` },
+          { onConflict: 'user_id,tool,note' }
+        ).catch(() => {})
+        // Simple insert approach as fallback
+        supabase.from('north_star_notes').insert([
+          { user_id: user.id, tool: 'expansion', note: `Horizon Self: ${horizonSelf}` },
+          firstSkill ? { user_id: user.id, tool: 'expansion', note: `Active skill: ${firstSkill.title} (${firstSkill.type})` } : null
+        ].filter(Boolean)).catch(() => {})
+      }
+
       setSetupData({ horizon_self: horizonSelf })
       if (firstSkill) setSkills([{ id: Date.now(), ...firstSkill, status: 'now' }])
       setView('checkin')
@@ -1208,7 +1221,7 @@ export function ExpansionPage() {
 
         {/* Setup */}
         {(mapData || skipMap) && !setupData && (
-          <SetupPhase mapData={mapData} onComplete={handleSetupComplete} />
+          <SetupPhase mapData={mapData} onComplete={handleSetupComplete} userId={user?.id} />
         )}
 
         {/* Main tool */}

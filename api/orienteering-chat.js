@@ -3,6 +3,7 @@
 // Serverless wrapper — keeps Anthropic API key off the client.
 
 const Anthropic = require("@anthropic-ai/sdk");
+const { getNorthStarContext, formatNorthStarContext } = require("./_north-star");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // ─── North Star Identity ───────────────────────────────────────────────────
@@ -108,7 +109,12 @@ RULES:
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const { messages = [] } = req.body;
+  const { messages = [], userId } = req.body;
+
+  // Load cross-tool North Star context
+  const northStarCtx = userId ? await getNorthStarContext(userId) : null
+  const nsBlock = northStarCtx ? formatNorthStarContext(northStarCtx) : ''
+  const systemPrompt = nsBlock ? SYSTEM_PROMPT + '\n\n' + nsBlock : SYSTEM_PROMPT
 
   // First turn — generate the opening question
   const msgs = messages.length
@@ -119,7 +125,7 @@ module.exports = async (req, res) => {
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 1000,
-      system: SYSTEM_PROMPT,
+      system: systemPrompt,
       messages: msgs
     });
 

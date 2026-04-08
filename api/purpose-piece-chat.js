@@ -1193,7 +1193,7 @@ async function handleConfirmation(session, latestInput, res) {
     const response = await anthropic.messages.create({
       model:      "claude-sonnet-4-20250514",
       max_tokens: 500,
-      system:     confirmPrompt,
+      system:     northStarCtx ? confirmPrompt + '\n\n' + formatNorthStarContext(northStarCtx) : confirmPrompt,
       messages:   apiMessages
     });
 
@@ -1277,7 +1277,9 @@ module.exports = async (req, res) => {
 
   if (req.method === "OPTIONS") { res.status(200).end(); return; }
 
-  const { messages, session: clientSession } = req.body || {};
+  const { messages, session: clientSession, userId } = req.body || {};
+
+  const northStarCtx = userId ? await getNorthStarContext(userId) : null
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: "Messages array required" });
   }

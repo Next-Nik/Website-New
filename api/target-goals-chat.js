@@ -276,7 +276,9 @@ module.exports = async (req, res) => {
     currentStateSummary, horizonText, targetGoal,
     targetDate, milestoneText, milestoneIndex,
     completedDomains,
-  } = req.body || {};
+  } = req.body || {, userId } = req.body || {};
+
+  const northStarCtx = userId ? await getNorthStarContext(userId) : null;
 
   try {
 

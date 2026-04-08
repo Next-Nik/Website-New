@@ -344,7 +344,10 @@ Return ONLY the text of the Horizon Goal. No preamble, no explanation, no JSON.`
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const { messages = [], session: clientSession } = req.body;
+  const { messages = [], session: clientSession, userId } = req.body;
+
+  // Load cross-tool North Star context
+  const northStarCtx = userId ? await getNorthStarContext(userId) : null
   const session = clientSession || createSession();
 
   try {
@@ -376,11 +379,12 @@ module.exports = async (req, res) => {
       session.phase = "final_synthesis";
 
       // Run map synthesis and life horizon synthesis in parallel
+      const nsBlockMap = northStarCtx ? '\n\n' + formatNorthStarContext(northStarCtx) : ''
       const [synthResponse, horizonResponse] = await Promise.all([
         anthropic.messages.create({
           model: "claude-sonnet-4-20250514",
           max_tokens: 2500,
-          messages: [{ role: "user", content: finalSynthesisPrompt(session) }]
+          messages: [{ role: "user", content: finalSynthesisPrompt(session) + nsBlockMap }]
         }),
         anthropic.messages.create({
           model: "claude-sonnet-4-20250514",

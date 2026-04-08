@@ -87,7 +87,9 @@ Be honest. Be specific. Name the logic. The person can override your recommendat
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const { messages, mode, mapData, customGoals } = req.body;
+  const { messages, mode, mapData, customGoals, userId } = req.body;
+
+  const northStarCtx = userId ? await getNorthStarContext(userId) : null
 
   if (!messages || !mode) {
     return res.status(400).json({ error: "Missing messages or mode" });
@@ -128,7 +130,7 @@ module.exports = async (req, res) => {
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 600,
-      system: systemWithContext,
+      system: northStarCtx ? systemWithContext + '\n\n' + formatNorthStarContext(northStarCtx) : systemWithContext,
       messages,
     });
 

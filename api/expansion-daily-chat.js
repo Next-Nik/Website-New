@@ -63,7 +63,9 @@ Warm, precise, direct. Under 200 words per response in the daily check-in. Sligh
 module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-  const { messages, mode, context } = req.body;
+  const { messages, mode, context, userId } = req.body;
+
+  const northStarCtx = userId ? await getNorthStarContext(userId) : null
   // mode: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'resource'
   // context: { horizonSelf, mapData, sprintActive, sprintDomains, currentSkill, recentCheckins, knownResources }
 

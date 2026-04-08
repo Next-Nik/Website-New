@@ -707,7 +707,7 @@ export function PurposePiecePage() {
   async function callAPI(msgs) {
     const res = await fetch('/tools/purpose-piece/api/chat', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: msgs, session: sessionRef.current })
+      body: JSON.stringify({ messages: msgs, session: sessionRef.current, userId: user?.id })
     })
     if (!res.ok) throw new Error(`API ${res.status}`)
     return res.json()
@@ -750,7 +750,21 @@ export function PurposePiecePage() {
     if (data.stage === 'synthesis') {
       setTimeout(async () => {
         setThinking(true)
-        try { const d = await callAPI([]); setThinking(false); handleResponse(d) } catch { setThinking(false) }
+        try { const d = await callAPI([])
+
+      // Write to North Star cross-tool memory
+      if (user?.id && session?.tentative) {
+        const { archetype, domain, scale } = session.tentative
+        const ppNotes = [
+          archetype ? `Organisational Archetype: ${archetype}` : null,
+          domain    ? `Global Domain: ${domain}` : null,
+          scale     ? `Scale of Focus: ${scale}` : null,
+        ].filter(Boolean)
+        if (ppNotes.length) {
+          await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'purpose-piece').catch(() => {})
+          await supabase.from('north_star_notes').insert(ppNotes.map(note => ({ user_id: user.id, tool: 'purpose-piece', note }))).catch(() => {})
+        }
+      }; setThinking(false); handleResponse(d) } catch { setThinking(false) }
       }, data.advanceDelay || 6000)
       return
     }
@@ -1182,7 +1196,7 @@ export function PurposePieceDeepPage() {
   async function deepCall(msgs, fl = null, isFirst = false) {
     const body = { messages: msgs, session: sessionRef.current, ...(isFirst && fl ? { firstLook: fl } : {}) }
     const res  = await fetch('/tools/purpose-piece/api/chat-deep', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, userId: user?.id })
     })
     if (!res.ok) throw new Error(`API ${res.status}`)
     return res.json()

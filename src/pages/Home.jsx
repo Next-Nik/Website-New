@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Nav } from '../components/Nav'
+import { useAuth } from '../hooks/useAuth'
+import { supabase } from '../hooks/useSupabase'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { SiteFooter } from '../components/SiteFooter'
 
@@ -123,6 +125,7 @@ function StagePanel({ stage }) {
 }
 
 function OrienteeringEmbed() {
+  const { user } = useAuth()
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [waiting, setWaiting] = useState(false)
@@ -149,7 +152,7 @@ function OrienteeringEmbed() {
     try {
       const res = await fetch('/tools/orienteering/api/chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: next.map(m => ({ role: m.role, content: m.content })) })
+        body: JSON.stringify({ messages: next.map(m => ({ role: m.role, content: m.content })), userId: user?.id })
       })
       const data = await res.json()
       let parsed = null
@@ -157,6 +160,18 @@ function OrienteeringEmbed() {
       if (parsed?.type === 'results') {
         setMessages(prev => [...prev, { role: 'result', data: parsed }])
         setDone(true)
+        // Write to North Star cross-tool memory if signed in
+        if (user?.id && parsed.stage) {
+          supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'orienteering').catch(() => {})
+          const oriNotes = [
+            parsed.stage ? `Orienteering stage: ${parsed.stage}` : null,
+            parsed.stage_note ? `Stage context: ${parsed.stage_note}` : null,
+            parsed.recommendations?.[0]?.title ? `Recommended entry point: ${parsed.recommendations[0].title}` : null,
+          ].filter(Boolean)
+          if (oriNotes.length) {
+            supabase.from('north_star_notes').insert(oriNotes.map(note => ({ user_id: user.id, tool: 'orienteering', note }))).catch(() => {})
+          }
+        }
       } else {
         setMessages(prev => [...prev, { role: 'assistant', content: data.message || data.reply || '' }])
       }

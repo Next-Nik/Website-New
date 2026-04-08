@@ -1733,6 +1733,23 @@ export function MapPage() {
         updated_at:          new Date().toISOString(),
       }, { onConflict: 'user_id' }).select('id').single()
       if (data?.id) setSessionId(data.id)
+
+      // Write to North Star cross-tool memory
+      const notes = []
+      if (map?.life_horizon_draft) notes.push({ tool: 'map', note: `Life horizon: ${map.life_horizon_draft}` })
+      if (map?.focus_domains?.length) notes.push({ tool: 'map', note: `Focus domains: ${map.focus_domains.join(', ')}` })
+      if (map?.stage) notes.push({ tool: 'map', note: `Developmental stage: ${map.stage}` })
+      // Flag any domains below 5
+      const dragDomains = Object.entries(allData)
+        .filter(([, d]) => d.currentScore !== undefined && d.currentScore < 5)
+        .map(([, d]) => d.label || d.id)
+      if (dragDomains.length) notes.push({ tool: 'map', note: `Domains below 5 (system drag): ${dragDomains.join(', ')}` })
+
+      if (notes.length) {
+        // Delete old map notes first
+        await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'map').catch(() => {})
+        await supabase.from('north_star_notes').insert(notes.map(n => ({ user_id: user.id, ...n }))).catch(() => {})
+      }
     } catch {}
   }
 
