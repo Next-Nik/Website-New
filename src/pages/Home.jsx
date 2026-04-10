@@ -343,7 +343,7 @@ export function HomePage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
           {[
             { q: 'Working with Nik definitely changed my life. He has the ability to build up the right foundation and the right container to actually be vulnerable and go straight to where you need to.', name: 'S.H.' },
-            { q: 'Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being \u2014 what I really wanted out of life \u2014 and how to live as the best version of myself.', name: 'O.W.H.' },
+            { q: 'I\u2019m 63 years old and just met myself for the first time working with Nik.', name: 'J.B.' },
             { q: 'I came to Nik apologising for not doing my homework \u2014 and started telling him I\u2019d met someone and gone on wonderful adventures, my work was expanding. He said: look at what you wrote in week one. I was already living it.', name: 'J.M.' },
           ].map(({ q, name }) => (
             <div key={name} style={{ borderLeft: '2px solid rgba(200,146,42,0.30)', padding: '20px 0 20px 24px' }}>

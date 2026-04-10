@@ -325,11 +325,11 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
       <text x={cx} y={cy - size * 0.018} textAnchor="middle" dominantBaseline="middle"
         fontSize={size * 0.053} fontFamily="'Cormorant SC', Georgia, serif"
         fill={allComplete ? '#FFFFFF' : 'rgba(200,146,42,0.65)'}
-        style={{ pointerEvents: 'none', userSelect: 'none' }}>Your</text>
+        style={{ pointerEvents: 'none', userSelect: 'none' }}>{allComplete ? 'Complete' : 'Your'}</text>
       <text x={cx} y={cy + size * 0.018} textAnchor="middle" dominantBaseline="middle"
         fontSize={size * 0.053} fontFamily="'Cormorant SC', Georgia, serif"
         fill={allComplete ? '#FFFFFF' : 'rgba(200,146,42,0.65)'}
-        style={{ pointerEvents: 'none', userSelect: 'none' }}>Sprint</text>
+        style={{ pointerEvents: 'none', userSelect: 'none' }}>{allComplete ? 'Sprint ✓' : 'Sprint'}</text>
     </svg>
   )
 }
@@ -615,6 +615,39 @@ function SprintSummaryModal({ domains, domainData, onClose }) {
             </div>
           )
         })}
+
+        {/* Completion section */}
+        <div style={{ marginTop: '28px', paddingTop: '24px', borderTop: '1.5px solid rgba(200,146,42,0.20)', textAlign: 'center' }}>
+          <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '20px' }}>
+            Your results are saved to your profile. You can return to them any time.
+          </p>
+          <button
+            onClick={onClose}
+            style={{
+              display: 'block', width: '100%', padding: '16px 0',
+              borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)',
+              background: '#C8922A', color: '#FFFFFF',
+              fontFamily: "'Cormorant SC', Georgia, serif",
+              fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em',
+              cursor: 'pointer', marginBottom: '12px',
+            }}
+          >
+            Complete my sprint and see my results
+          </button>
+          <a
+            href="https://buy.stripe.com/9B69ASaCe7wh91tdY2aMU08"
+            style={{
+              display: 'block', width: '100%', padding: '14px 0',
+              borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)',
+              background: 'transparent', color: '#A8721A',
+              fontFamily: "'Cormorant SC', Georgia, serif",
+              fontSize: '15px', letterSpacing: '0.14em',
+              textDecoration: 'none', boxSizing: 'border-box',
+            }}
+          >
+            Start a new sprint →
+          </a>
+        </div>
       </div>
     </div>
   )
