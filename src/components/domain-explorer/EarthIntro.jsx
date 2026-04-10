@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 // NASA Blue Marble texture — public domain, hosted on NASA servers
 // Using a CORS-friendly mirror via unpkg/jsdelivr CDN
 // Fallback: procedural ocean+land if image fails to load
-const BLUE_MARBLE_URL = 'https://unpkg.com/three-globe@2.33.0/example/img/earth-blue-marble.jpg'
+const BLUE_MARBLE_URL = '/earth-blue-marble.jpg'
 
 const GOLD_DK = '#A8721A'
 
