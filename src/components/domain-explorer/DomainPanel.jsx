@@ -146,8 +146,8 @@ export default function DomainPanel({
         )}
       </div>
 
-      {/* Top nav — consistent at every level */}
-      <nav className={styles.topNav} aria-label="Domain navigation">
+      {/* Unified nav — consistent at every level */}
+      <nav className={styles.topNav}>
         {onBack && (
           <button className={styles.navItem} onClick={onBack}>
             &#8592; {parentLabel}

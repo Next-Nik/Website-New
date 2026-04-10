@@ -203,34 +203,6 @@
 .exploreBtnTop:hover .arrow { transform: translateX(4px); }
 .arrow { transition: transform 0.25s ease; }
 
-/* ── Top nav — unified, borderless, consistent at every level ── */
-.topNav {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin-bottom: 20px;
-}
-
-/* Single style for all nav items — back, explore, view actors */
-.navItem {
-  background: none;
-  border: none;
-  padding: 6px 0;
-  cursor: pointer;
-  font-family: 'Cormorant SC', serif;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-meta);
-  text-decoration: none;
-  display: inline-block;
-  transition: color 0.2s ease;
-  text-align: left;
-}
-
-.navItem:hover { color: var(--gold-dk); }
-
 .comingSoonTop {
   font-family: 'Cormorant SC', serif;
   font-size: 19px;
@@ -694,3 +666,30 @@
   border-color: #A8721A;
   transform: translateY(-1px);
 }
+
+/* ── Unified top nav ── */
+.topNav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 20px;
+}
+
+.navItem {
+  background: none;
+  border: none;
+  padding: 6px 0;
+  cursor: pointer;
+  font-family: 'Cormorant SC', serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-meta);
+  text-decoration: none;
+  display: inline-block;
+  transition: color 0.2s ease;
+  text-align: left;
+}
+
+.navItem:hover { color: var(--gold-dk); }
