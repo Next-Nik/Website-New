@@ -146,12 +146,15 @@ export default function DomainExplorer() {
     setActiveIndex(prev => prev === null ? 0 : (prev + 1) % len)
   }
 
-  function handleExploreSubDomains() {
-    if (activeIndex === null) return
-    const currentItem = navState.currentList[activeIndex]
+  function handleExploreSubDomains(indexOverride) {
+    // Called from Heptagon's onDrillDown with the index directly,
+    // or from DomainPanel's button with no argument (uses activeIndex)
+    const idx = indexOverride !== undefined ? indexOverride : activeIndex
+    if (idx === null || idx === undefined) return
+    const currentItem = navState.currentList[idx]
     if (!currentItem?.subDomains?.length) return
     setParentItem(currentItem) // preserve text
-    setLevelPath(prev => [...prev, { index: activeIndex }])
+    setLevelPath(prev => [...prev, { index: idx }])
     setActiveIndex(null)
   }
 
@@ -183,6 +186,7 @@ export default function DomainExplorer() {
               isIdle={isIdle}
               centreLabel={centreLabel}
               onCentreClick={handleCentreClick}
+              onDrillDown={handleExploreSubDomains}
             />
           </div>
           {isIdle && (
