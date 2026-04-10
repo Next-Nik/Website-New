@@ -49,8 +49,38 @@ const TOOLS = [
   },
 ]
 
+const NEXTUS_PLATFORM = [
+  {
+    key:      'actors',
+    label:    'Actors',
+    subtitle: 'Who is doing the work',
+    path:     '/nextus/actors',
+    desc:     'Organisations, projects, and individuals placed on the map — by domain, by scale, by what they need.',
+  },
+  {
+    key:      'map',
+    label:    'The Map',
+    subtitle: 'Where the work is happening',
+    path:     '/nextus/map',
+    desc:     'Every actor placed geographically. The answer to a problem in one place may already exist somewhere else on this map.',
+  },
+  {
+    key:      'domains',
+    label:    'Domains',
+    subtitle: 'Seven civilisational domains',
+    path:     '/nextus',
+    desc:     'A living map of where humanity is trying to go — across seven domains, at every scale.',
+  },
+  {
+    key:      'nominate',
+    label:    'Nominate',
+    subtitle: 'Add an actor to the map',
+    path:     '/nextus/nominate',
+    desc:     'Know an organisation doing important work? Place them on the map.',
+  },
+]
+
 const DISCOVER = [
-  { label: 'NextUs',        path: '/nextus' },
   { label: 'Work with Nik', path: '/work-with-nik' },
   { label: 'Podcast',       path: '/podcast' },
   { label: 'About',         path: '/about' },
@@ -237,6 +267,37 @@ export function ToolDrawer({ open, onClose }) {
                   </Link>
                 )
               })}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '24px' }} />
+
+          {/* NextUs platform */}
+          <div style={{ marginBottom: '32px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '16px' }}>
+              <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase' }}>NextUs</span>
+              <span style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.40)' }}>A life worth living, a future worth building.</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px' }}>
+              {NEXTUS_PLATFORM.map(item => (
+                <Link
+                  key={item.key}
+                  to={item.path}
+                  onClick={onClose}
+                  style={{ display: 'block', padding: '16px 18px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.22)', borderRadius: '14px', textDecoration: 'none', transition: 'all 0.18s' }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)' }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.22)' }}
+                >
+                  <div style={{ marginBottom: '4px' }}>
+                    <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.08em', color: '#0F1523', fontWeight: 600 }}>{item.label}</span>
+                  </div>
+                  {item.subtitle && (
+                    <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.38)', marginBottom: '6px' }}>{item.subtitle}</div>
+                  )}
+                  <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, margin: 0 }}>{item.desc}</p>
+                </Link>
+              ))}
             </div>
           </div>
 

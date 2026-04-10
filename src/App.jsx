@@ -30,7 +30,13 @@ class ErrorBoundary extends Component {
 import { HomePage }          from './pages/Home'
 import { AboutPage }         from './pages/About'
 import { LifeOSPage }        from './pages/LifeOS'
-import { NextUsPage }        from './pages/NextUs'
+import { NextUsPage }          from './pages/NextUs'
+import { NextUsActorsPage }    from './pages/NextUsActors'
+import { NextUsActorPage }     from './pages/NextUsActor'
+import { NextUsActorManagePage } from './pages/NextUsActorManage'
+import { NextUsNeedNewPage }   from './pages/NextUsNeedNew'
+import { NextUsMapPage }       from './pages/NextUsMap'
+import { NextUsNominatePage }  from './pages/NextUsNominate'
 import { WorkWithNikPage, PodcastPage } from './pages/WorkAndPodcast'
 import { LoginPage }         from './pages/Login'
 import { PrivacyPage, TermsPage } from './pages/Legal'
@@ -80,7 +86,13 @@ function AppInner() {
         <Route path="/index"           element={<Navigate to="/" replace />} />
         <Route path="/about"           element={<AboutPage />} />
         <Route path="/life-os"         element={<LifeOSPage />} />
-        <Route path="/nextus"          element={<NextUsPage />} />
+        <Route path="/nextus"                        element={<NextUsPage />} />
+        <Route path="/nextus/actors"                 element={<NextUsActorsPage />} />
+        <Route path="/nextus/actors/:id"             element={<NextUsActorPage />} />
+        <Route path="/nextus/actors/:id/manage"      element={<NextUsActorManagePage />} />
+        <Route path="/nextus/actors/:id/needs/new"   element={<NextUsNeedNewPage />} />
+        <Route path="/nextus/map"                    element={<NextUsMapPage />} />
+        <Route path="/nextus/nominate"               element={<NextUsNominatePage />} />
         <Route path="/work-with-nik"   element={<WorkWithNikPage />} />
         <Route path="/podcast"         element={<PodcastPage />} />
         <Route path="/pricing"         element={<PricingPage />} />

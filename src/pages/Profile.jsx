@@ -1098,7 +1098,7 @@ function FoundationSlot({ foundationData }) {
   )
 }
 
-function NextUsSlot({ purposeData }) {
+function NextUsSlot({ purposeData, userId, claimedActor }) {
   const profile   = purposeData?.profile ?? {}
   const tentative = purposeData?.session?.tentative ?? {}
   const statement = profile.civilisational_statement
@@ -1106,48 +1106,173 @@ function NextUsSlot({ purposeData }) {
   const domain    = tentative.domain?.domain
   const scale     = tentative.scale?.scale
 
-  if (!statement && !archetype) {
-    return (
-      <div>
-        <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
-          color: 'rgba(15,21,35,0.72)', marginBottom: '16px', lineHeight: 1.7 }}>
-          Complete Purpose Piece to see where your contribution belongs in the larger work.
-        </p>
-        <a href="/tools/purpose-piece"
-          style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em',
-            color: '#A8721A', textDecoration: 'none' }}>
-          Begin Purpose Piece {'\u2192'}
-        </a>
-      </div>
-    )
+  const [summary,        setSummary]        = useState(null)
+  const [contribs,       setContribs]       = useState([])
+  const [visibility,     setVisibility]     = useState('public')
+  const [savingVis,      setSavingVis]      = useState(false)
+  const [loadingContribs, setLoadingContribs] = useState(true)
+
+  useEffect(() => {
+    if (!userId) return
+    async function load() {
+      const [{ data: sumData }, { data: contribData }] = await Promise.all([
+        supabase.from('nextus_contribution_summaries').select('*').eq('user_id', userId).maybeSingle(),
+        supabase.from('nextus_contributions')
+          .select('*, nextus_actors(name, domain_id)')
+          .eq('contributor_id', userId)
+          .eq('confirmed_by_actor', true)
+          .order('created_at', { ascending: false })
+          .limit(5),
+      ])
+      if (sumData) { setSummary(sumData); setVisibility(sumData.visibility || 'public') }
+      setContribs(contribData || [])
+      setLoadingContribs(false)
+    }
+    load()
+  }, [userId])
+
+  async function toggleVisibility() {
+    const next = visibility === 'public' ? 'muted' : 'public'
+    setSavingVis(true)
+    await supabase.from('nextus_contribution_summaries')
+      .upsert({ user_id: userId, visibility: next }, { onConflict: 'user_id' })
+    setVisibility(next)
+    setSavingVis(false)
   }
+
+  const hasContribs = summary && (
+    summary.total_hours > 0 || summary.total_capital > 0 ||
+    summary.skills_count > 0 || summary.resources_count > 0 || summary.community_count > 0
+  )
+
+  const CONTRIB_LABEL = { hours: 'Time', capital: 'Capital', skills: 'Skills', resources: 'Resources', community: 'Community', other: 'Other' }
+  const DOMAIN_LABEL  = { 'human-being': 'Human Being', 'society': 'Society', 'nature': 'Nature', 'technology': 'Technology', 'finance-economy': 'Finance & Economy', 'legacy': 'Legacy', 'vision': 'Vision' }
 
   return (
     <div>
+      {/* Civilisational identity */}
       {statement && (
         <>
           <Eyebrow>Your civilisational statement</Eyebrow>
-          <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', paddingLeft: '16px',
-            marginBottom: '20px' }}>
-            <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', fontWeight: 300,
-              color: '#0F1523', lineHeight: 1.75, margin: 0 }}>{statement}</p>
+          <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', paddingLeft: '16px', marginBottom: '20px' }}>
+            <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, margin: 0 }}>{statement}</p>
           </div>
         </>
       )}
+
       {(archetype || domain || scale) && (
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '24px' }}>
           {[archetype, domain, scale].filter(Boolean).map((v, i) => (
-            <span key={i} style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em',
-              color: '#A8721A', background: 'rgba(200,146,42,0.07)',
-              border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px',
-              padding: '5px 14px' }}>{v}</span>
+            <span key={i} style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: '#A8721A', background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', padding: '5px 14px' }}>{v}</span>
           ))}
         </div>
       )}
-      <a href="/nextus" style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em',
-        color: '#A8721A', textDecoration: 'none' }}>
-        Explore NextUs {'\u2192'}
-      </a>
+
+      {!statement && !archetype && (
+        <div style={{ marginBottom: '24px' }}>
+          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.65)', marginBottom: '14px', lineHeight: 1.7 }}>
+            Complete Purpose Piece to discover where your contribution belongs in the larger work.
+          </p>
+          <a href="/tools/purpose-piece" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none' }}>
+            Begin Purpose Piece {'→'}
+          </a>
+        </div>
+      )}
+
+      {/* Claimed actor profile */}
+      {claimedActor && (
+        <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '10px', padding: '14px 18px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+          <div>
+            <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '4px' }}>Your actor profile</p>
+            <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', margin: 0 }}>{claimedActor.name}</p>
+          </div>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <a href={'/nextus/actors/' + claimedActor.id} style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>View</a>
+            <span style={{ color: 'rgba(200,146,42,0.35)' }}>·</span>
+            <a href={'/nextus/actors/' + claimedActor.id + '/manage'} style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>Manage</a>
+          </div>
+        </div>
+      )}
+
+      {/* Contribution section */}
+      {!loadingContribs && (
+        <div style={{ borderTop: '1px solid rgba(200,146,42,0.12)', paddingTop: '20px', marginTop: '8px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+            <Eyebrow style={{ marginBottom: 0 }}>Your contributions</Eyebrow>
+            {hasContribs && (
+              <button onClick={toggleVisibility} disabled={savingVis}
+                style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                {savingVis ? '...' : visibility === 'public' ? 'Make private' : 'Make public'}
+              </button>
+            )}
+          </div>
+
+          {!hasContribs ? (
+            <div>
+              <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '14px' }}>
+                Your confirmed contributions will appear here as a record of what you have actually done in the world.
+              </p>
+              <a href="/nextus/actors" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none' }}>
+                Find actors to contribute to {'→'}
+              </a>
+            </div>
+          ) : (
+            <div>
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                {summary.total_hours > 0 && (
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ ...serif, fontSize: '24px', fontWeight: 300, color: '#0F1523', lineHeight: 1 }}>{summary.total_hours}</div>
+                    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginTop: '4px' }}>hours</div>
+                  </div>
+                )}
+                {summary.total_capital > 0 && (
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ ...serif, fontSize: '24px', fontWeight: 300, color: '#0F1523', lineHeight: 1 }}>${summary.total_capital}</div>
+                    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginTop: '4px' }}>capital</div>
+                  </div>
+                )}
+                {summary.skills_count > 0 && (
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ ...serif, fontSize: '24px', fontWeight: 300, color: '#0F1523', lineHeight: 1 }}>{summary.skills_count}</div>
+                    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginTop: '4px' }}>skills</div>
+                  </div>
+                )}
+                {summary.community_count > 0 && (
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ ...serif, fontSize: '24px', fontWeight: 300, color: '#0F1523', lineHeight: 1 }}>{summary.community_count}</div>
+                    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginTop: '4px' }}>community</div>
+                  </div>
+                )}
+              </div>
+
+              <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.40)', marginBottom: '16px' }}>
+                {visibility === 'public' ? 'Visible on your public profile.' : 'Hidden — your icon shows but details are private.'}
+              </p>
+
+              {contribs.length > 0 && (
+                <div style={{ marginBottom: '16px' }}>
+                  <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.40)', marginBottom: '10px' }}>Recent confirmed</p>
+                  {contribs.map(c => (
+                    <div key={c.id} style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
+                      <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: '#A8721A', background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '4px', padding: '2px 8px' }}>
+                        {CONTRIB_LABEL[c.contribution_type] || c.contribution_type}
+                      </span>
+                      <span style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.70)', flex: 1 }}>{c.nextus_actors?.name || 'Unknown'}</span>
+                      {c.nextus_actors?.domain_id && (
+                        <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.35)' }}>{DOMAIN_LABEL[c.nextus_actors.domain_id]}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <a href="/nextus/actors" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none' }}>
+                Find more actors {'→'}
+              </a>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -1156,11 +1281,12 @@ export function ProfilePage() {
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
-  const [mapData,         setMapData]         = useState(null)
-  const [purposeData,     setPurposeData]     = useState(null)
-  const [sprintData,      setSprintData]      = useState(null)
-  const [foundationData,  setFoundationData]  = useState(null)
-  const [dataLoading,     setDataLoading]     = useState(true)
+  const [mapData,        setMapData]        = useState(null)
+  const [purposeData,    setPurposeData]    = useState(null)
+  const [sprintData,     setSprintData]     = useState(null)
+  const [foundationData, setFoundationData] = useState(null)
+  const [claimedActor,   setClaimedActor]   = useState(null)
+  const [dataLoading,    setDataLoading]    = useState(true)
 
   useEffect(() => {
     if (authLoading) return
@@ -1171,7 +1297,7 @@ export function ProfilePage() {
   async function loadData() {
     setDataLoading(true)
     try {
-      const [mapRes, ppRes, sprintRes, foundationRes] = await Promise.all([
+      const [mapRes, ppRes, sprintRes, foundationRes, actorRes] = await Promise.all([
         supabase
           .from('map_results')
           .select('session, completed_at, map_data, horizon_goal_user, horizon_goal_system, complete')
@@ -1199,11 +1325,17 @@ export function ProfilePage() {
           .select('*')
           .eq('user_id', user.id)
           .maybeSingle(),
+        supabase
+          .from('nextus_actors')
+          .select('id, name, domain_id, subdomain_id, scale, winning, verified')
+          .eq('profile_owner', user.id)
+          .maybeSingle(),
       ])
       if (mapRes.data)        setMapData(mapRes.data)
       if (ppRes.data)         setPurposeData(ppRes.data)
       if (sprintRes.data)     setSprintData(sprintRes.data)
       if (foundationRes.data) setFoundationData(foundationRes.data)
+      if (actorRes.data)      setClaimedActor(actorRes.data)
     } catch {}
     setDataLoading(false)
   }
@@ -1262,7 +1394,7 @@ export function ProfilePage() {
 
         <Slot title="NextUs" eyebrow="The larger work"
           linkLabel="Explore" linkUrl="/nextus" defaultOpen={false}>
-          <NextUsSlot purposeData={purposeData} />
+          <NextUsSlot purposeData={purposeData} userId={user?.id} claimedActor={claimedActor} />
         </Slot>
 
         <div style={{ textAlign: 'center', paddingTop: '48px',

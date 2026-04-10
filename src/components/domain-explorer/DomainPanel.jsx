@@ -282,6 +282,16 @@ export default function DomainPanel({
         )
       )}
 
+      {level === 0 && item.id && (
+        <a
+          href={'/nextus/actors?domain=' + item.id}
+          className={styles.mailingBtn}
+          style={{ display: 'inline-block', marginBottom: '16px', textDecoration: 'none', textAlign: 'center', width: '100%' }}
+        >
+          View actors in {item.name} →
+        </a>
+      )}
+
       <div className={styles.divider} />
 
       <div className={styles.mailingList}>

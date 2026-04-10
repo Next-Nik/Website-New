@@ -126,7 +126,7 @@ function Toast({ message, onClose }) {
 
 // ── Tab navigation ────────────────────────────────────────────
 
-const TABS = ['Now', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
+const TABS = ['Now', 'Platform', 'Actors', 'Nominations', 'Domain Data', 'Needs', 'Contributions', 'Waitlist', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
 
 function TabBar({ active, setActive }) {
   return (
@@ -1042,12 +1042,706 @@ function GrantsTab() {
   )
 }
 
+// ── PLATFORM HEALTH TAB ─────────────────────────────────────
+
+const DOMAIN_LIST = [
+  { value: 'human-being',     label: 'Human Being' },
+  { value: 'society',         label: 'Society' },
+  { value: 'nature',          label: 'Nature' },
+  { value: 'technology',      label: 'Technology' },
+  { value: 'finance-economy', label: 'Finance & Economy' },
+  { value: 'legacy',          label: 'Legacy' },
+  { value: 'vision',          label: 'Vision' },
+]
+
+function PlatformTab() {
+  const [stats, setStats] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      const [
+        { count: totalActors }, { count: claimedActors }, { count: openNeeds },
+        { count: pendingClaims }, { count: totalContribs }, { count: waitlistCount },
+        { data: domainCounts }, { data: zeroActorDomains },
+      ] = await Promise.all([
+        supabase.from('nextus_actors').select('*', { count: 'exact', head: true }),
+        supabase.from('nextus_actors').select('*', { count: 'exact', head: true }).eq('claimed', true),
+        supabase.from('nextus_needs').select('*', { count: 'exact', head: true }).eq('status', 'open'),
+        supabase.from('nextus_claims').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+        supabase.from('nextus_contributions').select('*', { count: 'exact', head: true }),
+        supabase.from('nextus_waitlist').select('*', { count: 'exact', head: true }),
+        supabase.from('nextus_domains').select('id, name, total_actors, gap_score, gap_signal, data_status').order('gap_score'),
+        supabase.from('nextus_domains').select('id, name, total_actors').eq('total_actors', 0),
+      ])
+      setStats({ totalActors, claimedActors, openNeeds, pendingClaims, totalContribs, waitlistCount, domainCounts, zeroActorDomains })
+      setLoading(false)
+    }
+    load()
+  }, [])
+
+  if (loading) return <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>
+
+  const statCards = [
+    { label: 'Total Actors', value: stats.totalActors },
+    { label: 'Claimed', value: stats.claimedActors },
+    { label: 'Open Needs', value: stats.openNeeds },
+    { label: 'Pending Claims', value: stats.pendingClaims },
+    { label: 'Contributions', value: stats.totalContribs },
+    { label: 'Waitlist', value: stats.waitlistCount },
+  ]
+
+  return (
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '32px' }}>
+        {statCards.map(s => (
+          <Card key={s.label} style={{ textAlign: 'center', padding: '20px 12px' }}>
+            <div style={{ ...serif, fontSize: '32px', fontWeight: 300, color: '#0F1523', lineHeight: 1 }}>{s.value ?? 0}</div>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginTop: '6px' }}>{s.label}</div>
+          </Card>
+        ))}
+      </div>
+      <Eyebrow>Domains</Eyebrow>
+      <div style={{ marginBottom: '32px' }}>
+        {(stats.domainCounts || []).map(d => (
+          <Card key={d.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '14px 20px' }}>
+            <div style={{ ...serif, fontSize: '16px', color: '#0F1523', width: '160px', flexShrink: 0 }}>{d.name}</div>
+            <div style={{ flex: 1, height: '6px', background: 'rgba(200,146,42,0.12)', borderRadius: '3px', overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${(d.gap_score / 10) * 100}%`, background: d.gap_score < 4 ? '#8A3030' : d.gap_score < 6 ? '#8A7030' : '#2A6B3A', borderRadius: '3px' }} />
+            </div>
+            <div style={{ ...sc, fontSize: '13px', color: gold, width: '40px', textAlign: 'right' }}>{d.gap_score}/10</div>
+            <div style={{ width: '80px', textAlign: 'right', ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>{d.total_actors} actors</div>
+            {d.gap_signal && <Badge label="gap" color="#8A3030" />}
+            {d.data_status === 'verified' && <Badge label="verified" color="#2A6B3A" />}
+          </Card>
+        ))}
+      </div>
+      {stats.pendingClaims > 0 && (
+        <Card style={{ borderColor: 'rgba(200,146,42,0.60)', background: 'rgba(200,146,42,0.04)' }}>
+          <span style={{ ...serif, fontSize: '16px', color: '#0F1523' }}>{stats.pendingClaims} claim{stats.pendingClaims !== 1 ? 's' : ''} awaiting review \u2014 go to Actors tab</span>
+        </Card>
+      )}
+      {(stats.zeroActorDomains || []).length > 0 && (
+        <Card style={{ borderColor: 'rgba(138,48,48,0.40)', background: 'rgba(138,48,48,0.03)' }}>
+          <span style={{ ...serif, fontSize: '16px', color: '#0F1523' }}>Empty domains: {stats.zeroActorDomains.map(d => d.name).join(', ')}</span>
+        </Card>
+      )}
+    </div>
+  )
+}
+
+
+// ── ACTORS TAB ───────────────────────────────────────────────
+
+const SUBDOMAIN_MAP = {
+  'human-being':     [['hb-body','Body'],['hb-mind','Mind'],['hb-inner-life','Inner Life'],['hb-development','Development'],['hb-dignity','Dignity & Rights'],['hb-expression','Expression & Culture']],
+  'society':         [['soc-governance','Governance'],['soc-culture','Culture'],['soc-conflict-peace','Conflict & Peace'],['soc-community','Community'],['soc-communication','Communication & Information'],['soc-global','Global Coordination']],
+  'nature':          [['nat-earth','Earth'],['nat-air','Air'],['nat-salt-water','Salt Water'],['nat-fresh-water','Fresh Water'],['nat-flora','Flora'],['nat-fauna','Fauna'],['nat-living-systems','Living Systems']],
+  'technology':      [['tech-digital','Digital Systems'],['tech-biological','Biological Technology'],['tech-infrastructure','Physical Infrastructure'],['tech-energy','Energy'],['tech-frontier','Frontier & Emerging Technology']],
+  'finance-economy': [['fe-resources','Resources'],['fe-exchange','Exchange'],['fe-capital','Capital'],['fe-labour','Labour'],['fe-ownership','Ownership'],['fe-distribution','Distribution']],
+  'legacy':          [['leg-wisdom','Wisdom'],['leg-memory','Memory'],['leg-ceremony','Ceremony & Ritual'],['leg-intergenerational','Intergenerational Relationship'],['leg-long-arc','The Long Arc']],
+  'vision':          [['vis-imagination','Imagination'],['vis-philosophy','Philosophy & Worldview'],['vis-leadership','Leadership'],['vis-coordination','Coordination'],['vis-foresight','Foresight']],
+}
+
+const DOMAINS_WITH_EMPTY = [{ value: '', label: 'All domains' }, ...DOMAIN_LIST]
+const ACTOR_TYPES  = ['organisation', 'project', 'individual']
+const SCALE_OPTIONS = ['local', 'municipal', 'regional', 'national', 'international', 'global']
+
+const EMPTY_ACTOR_FORM = {
+  name: '', type: 'organisation', domain_id: '', subdomain_id: '',
+  scale: 'national', location_name: '', lat: '', lng: '', website: '',
+  description: '', impact_summary: '', reach: '',
+  alignment_score: '', winning: false, data_source: '',
+}
+
+function ActorsTab({ toast }) {
+  const [actors, setActors]           = useState([])
+  const [loading, setLoading]         = useState(false)
+  const [filterDomain, setFilterDomain] = useState('')
+  const [filterType, setFilterType]   = useState('')
+  const [filterClaimed, setFilterClaimed] = useState('')
+  const [filterWinning, setFilterWinning] = useState('')
+  const [search, setSearch]           = useState('')
+  const [total, setTotal]             = useState(0)
+  const [mode, setMode]               = useState('browse')
+  const [form, setForm]               = useState(EMPTY_ACTOR_FORM)
+  const [editId, setEditId]           = useState(null)
+  const [saving, setSaving]           = useState(false)
+  const [claims, setClaims]           = useState([])
+
+  const subdomainOptions = form.domain_id
+    ? [['', '— none —'], ...(SUBDOMAIN_MAP[form.domain_id] || [])].map(([v, l]) => ({ value: v, label: l }))
+    : [{ value: '', label: 'Select domain first' }]
+
+  async function fetchActors() {
+    setLoading(true)
+    let q = supabase.from('nextus_actors').select('*', { count: 'exact' })
+    if (filterDomain)  q = q.eq('domain_id', filterDomain)
+    if (filterType)    q = q.eq('type', filterType)
+    if (filterClaimed === 'claimed')   q = q.eq('claimed', true)
+    if (filterClaimed === 'unclaimed') q = q.eq('claimed', false)
+    if (filterWinning === 'winning')   q = q.eq('winning', true)
+    if (filterWinning === 'underloved') q = q.eq('winning', false)
+    if (search) q = q.ilike('name', `%${search}%`)
+    q = q.order('name').limit(50)
+    const { data, count } = await q
+    setActors(data || [])
+    setTotal(count || 0)
+    setLoading(false)
+  }
+
+  async function fetchClaims() {
+    const { data } = await supabase.from('nextus_claims')
+      .select('*, nextus_actors(name, domain_id)').eq('status', 'pending').order('submitted_at', { ascending: false })
+    setClaims(data || [])
+  }
+
+  useEffect(() => { fetchActors() }, [filterDomain, filterType, filterClaimed, filterWinning])
+  useEffect(() => { if (mode === 'claims') fetchClaims() }, [mode])
+
+  function setFormField(field, value) {
+    setForm(f => { const next = { ...f, [field]: value }; if (field === 'domain_id') next.subdomain_id = ''; return next })
+  }
+
+  function startEdit(actor) {
+    setForm({
+      name: actor.name || '', type: actor.type || 'organisation',
+      domain_id: actor.domain_id || '', subdomain_id: actor.subdomain_id || '',
+      scale: actor.scale || 'national', location_name: actor.location_name || '',
+      lat: actor.lat ?? '', lng: actor.lng ?? '',
+      website: actor.website || '', description: actor.description || '',
+      impact_summary: actor.impact_summary || '', reach: actor.reach || '',
+      alignment_score: actor.alignment_score ?? '', winning: actor.winning || false,
+      data_source: actor.data_source || '',
+    })
+    setEditId(actor.id)
+    setMode('edit')
+  }
+
+  async function saveActor() {
+    if (!form.name.trim()) { toast('Name is required'); return }
+    setSaving(true)
+    const payload = {
+      ...form,
+      alignment_score: form.alignment_score !== '' ? parseFloat(form.alignment_score) : null,
+      subdomain_id: form.subdomain_id || null,
+      domain_id: form.domain_id || null,
+      lat: form.lat !== '' ? parseFloat(form.lat) : null,
+      lng: form.lng !== '' ? parseFloat(form.lng) : null,
+    }
+    const { error } = mode === 'edit'
+      ? await supabase.from('nextus_actors').update(payload).eq('id', editId)
+      : await supabase.from('nextus_actors').insert(payload)
+    setSaving(false)
+    if (error) { toast('Error: ' + error.message); return }
+    toast(mode === 'edit' ? 'Actor updated' : 'Actor added')
+    setForm(EMPTY_ACTOR_FORM); setEditId(null); setMode('browse'); fetchActors()
+  }
+
+  async function deleteActor(id, name) {
+    if (!window.confirm(`Delete "${name}"?`)) return
+    await supabase.from('nextus_actors').delete().eq('id', id)
+    toast('Deleted'); fetchActors()
+  }
+
+  async function toggleWinning(actor) {
+    await supabase.from('nextus_actors').update({ winning: !actor.winning }).eq('id', actor.id)
+    fetchActors()
+  }
+
+  async function resolveClaim(claimId, actorId, approved) {
+    if (approved) {
+      await supabase.from('nextus_actors').update({ claimed: true, verified: true }).eq('id', actorId)
+      await supabase.from('nextus_claims').update({ status: 'verified', resolved_at: new Date().toISOString() }).eq('id', claimId)
+      toast('Claim approved')
+    } else {
+      await supabase.from('nextus_claims').update({ status: 'rejected', resolved_at: new Date().toISOString() }).eq('id', claimId)
+      toast('Claim rejected')
+    }
+    fetchClaims()
+  }
+
+  const domainLabel = id => DOMAIN_LIST.find(d => d.value === id)?.label || id
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '28px' }}>
+        {['browse', 'add', 'claims'].map(m => (
+          <Btn key={m} onClick={() => { setMode(m); if (m === 'add') setForm(EMPTY_ACTOR_FORM) }}
+            variant={mode === m || (mode === 'edit' && m === 'add') ? 'primary' : 'ghost'} small>
+            {m === 'browse' ? `Browse (${total})` : m === 'add' ? '+ Add Actor' : `Claims (${claims.length})`}
+          </Btn>
+        ))}
+      </div>
+
+      {mode === 'browse' && (
+        <div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '10px', marginBottom: '20px' }}>
+            <Input value={search} onChange={setSearch} placeholder="Search by name..." onKeyDown={e => e.key === 'Enter' && fetchActors()} />
+            <Select value={filterDomain} onChange={setFilterDomain} options={DOMAINS_WITH_EMPTY} />
+            <Select value={filterType} onChange={setFilterType} options={[{ value: '', label: 'All types' }, ...ACTOR_TYPES.map(t => ({ value: t, label: t }))]} />
+            <Select value={filterClaimed} onChange={setFilterClaimed} options={[{ value: '', label: 'Claimed / unclaimed' }, { value: 'claimed', label: 'Claimed' }, { value: 'unclaimed', label: 'Unclaimed' }]} />
+            <Select value={filterWinning} onChange={setFilterWinning} options={[{ value: '', label: 'All actors' }, { value: 'winning', label: 'Winning' }, { value: 'underloved', label: 'Underloved' }]} />
+            <Btn onClick={fetchActors} small>Search</Btn>
+          </div>
+          {loading && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+          {!loading && actors.length === 0 && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>No actors found.</p>}
+          {actors.map(a => (
+            <Card key={a.id}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                    <span style={{ ...serif, fontSize: '17px', color: '#0F1523' }}>{a.name}</span>
+                    <Badge label={a.type} />
+                    {a.scale && <Badge label={a.scale} color="rgba(15,21,35,0.45)" />}
+                    {a.winning && <Badge label="winning" color="#2A6B3A" />}
+                    {a.claimed && <Badge label="claimed" color="#2A4A8A" />}
+                    {a.verified && <Badge label="verified" color="#1A6B4A" />}
+                  </div>
+                  <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
+                    {a.domain_id && <span>{domainLabel(a.domain_id)}</span>}
+                    {a.location_name && <span> \u00b7 {a.location_name}</span>}
+                    {(a.lat && a.lng) && <span style={{ color: '#2A6B3A' }}> \u00b7 \ud83d\udccd mapped</span>}
+                  </div>
+                  {a.description && <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>{a.description.slice(0, 160)}{a.description.length > 160 ? '...' : ''}</p>}
+                </div>
+                <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                  <Btn small variant="ghost" onClick={() => toggleWinning(a)}>{a.winning ? 'Unmark' : 'Mark winning'}</Btn>
+                  <Btn small onClick={() => startEdit(a)}>Edit</Btn>
+                  <Btn small variant="danger" onClick={() => deleteActor(a.id, a.name)}>Delete</Btn>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {(mode === 'add' || mode === 'edit') && (
+        <div style={{ maxWidth: '640px' }}>
+          <Eyebrow>{mode === 'edit' ? `Editing: ${form.name}` : 'Add Actor'}</Eyebrow>
+          <div style={{ display: 'grid', gap: '12px' }}>
+            <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Name *</label><Input value={form.name} onChange={v => setFormField('name', v)} placeholder="Organisation or individual name" /></div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Type</label><Select value={form.type} onChange={v => setFormField('type', v)} options={ACTOR_TYPES.map(t => ({ value: t, label: t }))} /></div>
+              <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Scale</label><Select value={form.scale} onChange={v => setFormField('scale', v)} options={SCALE_OPTIONS.map(s => ({ value: s, label: s }))} /></div>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Domain</label><Select value={form.domain_id} onChange={v => setFormField('domain_id', v)} options={[{ value: '', label: '— none —' }, ...DOMAIN_LIST]} /></div>
+              <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Subdomain</label><Select value={form.subdomain_id} onChange={v => setFormField('subdomain_id', v)} options={subdomainOptions} /></div>
+            </div>
+            <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Location</label><Input value={form.location_name} onChange={v => setFormField('location_name', v)} placeholder="e.g. Nairobi, Kenya" /></div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Latitude</label><Input value={form.lat} onChange={v => setFormField('lat', v)} placeholder="e.g. -1.286" type="number" /></div>
+              <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Longitude</label><Input value={form.lng} onChange={v => setFormField('lng', v)} placeholder="e.g. 36.817" type="number" /></div>
+            </div>
+            <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Website</label><Input value={form.website} onChange={v => setFormField('website', v)} placeholder="https://..." /></div>
+            <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Description</label><textarea value={form.description} onChange={e => setFormField('description', e.target.value)} rows={3} style={{ ...serif, fontSize: '15px', color: '#0F1523', padding: '9px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical' }} /></div>
+            <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Impact Summary</label><textarea value={form.impact_summary} onChange={e => setFormField('impact_summary', e.target.value)} rows={2} style={{ ...serif, fontSize: '15px', color: '#0F1523', padding: '9px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical' }} /></div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+              <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Reach</label><Input value={form.reach} onChange={v => setFormField('reach', v)} placeholder="e.g. 40 countries" /></div>
+              <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Alignment (0-10)</label><Input value={form.alignment_score} onChange={v => setFormField('alignment_score', v)} type="number" /></div>
+              <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Data Source</label><Input value={form.data_source} onChange={v => setFormField('data_source', v)} /></div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <input type="checkbox" id="winning" checked={form.winning} onChange={e => setFormField('winning', e.target.checked)} />
+              <label htmlFor="winning" style={{ ...serif, fontSize: '15px', cursor: 'pointer' }}>Mark as winning</label>
+            </div>
+            <div style={{ display: 'flex', gap: '12px', paddingTop: '8px' }}>
+              <Btn onClick={saveActor} disabled={saving}>{saving ? 'Saving...' : mode === 'edit' ? 'Save Changes' : 'Add Actor'}</Btn>
+              <Btn variant="ghost" onClick={() => { setMode('browse'); setForm(EMPTY_ACTOR_FORM); setEditId(null) }}>Cancel</Btn>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {mode === 'claims' && (
+        <div>
+          {claims.length === 0 && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>No pending claims.</p>}
+          {claims.map(c => (
+            <Card key={c.id}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <div style={{ ...serif, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>{c.nextus_actors?.name || c.actor_id}</div>
+                  <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>Claimant: {c.claimant_id} \u00b7 Method: {c.verification_method || 'not specified'}</div>
+                  <div style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.45)', marginTop: '4px' }}>Submitted: {new Date(c.submitted_at).toLocaleDateString()}</div>
+                  {c.notes && <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '6px' }}>{c.notes}</p>}
+                </div>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <Btn small onClick={() => resolveClaim(c.id, c.actor_id, true)}>Approve</Btn>
+                  <Btn small variant="danger" onClick={() => resolveClaim(c.id, c.actor_id, false)}>Reject</Btn>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+
+// ── DOMAIN DATA TAB ──────────────────────────────────────────
+
+function DomainDataTab({ toast }) {
+  const [selectedDomain, setSelectedDomain] = useState('human-being')
+  const [loading, setLoading] = useState(false)
+  const [saving, setSaving]   = useState(false)
+  const [form, setForm]       = useState(null)
+
+  async function loadDomain(id) {
+    setLoading(true)
+    const { data } = await supabase.from('nextus_domains').select('*').eq('id', id).single()
+    if (data) setForm({ horizon_goal: data.horizon_goal || '', description: data.description || '', current_state: data.current_state || '', gap_score: data.gap_score ?? '', gap_signal: data.gap_signal || false, gap_reason: data.gap_reason || '', data_status: data.data_status || 'illustrative', indicators: JSON.stringify(data.indicators || [], null, 2), sources: JSON.stringify(data.sources || [], null, 2) })
+    setLoading(false)
+  }
+
+  useEffect(() => { loadDomain(selectedDomain) }, [selectedDomain])
+  function setField(f, v) { setForm(prev => ({ ...prev, [f]: v })) }
+
+  async function save() {
+    setSaving(true)
+    let indicators, sources
+    try { indicators = JSON.parse(form.indicators) } catch { toast('Indicators JSON invalid'); setSaving(false); return }
+    try { sources = JSON.parse(form.sources) } catch { toast('Sources JSON invalid'); setSaving(false); return }
+    const { error } = await supabase.from('nextus_domains').update({ horizon_goal: form.horizon_goal, description: form.description, current_state: form.current_state, gap_score: form.gap_score !== '' ? parseFloat(form.gap_score) : null, gap_signal: form.gap_signal, gap_reason: form.gap_reason || null, data_status: form.data_status, indicators, sources, last_updated: new Date().toISOString() }).eq('id', selectedDomain)
+    setSaving(false)
+    if (error) { toast('Error: ' + error.message); return }
+    toast('Domain saved')
+  }
+
+  const ta = (value, onChange, rows = 3, placeholder = '') => (
+    <textarea value={value} onChange={e => onChange(e.target.value)} rows={rows} placeholder={placeholder} style={{ ...serif, fontSize: '15px', color: '#0F1523', padding: '9px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.6 }} />
+  )
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '28px' }}>
+        <Select value={selectedDomain} onChange={setSelectedDomain} options={DOMAIN_LIST} />
+        {form && <Badge label={form.data_status} color={form.data_status === 'verified' ? '#2A6B3A' : gold} />}
+        {form?.gap_signal && <Badge label="gap signal" color="#8A3030" />}
+      </div>
+      {loading && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {form && !loading && (
+        <div style={{ display: 'grid', gap: '16px', maxWidth: '720px' }}>
+          <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Horizon Goal</label>{ta(form.horizon_goal, v => setField('horizon_goal', v), 2)}</div>
+          <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Description</label>{ta(form.description, v => setField('description', v), 2)}</div>
+          <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Current State Narrative</label>{ta(form.current_state, v => setField('current_state', v), 5)}</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 1fr', gap: '12px', alignItems: 'end' }}>
+            <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Gap Score (0-10)</label><Input value={form.gap_score} onChange={v => setField('gap_score', v)} type="number" placeholder="e.g. 4.1" /></div>
+            <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Data Status</label><Select value={form.data_status} onChange={v => setField('data_status', v)} options={[{ value: 'illustrative', label: 'Illustrative' }, { value: 'verified', label: 'Verified' }]} /></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingBottom: '2px' }}><input type="checkbox" id="gap_signal" checked={form.gap_signal} onChange={e => setField('gap_signal', e.target.checked)} /><label htmlFor="gap_signal" style={{ ...serif, fontSize: '15px', cursor: 'pointer' }}>Gap signal active</label></div>
+          </div>
+          {form.gap_signal && <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Gap Reason</label><Input value={form.gap_reason} onChange={v => setField('gap_reason', v)} /></div>}
+          <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Indicators (JSON)</label><p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>Format: [&#123;"label":"...","value":"...","trend":"up|down|flat"&#125;]</p>{ta(form.indicators, v => setField('indicators', v), 5)}</div>
+          <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Sources (JSON)</label>{ta(form.sources, v => setField('sources', v), 4)}</div>
+          <div style={{ display: 'flex', gap: '12px', paddingTop: '4px' }}>
+            <Btn onClick={save} disabled={saving}>{saving ? 'Saving...' : 'Save Domain'}</Btn>
+            <Btn variant="ghost" onClick={() => loadDomain(selectedDomain)}>Reset</Btn>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+
+// ── NEEDS TAB ────────────────────────────────────────────────
+
+function NeedsTab({ toast }) {
+  const [needs, setNeeds]               = useState([])
+  const [loading, setLoading]           = useState(true)
+  const [filterStatus, setFilterStatus] = useState('open')
+  const [filterType, setFilterType]     = useState('')
+  const [filterDomain, setFilterDomain] = useState('')
+
+  async function fetchNeeds() {
+    setLoading(true)
+    let q = supabase.from('nextus_needs').select('*, nextus_actors(name, domain_id)').order('created_at', { ascending: false }).limit(100)
+    if (filterStatus) q = q.eq('status', filterStatus)
+    if (filterType)   q = q.eq('need_type', filterType)
+    const { data } = await q
+    let results = data || []
+    if (filterDomain) results = results.filter(n => n.nextus_actors?.domain_id === filterDomain)
+    setNeeds(results)
+    setLoading(false)
+  }
+
+  useEffect(() => { fetchNeeds() }, [filterStatus, filterType, filterDomain])
+
+  async function updateStatus(id, status) {
+    await supabase.from('nextus_needs').update({ status, updated_at: new Date().toISOString() }).eq('id', id)
+    toast('Need marked ' + status); fetchNeeds()
+  }
+
+  const statusColor = { open: '#2A6B3A', in_progress: '#2A4A8A', fulfilled: gold, closed: 'rgba(15,21,35,0.45)' }
+
+  return (
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '10px', marginBottom: '20px' }}>
+        <Select value={filterStatus} onChange={setFilterStatus} options={[{ value: '', label: 'All statuses' }, { value: 'open', label: 'Open' }, { value: 'in_progress', label: 'In Progress' }, { value: 'fulfilled', label: 'Fulfilled' }, { value: 'closed', label: 'Closed' }]} />
+        <Select value={filterType} onChange={setFilterType} options={[{ value: '', label: 'All types' }, ...['skills','capital','time','resources','partnerships','data','other'].map(t => ({ value: t, label: t }))]} />
+        <Select value={filterDomain} onChange={setFilterDomain} options={[{ value: '', label: 'All domains' }, ...DOMAIN_LIST]} />
+        <Btn onClick={fetchNeeds} small>Refresh</Btn>
+      </div>
+      {loading && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {!loading && needs.length === 0 && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>No needs found.</p>}
+      {needs.map(n => (
+        <Card key={n.id}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
+                <span style={{ ...serif, fontSize: '16px', color: '#0F1523' }}>{n.title}</span>
+                <Badge label={n.need_type} /><Badge label={n.size} color="rgba(15,21,35,0.45)" /><Badge label={n.status} color={statusColor[n.status]} />
+              </div>
+              <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>{n.nextus_actors?.name || 'Unknown'}{n.time_estimate && ' \u00b7 ' + n.time_estimate}</div>
+              {n.description && <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>{n.description.slice(0, 200)}{n.description.length > 200 ? '...' : ''}</p>}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
+              {n.status === 'open'        && <Btn small onClick={() => updateStatus(n.id, 'in_progress')}>In progress</Btn>}
+              {n.status === 'in_progress' && <Btn small onClick={() => updateStatus(n.id, 'fulfilled')}>Fulfilled</Btn>}
+              {n.status !== 'closed'      && <Btn small variant="ghost" onClick={() => updateStatus(n.id, 'closed')}>Close</Btn>}
+            </div>
+          </div>
+        </Card>
+      ))}
+    </div>
+  )
+}
+
+
+// ── CONTRIBUTIONS TAB ────────────────────────────────────────
+
+function ContributionsTab({ toast }) {
+  const [contribs, setContribs]               = useState([])
+  const [loading, setLoading]                 = useState(true)
+  const [filterConfirmed, setFilterConfirmed] = useState('')
+  const [filterOutcome, setFilterOutcome]     = useState('')
+  const [filterType, setFilterType]           = useState('')
+
+  async function fetchContribs() {
+    setLoading(true)
+    let q = supabase.from('nextus_contributions').select('*, nextus_actors(name, domain_id)').order('created_at', { ascending: false }).limit(100)
+    if (filterConfirmed === 'confirmed')   q = q.eq('confirmed_by_actor', true)
+    if (filterConfirmed === 'unconfirmed') q = q.eq('confirmed_by_actor', false)
+    if (filterOutcome === 'missing')       q = q.eq('outcome_reported', false).eq('confirmed_by_actor', true)
+    if (filterType) q = q.eq('contribution_type', filterType)
+    const { data } = await q
+    setContribs(data || [])
+    setLoading(false)
+  }
+
+  useEffect(() => { fetchContribs() }, [filterConfirmed, filterOutcome, filterType])
+
+  const typeColor = { hours: '#2A4A8A', capital: '#2A6B3A', skills: gold, resources: '#6B2A6B', community: '#2A6B6B', other: 'rgba(15,21,35,0.45)' }
+
+  return (
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', marginBottom: '20px' }}>
+        <Select value={filterConfirmed} onChange={setFilterConfirmed} options={[{ value: '', label: 'All contributions' }, { value: 'confirmed', label: 'Confirmed' }, { value: 'unconfirmed', label: 'Unconfirmed' }]} />
+        <Select value={filterOutcome} onChange={setFilterOutcome} options={[{ value: '', label: 'All outcomes' }, { value: 'missing', label: 'Outcome report missing' }]} />
+        <Select value={filterType} onChange={setFilterType} options={[{ value: '', label: 'All types' }, ...['hours','capital','skills','resources','community','other'].map(t => ({ value: t, label: t }))]} />
+        <Btn onClick={fetchContribs} small>Refresh</Btn>
+      </div>
+      {loading && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {!loading && contribs.length === 0 && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>No contributions found.</p>}
+      {contribs.map(c => (
+        <Card key={c.id}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <Badge label={c.contribution_type} color={typeColor[c.contribution_type]} />
+                {c.amount && <span style={{ ...sc, fontSize: '13px', color: gold }}>{c.contribution_type === 'capital' ? `${c.currency} ${c.amount}` : `${c.amount} hrs`}</span>}
+                {c.confirmed_by_actor ? <Badge label="confirmed" color="#2A6B3A" /> : <Badge label="unconfirmed" color="rgba(15,21,35,0.45)" />}
+                {c.confirmed_by_actor && !c.outcome_reported && <Badge label="outcome missing" color="#8A3030" />}
+              </div>
+              <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>To: {c.nextus_actors?.name || c.actor_id}{c.contribution_date && ' \u00b7 ' + c.contribution_date}</div>
+              {c.description && <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '4px', lineHeight: 1.6 }}>{c.description.slice(0, 160)}{c.description.length > 160 ? '...' : ''}</p>}
+              {c.outcome_report && <p style={{ ...serif, fontSize: '14px', color: '#2A6B3A', marginTop: '4px' }}>Outcome: {c.outcome_report.slice(0, 160)}</p>}
+            </div>
+          </div>
+        </Card>
+      ))}
+    </div>
+  )
+}
+
+
+// ── WAITLIST TAB ─────────────────────────────────────────────
+
+function WaitlistTab({ toast }) {
+  const [entries, setEntries]           = useState([])
+  const [loading, setLoading]           = useState(true)
+  const [filterDomain, setFilterDomain] = useState('')
+  const [total, setTotal]               = useState(0)
+
+  async function fetchWaitlist() {
+    setLoading(true)
+    let q = supabase.from('nextus_waitlist').select('*, nextus_actors(name), nextus_domains(name)', { count: 'exact' }).order('created_at', { ascending: false }).limit(200)
+    if (filterDomain) q = q.eq('domain_id', filterDomain)
+    const { data, count } = await q
+    setEntries(data || []); setTotal(count || 0); setLoading(false)
+  }
+
+  useEffect(() => { fetchWaitlist() }, [filterDomain])
+
+  function copyEmails() {
+    navigator.clipboard.writeText(entries.map(e => e.email).join('\n'))
+    toast(entries.length + ' emails copied')
+  }
+
+  const byDomain = entries.reduce((acc, e) => {
+    const key = e.nextus_domains?.name || e.domain_id || 'General'
+    acc[key] = (acc[key] || 0) + 1; return acc
+  }, {})
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
+        <Select value={filterDomain} onChange={setFilterDomain} options={[{ value: '', label: 'All domains' }, ...DOMAIN_LIST]} />
+        <Btn onClick={fetchWaitlist} small>Refresh</Btn>
+        <Btn onClick={copyEmails} small variant="ghost">Copy {total} emails</Btn>
+      </div>
+      {Object.keys(byDomain).length > 0 && (
+        <Card style={{ marginBottom: '24px' }}>
+          <Eyebrow>By Domain</Eyebrow>
+          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '8px' }}>
+            {Object.entries(byDomain).sort((a, b) => b[1] - a[1]).map(([domain, count]) => (
+              <div key={domain} style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.88)' }}>
+                <span style={{ color: gold, fontWeight: 500 }}>{count}</span> {domain}
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+      {loading && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {!loading && entries.length === 0 && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>No waitlist entries yet.</p>}
+      {entries.map(e => (
+        <Card key={e.id} style={{ padding: '14px 20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
+            <div>
+              <div style={{ ...serif, fontSize: '16px', color: '#0F1523' }}>{e.email}</div>
+              <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>
+                {e.nextus_domains?.name || e.nextus_actors?.name || 'General interest'}
+                {e.contribution_types?.length > 0 && ' \u00b7 wants: ' + e.contribution_types.join(', ')}
+                {e.source && ' \u00b7 via ' + e.source}
+              </div>
+              {e.note && <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '4px' }}>{e.note}</p>}
+            </div>
+            <div style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.45)', flexShrink: 0 }}>{new Date(e.created_at).toLocaleDateString()}</div>
+          </div>
+        </Card>
+      ))}
+    </div>
+  )
+}
+
+
+// ── NOMINATIONS TAB ─────────────────────────────────────────
+
+function NominationsTab({ toast }) {
+  const [nominations, setNominations] = useState([])
+  const [loading, setLoading]         = useState(true)
+  const [filter, setFilter]           = useState('nominated')
+
+  async function load() {
+    setLoading(true)
+    let q = supabase.from('nextus_actors').select('*').eq('seeded_by', 'community').order('created_at', { ascending: false }).limit(100)
+    // nominated = not yet claimed/verified, approved = claimed, rejected = we use a note convention
+    const { data } = await q
+    let results = data || []
+    if (filter === 'nominated') results = results.filter(a => !a.claimed && !a.verified)
+    if (filter === 'approved')  results = results.filter(a => a.claimed || a.verified)
+    setNominations(results)
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [filter])
+
+  async function approve(actor) {
+    // Mark as winning = false, claimed = false (still needs owner to claim)
+    // Visible to public — the vetting is done
+    const { error } = await supabase.from('nextus_actors').update({
+      seeded_by: 'nextus',   // promote to curated
+      data_source: actor.data_source,
+    }).eq('id', actor.id)
+    if (error) { toast('Error approving'); return }
+    toast(`${actor.name} approved and now live`)
+    load()
+  }
+
+  async function reject(actor) {
+    if (!window.confirm(`Remove "${actor.name}" from nominations?`)) return
+    await supabase.from('nextus_actors').delete().eq('id', actor.id)
+    toast('Nomination removed')
+    load()
+  }
+
+  const domainLabel = id => ({ 'human-being':'Human Being','society':'Society','nature':'Nature','technology':'Technology','finance-economy':'Finance & Economy','legacy':'Legacy','vision':'Vision' })[id] || id
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+        {[['nominated','Pending'], ['approved','Approved']].map(([val, label]) => (
+          <Btn key={val} small variant={filter === val ? 'primary' : 'ghost'} onClick={() => setFilter(val)}>{label}</Btn>
+        ))}
+        <Btn small variant="ghost" onClick={load}>Refresh</Btn>
+      </div>
+
+      {filter === 'nominated' && (
+        <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.50)', marginBottom: '20px', lineHeight: 1.6, maxWidth: '560px' }}>
+          Review each nomination. Approve if the work is genuinely aimed at the Horizon Goal for their domain and scale, and the nominator's description is honest. Reject if the fit isn't right.
+        </div>
+      )}
+
+      {loading && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {!loading && nominations.length === 0 && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>No {filter} nominations.</p>}
+
+      {nominations.map(a => (
+        <Card key={a.id} style={{ borderLeft: '3px solid rgba(200,146,42,0.40)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                <span style={{ ...serif, fontSize: '18px', color: '#0F1523' }}>{a.name}</span>
+                <Badge label={a.type} />
+                {a.scale && <Badge label={a.scale} color="rgba(15,21,35,0.40)" />}
+                {a.domain_id && <Badge label={domainLabel(a.domain_id)} color="#2A4A8A" />}
+              </div>
+              {a.location_name && <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.50)', marginBottom: '6px' }}>{a.location_name}</div>}
+              {a.website && <div style={{ marginBottom: '8px' }}><a href={a.website} target="_blank" rel="noopener noreferrer" style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold }}>{a.website}</a></div>}
+              {a.description && (
+                <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', padding: '12px 14px', marginBottom: '8px' }}>
+                  <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold, marginBottom: '6px' }}>Why they belong (nominator's words)</p>
+                  <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>{a.description}</p>
+                </div>
+              )}
+              {a.data_source && <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.40)' }}>Source: {a.data_source}</p>}
+              <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.35)' }}>Submitted: {new Date(a.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+            </div>
+            {filter === 'nominated' && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
+                <Btn small onClick={() => approve(a)}>Approve →</Btn>
+                <Btn small variant="danger" onClick={() => reject(a)}>Reject</Btn>
+              </div>
+            )}
+            {filter === 'approved' && (
+              <div style={{ flexShrink: 0 }}>
+                <a href={'/nextus/actors/' + a.id} target="_blank" rel="noopener noreferrer" style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold }}>View live →</a>
+              </div>
+            )}
+          </div>
+        </Card>
+      ))}
+    </div>
+  )
+}
+
+
 // ── MAIN PAGE ─────────────────────────────────────────────────
 
 export function AdminConsolePage() {
   const { user, loading } = useAuth()
   const navigate          = useNavigate()
-  const [tab, setTab]     = useState('Groups')
+  const [tab, setTab]     = useState('Platform')
   const [toast, setToast] = useState(null)
 
   const showToast = useCallback((msg) => setToast(msg), [])
@@ -1073,12 +1767,19 @@ export function AdminConsolePage() {
         </h1>
         <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)',
           marginBottom: '48px' }}>
-          Groups, access, users, grants.
+          Platform health, actors, domains, needs, contributions, waitlist, access.
         </p>
 
         <TabBar active={tab} setActive={setTab} />
 
-        {tab === 'Now'          && <NowTab />}
+        {tab === 'Now'           && <NowTab />}
+        {tab === 'Platform'     && <PlatformTab />}
+        {tab === 'Actors'       && <ActorsTab       toast={showToast} />}
+        {tab === 'Nominations'  && <NominationsTab  toast={showToast} />}
+        {tab === 'Domain Data'  && <DomainDataTab   toast={showToast} />}
+        {tab === 'Needs'        && <NeedsTab        toast={showToast} />}
+        {tab === 'Contributions'&& <ContributionsTab toast={showToast} />}
+        {tab === 'Waitlist'     && <WaitlistTab     toast={showToast} />}
         {tab === 'Groups'       && <GroupsTab       toast={showToast} />}
         {tab === 'Members'      && <MembersTab      toast={showToast} />}
         {tab === 'Entitlements' && <EntitlementsTab toast={showToast} />}

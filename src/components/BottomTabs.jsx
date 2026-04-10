@@ -39,12 +39,21 @@ function MoreIcon({ active }) {
 }
 
 function MoreMenu({ onClose }) {
-  const links = [
-    { label: 'NextUs',        path: '/nextus' },
+  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+
+  const nextusLinks = [
+    { label: 'Actors',    path: '/nextus/actors',   desc: 'Who is doing the work' },
+    { label: 'Map',       path: '/nextus/map',       desc: 'Where the work is happening' },
+    { label: 'Domains',   path: '/nextus',            desc: 'The seven domains' },
+    { label: 'Nominate',  path: '/nextus/nominate',  desc: 'Add an actor' },
+  ]
+
+  const siteLinks = [
     { label: 'Work with Nik', path: '/work-with-nik' },
     { label: 'Podcast',       path: '/podcast' },
     { label: 'About',         path: '/about' },
   ]
+
   return (
     <>
       <div onClick={onClose} style={{
@@ -60,15 +69,32 @@ function MoreMenu({ onClose }) {
         backdropFilter: 'blur(20px)',
         overflow: 'hidden',
         animation: 'moreSlideUp 0.22s cubic-bezier(0.16,1,0.3,1) both',
+        maxHeight: '70vh', overflowY: 'auto',
       }}>
-        {links.map((l, i) => (
+        <div style={{ padding: '12px 20px 8px' }}>
+          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: '#A8721A', textTransform: 'uppercase' }}>NextUs</span>
+        </div>
+        {nextusLinks.map(l => (
           <Link key={l.path} to={l.path} onClick={onClose} style={{
-            display: 'block', padding: '16px 20px',
-            ...sc, fontSize: '15px', letterSpacing: '0.1em',
-            color: '#0F1523', textDecoration: 'none',
-            borderBottom: i < links.length - 1 ? '1px solid rgba(200,146,42,0.10)' : 'none',
-          }}>{l.label}</Link>
+            display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px',
+            padding: '13px 20px', textDecoration: 'none',
+            borderBottom: '1px solid rgba(200,146,42,0.08)',
+            background: 'rgba(200,146,42,0.02)',
+          }}>
+            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: '#0F1523' }}>{l.label}</span>
+            <span style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.40)' }}>{l.desc}</span>
+          </Link>
         ))}
+        <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)' }}>
+          {siteLinks.map((l, i) => (
+            <Link key={l.path} to={l.path} onClick={onClose} style={{
+              display: 'block', padding: '15px 20px',
+              ...sc, fontSize: '15px', letterSpacing: '0.10em',
+              color: 'rgba(15,21,35,0.65)', textDecoration: 'none',
+              borderBottom: i < siteLinks.length - 1 ? '1px solid rgba(200,146,42,0.08)' : 'none',
+            }}>{l.label}</Link>
+          ))}
+        </div>
       </div>
       <style>{`@keyframes moreSlideUp { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:translateY(0) } }`}</style>
     </>

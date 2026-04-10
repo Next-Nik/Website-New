@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { CivilisationalFramePanel } from '../components/CivilisationalFramePanel'
 import { DomainTooltip, LIFEOS_LABEL_MAP, NEXTUS_LABEL_MAP } from '../components/DomainTooltip'
@@ -36,6 +37,7 @@ function DomainModal({ domain, onClose }) {
 
 export function NextUsPage() {
   const [modal, setModal] = useState(null)
+  const navigate = useNavigate()
 
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
@@ -133,6 +135,21 @@ export function NextUsPage() {
               <div style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.6 }}>{d.tip}</div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Actors entry point */}
+      <div className="nextus-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '0 40px 0' }}>
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 48px' }} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+          <div>
+            <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '10px' }}>Who is doing the work.</h2>
+            <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', maxWidth: '480px', lineHeight: 1.7 }}>Organisations, projects, and individuals placed on the map — by domain, by scale, by what they need.</p>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button onClick={() => navigate('/nextus/actors')} style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '13px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', cursor: 'pointer', whiteSpace: 'nowrap' }}>View all actors →</button>
+            <button onClick={() => navigate('/nextus/map')} style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '13px 28px', borderRadius: '40px', border: '1px solid rgba(200,146,42,0.35)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', whiteSpace: 'nowrap' }}>View map</button>
+          </div>
         </div>
       </div>
 
