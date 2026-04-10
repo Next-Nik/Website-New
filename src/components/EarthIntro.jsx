@@ -262,9 +262,7 @@ export function EarthIntro({ onEntered }) {
       lastTimeRef.current = time
 
       // Rotation: one full rotation per ~20 seconds
-      if (!prefersReduced.current) {
-        rotationRef.current += dt / 20
-      }
+      rotationRef.current += dt / 20
 
       let progress = 0
       if (phase === 'entering') {
@@ -298,12 +296,10 @@ export function EarthIntro({ onEntered }) {
     enterStartRef.current = null
   }
 
-  // Reduced motion: skip straight through
-  useEffect(() => {
-    if (prefersReduced.current) {
-      onEntered()
-    }
-  }, [])
+  // Note: reduced-motion skip disabled until animation confirmed working
+  // useEffect(() => {
+  //   if (prefersReduced.current) { onEntered() }
+  // }, [])
 
   if (phase === 'done') return null
 
