@@ -225,6 +225,7 @@ export default function DomainExplorer() {
               level={navState.level}
               isVisible={!isIdle}
               userData={null}
+              rootDomainId={levelPath.length > 0 ? domainTree[levelPath[0].index]?.id : selectedItem?.id}
             />
           ) : !overviewOpen && (
             <div className={styles.idlePanel}>

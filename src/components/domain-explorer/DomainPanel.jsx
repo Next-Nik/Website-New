@@ -87,6 +87,7 @@ export default function DomainPanel({
   level,
   isVisible,
   userData,
+  rootDomainId,
 }) {
   const [fieldExpanded, setFieldExpanded] = useState(false);
   const isPlaceholder = item.horizonGoal === "placeholder";
@@ -145,25 +146,25 @@ export default function DomainPanel({
         )}
       </div>
 
-      {/* Top nav — view actors, explore subdomains, back */}
-      <div className={styles.topNav}>
-        {level === 0 && item.id && (
-          <a href={'/nextus/actors?domain=' + item.id} className={styles.topNavLink}>
-            View actors &#8594;
-          </a>
-        )}
-        {level < 4 && item.subDomains && item.subDomains.length > 0 &&
-         item.subDomains[0].name !== "Being mapped" && (
-          <button className={styles.topNavBtn} onClick={onExploreSubDomains}>
-            Explore {item.name} &#8594;
-          </button>
-        )}
+      {/* Top nav — consistent at every level */}
+      <nav className={styles.topNav} aria-label="Domain navigation">
         {onBack && (
-          <button className={styles.topNavBack} onClick={onBack}>
+          <button className={styles.navItem} onClick={onBack}>
             &#8592; {parentLabel}
           </button>
         )}
-      </div>
+        {level < 4 && item.subDomains && item.subDomains.length > 0 &&
+         item.subDomains[0].name !== "Being mapped" && (
+          <button className={styles.navItem} onClick={onExploreSubDomains}>
+            Explore {item.name} &#8594;
+          </button>
+        )}
+        {rootDomainId && (
+          <a href={'/nextus/actors?domain=' + rootDomainId} className={styles.navItem}>
+            View actors
+          </a>
+        )}
+      </nav>
 
 
 

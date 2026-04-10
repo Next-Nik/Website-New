@@ -281,6 +281,7 @@ export function EarthIntro({ onEntered }) {
         height:         '100%',
         padding:        '32px 40px',
         boxSizing:      'border-box',
+        transform:      'translateY(-22%)',
       }}>
         {/*
           Canvas sized to match the heptagon SVG exactly.
@@ -293,10 +294,10 @@ export function EarthIntro({ onEntered }) {
           width={480}
           height={480}
           style={{
-            width:   '100%',
-            maxWidth:'480px',
-            height:  'auto',
-            display: 'block',
+            width:    '100%',
+            maxWidth: '480px',
+            height:   'auto',
+            display:  'block',
           }}
         />
 
