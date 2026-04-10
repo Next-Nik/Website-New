@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { EarthIntro } from './EarthIntro'
 import { useAuth } from '../../hooks/useAuth'
 import Heptagon from './Heptagon'
 import DomainPanel from './DomainPanel'
@@ -24,6 +25,7 @@ export default function DomainExplorer() {
   const [contributeOpen, setContributeOpen] = useState(false)
   const [overviewOpen,   setOverviewOpen]   = useState(true)
   const [parentItem,     setParentItem]     = useState(null) // keeps text visible when drilling into subdomains
+  const [earthDone,      setEarthDone]      = useState(false)  // earth intro has completed
 
   // User initial for display (optional — auth already handled by useAuth)
   const userInitial = user?.email
@@ -165,10 +167,13 @@ export default function DomainExplorer() {
   const centreLabel  = getCentreLabel()
 
   return (
-    <div className={styles.app}>
+    <div className={styles.app} style={{ position: 'relative' }}>
+      {!earthDone && (
+        <EarthIntro onEntered={() => setEarthDone(true)} />
+      )}
       <div className={styles.grain} aria-hidden="true" />
 
-      <main className={styles.main}>
+      <main className={styles.main} style={{ opacity: earthDone ? 1 : 0, transition: 'opacity 0.6s ease 0.1s' }}>
         <div className={styles.heptagonCol}>
           <div className={styles.heptagonWrapper}>
             <Heptagon

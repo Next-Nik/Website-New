@@ -1,8 +1,15 @@
 .app {
-  min-height: 560px;
+  min-height: 580px;
   background: var(--bg);
   position: relative;
   overflow: hidden;
+}
+
+/* Earth intro overlay sits above everything */
+.earthOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
 }
 
 .grain {
