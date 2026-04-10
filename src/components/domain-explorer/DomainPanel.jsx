@@ -117,12 +117,6 @@ export default function DomainPanel({
   return (
     <div className={`${styles.panel} ${isVisible ? styles.visible : ""}`}>
 
-      {onBack && (
-        <button className={styles.backBtn} onClick={onBack}>
-          <span className={styles.backArrow}>&#8592;</span> {parentLabel}
-        </button>
-      )}
-
       {breadcrumb.length > 1 && (
         <nav className={styles.breadcrumb} aria-label="Navigation path">
           {breadcrumb.map((crumb, i) => (
@@ -151,14 +145,27 @@ export default function DomainPanel({
         )}
       </div>
 
-      {/* Explore sub-domains — only if sub-domains exist and level < 4 */}
-      {level < 4 && item.subDomains && item.subDomains.length > 0 &&
-       item.subDomains[0].name !== "Being mapped" && (
-        <button className={styles.exploreBtnTop} onClick={onExploreSubDomains}>
-          Explore {item.name}
-          <span className={styles.arrow}>&#8594;</span>
-        </button>
-      )}
+      {/* Top nav — view actors, explore subdomains, back */}
+      <div className={styles.topNav}>
+        {level === 0 && item.id && (
+          <a href={'/nextus/actors?domain=' + item.id} className={styles.topNavLink}>
+            View actors &#8594;
+          </a>
+        )}
+        {level < 4 && item.subDomains && item.subDomains.length > 0 &&
+         item.subDomains[0].name !== "Being mapped" && (
+          <button className={styles.topNavBtn} onClick={onExploreSubDomains}>
+            Explore {item.name} &#8594;
+          </button>
+        )}
+        {onBack && (
+          <button className={styles.topNavBack} onClick={onBack}>
+            &#8592; {parentLabel}
+          </button>
+        )}
+      </div>
+
+
 
       <p className={styles.horizonGoal}>
         {isPlaceholder ? (
@@ -280,16 +287,6 @@ export default function DomainPanel({
             )}
           </div>
         )
-      )}
-
-      {level === 0 && item.id && (
-        <a
-          href={'/nextus/actors?domain=' + item.id}
-          className={styles.mailingBtn}
-          style={{ display: 'inline-block', marginBottom: '16px', textDecoration: 'none', textAlign: 'center', width: '100%' }}
-        >
-          View actors in {item.name} →
-        </a>
       )}
 
       <div className={styles.divider} />
