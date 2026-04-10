@@ -1,413 +1,246 @@
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-// ── EarthIntro ────────────────────────────────────────────────
-//
-// Phase sequence:
-//   'earth'        — spinning globe on black, tagline visible, entry prompt pulsing
-//   'entering'     — globe scales down + cross-fades to gold orb, black clears to parchment
-//   'done'         — component hands off, DomainExplorer takes over
-//
-// The globe is rendered on a canvas element using a cylindrical map
-// projection texture painted frame-by-frame. The texture is generated
-// procedurally from SVG paths of the major continents — no external
-// image dependency, no network request.
-//
-// On mobile the canvas is slightly smaller. Animation respects
-// prefers-reduced-motion.
-
-const EARTH_COLORS = {
-  ocean:      '#1A3A5C',
-  oceanShallow: '#1E4A72',
-  land:       '#2D5A27',
-  desert:     '#8B7355',
-  arctic:     '#E8E8E8',
-  atmosphere: 'rgba(100,160,220,0.18)',
-  glow:       'rgba(80,140,200,0.12)',
-}
-
-const GOLD = '#C8922A'
 const GOLD_DK = '#A8721A'
+const OCEAN   = '#1B3A5C'
+const LAND    = '#2D5A27'
+const DESERT  = '#8B7355'
+const ICE     = '#D8E8F0'
 
-// Simple continent outlines as normalised [0,1] x/y coordinates
-// These are rough but recognisable at globe scale
-const CONTINENT_PATHS = [
-  // North America
-  { fill: EARTH_COLORS.land, path: [
-    [0.11,0.15],[0.18,0.12],[0.26,0.14],[0.28,0.22],[0.24,0.32],
-    [0.20,0.38],[0.17,0.42],[0.13,0.38],[0.09,0.28],[0.10,0.20],
-  ]},
-  // South America
-  { fill: EARTH_COLORS.land, path: [
-    [0.22,0.45],[0.28,0.42],[0.32,0.48],[0.30,0.58],[0.25,0.68],
-    [0.20,0.72],[0.18,0.65],[0.20,0.55],[0.20,0.48],
-  ]},
-  // Europe
-  { fill: EARTH_COLORS.land, path: [
-    [0.46,0.18],[0.52,0.15],[0.56,0.18],[0.54,0.26],[0.50,0.28],
-    [0.46,0.26],[0.44,0.22],
-  ]},
-  // Africa
-  { fill: EARTH_COLORS.land, path: [
-    [0.48,0.30],[0.56,0.28],[0.60,0.35],[0.58,0.50],[0.54,0.62],
-    [0.48,0.65],[0.44,0.58],[0.44,0.45],[0.46,0.35],
-  ]},
-  // Asia
-  { fill: EARTH_COLORS.land, path: [
-    [0.56,0.18],[0.72,0.15],[0.82,0.20],[0.85,0.30],[0.80,0.40],
-    [0.72,0.42],[0.65,0.38],[0.58,0.32],[0.54,0.26],[0.56,0.20],
-  ]},
-  // Australia
-  { fill: EARTH_COLORS.desert, path: [
-    [0.76,0.55],[0.84,0.52],[0.88,0.58],[0.84,0.65],[0.76,0.66],
-    [0.72,0.62],[0.73,0.57],
-  ]},
-  // Antarctica (partial)
-  { fill: EARTH_COLORS.arctic, path: [
-    [0.10,0.88],[0.90,0.88],[0.95,0.95],[0.05,0.95],
-  ]},
-  // Greenland
-  { fill: EARTH_COLORS.arctic, path: [
-    [0.22,0.10],[0.30,0.08],[0.32,0.14],[0.28,0.18],[0.22,0.16],
-  ]},
+const SHAPES = [
+  { c: LAND,   pts: [[0.08,0.18],[0.17,0.13],[0.25,0.15],[0.27,0.24],[0.23,0.34],[0.18,0.40],[0.14,0.43],[0.10,0.38],[0.08,0.28]] },
+  { c: LAND,   pts: [[0.20,0.46],[0.26,0.43],[0.30,0.48],[0.29,0.58],[0.24,0.70],[0.19,0.74],[0.17,0.66],[0.18,0.55]] },
+  { c: LAND,   pts: [[0.45,0.18],[0.52,0.15],[0.56,0.19],[0.53,0.27],[0.48,0.28],[0.44,0.24]] },
+  { c: LAND,   pts: [[0.47,0.30],[0.56,0.28],[0.60,0.34],[0.58,0.50],[0.53,0.63],[0.47,0.66],[0.43,0.58],[0.43,0.43]] },
+  { c: DESERT, pts: [[0.57,0.19],[0.74,0.14],[0.84,0.20],[0.86,0.30],[0.80,0.42],[0.70,0.44],[0.62,0.38],[0.56,0.28]] },
+  { c: DESERT, pts: [[0.75,0.56],[0.84,0.53],[0.88,0.59],[0.84,0.67],[0.75,0.67],[0.71,0.62]] },
+  { c: ICE,    pts: [[0.00,0.88],[1.00,0.88],[1.00,1.00],[0.00,1.00]] },
+  { c: ICE,    pts: [[0.21,0.09],[0.30,0.07],[0.32,0.14],[0.27,0.18],[0.21,0.15]] },
 ]
 
-// Draw the globe onto an offscreen canvas texture, then project it
-// onto the visible canvas as a sphere with a cylindrical projection offset
-function createGlobeTexture(size) {
-  const canvas = document.createElement('canvas')
-  canvas.width  = size * 2
-  canvas.height = size
-  const ctx = canvas.getContext('2d')
-
-  // Ocean base
-  ctx.fillStyle = EARTH_COLORS.ocean
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-  // Shallow water band (tropics)
-  const grad = ctx.createLinearGradient(0, size * 0.3, 0, size * 0.7)
-  grad.addColorStop(0, 'transparent')
-  grad.addColorStop(0.5, EARTH_COLORS.oceanShallow + '40')
-  grad.addColorStop(1, 'transparent')
-  ctx.fillStyle = grad
-  ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-  // Draw continents
-  CONTINENT_PATHS.forEach(({ fill, path }) => {
-    ctx.beginPath()
-    path.forEach(([x, y], i) => {
-      const px = x * canvas.width
-      const py = y * canvas.height
-      if (i === 0) ctx.moveTo(px, py)
-      else ctx.lineTo(px, py)
-    })
-    ctx.closePath()
-    ctx.fillStyle = fill
-    ctx.fill()
-
-    // Second copy offset by one width (for seamless wrapping)
-    ctx.beginPath()
-    path.forEach(([x, y], i) => {
-      const px = (x + 1) * canvas.width
-      const py = y * canvas.height
-      if (i === 0) ctx.moveTo(px, py)
-      else ctx.lineTo(px, py)
-    })
-    ctx.closePath()
-    ctx.fill()
+function buildTexture() {
+  const W = 1024, H = 512
+  const off = document.createElement('canvas')
+  off.width = W; off.height = H
+  const ctx = off.getContext('2d')
+  ctx.fillStyle = OCEAN
+  ctx.fillRect(0, 0, W, H)
+  SHAPES.forEach(({ c, pts }) => {
+    for (const dx of [0, W]) {
+      ctx.beginPath()
+      pts.forEach(([lx, ly], i) => {
+        i === 0 ? ctx.moveTo(lx * W + dx, ly * H) : ctx.lineTo(lx * W + dx, ly * H)
+      })
+      ctx.closePath()
+      ctx.fillStyle = c
+      ctx.fill()
+    }
   })
-
-  return canvas
+  return off
 }
 
-// Render a frame of the spinning globe onto the visible canvas
-function renderGlobe(ctx, texture, canvasSize, rotation, phase, enterProgress) {
-  const cx = canvasSize / 2
-  const cy = canvasSize / 2
-  const r  = canvasSize * 0.38
+function drawFrame(ctx, tex, size, rot) {
+  const cx = size / 2, cy = size / 2, r = size * 0.40
+  ctx.clearRect(0, 0, size, size)
 
-  ctx.clearRect(0, 0, canvasSize, canvasSize)
-
-  // During 'entering', globe scales down toward centre-orb size
-  const scale = phase === 'entering'
-    ? 1 - enterProgress * 0.55
-    : 1
-
-  ctx.save()
-  ctx.translate(cx, cy)
-  ctx.scale(scale, scale)
-  ctx.translate(-cx, -cy)
-
-  // Outer glow
-  const glowGrad = ctx.createRadialGradient(cx, cy, r * 0.6, cx, cy, r * 1.4)
-  glowGrad.addColorStop(0, 'transparent')
-  glowGrad.addColorStop(0.7, EARTH_COLORS.glow)
-  glowGrad.addColorStop(1, 'transparent')
-  ctx.fillStyle = glowGrad
-  ctx.beginPath()
-  ctx.arc(cx, cy, r * 1.4, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Clip to circle
   ctx.save()
   ctx.beginPath()
   ctx.arc(cx, cy, r, 0, Math.PI * 2)
   ctx.clip()
 
-  // Project texture: cylindrical projection
-  const texW = texture.width
-  const texH = texture.height
-  const offsetX = (rotation % 1) * texW
+  const tW = tex.width, tH = tex.height
+  const dW = r * 2, dH = r * 2
+  const off = (rot % 1) * tW
+  const scale = dW / tW
 
-  // Draw texture twice for seamless wrap
-  for (let tile = -1; tile <= 1; tile++) {
-    ctx.drawImage(
-      texture,
-      0, 0, texW, texH,
-      cx - r + (tile * texW * r * 2 / texW) - offsetX * (r * 2 / texW),
-      cy - r,
-      texW * r * 2 / texW,
-      r * 2
-    )
-  }
+  ctx.drawImage(tex, off, 0, tW, tH,  cx - r - off * scale,       cy - r, tW * scale, dH)
+  ctx.drawImage(tex,  0,  0, tW, tH,  cx - r + (tW - off) * scale, cy - r, tW * scale, dH)
 
-  // Sphere shading — left dark, right lit
-  const sphereGrad = ctx.createRadialGradient(
-    cx - r * 0.25, cy - r * 0.2, r * 0.05,
-    cx, cy, r
-  )
-  sphereGrad.addColorStop(0, 'rgba(255,255,255,0.08)')
-  sphereGrad.addColorStop(0.4, 'transparent')
-  sphereGrad.addColorStop(0.85, 'rgba(0,0,0,0.25)')
-  sphereGrad.addColorStop(1, 'rgba(0,0,0,0.55)')
-  ctx.fillStyle = sphereGrad
+  const shade = ctx.createRadialGradient(cx - r * 0.2, cy - r * 0.2, r * 0.05, cx, cy, r)
+  shade.addColorStop(0, 'rgba(255,255,255,0.07)')
+  shade.addColorStop(0.5, 'rgba(0,0,0,0)')
+  shade.addColorStop(1, 'rgba(0,0,0,0.52)')
+  ctx.fillStyle = shade
   ctx.fillRect(cx - r, cy - r, r * 2, r * 2)
-
   ctx.restore()
 
-  // Atmosphere ring
-  const atmGrad = ctx.createRadialGradient(cx, cy, r * 0.95, cx, cy, r * 1.12)
-  atmGrad.addColorStop(0, EARTH_COLORS.atmosphere)
-  atmGrad.addColorStop(1, 'transparent')
-  ctx.fillStyle = atmGrad
+  const atm = ctx.createRadialGradient(cx, cy, r * 0.88, cx, cy, r * 1.18)
+  atm.addColorStop(0, 'rgba(80,140,220,0.22)')
+  atm.addColorStop(1, 'rgba(80,140,220,0.00)')
   ctx.beginPath()
-  ctx.arc(cx, cy, r * 1.12, 0, Math.PI * 2)
+  ctx.arc(cx, cy, r * 1.18, 0, Math.PI * 2)
+  ctx.fillStyle = atm
   ctx.fill()
-
-  ctx.restore()
-
-  // During entering: gold orb fades in at same position as globe fades out
-  if (phase === 'entering') {
-    ctx.save()
-    ctx.globalAlpha = enterProgress
-    // Gold circle emerges
-    ctx.beginPath()
-    ctx.arc(cx, cy, r * scale * 0.85, 0, Math.PI * 2)
-    ctx.fillStyle = '#FFFFFF'
-    ctx.fill()
-    ctx.strokeStyle = `rgba(200,146,42,${0.78 * enterProgress})`
-    ctx.lineWidth = 1.5
-    ctx.stroke()
-    // Label fades in
-    if (enterProgress > 0.5) {
-      const labelAlpha = (enterProgress - 0.5) * 2
-      ctx.globalAlpha = labelAlpha
-      ctx.fillStyle = GOLD_DK
-      ctx.font = `300 ${Math.round(r * scale * 0.22)}px 'Cormorant Garamond', Georgia, serif`
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.fillText('Our', cx, cy - r * scale * 0.12)
-      ctx.fillText('Planet', cx, cy + r * scale * 0.14)
-    }
-    ctx.restore()
-  }
 }
 
 export function EarthIntro({ onEntered }) {
-  const canvasRef       = useRef(null)
-  const textureRef      = useRef(null)
-  const animRef         = useRef(null)
-  const rotationRef     = useRef(0)
-  const lastTimeRef     = useRef(null)
-  const enterStartRef   = useRef(null)
-  const [phase, setPhase]         = useState('earth')   // 'earth' | 'entering' | 'done'
-  const [enterProgress, setEnterProgress] = useState(0)
-  const [taglineVisible, setTaglineVisible] = useState(false)
-  const [promptVisible, setPromptVisible]   = useState(false)
-  const prefersReduced = useRef(
-    typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-  )
+  const canvasRef     = useRef(null)
+  const texRef        = useRef(null)
+  const rotRef        = useRef(0)
+  const rafRef        = useRef(null)
+  const lastRef       = useRef(null)
+  const enterStartRef = useRef(null)
 
-  // Show tagline and prompt after brief pause
+  const [phase, setPhase]   = useState('earth')
+  const [enterT, setEnterT] = useState(0)
+  const [show,   setShow]   = useState(false)
+
   useEffect(() => {
-    const t1 = setTimeout(() => setTaglineVisible(true), 600)
-    const t2 = setTimeout(() => setPromptVisible(true), 1400)
-    return () => { clearTimeout(t1); clearTimeout(t2) }
+    texRef.current = buildTexture()
   }, [])
 
-  // Create texture once
   useEffect(() => {
-    textureRef.current = createGlobeTexture(512)
+    const t = setTimeout(() => setShow(true), 600)
+    return () => clearTimeout(t)
   }, [])
 
-  // Animation loop
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    const size = canvas.width
 
-    function animate(time) {
-      if (lastTimeRef.current === null) lastTimeRef.current = time
-      const dt = Math.min((time - lastTimeRef.current) / 1000, 0.05)
-      lastTimeRef.current = time
+    function waitForTex(ts) {
+      if (!texRef.current) { rafRef.current = requestAnimationFrame(waitForTex); return }
+      lastRef.current = ts
+      rafRef.current = requestAnimationFrame(loop)
+    }
 
-      // Rotation: one full rotation per ~20 seconds
-      rotationRef.current += dt / 20
+    function loop(ts) {
+      if (!lastRef.current) lastRef.current = ts
+      const dt = Math.min((ts - lastRef.current) / 1000, 0.05)
+      lastRef.current = ts
+      rotRef.current += dt / 22
 
-      let progress = 0
+      const ctx = canvas.getContext('2d')
+      const SIZE = canvas.width
+
+      drawFrame(ctx, texRef.current, SIZE, rotRef.current)
+
       if (phase === 'entering') {
-        if (!enterStartRef.current) enterStartRef.current = time
-        progress = Math.min((time - enterStartRef.current) / 900, 1) // 900ms transition
-        setEnterProgress(progress)
-        if (progress >= 1) {
+        if (!enterStartRef.current) enterStartRef.current = ts
+        const p = Math.min((ts - enterStartRef.current) / 850, 1)
+        setEnterT(p)
+
+        const r = SIZE * 0.40, cx = SIZE / 2, cy = SIZE / 2
+        ctx.save()
+        ctx.globalAlpha = p
+        ctx.beginPath()
+        ctx.arc(cx, cy, r * 0.80, 0, Math.PI * 2)
+        ctx.fillStyle = '#FFFFFF'
+        ctx.fill()
+        ctx.strokeStyle = 'rgba(200,146,42,0.78)'
+        ctx.lineWidth = 1.5
+        ctx.stroke()
+        if (p > 0.55) {
+          ctx.globalAlpha = (p - 0.55) / 0.45
+          ctx.fillStyle = GOLD_DK
+          ctx.font = `300 ${Math.round(r * 0.21)}px 'Cormorant Garamond', Georgia, serif`
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          ctx.fillText('Our', cx, cy - r * 0.13)
+          ctx.fillText('Planet', cx, cy + r * 0.13)
+        }
+        ctx.restore()
+
+        if (p >= 1) {
+          cancelAnimationFrame(rafRef.current)
           setPhase('done')
           onEntered()
           return
         }
       }
 
-      if (textureRef.current) {
-        renderGlobe(ctx, textureRef.current, size, rotationRef.current, phase, progress)
-      }
-
-      animRef.current = requestAnimationFrame(animate)
+      rafRef.current = requestAnimationFrame(loop)
     }
 
-    animRef.current = requestAnimationFrame(animate)
-    return () => {
-      cancelAnimationFrame(animRef.current)
-      lastTimeRef.current = null
-    }
+    rafRef.current = requestAnimationFrame(waitForTex)
+    return () => cancelAnimationFrame(rafRef.current)
   }, [phase, onEntered])
 
-  function handleEnter() {
+  function handleClick() {
     if (phase !== 'earth') return
-    setPhase('entering')
     enterStartRef.current = null
+    lastRef.current = null
+    setPhase('entering')
   }
-
-  // Note: reduced-motion skip disabled until animation confirmed working
-  // useEffect(() => {
-  //   if (prefersReduced.current) { onEntered() }
-  // }, [])
 
   if (phase === 'done') return null
 
-  // Background opacity: black → transparent during entering
-  const bgOpacity = phase === 'entering' ? 1 - enterProgress : 1
+  const bgAlpha = phase === 'entering' ? Math.max(0, 1 - enterT * 1.5) : 1
 
   return (
     <div
+      onClick={handleClick}
       style={{
-        position: 'absolute',
-        inset: 0,
-        zIndex: 20,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
+        position:       'absolute',
+        inset:          0,
+        zIndex:         20,
+        background:     `rgba(4,8,20,${bgAlpha})`,
+        display:        'flex',
+        flexDirection:  'column',
+        alignItems:     'center',
         justifyContent: 'center',
-        background: `rgba(4,8,18,${bgOpacity})`,
-        transition: phase === 'entering' ? 'none' : 'background 0.3s',
-        cursor: phase === 'earth' ? 'pointer' : 'default',
+        cursor:         phase === 'earth' ? 'pointer' : 'default',
+        userSelect:     'none',
       }}
-      onClick={handleEnter}
     >
-      {/* Canvas globe */}
       <canvas
         ref={canvasRef}
-        width={420}
-        height={420}
-        style={{
-          display: 'block',
-          width: 'min(340px, 70vw)',
-          height: 'auto',
-          opacity: phase === 'entering' ? 1 : 1,
-        }}
+        width={480}
+        height={480}
+        style={{ width: 'min(300px,62vw)', height: 'auto', display: 'block' }}
       />
 
-      {/* Tagline */}
-      <div style={{
-        marginTop: '32px',
-        textAlign: 'center',
-        opacity: taglineVisible && phase === 'earth' ? 1 : 0,
-        transform: taglineVisible && phase === 'earth' ? 'translateY(0)' : 'translateY(8px)',
-        transition: 'opacity 0.8s ease, transform 0.8s ease',
-        pointerEvents: 'none',
+      <p style={{
+        margin:         '26px 0 0',
+        fontFamily:     "'Cormorant Garamond', Georgia, serif",
+        fontSize:       'clamp(14px,3.2vw,17px)',
+        fontWeight:     300,
+        color:          'rgba(255,255,255,0.55)',
+        textAlign:      'center',
+        lineHeight:     1.75,
+        letterSpacing:  '0.03em',
+        opacity:        show && phase === 'earth' ? 1 : 0,
+        transform:      show && phase === 'earth' ? 'translateY(0)' : 'translateY(8px)',
+        transition:     'opacity 0.9s ease, transform 0.9s ease',
+        pointerEvents:  'none',
       }}>
-        <p style={{
-          fontFamily: "'Cormorant Garamond', Georgia, serif",
-          fontSize: 'clamp(15px,3.5vw,19px)',
-          fontWeight: 300,
-          color: 'rgba(255,255,255,0.55)',
-          letterSpacing: '0.04em',
-          lineHeight: 1.6,
-          margin: 0,
-          maxWidth: '320px',
-        }}>
-          Our planet.<br />
-          Our privilege.<br />
-          Our responsibility.
-        </p>
-      </div>
+        Our planet.<br />Our privilege.<br />Our responsibility.
+      </p>
 
-      {/* Entry prompt */}
       <div style={{
-        marginTop: '36px',
-        opacity: promptVisible && phase === 'earth' ? 1 : 0,
-        transform: promptVisible && phase === 'earth' ? 'translateY(0)' : 'translateY(6px)',
-        transition: 'opacity 0.6s ease, transform 0.6s ease',
+        marginTop:      '26px',
+        display:        'flex',
+        flexDirection:  'column',
+        alignItems:     'center',
+        gap:            '8px',
+        opacity:        show && phase === 'earth' ? 1 : 0,
+        transition:     'opacity 0.7s ease 0.4s',
       }}>
         <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '8px',
+          width:          '38px',
+          height:         '38px',
+          borderRadius:   '50%',
+          border:         '1.5px solid rgba(200,146,42,0.60)',
+          display:        'flex',
+          alignItems:     'center',
+          justifyContent: 'center',
+          animation:      'earthPulse 2.2s ease-in-out infinite',
         }}>
-          {/* Pulsing ring prompt */}
-          <div style={{
-            width: '44px',
-            height: '44px',
-            borderRadius: '50%',
-            border: '1.5px solid rgba(200,146,42,0.60)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            animation: 'earthPulse 2s ease-in-out infinite',
-          }}>
-            <div style={{
-              width: '10px',
-              height: '10px',
-              borderRadius: '50%',
-              background: GOLD,
-              opacity: 0.85,
-            }} />
-          </div>
-          <span style={{
-            fontFamily: "'Cormorant SC', Georgia, serif",
-            fontSize: '13px',
-            letterSpacing: '0.22em',
-            color: 'rgba(200,146,42,0.70)',
-          }}>
-            Enter
-          </span>
+          <div style={{ width:'8px', height:'8px', borderRadius:'50%', background:'#C8922A' }} />
         </div>
+        <span style={{
+          fontFamily:     "'Cormorant SC', Georgia, serif",
+          fontSize:       '12px',
+          letterSpacing:  '0.22em',
+          color:          'rgba(200,146,42,0.60)',
+        }}>
+          Enter
+        </span>
       </div>
 
       <style>{`
         @keyframes earthPulse {
-          0%   { transform: scale(1);    opacity: 0.7; }
-          50%  { transform: scale(1.15); opacity: 1;   }
-          100% { transform: scale(1);    opacity: 0.7; }
+          0%,100% { transform:scale(1);    opacity:.6  }
+          50%      { transform:scale(1.15); opacity:1   }
         }
       `}</style>
     </div>
