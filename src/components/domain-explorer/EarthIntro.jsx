@@ -153,36 +153,6 @@ export function EarthIntro({ onEntered }) {
         </div>
       </div>
 
-      {/* Orb that flies toward the earth during morph — rendered independently */}
-      {phase === 'morphing' && (() => {
-        // Start position: where the Enter orb was (right of globe, below tagline)
-        const startLeft = GLOBE.x / 100 * 100  // will be offset by calc below
-        const orbScale   = 1 + ease * 6
-        // Move from Enter orb position toward the globe centre
-        const orbMoveX   = -(ease * 180)
-        const orbMoveY   = -(ease * 60)
-        const orbOpacity = Math.max(0, 1 - ease * 1.4)
-        return (
-          <div style={{
-            position: 'absolute',
-            left: `calc(${GLOBE.x}% + ${GLOBE.size / 2 + 32}px)`,
-            top:  `calc(${GLOBE.y}% + 80px)`,
-            pointerEvents: 'none',
-            opacity: orbOpacity,
-            transform: `translate(${orbMoveX}px, ${orbMoveY}px) scale(${orbScale})`,
-            transformOrigin: 'center center',
-          }}>
-            <div style={{
-              width: '36px', height: '36px', borderRadius: '50%',
-              border: '1.5px solid rgba(200,146,42,0.80)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#C8922A' }}/>
-            </div>
-          </div>
-        )
-      })()}
-
       <style>{`
         @keyframes earthPulse {
           0%,100% { transform:scale(1);    opacity:.6 }

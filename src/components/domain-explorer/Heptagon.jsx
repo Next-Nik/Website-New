@@ -98,14 +98,17 @@ export default function Heptagon({
     setBloomT(0)
     bloomStartRef.current = null
     cancelAnimationFrame(bloomRafRef.current)
-    function tick(ts) {
-      if (!bloomStartRef.current) bloomStartRef.current = ts
-      const t = Math.min((ts - bloomStartRef.current) / BLOOM_DURATION_MS, 1)
-      setBloomT(easeInOut(t))
-      if (t < 1) bloomRafRef.current = requestAnimationFrame(tick)
-    }
-    bloomRafRef.current = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(bloomRafRef.current)
+    // Delay matches the DomainExplorer main fade-in (0.6s + 0.1s delay = 700ms)
+    const delay = setTimeout(() => {
+      function tick(ts) {
+        if (!bloomStartRef.current) bloomStartRef.current = ts
+        const t = Math.min((ts - bloomStartRef.current) / BLOOM_DURATION_MS, 1)
+        setBloomT(easeInOut(t))
+        if (t < 1) bloomRafRef.current = requestAnimationFrame(tick)
+      }
+      bloomRafRef.current = requestAnimationFrame(tick)
+    }, 700)
+    return () => { clearTimeout(delay); cancelAnimationFrame(bloomRafRef.current) }
   }, [bloom, bloomed])
 
   useEffect(() => {
