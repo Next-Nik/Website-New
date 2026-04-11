@@ -134,8 +134,12 @@ export default function DomainExplorer() {
   }
 
   function handleLand(index) {
-    setActiveIndex(index)
-    // overviewOpen stays true — panel stays on Our Planet until explicit click
+    // Top level only: set activeIndex so the landed node is visually highlighted,
+    // but overviewOpen stays true so the panel doesn't change until user clicks.
+    // Sub-levels: do nothing — user chooses, wheel doesn't choose for them.
+    if (levelPath.length === 0) {
+      setActiveIndex(index)
+    }
   }
 
   function handleSelectAndDrill(index) {
@@ -245,20 +249,20 @@ export default function DomainExplorer() {
             <div className={styles.idlePanel}>
               {parentItem && (
                 <div style={{ marginBottom: '24px', paddingBottom: '20px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
-                  <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px', textTransform: 'uppercase' }}>
+                  <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '19px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px', textTransform: 'uppercase' }}>
                     {parentItem.name}
                   </p>
                   {parentItem.horizonGoal && (
-                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, marginBottom: '8px' }}>
+                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '19px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, marginBottom: '8px' }}>
                       {parentItem.horizonGoal}
                     </p>
                   )}
                   {parentItem.description && (
-                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.65 }}>
+                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '19px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.65 }}>
                       {parentItem.description}
                     </p>
                   )}
-                  <button onClick={handleBack} style={{ marginTop: '12px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                  <button onClick={handleBack} style={{ marginTop: '12px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '19px', letterSpacing: '0.12em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                     ← Back
                   </button>
                 </div>

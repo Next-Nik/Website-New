@@ -146,26 +146,33 @@ export default function DomainPanel({
         )}
       </div>
 
-      {/* Unified nav — consistent at every level */}
+      {/* Row 1: back + explore */}
       <nav className={styles.topNav}>
         {onBack && (
           <button className={styles.navItem} onClick={onBack}>
             &#8592; {parentLabel}
           </button>
         )}
-        {rootDomainId && (
-          <a href={'/nextus/actors?domain=' + rootDomainId} className={styles.navItem}>
-            View actors
-          </a>
-        )}
         {level < 4 && item.subDomains && item.subDomains.length > 0 &&
-         item.subDomains[0].name !== "Being mapped" && (
+         item.subDomains[0].name !== 'Being mapped' && (
           <button className={styles.navItem} onClick={onExploreSubDomains}>
             Explore {item.name} &#8594;
           </button>
         )}
       </nav>
 
+      {/* Row 2: view actors centered above prev/next arrows */}
+      <div className={styles.actorsNav}>
+        {rootDomainId && (
+          <a href={'/nextus/actors?domain=' + rootDomainId} className={styles.navItem}>
+            View actors
+          </a>
+        )}
+        <div className={styles.navArrows}>
+          <button className={styles.navBtn} onClick={onPrev} aria-label="Previous domain">‹</button>
+          <button className={styles.navBtn} onClick={onNext} aria-label="Next domain">›</button>
+        </div>
+      </div>
 
 
       <p className={styles.horizonGoal}>
@@ -317,10 +324,7 @@ export default function DomainPanel({
         </form>
       </div>
 
-      <div className={styles.navArrows}>
-        <button className={styles.navBtn} onClick={onPrev} aria-label="Previous domain">‹</button>
-        <button className={styles.navBtn} onClick={onNext} aria-label="Next domain">›</button>
-      </div>
+
     </div>
   );
 }
