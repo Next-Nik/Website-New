@@ -30,7 +30,7 @@ export function EarthIntro({ onEntered }) {
       if (!startRef.current) startRef.current = ts
       const progress = Math.min((ts - startRef.current) / 900, 1)
       setT(progress)
-      if (!enteredFired && progress >= 0.85) {
+      if (!enteredFired && progress >= 0) {
         enteredFired = true
         onEntered()
       }
