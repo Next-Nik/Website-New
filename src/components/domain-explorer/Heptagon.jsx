@@ -95,17 +95,19 @@ export default function Heptagon({
   // Bloom: nodes spiral out from centre. Fires when bloom=true, and re-fires after each domain reset.
   useEffect(() => {
     if (!bloom || bloomed) return
-    setBloomed(true)
     setBloomT(0)
     bloomStartRef.current = null
     cancelAnimationFrame(bloomRafRef.current)
-    // Delay matches the DomainExplorer main fade-in (0.6s + 0.1s delay = 700ms)
     const delay = setTimeout(() => {
       function tick(ts) {
         if (!bloomStartRef.current) bloomStartRef.current = ts
         const t = Math.min((ts - bloomStartRef.current) / BLOOM_DURATION_MS, 1)
         setBloomT(easeInOut(t))
-        if (t < 1) bloomRafRef.current = requestAnimationFrame(tick)
+        if (t < 1) {
+          bloomRafRef.current = requestAnimationFrame(tick)
+        } else {
+          setBloomed(true)  // only lock after animation completes
+        }
       }
       bloomRafRef.current = requestAnimationFrame(tick)
     }, 700)
