@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 const VIDEO_URL = '/earth-rotation.mp4'
 
 // Measured values from position debug tool (% of .app container)
-const GLOBE = { x: 27,   y: 20,  size: 310 }
+const GLOBE = { x: 27,   y: 20,  size: 320 }
 const ORB   = { x: 30.5, y: 23,  size: 158 }
 
 function easeInOut(t) { return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2 }
