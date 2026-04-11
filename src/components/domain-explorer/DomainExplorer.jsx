@@ -10,7 +10,7 @@ import styles from './DomainExplorer.module.css'
 
 // ── Position debug overlay — visible only at ?debug=positions ──
 function PositionDebug() {
-  const [globe, setGlobe] = React.useState({ x: 10, y: 100, size: 300 })
+  const [globe, setGlobe] = React.useState({ x: 25, y: -300, size: 300 })
   const [orb,   setOrb]   = React.useState({ x: 32, y: 72, size: 152 })
   const [mode,  setMode]  = React.useState('globe')
 
