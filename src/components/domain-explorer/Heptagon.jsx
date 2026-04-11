@@ -5,19 +5,25 @@ const N = 7
 const CX = 260
 const CY = 260
 const RADIUS = 170
-const INTRO_SPIN_DEG_PER_SEC = 35    // rotation speed during intro spin
-const INTRO_SPIN_DURATION_MS = 4000  // how long it spins before landing
-const BLOOM_DURATION_MS      = 2000  // how long the scale-up bloom takes
+const INTRO_SPIN_DEG_PER_SEC = 35
+const INTRO_SPIN_DURATION_MS = 4000
+const BLOOM_DURATION_MS      = 2000
 
 // Drill-down animation durations ms
 const T_PULL    = 240
 const T_BREATHE = 280
+
+// Node radius bounds — tight range so size reads as "fitted", not "ranked"
+const NODE_RADIUS_MIN = 46
+const NODE_RADIUS_MAX = 68
 
 function getNodePos(index, rotationDeg = 0) {
   const angleDeg = index * (360 / N) - 90 + rotationDeg
   const rad = (angleDeg * Math.PI) / 180
   return { x: CX + RADIUS * Math.cos(rad), y: CY + RADIUS * Math.sin(rad) }
 }
+
+
 
 function getRotationToTop(index, currentRot) {
   const raw = -(index * (360 / N))
@@ -52,12 +58,14 @@ function getNodeLabel(name) {
 function getNodeSizing(lines) {
   const maxLen = Math.max(...lines.map(l => l.length))
   const n = lines.length
-  const BASE = 46
-  const perLine = 9
-  const perChar = 0.8
-  const charExtra = Math.max(0, maxLen - 9) * perChar
-  const radius = Math.round(BASE + (n - 1) * perLine + charExtra)
-  return { fontSize: 20, radius, lineHeight: 1.28 }
+  // Cormorant SC at 19px: ~10.5px per char, so half-width = maxLen * 5.25
+  // Add 14px padding each side → minimum radius = maxLen * 5.25 + 14
+  // Height: n lines * 19px * 1.28 lineHeight / 2 + 10px padding
+  const halfW = maxLen * 5.25 + 14
+  const halfH = (n * 19 * 1.28) / 2 + 10
+  const raw   = Math.ceil(Math.max(halfW, halfH))
+  const radius = Math.min(NODE_RADIUS_MAX, Math.max(NODE_RADIUS_MIN, raw))
+  return { fontSize: 19, radius, lineHeight: 1.28 }
 }
 
 function easeInOut(t) { return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2 }
@@ -76,7 +84,7 @@ export default function Heptagon({
   const [phase,      setPhase]      = useState('spinning')
   const [displayRot, setDisplayRot] = useState(0)
   const [nodeStates, setNodeStates] = useState(null)
-  const [bloomT,     setBloomT]     = useState(0)      // 0 = hidden behind centre, 1 = fully out
+  const [bloomT,     setBloomT]     = useState(0)
   const [bloomed,    setBloomed]    = useState(false)
 
   const bloomStartRef = useRef(null)
@@ -92,7 +100,6 @@ export default function Heptagon({
   const drillStartRef   = useRef(null)
   const breatheStartRef = useRef(null)
 
-  // Bloom: scale wheel up from small. Fires immediately when bloom=true.
   useEffect(() => {
     if (!bloom || bloomed) return
     setBloomT(0)
@@ -116,7 +123,6 @@ export default function Heptagon({
     landingIdxRef.current = Math.floor(Math.random() * N)
   }, [])
 
-  // Re-bloom when domains change (new level loaded)
   useEffect(() => {
     if (!domains?.length) return
     rotRef.current = 0
@@ -130,7 +136,6 @@ export default function Heptagon({
     lastTimeRef.current = null
     setPhase('spinning')
     setDisplayRot(0)
-    // Reset bloom so nodes spiral out again on new level
     setBloomT(0)
     setBloomed(false)
   }, [domains])
@@ -162,7 +167,7 @@ export default function Heptagon({
         if (elapsed >= INTRO_SPIN_DURATION_MS) {
           targetRotRef.current = getRotationToTop(landingIdxRef.current, rotRef.current)
           setPhase('landing')
-          onLand?.(landingIdxRef.current)  // visual highlight only, no panel
+          onLand?.(landingIdxRef.current)
         }
       }
 
@@ -233,6 +238,8 @@ export default function Heptagon({
     return `${p.x},${p.y}`
   }).join(' ')
 
+
+
   return (
     <svg
       className={styles.svg}
@@ -246,31 +253,40 @@ export default function Heptagon({
         transition: bloomed ? 'none' : undefined,
       }}
     >
-      <circle cx={CX} cy={CY} r={RADIUS + 48} fill="none" stroke="rgba(200,146,42,0.05)" strokeWidth="1" />
-      <circle cx={CX} cy={CY} r={RADIUS + 24} fill="none" stroke="rgba(200,146,42,0.08)" strokeWidth="0.5" />
-      <polygon points={polygonPoints} fill="rgba(200,146,42,0.03)" stroke="rgba(200,146,42,0.18)" strokeWidth="1" />
+      {/* Outer decorative rings */}
+      <circle cx={CX} cy={CY} r={RADIUS + 48} fill="none" stroke="rgba(200,146,42,0.04)" strokeWidth="1" />
+      <circle cx={CX} cy={CY} r={RADIUS + 24} fill="none" stroke="rgba(200,146,42,0.06)" strokeWidth="0.5" />
+
+      {/* Heptagon web */}
+      <polygon points={polygonPoints} fill="rgba(200,146,42,0.03)" stroke="rgba(200,146,42,0.15)" strokeWidth="0.75" />
+
+      {/* Spokes — centre to node centre, nodes rendered above hide the ends */}
       {Array.from({ length: N }, (_, i) => {
         const p = getNodePos(i, displayRot)
-        return <line key={`spoke-${i}`} x1={CX} y1={CY} x2={p.x} y2={p.y} stroke="rgba(200,146,42,0.08)" strokeWidth="0.5" />
+        return (
+          <line
+            key={`spoke-${i}`}
+            x1={CX} y1={CY}
+            x2={p.x} y2={p.y}
+            stroke="rgba(200,146,42,0.10)"
+            strokeWidth="0.5"
+          />
+        )
       })}
 
+      {/* Nodes */}
       {(domains || []).map((domain, i) => {
-        const p       = getNodePos(i, displayRot)
-        const ns      = nodeStates?.[i]
+        const p        = getNodePos(i, displayRot)
+        const ns       = nodeStates?.[i]
         const isActive = !busy && !isIdle && i === activeIndex
-        const words   = getNodeLabel(domain.name)
+        const words    = getNodeLabel(domain.name)
         const { fontSize, radius: r, lineHeight } = getNodeSizing(words)
         const blockHeight = (words.length - 1) * lineHeight
         const startDy = words.length === 1 ? '0.35em' : `-${(blockHeight / 2).toFixed(2)}em`
-        const maxWordLen = Math.max(...words.map(w => w.length))
-        const rectW   = Math.round(maxWordLen * fontSize * 0.58 + 14)
-        const rectH   = Math.round(words.length * fontSize * lineHeight + 14)
-        const rectFill = isSpinning ? 'rgba(255,255,255,0.95)' : isActive ? 'rgba(200,146,42,0.06)' : '#FFFFFF'
 
-        // Bloom: interpolate from centre to final position
+        // Bloom: nodes travel from centre outward
         const bloomedX = CX + (p.x - CX) * bloomT
         const bloomedY = CY + (p.y - CY) * bloomT
-        const bloomOpacity = bloomT
 
         const gStyle = ns ? {
           opacity: ns.op,
@@ -279,7 +295,7 @@ export default function Heptagon({
           cursor: 'default',
         } : {
           cursor: busy ? 'default' : 'pointer',
-          opacity: bloomed ? 1 : bloomOpacity,
+          opacity: bloomed ? 1 : bloomT,
           transform: bloomed ? 'none' : `translate(${bloomedX - p.x}px, ${bloomedY - p.y}px)`,
         }
 
@@ -294,33 +310,34 @@ export default function Heptagon({
             aria-label={`Select domain: ${domain.name}`}
             onKeyDown={e => e.key === 'Enter' && handleNodeClick(i)}
           >
+            {/* Active halo */}
             {isActive && (
-              <circle cx={p.x} cy={p.y} r={r + 12}
-                fill="rgba(200,146,42,0.06)"
-                stroke="rgba(200,146,42,0.25)"
+              <circle
+                cx={p.x} cy={p.y} r={r + 10}
+                fill="rgba(200,146,42,0.05)"
+                stroke="rgba(200,146,42,0.22)"
                 strokeWidth="1"
               />
             )}
-            <circle cx={p.x} cy={p.y} r={r}
+
+            {/* Node circle — white fill covers spoke end cleanly */}
+            <circle
+              cx={p.x} cy={p.y} r={r}
               className={styles.nodeCircle}
-              fill={isSpinning ? 'rgba(255,255,255,0.95)' : isActive ? 'rgba(200,146,42,0.06)' : '#FFFFFF'}
-              stroke={isSpinning ? 'rgba(200,146,42,0.78)' : isActive ? 'rgba(200,146,42,1)' : 'rgba(200,146,42,0.78)'}
+              fill={isSpinning ? 'rgba(255,255,255,0.95)' : isActive ? 'rgba(200,146,42,0.05)' : '#FFFFFF'}
+              stroke={isActive ? 'rgba(200,146,42,1)' : 'rgba(200,146,42,0.78)'}
               strokeWidth={isActive ? 1.5 : 1}
             />
-            <rect
-              x={p.x - rectW / 2} y={p.y - rectH / 2}
-              width={rectW} height={rectH}
-              rx={5} ry={5}
-              fill={rectFill}
-              style={{ pointerEvents: 'none' }}
-            />
+
+            {/* Label — sits inside the circle, no backing rect */}
             <text
               x={p.x} y={p.y}
               textAnchor="middle" dominantBaseline="middle"
               fill={isActive ? '#A8721A' : '#0F1523'}
               fontSize={fontSize}
               fontFamily="'Cormorant SC', Georgia, serif"
-              fontWeight="500" letterSpacing="0.04em"
+              fontWeight="500"
+              letterSpacing="0.04em"
               style={{ pointerEvents: 'none', userSelect: 'none' }}
             >
               {words.map((word, wi) => (
