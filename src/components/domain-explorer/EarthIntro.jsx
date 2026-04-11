@@ -130,33 +130,45 @@ export function EarthIntro({ onEntered }) {
         <p style={{
           fontFamily: "'Cormorant Garamond', Georgia, serif",
           fontSize: 'clamp(14px,2.8vw,19px)', fontWeight: 300,
-          color: 'rgba(255,255,255,0.55)',
+          color: 'rgba(255,255,255,1)',
           lineHeight: 1.8, letterSpacing: '0.04em',
           margin: '0 0 28px',
         }}>
           Our planet.<br />Our privilege.<br />Our responsibility.
         </p>
 
-        {/* Enter prompt — sits below the tagline, left-aligned */}
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: '12px',
-          opacity: textAlpha,
-          transition: 'opacity 0.7s ease 0.5s',
-        }}>
-          <div style={{
-            width: '36px', height: '36px', borderRadius: '50%',
-            border: '1.5px solid rgba(200,146,42,0.60)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            animation: 'earthPulse 2.2s ease-in-out infinite',
-            flexShrink: 0,
-          }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#C8922A' }}/>
-          </div>
-          <span style={{
-            fontFamily: "'Cormorant SC', Georgia, serif",
-            fontSize: '12px', letterSpacing: '0.22em', color: 'rgba(200,146,42,0.60)',
-          }}>Enter</span>
-        </div>
+        {/* Enter prompt — orb races toward the earth during morph */}
+        {(() => {
+          const orbScale   = phase === 'morphing' ? 1 + ease * 5   : 1
+          const orbMoveX   = phase === 'morphing' ? -(ease * 120)  : 0
+          const orbMoveY   = phase === 'morphing' ? -(ease * 80)   : 0
+          const orbOpacity = phase === 'morphing' ? Math.max(0, 1 - ease * 1.1) : textAlpha
+          return (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '12px',
+              opacity: orbOpacity,
+              transition: phase === 'idle' ? 'opacity 0.7s ease 0.5s' : 'none',
+              transform: `translate(${orbMoveX}px, ${orbMoveY}px) scale(${orbScale})`,
+              transformOrigin: 'left center',
+            }}>
+              <div style={{
+                width: '36px', height: '36px', borderRadius: '50%',
+                border: '1.5px solid rgba(200,146,42,0.60)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                animation: phase === 'idle' ? 'earthPulse 2.2s ease-in-out infinite' : 'none',
+                flexShrink: 0,
+              }}>
+                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#C8922A' }}/>
+              </div>
+              <span style={{
+                fontFamily: "'Cormorant SC', Georgia, serif",
+                fontSize: '12px', letterSpacing: '0.22em', color: 'rgba(200,146,42,0.60)',
+                opacity: phase === 'morphing' ? 0 : 1,
+                transition: 'opacity 0.2s ease',
+              }}>Enter</span>
+            </div>
+          )
+        })()}
       </div>
 
       <style>{`

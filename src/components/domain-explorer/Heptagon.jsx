@@ -7,6 +7,7 @@ const CY = 260
 const RADIUS = 170
 const INTRO_SPIN_DEG_PER_SEC = 60
 const INTRO_SPIN_DURATION_MS = 2400
+const BLOOM_DURATION_MS = 700
 
 // Drill-down animation durations ms
 const T_PULL    = 240
@@ -69,10 +70,16 @@ export default function Heptagon({
   centreLabel,
   onCentreClick,
   onDrillDown,
+  bloom = false,
 }) {
   const [phase,      setPhase]      = useState('spinning')
   const [displayRot, setDisplayRot] = useState(0)
   const [nodeStates, setNodeStates] = useState(null)
+  const [bloomT,     setBloomT]     = useState(0)      // 0 = hidden behind centre, 1 = fully out
+  const [bloomed,    setBloomed]    = useState(false)
+
+  const bloomStartRef = useRef(null)
+  const bloomRafRef   = useRef(null)
 
   const rotRef          = useRef(0)
   const targetRotRef    = useRef(null)
@@ -83,6 +90,21 @@ export default function Heptagon({
   const spinStartRef    = useRef(Date.now())
   const drillStartRef   = useRef(null)
   const breatheStartRef = useRef(null)
+
+  // Bloom: nodes spiral out from centre when bloom prop fires
+  useEffect(() => {
+    if (!bloom || bloomed) return
+    setBloomed(true)
+    bloomStartRef.current = null
+    function tick(ts) {
+      if (!bloomStartRef.current) bloomStartRef.current = ts
+      const t = Math.min((ts - bloomStartRef.current) / BLOOM_DURATION_MS, 1)
+      setBloomT(easeInOut(t))
+      if (t < 1) bloomRafRef.current = requestAnimationFrame(tick)
+    }
+    bloomRafRef.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(bloomRafRef.current)
+  }, [bloom, bloomed])
 
   useEffect(() => {
     landingIdxRef.current = Math.floor(Math.random() * N)
@@ -227,8 +249,13 @@ export default function Heptagon({
         const startDy = words.length === 1 ? '0.35em' : `-${(blockHeight / 2).toFixed(2)}em`
         const maxWordLen = Math.max(...words.map(w => w.length))
         const rectW   = Math.round(maxWordLen * fontSize * 0.58 + 14)
-        const rectH   = Math.round(words.length * fontSize * lineHeight + 10)
+        const rectH   = Math.round(words.length * fontSize * lineHeight + 14)
         const rectFill = isSpinning ? 'rgba(255,255,255,0.95)' : isActive ? 'rgba(200,146,42,0.06)' : '#FFFFFF'
+
+        // Bloom: interpolate from centre to final position
+        const bloomedX = CX + (p.x - CX) * bloomT
+        const bloomedY = CY + (p.y - CY) * bloomT
+        const bloomOpacity = bloomT
 
         const gStyle = ns ? {
           opacity: ns.op,
@@ -237,6 +264,8 @@ export default function Heptagon({
           cursor: 'default',
         } : {
           cursor: busy ? 'default' : 'pointer',
+          opacity: bloomed ? 1 : bloomOpacity,
+          transform: bloomed ? 'none' : `translate(${bloomedX - p.x}px, ${bloomedY - p.y}px)`,
         }
 
         return (

@@ -188,6 +188,7 @@ export default function DomainExplorer() {
               centreLabel={centreLabel}
               onCentreClick={handleCentreClick}
               onDrillDown={handleExploreSubDomains}
+              bloom={earthDone}
             />
           </div>
           {isIdle && (

@@ -153,16 +153,16 @@ export default function DomainPanel({
             &#8592; {parentLabel}
           </button>
         )}
+        {rootDomainId && (
+          <a href={'/nextus/actors?domain=' + rootDomainId} className={styles.navItem}>
+            View actors
+          </a>
+        )}
         {level < 4 && item.subDomains && item.subDomains.length > 0 &&
          item.subDomains[0].name !== "Being mapped" && (
           <button className={styles.navItem} onClick={onExploreSubDomains}>
             Explore {item.name} &#8594;
           </button>
-        )}
-        {rootDomainId && (
-          <a href={'/nextus/actors?domain=' + rootDomainId} className={styles.navItem}>
-            View actors
-          </a>
         )}
       </nav>
 

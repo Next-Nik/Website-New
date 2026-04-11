@@ -670,9 +670,11 @@
 /* ── Unified top nav ── */
 .topNav {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
   margin-bottom: 20px;
+  flex-wrap: wrap;
 }
 
 .navItem {
