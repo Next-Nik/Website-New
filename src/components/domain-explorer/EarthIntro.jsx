@@ -98,7 +98,7 @@ export function EarthIntro({ onEntered }) {
             position: 'absolute',
             top: '50%', left: '50%',
             transform: 'translate(-50%, -50%)',
-            width: '205', height: 'auto',
+            width: '180%', height: 'auto',
             display: 'block',
             border: 'none', outline: 'none',
           }}
