@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import styles from './Heptagon.module.css'
 
-const N = 7
 const CX = 260
 const CY = 260
 const RADIUS = 170
@@ -17,16 +16,14 @@ const T_BREATHE = 280
 const NODE_RADIUS_MIN = 46
 const NODE_RADIUS_MAX = 68
 
-function getNodePos(index, rotationDeg = 0) {
-  const angleDeg = index * (360 / N) - 90 + rotationDeg
+function getNodePos(index, rotationDeg = 0, count = 7) {
+  const angleDeg = index * (360 / count) - 90 + rotationDeg
   const rad = (angleDeg * Math.PI) / 180
   return { x: CX + RADIUS * Math.cos(rad), y: CY + RADIUS * Math.sin(rad) }
 }
 
-
-
-function getRotationToTop(index, currentRot) {
-  const raw = -(index * (360 / N))
+function getRotationToTop(index, currentRot, count = 7) {
+  const raw = -(index * (360 / count))
   let diff = ((raw - (currentRot % 360)) + 540) % 360 - 180
   return currentRot + diff
 }
@@ -120,7 +117,7 @@ export default function Heptagon({
   }, [bloom, bloomed])
 
   useEffect(() => {
-    landingIdxRef.current = Math.floor(Math.random() * N)
+    landingIdxRef.current = Math.floor(Math.random() * (domains?.length || 7))
   }, [])
 
   useEffect(() => {
@@ -131,7 +128,7 @@ export default function Heptagon({
     drillStartRef.current = null
     breatheStartRef.current = null
     setNodeStates(null)
-    landingIdxRef.current = Math.floor(Math.random() * N)
+    landingIdxRef.current = Math.floor(Math.random() * domains.length)
     spinStartRef.current = Date.now()
     lastTimeRef.current = null
     setPhase('spinning')
@@ -142,17 +139,17 @@ export default function Heptagon({
 
   useEffect(() => {
     if ((phase === 'settled' || phase === 'navigating') && activeIndex !== null) {
-      targetRotRef.current = getRotationToTop(activeIndex, rotRef.current)
+      targetRotRef.current = getRotationToTop(activeIndex, rotRef.current, domains?.length || 7)
       setPhase('navigating')
     }
   }, [activeIndex])
 
   const cancelSpinAndSelect = useCallback((index) => {
     landingIdxRef.current = index
-    targetRotRef.current = getRotationToTop(index, rotRef.current)
+    targetRotRef.current = getRotationToTop(index, rotRef.current, domains?.length || 7)
     setPhase('landing')
     onSelect(index)
-  }, [onSelect])
+  }, [onSelect, domains])
 
   useEffect(() => {
     function animate(time) {
@@ -165,7 +162,8 @@ export default function Heptagon({
         rotRef.current += INTRO_SPIN_DEG_PER_SEC * dt
         setDisplayRot(rotRef.current)
         if (elapsed >= INTRO_SPIN_DURATION_MS) {
-          targetRotRef.current = getRotationToTop(landingIdxRef.current, rotRef.current)
+          const c = (domains || []).length || 7
+          targetRotRef.current = getRotationToTop(landingIdxRef.current, rotRef.current, c)
           setPhase('landing')
           onLand?.(landingIdxRef.current)
         }
@@ -188,13 +186,14 @@ export default function Heptagon({
         const t  = Math.min((time - drillStartRef.current) / T_PULL, 1)
         const te = easeInOut(t)
         const idx = drillIdxRef.current
-        const tp = getNodePos(idx, rotRef.current)
+        const c   = (domains || []).length || 7
+        const tp  = getNodePos(idx, rotRef.current, c)
 
         setNodeStates(Array.from({ length: (domains || []).length }, (_, i) => {
           if (i === idx) {
             return { sc: 1 + te * 0.12, op: 1, ox: (CX - tp.x) * te, oy: (CY - tp.y) * te }
           }
-          const p = getNodePos(i, rotRef.current)
+          const p = getNodePos(i, rotRef.current, c)
           return { sc: 1 - te * 0.18, op: 1 - te, ox: (p.x - CX) * 0.45 * te, oy: (p.y - CY) * 0.45 * te }
         }))
 
@@ -230,11 +229,13 @@ export default function Heptagon({
     }
   }
 
+  const count      = domains?.length || 7
   const isSpinning = phase === 'spinning' || phase === 'landing'
   const busy       = phase !== 'settled'
 
-  const polygonPoints = Array.from({ length: N }, (_, i) => {
-    const p = getNodePos(i, displayRot)
+
+  const polygonPoints = Array.from({ length: count }, (_, i) => {
+    const p = getNodePos(i, displayRot, count)
     return `${p.x},${p.y}`
   }).join(' ')
 
@@ -261,8 +262,8 @@ export default function Heptagon({
       <polygon points={polygonPoints} fill="rgba(200,146,42,0.03)" stroke="rgba(200,146,42,0.15)" strokeWidth="0.75" />
 
       {/* Spokes — centre to node centre, nodes rendered above hide the ends */}
-      {Array.from({ length: N }, (_, i) => {
-        const p = getNodePos(i, displayRot)
+      {Array.from({ length: count }, (_, i) => {
+        const p = getNodePos(i, displayRot, count)
         return (
           <line
             key={`spoke-${i}`}
@@ -276,7 +277,7 @@ export default function Heptagon({
 
       {/* Nodes */}
       {(domains || []).map((domain, i) => {
-        const p        = getNodePos(i, displayRot)
+        const p        = getNodePos(i, displayRot, count)
         const ns       = nodeStates?.[i]
         const isActive = !busy && !isIdle && i === activeIndex
         const words    = getNodeLabel(domain.name)
