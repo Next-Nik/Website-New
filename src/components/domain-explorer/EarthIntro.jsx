@@ -88,39 +88,55 @@ function drawGlobe(ctx, tex, SIZE, rot, enterP) {
   }
 }
 
-// Fallback procedural Earth if texture fails
+// Fallback: clean blue orb with ocean gradient — no polygon continents
 function drawFallback(ctx, SIZE, rot, enterP) {
   const cx = SIZE/2, cy = SIZE/2
   const R_FULL = SIZE * 0.415, R_TARGET = SIZE * 0.163
   const r = enterP > 0 ? R_FULL - (R_FULL - R_TARGET) * enterP : R_FULL
-  ctx.clearRect(0,0,SIZE,SIZE)
+  ctx.clearRect(0, 0, SIZE, SIZE)
+
+  // Space glow
+  const glow = ctx.createRadialGradient(cx, cy, r * 0.9, cx, cy, r * 1.5)
+  glow.addColorStop(0, 'rgba(30,60,120,0.20)')
+  glow.addColorStop(1, 'rgba(0,0,0,0)')
+  ctx.beginPath(); ctx.arc(cx, cy, r * 1.5, 0, Math.PI * 2)
+  ctx.fillStyle = glow; ctx.fill()
+
+  // Sphere base — deep ocean blue
   ctx.save()
-  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.clip()
-  ctx.fillStyle = '#1B3A5C'; ctx.fillRect(cx-r,cy-r,r*2,r*2)
-  // Simple continent shapes
-  const shapes = [
-    {c:'#2D5A27',p:[[.08,.18],[.25,.13],[.29,.27],[.14,.43],[.07,.28]]},
-    {c:'#2D5A27',p:[[.19,.46],[.30,.45],[.26,.70],[.17,.66]]},
-    {c:'#2D5A27',p:[[.44,.16],[.57,.18],[.53,.27],[.44,.24]]},
-    {c:'#2D5A27',p:[[.46,.29],[.62,.33],[.53,.63],[.42,.54]]},
-    {c:'#8B7355',p:[[.57,.14],[.88,.28],[.70,.44],[.56,.28]]},
-    {c:'#8B7355',p:[[.74,.56],[.88,.59],[.80,.70],[.71,.62]]},
-    {c:'#D8E8F0',p:[[.00,.87],[1.0,.87],[1.0,1.0],[.00,1.0]]},
-  ]
-  shapes.forEach(({c,p})=>{
-    for(const dx of [0,1]){
-      ctx.beginPath()
-      p.forEach(([lx,ly],i)=>{ const x=cx-r+((lx+rot)%1+dx)*r*2,y=cy-r+ly*r*2; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y) })
-      ctx.closePath(); ctx.fillStyle=c; ctx.fill()
-    }
-  })
-  const shade=ctx.createRadialGradient(cx-r*.28,cy-r*.26,r*.04,cx,cy,r)
-  shade.addColorStop(0,'rgba(255,255,255,.10)'); shade.addColorStop(1,'rgba(0,0,0,.60)')
-  ctx.fillStyle=shade; ctx.fillRect(cx-r,cy-r,r*2,r*2)
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip()
+  const ocean = ctx.createRadialGradient(cx - r * 0.15, cy - r * 0.15, r * 0.1, cx, cy, r)
+  ocean.addColorStop(0.0, '#3A7FC1')
+  ocean.addColorStop(0.4, '#1B5A8A')
+  ocean.addColorStop(0.8, '#0D3860')
+  ocean.addColorStop(1.0, '#071F3A')
+  ctx.fillStyle = ocean
+  ctx.fillRect(cx - r, cy - r, r * 2, r * 2)
+
+  // Sphere shading
+  const shade = ctx.createRadialGradient(cx - r*.28, cy - r*.26, r*.04, cx + r*.1, cy + r*.1, r*1.05)
+  shade.addColorStop(0.00, 'rgba(255,255,255,0.10)')
+  shade.addColorStop(0.30, 'rgba(255,255,255,0.02)')
+  shade.addColorStop(0.65, 'rgba(0,0,0,0.03)')
+  shade.addColorStop(0.88, 'rgba(0,0,0,0.32)')
+  shade.addColorStop(1.00, 'rgba(0,0,0,0.60)')
+  ctx.fillStyle = shade; ctx.fillRect(cx - r, cy - r, r * 2, r * 2)
+
+  // Specular highlight
+  const spec = ctx.createRadialGradient(cx - r*.40, cy - r*.40, 0, cx - r*.40, cy - r*.40, r*.50)
+  spec.addColorStop(0, 'rgba(255,255,255,0.22)')
+  spec.addColorStop(0.5, 'rgba(255,255,255,0.05)')
+  spec.addColorStop(1, 'rgba(255,255,255,0)')
+  ctx.fillStyle = spec; ctx.fillRect(cx - r, cy - r, r * 2, r * 2)
   ctx.restore()
-  const atm=ctx.createRadialGradient(cx,cy,r*.87,cx,cy,r*1.18)
-  atm.addColorStop(0,'rgba(90,155,230,.30)'); atm.addColorStop(1,'rgba(50,100,180,0)')
-  ctx.beginPath(); ctx.arc(cx,cy,r*1.18,0,Math.PI*2); ctx.fillStyle=atm; ctx.fill()
+
+  // Atmosphere limb
+  const atm = ctx.createRadialGradient(cx, cy, r * .87, cx, cy, r * 1.18)
+  atm.addColorStop(0, 'rgba(90,155,230,0.32)')
+  atm.addColorStop(0.5, 'rgba(70,130,210,0.14)')
+  atm.addColorStop(1, 'rgba(50,100,180,0)')
+  ctx.beginPath(); ctx.arc(cx, cy, r * 1.18, 0, Math.PI * 2)
+  ctx.fillStyle = atm; ctx.fill()
 }
 
 export function EarthIntro({ onEntered }) {
@@ -203,12 +219,11 @@ export function EarthIntro({ onEntered }) {
       cursor: phase === 'earth' ? 'pointer' : 'default',
       userSelect: 'none',
     }}>
-      {/* Left column — over the heptagon */}
+      {/* Left column — sits over the heptagon, vertically centered to match the hep */}
       <div style={{
         width: '50%', display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center',
         height: '100%', padding: '32px 40px', boxSizing: 'border-box',
-        transform: 'translateY(-22%)',
       }}>
         <canvas ref={canvasRef} width={480} height={480}
           style={{ width: '100%', maxWidth: '480px', height: 'auto', display: 'block' }}
