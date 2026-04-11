@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 const VIDEO_URL = '/earth-rotation.mp4'
 
 // Measured values from position debug tool (% of .app container)
-const GLOBE = { x: 27,   y: 20,  size: 350 }
+const GLOBE = { x: 27,   y: 20,  size: 310 }
 const ORB   = { x: 30.5, y: 23,  size: 158 }
 
 function easeInOut(t) { return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2 }
@@ -92,9 +92,11 @@ export function EarthIntro({ onEntered }) {
           src={VIDEO_URL}
           autoPlay loop muted playsInline
           style={{
-            position: 'absolute', inset: 0,
-            width: '100%', height: '100%',
-            objectFit: 'cover', display: 'block',
+            position: 'absolute',
+            top: '50%', left: '50%',
+            transform: 'translate(-50%, -50%)',
+            height: '180%', width: 'auto',
+            display: 'block',
             border: 'none', outline: 'none',
           }}
         />
