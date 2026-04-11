@@ -86,7 +86,6 @@ export function EarthIntro({ onEntered }) {
         height: `${globeSize}px`,
         borderRadius: '50%',
         overflow: 'hidden',
-        border: `1.5px solid rgba(200,146,42,${0.3 + ease * 0.5})`,
         pointerEvents: 'none',
         // Display flex so "Our Planet" label can be centred over the video
         display: 'flex', alignItems: 'center', justifyContent: 'center',
