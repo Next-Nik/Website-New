@@ -10,7 +10,7 @@ import styles from './DomainExplorer.module.css'
 
 // ── TIMING CONTROLS ───────────────────────────────────────────────────────────
 const HEP_FADE_IN_DURATION = 2500  // ms — how long the hep wheel fades in
-const HEP_FADE_IN_DELAY    = 0     // ms — delay after earth fires (0 = immediate blend)
+const HEP_FADE_IN_DELAY    = -1000     // ms — delay after earth fires (0 = immediate blend)
 // ─────────────────────────────────────────────────────────────────────────────
 
 const OVERVIEW_TEXT = `The Overview Effect is what astronauts report when they first see Earth from space — a sudden, irreversible recognition of the whole. The boundaries dissolve. The fragmentation that seemed inevitable from inside it becomes obviously contingent from outside it.
