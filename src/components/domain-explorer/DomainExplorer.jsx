@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
+
 import { EarthIntro } from './EarthIntro'
 import { useAuth } from '../../hooks/useAuth'
 import Heptagon from './Heptagon'
@@ -6,6 +7,105 @@ import DomainPanel from './DomainPanel'
 import ContributeModal from './ContributeModal'
 import { fetchDomains, STATIC_DOMAINS, TOP_LEVEL_GOAL } from './data'
 import styles from './DomainExplorer.module.css'
+
+// ── Position debug overlay — visible only at ?debug=positions ──
+function PositionDebug() {
+  const [globe, setGlobe] = React.useState({ x: 30, y: 60, size: 300 })
+  const [orb,   setOrb]   = React.useState({ x: 32, y: 72, size: 152 })
+  const [mode,  setMode]  = React.useState('globe')
+
+  const current  = mode === 'globe' ? globe : orb
+  const setCurrent = mode === 'globe' ? setGlobe : setOrb
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, zIndex: 50, pointerEvents: 'none' }}>
+      {/* Globe circle */}
+      <div style={{
+        position: 'absolute',
+        left: globe.x + '%', top: globe.y + '%',
+        width: globe.size, height: globe.size,
+        borderRadius: '50%',
+        border: '2px dashed rgba(200,146,42,0.8)',
+        background: 'rgba(200,146,42,0.06)',
+        transform: 'translate(-50%,-50%)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 11, letterSpacing: '0.2em', color: 'rgba(200,146,42,0.8)',
+        fontFamily: 'Georgia, serif',
+      }}>GLOBE</div>
+
+      {/* Orb circle */}
+      <div style={{
+        position: 'absolute',
+        left: orb.x + '%', top: orb.y + '%',
+        width: orb.size, height: orb.size,
+        borderRadius: '50%',
+        border: '2px solid rgba(90,160,255,0.8)',
+        background: 'rgba(90,160,255,0.08)',
+        transform: 'translate(-50%,-50%)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 9, letterSpacing: '0.15em', color: 'rgba(90,160,255,0.9)',
+        fontFamily: 'Georgia, serif', textAlign: 'center', lineHeight: 1.4,
+      }}>OUR<br/>PLANET<br/>ORB</div>
+
+      {/* Controls — pointer events re-enabled */}
+      <div style={{
+        position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
+        background: 'rgba(15,21,35,0.95)', border: '1px solid rgba(200,146,42,0.5)',
+        borderRadius: 12, padding: '16px 24px', pointerEvents: 'all',
+        display: 'flex', gap: 24, alignItems: 'flex-end',
+        zIndex: 9999, boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+        fontFamily: 'Georgia, serif',
+      }}>
+        {/* Mode toggle */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div style={{ fontSize: 10, letterSpacing: '0.18em', color: 'rgba(200,146,42,0.6)', textTransform: 'uppercase' }}>
+            Editing
+          </div>
+          <div style={{ display: 'flex', gap: 6 }}>
+            {['globe','orb'].map(m => (
+              <button key={m} onClick={() => setMode(m)} style={{
+                padding: '5px 12px', borderRadius: 6, cursor: 'pointer',
+                border: '1px solid rgba(200,146,42,' + (mode===m ? '0.9' : '0.3') + ')',
+                background: mode===m ? 'rgba(200,146,42,0.15)' : 'transparent',
+                color: mode===m ? 'rgba(200,146,42,1)' : 'rgba(200,146,42,0.5)',
+                fontSize: 11, letterSpacing: '0.1em', fontFamily: 'Georgia, serif',
+              }}>{m === 'globe' ? 'Globe' : 'Our Planet Orb'}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* Sliders */}
+        {[
+          { label: 'Left / Right', key: 'x', min: 0, max: 100, step: 0.5, unit: '%' },
+          { label: 'Up / Down',    key: 'y', min: 0, max: 100, step: 0.5, unit: '%' },
+          { label: 'Size',         key: 'size', min: 40, max: 600, step: 2, unit: 'px' },
+        ].map(({ label, key, min, max, step, unit }) => (
+          <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 140 }}>
+            <div style={{ fontSize: 10, letterSpacing: '0.16em', color: 'rgba(200,146,42,0.7)', textTransform: 'uppercase' }}>
+              {label} <span style={{ color: 'rgba(255,255,255,0.5)' }}>{current[key]}{unit}</span>
+            </div>
+            <input type="range" min={min} max={max} step={step} value={current[key]}
+              onChange={e => setCurrent(prev => ({ ...prev, [key]: parseFloat(e.target.value) }))}
+              style={{ accentColor: '#C8922A', cursor: 'pointer', width: '100%' }}
+            />
+          </div>
+        ))}
+
+        {/* Output */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 220, borderLeft: '1px solid rgba(200,146,42,0.2)', paddingLeft: 20 }}>
+          <div style={{ fontSize: 10, letterSpacing: '0.16em', color: 'rgba(200,146,42,0.7)', textTransform: 'uppercase', marginBottom: 4 }}>Send these values back</div>
+          {[['Globe', globe], ['Orb', orb]].map(([name, val]) => (
+            <div key={name} style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', fontFamily: 'Courier New, monospace' }}>
+              {name}: X=<span style={{color:'rgba(255,255,255,0.9)'}}>{val.x}%</span>{' '}
+              Y=<span style={{color:'rgba(255,255,255,0.9)'}}>{val.y}%</span>{' '}
+              Size=<span style={{color:'rgba(255,255,255,0.9)'}}>{val.size}px</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const OVERVIEW_TEXT = `The Overview Effect is what astronauts report when they first see Earth from space — a sudden, irreversible recognition of the whole. The boundaries dissolve. The fragmentation that seemed inevitable from inside it becomes obviously contingent from outside it.
 
@@ -171,6 +271,7 @@ export default function DomainExplorer() {
 
   return (
     <div className={styles.app} style={{ position: 'relative' }}>
+      <PositionDebug />
       {!earthDone && (
         <EarthIntro onEntered={() => setEarthDone(true)} />
       )}
