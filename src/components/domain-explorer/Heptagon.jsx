@@ -5,9 +5,9 @@ const N = 7
 const CX = 260
 const CY = 260
 const RADIUS = 170
-const INTRO_SPIN_DEG_PER_SEC = 60
-const INTRO_SPIN_DURATION_MS = 2400
-const BLOOM_DURATION_MS = 700
+const INTRO_SPIN_DEG_PER_SEC = 35
+const INTRO_SPIN_DURATION_MS = 4000
+const BLOOM_DURATION_MS = 2000
 
 // Drill-down animation durations ms
 const T_PULL    = 240
@@ -242,7 +242,7 @@ export default function Heptagon({
       style={{
         transform: bloomed ? 'scale(1)' : `scale(${0.15 + bloomT * 0.85})`,
         transformOrigin: 'center center',
-        opacity: bloomed ? 1 : Math.min(1, bloomT * 2),
+        opacity: bloomed ? 1 : bloomT,
         transition: bloomed ? 'none' : undefined,
       }}
     >

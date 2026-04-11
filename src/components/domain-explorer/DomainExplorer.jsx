@@ -183,7 +183,7 @@ export default function DomainExplorer() {
       )}
       <div className={styles.grain} aria-hidden="true" />
 
-      <main className={styles.main} style={{ opacity: earthDone ? 1 : 0, transition: 'opacity 0.6s ease 0.1s' }}>
+      <main className={styles.main} style={{ opacity: earthDone ? 1 : 0, transition: 'opacity 1.4s ease 0s' }}>
         <div className={styles.heptagonCol}>
           <div className={styles.heptagonWrapper}>
             <Heptagon
