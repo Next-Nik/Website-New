@@ -10,7 +10,7 @@ import styles from './DomainExplorer.module.css'
 
 // ── TIMING CONTROLS ───────────────────────────────────────────────────────────
 const HEP_FADE_IN_DURATION = 2500  // ms — how long the hep wheel fades in
-const HEP_FADE_IN_DELAY    = -5000     // ms — delay after earth fires (0 = immediate blend)
+const HEP_FADE_IN_DELAY    = 0     // ms — delay after earth fires (0 = immediate blend)
 // ─────────────────────────────────────────────────────────────────────────────
 
 const OVERVIEW_TEXT = `The Overview Effect is what astronauts report when they first see Earth from space — a sudden, irreversible recognition of the whole. The boundaries dissolve. The fragmentation that seemed inevitable from inside it becomes obviously contingent from outside it.
@@ -32,6 +32,15 @@ export default function DomainExplorer() {
   const [overviewOpen,   setOverviewOpen]   = useState(true)
   const [parentItem,     setParentItem]     = useState(null)
   const [earthDone,      setEarthDone]      = useState(false)
+  const [mainVisible,    setMainVisible]    = useState(false)
+
+  // Start fading the hep wheel in after a short delay — independent of earthDone.
+  // The earth's black overlay naturally hides it until the overlay fades,
+  // so they blend through each other rather than sequencing.
+  useEffect(() => {
+    const t = setTimeout(() => setMainVisible(true), 400)
+    return () => clearTimeout(t)
+  }, [])
 
   const userInitial = user?.email
     ? (user.email.split('@')[0]?.charAt(0) || '?').toUpperCase()
@@ -183,7 +192,7 @@ export default function DomainExplorer() {
       )}
       <div className={styles.grain} aria-hidden="true" />
 
-      <main className={styles.main} style={{ opacity: earthDone ? 1 : 0, transition: `opacity ${HEP_FADE_IN_DURATION}ms ease ${HEP_FADE_IN_DELAY}ms` }}>
+      <main className={styles.main} style={{ opacity: mainVisible ? 1 : 0, transition: `opacity ${HEP_FADE_IN_DURATION}ms ease ${HEP_FADE_IN_DELAY}ms` }}>
         <div className={styles.heptagonCol}>
           <div className={styles.heptagonWrapper}>
             <Heptagon
