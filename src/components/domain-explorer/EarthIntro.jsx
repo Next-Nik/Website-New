@@ -26,20 +26,12 @@ function drawGlobe(ctx, tex, SIZE, rot, enterP) {
   ctx.save()
   ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip()
 
-  // Project texture as cylindrical → sphere approximation
-  const iW = tex.naturalWidth || tex.width
-  const iH = tex.naturalHeight || tex.height
+  // Equirectangular texture: render at diam x diam, tile horizontally for seamless wrap
   const diam = r * 2
-  const offX = (rot % 1) * iW
+  const offX = (rot % 1) * diam
 
-  // Draw shifted texture (tile for seamless wrap)
   for (let tile = -1; tile <= 1; tile++) {
-    ctx.drawImage(tex, 0, 0, iW, iH,
-      cx - r + tile * diam - offX * (diam / iW),
-      cy - r,
-      iW * (diam / iW),
-      diam
-    )
+    ctx.drawImage(tex, cx - r + tile * diam - offX, cy - r, diam, diam)
   }
 
   // Sphere shading — lit upper-left, dark lower-right edge
@@ -215,18 +207,19 @@ export function EarthIntro({ onEntered }) {
     <div onClick={handleClick} style={{
       position: 'absolute', inset: 0, zIndex: 20,
       background: `rgba(4,8,20,${bgAlpha})`,
-      display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
       cursor: phase === 'earth' ? 'pointer' : 'default',
       userSelect: 'none',
     }}>
-      {/* Left column — sits over the heptagon, vertically centered to match the hep */}
+      {/* Left column — mirrors heptagon column padding exactly so canvas centre = hep centre */}
       <div style={{
-        width: '50%', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        height: '100%', padding: '32px 40px', boxSizing: 'border-box',
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'flex-start',
+        padding: '32px 40px 48px', boxSizing: 'border-box',
       }}>
         <canvas ref={canvasRef} width={480} height={480}
-          style={{ width: '100%', maxWidth: '480px', height: 'auto', display: 'block' }}
+          style={{ width: '100%', maxWidth: '520px', height: 'auto', display: 'block' }}
         />
 
         <p style={{
