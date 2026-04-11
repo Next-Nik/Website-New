@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import { supabase } from '../hooks/useSupabase'
@@ -87,16 +87,15 @@ function ViewToggle({ view, setView }) {
   return (
     <div style={{ display: 'flex', gap: '0', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.35)', overflow: 'hidden' }}>
       {[
-        { key: 'all',       label: 'All' },
-        { key: 'winning',   label: 'Succeeding' },
-        { key: 'underloved',label: 'Underloved' },
-      ].map(({ key, label }) => (
+        { key: 'all',     label: 'All' },
+        { key: 'winning', label: 'Succeeding' },
+      ].map(({ key, label }, i, arr) => (
         <button key={key} onClick={() => setView(key)} style={{
           ...sc, fontSize: '13px', letterSpacing: '0.12em',
           padding: '8px 16px', border: 'none', cursor: 'pointer',
           background: view === key ? 'rgba(200,146,42,0.10)' : '#FFFFFF',
           color: view === key ? gold : 'rgba(15,21,35,0.55)',
-          borderRight: key !== 'underloved' ? '1px solid rgba(200,146,42,0.25)' : 'none',
+          borderRight: i < arr.length - 1 ? '1px solid rgba(200,146,42,0.25)' : 'none',
         }}>
           {label}
         </button>
@@ -193,12 +192,13 @@ function ActorCard({ actor, onClick }) {
 
 export function NextUsActorsPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
 
   const [actors, setActors]     = useState([])
   const [loading, setLoading]   = useState(true)
   const [total, setTotal]       = useState(0)
 
-  const [domain,    setDomain]    = useState('')
+  const [domain,    setDomain]    = useState(searchParams.get('domain') || '')
   const [scale,     setScale]     = useState('')
   const [type,      setType]      = useState('')
   const [view,      setView]      = useState('all')   // 'all' | 'winning' | 'underloved'

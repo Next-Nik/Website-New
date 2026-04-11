@@ -392,6 +392,7 @@ function AuthPromptModal({ need, actor, onClose }) {
 // ── Contribution success state ───────────────────────────────
 
 function ContributionSuccess({ actor, onClose }) {
+  const navigate = useNavigate()
   return (
     <div
       onClick={e => e.target === e.currentTarget && onClose()}
@@ -403,14 +404,22 @@ function ContributionSuccess({ actor, onClose }) {
         </div>
         <h3 style={{ ...serif, fontSize: '26px', fontWeight: 300, color: dark, marginBottom: '12px' }}>Contribution recorded.</h3>
         <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '28px' }}>
-          Your contribution to {actor.name} is now on record. {actor.name} will be notified and can confirm when the work is done. It will appear on your contribution profile.
+          Your contribution to {actor.name} is now on record. {actor.name} will be notified and can confirm when the work is done. It will appear on your profile.
         </p>
-        <button
-          onClick={onClose}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: gold, cursor: 'pointer' }}
-        >
-          Back to profile
-        </button>
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => navigate('/profile')}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 28px', borderRadius: '40px', border: 'none', background: '#C8922A', color: '#FFFFFF', cursor: 'pointer' }}
+          >
+            View my profile →
+          </button>
+          <button
+            onClick={onClose}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: gold, cursor: 'pointer' }}
+          >
+            Stay here
+          </button>
+        </div>
       </div>
     </div>
   )

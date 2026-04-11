@@ -1108,6 +1108,7 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
 
   const [summary,        setSummary]        = useState(null)
   const [contribs,       setContribs]       = useState([])
+  const [pending,        setPending]        = useState([])
   const [visibility,     setVisibility]     = useState('public')
   const [savingVis,      setSavingVis]      = useState(false)
   const [loadingContribs, setLoadingContribs] = useState(true)
@@ -1115,17 +1116,24 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
   useEffect(() => {
     if (!userId) return
     async function load() {
-      const [{ data: sumData }, { data: contribData }] = await Promise.all([
+      const [{ data: sumData }, { data: contribData }, { data: pendingData }] = await Promise.all([
         supabase.from('nextus_contribution_summaries').select('*').eq('user_id', userId).maybeSingle(),
         supabase.from('nextus_contributions')
-          .select('*, nextus_actors(name, domain_id)')
+          .select('*, nextus_actors(id, name, domain_id)')
           .eq('contributor_id', userId)
           .eq('confirmed_by_actor', true)
+          .order('created_at', { ascending: false })
+          .limit(5),
+        supabase.from('nextus_contributions')
+          .select('*, nextus_actors(id, name, domain_id)')
+          .eq('contributor_id', userId)
+          .eq('confirmed_by_actor', false)
           .order('created_at', { ascending: false })
           .limit(5),
       ])
       if (sumData) { setSummary(sumData); setVisibility(sumData.visibility || 'public') }
       setContribs(contribData || [])
+      setPending(pendingData || [])
       setLoadingContribs(false)
     }
     load()
@@ -1133,10 +1141,12 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
 
   async function toggleVisibility() {
     const next = visibility === 'public' ? 'muted' : 'public'
+    const prev = visibility
     setSavingVis(true)
-    await supabase.from('nextus_contribution_summaries')
-      .upsert({ user_id: userId, visibility: next }, { onConflict: 'user_id' })
     setVisibility(next)
+    const { error } = await supabase.from('nextus_contribution_summaries')
+      .upsert({ user_id: userId, visibility: next }, { onConflict: 'user_id' })
+    if (error) setVisibility(prev)
     setSavingVis(false)
   }
 
@@ -1207,14 +1217,36 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
             )}
           </div>
 
+          {/* Pending contributions */}
+          {pending.length > 0 && (
+            <div style={{ marginBottom: '16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '10px', padding: '14px 16px' }}>
+              <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.40)', marginBottom: '10px' }}>Pending confirmation</p>
+              {pending.map(c => (
+                <div key={c.id} style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '7px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
+                  <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: '#A8721A', background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '4px', padding: '2px 8px' }}>
+                    {CONTRIB_LABEL[c.contribution_type] || c.contribution_type}
+                  </span>
+                  <a href={'/nextus/actors/' + c.nextus_actors?.id} style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.70)', flex: 1, textDecoration: 'none' }}>
+                    {c.nextus_actors?.name || 'Unknown'}
+                  </a>
+                  <span style={{ ...serif, fontSize: '12px', color: 'rgba(15,21,35,0.35)', fontStyle: 'italic' }}>awaiting confirmation</span>
+                </div>
+              ))}
+            </div>
+          )}
+
           {!hasContribs ? (
             <div>
               <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '14px' }}>
-                Your confirmed contributions will appear here as a record of what you have actually done in the world.
+                {pending.length > 0
+                  ? 'Your confirmed contributions will appear here once the organisation confirms your work.'
+                  : 'Your confirmed contributions will appear here as a record of what you have actually done in the world.'}
               </p>
-              <a href="/nextus/actors" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none' }}>
-                Find actors to contribute to {'→'}
-              </a>
+              {pending.length === 0 && (
+                <a href="/nextus/actors" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none' }}>
+                  Find actors to contribute to {'→'}
+                </a>
+              )}
             </div>
           ) : (
             <div>
@@ -1257,7 +1289,9 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
                       <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: '#A8721A', background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '4px', padding: '2px 8px' }}>
                         {CONTRIB_LABEL[c.contribution_type] || c.contribution_type}
                       </span>
-                      <span style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.70)', flex: 1 }}>{c.nextus_actors?.name || 'Unknown'}</span>
+                      <a href={'/nextus/actors/' + c.nextus_actors?.id} style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.70)', flex: 1, textDecoration: 'none' }}>
+                        {c.nextus_actors?.name || 'Unknown'}
+                      </a>
                       {c.nextus_actors?.domain_id && (
                         <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.35)' }}>{DOMAIN_LABEL[c.nextus_actors.domain_id]}</span>
                       )}

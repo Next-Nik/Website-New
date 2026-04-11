@@ -642,6 +642,11 @@ export function FoundationPage() {
             sessions={sessions}
             onAfterComplete={async (afterData, beforeData, updatedSessions) => {
               await writeSummary(user, updatedSessions, afterData, beforeData)
+              // Write to North Star cross-tool memory — stable note, deduplicates on every completion
+              supabase.from('north_star_notes').upsert(
+                { user_id: user.id, tool: 'foundation', note: 'Foundation Baseline practice active.' },
+                { onConflict: 'user_id,tool,note' }
+              ).catch(() => {})
             }}
           />
         </PhaseBlock>

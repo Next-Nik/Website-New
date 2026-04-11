@@ -385,7 +385,7 @@ module.exports = async (req, res) => {
         anthropic.messages.create({
           model: "claude-sonnet-4-20250514",
           max_tokens: 2500,
-          messages: [{ role: "user", content: finalSynthesisPrompt(session) + nsBlockMap }]
+          messages: [{ role: "user", content: NORTH_STAR_IDENTITY + '\n\n' + finalSynthesisPrompt(session) + nsBlockMap }]
         }),
         anthropic.messages.create({
           model: "claude-sonnet-4-20250514",

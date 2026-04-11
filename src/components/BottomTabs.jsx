@@ -42,7 +42,7 @@ function MoreMenu({ onClose }) {
   const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
   const nextusLinks = [
-    { label: 'Actors',    path: '/nextus/actors',   desc: 'Who is doing the work' },
+    { label: 'Orgs in the Field', path: '/nextus/actors',   desc: 'Who is doing the work' },
     { label: 'Map',       path: '/nextus/map',       desc: 'Where the work is happening' },
     { label: 'Domains',   path: '/nextus',            desc: 'The seven domains' },
     { label: 'Nominate',  path: '/nextus/nominate',  desc: 'Add an actor' },

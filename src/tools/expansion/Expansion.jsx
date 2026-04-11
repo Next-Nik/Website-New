@@ -997,7 +997,34 @@ function LoopJournal({ loops, setupData, onSave }) {
           {chat.messages.length > 6 && (
             <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.15)' }}>
               <Btn onClick={() => {
-                onSave({ loop_text: 'From conversation', created_at: new Date().toISOString() })
+                // Extract loop record fields from conversation at save time.
+                // The API instructs the model to summarise all four fields when complete.
+                // Scan assistant messages in reverse to find the summary block.
+                const assistantMsgs = chat.messages
+                  .filter(m => m.role === 'assistant')
+                  .map(m => m.content)
+                const combined = assistantMsgs.join('\n')
+
+                function extract(label) {
+                  // Match label (case-insensitive) followed by a colon and capture until next label or end
+                  const pattern = new RegExp(
+                    `${label}[:\\s]+([\\s\\S]*?)(?=(?:Loop|Function|Interruption|Replacement)[:\\s]|$)`,
+                    'i'
+                  )
+                  const match = combined.match(pattern)
+                  return match ? match[1].trim().replace(/^["']|["']$/g, '') : null
+                }
+
+                // Fallback: first user message is always the loop they named
+                const firstUserMsg = chat.messages.find(m => m.role === 'user')?.content || null
+
+                onSave({
+                  loop_text:     extract('Loop') || firstUserMsg || 'From conversation',
+                  function_text: extract('Function'),
+                  interruption:  extract('Interruption'),
+                  replacement:   extract('Replacement'),
+                  created_at:    new Date().toISOString()
+                })
                 setActive(false)
                 chat.setMessages([])
               }}>Save this loop record →</Btn>
@@ -1123,7 +1150,7 @@ export function ExpansionPage() {
   const [skipMap, setSkipMap] = useState(false)
   const [setupData, setSetupData] = useState(null)
   const [mapData, setMapData] = useState(null)
-  const [mapLoading, setMapLoading] = useState(true)
+  const [mapLoading, setMapLoading] = useState(false)
   const [checkins, setCheckins] = useState([])
   const [skills, setSkills] = useState([])
   const [loops, setLoops] = useState([])
@@ -1252,11 +1279,12 @@ export function ExpansionPage() {
           { user_id: user.id, tool: 'expansion', note: `Horizon Self: ${horizonSelf}` },
           { onConflict: 'user_id,tool,note' }
         ).catch(() => {})
-        // Simple insert approach as fallback
-        supabase.from('north_star_notes').insert([
-          { user_id: user.id, tool: 'expansion', note: `Horizon Self: ${horizonSelf}` },
-          firstSkill ? { user_id: user.id, tool: 'expansion', note: `Active skill: ${firstSkill.title} (${firstSkill.type})` } : null
-        ].filter(Boolean)).catch(() => {})
+      }
+      if (firstSkill) {
+        await supabase.from('north_star_notes').upsert(
+          { user_id: user.id, tool: 'expansion', note: `Active skill: ${firstSkill.title} (${firstSkill.type})` },
+          { onConflict: 'user_id,tool,note' }
+        ).catch(() => {})
       }
 
       setSetupData({ horizon_self: horizonSelf })

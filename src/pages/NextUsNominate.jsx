@@ -113,17 +113,18 @@ export function NextUsNominatePage() {
 
     // Write to nextus_actors with vetting_status = 'nominated'
     const { error: saveError } = await supabase.from('nextus_actors').insert({
-      name:         form.name.trim(),
-      type:         form.type,
-      website:      form.website.trim() || null,
-      domain_id:    form.domain_id || null,
-      scale:        form.scale || null,
-      location_name: form.location_name.trim() || null,
-      description:  form.why.trim(),   // why they belong — becomes the initial description
-      data_source:  `Nominated by ${form.nominator_name.trim() || form.nominator_email.trim()}`,
-      seeded_by:    'community',
-      // vetting_status will be 'nominated' — visible only in admin until approved
-      // We store nominator contact in description until vetting adds a proper field
+      name:            form.name.trim(),
+      type:            form.type,
+      website:         form.website.trim() || null,
+      domain_id:       form.domain_id || null,
+      scale:           form.scale || null,
+      location_name:   form.location_name.trim() || null,
+      description:     form.why.trim(),
+      data_source:     `Nominated by ${form.nominator_name.trim() || form.nominator_email.trim()}`,
+      nominator_name:  form.nominator_name.trim() || null,
+      nominator_email: form.nominator_email.trim() || null,
+      seeded_by:       'community',
+      vetting_status:  'nominated',
     })
 
     // Also write to waitlist so nominator gets follow-up

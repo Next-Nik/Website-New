@@ -118,6 +118,20 @@ export function SprintPanel({ context = 'default' }) {
   const currentScores = sprint?.scores_at_start || {}
   const sprintScores  = sprint?.sprint_scores || {}
 
+  // Derive goals from domain_data (the field actually written by TargetGoals)
+  // domain_data[id] = { targetGoal, milestones: [{text}, ...], ... }
+  const derivedGoals = sprint?.domain_data
+    ? Object.entries(sprint.domain_data)
+        .filter(([, dd]) => dd?.targetGoal)
+        .map(([id, dd]) => ({
+          domain:     id,
+          outcome_user: dd.targetGoal,
+          month1:     dd.milestones?.[0]?.text || null,
+          month2:     dd.milestones?.[1]?.text || null,
+          month3:     dd.milestones?.[2]?.text || null,
+        }))
+    : []
+
   return (
     <>
       {/* Left edge tab */}
@@ -269,7 +283,7 @@ export function SprintPanel({ context = 'default' }) {
                   <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '12px' }}>
                     Active Goals
                   </div>
-                  {sprint.goals?.map((g, i) => {
+                  {derivedGoals.map((g, i) => {
                     const dl = DOMAINS.find(d => d.id === g.domain)
                     const s = currentScores[g.domain]
                     const sp = g.sprint_score
@@ -298,7 +312,7 @@ export function SprintPanel({ context = 'default' }) {
 
                   {/* Current milestone */}
                   {(() => {
-                    if (!sprint.target_date || !sprint.goals?.length) return null
+                    if (!sprint.target_date || !derivedGoals.length) return null
                     const base = new Date(sprint.target_date)
                     const now  = new Date()
                     const m1   = new Date(base); m1.setDate(m1.getDate() - 60)
@@ -310,7 +324,7 @@ export function SprintPanel({ context = 'default' }) {
                         <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '12px' }}>
                           {label} {'\u00B7'} Right Now
                         </div>
-                        {sprint.goals.map((g, i) => {
+                        {derivedGoals.map((g, i) => {
                           const dl = DOMAINS.find(d => d.id === g.domain)
                           return g[key] ? (
                             <div key={i} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
