@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 
 import { EarthIntro } from './EarthIntro'
 import { useAuth } from '../../hooks/useAuth'
@@ -9,9 +9,9 @@ import { fetchDomains, STATIC_DOMAINS, TOP_LEVEL_GOAL } from './data'
 import styles from './DomainExplorer.module.css'
 
 // ── TIMING CONTROLS ───────────────────────────────────────────────────────────
-const HEP_FADE_IN_DURATION = 2500  // ms — how long the hep wheel fades in
-const HEP_FADE_IN_DELAY    = 0     // ms — delay after click before fade starts
-const HEP_START_DELAY      = 0   // ms after click before hep begins fading in
+const HEP_FADE_IN_DURATION = 2500
+const HEP_FADE_IN_DELAY    = 0
+const HEP_START_DELAY      = 0
 // ─────────────────────────────────────────────────────────────────────────────
 
 const OVERVIEW_TEXT = `The Overview Effect is what astronauts report when they first see Earth from space — a sudden, irreversible recognition of the whole. The boundaries dissolve. The fragmentation that seemed inevitable from inside it becomes obviously contingent from outside it.
@@ -31,16 +31,20 @@ export default function DomainExplorer() {
   const [levelPath,      setLevelPath]      = useState([])
   const [contributeOpen, setContributeOpen] = useState(false)
   const [overviewOpen,   setOverviewOpen]   = useState(true)
-  const [parentItem,     setParentItem]     = useState(null)
-  const [earthDone,      setEarthDone]      = useState(false)
+
+  // parentPanelOpen mirrors overviewOpen but for sub-levels.
+  // When true: show parent domain panel, not the selected sub-domain.
+  // Clears when user explicitly clicks a sub-domain node.
+  const [parentPanelOpen, setParentPanelOpen] = useState(false)
+  const [parentItem,      setParentItem]      = useState(null)
+  const [earthDone,       setEarthDone]       = useState(false)
+
+  // Tracks which node the wheel landed on at the current level
+  const landedIndexRef = useRef(0)
 
   function handleEarthClick() {
     setTimeout(() => setEarthDone(true), HEP_START_DELAY)
   }
-
-  const userInitial = user?.email
-    ? (user.email.split('@')[0]?.charAt(0) || '?').toUpperCase()
-    : null
 
   useEffect(() => {
     fetchDomains().then(data => setDomainTree(data))
@@ -104,7 +108,9 @@ export default function DomainExplorer() {
     if (levelPath.length === 0) {
       setOverviewOpen(prev => !prev)
     } else {
+      // At sub-levels, clicking centre resets to parent panel
       setActiveIndex(null)
+      setParentPanelOpen(true)
     }
   }
 
@@ -113,55 +119,52 @@ export default function DomainExplorer() {
     const len = navState.currentList.length
     if (e.key === 'ArrowRight') {
       e.preventDefault()
-      setActiveIndex(prev => prev === null ? 0 : (prev + 1) % len)
+      setActiveIndex(prev => prev === null ? landedIndexRef.current : (prev + 1) % len)
+      setOverviewOpen(false)
+      setParentPanelOpen(false)
     } else if (e.key === 'ArrowLeft') {
       e.preventDefault()
       setActiveIndex(prev => prev === null ? len - 1 : (prev - 1 + len) % len)
+      setOverviewOpen(false)
+      setParentPanelOpen(false)
     } else if (e.key === 'Escape') {
       if (overviewOpen) { setOverviewOpen(false); return }
-      if (activeIndex !== null) setActiveIndex(null)
+      if (activeIndex !== null) { setActiveIndex(null); setParentPanelOpen(levelPath.length > 0) }
     }
-  }, [isIdle, navState.currentList.length, activeIndex, contributeOpen, overviewOpen])
+  }, [isIdle, navState.currentList.length, activeIndex, contributeOpen, overviewOpen, levelPath])
 
   useEffect(() => {
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [handleKey])
 
+  // User explicitly clicks a node — always navigate to that domain
   function handleSelect(index) {
     setActiveIndex(index)
     setOverviewOpen(false)
+    setParentPanelOpen(false)
   }
 
+  // Wheel lands — highlight the node at every level, but keep parent panel showing
   function handleLand(index) {
-    // Top level only: set activeIndex so the landed node is visually highlighted,
-    // but overviewOpen stays true so the panel doesn't change until user clicks.
-    // Sub-levels: do nothing — user chooses, wheel doesn't choose for them.
-    if (levelPath.length === 0) {
-      setActiveIndex(index)
-    }
-  }
-
-  function handleSelectAndDrill(index) {
-    const item = navState.currentList[index]
-    if (item?.subDomains?.length > 0) {
-      setLevelPath(prev => [...prev, { index }])
-      setActiveIndex(null)
-      setOverviewOpen(false)
-    } else {
-      setActiveIndex(index)
-      setOverviewOpen(false)
-    }
+    landedIndexRef.current = index
+    setActiveIndex(index)
+    // Level 0: overview stays open (existing behaviour)
+    // Sub-levels: parentPanelOpen stays true — highlight fires but panel doesn't switch
   }
 
   function handlePrev() {
     const len = navState.currentList.length
     setActiveIndex(prev => prev === null ? len - 1 : (prev - 1 + len) % len)
+    setOverviewOpen(false)
+    setParentPanelOpen(false)
   }
 
   function handleNext() {
     const len = navState.currentList.length
-    setActiveIndex(prev => prev === null ? 0 : (prev + 1) % len)
+    setActiveIndex(prev => prev === null ? landedIndexRef.current : (prev + 1) % len)
+    setOverviewOpen(false)
+    setParentPanelOpen(false)
   }
 
   function handleExploreSubDomains(indexOverride) {
@@ -172,18 +175,33 @@ export default function DomainExplorer() {
     setParentItem(currentItem)
     setLevelPath(prev => [...prev, { index: idx }])
     setActiveIndex(null)
+    setParentPanelOpen(true)
+    landedIndexRef.current = 0
   }
 
   function handleBack() {
-    if (levelPath.length === 0) { setActiveIndex(null); setParentItem(null); return }
+    if (levelPath.length === 0) {
+      setActiveIndex(null)
+      setParentItem(null)
+      setParentPanelOpen(false)
+      return
+    }
     const prevIndex = levelPath[levelPath.length - 1].index
     setLevelPath(prev => prev.slice(0, -1))
     setActiveIndex(prevIndex)
-    setParentItem(null)
+    setParentItem(levelPath.length > 1 ? getItemAtPath(levelPath.slice(0, -1)) : null)
+    setParentPanelOpen(false)
+    landedIndexRef.current = prevIndex
   }
 
   const selectedItem = activeIndex !== null ? navState.currentList[activeIndex] : null
   const centreLabel  = getCentreLabel()
+
+  // Panel display logic — mirrors top-level pattern at every level:
+  // overviewOpen / parentPanelOpen = show parent context, not child
+  // !isIdle && selectedItem && !overviewOpen && !parentPanelOpen = show selected domain
+  const showParentPanel = levelPath.length > 0 && parentPanelOpen && parentItem
+  const showSelectedPanel = !overviewOpen && !parentPanelOpen && !isIdle && selectedItem
 
   return (
     <div className={styles.app} style={{ position: 'relative' }}>
@@ -207,6 +225,7 @@ export default function DomainExplorer() {
               bloom={earthDone}
             />
           </div>
+          {/* Instruction only shows when truly idle — no node highlighted */}
           {isIdle && (
             <p className={styles.instruction}>
               {levelPath.length === 0 ? 'Select a domain to explore' : 'Select a sub-domain'}
@@ -215,6 +234,8 @@ export default function DomainExplorer() {
         </div>
 
         <div className={styles.panelCol}>
+
+          {/* Top level: Our Planet overview */}
           {overviewOpen && (
             <div className={`${styles.overviewPanel} ${styles.overviewVisible}`}>
               <p className={styles.overviewEyebrow}>NEXTUS · OUR PLANET</p>
@@ -230,7 +251,28 @@ export default function DomainExplorer() {
             </div>
           )}
 
-          {!overviewOpen && !isIdle && selectedItem ? (
+          {/* Sub-level: show parent domain panel while wheel spins / user hasn't chosen */}
+          {!overviewOpen && showParentPanel && (
+            <DomainPanel
+              item={parentItem}
+              parentLabel={levelPath.length > 1
+                ? (getItemAtPath(levelPath.slice(0, -1))?.name ?? 'Our Planet')
+                : 'Our Planet'}
+              breadcrumb={navState.breadcrumb}
+              onExploreSubDomains={null}
+              onBack={handleBack}
+              onContribute={() => setContributeOpen(true)}
+              onPrev={handlePrev}
+              onNext={handleNext}
+              level={navState.level - 1}
+              isVisible={true}
+              userData={null}
+              rootDomainId={domainTree[levelPath[0].index]?.id}
+            />
+          )}
+
+          {/* Any level: show the selected domain's panel */}
+          {showSelectedPanel && (
             <DomainPanel
               item={selectedItem}
               parentLabel={navState.parentLabel}
@@ -241,42 +283,21 @@ export default function DomainExplorer() {
               onPrev={handlePrev}
               onNext={handleNext}
               level={navState.level}
-              isVisible={!isIdle}
+              isVisible={true}
               userData={null}
               rootDomainId={levelPath.length > 0 ? domainTree[levelPath[0].index]?.id : selectedItem?.id}
             />
-          ) : !overviewOpen && (
+          )}
+
+          {/* Top level idle — no domain selected yet, overview closed */}
+          {!overviewOpen && !showParentPanel && !showSelectedPanel && (
             <div className={styles.idlePanel}>
-              {parentItem && (
-                <div style={{ marginBottom: '24px', paddingBottom: '20px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
-                  <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '19px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px', textTransform: 'uppercase' }}>
-                    {parentItem.name}
-                  </p>
-                  {parentItem.horizonGoal && (
-                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '19px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, marginBottom: '8px' }}>
-                      {parentItem.horizonGoal}
-                    </p>
-                  )}
-                  {parentItem.description && (
-                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '19px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.65 }}>
-                      {parentItem.description}
-                    </p>
-                  )}
-                  <button onClick={handleBack} style={{ marginTop: '12px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '19px', letterSpacing: '0.12em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                    ← Back
-                  </button>
-                </div>
-              )}
               <div className={styles.idleDivider} />
-              <p className={styles.idleLabel}>
-                {levelPath.length === 0
-                  ? 'Our Planet — seven domains of collective life'
-                  : `${getCentreLabel()} — sub-domains`}
-              </p>
+              <p className={styles.idleLabel}>Our Planet — seven domains of collective life</p>
               <ul className={styles.idleList}>
                 {navState.currentList.map((d, i) => (
                   <li key={d.id}>
-                    <button className={styles.idleListItem} onClick={() => handleSelectAndDrill(i)}>
+                    <button className={styles.idleListItem} onClick={() => handleSelect(i)}>
                       <span>{d.name}</span>
                     </button>
                   </li>
@@ -284,6 +305,7 @@ export default function DomainExplorer() {
               </ul>
             </div>
           )}
+
         </div>
       </main>
 

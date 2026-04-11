@@ -153,7 +153,7 @@ export default function DomainPanel({
             &#8592; {parentLabel}
           </button>
         )}
-        {level < 4 && item.subDomains && item.subDomains.length > 0 &&
+        {onExploreSubDomains && level < 4 && item.subDomains && item.subDomains.length > 0 &&
          item.subDomains[0].name !== 'Being mapped' && (
           <button className={styles.navItem} onClick={onExploreSubDomains}>
             Explore {item.name} &#8594;

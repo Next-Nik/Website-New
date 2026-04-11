@@ -279,7 +279,7 @@ export default function Heptagon({
       {(domains || []).map((domain, i) => {
         const p        = getNodePos(i, displayRot, count)
         const ns       = nodeStates?.[i]
-        const isActive = !busy && !isIdle && i === activeIndex
+        const isActive = !busy && i === activeIndex
         const words    = getNodeLabel(domain.name)
         const { fontSize, radius: r, lineHeight } = getNodeSizing(words)
         const blockHeight = (words.length - 1) * lineHeight
