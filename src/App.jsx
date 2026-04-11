@@ -47,6 +47,7 @@ import { GroupJoinPage }      from './pages/GroupJoin'
 import { ToolsPage }          from './pages/Tools'
 import { PricingPage }        from './pages/Pricing'
 import { TestPaymentPage }   from './pages/TestPayment'
+import { AuthCallbackPage }  from './pages/AuthCallback'
 
 // Tools
 import { OrienteeringPage }  from './tools/orienteering/Orienteering'
@@ -115,6 +116,8 @@ function AppInner() {
 
         <Route path="/admin"           element={<AdminConsolePage />} />
         <Route path="/join/:slug"      element={<GroupJoinPage />} />
+
+        <Route path="/auth/callback"   element={<AuthCallbackPage />} />
 
         {/* ── Fallback ── */}
         <Route path="*" element={<Navigate to="/" replace />} />

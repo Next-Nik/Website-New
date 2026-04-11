@@ -4,55 +4,57 @@ import { supabase } from '../hooks/useSupabase'
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
+// Where to send the user after sign-in.
+// Reads ?redirect= param. Accepts relative paths (/test, /tools/map) or
+// full same-origin URLs. Falls back to '/'.
+function getIntendedDestination() {
+  const params = new URLSearchParams(window.location.search)
+  const redirect = params.get('redirect')
+  if (!redirect) return '/'
+
+  // Relative path — safe as-is
+  if (redirect.startsWith('/')) return redirect
+
+  // Full URL — only allow same origin
+  try {
+    const url = new URL(redirect)
+    const allowed = ['nextus.world', 'www.nextus.world']
+    const isVercel = url.hostname.endsWith('.vercel.app')
+    if (allowed.includes(url.hostname) || isVercel) return redirect
+  } catch {}
+
+  return '/'
+}
+
 export function LoginPage() {
   const [email, setEmail] = useState('')
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
 
-  function getRedirectUrl() {
-    const params = new URLSearchParams(window.location.search)
-    const redirect = params.get('redirect')
-    if (redirect) {
-      try {
-        const url = new URL(redirect)
-        if (url.hostname === 'nextus.world' || url.hostname === 'www.nextus.world' || url.hostname.endsWith('.vercel.app')) {
-          return redirect
-        }
-      } catch {}
-    }
-    return 'https://nextus.world'
-  }
-
+  // If already signed in, skip straight to destination
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        // Check localStorage first (covers magic link flow)
         let dest = null
         try { dest = localStorage.getItem('auth_redirect') } catch {}
-        if (!dest) dest = getRedirectUrl()
+        if (!dest) dest = getIntendedDestination()
         try { localStorage.removeItem('auth_redirect') } catch {}
         window.location.href = dest
       }
     })
-
-    // Also listen for auth state changes (covers OAuth and magic link callback)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
-        let dest = null
-        try { dest = localStorage.getItem('auth_redirect') } catch {}
-        if (!dest) dest = getRedirectUrl()
-        try { localStorage.removeItem('auth_redirect') } catch {}
-        window.location.href = dest
-      }
-    })
-    return () => subscription.unsubscribe()
   }, [])
 
   async function handleGoogle() {
+    // Store destination before leaving — OAuth redirects via /auth/callback
+    const dest = getIntendedDestination()
+    try { localStorage.setItem('auth_redirect', dest) } catch {}
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: getRedirectUrl() }
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      }
     })
     if (error) setError(error.message)
   }
@@ -60,12 +62,17 @@ export function LoginPage() {
   async function handleEmail() {
     if (!email || !email.includes('@')) { setError('Please enter a valid email address.'); return }
     setSending(true); setError('')
-    // Store redirect so we can use it after magic link auth
-    const dest = getRedirectUrl()
+
+    // Store destination — magic link redirects via /auth/callback
+    const dest = getIntendedDestination()
     try { localStorage.setItem('auth_redirect', dest) } catch {}
+
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: dest, shouldCreateUser: true }
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        shouldCreateUser: true,
+      }
     })
     if (error) { setError(error.message); setSending(false); return }
     setSent(true); setSending(false)
