@@ -8,6 +8,11 @@ import ContributeModal from './ContributeModal'
 import { fetchDomains, STATIC_DOMAINS, TOP_LEVEL_GOAL } from './data'
 import styles from './DomainExplorer.module.css'
 
+// ── TIMING CONTROLS ───────────────────────────────────────────────────────────
+const HEP_FADE_IN_DURATION = 2500  // ms — how long the hep wheel fades in
+const HEP_FADE_IN_DELAY    = 0     // ms — delay after earth fires (0 = immediate blend)
+// ─────────────────────────────────────────────────────────────────────────────
+
 const OVERVIEW_TEXT = `The Overview Effect is what astronauts report when they first see Earth from space — a sudden, irreversible recognition of the whole. The boundaries dissolve. The fragmentation that seemed inevitable from inside it becomes obviously contingent from outside it.
 
 From that vantage point, a question becomes possible that is very hard to ask from inside the noise:
@@ -25,15 +30,13 @@ export default function DomainExplorer() {
   const [levelPath,      setLevelPath]      = useState([])
   const [contributeOpen, setContributeOpen] = useState(false)
   const [overviewOpen,   setOverviewOpen]   = useState(true)
-  const [parentItem,     setParentItem]     = useState(null) // keeps text visible when drilling into subdomains
-  const [earthDone,      setEarthDone]      = useState(false)  // earth intro has completed
+  const [parentItem,     setParentItem]     = useState(null)
+  const [earthDone,      setEarthDone]      = useState(false)
 
-  // User initial for display (optional — auth already handled by useAuth)
   const userInitial = user?.email
     ? (user.email.split('@')[0]?.charAt(0) || '?').toUpperCase()
     : null
 
-  // Load live domain tree from Supabase (falls back to static data)
   useEffect(() => {
     fetchDomains().then(data => setDomainTree(data))
   }, [])
@@ -126,9 +129,8 @@ export default function DomainExplorer() {
   }
 
   function handleLand(index) {
-    // Spin has landed — highlight the node visually but don't open the panel
     setActiveIndex(index)
-    // Keep overviewOpen true so panel stays on Our Planet
+    // overviewOpen stays true — panel stays on Our Planet until explicit click
   }
 
   function handleSelectAndDrill(index) {
@@ -154,13 +156,11 @@ export default function DomainExplorer() {
   }
 
   function handleExploreSubDomains(indexOverride) {
-    // Called from Heptagon's onDrillDown with the index directly,
-    // or from DomainPanel's button with no argument (uses activeIndex)
     const idx = indexOverride !== undefined ? indexOverride : activeIndex
     if (idx === null || idx === undefined) return
     const currentItem = navState.currentList[idx]
     if (!currentItem?.subDomains?.length) return
-    setParentItem(currentItem) // preserve text
+    setParentItem(currentItem)
     setLevelPath(prev => [...prev, { index: idx }])
     setActiveIndex(null)
   }
@@ -170,7 +170,7 @@ export default function DomainExplorer() {
     const prevIndex = levelPath[levelPath.length - 1].index
     setLevelPath(prev => prev.slice(0, -1))
     setActiveIndex(prevIndex)
-    setParentItem(null) // clear preserved text when going back
+    setParentItem(null)
   }
 
   const selectedItem = activeIndex !== null ? navState.currentList[activeIndex] : null
@@ -183,7 +183,7 @@ export default function DomainExplorer() {
       )}
       <div className={styles.grain} aria-hidden="true" />
 
-      <main className={styles.main} style={{ opacity: earthDone ? 1 : 0, transition: 'opacity 1.4s ease 0s' }}>
+      <main className={styles.main} style={{ opacity: earthDone ? 1 : 0, transition: `opacity ${HEP_FADE_IN_DURATION}ms ease ${HEP_FADE_IN_DELAY}ms` }}>
         <div className={styles.heptagonCol}>
           <div className={styles.heptagonWrapper}>
             <Heptagon
@@ -238,7 +238,6 @@ export default function DomainExplorer() {
             />
           ) : !overviewOpen && (
             <div className={styles.idlePanel}>
-              {/* Show parent item text when drilling into subdomains */}
               {parentItem && (
                 <div style={{ marginBottom: '24px', paddingBottom: '20px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
                   <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px', textTransform: 'uppercase' }}>

@@ -5,9 +5,9 @@ const N = 7
 const CX = 260
 const CY = 260
 const RADIUS = 170
-const INTRO_SPIN_DEG_PER_SEC = 35
-const INTRO_SPIN_DURATION_MS = 4000
-const BLOOM_DURATION_MS = 2000
+const INTRO_SPIN_DEG_PER_SEC = 35    // rotation speed during intro spin
+const INTRO_SPIN_DURATION_MS = 4000  // how long it spins before landing
+const BLOOM_DURATION_MS      = 2000  // how long the scale-up bloom takes
 
 // Drill-down animation durations ms
 const T_PULL    = 240
@@ -92,7 +92,7 @@ export default function Heptagon({
   const drillStartRef   = useRef(null)
   const breatheStartRef = useRef(null)
 
-  // Bloom: scale the whole SVG up from small. Fires immediately when bloom=true.
+  // Bloom: scale wheel up from small. Fires immediately when bloom=true.
   useEffect(() => {
     if (!bloom || bloomed) return
     setBloomT(0)
@@ -267,8 +267,11 @@ export default function Heptagon({
         const rectH   = Math.round(words.length * fontSize * lineHeight + 14)
         const rectFill = isSpinning ? 'rgba(255,255,255,0.95)' : isActive ? 'rgba(200,146,42,0.06)' : '#FFFFFF'
 
-        // Bloom: nodes scale up from nothing at their own position — doesn't interfere with rotation
-        const nodeBloomScale = bloomed ? 1 : bloomT
+        // Bloom: interpolate from centre to final position
+        const bloomedX = CX + (p.x - CX) * bloomT
+        const bloomedY = CY + (p.y - CY) * bloomT
+        const bloomOpacity = bloomT
+
         const gStyle = ns ? {
           opacity: ns.op,
           transform: `translate(${ns.ox}px,${ns.oy}px) scale(${ns.sc})`,
@@ -276,9 +279,8 @@ export default function Heptagon({
           cursor: 'default',
         } : {
           cursor: busy ? 'default' : 'pointer',
-          opacity: nodeBloomScale,
-          transform: `scale(${nodeBloomScale})`,
-          transformOrigin: `${p.x}px ${p.y}px`,
+          opacity: bloomed ? 1 : bloomOpacity,
+          transform: bloomed ? 'none' : `translate(${bloomedX - p.x}px, ${bloomedY - p.y}px)`,
         }
 
         return (
