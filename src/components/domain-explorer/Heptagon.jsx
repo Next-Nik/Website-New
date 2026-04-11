@@ -92,26 +92,24 @@ export default function Heptagon({
   const drillStartRef   = useRef(null)
   const breatheStartRef = useRef(null)
 
-  // Bloom: nodes spiral out from centre. Fires when bloom=true, and re-fires after each domain reset.
+  // Bloom: scale the whole SVG up from small. Fires immediately when bloom=true.
   useEffect(() => {
     if (!bloom || bloomed) return
     setBloomT(0)
     bloomStartRef.current = null
     cancelAnimationFrame(bloomRafRef.current)
-    const delay = setTimeout(() => {
-      function tick(ts) {
-        if (!bloomStartRef.current) bloomStartRef.current = ts
-        const t = Math.min((ts - bloomStartRef.current) / BLOOM_DURATION_MS, 1)
-        setBloomT(easeInOut(t))
-        if (t < 1) {
-          bloomRafRef.current = requestAnimationFrame(tick)
-        } else {
-          setBloomed(true)  // only lock after animation completes
-        }
+    function tick(ts) {
+      if (!bloomStartRef.current) bloomStartRef.current = ts
+      const t = Math.min((ts - bloomStartRef.current) / BLOOM_DURATION_MS, 1)
+      setBloomT(easeInOut(t))
+      if (t < 1) {
+        bloomRafRef.current = requestAnimationFrame(tick)
+      } else {
+        setBloomed(true)
       }
-      bloomRafRef.current = requestAnimationFrame(tick)
-    }, 700)
-    return () => { clearTimeout(delay); cancelAnimationFrame(bloomRafRef.current) }
+    }
+    bloomRafRef.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(bloomRafRef.current)
   }, [bloom, bloomed])
 
   useEffect(() => {
@@ -269,11 +267,8 @@ export default function Heptagon({
         const rectH   = Math.round(words.length * fontSize * lineHeight + 14)
         const rectFill = isSpinning ? 'rgba(255,255,255,0.95)' : isActive ? 'rgba(200,146,42,0.06)' : '#FFFFFF'
 
-        // Bloom: interpolate from centre to final position
-        const bloomedX = CX + (p.x - CX) * bloomT
-        const bloomedY = CY + (p.y - CY) * bloomT
-        const bloomOpacity = bloomT
-
+        // Bloom: nodes scale up from nothing at their own position — doesn't interfere with rotation
+        const nodeBloomScale = bloomed ? 1 : bloomT
         const gStyle = ns ? {
           opacity: ns.op,
           transform: `translate(${ns.ox}px,${ns.oy}px) scale(${ns.sc})`,
@@ -281,8 +276,9 @@ export default function Heptagon({
           cursor: 'default',
         } : {
           cursor: busy ? 'default' : 'pointer',
-          opacity: bloomed ? 1 : bloomOpacity,
-          transform: bloomed ? 'none' : `translate(${bloomedX - p.x}px, ${bloomedY - p.y}px)`,
+          opacity: nodeBloomScale,
+          transform: `scale(${nodeBloomScale})`,
+          transformOrigin: `${p.x}px ${p.y}px`,
         }
 
         return (
