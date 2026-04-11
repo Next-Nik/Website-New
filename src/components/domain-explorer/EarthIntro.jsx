@@ -88,7 +88,7 @@ export function EarthIntro({ onEntered }) {
               width: '100%',
               height: 'auto',
               display: 'block',
-              // The NASA video is a globe on black — fits naturally
+              aspectRatio: '1 / 1',   // reserves space before video loads
             }}
           />
         </div>
