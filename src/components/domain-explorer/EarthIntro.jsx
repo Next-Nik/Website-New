@@ -93,7 +93,7 @@ export function EarthIntro({ onEntered }) {
           autoPlay loop muted playsInline
           style={{
             position: 'absolute', inset: 0,
-            width: '98%', height: '50%',
+            width: '130%', height: '130%',
             objectFit: 'cover', display: 'block',
             border: 'none', outline: 'none',
           }}
