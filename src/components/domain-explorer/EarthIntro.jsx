@@ -87,6 +87,9 @@ export function EarthIntro({ onEntered }) {
         boxShadow: 'none',
         pointerEvents: 'none',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
+        willChange: 'left, top, width, height',
+        isolation: 'isolate',
+        WebkitMaskImage: '-webkit-radial-gradient(white, black)',
       }}>
         <video
           src={VIDEO_URL}
