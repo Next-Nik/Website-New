@@ -10,8 +10,8 @@ import styles from './DomainExplorer.module.css'
 
 // ── Position debug overlay — visible only at ?debug=positions ──
 function PositionDebug() {
-  const [globe, setGlobe] = React.useState({ x: 27.5, y: 20, size: 267 })
-  const [orb,   setOrb]   = React.useState({ x: 32, y: 23, size: 160 })
+  const [globe, setGlobe] = React.useState({ x: 30, y: 60, size: 300 })
+  const [orb,   setOrb]   = React.useState({ x: 32, y: 72, size: 152 })
   const [mode,  setMode]  = React.useState('globe')
 
   const current  = mode === 'globe' ? globe : orb
@@ -22,12 +22,12 @@ function PositionDebug() {
       {/* Globe circle */}
       <div style={{
         position: 'absolute',
-        left: globe.x + '%', top: globe.y + '%',
+        left: `calc(${globe.x}% - ${globe.size/2}px)`,
+        top: `calc(${globe.y}% - ${globe.size/2}px)`,
         width: globe.size, height: globe.size,
         borderRadius: '50%',
         border: '2px dashed rgba(200,146,42,0.8)',
         background: 'rgba(200,146,42,0.06)',
-        transform: 'translate(-50%,-50%)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontSize: 11, letterSpacing: '0.2em', color: 'rgba(200,146,42,0.8)',
         fontFamily: 'Georgia, serif',
@@ -36,12 +36,12 @@ function PositionDebug() {
       {/* Orb circle */}
       <div style={{
         position: 'absolute',
-        left: orb.x + '%', top: orb.y + '%',
+        left: `calc(${orb.x}% - ${orb.size/2}px)`,
+        top: `calc(${orb.y}% - ${orb.size/2}px)`,
         width: orb.size, height: orb.size,
         borderRadius: '50%',
         border: '2px solid rgba(90,160,255,0.8)',
         background: 'rgba(90,160,255,0.08)',
-        transform: 'translate(-50%,-50%)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontSize: 9, letterSpacing: '0.15em', color: 'rgba(90,160,255,0.9)',
         fontFamily: 'Georgia, serif', textAlign: 'center', lineHeight: 1.4,
