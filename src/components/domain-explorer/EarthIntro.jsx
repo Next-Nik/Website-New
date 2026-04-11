@@ -92,11 +92,9 @@ export function EarthIntro({ onEntered }) {
           src={VIDEO_URL}
           autoPlay loop muted playsInline
           style={{
-            position: 'absolute',
-            top: '50%', left: '50%',
-            transform: 'translate(-50%, -50%)',
-            height: '180%', width: 'auto',
-            display: 'block',
+            position: 'absolute', inset: 0,
+            width: '100%', height: '100%',
+            objectFit: 'cover', display: 'block',
             border: 'none', outline: 'none',
           }}
         />
