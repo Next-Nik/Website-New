@@ -66,6 +66,7 @@ export default function Heptagon({
   domains,
   activeIndex,
   onSelect,
+  onLand,
   isIdle,
   centreLabel,
   onCentreClick,
@@ -161,7 +162,7 @@ export default function Heptagon({
         if (elapsed >= INTRO_SPIN_DURATION_MS) {
           targetRotRef.current = getRotationToTop(landingIdxRef.current, rotRef.current)
           setPhase('landing')
-          onSelect(landingIdxRef.current)
+          onLand?.(landingIdxRef.current)  // visual highlight only, no panel
         }
       }
 
@@ -238,6 +239,12 @@ export default function Heptagon({
       viewBox="0 0 480 480"
       xmlns="http://www.w3.org/2000/svg"
       aria-label="NextUs Seven Domains"
+      style={{
+        transform: bloomed ? 'scale(1)' : `scale(${0.15 + bloomT * 0.85})`,
+        transformOrigin: 'center center',
+        opacity: bloomed ? 1 : Math.min(1, bloomT * 2),
+        transition: bloomed ? 'none' : undefined,
+      }}
     >
       <circle cx={CX} cy={CY} r={RADIUS + 48} fill="none" stroke="rgba(200,146,42,0.05)" strokeWidth="1" />
       <circle cx={CX} cy={CY} r={RADIUS + 24} fill="none" stroke="rgba(200,146,42,0.08)" strokeWidth="0.5" />

@@ -125,6 +125,12 @@ export default function DomainExplorer() {
     setOverviewOpen(false)
   }
 
+  function handleLand(index) {
+    // Spin has landed — highlight the node visually but don't open the panel
+    setActiveIndex(index)
+    // Keep overviewOpen true so panel stays on Our Planet
+  }
+
   function handleSelectAndDrill(index) {
     const item = navState.currentList[index]
     if (item?.subDomains?.length > 0) {
@@ -184,6 +190,7 @@ export default function DomainExplorer() {
               domains={navState.currentList}
               activeIndex={activeIndex}
               onSelect={handleSelect}
+              onLand={handleLand}
               isIdle={isIdle}
               centreLabel={centreLabel}
               onCentreClick={handleCentreClick}
