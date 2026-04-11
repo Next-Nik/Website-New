@@ -28,7 +28,7 @@ export function EarthIntro({ onEntered }) {
 
     function tick(ts) {
       if (!startRef.current) startRef.current = ts
-      const progress = Math.min((ts - startRef.current) / 900, 1)
+      const progress = Math.min((ts - startRef.current) / 1200, 1)
       setT(progress)
       if (!enteredFired && progress >= 0.85) {
         enteredFired = true
