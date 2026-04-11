@@ -26,6 +26,9 @@
     "api/stripe-webhook.js": {
       "maxDuration": 30
     },
+    "api/create-checkout.js": {
+      "maxDuration": 15
+    },
     "api/expansion-setup-chat.js": {
       "maxDuration": 60
     },
@@ -85,6 +88,10 @@
     {
       "source": "/api/stripe-webhook",
       "destination": "/api/stripe-webhook"
+    },
+    {
+      "source": "/api/create-checkout",
+      "destination": "/api/create-checkout"
     },
     {
       "source": "/tools/expansion/api/setup-chat",
