@@ -116,7 +116,7 @@ export function EarthIntro({ onEntered }) {
         )}
       </div>
 
-      {/* Tagline — to the right of the globe, vertically centred on it */}
+      {/* Tagline + Enter label — fades in at idle, fades out on morph start */}
       <div style={{
         position: 'absolute',
         left: `calc(${GLOBE.x}% + ${GLOBE.size / 2 + 32}px)`,
@@ -136,40 +136,52 @@ export function EarthIntro({ onEntered }) {
         }}>
           Our planet.<br />Our privilege.<br />Our responsibility.
         </p>
-
-        {/* Enter prompt — orb races toward the earth during morph */}
-        {(() => {
-          const orbScale   = phase === 'morphing' ? 1 + ease * 5   : 1
-          const orbMoveX   = phase === 'morphing' ? -(ease * 120)  : 0
-          const orbMoveY   = phase === 'morphing' ? -(ease * 80)   : 0
-          const orbOpacity = phase === 'morphing' ? Math.max(0, 1 - ease * 1.1) : textAlpha
-          return (
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: '12px',
-              opacity: orbOpacity,
-              transition: phase === 'idle' ? 'opacity 0.7s ease 0.5s' : 'none',
-              transform: `translate(${orbMoveX}px, ${orbMoveY}px) scale(${orbScale})`,
-              transformOrigin: 'left center',
-            }}>
-              <div style={{
-                width: '36px', height: '36px', borderRadius: '50%',
-                border: '1.5px solid rgba(200,146,42,0.60)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                animation: phase === 'idle' ? 'earthPulse 2.2s ease-in-out infinite' : 'none',
-                flexShrink: 0,
-              }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#C8922A' }}/>
-              </div>
-              <span style={{
-                fontFamily: "'Cormorant SC', Georgia, serif",
-                fontSize: '12px', letterSpacing: '0.22em', color: 'rgba(200,146,42,0.60)',
-                opacity: phase === 'morphing' ? 0 : 1,
-                transition: 'opacity 0.2s ease',
-              }}>Enter</span>
-            </div>
-          )
-        })()}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{
+            width: '36px', height: '36px', borderRadius: '50%',
+            border: '1.5px solid rgba(200,146,42,0.60)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            animation: 'earthPulse 2.2s ease-in-out infinite',
+            flexShrink: 0,
+          }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#C8922A' }}/>
+          </div>
+          <span style={{
+            fontFamily: "'Cormorant SC', Georgia, serif",
+            fontSize: '12px', letterSpacing: '0.22em', color: 'rgba(200,146,42,0.60)',
+          }}>Enter</span>
+        </div>
       </div>
+
+      {/* Orb that flies toward the earth during morph — rendered independently */}
+      {phase === 'morphing' && (() => {
+        // Start position: where the Enter orb was (right of globe, below tagline)
+        const startLeft = GLOBE.x / 100 * 100  // will be offset by calc below
+        const orbScale   = 1 + ease * 6
+        // Move from Enter orb position toward the globe centre
+        const orbMoveX   = -(ease * 180)
+        const orbMoveY   = -(ease * 60)
+        const orbOpacity = Math.max(0, 1 - ease * 1.4)
+        return (
+          <div style={{
+            position: 'absolute',
+            left: `calc(${GLOBE.x}% + ${GLOBE.size / 2 + 32}px)`,
+            top:  `calc(${GLOBE.y}% + 80px)`,
+            pointerEvents: 'none',
+            opacity: orbOpacity,
+            transform: `translate(${orbMoveX}px, ${orbMoveY}px) scale(${orbScale})`,
+            transformOrigin: 'center center',
+          }}>
+            <div style={{
+              width: '36px', height: '36px', borderRadius: '50%',
+              border: '1.5px solid rgba(200,146,42,0.80)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#C8922A' }}/>
+            </div>
+          </div>
+        )
+      })()}
 
       <style>{`
         @keyframes earthPulse {

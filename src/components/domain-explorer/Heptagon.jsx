@@ -91,11 +91,13 @@ export default function Heptagon({
   const drillStartRef   = useRef(null)
   const breatheStartRef = useRef(null)
 
-  // Bloom: nodes spiral out from centre when bloom prop fires
+  // Bloom: nodes spiral out from centre. Fires when bloom=true, and re-fires after each domain reset.
   useEffect(() => {
     if (!bloom || bloomed) return
     setBloomed(true)
+    setBloomT(0)
     bloomStartRef.current = null
+    cancelAnimationFrame(bloomRafRef.current)
     function tick(ts) {
       if (!bloomStartRef.current) bloomStartRef.current = ts
       const t = Math.min((ts - bloomStartRef.current) / BLOOM_DURATION_MS, 1)
@@ -124,6 +126,9 @@ export default function Heptagon({
     lastTimeRef.current = null
     setPhase('spinning')
     setDisplayRot(0)
+    // Reset bloom so nodes spiral out again on new level
+    setBloomT(0)
+    setBloomed(false)
   }, [domains])
 
   useEffect(() => {
