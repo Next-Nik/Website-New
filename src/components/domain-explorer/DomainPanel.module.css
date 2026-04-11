@@ -703,3 +703,57 @@
 }
 
 .navItem:hover { color: var(--gold-dk); }
+
+/* Who's working on this — info icon + tooltip */
+.actorsNavLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.infoWrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.infoIcon {
+  font-size: 14px;
+  color: var(--text-meta);
+  cursor: default;
+  opacity: 0.55;
+  line-height: 1;
+  user-select: none;
+  transition: opacity 0.2s ease;
+}
+
+.infoWrap:hover .infoIcon {
+  opacity: 1;
+}
+
+.infoTooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--dark);
+  color: rgba(255,255,255,0.88);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.7;
+  padding: 12px 16px;
+  border-radius: 10px;
+  width: 280px;
+  max-width: 90vw;
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  text-align: left;
+}
+
+.infoWrap:hover .infoTooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}

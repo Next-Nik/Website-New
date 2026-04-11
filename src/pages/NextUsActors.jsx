@@ -270,7 +270,7 @@ export function NextUsActorsPage() {
             Who is doing the work.
           </h1>
           <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', maxWidth: '560px', lineHeight: 1.7 }}>
-            Organisations, projects, and individuals placed on the map — by domain, by subdomain, by scale. What they're building, what they need, and how to help.
+            Organisations, projects, and individuals working across the seven domains. What they're building, what they need, and where you fit.
           </p>
         </div>
 
@@ -293,7 +293,7 @@ export function NextUsActorsPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' }}>
           <ViewToggle view={view} setView={setView} />
           <span style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.45)' }}>
-            {loading ? 'Loading…' : `${total} actor${total !== 1 ? 's' : ''}`}
+            {loading ? 'Loading…' : `${total} in the field`}
           </span>
         </div>
 
@@ -342,10 +342,10 @@ export function NextUsActorsPage() {
         {!loading && total === 0 && actors.length === 0 && !domain && !search && (
           <div style={{ textAlign: 'center', padding: '80px 0', maxWidth: '480px', margin: '0 auto' }}>
             <p style={{ ...serif, fontSize: '20px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', marginBottom: '12px', lineHeight: 1.6 }}>
-              The actor layer is being built.
+              The map is being populated.
             </p>
             <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.45)', lineHeight: 1.7 }}>
-              Organisations and individuals working across the seven domains will appear here as the platform populates.
+              Organisations and individuals working across the seven domains will appear here as the platform grows.
             </p>
           </div>
         )}

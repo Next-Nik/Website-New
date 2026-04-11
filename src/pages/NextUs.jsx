@@ -55,7 +55,7 @@ export function NextUsPage() {
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           The future is not something<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>that happens to us.</em>
         </h1>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '520px' }}>Seven domains. A living map of where we are {'\u2014'} and the distance to where we are trying to go.</p>
+        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '520px' }}>Seven domains. A living map of who is doing the work {'\u2014'} and how to find your place in it.</p>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '14px' }}>Explore the horizon goals</span>
       </div>
 
@@ -147,8 +147,8 @@ export function NextUsPage() {
             <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', maxWidth: '480px', lineHeight: 1.7 }}>Organisations, projects, and individuals placed on the map — by domain, by scale, by what they need.</p>
           </div>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button onClick={() => navigate('/nextus/actors')} style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '13px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', cursor: 'pointer', whiteSpace: 'nowrap' }}>View all actors →</button>
-            <button onClick={() => navigate('/nextus/map')} style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '13px 28px', borderRadius: '40px', border: '1px solid rgba(200,146,42,0.35)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', whiteSpace: 'nowrap' }}>View map</button>
+            <button onClick={() => navigate('/nextus/actors')} style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '13px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', cursor: 'pointer', whiteSpace: 'nowrap' }}>Who's working on this →</button>
+            <button onClick={() => navigate('/nextus/map')} style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '13px 28px', borderRadius: '40px', border: '1px solid rgba(200,146,42,0.35)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', whiteSpace: 'nowrap' }}>See the map</button>
           </div>
         </div>
       </div>

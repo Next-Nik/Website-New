@@ -164,9 +164,17 @@ export default function DomainPanel({
       {/* Row 2: view actors centered above prev/next arrows */}
       <div className={styles.actorsNav}>
         {rootDomainId && (
-          <a href={'/nextus/actors?domain=' + rootDomainId} className={styles.navItem}>
-            View actors
-          </a>
+          <div className={styles.actorsNavLabel}>
+            <a href={'/nextus/actors?domain=' + rootDomainId} className={styles.navItem}>
+              Who's working on this
+            </a>
+            <div className={styles.infoWrap}>
+              <span className={styles.infoIcon}>ⓘ</span>
+              <div className={styles.infoTooltip}>
+                The foundations, organisations, co-ops, projects, initiatives, and individuals actively working toward the horizon goal in this domain.
+              </div>
+            </div>
+          </div>
         )}
         <div className={styles.navArrows}>
           <button className={styles.navBtn} onClick={onPrev} aria-label="Previous domain">‹</button>
@@ -279,7 +287,7 @@ export default function DomainPanel({
                     className={styles.seeAllBtn}
                     onClick={() => setFieldExpanded(!fieldExpanded)}
                   >
-                    {fieldExpanded ? "Show less" : `See all ${cs.totalActors} actors &#8594;`}
+                    {fieldExpanded ? "Show less" : `See all ${cs.totalActors} \u2192`}
                   </button>
                 )}
               </div>
@@ -300,7 +308,7 @@ export default function DomainPanel({
       <div className={styles.divider} />
 
       <div className={styles.mailingList}>
-        <p className={styles.mailingLabel}>Join us — stay up to date as we build.</p>
+        <p className={styles.mailingLabel}>Stay close as this domain develops.</p>
         <form
           className={styles.mailingForm}
           onSubmit={(e) => {

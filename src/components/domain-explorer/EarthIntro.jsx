@@ -134,7 +134,7 @@ export function EarthIntro({ onEntered }) {
           lineHeight: 1.8, letterSpacing: '0.04em',
           margin: '0 0 28px',
         }}>
-          Our planet.<br />Our privilege.<br />Our responsibility.
+          Our planet.<br />Our moment.<br />Our move.
         </p>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{
