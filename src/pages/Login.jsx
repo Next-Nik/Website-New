@@ -46,14 +46,13 @@ export function LoginPage() {
   }, [])
 
   async function handleGoogle() {
-    // Store destination before leaving — OAuth redirects via /auth/callback
     const dest = getIntendedDestination()
-    try { localStorage.setItem('auth_redirect', dest) } catch {}
-
+    // Encode destination in the redirectTo URL — localStorage doesn't survive
+    // cross-origin OAuth redirects reliably across all browsers
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(dest)}`,
       }
     })
     if (error) setError(error.message)
@@ -63,14 +62,14 @@ export function LoginPage() {
     if (!email || !email.includes('@')) { setError('Please enter a valid email address.'); return }
     setSending(true); setError('')
 
-    // Store destination — magic link redirects via /auth/callback
     const dest = getIntendedDestination()
+    // Also keep localStorage as fallback for magic link
     try { localStorage.setItem('auth_redirect', dest) } catch {}
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(dest)}`,
         shouldCreateUser: true,
       }
     })
