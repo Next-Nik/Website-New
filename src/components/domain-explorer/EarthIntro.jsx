@@ -26,12 +26,30 @@ function drawGlobe(ctx, tex, SIZE, rot, enterP) {
   ctx.save()
   ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI * 2); ctx.clip()
 
-  // Equirectangular texture: render at diam x diam, tile horizontally for seamless wrap
-  const diam = r * 2
-  const offX = (rot % 1) * diam
+  // Equirectangular texture: tile horizontally, stretch vertically to crop Antarctica
+  // texH > diam so the bottom (Antarctica) is cropped; texOffY shifts the view up
+  const diam   = r * 2
+  const texH   = diam * 1.28          // stretch: makes globe taller, crops poles
+  const texOffY = diam * 0.10         // shift up: less Antarctica, more equator
+  const offX   = (rot % 1) * diam
 
   for (let tile = -1; tile <= 1; tile++) {
-    ctx.drawImage(tex, cx - r + tile * diam - offX, cy - r, diam, diam)
+    ctx.drawImage(tex, cx - r + tile * diam - offX, cy - r - texOffY, diam, texH)
+  }
+
+  // Blend seam: thin dark vertical gradient over the wrap boundary to soften any edge
+  const seamX = ((1 - (rot % 1)) * diam + cx - r) % diam + cx - r
+  for (let tile = -1; tile <= 1; tile++) {
+    const sx = seamX + tile * diam
+    if (sx > cx - r - 4 && sx < cx + r + 4) {
+      const sg = ctx.createLinearGradient(sx - 6, 0, sx + 6, 0)
+      sg.addColorStop(0,   'rgba(0,0,0,0)')
+      sg.addColorStop(0.4, 'rgba(0,0,0,0.18)')
+      sg.addColorStop(0.6, 'rgba(0,0,0,0.18)')
+      sg.addColorStop(1,   'rgba(0,0,0,0)')
+      ctx.fillStyle = sg
+      ctx.fillRect(sx - 6, cy - r, 12, diam)
+    }
   }
 
   // Sphere shading — lit upper-left, dark lower-right edge
@@ -219,7 +237,8 @@ export function EarthIntro({ onEntered }) {
         padding: '32px 40px 48px', boxSizing: 'border-box',
       }}>
         <canvas ref={canvasRef} width={480} height={480}
-          style={{ width: '100%', maxWidth: '520px', height: 'auto', display: 'block' }}
+          style={{ width: '100%', maxWidth: '520px', height: 'auto', display: 'block',
+            marginLeft: '60px', marginTop: '-20px' }}
         />
 
         <p style={{
