@@ -80,7 +80,7 @@ export function EarthIntro({ onEntered }) {
         top:  `calc(${globeY}% - ${globeSize/2}px)`,
         width:  `${globeSize}px`,
         height: `${globeSize}px`,
-        borderRadius: '50%',
+        borderRadius: '100%',
         overflow: 'hidden',
         border: 'none',
         outline: 'none',
