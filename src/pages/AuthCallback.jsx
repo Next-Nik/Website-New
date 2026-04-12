@@ -11,14 +11,30 @@ const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 function getDestination() {
-  let dest = null
-  try { dest = localStorage.getItem('auth_redirect') } catch {}
-  try { localStorage.removeItem('auth_redirect') } catch {}
+  // URL param takes priority — it survives OAuth redirects and magic links
+  // reliably across all browsers; localStorage does not.
+  const params = new URLSearchParams(window.location.search)
+  let dest = params.get('redirect') || null
+
+  // Fall back to localStorage (set by email magic link flow)
   if (!dest) {
-    const params = new URLSearchParams(window.location.search)
-    dest = params.get('redirect') || null
+    try { dest = localStorage.getItem('auth_redirect') } catch {}
   }
-  if (dest && dest.startsWith('/')) return dest
+  try { localStorage.removeItem('auth_redirect') } catch {}
+
+  if (!dest) return '/'
+
+  // Relative path — safe
+  if (dest.startsWith('/')) return dest
+
+  // Full URL — only allow same origin, extract path only
+  try {
+    const url = new URL(dest)
+    const allowed = ['nextus.world', 'www.nextus.world']
+    const isVercel = url.hostname.endsWith('.vercel.app')
+    if (allowed.includes(url.hostname) || isVercel) return url.pathname + url.search + url.hash
+  } catch {}
+
   return '/'
 }
 
