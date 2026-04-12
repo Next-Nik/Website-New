@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { ToolDrawer } from './ToolDrawer'
 
-const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 function HomeIcon({ active }) {
   const c = active ? '#A8721A' : 'rgba(15,21,35,0.4)'
@@ -19,9 +20,9 @@ function GridIcon({ active }) {
   const c = active ? '#A8721A' : 'rgba(15,21,35,0.4)'
   return (
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-      <rect x="3" y="3" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.5" fill="none"/>
-      <rect x="12" y="3" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.5" fill="none"/>
-      <rect x="3" y="12" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.5" fill="none"/>
+      <rect x="3"  y="3"  width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.5" fill="none"/>
+      <rect x="12" y="3"  width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.5" fill="none"/>
+      <rect x="3"  y="12" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.5" fill="none"/>
       <rect x="12" y="12" width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.5" fill="none"/>
     </svg>
   )
@@ -39,19 +40,21 @@ function MoreIcon({ active }) {
 }
 
 function MoreMenu({ onClose }) {
-  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const lifeOSLinks = [
+    { label: 'Life OS',   path: '/life-os',   desc: 'Overview of all tools' },
+  ]
 
   const nextusLinks = [
-    { label: 'Orgs in the Field', path: '/nextus/actors',   desc: 'Who is doing the work' },
-    { label: 'Map',       path: '/nextus/map',       desc: 'Where the work is happening' },
-    { label: 'Domains',   path: '/nextus',            desc: 'The seven domains' },
-    { label: 'Nominate',  path: '/nextus/nominate',  desc: 'Add an actor' },
+    { label: 'NextUs',         path: '/nextus',         desc: 'Seven civilisational domains' },
+    { label: 'Orgs in the Field', path: '/nextus/actors', desc: 'Who is doing the work' },
+    { label: 'Map',            path: '/nextus/map',     desc: 'Where the work is happening' },
   ]
 
   const siteLinks = [
     { label: 'Work with Nik', path: '/work-with-nik' },
-    { label: 'Podcast',       path: '/podcast' },
-    { label: 'About',         path: '/about' },
+    { label: 'Podcast',       path: '/podcast'       },
+    { label: 'About',         path: '/about'         },
+    { label: 'Pricing',       path: '/pricing'       },
   ]
 
   return (
@@ -71,13 +74,15 @@ function MoreMenu({ onClose }) {
         animation: 'moreSlideUp 0.22s cubic-bezier(0.16,1,0.3,1) both',
         maxHeight: '70vh', overflowY: 'auto',
       }}>
-        <div style={{ padding: '12px 20px 8px' }}>
-          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: '#A8721A', textTransform: 'uppercase' }}>NextUs</span>
+
+        {/* Life OS */}
+        <div style={{ padding: '12px 20px 6px' }}>
+          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: '#A8721A', textTransform: 'uppercase' }}>Life OS</span>
         </div>
-        {nextusLinks.map(l => (
+        {lifeOSLinks.map(l => (
           <Link key={l.path} to={l.path} onClick={onClose} style={{
             display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px',
-            padding: '13px 20px', textDecoration: 'none',
+            padding: '12px 20px', textDecoration: 'none',
             borderBottom: '1px solid rgba(200,146,42,0.08)',
             background: 'rgba(200,146,42,0.02)',
           }}>
@@ -85,10 +90,28 @@ function MoreMenu({ onClose }) {
             <span style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.40)' }}>{l.desc}</span>
           </Link>
         ))}
+
+        {/* NextUs */}
+        <div style={{ padding: '12px 20px 6px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
+          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: '#A8721A', textTransform: 'uppercase' }}>NextUs</span>
+        </div>
+        {nextusLinks.map(l => (
+          <Link key={l.path} to={l.path} onClick={onClose} style={{
+            display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px',
+            padding: '12px 20px', textDecoration: 'none',
+            borderBottom: '1px solid rgba(200,146,42,0.08)',
+            background: 'rgba(200,146,42,0.02)',
+          }}>
+            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: '#0F1523' }}>{l.label}</span>
+            <span style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.40)' }}>{l.desc}</span>
+          </Link>
+        ))}
+
+        {/* Site links */}
         <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)' }}>
           {siteLinks.map((l, i) => (
             <Link key={l.path} to={l.path} onClick={onClose} style={{
-              display: 'block', padding: '15px 20px',
+              display: 'block', padding: '14px 20px',
               ...sc, fontSize: '15px', letterSpacing: '0.10em',
               color: 'rgba(15,21,35,0.65)', textDecoration: 'none',
               borderBottom: i < siteLinks.length - 1 ? '1px solid rgba(200,146,42,0.08)' : 'none',
@@ -102,7 +125,7 @@ function MoreMenu({ onClose }) {
 }
 
 export function BottomTabs() {
-  const { user } = useAuth()
+  const { user }     = useAuth()
   const { pathname } = useLocation()
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [moreOpen,   setMoreOpen]   = useState(false)
@@ -111,40 +134,41 @@ export function BottomTabs() {
     ? (user.email.split('@')[0].charAt(0) || '?').toUpperCase()
     : null
 
-  const isHome    = pathname === '/'
-  const isTools   = pathname.startsWith('/tools')
-  const isMore    = ['/nextus','/work-with-nik','/podcast','/about'].some(p => pathname.startsWith(p))
+  const isHome  = pathname === '/'
+  const isTools = pathname.startsWith('/tools')
+  const isMore  = ['/nextus', '/work-with-nik', '/podcast', '/about', '/life-os', '/pricing']
+    .some(p => pathname.startsWith(p))
 
   const tabs = [
     {
-      key:   'home',
-      label: 'Home',
-      icon:  <HomeIcon active={isHome} />,
+      key:    'home',
+      label:  'Home',
+      icon:   <HomeIcon active={isHome} />,
       active: isHome,
+      to:     '/',
       action: null,
-      to:    '/',
     },
     {
       key:    'tools',
       label:  'Tools',
       icon:   <GridIcon active={isTools || drawerOpen} />,
       active: isTools || drawerOpen,
-      action: () => { setMoreOpen(false); setDrawerOpen(o => !o) },
       to:     null,
+      action: () => { setMoreOpen(false); setDrawerOpen(o => !o) },
     },
     {
       key:    'more',
       label:  'More',
       icon:   <MoreIcon active={isMore || moreOpen} />,
       active: isMore || moreOpen,
-      action: () => { setDrawerOpen(false); setMoreOpen(o => !o) },
       to:     null,
+      action: () => { setDrawerOpen(false); setMoreOpen(o => !o) },
     },
   ]
 
   return (
     <>
-      {moreOpen && <MoreMenu onClose={() => setMoreOpen(false)} />}
+      {moreOpen   && <MoreMenu onClose={() => setMoreOpen(false)} />}
       <ToolDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <nav data-bottom-tabs style={{
@@ -172,6 +196,7 @@ export function BottomTabs() {
               }}>{tab.label}</span>
             </div>
           )
+
           if (tab.action) {
             return (
               <button key={tab.key} onClick={tab.action} style={{
