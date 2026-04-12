@@ -700,33 +700,48 @@ export function PurposePiecePage() {
   // Check Supabase for any existing result on mount — restores returning users
   useEffect(() => {
     if (!user?.id || showReveal) return
-    supabase.from('purpose_piece_results')
-      .select('profile, session, status')
-      .eq('user_id', user.id)
-      .in('status', ['complete', 'started'])
-      .order('updated_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data?.status === 'complete' && data?.profile) {
-          // Completed — skip welcome, show results
-          setMessages([{ role: 'assistant', type: 'html', content: data.profile }])
-          if (data.session) setSession(data.session)
+
+    async function checkExisting() {
+      try {
+        // Check for completed result first
+        const { data: complete } = await supabase
+          .from('purpose_piece_results')
+          .select('session, status, archetype, domain, scale')
+          .eq('user_id', user.id)
+          .eq('status', 'complete')
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+
+        if (complete) {
+          if (complete.session) setSession(complete.session)
           setShowReveal(true)
           setShowWelcome(false)
           startedRef.current = true
-        } else if (data?.status === 'started') {
-          // In progress — skip welcome, session init useEffect will call startTool()
-          // which resumes from sessionStorage or starts the API fresh
+          return
+        }
+
+        // Check for in-progress result
+        const { data: started } = await supabase
+          .from('purpose_piece_results')
+          .select('session, status')
+          .eq('user_id', user.id)
+          .eq('status', 'started')
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+
+        if (started) {
           setShowWelcome(false)
         } else {
-          // Genuinely fresh — show welcome modal
           setShowWelcome(prev => prev === null ? true : prev)
         }
-      })
-      .catch(() => {
+      } catch {
         setShowWelcome(prev => prev === null ? true : prev)
-      })
+      }
+    }
+
+    checkExisting()
   }, [user?.id])
 
   // Persist to sessionStorage
@@ -804,12 +819,14 @@ export function PurposePiecePage() {
         if (data.session.archetypeTranscript?.length > 0) completedStages.push('archetype')
         if (data.session.domainTranscript?.length > 0) completedStages.push('domain')
         if (data.session.scaleTranscript?.length > 0) completedStages.push('scale')
-        ;(async () => { try { await supabase.from('purpose_piece_results').upsert({
-          user_id: user.id,
-          status: 'started',
-          session: data.session,
-          updated_at: new Date().toISOString(),
-        }, { onConflict: 'user_id', ignoreDuplicates: false }) } catch {} })()
+        ;(async () => { try {
+          const { data: ex } = await supabase.from('purpose_piece_results').select('id').eq('user_id', user.id).limit(1).maybeSingle()
+          if (ex?.id) {
+            await supabase.from('purpose_piece_results').update({ status: 'started', session: data.session, updated_at: new Date().toISOString() }).eq('id', ex.id)
+          } else {
+            await supabase.from('purpose_piece_results').insert({ user_id: user.id, status: 'started', session: data.session, updated_at: new Date().toISOString() })
+          }
+        } catch {} })()
       }
       return
     }
@@ -855,11 +872,14 @@ export function PurposePiecePage() {
       setShowReveal(true)
       // Save profile
       if (user?.id && data.profile) {
-        ;(async () => { try { await supabase.from('purpose_piece_results').upsert({
-          user_id: user.id, profile: data.profile, session: data.session,
-          status: 'complete',
-          completed_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-        }, { onConflict: 'user_id' }) } catch {} })()
+        ;(async () => { try {
+          const { data: ex } = await supabase.from('purpose_piece_results').select('id').eq('user_id', user.id).limit(1).maybeSingle()
+          if (ex?.id) {
+            await supabase.from('purpose_piece_results').update({ status: 'complete', session: data.session, completed_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', ex.id)
+          } else {
+            await supabase.from('purpose_piece_results').insert({ user_id: user.id, status: 'complete', session: data.session, completed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+          }
+        } catch {} })()
       }
       // Save for Deep Dive
       try {
@@ -1060,11 +1080,12 @@ export function PurposePiecePage() {
       {user && showWelcome === true && <WelcomeModal onBegin={async () => {
         if (user?.id) {
           try {
-            await supabase.from('purpose_piece_results').upsert({
-              user_id: user.id,
-              status: 'started',
-              updated_at: new Date().toISOString(),
-            }, { onConflict: 'user_id', ignoreDuplicates: false })
+            const { data: ex } = await supabase.from('purpose_piece_results').select('id').eq('user_id', user.id).limit(1).maybeSingle()
+            if (ex?.id) {
+              await supabase.from('purpose_piece_results').update({ status: 'started', updated_at: new Date().toISOString() }).eq('id', ex.id)
+            } else {
+              await supabase.from('purpose_piece_results').insert({ user_id: user.id, status: 'started', updated_at: new Date().toISOString() })
+            }
           } catch {}
         }
         setShowWelcome(false)
