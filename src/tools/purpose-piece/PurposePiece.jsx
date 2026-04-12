@@ -804,12 +804,12 @@ export function PurposePiecePage() {
         if (data.session.archetypeTranscript?.length > 0) completedStages.push('archetype')
         if (data.session.domainTranscript?.length > 0) completedStages.push('domain')
         if (data.session.scaleTranscript?.length > 0) completedStages.push('scale')
-        try { await supabase.from('purpose_piece_results').upsert({
+        ;(async () => { try { await supabase.from('purpose_piece_results').upsert({
           user_id: user.id,
           status: 'started',
           session: data.session,
           updated_at: new Date().toISOString(),
-        }, { onConflict: 'user_id', ignoreDuplicates: false }) } catch {}
+        }, { onConflict: 'user_id', ignoreDuplicates: false }) } catch {} })()
       }
       return
     }
@@ -855,11 +855,11 @@ export function PurposePiecePage() {
       setShowReveal(true)
       // Save profile
       if (user?.id && data.profile) {
-        try { await supabase.from('purpose_piece_results').upsert({
+        ;(async () => { try { await supabase.from('purpose_piece_results').upsert({
           user_id: user.id, profile: data.profile, session: data.session,
           status: 'complete',
           completed_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-        }, { onConflict: 'user_id' }) } catch {}
+        }, { onConflict: 'user_id' }) } catch {} })()
       }
       // Save for Deep Dive
       try {
