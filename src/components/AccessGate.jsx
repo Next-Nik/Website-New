@@ -76,8 +76,8 @@ function GateCard({ toolName, variant, discountPct = 0 }) {
       body: discountPct > 0
         ? `You have a ${discountPct}% discount available.`
         : 'This tool is part of the Life OS suite.',
-      cta: 'Sign in to get started →',
-      ctaHref: `/login?redirect=${encodeURIComponent(window.location.href)}`,
+      cta: 'See pricing →',
+      ctaHref: '/pricing',
     },
     banned: {
       eyebrow: 'Access restricted',
