@@ -84,14 +84,14 @@ export function OrienteeringPage() {
 
         // M1 fix: write North Star notes for signed-in full-page users
         if (user?.id && parsed.stage) {
-          supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'orienteering').catch(() => {})
+          try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'orienteering') } catch {}
           const oriNotes = [
             parsed.stage       ? `Orienteering stage: ${parsed.stage}` : null,
             parsed.stage_note  ? `Stage context: ${parsed.stage_note}` : null,
             parsed.recommendations?.[0]?.title ? `Recommended entry point: ${parsed.recommendations[0].title}` : null,
           ].filter(Boolean)
           if (oriNotes.length) {
-            supabase.from('north_star_notes').insert(oriNotes.map(note => ({ user_id: user.id, tool: 'orienteering', note }))).catch(() => {})
+            try { await supabase.from('north_star_notes').insert(oriNotes.map(note => ({ user_id: user.id, tool: 'orienteering', note }))) } catch {}
           }
         }
       } else {
