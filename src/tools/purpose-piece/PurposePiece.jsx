@@ -615,7 +615,7 @@ export function PurposePiecePage() {
   const [showDeepGate,  setShowDeepGate]  = useState(false)
   const [showCentreModal, setShowCentreModal] = useState(false)
   const [showWelcome, setShowWelcome] = useState(() => {
-    // Skip welcome modal if a valid session already exists
+    // Skip welcome modal if a valid in-progress session already exists in sessionStorage
     try {
       const raw = sessionStorage.getItem(SS_KEY)
       if (raw) {
@@ -623,7 +623,10 @@ export function PurposePiecePage() {
         if (s.session?.currentQuestion && s.messages?.length > 0) return false
       }
     } catch {}
-    return true
+    // Don't show yet — wait for Supabase check to determine if returning user
+    // The completed-result useEffect below will set this to false if a result exists,
+    // or leave it to be set true once we know they're fresh.
+    return null // null = still loading
   })
   // Reference panels manage their own open state internally.
   // Trigger via custom events so the ReferenceTrigger buttons actually work.
@@ -671,9 +674,9 @@ export function PurposePiecePage() {
     return () => { if (window.App) delete window.App }
   }, [showReveal])
 
-  // Restore or start session — only after welcome dismissed
+  // Restore or start session — only after welcome dismissed and Supabase check complete
   useEffect(() => {
-    if (!user || startedRef.current || showWelcome) return
+    if (!user || startedRef.current || showWelcome !== false) return
     startedRef.current = true
     try {
       const raw = sessionStorage.getItem(SS_KEY)
@@ -704,14 +707,21 @@ export function PurposePiecePage() {
       .maybeSingle()
       .then(({ data }) => {
         if (data?.profile) {
+          // Returning user with completed result — skip welcome, show results
           setMessages([{ role: 'assistant', type: 'html', content: data.profile }])
           if (data.session) setSession(data.session)
           setShowReveal(true)
           setShowWelcome(false)
           startedRef.current = true
+        } else {
+          // Fresh user — show welcome modal now that we know
+          setShowWelcome(prev => prev === null ? true : prev)
         }
       })
-      .catch(() => {})
+      .catch(() => {
+        // On error, default to showing welcome
+        setShowWelcome(prev => prev === null ? true : prev)
+      })
   }, [user?.id])
 
   // Persist to sessionStorage
@@ -1042,7 +1052,7 @@ export function PurposePiecePage() {
     <div className="page-shell">
       <Nav activePath="life-os" />
       {!user && <AuthModal />}
-      {user && showWelcome && (() => {
+      {user && showWelcome === true && (() => {
         try {
           const raw = sessionStorage.getItem(SS_KEY)
           if (!raw) return true
