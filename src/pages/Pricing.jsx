@@ -274,7 +274,7 @@ export function PricingPage() {
           {[
             {
               q: 'Can I use a one-time tool more than once?',
-              a: 'Yes. Purpose Piece, The Map, and Target Sprint are yours to return to. Life changes. Your answers will too.',
+              a: 'Yes. Purpose Piece and The Map are yours to return to as many times as you like — life changes, and your answers will too. Target Sprint is a one-time purchase per sprint; past sprints are always available to review.',
             },
             {
               q: "What's included in Life OS Complete?",
