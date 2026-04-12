@@ -111,6 +111,59 @@ export function LifeOSPage() {
           </div>
         </div>
 
+        {/* ── Tool anchors — linked from ToolDrawer for logged-out users ── */}
+        <div style={{ marginBottom: '72px' }}>
+          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '32px' }}>The tools</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+
+            <div id="foundation" style={{ padding: '28px 32px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Daily regulation practice</span>
+              <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>Foundation</h3>
+              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
+                Regulated baseline. The floor beneath everything. A 20-minute guided audio practice that restores the nervous system before anything else is attempted. You cannot build on a depleted ground.
+              </p>
+              <a href="/login?redirect=/tools/foundation" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '2px' }}>Get access →</a>
+            </div>
+
+            <div id="map" style={{ padding: '28px 32px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>See where you are. Set where you're going.</span>
+              <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>The Map</h3>
+              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
+                Seven domains. One honest picture of where you are and where you want to be. The most powerful tool in the suite — because you cannot navigate without knowing your position.
+              </p>
+              <a href="/login?redirect=/tools/map" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '2px' }}>Get access →</a>
+            </div>
+
+            <div id="purpose-piece" style={{ padding: '28px 32px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Your role, your domain, your scale</span>
+              <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>Purpose Piece</h3>
+              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
+                Your contribution archetype, domain, and scale. Reveals the Godspark coordinates — what you're built to do. Most people are capable of far more than they're currently expressing. Usually the missing piece isn't effort — it's fit.
+              </p>
+              <a href="/login?redirect=/tools/purpose-piece" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '2px' }}>Get access →</a>
+            </div>
+
+            <div id="target-goals" style={{ padding: '28px 32px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>90-day focused goal plan</span>
+              <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>Target Sprint</h3>
+              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
+                Three domains. Ninety days. A route reverse-engineered from where you want to be. Not a to-do list — a focused arc with a clear win condition.
+              </p>
+              <a href="/login?redirect=/tools/target-goals" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '2px' }}>Get access →</a>
+            </div>
+
+            <div id="expansion" style={{ padding: '28px 32px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Daily becoming practice</span>
+              <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>Expansion</h3>
+              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
+                Daily T.E.A. practice — Thoughts, Emotions, Actions — aligned with your Horizon Self. Skill development and thought loop work toward the person you're becoming. The practice that closes the gap.
+              </p>
+              <a href="/login?redirect=/tools/expansion" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '2px' }}>Get access →</a>
+            </div>
+
+          </div>
+        </div>
+
         {/* Tools CTA */}
         <div style={{ marginBottom: '72px', padding: '32px', background: '#0F1523', borderRadius: '14px' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>Ready to use the tools?</span>
