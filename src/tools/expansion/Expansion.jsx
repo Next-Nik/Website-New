@@ -1278,13 +1278,13 @@ export function ExpansionPage() {
         await supabase.from('north_star_notes').upsert(
           { user_id: user.id, tool: 'expansion', note: `Horizon Self: ${horizonSelf}` },
           { onConflict: 'user_id,tool,note' }
-        ).catch(() => {})
+        )
       }
       if (firstSkill) {
         await supabase.from('north_star_notes').upsert(
           { user_id: user.id, tool: 'expansion', note: `Active skill: ${firstSkill.title} (${firstSkill.type})` },
           { onConflict: 'user_id,tool,note' }
-        ).catch(() => {})
+        )
       }
 
       setSetupData({ horizon_self: horizonSelf })
