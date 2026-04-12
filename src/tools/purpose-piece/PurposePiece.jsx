@@ -697,29 +697,34 @@ export function PurposePiecePage() {
     startTool()
   }, [user, showWelcome])
 
-  // Check Supabase for completed result on mount — restores returning users
+  // Check Supabase for any existing result on mount — restores returning users
   useEffect(() => {
     if (!user?.id || showReveal) return
     supabase.from('purpose_piece_results')
       .select('profile, session, status')
       .eq('user_id', user.id)
-      .eq('status', 'complete')
+      .in('status', ['complete', 'started'])
+      .order('updated_at', { ascending: false })
+      .limit(1)
       .maybeSingle()
       .then(({ data }) => {
-        if (data?.profile) {
-          // Returning user with completed result — skip welcome, show results
+        if (data?.status === 'complete' && data?.profile) {
+          // Completed — skip welcome, show results
           setMessages([{ role: 'assistant', type: 'html', content: data.profile }])
           if (data.session) setSession(data.session)
           setShowReveal(true)
           setShowWelcome(false)
           startedRef.current = true
+        } else if (data?.status === 'started') {
+          // In progress — skip welcome, session init useEffect will call startTool()
+          // which resumes from sessionStorage or starts the API fresh
+          setShowWelcome(false)
         } else {
-          // Fresh user — show welcome modal now that we know
+          // Genuinely fresh — show welcome modal
           setShowWelcome(prev => prev === null ? true : prev)
         }
       })
       .catch(() => {
-        // On error, default to showing welcome
         setShowWelcome(prev => prev === null ? true : prev)
       })
   }, [user?.id])
