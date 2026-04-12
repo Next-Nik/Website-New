@@ -1,6 +1,7 @@
 import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
+import { useAuth } from '../hooks/useAuth'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
@@ -21,9 +22,24 @@ const LINKS = {
   lifeos_yearly:       'https://buy.stripe.com/bJe5kC25I8AlcdF9HMaMU04',
 }
 
-// Append ?prefilled_promo_code=FOUNDING50 to any link to pre-fill the founding member discount
-function withCoupon(url) {
-  return url + '?prefilled_promo_code=FOUNDING50'
+// Build payment links with client_reference_id so the webhook grants access
+// to the logged-in account regardless of which billing email is used at checkout.
+function usePaymentLinks(userId) {
+  function link(base) {
+    if (!userId) return base
+    return `${base}?client_reference_id=${userId}`
+  }
+  return {
+    foundation_monthly: link(LINKS.foundation_monthly),
+    foundation_yearly:  link(LINKS.foundation_yearly),
+    purpose_piece:      link(LINKS.purpose_piece),
+    map:                link(LINKS.map),
+    target_sprint:      link(LINKS.target_sprint),
+    expansion_monthly:  link(LINKS.expansion_monthly),
+    expansion_yearly:   link(LINKS.expansion_yearly),
+    lifeos_monthly:     link(LINKS.lifeos_monthly),
+    lifeos_yearly:      link(LINKS.lifeos_yearly),
+  }
 }
 
 function PriceTag({ amount, period, note }) {
@@ -91,6 +107,8 @@ function ToolCard({ name, desc, monthly, yearly, oneTime, monthlyLink, yearlyLin
 }
 
 export function PricingPage() {
+  const { user } = useAuth()
+  const L = usePaymentLinks(user?.id)
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
       <Nav />
@@ -142,10 +160,10 @@ export function PricingPage() {
                   <div style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginTop: '2px' }}>save $189 vs monthly</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <a href={LINKS.lifeos_monthly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+                  <a href={L.lifeos_monthly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                     Monthly →
                   </a>
-                  <a href={LINKS.lifeos_yearly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+                  <a href={L.lifeos_yearly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                     Yearly →
                   </a>
                 </div>
@@ -162,34 +180,34 @@ export function PricingPage() {
             desc="The regulated ground that makes everything else possible. Daily audio practice — nervous system first."
             monthly={15}
             yearly={120}
-            monthlyLink={LINKS.foundation_monthly}
-            yearlyLink={LINKS.foundation_yearly}
+            monthlyLink={L.foundation_monthly}
+            yearlyLink={L.foundation_yearly}
           />
           <ToolCard
             name="The Map"
             desc="Seven domains. One honest picture of where you are and where you want to be. The most powerful tool in the suite."
             oneTime={59}
-            oneTimeLink={LINKS.map}
+            oneTimeLink={L.map}
           />
           <ToolCard
             name="Purpose Piece"
             desc="Your archetype, domain, and scale of contribution. Reveals the Godspark coordinates — what you're built to do."
             oneTime={39}
-            oneTimeLink={LINKS.purpose_piece}
+            oneTimeLink={L.purpose_piece}
           />
           <ToolCard
             name="Target Sprint"
             desc="Three domains. Ninety days. A route reverse-engineered from where you want to be."
             oneTime={29}
-            oneTimeLink={LINKS.target_sprint}
+            oneTimeLink={L.target_sprint}
           />
           <ToolCard
             name="Expansion"
             desc="Daily T.E.A. practice. Thoughts, Emotions, Actions — aligned with your Horizon Self. The practice that closes the gap."
             monthly={29}
             yearly={229}
-            monthlyLink={LINKS.expansion_monthly}
-            yearlyLink={LINKS.expansion_yearly}
+            monthlyLink={L.expansion_monthly}
+            yearlyLink={L.expansion_yearly}
           />
         </div>
 
