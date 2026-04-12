@@ -1602,7 +1602,7 @@ export function MapPage() {
         if (parsed.domainData && Object.keys(parsed.domainData).length > 0) return false
       }
     } catch {}
-    return true
+    return null // null = still loading — wait for Supabase check
   })
   const hasLoadedRef = useRef(false)
 
@@ -1644,8 +1644,15 @@ export function MapPage() {
           setCurrentScores(scores)
           setHorizonScores(hscores)
           if (data.complete) { setPhase('results'); setMapData(data.map_data) }
+          // Returning user — skip welcome modal
+          setShowWelcome(false)
+        } else {
+          // No Supabase record — fresh user, show welcome
+          setShowWelcome(prev => prev === null ? true : prev)
         }
-      } catch {}
+      } catch {
+        setShowWelcome(prev => prev === null ? true : prev)
+      }
     }
     load()
   }, [user])
@@ -1762,7 +1769,7 @@ export function MapPage() {
   return (
     <div className="page-shell">
       <Nav activePath="life-os" />
-      {user && showWelcome && <MapWelcomeModal onBegin={() => setShowWelcome(false)} />}
+      {user && showWelcome === true && <MapWelcomeModal onBegin={() => setShowWelcome(false)} />}
 
       {/* Left — domain thread panel */}
       <DomainThreadPanel
