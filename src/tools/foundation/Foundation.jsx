@@ -359,7 +359,7 @@ function FoundationReview({ user, sessions }) {
         }, { onConflict: 'user_id,period_type,period_id' })
         setSaved({ type, label })
         // Refresh summary so profile picks up new review text
-        writeSummary(user, sessions, null, null).catch(() => {})
+        writeSummary(user, sessions, null, null)
       }
     } catch {
       setError('Review unavailable. Please try again shortly.')
@@ -646,7 +646,7 @@ export function FoundationPage() {
               supabase.from('north_star_notes').upsert(
                 { user_id: user.id, tool: 'foundation', note: 'Foundation Baseline practice active.' },
                 { onConflict: 'user_id,tool,note' }
-              ).catch(() => {})
+              )
             }}
           />
         </PhaseBlock>
