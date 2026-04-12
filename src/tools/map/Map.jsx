@@ -1758,8 +1758,8 @@ export function MapPage() {
 
       if (notes.length) {
         // Delete old map notes first
-        await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'map').catch(() => {})
-        await supabase.from('north_star_notes').insert(notes.map(n => ({ user_id: user.id, ...n }))).catch(() => {})
+        try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'map') } catch {}
+        try { await supabase.from('north_star_notes').insert(notes.map(n => ({ user_id: user.id, ...n }))) } catch {}
       }
     } catch {}
   }
