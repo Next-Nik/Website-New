@@ -167,6 +167,12 @@ export function ToolDrawer({ open, onClose }) {
   const navigate = useNavigate()
   const overlayRef = useRef(null)
 
+  // Logged-out → Life OS page anchor for that tool
+  // Logged-in  → directly into the tool
+  function toolHref(tool) {
+    return user ? tool.path : `/life-os#${tool.key}`
+  }
+
   // Close on Escape
   useEffect(() => {
     function onKey(e) { if (e.key === 'Escape') onClose() }
@@ -225,9 +231,11 @@ export function ToolDrawer({ open, onClose }) {
                 return (
                   <Link
                     key={tool.key}
-                    to={tool.path}
+                    to={toolHref(tool)}
                     onClick={() => {
-                      try { localStorage.setItem('auth_redirect', window.location.origin + tool.path) } catch {}
+                      if (user) {
+                        try { localStorage.setItem('auth_redirect', window.location.origin + tool.path) } catch {}
+                      }
                       onClose()
                     }}
                     style={{
