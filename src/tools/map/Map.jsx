@@ -508,7 +508,7 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
             border: '1.5px solid rgba(200,146,42,0.78)',
             borderLeft: 'none',
             width: '44px',
-            height: '88px',
+            height: '120px',
             cursor: 'pointer',
             display: 'flex',
             flexDirection: 'column',

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { STATIC_DOMAINS } from './domain-explorer/data'
+import { DomainTooltip, NEXTUS_LABEL_MAP } from './DomainTooltip'
 
 export function CivilisationalFramePanel() {
   const [open, setOpen] = useState(false)
@@ -31,7 +32,7 @@ export function CivilisationalFramePanel() {
           background: '#FAFAF7',
           border: '1.5px solid rgba(200,146,42,0.78)',
           width: '44px',
-          height: '88px',
+          height: '120px',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
@@ -47,8 +48,8 @@ export function CivilisationalFramePanel() {
           textOrientation: 'mixed',
           transform: 'rotate(180deg)',
           fontFamily: "'Cormorant SC', Georgia, serif",
-          fontSize: '15px',
-          letterSpacing: '0.18em',
+          fontSize: '13px',
+          letterSpacing: '0.14em',
           color: '#A8721A',
           textTransform: 'uppercase',
           userSelect: 'none',
