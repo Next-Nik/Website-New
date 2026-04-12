@@ -804,12 +804,12 @@ export function PurposePiecePage() {
         if (data.session.archetypeTranscript?.length > 0) completedStages.push('archetype')
         if (data.session.domainTranscript?.length > 0) completedStages.push('domain')
         if (data.session.scaleTranscript?.length > 0) completedStages.push('scale')
-        supabase.from('purpose_piece_results').upsert({
+        try { await supabase.from('purpose_piece_results').upsert({
           user_id: user.id,
           status: 'started',
           session: data.session,
           updated_at: new Date().toISOString(),
-        }, { onConflict: 'user_id', ignoreDuplicates: false }).catch(() => {})
+        }, { onConflict: 'user_id', ignoreDuplicates: false }) } catch {}
       }
       return
     }
@@ -829,8 +829,8 @@ export function PurposePiecePage() {
           t.scale?.scale         ? `Scale of Focus: ${t.scale.scale}` : null,
         ].filter(Boolean)
         if (ppNotes.length) {
-          await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'purpose-piece').catch(() => {})
-          await supabase.from('north_star_notes').insert(ppNotes.map(note => ({ user_id: user.id, tool: 'purpose-piece', note }))).catch(() => {})
+          try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'purpose-piece') } catch {}
+          try { await supabase.from('north_star_notes').insert(ppNotes.map(note => ({ user_id: user.id, tool: 'purpose-piece', note }))) } catch {}
         }
       }; setThinking(false); handleResponse(d) } catch { setThinking(false) }
       }, data.advanceDelay || 6000)
@@ -855,11 +855,11 @@ export function PurposePiecePage() {
       setShowReveal(true)
       // Save profile
       if (user?.id && data.profile) {
-        supabase.from('purpose_piece_results').upsert({
+        try { await supabase.from('purpose_piece_results').upsert({
           user_id: user.id, profile: data.profile, session: data.session,
           status: 'complete',
           completed_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-        }, { onConflict: 'user_id' }).catch(() => {})
+        }, { onConflict: 'user_id' }) } catch {}
       }
       // Save for Deep Dive
       try {
@@ -1057,13 +1057,15 @@ export function PurposePiecePage() {
     <div className="page-shell">
       <Nav activePath="life-os" />
       {!user && <AuthModal />}
-      {user && showWelcome === true && <WelcomeModal onBegin={() => {
+      {user && showWelcome === true && <WelcomeModal onBegin={async () => {
         if (user?.id) {
-          supabase.from('purpose_piece_results').upsert({
-            user_id: user.id,
-            status: 'started',
-            updated_at: new Date().toISOString(),
-          }, { onConflict: 'user_id', ignoreDuplicates: false }).catch(() => {})
+          try {
+            await supabase.from('purpose_piece_results').upsert({
+              user_id: user.id,
+              status: 'started',
+              updated_at: new Date().toISOString(),
+            }, { onConflict: 'user_id', ignoreDuplicates: false })
+          } catch {}
         }
         setShowWelcome(false)
       }} />}
