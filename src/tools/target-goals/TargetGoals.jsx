@@ -1358,10 +1358,10 @@ export function TargetGoalsPage() {
       if (selectedDomains?.length) {
         const DOMAIN_LABELS = { path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances', connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal' }
         const domainNames = selectedDomains.map(id => DOMAIN_LABELS[id] || id).join(', ')
-        await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'target-goals').catch(() => {})
+        try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'target-goals') } catch {}
         await supabase.from('north_star_notes').insert([
           { user_id: user.id, tool: 'target-goals', note: `Active 90-day sprint domains: ${domainNames}` }
-        ]).catch(() => {})
+        ])
       }
     } catch {}
   }
@@ -1430,7 +1430,7 @@ export function TargetGoalsPage() {
             updated_at: new Date().toISOString(),
           }).select('id').then(({ data }) => {
             if (data?.[0]?.id) setSessionId(data[0].id)
-          }).catch(() => {})
+          })
         }
         setShowWelcome(false)
       }} />}
