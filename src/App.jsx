@@ -48,7 +48,6 @@ import { AdminConsolePage }  from './pages/AdminConsole'
 import { GroupJoinPage }      from './pages/GroupJoin'
 import { ToolsPage }          from './pages/Tools'
 import { PricingPage }        from './pages/Pricing'
-import { TestPaymentPage }   from './pages/TestPayment'
 import { AuthCallbackPage }  from './pages/AuthCallback'
 
 // Tools
@@ -101,7 +100,6 @@ function AppInner() {
         <Route path="/work-with-nik"   element={<WorkWithNikPage />} />
         <Route path="/podcast"         element={<PodcastPage />} />
         <Route path="/pricing"         element={<PricingPage />} />
-        <Route path="/test"            element={<TestPaymentPage />} />
         <Route path="/login"           element={<LoginPage />} />
         <Route path="/privacy"         element={<PrivacyPage />} />
         <Route path="/terms"           element={<TermsPage />} />

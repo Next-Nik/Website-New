@@ -77,7 +77,7 @@ function ToolCard({ name, desc, monthly, yearly, oneTime, monthlyLink, yearlyLin
 
       {oneTime && (
         <>
-          <PriceTag amount={oneTime} note="one-time · use again any time" />
+          <PriceTag amount={oneTime} note="one-time per sprint · past sprints always available" />
           <a href={oneTimeLink} target="_blank" rel="noopener" style={{ display: 'block', marginTop: '16px', padding: '12px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
             Get access →
           </a>
