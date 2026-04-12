@@ -11,9 +11,9 @@ import { CivilisationalFramePanel } from '../../components/CivilisationalFramePa
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const SS_KEY = 'pp_session_v4'
+const SS_KEY = 'pp_session_v5'
 // Clear any stale sessions from previous versions
-;['pp_session', 'pp_session_v1', 'pp_session_v2', 'pp_session_v3'].forEach(k => sessionStorage.removeItem(k))
+;['pp_session', 'pp_session_v1', 'pp_session_v2', 'pp_session_v3', 'pp_session_v4'].forEach(k => sessionStorage.removeItem(k))
 
 // Wedge colours — intentional design system additions
 // Gold:   Archetype — primary brand colour, most important coordinate
@@ -1057,14 +1057,7 @@ export function PurposePiecePage() {
     <div className="page-shell">
       <Nav activePath="life-os" />
       {!user && <AuthModal />}
-      {user && showWelcome === true && (() => {
-        try {
-          const raw = sessionStorage.getItem(SS_KEY)
-          if (!raw) return true
-          const s = JSON.parse(raw)
-          return !(s.session?.currentQuestion && s.messages?.length > 0)
-        } catch { return true }
-      })() && <WelcomeModal onBegin={() => {
+      {user && showWelcome === true && <WelcomeModal onBegin={() => {
         if (user?.id) {
           supabase.from('purpose_piece_results').upsert({
             user_id: user.id,
