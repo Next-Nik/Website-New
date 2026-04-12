@@ -1427,7 +1427,7 @@ export function ProfilePage() {
         </Slot>
 
         <Slot title="NextUs" eyebrow="The larger work"
-          linkLabel="Explore" linkUrl="/nextus" defaultOpen={false}>
+          linkLabel="Explore" linkUrl="/nextus" defaultOpen={!!claimedActor || !!purposeData?.profile?.civilisational_statement}>
           <NextUsSlot purposeData={purposeData} userId={user?.id} claimedActor={claimedActor} />
         </Slot>
 

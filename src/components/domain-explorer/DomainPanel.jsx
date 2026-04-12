@@ -171,7 +171,7 @@ export default function DomainPanel({
             <div className={styles.infoWrap}>
               <span className={styles.infoIcon}>ⓘ</span>
               <div className={styles.infoTooltip}>
-                The foundations, organisations, co-ops, projects, initiatives, and individuals actively working toward the horizon goal in this domain.
+                The foundations, organisations, co-ops, projects, and initiatives actively working toward the horizon goal in this domain.
               </div>
             </div>
           </div>

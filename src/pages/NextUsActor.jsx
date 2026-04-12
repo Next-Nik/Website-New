@@ -510,9 +510,10 @@ export function NextUsActorPage() {
   const navigate = useNavigate()
   const { user } = useAuth()
 
-  const [actor, setActor]     = useState(null)
-  const [needs, setNeeds]     = useState([])
-  const [loading, setLoading] = useState(true)
+  const [actor, setActor]           = useState(null)
+  const [needs, setNeeds]           = useState([])
+  const [actorDomains, setActorDomains] = useState([])
+  const [loading, setLoading]       = useState(true)
 
   // Modal state
   const [modal, setModal] = useState(null)
@@ -530,16 +531,21 @@ export function NextUsActorPage() {
 
   useEffect(() => {
     async function load() {
-      const [{ data: actorData }, { data: needsData }] = await Promise.all([
+      const [{ data: actorData }, { data: needsData }, { data: domainsData }] = await Promise.all([
         supabase.from('nextus_actors').select('*').eq('id', id).single(),
         supabase.from('nextus_needs')
           .select('*')
           .eq('actor_id', id)
           .eq('status', 'open')
           .order('created_at'),
+        supabase.from('nextus_actor_domains')
+          .select('*')
+          .eq('actor_id', id)
+          .order('is_primary', { ascending: false }),
       ])
       setActor(actorData)
       setNeeds(needsData || [])
+      setActorDomains(domainsData || [])
       setLoading(false)
     }
     load()
@@ -719,8 +725,8 @@ export function NextUsActorPage() {
           {actor.name}
         </h1>
 
-        {/* Domain breadcrumb */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '32px' }}>
+        {/* Domain breadcrumb — primary */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: actorDomains.length > 1 ? '12px' : '32px' }}>
           {domainLabel && (
             <button
               onClick={() => navigate(`/nextus/actors?domain=${actor.domain_id}`)}
@@ -737,7 +743,39 @@ export function NextUsActorPage() {
               </span>
             </>
           )}
+          {actorDomains.length > 1 && (
+            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.35)', marginLeft: '4px' }}>
+              Primary
+            </span>
+          )}
         </div>
+
+        {/* Secondary domains */}
+        {actorDomains.length > 1 && (
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '32px' }}>
+            {actorDomains.filter(d => !d.is_primary).map(d => {
+              const dLabel = DOMAIN_LABEL[d.domain_id]
+              const sdLabel = SUBDOMAIN_LABEL[d.subdomain_id]
+              if (!dLabel) return null
+              return (
+                <button
+                  key={d.id}
+                  onClick={() => navigate(`/nextus/actors?domain=${d.domain_id}`)}
+                  style={{
+                    ...sc, fontSize: '12px', letterSpacing: '0.12em',
+                    color: 'rgba(168,114,26,0.72)',
+                    background: 'rgba(200,146,42,0.05)',
+                    border: '1px solid rgba(200,146,42,0.22)',
+                    borderRadius: '40px', padding: '4px 12px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {dLabel}{sdLabel ? ` · ${sdLabel}` : ''}
+                </button>
+              )
+            })}
+          </div>
+        )}
 
         {/* Owner controls */}
         {isOwner && (

@@ -1144,7 +1144,7 @@ const SUBDOMAIN_MAP = {
 }
 
 const DOMAINS_WITH_EMPTY = [{ value: '', label: 'All domains' }, ...DOMAIN_LIST]
-const ACTOR_TYPES  = ['organisation', 'project', 'individual']
+const ACTOR_TYPES  = ['organisation', 'project']
 const SCALE_OPTIONS = ['local', 'municipal', 'regional', 'national', 'international', 'global']
 
 const EMPTY_ACTOR_FORM = {
@@ -1168,6 +1168,7 @@ function ActorsTab({ toast }) {
   const [editId, setEditId]           = useState(null)
   const [saving, setSaving]           = useState(false)
   const [claims, setClaims]           = useState([])
+  const [actorDomains, setActorDomains] = useState([])
 
   const subdomainOptions = form.domain_id
     ? [['', '— none —'], ...(SUBDOMAIN_MAP[form.domain_id] || [])].map(([v, l]) => ({ value: v, label: l }))
@@ -1203,7 +1204,7 @@ function ActorsTab({ toast }) {
     setForm(f => { const next = { ...f, [field]: value }; if (field === 'domain_id') next.subdomain_id = ''; return next })
   }
 
-  function startEdit(actor) {
+  async function startEdit(actor) {
     setForm({
       name: actor.name || '', type: actor.type || 'organisation',
       domain_id: actor.domain_id || '', subdomain_id: actor.subdomain_id || '',
@@ -1215,6 +1216,9 @@ function ActorsTab({ toast }) {
       data_source: actor.data_source || '',
     })
     setEditId(actor.id)
+    const { data } = await supabase.from('nextus_actor_domains')
+      .select('*').eq('actor_id', actor.id).order('is_primary', { ascending: false })
+    setActorDomains(data || [])
     setMode('edit')
   }
 
@@ -1229,13 +1233,29 @@ function ActorsTab({ toast }) {
       lat: form.lat !== '' ? parseFloat(form.lat) : null,
       lng: form.lng !== '' ? parseFloat(form.lng) : null,
     }
-    const { error } = mode === 'edit'
-      ? await supabase.from('nextus_actors').update(payload).eq('id', editId)
-      : await supabase.from('nextus_actors').insert(payload)
+    let savedId = editId
+    if (mode === 'edit') {
+      const { error } = await supabase.from('nextus_actors').update(payload).eq('id', editId)
+      if (error) { setSaving(false); toast('Error: ' + error.message); return }
+    } else {
+      const { data, error } = await supabase.from('nextus_actors').insert(payload).select('id').single()
+      if (error) { setSaving(false); toast('Error: ' + error.message); return }
+      savedId = data.id
+    }
+    if (savedId && actorDomains.length > 0) {
+      await supabase.from('nextus_actor_domains').delete().eq('actor_id', savedId)
+      const domainRows = actorDomains.map(d => ({
+        actor_id: savedId,
+        domain_id: d.domain_id,
+        subdomain_id: d.subdomain_id || null,
+        is_primary: d.is_primary || false,
+        alignment_score: d.alignment_score || null,
+      }))
+      await supabase.from('nextus_actor_domains').insert(domainRows)
+    }
     setSaving(false)
-    if (error) { toast('Error: ' + error.message); return }
     toast(mode === 'edit' ? 'Actor updated' : 'Actor added')
-    setForm(EMPTY_ACTOR_FORM); setEditId(null); setMode('browse'); fetchActors()
+    setForm(EMPTY_ACTOR_FORM); setActorDomains([]); setEditId(null); setMode('browse'); fetchActors()
   }
 
   async function deleteActor(id, name) {
@@ -1326,8 +1346,33 @@ function ActorsTab({ toast }) {
               <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Scale</label><Select value={form.scale} onChange={v => setFormField('scale', v)} options={SCALE_OPTIONS.map(s => ({ value: s, label: s }))} /></div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Domain</label><Select value={form.domain_id} onChange={v => setFormField('domain_id', v)} options={[{ value: '', label: '— none —' }, ...DOMAIN_LIST]} /></div>
-              <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Subdomain</label><Select value={form.subdomain_id} onChange={v => setFormField('subdomain_id', v)} options={subdomainOptions} /></div>
+              <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Primary Domain</label><Select value={form.domain_id} onChange={v => setFormField('domain_id', v)} options={[{ value: '', label: '— none —' }, ...DOMAIN_LIST]} /></div>
+              <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Primary Subdomain</label><Select value={form.subdomain_id} onChange={v => setFormField('subdomain_id', v)} options={subdomainOptions} /></div>
+            </div>
+            <div>
+              <label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '8px' }}>All Domains</label>
+              {actorDomains.map((d, i) => {
+                const sdOpts = d.domain_id
+                  ? [['', '— none —'], ...(SUBDOMAIN_MAP[d.domain_id] || [])].map(([v, l]) => ({ value: v, label: l }))
+                  : [{ value: '', label: 'Select domain first' }]
+                return (
+                  <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto auto', gap: '8px', alignItems: 'center', marginBottom: '8px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '8px', padding: '10px 12px' }}>
+                    <Select value={d.domain_id} onChange={v => setActorDomains(rows => rows.map((r, ri) => ri === i ? { ...r, domain_id: v, subdomain_id: '' } : r))} options={[{ value: '', label: '— domain —' }, ...DOMAIN_LIST]} />
+                    <Select value={d.subdomain_id || ''} onChange={v => setActorDomains(rows => rows.map((r, ri) => ri === i ? { ...r, subdomain_id: v } : r))} options={sdOpts} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
+                      <input type="checkbox" id={`primary-${i}`} checked={d.is_primary || false}
+                        onChange={e => setActorDomains(rows => rows.map((r, ri) => ({ ...r, is_primary: ri === i ? e.target.checked : false })))} />
+                      <label htmlFor={`primary-${i}`} style={{ ...serif, fontSize: '13px', cursor: 'pointer' }}>Primary</label>
+                    </div>
+                    <button onClick={() => setActorDomains(rows => rows.filter((_, ri) => ri !== i))}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(138,48,48,0.7)', fontSize: '18px', lineHeight: 1, padding: '0 4px' }}>×</button>
+                  </div>
+                )
+              })}
+              <button onClick={() => setActorDomains(rows => [...rows, { domain_id: '', subdomain_id: '', is_primary: rows.length === 0, alignment_score: null }])}
+                style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold, background: 'none', border: '1px dashed rgba(200,146,42,0.40)', borderRadius: '8px', padding: '8px 16px', cursor: 'pointer', width: '100%' }}>
+                + Add domain
+              </button>
             </div>
             <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Location</label><Input value={form.location_name} onChange={v => setFormField('location_name', v)} placeholder="e.g. Nairobi, Kenya" /></div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -1646,11 +1691,11 @@ function NominationsTab({ toast }) {
   async function load() {
     setLoading(true)
     let q = supabase.from('nextus_actors').select('*').eq('seeded_by', 'community').order('created_at', { ascending: false }).limit(100)
-    // nominated = not yet claimed/verified, approved = claimed, rejected = we use a note convention
     const { data } = await q
     let results = data || []
-    if (filter === 'nominated') results = results.filter(a => !a.claimed && !a.verified)
+    if (filter === 'nominated') results = results.filter(a => !a.claimed && !a.verified && a.vetting_status !== 'rejected')
     if (filter === 'approved')  results = results.filter(a => a.claimed || a.verified)
+    if (filter === 'rejected')  results = results.filter(a => a.vetting_status === 'rejected')
     setNominations(results)
     setLoading(false)
   }
@@ -1670,9 +1715,16 @@ function NominationsTab({ toast }) {
   }
 
   async function reject(actor) {
-    if (!window.confirm(`Remove "${actor.name}" from nominations?`)) return
-    await supabase.from('nextus_actors').delete().eq('id', actor.id)
-    toast('Nomination removed')
+    const reason = window.prompt(`Reason for rejecting "${actor.name}" (optional):`)
+    if (reason === null) return
+    const { error } = await supabase.from('nextus_actors').update({
+      vetting_status: 'rejected',
+      data_source: actor.data_source
+        ? actor.data_source + (reason ? ` | Rejected: ${reason}` : ' | Rejected')
+        : reason ? `Rejected: ${reason}` : 'Rejected',
+    }).eq('id', actor.id)
+    if (error) { toast('Error rejecting'); return }
+    toast(`${actor.name} rejected`)
     load()
   }
 
@@ -1681,7 +1733,7 @@ function NominationsTab({ toast }) {
   return (
     <div>
       <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
-        {[['nominated','Pending'], ['approved','Approved']].map(([val, label]) => (
+        {[['nominated','Pending'], ['approved','Approved'], ['rejected','Rejected']].map(([val, label]) => (
           <Btn key={val} small variant={filter === val ? 'primary' : 'ghost'} onClick={() => setFilter(val)}>{label}</Btn>
         ))}
         <Btn small variant="ghost" onClick={load}>Refresh</Btn>
@@ -1726,6 +1778,11 @@ function NominationsTab({ toast }) {
             {filter === 'approved' && (
               <div style={{ flexShrink: 0 }}>
                 <a href={'/nextus/actors/' + a.id} target="_blank" rel="noopener noreferrer" style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold }}>View live →</a>
+              </div>
+            )}
+            {filter === 'rejected' && (
+              <div style={{ flexShrink: 0 }}>
+                <Badge label="rejected" color="#8A3030" />
               </div>
             )}
           </div>

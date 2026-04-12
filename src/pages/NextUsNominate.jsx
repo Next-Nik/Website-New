@@ -44,7 +44,6 @@ const SCALES = [
 const TYPES = [
   { value: 'organisation', label: 'Organisation' },
   { value: 'project',      label: 'Project' },
-  { value: 'individual',   label: 'Individual' },
 ]
 
 function Label({ children, required }) {
@@ -189,7 +188,7 @@ export function NextUsNominatePage() {
           ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)',
           background: 'none', border: 'none', cursor: 'pointer', marginBottom: '32px', padding: 0,
         }}>
-          ← Actors
+          ← Orgs in the Field
         </button>
 
         <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: gold, display: 'block', marginBottom: '12px' }}>
@@ -199,7 +198,7 @@ export function NextUsNominatePage() {
           Know someone doing the work?
         </h1>
         <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '16px', maxWidth: '480px' }}>
-          The most important actors on this map won't be found by algorithm. If you know an organisation, project, or individual doing genuine work toward a Horizon Goal — place them here.
+          The most important actors on this map won't be found by algorithm. If you know an organisation or project doing genuine work toward a Horizon Goal — place them here.
         </p>
         <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.45)', lineHeight: 1.65, marginBottom: '48px', maxWidth: '480px' }}>
           Nominations are reviewed before going live. The criteria: is the work genuinely aimed at the Horizon Goal for their domain and scale? We're not looking for perfection — we're looking for direction and integrity.
@@ -210,7 +209,7 @@ export function NextUsNominatePage() {
           {/* Who they are */}
           <div style={{ marginBottom: '24px' }}>
             <Label required>Name</Label>
-            <TextInput value={form.name} onChange={v => set('name', v)} placeholder="Organisation, project, or individual name" />
+            <TextInput value={form.name} onChange={v => set('name', v)} placeholder="Organisation or project name" />
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>

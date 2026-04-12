@@ -32,10 +32,9 @@ const SCALES = [
 ]
 
 const TYPES = [
-  { value: '',               label: 'All types' },
+  { value: '',              label: 'All types' },
   { value: 'organisation',  label: 'Organisation' },
   { value: 'project',       label: 'Project' },
-  { value: 'individual',    label: 'Individual' },
 ]
 
 const DOMAIN_HORIZON = {
@@ -270,7 +269,7 @@ export function NextUsActorsPage() {
             Who is doing the work.
           </h1>
           <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', maxWidth: '560px', lineHeight: 1.7 }}>
-            Organisations, projects, and individuals working across the seven domains. What they're building, what they need, and where you fit.
+            Organisations and projects working across the seven domains. What they're building, what they need, and where you fit.
           </p>
         </div>
 
@@ -345,7 +344,7 @@ export function NextUsActorsPage() {
               The map is being populated.
             </p>
             <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.45)', lineHeight: 1.7 }}>
-              Organisations and individuals working across the seven domains will appear here as the platform grows.
+              Organisations and projects working across the seven domains will appear here as the platform grows.
             </p>
           </div>
         )}
