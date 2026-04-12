@@ -1098,7 +1098,502 @@ function FoundationSlot({ foundationData }) {
   )
 }
 
-function NextUsSlot({ purposeData, userId, claimedActor }) {
+// ─── Contributor Offer slot ────────────────────────────────────────────────────
+
+const OFFER_TYPES = [
+  { value: 'skills',    label: 'Skills',      desc: 'Professional or craft expertise' },
+  { value: 'time',      label: 'Time',        desc: 'Availability for a project or role' },
+  { value: 'capital',   label: 'Capital',     desc: 'Financial contribution or investment' },
+  { value: 'community', label: 'Community',   desc: 'Network, amplification, advocacy' },
+  { value: 'knowledge', label: 'Knowledge',   desc: 'Research, data, frameworks' },
+  { value: 'creative',  label: 'Creative',    desc: 'Artistic, expressive, or cultural work' },
+  { value: 'other',     label: 'Other',       desc: 'Something else' },
+]
+
+const OFFER_MODES = [
+  { value: 'functional',   label: 'Functional',   desc: 'Builds, organises, funds, connects' },
+  { value: 'expressive',   label: 'Expressive',   desc: 'Makes, performs, creates, transmits' },
+  { value: 'relational',   label: 'Relational',   desc: 'Heals, holds, facilitates, witnesses' },
+  { value: 'intellectual', label: 'Intellectual', desc: 'Researches, synthesises, frames, teaches' },
+  { value: 'mixed',        label: 'Mixed',        desc: 'Crosses more than one mode' },
+]
+
+const OFFER_TO = [
+  { value: 'any',            label: 'Anyone aligned' },
+  { value: 'domain_aligned', label: 'My domains only' },
+  { value: 'verified_only',  label: 'Verified orgs only' },
+  { value: 'invitation_only',label: 'By invitation' },
+]
+
+const RETURN_TYPES = [
+  { value: 'none',        label: 'Volunteer — no expectation' },
+  { value: 'acknowledged',label: 'Acknowledged — public attribution' },
+  { value: 'paid',        label: 'Paid — financial compensation' },
+  { value: 'token',       label: 'Token — points/token return' },
+  { value: 'reciprocal',  label: 'Reciprocal — give to the ecosystem' },
+]
+
+const NEXTUS_DOMAINS = [
+  { value: 'human-being',    label: 'Human Being' },
+  { value: 'society',        label: 'Society' },
+  { value: 'nature',         label: 'Nature' },
+  { value: 'technology',     label: 'Technology' },
+  { value: 'finance-economy',label: 'Finance & Economy' },
+  { value: 'legacy',         label: 'Legacy' },
+  { value: 'vision',         label: 'Vision' },
+]
+
+const EMPTY_OFFER = {
+  title: '',
+  offer_type: 'skills',
+  contribution_mode: 'functional',
+  description: '',
+  domain_ids: [],
+  scale: '',
+  willing_to_offer_to: 'any',
+  open_to_adjacent: true,
+  return_type: 'none',
+  availability: '',
+  is_active: true,
+}
+
+function OfferChips({ options, selected, onChange, multi = false }) {
+  const sc_ = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const serif_ = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const gold_ = '#A8721A'
+
+  function toggle(val) {
+    if (multi) {
+      onChange(selected.includes(val) ? selected.filter(v => v !== val) : [...selected, val])
+    } else {
+      onChange(val)
+    }
+  }
+
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+      {options.map(o => {
+        const on = multi ? selected.includes(o.value) : selected === o.value
+        return (
+          <button
+            key={o.value}
+            type="button"
+            onClick={() => toggle(o.value)}
+            style={{
+              textAlign: 'left',
+              padding: o.desc ? '10px 14px' : '6px 14px',
+              borderRadius: o.desc ? '10px' : '40px',
+              cursor: 'pointer',
+              border: on ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.22)',
+              background: on ? 'rgba(200,146,42,0.08)' : 'transparent',
+              transition: 'all 0.15s',
+              minWidth: o.desc ? '140px' : 'auto',
+            }}
+          >
+            <div style={{ ...sc_, fontSize: '12px', letterSpacing: '0.12em', color: on ? gold_ : 'rgba(15,21,35,0.65)' }}>
+              {o.label}
+            </div>
+            {o.desc && (
+              <div style={{ ...serif_, fontSize: '12px', color: 'rgba(15,21,35,0.45)', marginTop: '2px', lineHeight: 1.4 }}>
+                {o.desc}
+              </div>
+            )}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function ContributorOfferForm({ initial = EMPTY_OFFER, onSave, onCancel, saving }) {
+  const sc_ = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const serif_ = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const gold_ = '#A8721A'
+  const dark_ = '#0F1523'
+
+  const [form, setForm] = useState(initial)
+  function set(field, val) { setForm(f => ({ ...f, [field]: val })) }
+
+  return (
+    <div style={{ background: 'rgba(200,146,42,0.03)', border: '1.5px solid rgba(200,146,42,0.28)', borderRadius: '14px', padding: '22px 24px', marginBottom: '16px' }}>
+
+      <div style={{ marginBottom: '16px' }}>
+        <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
+          What you're offering <span style={{ color: '#8A3030' }}>*</span>
+        </label>
+        <input
+          value={form.title}
+          onChange={e => set('title', e.target.value)}
+          placeholder="e.g. Strategic communications, Documentary filmmaking, Trauma-informed facilitation"
+          style={{ ...serif_, fontSize: '15px', color: dark_, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.28)', background: '#FFFFFF', outline: 'none', width: '100%' }}
+        />
+      </div>
+
+      <div style={{ marginBottom: '16px' }}>
+        <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
+          Type
+        </label>
+        <OfferChips options={OFFER_TYPES} selected={form.offer_type} onChange={v => set('offer_type', v)} />
+      </div>
+
+      <div style={{ marginBottom: '16px' }}>
+        <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
+          Mode — how does this contribution move?
+        </label>
+        <OfferChips options={OFFER_MODES} selected={form.contribution_mode} onChange={v => set('contribution_mode', v)} />
+      </div>
+
+      <div style={{ marginBottom: '16px' }}>
+        <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
+          More detail
+        </label>
+        <textarea
+          value={form.description}
+          onChange={e => set('description', e.target.value)}
+          placeholder="What specifically do you bring? Background, experience, approach. This is what orgs read when they find you."
+          rows={3}
+          style={{ ...serif_, fontSize: '15px', color: dark_, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.28)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }}
+        />
+      </div>
+
+      <div style={{ marginBottom: '16px' }}>
+        <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '8px' }}>
+          Domains — where do you want this to go?
+        </label>
+        <p style={{ ...serif_, fontSize: '13px', color: 'rgba(15,21,35,0.45)', marginBottom: '10px', lineHeight: 1.5 }}>
+          Leave empty to stay open to any. Select to focus.
+        </p>
+        <OfferChips
+          options={NEXTUS_DOMAINS}
+          selected={form.domain_ids}
+          onChange={v => set('domain_ids', v)}
+          multi
+        />
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+        <div>
+          <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
+            Who can approach you?
+          </label>
+          <OfferChips options={OFFER_TO} selected={form.willing_to_offer_to} onChange={v => set('willing_to_offer_to', v)} />
+        </div>
+        <div>
+          <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
+            What are you looking for in return?
+          </label>
+          <OfferChips options={RETURN_TYPES} selected={form.return_type} onChange={v => set('return_type', v)} />
+        </div>
+      </div>
+
+      <div style={{ marginBottom: '16px' }}>
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer' }}>
+          <input
+            type="checkbox"
+            checked={form.open_to_adjacent}
+            onChange={e => set('open_to_adjacent', e.target.checked)}
+            style={{ marginTop: '3px', accentColor: gold_ }}
+          />
+          <span style={{ ...serif_, fontSize: '14px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.6 }}>
+            Open to adjacent enquiries — orgs can reach out even if I'm not an exact match for what they need
+          </span>
+        </label>
+      </div>
+
+      <div style={{ marginBottom: '20px' }}>
+        <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
+          Availability
+        </label>
+        <input
+          value={form.availability}
+          onChange={e => set('availability', e.target.value)}
+          placeholder="e.g. 5 hours/week, one project at a time, advisory only"
+          style={{ ...serif_, fontSize: '15px', color: dark_, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.28)', background: '#FFFFFF', outline: 'none', width: '100%' }}
+        />
+      </div>
+
+      <div style={{ display: 'flex', gap: '12px' }}>
+        <button
+          onClick={() => onSave(form)}
+          disabled={saving || !form.title.trim()}
+          style={{
+            ...sc_, fontSize: '14px', letterSpacing: '0.14em',
+            padding: '12px 24px', borderRadius: '40px',
+            border: 'none', cursor: saving || !form.title.trim() ? 'not-allowed' : 'pointer',
+            background: saving || !form.title.trim() ? 'rgba(200,146,42,0.30)' : '#C8922A',
+            color: '#FFFFFF', opacity: saving || !form.title.trim() ? 0.6 : 1,
+          }}
+        >
+          {saving ? 'Saving…' : 'Save offer'}
+        </button>
+        <button
+          onClick={onCancel}
+          style={{ ...sc_, fontSize: '14px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.20)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function ContributorOfferCard({ offer, onEdit, onToggleActive, onDelete }) {
+  const sc_ = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const serif_ = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const gold_ = '#A8721A'
+  const dark_ = '#0F1523'
+
+  const typeLabel   = OFFER_TYPES.find(t => t.value === offer.offer_type)?.label || offer.offer_type
+  const modeLabel   = OFFER_MODES.find(m => m.value === offer.contribution_mode)?.label || offer.contribution_mode
+  const returnLabel = RETURN_TYPES.find(r => r.value === offer.return_type)?.label?.split(' —')[0] || offer.return_type
+
+  return (
+    <div style={{
+      background: offer.is_active ? '#FFFFFF' : 'rgba(15,21,35,0.02)',
+      border: offer.is_active ? '1.5px solid rgba(200,146,42,0.22)' : '1.5px solid rgba(15,21,35,0.10)',
+      borderRadius: '12px', padding: '18px 20px', marginBottom: '10px',
+      opacity: offer.is_active ? 1 : 0.6,
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', gap: '6px', marginBottom: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ ...sc_, fontSize: '11px', letterSpacing: '0.12em', color: gold_, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '4px', padding: '2px 8px' }}>
+              {typeLabel}
+            </span>
+            <span style={{ ...sc_, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.45)', background: 'rgba(15,21,35,0.04)', border: '1px solid rgba(15,21,35,0.08)', borderRadius: '4px', padding: '2px 8px' }}>
+              {modeLabel}
+            </span>
+            <span style={{ ...sc_, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)' }}>
+              {returnLabel}
+            </span>
+            {!offer.is_active && (
+              <span style={{ ...sc_, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.35)' }}>
+                Paused
+              </span>
+            )}
+          </div>
+          <p style={{ ...serif_, fontSize: '16px', fontWeight: 300, color: dark_, marginBottom: offer.description ? '4px' : 0, lineHeight: 1.3 }}>
+            {offer.title}
+          </p>
+          {offer.description && (
+            <p style={{ ...serif_, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65 }}>
+              {offer.description.slice(0, 120)}{offer.description.length > 120 ? '…' : ''}
+            </p>
+          )}
+          {offer.domain_ids?.length > 0 && (
+            <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '6px' }}>
+              {offer.domain_ids.map(d => (
+                <span key={d} style={{ ...sc_, fontSize: '10px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)', background: 'rgba(15,21,35,0.04)', borderRadius: '4px', padding: '2px 7px' }}>
+                  {NEXTUS_DOMAINS.find(nd => nd.value === d)?.label || d}
+                </span>
+              ))}
+            </div>
+          )}
+          {offer.availability && (
+            <p style={{ ...sc_, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)', marginTop: '6px' }}>
+              {offer.availability}
+            </p>
+          )}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flexShrink: 0 }}>
+          <button
+            onClick={() => onEdit(offer)}
+            style={{ ...sc_, fontSize: '12px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.50)', background: 'rgba(200,146,42,0.04)', color: gold_, cursor: 'pointer' }}
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => onToggleActive(offer)}
+            style={{ ...sc_, fontSize: '12px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.15)', background: 'transparent', color: 'rgba(15,21,35,0.50)', cursor: 'pointer' }}
+          >
+            {offer.is_active ? 'Pause' : 'Resume'}
+          </button>
+          <button
+            onClick={() => onDelete(offer.id)}
+            style={{ ...sc_, fontSize: '12px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', border: '1px solid rgba(138,48,48,0.30)', background: 'transparent', color: '#8A3030', cursor: 'pointer' }}
+          >
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ContributorOfferSection({ userId, purposeData }) {
+  const sc_ = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const serif_ = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const gold_ = '#A8721A'
+
+  const [offers, setOffers]   = useState([])
+  const [loading, setLoading] = useState(true)
+  const [adding, setAdding]   = useState(false)
+  const [editing, setEditing] = useState(null)
+  const [saving, setSaving]   = useState(false)
+
+  // Seed from Purpose Piece if available
+  const ppDomain   = purposeData?.session?.tentative?.domain?.domain_id
+  const ppScale    = purposeData?.session?.tentative?.scale?.scale
+  const ppArchetype = purposeData?.session?.tentative?.archetype?.archetype
+
+  const seededOffer = {
+    ...EMPTY_OFFER,
+    domain_ids: ppDomain ? [ppDomain] : [],
+    scale: ppScale || '',
+  }
+
+  async function load() {
+    setLoading(true)
+    const { data } = await supabase
+      .from('nextus_contributor_offers')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: true })
+    setOffers(data || [])
+    setLoading(false)
+  }
+
+  useEffect(() => { if (userId) load() }, [userId])
+
+  async function saveNew(form) {
+    if (!form.title.trim()) return
+    setSaving(true)
+    await supabase.from('nextus_contributor_offers').insert({
+      user_id:            userId,
+      title:              form.title.trim(),
+      offer_type:         form.offer_type,
+      contribution_mode:  form.contribution_mode,
+      description:        form.description.trim() || null,
+      domain_ids:         form.domain_ids,
+      scale:              form.scale || null,
+      willing_to_offer_to: form.willing_to_offer_to,
+      open_to_adjacent:   form.open_to_adjacent,
+      return_type:        form.return_type,
+      availability:       form.availability.trim() || null,
+      is_active:          true,
+      last_active_at:     new Date().toISOString(),
+    })
+    setSaving(false)
+    setAdding(false)
+    load()
+  }
+
+  async function saveEdit(form) {
+    if (!form.title.trim()) return
+    setSaving(true)
+    await supabase.from('nextus_contributor_offers').update({
+      title:              form.title.trim(),
+      offer_type:         form.offer_type,
+      contribution_mode:  form.contribution_mode,
+      description:        form.description.trim() || null,
+      domain_ids:         form.domain_ids,
+      scale:              form.scale || null,
+      willing_to_offer_to: form.willing_to_offer_to,
+      open_to_adjacent:   form.open_to_adjacent,
+      return_type:        form.return_type,
+      availability:       form.availability.trim() || null,
+      updated_at:         new Date().toISOString(),
+    }).eq('id', form.id)
+    setSaving(false)
+    setEditing(null)
+    load()
+  }
+
+  async function toggleActive(offer) {
+    await supabase.from('nextus_contributor_offers')
+      .update({ is_active: !offer.is_active, updated_at: new Date().toISOString() })
+      .eq('id', offer.id)
+    load()
+  }
+
+  async function deleteOffer(id) {
+    if (!window.confirm('Remove this offer?')) return
+    await supabase.from('nextus_contributor_offers').delete().eq('id', id)
+    load()
+  }
+
+  if (loading) return null
+
+  return (
+    <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.15)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+        <div>
+          <span style={{ ...sc_, fontSize: '12px', letterSpacing: '0.18em', color: gold_, display: 'block', marginBottom: '4px' }}>
+            What you're putting on the table
+          </span>
+          <p style={{ ...serif_, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, margin: 0, maxWidth: '380px' }}>
+            Skills, creativity, time, or resources you're willing to offer the ecosystem.
+            {ppArchetype && ` As a ${ppArchetype}, your offer is already placed in context.`}
+          </p>
+        </div>
+        {!adding && !editing && (
+          <button
+            onClick={() => setAdding(true)}
+            style={{ ...sc_, fontSize: '13px', letterSpacing: '0.14em', padding: '9px 18px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: gold_, cursor: 'pointer', flexShrink: 0 }}
+          >
+            + Add offer
+          </button>
+        )}
+      </div>
+
+      {/* Purpose Piece seed prompt */}
+      {offers.length === 0 && !adding && ppDomain && (
+        <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px', padding: '14px 18px', marginBottom: '12px' }}>
+          <p style={{ ...serif_, fontSize: '14px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, marginBottom: '10px' }}>
+            Your Purpose Piece output has pre-filled your domain. Add your first offer and it will be discoverable by orgs working in that space.
+          </p>
+          <button
+            onClick={() => setAdding(true)}
+            style={{ ...sc_, fontSize: '13px', letterSpacing: '0.14em', padding: '8px 18px', borderRadius: '40px', border: 'none', background: '#C8922A', color: '#FFFFFF', cursor: 'pointer' }}
+          >
+            Add first offer →
+          </button>
+        </div>
+      )}
+
+      {/* Empty — no PP data */}
+      {offers.length === 0 && !adding && !ppDomain && (
+        <p style={{ ...serif_, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginBottom: '8px' }}>
+          No offers yet.{' '}
+          <button onClick={() => setAdding(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc_, fontSize: '13px', letterSpacing: '0.12em', color: gold_, padding: 0 }}>
+            Add one →
+          </button>
+        </p>
+      )}
+
+      {/* Add form */}
+      {adding && (
+        <ContributorOfferForm
+          initial={seededOffer}
+          onSave={saveNew}
+          onCancel={() => setAdding(false)}
+          saving={saving}
+        />
+      )}
+
+      {/* Offer cards */}
+      {offers.map(o => (
+        editing?.id === o.id
+          ? <ContributorOfferForm
+              key={o.id}
+              initial={editing}
+              onSave={saveEdit}
+              onCancel={() => setEditing(null)}
+              saving={saving}
+            />
+          : <ContributorOfferCard
+              key={o.id}
+              offer={o}
+              onEdit={o => setEditing(o)}
+              onToggleActive={toggleActive}
+              onDelete={deleteOffer}
+            />
+      ))}
+    </div>
+  )
+}
+
+// ─── NextUs slot ───────────────────────────────────────────────────────────────
   const profile   = purposeData?.profile ?? {}
   const tentative = purposeData?.session?.tentative ?? {}
   const statement = profile.civilisational_statement
@@ -1189,7 +1684,24 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
         </div>
       )}
 
-      {/* Claimed actor profile */}
+      {/* Contributor offer section */}
+      <ContributorOfferSection userId={userId} purposeData={purposeData} />
+
+      {/* Contributor profile link */}
+      {userId && (
+        <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
+          <a
+            href={`/nextus/contributors/${userId}`}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none' }}
+          >
+            View your contributor profile →
+          </a>
+          <span style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.40)', marginLeft: '10px' }}>
+            This is what orgs see when they find you
+          </span>
+        </div>
+      )}
+
       {claimedActor && (
         <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '10px', padding: '14px 18px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
           <div>

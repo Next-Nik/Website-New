@@ -35,6 +35,208 @@ function DomainModal({ domain, onClose }) {
   )
 }
 
+// ── How it works section ─────────────────────────────────────
+
+const ORG_STEPS = [
+  {
+    n: '01',
+    title: 'Orient',
+    body: 'Tell the platform what you\'re building and why. Name the horizon goal you\'re working toward. Place yourself in the domain where your work belongs — and every domain it touches.',
+  },
+  {
+    n: '02',
+    title: 'Offer',
+    body: 'Show what you produce. Tools, services, programmes, resources, events. Contributors and visitors see what you give before they see what you ask for. The platform requires this. Give first.',
+  },
+  {
+    n: '03',
+    title: 'Need',
+    body: 'Post what you\'re looking for. Skills, capital, time, creative work, relational capacity. Be specific — specific needs attract specific contributors. Once posted, needs are matched against contributor offers automatically.',
+  },
+  {
+    n: '04',
+    title: 'Receive',
+    body: 'Matched contributors find you. Or they reach out directly — having placed their skills on the table without waiting for a specific need. Either direction can start a contribution.',
+  },
+  {
+    n: '05',
+    title: 'Close the loop',
+    body: 'Confirm contributions. File outcome reports. The platform tracks what happened with every contribution it helped route. Silence costs visibility. Honesty builds it.',
+  },
+]
+
+const CONTRIBUTOR_STEPS = [
+  {
+    n: '01',
+    title: 'Orient',
+    body: 'Purpose Piece tells you your archetype, your domain, and the scale where your contribution belongs. Your coordinates are placed on the map before you\'ve consciously decided to be here.',
+  },
+  {
+    n: '02',
+    title: 'Offer',
+    body: 'Put what you have on the table. Skills, creative capacity, time, capital, knowledge, relational depth. Name who you\'ll hear from, what you expect in return — including nothing. The right orgs find you.',
+  },
+  {
+    n: '03',
+    title: 'Discover',
+    body: 'Browse orgs filtered to your domain. The platform surfaces the ones whose open needs align with what you\'re offering. Direct matches and adjacent ones — because sometimes the best contribution is a conversation you didn\'t expect.',
+  },
+  {
+    n: '04',
+    title: 'Give',
+    body: 'Respond to a specific need, or reach out directly with what you have. Both directions work. The contribution is recorded, attributed, and visible on your profile.',
+  },
+  {
+    n: '05',
+    title: 'Build a record',
+    body: 'Every confirmed, closed-loop contribution becomes part of your permanent record. Not what you claimed to do — what you actually did, confirmed by the people you did it with.',
+  },
+]
+
+function StepRow({ step, side }) {
+  const isLeft = side === 'org'
+  return (
+    <div style={{
+      display: 'flex',
+      gap: '20px',
+      alignItems: 'flex-start',
+      padding: '20px 0',
+      borderBottom: '1px solid rgba(200,146,42,0.10)',
+    }}>
+      <span style={{
+        ...sc,
+        fontSize: '13px',
+        letterSpacing: '0.16em',
+        color: isLeft ? '#A8721A' : 'rgba(15,21,35,0.35)',
+        flexShrink: 0,
+        minWidth: '28px',
+        paddingTop: '3px',
+      }}>
+        {step.n}
+      </span>
+      <div>
+        <p style={{
+          ...serif,
+          fontSize: '18px',
+          fontWeight: 300,
+          color: '#0F1523',
+          marginBottom: '6px',
+          lineHeight: 1.2,
+        }}>
+          {step.title}
+        </p>
+        <p style={{
+          ...serif,
+          fontSize: '15px',
+          color: 'rgba(15,21,35,0.60)',
+          lineHeight: 1.75,
+          margin: 0,
+        }}>
+          {step.body}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function HowItWorksSection({ navigate }) {
+  const [side, setSide] = useState('org')
+  const steps = side === 'org' ? ORG_STEPS : CONTRIBUTOR_STEPS
+
+  return (
+    <div className="nextus-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '0 40px 80px' }}>
+      <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 56px' }} />
+
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '14px' }}>
+        How it works
+      </span>
+      <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>
+        The platform works both ways.
+      </h2>
+      <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.8, marginBottom: '40px', maxWidth: '560px' }}>
+        Organisations place themselves on the map and say what they need. Contributors place what they have on the table and say where they want it to go. The platform connects them — in either direction.
+      </p>
+
+      {/* Toggle */}
+      <div style={{ display: 'flex', gap: '0', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.35)', overflow: 'hidden', width: 'fit-content', marginBottom: '40px' }}>
+        {[
+          { key: 'org',         label: 'I\'m an organisation' },
+          { key: 'contributor', label: 'I have something to offer' },
+        ].map(({ key, label }, i, arr) => (
+          <button
+            key={key}
+            onClick={() => setSide(key)}
+            style={{
+              ...sc,
+              fontSize: '13px',
+              letterSpacing: '0.12em',
+              padding: '11px 22px',
+              border: 'none',
+              cursor: 'pointer',
+              background: side === key ? 'rgba(200,146,42,0.10)' : '#FFFFFF',
+              color: side === key ? '#A8721A' : 'rgba(15,21,35,0.55)',
+              borderRight: i < arr.length - 1 ? '1px solid rgba(200,146,42,0.25)' : 'none',
+              transition: 'all 0.15s',
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Steps */}
+      <div style={{ maxWidth: '580px' }}>
+        {steps.map(step => (
+          <StepRow key={step.n} step={step} side={side} />
+        ))}
+      </div>
+
+      {/* CTA */}
+      <div style={{ marginTop: '40px', display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+        {side === 'org' ? (
+          <>
+            <button
+              onClick={() => navigate('/nextus/nominate')}
+              style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '14px 32px', borderRadius: '40px', border: 'none', background: '#C8922A', color: '#FFFFFF', cursor: 'pointer' }}
+            >
+              Place your organisation →
+            </button>
+            <button
+              onClick={() => navigate('/nextus/actors')}
+              style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '14px 32px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.50)', background: 'transparent', color: '#A8721A', cursor: 'pointer' }}
+            >
+              See who's already here
+            </button>
+          </>
+        ) : (
+          <>
+            <button
+              onClick={() => navigate('/tools/purpose-piece')}
+              style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '14px 32px', borderRadius: '40px', border: 'none', background: '#C8922A', color: '#FFFFFF', cursor: 'pointer' }}
+            >
+              Find your coordinates →
+            </button>
+            <button
+              onClick={() => navigate('/nextus/actors')}
+              style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '14px 32px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.50)', background: 'transparent', color: '#A8721A', cursor: 'pointer' }}
+            >
+              Browse orgs
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Integrity note */}
+      <div style={{ marginTop: '48px', paddingTop: '28px', borderTop: '1px solid rgba(200,146,42,0.15)', maxWidth: '520px' }}>
+        <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.75, margin: 0 }}>
+          The platform tracks what actually happens with every contribution — not what was promised, what was done. Contribution loops that don't close stop being visible. Alignment scores are earned, not declared. The architecture is designed so that good-faith participation is effortless and extraction is structurally difficult.
+        </p>
+      </div>
+
+    </div>
+  )
+}
+
 export function NextUsPage() {
   const [modal, setModal] = useState(null)
   const navigate = useNavigate()
@@ -149,9 +351,13 @@ export function NextUsPage() {
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button onClick={() => navigate('/nextus/actors')} style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '13px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', cursor: 'pointer', whiteSpace: 'nowrap' }}>Who's working on this →</button>
             <button onClick={() => navigate('/nextus/map')} style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '13px 28px', borderRadius: '40px', border: '1px solid rgba(200,146,42,0.35)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', whiteSpace: 'nowrap' }}>See the map</button>
+            <button onClick={() => navigate('/nextus/contributors')} style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '13px 28px', borderRadius: '40px', border: '1px solid rgba(200,146,42,0.35)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', whiteSpace: 'nowrap' }}>I have something to offer</button>
           </div>
         </div>
       </div>
+
+      {/* ── How it works ── */}
+      <HowItWorksSection navigate={navigate} />
 
       {/* Dark section */}
       <section className="nextus-dark" style={{ background: '#0F1523', borderTop: '1.5px solid rgba(200,146,42,0.78)', padding: '96px 40px', textAlign: 'center' }}>

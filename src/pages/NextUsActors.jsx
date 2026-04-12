@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import { supabase } from '../hooks/useSupabase'
+import { useAuth } from '../hooks/useAuth'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
@@ -189,9 +190,142 @@ function ActorCard({ actor, onClick }) {
   )
 }
 
+// ── Matches for you panel ─────────────────────────────────────
+
+const OFFER_TYPE_LABEL = {
+  skills:'Skills', time:'Time', capital:'Capital',
+  community:'Community', knowledge:'Knowledge', creative:'Creative', other:'Other',
+}
+
+const MODE_LABEL = {
+  functional:'Functional', expressive:'Expressive', relational:'Relational',
+  intellectual:'Intellectual', mixed:'Mixed',
+}
+
+function MatchCard({ match, navigate }) {
+  const domainLabel = DOMAIN_LABEL[match.domain_id] || match.domain_id
+  return (
+    <div
+      onClick={() => navigate(`/nextus/actors/${match.actor_id}`)}
+      style={{
+        background: match.adjacent ? '#FFFFFF' : 'rgba(200,146,42,0.04)',
+        border: match.adjacent
+          ? '1.5px solid rgba(200,146,42,0.18)'
+          : '1.5px solid rgba(200,146,42,0.55)',
+        borderRadius: '12px', padding: '18px 20px',
+        cursor: 'pointer', transition: 'all 0.15s',
+        position: 'relative',
+      }}
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,21,35,0.08)' }}
+      onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
+    >
+      {match.adjacent && (
+        <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.35)', display: 'block', marginBottom: '6px' }}>
+          Adjacent match
+        </span>
+      )}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+        {domainLabel && (
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '4px', padding: '2px 8px' }}>
+            {domainLabel}
+          </span>
+        )}
+        {match.open_needs_count > 0 && (
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: '#2A6B3A', background: 'rgba(42,107,58,0.06)', border: '1px solid rgba(42,107,58,0.20)', borderRadius: '4px', padding: '2px 8px' }}>
+            {match.open_needs_count} open need{match.open_needs_count !== 1 ? 's' : ''}
+          </span>
+        )}
+      </div>
+      <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: dark, marginBottom: '4px', lineHeight: 1.3 }}>
+        {match.name}
+      </p>
+      {match.best_need && (
+        <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.45)', marginBottom: '4px' }}>
+          Needs: {match.best_need.title}
+        </p>
+      )}
+      {match.description && (
+        <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>
+          {match.description.slice(0, 100)}{match.description.length > 100 ? '…' : ''}
+        </p>
+      )}
+    </div>
+  )
+}
+
+function MatchesPanel({ userId, navigate }) {
+  const [matches, setMatches]   = useState([])
+  const [loading, setLoading]   = useState(true)
+  const [expanded, setExpanded] = useState(false)
+  const [hasData, setHasData]   = useState(false)
+
+  useEffect(() => {
+    if (!userId) { setLoading(false); return }
+    async function load() {
+      try {
+        const res = await fetch('/api/nextus-match', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'for_contributor', user_id: userId }),
+        })
+        const data = await res.json()
+        if (data.matches?.length) {
+          setMatches(data.matches)
+          setHasData(true)
+        }
+      } catch {}
+      setLoading(false)
+    }
+    load()
+  }, [userId])
+
+  if (!userId || loading || !hasData) return null
+
+  const shown = expanded ? matches : matches.slice(0, 3)
+
+  return (
+    <div style={{
+      background: 'rgba(200,146,42,0.03)',
+      border: '1.5px solid rgba(200,146,42,0.30)',
+      borderRadius: '14px', padding: '24px 28px',
+      marginBottom: '36px',
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', gap: '12px', flexWrap: 'wrap' }}>
+        <div>
+          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, display: 'block', marginBottom: '4px' }}>
+            Matched for you
+          </span>
+          <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.6, margin: 0 }}>
+            Orgs whose open needs align with what you're offering.
+          </p>
+        </div>
+        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.40)' }}>
+          {matches.length} match{matches.length !== 1 ? 'es' : ''}
+        </span>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '10px' }}>
+        {shown.map(m => (
+          <MatchCard key={m.actor_id} match={m} navigate={navigate} />
+        ))}
+      </div>
+
+      {matches.length > 3 && (
+        <button
+          onClick={() => setExpanded(e => !e)}
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', marginTop: '16px', padding: 0 }}
+        >
+          {expanded ? 'Show fewer ↑' : `Show all ${matches.length} matches ↓`}
+        </button>
+      )}
+    </div>
+  )
+}
+
 export function NextUsActorsPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { user } = useAuth()
 
   const [actors, setActors]     = useState([])
   const [loading, setLoading]   = useState(true)
@@ -295,6 +429,9 @@ export function NextUsActorsPage() {
             {loading ? 'Loading…' : `${total} in the field`}
           </span>
         </div>
+
+        {/* Matches for you — shown to logged-in users with offers/PP data */}
+        <MatchesPanel userId={user?.id} navigate={navigate} />
 
         {/* Domain Horizon Goal context */}
         {domain && DOMAIN_HORIZON[domain] && (

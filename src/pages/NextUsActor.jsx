@@ -503,6 +503,111 @@ function NeedCard({ need, onHelp }) {
   )
 }
 
+// ── Offering card (public) ───────────────────────────────────
+
+const OFFERING_TYPE_LABEL = {
+  tool:'Tool', service:'Service', programme:'Programme',
+  resource:'Resource', content:'Content', event:'Event', other:'Other',
+}
+
+const CONTRIBUTION_MODE_LABEL = {
+  functional:'Functional', expressive:'Expressive', relational:'Relational',
+  intellectual:'Intellectual', mixed:'Mixed',
+}
+
+const ACCESS_TYPE_LABEL = {
+  free:'Free', paid:'Paid', application:'By application',
+  open_source:'Open source', invitation:'By invitation',
+}
+
+const ACCESS_TYPE_COLOR = {
+  free: '#2A6B3A',
+  paid: 'rgba(15,21,35,0.50)',
+  application: gold,
+  open_source: '#2A6B3A',
+  invitation: gold,
+}
+
+function OfferingCard({ offering }) {
+  const typeLabel   = OFFERING_TYPE_LABEL[offering.offering_type]   || offering.offering_type
+  const modeLabel   = CONTRIBUTION_MODE_LABEL[offering.contribution_mode] || offering.contribution_mode
+  const accessLabel = ACCESS_TYPE_LABEL[offering.access_type]       || offering.access_type
+  const accessColor = ACCESS_TYPE_COLOR[offering.access_type]       || gold
+
+  return (
+    <div style={{
+      background: offering.is_flagship ? 'rgba(200,146,42,0.05)' : '#FFFFFF',
+      border: offering.is_flagship
+        ? '1.5px solid rgba(200,146,42,0.78)'
+        : '1.5px solid rgba(200,146,42,0.18)',
+      borderRadius: '14px',
+      padding: '22px 26px',
+      marginBottom: '12px',
+      position: 'relative',
+    }}>
+      {offering.is_flagship && (
+        <span style={{
+          position: 'absolute', top: '-10px', left: '20px',
+          ...sc, fontSize: '11px', letterSpacing: '0.16em',
+          background: '#C8922A', color: '#FFFFFF',
+          padding: '3px 12px', borderRadius: '40px',
+        }}>
+          Flagship
+        </span>
+      )}
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '20px' }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+            <Pill>{typeLabel}</Pill>
+            <Pill color="rgba(15,21,35,0.40)">{modeLabel}</Pill>
+            <span style={{
+              ...sc, fontSize: '12px', letterSpacing: '0.12em',
+              color: accessColor,
+            }}>
+              {accessLabel}
+            </span>
+          </div>
+
+          <h4 style={{ ...serif, fontSize: '18px', fontWeight: 300, color: dark, marginBottom: '8px', lineHeight: 1.3 }}>
+            {offering.title}
+          </h4>
+
+          {offering.description && (
+            <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.75, marginBottom: '10px' }}>
+              {offering.description}
+            </p>
+          )}
+        </div>
+
+        {offering.url && (
+          <div style={{ flexShrink: 0 }}>
+            <a
+              href={offering.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                ...sc, fontSize: '13px', letterSpacing: '0.14em',
+                padding: '11px 22px', borderRadius: '40px',
+                border: '1.5px solid rgba(200,146,42,0.78)',
+                background: 'rgba(200,146,42,0.05)',
+                color: gold, cursor: 'pointer',
+                textDecoration: 'none', display: 'inline-block',
+                transition: 'all 0.15s',
+                whiteSpace: 'nowrap',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#C8922A'; e.currentTarget.style.color = '#FFFFFF' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.05)'; e.currentTarget.style.color = gold }}
+            >
+              Explore →
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ── Main page ────────────────────────────────────────────────
 
 export function NextUsActorPage() {
@@ -512,6 +617,7 @@ export function NextUsActorPage() {
 
   const [actor, setActor]           = useState(null)
   const [needs, setNeeds]           = useState([])
+  const [offerings, setOfferings]   = useState([])
   const [actorDomains, setActorDomains] = useState([])
   const [loading, setLoading]       = useState(true)
 
@@ -531,7 +637,12 @@ export function NextUsActorPage() {
 
   useEffect(() => {
     async function load() {
-      const [{ data: actorData }, { data: needsData }, { data: domainsData }] = await Promise.all([
+      const [
+        { data: actorData },
+        { data: needsData },
+        { data: domainsData },
+        { data: offeringsData },
+      ] = await Promise.all([
         supabase.from('nextus_actors').select('*').eq('id', id).single(),
         supabase.from('nextus_needs')
           .select('*')
@@ -542,10 +653,17 @@ export function NextUsActorPage() {
           .select('*')
           .eq('actor_id', id)
           .order('is_primary', { ascending: false }),
+        supabase.from('nextus_actor_offerings')
+          .select('*')
+          .eq('actor_id', id)
+          .order('is_flagship', { ascending: false })
+          .order('sort_order', { ascending: true, nullsFirst: false })
+          .order('created_at', { ascending: true }),
       ])
       setActor(actorData)
       setNeeds(needsData || [])
       setActorDomains(domainsData || [])
+      setOfferings(offeringsData || [])
       setLoading(false)
     }
     load()
@@ -706,6 +824,19 @@ export function NextUsActorPage() {
           </div>
         )}
 
+        {/* Dormancy signal */}
+        {actor.dormant_since && !isOwner && (() => {
+          const days = Math.floor((Date.now() - new Date(actor.dormant_since).getTime()) / (1000 * 60 * 60 * 24))
+          return (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '18px' }}>
+              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(15,21,35,0.25)' }} />
+              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.35)' }}>
+                Last active {days} days ago
+              </span>
+            </div>
+          )
+        })()}
+
         {/* Meta pills */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '14px' }}>
           {actor.type        && <Pill color="rgba(15,21,35,0.45)">{actor.type}</Pill>}
@@ -819,6 +950,55 @@ export function NextUsActorPage() {
           </div>
         )}
 
+        {/* Domain alignment notes — shown when actorDomains have notes */}
+        {actorDomains.some(d => d.alignment_note) && (
+          <div style={{ marginBottom: '40px' }}>
+            {actorDomains.filter(d => d.alignment_note).map(d => {
+              const dLabel = DOMAIN_LABEL[d.domain_id]
+              const horizon = DOMAIN_HORIZON[d.domain_id]
+              return (
+                <div key={d.id} style={{
+                  background: 'rgba(200,146,42,0.04)',
+                  border: '1px solid rgba(200,146,42,0.18)',
+                  borderRadius: '12px', padding: '18px 22px',
+                  marginBottom: '10px',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                    <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold }}>
+                      {dLabel}
+                    </span>
+                    {d.is_primary && (
+                      <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(168,114,26,0.60)' }}>
+                        Primary domain
+                      </span>
+                    )}
+                  </div>
+                  <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: horizon ? '10px' : 0 }}>
+                    {d.alignment_note}
+                  </p>
+                  {horizon && (
+                    <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.40)', lineHeight: 1.6, margin: 0 }}>
+                      Horizon: {horizon}
+                    </p>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Horizon goal — fallback when no alignment notes */}
+        {!actorDomains.some(d => d.alignment_note) && horizonGoal && (
+          <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '12px', padding: '20px 24px', marginBottom: '40px' }}>
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>
+              {domainLabel} · Horizon Goal
+            </div>
+            <p style={{ ...serif, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.75)', lineHeight: 1.75, margin: 0 }}>
+              {horizonGoal}
+            </p>
+          </div>
+        )}
+
         {/* Alignment score */}
         {actor.alignment_score != null && (
           <div style={{ marginBottom: '36px' }}>
@@ -831,21 +1011,9 @@ export function NextUsActorPage() {
           </div>
         )}
 
-        {/* Horizon Goal context */}
-        {horizonGoal && (
-          <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '12px', padding: '20px 24px', marginBottom: '40px' }}>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>
-              {domainLabel} · Horizon Goal
-            </div>
-            <p style={{ ...serif, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.75)', lineHeight: 1.75, margin: 0 }}>
-              {horizonGoal}
-            </p>
-          </div>
-        )}
-
         {/* Website */}
         {actor.website && (
-          <div style={{ marginBottom: '40px' }}>
+          <div style={{ marginBottom: '48px' }}>
             <a
               href={actor.website} target="_blank" rel="noopener noreferrer"
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, textDecoration: 'none', borderBottom: `1px solid ${gold}35`, paddingBottom: '2px' }}
@@ -855,8 +1023,36 @@ export function NextUsActorPage() {
           </div>
         )}
 
+        {/* ── OFFERINGS ── */}
+        {offerings.length > 0 && (
+          <div style={{ marginBottom: '52px' }}>
+            <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '36px' }} />
+            <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: dark, marginBottom: '10px' }}>
+              What they offer.
+            </h2>
+            <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)', marginBottom: '28px', lineHeight: 1.65, maxWidth: '520px' }}>
+              Tools, services, programmes, and resources available from {actor.name}.
+            </p>
+            {offerings.map(o => (
+              <OfferingCard key={o.id} offering={o} />
+            ))}
+          </div>
+        )}
+
         {/* ── NEEDS ── */}
-        {needs.length > 0 && (
+        {actor.needs_visible === false ? (
+          <div style={{ marginBottom: '48px' }}>
+            <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '36px' }} />
+            <div style={{ background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '12px', padding: '20px 24px' }}>
+              <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.40)', marginBottom: '8px' }}>
+                Needs paused
+              </p>
+              <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, margin: 0 }}>
+                {actor.name} is completing outstanding contribution reports before posting new needs. Check back soon.
+              </p>
+            </div>
+          </div>
+        ) : needs.length > 0 && (
           <div style={{ marginBottom: '48px' }}>
             <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '36px' }} />
             <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: dark, marginBottom: '10px' }}>

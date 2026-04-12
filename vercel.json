@@ -1,7 +1,19 @@
 {
   "buildCommand": "vite build",
   "outputDirectory": "dist",
+  "crons": [
+    {
+      "path": "/api/integrity-cron",
+      "schedule": "0 2 * * *"
+    }
+  ],
   "functions": {
+    "api/integrity-cron.js": {
+      "maxDuration": 60
+    },
+    "api/nextus-match.js": {
+      "maxDuration": 15
+    },
     "api/map-chat.js": {
       "maxDuration": 60
     },
@@ -108,6 +120,14 @@
     {
       "source": "/tools/map/api/connection-synthesis",
       "destination": "/api/connection-synthesis-chat"
+    },
+    {
+      "source": "/api/nextus-match",
+      "destination": "/api/nextus-match"
+    },
+    {
+      "source": "/api/integrity-cron",
+      "destination": "/api/integrity-cron"
     },
     {
       "source": "/(.*)",
