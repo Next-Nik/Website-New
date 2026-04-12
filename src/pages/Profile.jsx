@@ -1915,7 +1915,10 @@ export function ProfilePage() {
           <Eyebrow>Your profile</Eyebrow>
           <h1 style={{ ...serif, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 300,
             color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '8px' }}>
-            {name}.
+            {user?.user_metadata?.role === 'founder'
+              ? <a href="/admin" style={{ textDecoration: 'none', color: 'inherit' }}>{name}.</a>
+              : <>{name}.</>
+            }
           </h1>
           <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
             color: 'rgba(15,21,35,0.72)' }}>{user.email}</p>
