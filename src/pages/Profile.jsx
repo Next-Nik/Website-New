@@ -1594,6 +1594,8 @@ function ContributorOfferSection({ userId, purposeData }) {
 }
 
 // ─── NextUs slot ───────────────────────────────────────────────────────────────
+
+function NextUsSlot({ purposeData, userId, claimedActor }) {
   const profile   = purposeData?.profile ?? {}
   const tentative = purposeData?.session?.tentative ?? {}
   const statement = profile.civilisational_statement
