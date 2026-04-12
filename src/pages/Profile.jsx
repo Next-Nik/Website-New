@@ -421,7 +421,7 @@ function PPActionChecklist({ userId, actions }) {
       supabase.from('purpose_piece_results')
         .update({ actions_checked: next, updated_at: new Date().toISOString() })
         .eq('user_id', userId)
-        .catch(() => {})
+        
     }
   }
 
