@@ -309,7 +309,9 @@ function getNextStage(stage) {
 // These set the register for each stage — behavioural, attentional, confessional.
 
 const STAGE_OPENINGS = {
-  archetype: null, // goes straight to Q1 from welcome
+  archetype: `Five questions. Each one is behavioural — I’m looking for what you actually did, not what you think you’d do.
+
+Answer from your life as it is right now. Not the version you’re working toward.`,
 
   domain: `Good. Now a different kind of question.
 
@@ -1192,7 +1194,7 @@ async function handleStageComplete(session, res, prefixMessage = null) {
 
 // ─── Confirmation phase handler ───────────────────────────────────────────────
 
-async function handleConfirmation(session, latestInput, res) {
+async function handleConfirmation(session, latestInput, res, northStarCtx) {
   session.confirmationHistory = session.confirmationHistory || [];
   session.confirmationHistory.push({ role: "user", content: latestInput });
 
@@ -1312,23 +1314,24 @@ module.exports = async (req, res) => {
   try {
     let session = clientSession || null;
 
-    // ── New session ───────────────────────────────────────────────────────────
+    // ── New session ───────────────────────────────────────────────────────────────
     if (!session || session.status === undefined) {
       session = createSession();
       session.stage = "archetype";
       session.currentQuestion = ARCHETYPE_QUESTIONS[0].text;
-      // Do NOT send the question as `message` — the pinned question header
-      // already renders `currentQuestion`. Sending it as `message` too causes
-      // it to appear twice (once pinned, once as a chat bubble).
+      // Send archetype opening as a bubble, then auto-advance to Q1.
+      // currentQuestion pre-set so pinned header is ready after advance.
       return res.status(200).json({
-        questionLabel: `Archetype · 1 of ${ARCHETYPE_QUESTIONS.length}`,
+        message:      STAGE_OPENINGS.archetype,
         session,
-        stage:         "archetype",
-        inputMode:     "text"
+        stage:        "archetype",
+        inputMode:    "none",
+        autoAdvance:  true,
+        advanceDelay: 2500,
       });
     }
 
-    // ── Complete ──────────────────────────────────────────────────────────────
+    // ── Complete ──────────────────────────────────────────────────────────────────────────
     if (session.status === "complete") {
       return res.status(200).json({
         message:   "Your Purpose Piece has been delivered.",
@@ -1341,16 +1344,17 @@ module.exports = async (req, res) => {
     const userMessages = messages.filter(m => m.role === "user");
     const latestInput  = userMessages[userMessages.length - 1]?.content?.trim() || "";
 
-    // ── Welcome → first archetype question ───────────────────────────────────
+    // ── Welcome → archetype opening ─────────────────────────────────────────────────────
     if (session.stage === "welcome") {
       session.stage = "archetype";
       session.currentQuestion = ARCHETYPE_QUESTIONS[0].text;
       return res.status(200).json({
-        questionLabel: `Archetype · 1 of ${ARCHETYPE_QUESTIONS.length}`,
+        message:      STAGE_OPENINGS.archetype,
         session,
-        stage:         "archetype",
-        questionIndex: 0,
-        inputMode:     "text"
+        stage:        "archetype",
+        inputMode:    "none",
+        autoAdvance:  true,
+        advanceDelay: 2500,
       });
     }
 
@@ -1361,7 +1365,7 @@ module.exports = async (req, res) => {
 
     // ── Confirmation ──────────────────────────────────────────────────────────
     if (session.stage === "confirmation") {
-      return await handleConfirmation(session, latestInput, res);
+      return await handleConfirmation(session, latestInput, res, northStarCtx);
     }
 
     // ── Thinking → synthesis ──────────────────────────────────────────────────
