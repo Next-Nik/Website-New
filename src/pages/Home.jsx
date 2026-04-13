@@ -267,7 +267,7 @@ export function HomePage() {
             <em style={{ fontStyle: 'italic', color: '#A8721A' }}>A future worth building.</em>
           </h1>
           <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '16px', maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto' }}>
-            A personal development ecosystem for people who are done with the loop they're in. Tools for self-knowledge, clarity, and building a life that actually fits you.
+            Build yourself. Build the world.
           </p>
           <p style={{ ...serif, fontSize: '15px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '52px', maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
             Sign in to save your work and track your progress.
