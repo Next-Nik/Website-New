@@ -718,7 +718,7 @@
 }
 
 .infoIcon {
-  font-size: 14px;
+  font-size: 16px;
   color: var(--text-meta);
   cursor: default;
   opacity: 0.55;
@@ -850,7 +850,7 @@
 
 .focusSearching {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 14px;
+  font-size: 16px;
   color: rgba(15,21,35,0.40);
   padding: 10px 14px;
   margin: 0;
@@ -934,7 +934,7 @@
 
 .focusEmptyHint {
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: 14px;
+  font-size: 16px;
   font-style: italic;
   color: #A8721A;
   margin: 0;
@@ -952,3 +952,42 @@
 }
 
 .focusPageLink:hover { opacity: 0.7; }
+
+/* ── MOBILE ────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  /* Focus bar — prevent dropdown overflowing screen edge */
+  .focusDropdown {
+    left: 0;
+    right: 0;
+    min-width: 0;
+    max-width: 100vw;
+    width: calc(100vw - 32px);
+  }
+
+  /* Focus trigger — truncate long place names */
+  .focusName {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Focus actors section — tighter padding */
+  .focusActorsSection {
+    padding: 12px 12px;
+  }
+
+  /* Status badge — don't let it push off screen */
+  .statusBadge {
+    font-size: 10px;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+
+  /* Actor chips — full width on very small screens */
+  .focusActorsHeader {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}

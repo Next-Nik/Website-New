@@ -281,9 +281,9 @@ function FocusSearch({ value, onChange }) {
             style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: '#0F1523', padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
           />
           {open && query.trim().length >= 2 && (
-            <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 200, background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '0 0 8px 8px', boxShadow: '0 8px 24px rgba(15,21,35,0.10)', maxHeight: '240px', overflowY: 'auto' }}>
-              {searching && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.40)', padding: '12px 16px' }}>Searching…</div>}
-              {!searching && results.length === 0 && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.40)', padding: '12px 16px' }}>No results for "{query}"</div>}
+            <div className="focus-search-dropdown" style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 200, background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '0 0 8px 8px', boxShadow: '0 8px 24px rgba(15,21,35,0.10)', maxHeight: '240px', overflowY: 'auto' }}>
+              {searching && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', color: 'rgba(15,21,35,0.40)', padding: '12px 16px' }}>Searching…</div>}
+              {!searching && results.length === 0 && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', color: 'rgba(15,21,35,0.40)', padding: '12px 16px' }}>No results for "{query}"</div>}
               {results.map(f => (
                 <button key={f.id} onClick={() => select(f)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 16px', background: 'none', border: 'none', borderBottom: '1px solid rgba(200,146,42,0.10)', cursor: 'pointer', textAlign: 'left' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,146,42,0.05)'}
@@ -1602,6 +1602,7 @@ export function NextUsActorManagePage() {
       <style>{`
         @media (max-width: 640px) {
           .manage-main { padding-left: 20px !important; padding-right: 20px !important; }
+          .focus-search-dropdown { max-width: calc(100vw - 40px) !important; }
         }
       `}</style>
 

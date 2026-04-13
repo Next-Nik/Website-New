@@ -559,7 +559,7 @@ function FocusGoalsTab({ toast }) {
                     <button onClick={() => deleteGoal(domain.id)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(180,40,40,0.60)', background: 'none', border: 'none', cursor: 'pointer' }}>Remove</button>
                   )}
                 </div>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.38)', lineHeight: 1.6, marginBottom: '12px' }}>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.38)', lineHeight: 1.6, marginBottom: '12px' }}>
                   Global: {domain.goal}
                 </p>
                 <textarea

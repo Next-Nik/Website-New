@@ -87,12 +87,12 @@ function DomainCard({ domain, goal, actors, status, focusSlug, focusName }) {
       borderLeft: `4px solid ${cfg.color}`,
     }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', gap: '16px' }}>
+      <div className="domain-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', gap: '16px' }}>
         <div>
           <h3 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: dark, marginBottom: '4px' }}>
             {domain.label}
           </h3>
-          <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.40)', lineHeight: 1.5, maxWidth: '480px' }}>
+          <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.40)', lineHeight: 1.5, maxWidth: '480px' }}>
             {goal || domain.globalGoal}
           </p>
           {goal && (
@@ -105,7 +105,7 @@ function DomainCard({ domain, goal, actors, status, focusSlug, focusName }) {
       </div>
 
       {/* Status description */}
-      <p style={{ ...serif, fontSize: '14px', color: cfg.color, marginBottom: '14px', fontStyle: 'italic' }}>
+      <p style={{ ...serif, fontSize: '16px', color: cfg.color, marginBottom: '14px', fontStyle: 'italic' }}>
         {cfg.desc}
       </p>
 
@@ -121,7 +121,7 @@ function DomainCard({ domain, goal, actors, status, focusSlug, focusName }) {
                 key={a.id}
                 to={`/nextus/actors/${a.id}`}
                 style={{
-                  ...serif, fontSize: '14px', color: a.winning ? gold : 'rgba(15,21,35,0.55)',
+                  ...serif, fontSize: '16px', color: a.winning ? gold : 'rgba(15,21,35,0.55)',
                   background: a.winning ? 'rgba(200,146,42,0.08)' : 'rgba(15,21,35,0.04)',
                   border: `1px solid ${a.winning ? 'rgba(200,146,42,0.30)' : 'rgba(15,21,35,0.10)'}`,
                   borderRadius: '6px', padding: '4px 12px',
@@ -306,6 +306,8 @@ export function NextUsFocusPage() {
         @media (max-width: 640px) {
           .focus-main { padding-left: 20px !important; padding-right: 20px !important; }
           .focus-summary { grid-template-columns: repeat(2, 1fr) !important; }
+          .domain-card-header { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
+          .child-focuses { gap: 8px !important; }
         }
       `}</style>
 
@@ -374,7 +376,7 @@ export function NextUsFocusPage() {
             <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.45)', marginBottom: '16px' }}>
               Within {focus.name}
             </p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+            <div className="child-focuses" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
               {children.map(c => (
                 <Link
                   key={c.id}
