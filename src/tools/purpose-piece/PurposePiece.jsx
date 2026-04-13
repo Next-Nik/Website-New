@@ -778,6 +778,15 @@ export function PurposePiecePage() {
     if (session) setSession(prev => ({ ...prev, stage: STAGE_ORDER[nextIdx] }))
   }
 
+  // Direct stage jump — called when user clicks a wedge on the disc
+  function handleWedgeClick(key) {
+    if (!session) return
+    if (!['archetype', 'domain', 'scale'].includes(key)) return
+    if (key === stage) return // already on this stage
+    setSession(prev => ({ ...prev, stage: key }))
+    setStageComplete(false)
+  }
+
   function handleCentreClick() {
     if (allWedgesDone) {
       setShowReveal(true)
@@ -1163,7 +1172,7 @@ export function PurposePiecePage() {
                 <div style={{ pointerEvents: 'auto' }}>
                   <PurposeDisc
                     wedgeStates={wedgeStates} activeStage={breadcrumb}
-                    onWedgeClick={handleWedgeNav} onDiscClick={handleCentreClick}
+                    onWedgeClick={handleWedgeClick} onDiscClick={handleCentreClick}
                     allDone={allWedgesDone} size={discSize}
                   />
                 </div>
@@ -1204,7 +1213,7 @@ export function PurposePiecePage() {
                 <div style={{ pointerEvents: 'auto', width: '100%' }}>
                   <PurposeDisc
                     wedgeStates={wedgeStates} activeStage={breadcrumb}
-                    onWedgeClick={handleWedgeNav} onDiscClick={handleCentreClick}
+                    onWedgeClick={handleWedgeClick} onDiscClick={handleCentreClick}
                     allDone={allWedgesDone} size={440}
                   />
                 </div>

@@ -936,8 +936,9 @@ async function handleQuestionPhase(session, latestInput, res) {
   // ── Auto-advance / empty call — just surface the current question ───────────
   // The stage opening auto-advance fires an empty API call. Return currentQuestion
   // without treating it as a user answer.
+  // Always derive from current stage questions — never carry over stale value from prior stage.
   if (!latestInput) {
-    session.currentQuestion = session.currentQuestion || questions[qi].text;
+    session.currentQuestion = questions[qi].text;
     return res.status(200).json({
       questionLabel: `${capitalise(stage)} · ${qi + 1} of ${total}`,
       session,
@@ -948,17 +949,15 @@ async function handleQuestionPhase(session, latestInput, res) {
   }
 
   // ── Duplicate message guard ──────────────────────────────────────────────────
-  // Two identical consecutive messages — treat as re-send, not a new answer
+  // Two identical consecutive messages — treat as re-send, not a new answer.
+  // Do NOT send message — currentQuestion in session already populates the pinned header.
   const lastMsg = session.lastUserMessage || null;
   if (latestInput === lastMsg && entry) {
-    // Already processed this answer — just re-send the last probe or current question
-    const currentQ = session.currentQuestion || questions[qi].text;
     return res.status(200).json({
-      message:   currentQ,
       session,
       stage,
+      questionIndex: qi,
       inputMode: "text",
-      isProbe:   !!entry
     });
   }
   session.lastUserMessage = latestInput;
