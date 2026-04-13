@@ -269,10 +269,15 @@ export function HomePage() {
           <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '16px', maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto' }}>
             Build yourself. Build the world.
           </p>
-          <p style={{ ...serif, fontSize: '15px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '52px', maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
-            Sign in to save your work and track your progress.
-          </p>
-          <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Find your starting point →</a>
+          {!user && (
+            <p style={{ ...serif, fontSize: '15px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '52px', maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
+              <a href="/login" style={{ color: 'rgba(15,21,35,0.55)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign in</a> to save your work and track your progress.
+            </p>
+          )}
+          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginTop: user ? '52px' : '0' }}>
+            <a href="/nextus-self" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>NextUs Self →</a>
+            <a href="/nextus" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>NextUs World →</a>
+          </div>
         </div>
         <div style={{ position: 'absolute', bottom: '36px', left: '50%', transform: 'translateX(-50%)', textAlign: 'center' }}>
           <p style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', opacity: 0.78 }}>nextus.world</p>
