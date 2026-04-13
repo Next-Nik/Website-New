@@ -68,7 +68,30 @@ const NEED_TYPE_COLOR = {
   skills:'rgba(42,74,138,0.85)', capital:'rgba(42,107,58,0.85)',
   time:'rgba(168,114,26,0.85)', resources:'rgba(107,42,107,0.85)',
   partnerships:'rgba(42,107,107,0.85)', data:'rgba(107,74,42,0.85)', other:'rgba(15,21,35,0.55)',
+  creative:'rgba(138,74,138,0.85)',
 }
+
+// Subdomain options grouped by domain — only shown when a domain is selected
+const SUBDOMAINS_BY_DOMAIN = {
+  'human-being':     [['hb-body','Body'],['hb-mind','Mind'],['hb-inner-life','Inner Life'],['hb-development','Development'],['hb-dignity','Dignity & Rights'],['hb-expression','Expression & Culture']],
+  'society':         [['soc-governance','Governance'],['soc-culture','Culture'],['soc-conflict-peace','Conflict & Peace'],['soc-community','Community'],['soc-communication','Communication & Information'],['soc-global','Global Coordination']],
+  'nature':          [['nat-earth','Earth'],['nat-air','Air'],['nat-salt-water','Salt Water'],['nat-fresh-water','Fresh Water'],['nat-flora','Flora'],['nat-fauna','Fauna'],['nat-living-systems','Living Systems']],
+  'technology':      [['tech-digital','Digital Systems'],['tech-biological','Biological Technology'],['tech-infrastructure','Physical Infrastructure'],['tech-energy','Energy'],['tech-frontier','Frontier & Emerging Technology']],
+  'finance-economy': [['fe-resources','Resources'],['fe-exchange','Exchange'],['fe-capital','Capital'],['fe-labour','Labour'],['fe-ownership','Ownership'],['fe-distribution','Distribution']],
+  'legacy':          [['leg-wisdom','Wisdom'],['leg-memory','Memory'],['leg-ceremony','Ceremony & Ritual'],['leg-intergenerational','Intergenerational Relationship'],['leg-long-arc','The Long Arc']],
+  'vision':          [['vis-imagination','Imagination'],['vis-philosophy','Philosophy & Worldview'],['vis-leadership','Leadership'],['vis-coordination','Coordination'],['vis-foresight','Foresight']],
+}
+
+const NEED_TYPE_FILTERS = [
+  { value: '', label: 'All needs' },
+  { value: 'skills',       label: 'Skills' },
+  { value: 'creative',     label: 'Creative' },
+  { value: 'capital',      label: 'Capital' },
+  { value: 'time',         label: 'Time' },
+  { value: 'resources',    label: 'Resources' },
+  { value: 'partnerships', label: 'Partnerships' },
+  { value: 'data',         label: 'Data' },
+]
 
 function FilterSelect({ value, onChange, options }) {
   return (
@@ -332,46 +355,58 @@ export function NextUsActorsPage() {
   const [total, setTotal]       = useState(0)
 
   const [domain,    setDomain]    = useState(searchParams.get('domain') || '')
+  const [subdomain, setSubdomain] = useState('')
   const [scale,     setScale]     = useState('')
   const [type,      setType]      = useState('')
-  const [view,      setView]      = useState('all')   // 'all' | 'winning' | 'underloved'
+  const [needType,  setNeedType]  = useState('')
+  const [view,      setView]      = useState('all')
   const [search,    setSearch]    = useState('')
   const [searchInput, setSearchInput] = useState('')
 
-  useEffect(() => { fetchActors() }, [domain, scale, type, view, search])
+  // Clear subdomain when domain changes
+  useEffect(() => { setSubdomain('') }, [domain])
+
+  useEffect(() => { fetchActors() }, [domain, subdomain, scale, type, view, search, needType])
 
   async function fetchActors() {
     setLoading(true)
 
-    // Fetch actors with a count of their open needs
     let q = supabase
       .from('nextus_actors')
       .select(`
         id, name, type, domain_id, subdomain_id, scale, location_name,
         description, impact_summary, alignment_score, winning, claimed, verified,
-        nextus_needs(id, status)
+        nextus_needs(id, status, need_type)
       `, { count: 'exact' })
       .order('name')
       .limit(80)
 
-    if (domain) q = q.eq('domain_id', domain)
-    if (scale)  q = q.eq('scale', scale)
-    if (type)   q = q.eq('type', type)
+    if (domain)    q = q.eq('domain_id', domain)
+    if (subdomain) q = q.eq('subdomain_id', subdomain)
+    if (scale)     q = q.eq('scale', scale)
+    if (type)      q = q.eq('type', type)
     if (view === 'winning')    q = q.eq('winning', true)
     if (view === 'underloved') q = q.eq('winning', false)
-    if (search) q = q.ilike('name', `%${search}%`)
+    if (search)    q = q.ilike('name', `%${search}%`)
 
     const { data, count, error } = await q
     if (error) { setLoading(false); return }
 
-    // Add open needs count
-    const enriched = (data || []).map(a => ({
-      ...a,
-      open_needs_count: (a.nextus_needs || []).filter(n => n.status === 'open').length,
-    }))
+    // Enrich with open needs count, optionally filtered by need type
+    const enriched = (data || []).map(a => {
+      const openNeeds = (a.nextus_needs || []).filter(n => n.status === 'open')
+      const filteredNeeds = needType
+        ? openNeeds.filter(n => n.need_type === needType)
+        : openNeeds
+      return {
+        ...a,
+        open_needs_count: filteredNeeds.length,
+        _all_open_needs: openNeeds.length,
+      }
+    }).filter(a => needType ? a.open_needs_count > 0 : true)
 
     setActors(enriched)
-    setTotal(count || 0)
+    setTotal(needType ? enriched.length : (count || 0))
     setLoading(false)
   }
 
@@ -419,8 +454,16 @@ export function NextUsActorsPage() {
             <button type="submit" style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '10px 18px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: gold, cursor: 'pointer' }}>Search</button>
           </form>
           <FilterSelect value={domain} onChange={v => { setDomain(v) }} options={DOMAINS} />
-          <FilterSelect value={scale}  onChange={setScale}  options={SCALES} />
-          <FilterSelect value={type}   onChange={setType}   options={TYPES} />
+          {domain && SUBDOMAINS_BY_DOMAIN[domain] && (
+            <FilterSelect
+              value={subdomain}
+              onChange={setSubdomain}
+              options={[{ value: '', label: 'All subdomains' }, ...SUBDOMAINS_BY_DOMAIN[domain].map(([v, l]) => ({ value: v, label: l }))]}
+            />
+          )}
+          <FilterSelect value={scale}    onChange={setScale}    options={SCALES} />
+          <FilterSelect value={type}     onChange={setType}     options={TYPES} />
+          <FilterSelect value={needType} onChange={setNeedType} options={NEED_TYPE_FILTERS} />
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' }}>

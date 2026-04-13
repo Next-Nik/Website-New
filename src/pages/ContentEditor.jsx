@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Nav } from '../components/Nav'
 import { useAuth } from '../hooks/useAuth'
@@ -64,7 +64,7 @@ function Toast({ message, onClose }) {
 
 // ─── Tabs ─────────────────────────────────────────────────────
 
-const TABS = ['Products', 'Announcements', 'Ask']
+const TABS = ['Products', 'Announcements', 'Focus Goals', 'Ask']
 
 function TabBar({ active, setActive }) {
   return (
@@ -398,6 +398,197 @@ function AnnouncementsTab({ toast }) {
   )
 }
 
+// ─── Focus Goals tab — set horizon goals per Focus per domain ─
+
+const FOCUS_DOMAINS = [
+  { id: 'human-being',     label: 'Human Being',      goal: 'Every person has what they need to know themselves, develop fully, and bring what they came here to bring.' },
+  { id: 'society',         label: 'Society',           goal: 'Humanity knows how to be human together — and every individual is better for it.' },
+  { id: 'nature',          label: 'Nature',            goal: 'Ecosystems are thriving and we are living in harmony with the planet.' },
+  { id: 'technology',      label: 'Technology',        goal: 'Our creations support and amplify life.' },
+  { id: 'finance-economy', label: 'Finance & Economy', goal: 'Resources flow toward what sustains and generates life — rewarding care, contribution, and long-term thinking.' },
+  { id: 'legacy',          label: 'Legacy',            goal: 'We are ancestors worth having.' },
+  { id: 'vision',          label: 'Vision',            goal: 'Into the unknown. On purpose. Together.' },
+]
+
+function FocusGoalsTab({ toast }) {
+  const [query, setQuery]             = useState('')
+  const [results, setResults]         = useState([])
+  const [searching, setSearching]     = useState(false)
+  const [selectedFocus, setSelected]  = useState(null)
+  const [goals, setGoals]             = useState({})
+  const [editing, setEditing]         = useState({})
+  const [saving, setSaving]           = useState({})
+  const debounceRef                   = useRef(null)
+
+  const TYPE_LABEL = {
+    planet:'Planet', continent:'Continent', nation:'Nation',
+    province:'Province / Territory', city:'City',
+    neighbourhood:'Neighbourhood', organisation:'Organisation',
+  }
+
+  useEffect(() => {
+    if (query.trim().length < 2) { setResults([]); return }
+    clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(async () => {
+      setSearching(true)
+      const { data } = await supabase
+        .from('nextus_focuses')
+        .select('id, name, type, slug')
+        .ilike('name', `%${query.trim()}%`)
+        .order('type').limit(14)
+      setResults(data || [])
+      setSearching(false)
+    }, 280)
+    return () => clearTimeout(debounceRef.current)
+  }, [query])
+
+  async function loadGoals(focus) {
+    setSelected(focus)
+    setGoals({})
+    setEditing({})
+    const { data } = await supabase
+      .from('nextus_focus_goals')
+      .select('id, domain_id, horizon_goal, status')
+      .eq('focus_id', focus.id)
+    const map = {}
+    ;(data || []).forEach(g => { map[g.domain_id] = g })
+    setGoals(map)
+    const drafts = {}
+    ;(data || []).forEach(g => { drafts[g.domain_id] = g.horizon_goal })
+    setEditing(drafts)
+  }
+
+  async function saveGoal(domainId) {
+    const text = (editing[domainId] || '').trim()
+    if (!text) { toast('Goal text is required'); return }
+    setSaving(s => ({ ...s, [domainId]: true }))
+    const existing = goals[domainId]
+    if (existing) {
+      const { error } = await supabase.from('nextus_focus_goals')
+        .update({ horizon_goal: text, status: 'ratified', updated_at: new Date().toISOString() })
+        .eq('id', existing.id)
+      if (error) { toast('Error: ' + error.message); setSaving(s => ({ ...s, [domainId]: false })); return }
+    } else {
+      const { data: userData } = await supabase.auth.getUser()
+      const { error } = await supabase.from('nextus_focus_goals').insert({
+        focus_id: selectedFocus.id, domain_id: domainId,
+        horizon_goal: text, status: 'ratified',
+        set_by: userData?.user?.id,
+      })
+      if (error) { toast('Error: ' + error.message); setSaving(s => ({ ...s, [domainId]: false })); return }
+    }
+    toast(`${FOCUS_DOMAINS.find(d => d.id === domainId)?.label} goal saved`)
+    setSaving(s => ({ ...s, [domainId]: false }))
+    await loadGoals(selectedFocus)
+  }
+
+  async function deleteGoal(domainId) {
+    const existing = goals[domainId]
+    if (!existing) return
+    if (!window.confirm('Delete this goal?')) return
+    await supabase.from('nextus_focus_goals').delete().eq('id', existing.id)
+    toast('Goal removed')
+    await loadGoals(selectedFocus)
+  }
+
+  const card = {
+    background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.18)',
+    borderRadius: '12px', padding: '22px 24px', marginBottom: '14px',
+  }
+
+  return (
+    <div style={{ maxWidth: '680px' }}>
+      <Eyebrow>Focus Goals</Eyebrow>
+      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '17px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '28px' }}>
+        Set locally-ratified horizon goals for any Focus. These appear in the Domain Explorer when a visitor sets that Focus as their viewing context.
+      </p>
+
+      <div style={{ marginBottom: '32px' }}>
+        <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '8px' }}>
+          Select a Focus
+        </label>
+        <input
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder="Search — Canada, British Columbia, Vancouver…"
+          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '17px', color: '#0F1523', padding: '11px 16px', borderRadius: '8px', width: '100%', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FAFAF7', outline: 'none' }}
+        />
+        {searching && <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.40)', marginTop: '8px' }}>Searching…</p>}
+        {results.length > 0 && (
+          <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.25)', borderRadius: '8px', marginTop: '6px', overflow: 'hidden' }}>
+            {results.map(f => (
+              <button key={f.id} onClick={() => { setQuery(''); setResults([]); loadGoals(f) }}
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: '10px 16px', background: 'none', border: 'none', borderBottom: '1px solid rgba(200,146,42,0.10)', cursor: 'pointer', textAlign: 'left' }}
+                onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,146,42,0.05)'}
+                onMouseLeave={e => e.currentTarget.style.background = 'none'}
+              >
+                <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '17px', color: '#0F1523' }}>{f.name}</span>
+                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.12em', color: gold }}>{TYPE_LABEL[f.type] || f.type}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {selectedFocus && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid rgba(200,146,42,0.18)' }}>
+            <div>
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '4px' }}>{TYPE_LABEL[selectedFocus.type] || selectedFocus.type}</span>
+              <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '22px', color: '#0F1523' }}>{selectedFocus.name}</span>
+            </div>
+            <button onClick={() => setSelected(null)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.40)', background: 'none', border: 'none', cursor: 'pointer' }}>Change ×</button>
+          </div>
+
+          {FOCUS_DOMAINS.map(domain => {
+            const existing = goals[domain.id]
+            const draft    = editing[domain.id] ?? ''
+            const isDirty  = draft !== (existing?.horizon_goal || '')
+            const isSet    = !!existing
+
+            return (
+              <div key={domain.id} style={{ ...card, borderColor: isSet ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.12)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                  <div>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '14px', letterSpacing: '0.14em', color: gold }}>{domain.label}</span>
+                    {isSet && (
+                      <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.14em', color: '#2A6B3A', background: 'rgba(42,107,58,0.08)', border: '1px solid rgba(42,107,58,0.25)', borderRadius: '40px', padding: '2px 8px', marginLeft: '10px' }}>Ratified</span>
+                    )}
+                  </div>
+                  {isSet && (
+                    <button onClick={() => deleteGoal(domain.id)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(180,40,40,0.60)', background: 'none', border: 'none', cursor: 'pointer' }}>Remove</button>
+                  )}
+                </div>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.38)', lineHeight: 1.6, marginBottom: '12px' }}>
+                  Global: {domain.goal}
+                </p>
+                <textarea
+                  value={draft}
+                  onChange={e => setEditing(ed => ({ ...ed, [domain.id]: e.target.value }))}
+                  placeholder={`Local horizon goal for ${selectedFocus.name} — ${domain.label}…`}
+                  rows={3}
+                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', color: '#0F1523', padding: '10px 14px', borderRadius: '8px', width: '100%', border: '1.5px solid rgba(200,146,42,0.25)', background: draft ? '#FFFFFF' : 'rgba(200,146,42,0.02)', outline: 'none', resize: 'vertical', lineHeight: 1.65 }}
+                />
+                <div style={{ marginTop: '10px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <Btn small variant="solid" disabled={!draft.trim() || saving[domain.id]} onClick={() => saveGoal(domain.id)}>
+                    {saving[domain.id] ? 'Saving…' : isSet ? 'Update' : 'Ratify'}
+                  </Btn>
+                  {isDirty && existing && (
+                    <button onClick={() => setEditing(ed => ({ ...ed, [domain.id]: existing.horizon_goal }))}
+                      style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                      Reset
+                    </button>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </>
+      )}
+    </div>
+  )
+}
+
 // ─── Ask tab — AI observer query interface ────────────────────
 
 function AskTab() {
@@ -556,6 +747,7 @@ export function ContentEditorPage() {
 
         {tab === 'Products'       && <ProductsTab      toast={showToast} />}
         {tab === 'Announcements'  && <AnnouncementsTab toast={showToast} />}
+        {tab === 'Focus Goals'    && <FocusGoalsTab    toast={showToast} />}
         {tab === 'Ask'            && <AskTab />}
       </div>
 

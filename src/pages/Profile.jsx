@@ -1157,6 +1157,21 @@ const EMPTY_OFFER = {
   is_active: true,
 }
 
+// Maps Purpose Piece archetype to the most natural contribution mode.
+// Used to seed new offer forms so Expressive contributors don't start
+// on 'functional' by default.
+const ARCHETYPE_TO_MODE = {
+  'Maker':      'expressive',
+  'Mirror':     'expressive',
+  'Exemplar':   'expressive',
+  'Connector':  'relational',
+  'Steward':    'functional',
+  'Guardian':   'functional',
+  'Explorer':   'intellectual',
+  'Sage':       'intellectual',
+  'Architect':  'intellectual',
+}
+
 function OfferChips({ options, selected, onChange, multi = false }) {
   const sc_ = { fontFamily: "'Cormorant SC', Georgia, serif" }
   const serif_ = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -1438,8 +1453,12 @@ function ContributorOfferSection({ userId, purposeData }) {
 
   const seededOffer = {
     ...EMPTY_OFFER,
-    domain_ids: ppDomain ? [ppDomain] : [],
-    scale: ppScale || '',
+    domain_ids:        ppDomain    ? [ppDomain] : [],
+    scale:             ppScale     || '',
+    contribution_mode: ppArchetype ? (ARCHETYPE_TO_MODE[ppArchetype] || 'functional') : 'functional',
+    offer_type:        (ppArchetype === 'Maker' || ppArchetype === 'Mirror' || ppArchetype === 'Exemplar')
+                         ? 'creative'
+                         : EMPTY_OFFER.offer_type,
   }
 
   async function load() {

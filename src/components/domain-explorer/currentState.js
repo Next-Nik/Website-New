@@ -1,12 +1,7 @@
 // ── QUALITATIVE BANDS ─────────────────────────────────────────────────────────
-// Maps illustrative score ranges to honest qualitative signals
-export function getQualitativeBand(score) {
-  if (score < 2)  return { label: "Critical",    description: "Significant structural gaps" };
-  if (score < 4)  return { label: "Strained",    description: "Under considerable pressure" };
-  if (score < 6)  return { label: "Developing",  description: "Progress is happening, gaps remain" };
-  if (score < 8)  return { label: "Advancing",   description: "Meaningful movement toward the horizon" };
-  return           { label: "Approaching", description: "Close to the horizon goal" };
-}
+// Imported from shared Horizon Scale constants.
+// The local definition below is retired — use getQualitativeBand from horizonScale.js
+export { getQualitativeBand } from '../constants/horizonScale'
 
 // dataStatus: signals to the UI whether numbers are illustrative or verified
 // 'illustrative' = placeholder shape, Decision Analytics not yet run

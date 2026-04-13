@@ -86,9 +86,11 @@ function Pill({ children, color = gold }) {
 // Shown when an authenticated user clicks "I can help"
 // Collects contribution type, message, and records to DB
 
-function ContributionModal({ need, actor, user, onClose, onSuccess }) {
-  const [step, setStep]           = useState('type') // 'type' | 'detail' | 'confirm'
-  const [contribType, setContribType] = useState('')
+function ContributionModal({ need, actor, user, onClose, onSuccess, existingOffers = [] }) {
+  const [step, setStep]           = useState('type')
+  // Pre-populate from best matching offer if available
+  const defaultType = existingOffers.length > 0 ? (existingOffers[0].offer_type || '') : ''
+  const [contribType, setContribType] = useState(defaultType)
   const [message, setMessage]     = useState('')
   const [amount, setAmount]       = useState('')
   const [saving, setSaving]       = useState(false)
@@ -182,6 +184,14 @@ function ContributionModal({ need, actor, user, onClose, onSuccess }) {
         </div>
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '24px' }} />
+
+        {/* Show contributor's offer context if available */}
+        {existingOffers.length > 0 && existingOffers[0].title && (
+          <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', padding: '12px 16px', marginBottom: '20px' }}>
+            <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Your offer</p>
+            <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.70)', margin: 0 }}>{existingOffers[0].title}</p>
+          </div>
+        )}
 
         {/* Step 1: Type selection */}
         <div style={{ marginBottom: '20px' }}>
@@ -643,7 +653,9 @@ export function NextUsActorPage() {
         { data: domainsData },
         { data: offeringsData },
       ] = await Promise.all([
-        supabase.from('nextus_actors').select('*').eq('id', id).single(),
+        supabase.from('nextus_actors')
+          .select('*, focus:focus_id(id, name, type, slug)')
+          .eq('id', id).single(),
         supabase.from('nextus_needs')
           .select('*')
           .eq('actor_id', id)
@@ -670,21 +682,32 @@ export function NextUsActorPage() {
   }, [id])
 
   // When "I can help" is clicked on a need card
-  function handleHelp(need) {
-    if (user) {
-      setModal({ type: 'contribute', need })
-    } else {
-      setModal({ type: 'auth', need })
-    }
+  async function handleHelp(need) {
+    if (!user) { setModal({ type: 'auth', need }); return }
+
+    // Fetch contributor's active offers to pre-populate the modal
+    const { data: existingOffers } = await supabase
+      .from('nextus_contributor_offers')
+      .select('offer_type, contribution_mode, title, description')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .limit(5)
+
+    setModal({ type: 'contribute', need, existingOffers: existingOffers || [] })
   }
 
   // When "Contribute to this organisation" is clicked (no specific need)
-  function handleGeneralContribute() {
-    if (user) {
-      setModal({ type: 'contribute', need: null })
-    } else {
-      setModal({ type: 'auth', need: null })
-    }
+  async function handleGeneralContribute() {
+    if (!user) { setModal({ type: 'auth', need: null }); return }
+
+    const { data: existingOffers } = await supabase
+      .from('nextus_contributor_offers')
+      .select('offer_type, contribution_mode, title, description')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .limit(5)
+
+    setModal({ type: 'contribute', need: null, existingOffers: existingOffers || [] })
   }
 
   async function submitClaim() {
@@ -759,6 +782,7 @@ export function NextUsActorPage() {
           user={user}
           onClose={() => setModal(null)}
           onSuccess={() => setModal({ type: 'success' })}
+          existingOffers={modal.existingOffers || []}
         />
       )}
       {modal?.type === 'auth' && (
@@ -841,6 +865,7 @@ export function NextUsActorPage() {
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '14px' }}>
           {actor.type        && <Pill color="rgba(15,21,35,0.45)">{actor.type}</Pill>}
           {scaleLabel        && <Pill color="rgba(15,21,35,0.35)">{scaleLabel}</Pill>}
+          {actor.focus?.name && <Pill color={gold}>{actor.focus.name}</Pill>}
           {actor.location_name && <Pill color="rgba(15,21,35,0.35)">{actor.location_name}</Pill>}
           {actor.winning     && <Pill color="#2A6B3A">Succeeding</Pill>}
         </div>
@@ -999,14 +1024,24 @@ export function NextUsActorPage() {
           </div>
         )}
 
-        {/* Alignment score */}
-        {actor.alignment_score != null && (
+        {/* Alignment score — only show if computed by integrity cron (3+ closed loops) */}
+        {actor.alignment_score != null && actor.alignment_score_computed && (
           <div style={{ marginBottom: '36px' }}>
             <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.40)', marginBottom: '8px' }}>
               Alignment to Horizon Goal — {actor.alignment_score}/10
             </div>
             <div style={{ height: '3px', background: 'rgba(200,146,42,0.12)', borderRadius: '2px', maxWidth: '280px' }}>
               <div style={{ height: '100%', width: `${(actor.alignment_score / 10) * 100}%`, background: gold, borderRadius: '2px' }} />
+            </div>
+          </div>
+        )}
+        {actor.alignment_score != null && !actor.alignment_score_computed && (
+          <div style={{ marginBottom: '36px' }}>
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.30)', marginBottom: '4px' }}>
+              Alignment to Horizon Goal
+            </div>
+            <div style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.35)' }}>
+              Not yet established — confirmed contribution loops required
             </div>
           </div>
         )}

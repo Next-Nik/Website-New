@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { EarthIntro } from './EarthIntro'
 import { useAuth } from '../../hooks/useAuth'
 import Heptagon from './Heptagon'
 import DomainPanel from './DomainPanel'
-import ContributeModal from './ContributeModal'
 import { fetchDomains, STATIC_DOMAINS, TOP_LEVEL_GOAL } from './data'
 import styles from './DomainExplorer.module.css'
 
@@ -26,10 +26,10 @@ Seven domains. Horizon goals at every level. A shared destination — so that th
 
 export default function DomainExplorer() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [domainTree,     setDomainTree]     = useState(STATIC_DOMAINS)
   const [activeIndex,    setActiveIndex]    = useState(null)
   const [levelPath,      setLevelPath]      = useState([])
-  const [contributeOpen, setContributeOpen] = useState(false)
   const [overviewOpen,   setOverviewOpen]   = useState(true)
 
   // parentPanelOpen mirrors overviewOpen but for sub-levels.
@@ -115,7 +115,7 @@ export default function DomainExplorer() {
   }
 
   const handleKey = useCallback((e) => {
-    if (contributeOpen || overviewOpen) return
+    if (overviewOpen) return
     const len = navState.currentList.length
     if (e.key === 'ArrowRight') {
       e.preventDefault()
@@ -131,7 +131,7 @@ export default function DomainExplorer() {
       if (overviewOpen) { setOverviewOpen(false); return }
       if (activeIndex !== null) { setActiveIndex(null); setParentPanelOpen(levelPath.length > 0) }
     }
-  }, [isIdle, navState.currentList.length, activeIndex, contributeOpen, overviewOpen, levelPath])
+  }, [isIdle, navState.currentList.length, activeIndex, overviewOpen, levelPath])
 
   useEffect(() => {
     window.addEventListener('keydown', handleKey)
@@ -261,7 +261,7 @@ export default function DomainExplorer() {
               breadcrumb={navState.breadcrumb}
               onExploreSubDomains={null}
               onBack={handleBack}
-              onContribute={() => setContributeOpen(true)}
+              onContribute={() => navigate(`/nextus/actors${selectedItem?.id ? `?domain=${selectedItem.id}` : ''}`)}
               onPrev={handlePrev}
               onNext={handleNext}
               level={navState.level - 1}
@@ -279,7 +279,7 @@ export default function DomainExplorer() {
               breadcrumb={navState.breadcrumb.concat(selectedItem.name)}
               onExploreSubDomains={handleExploreSubDomains}
               onBack={handleBack}
-              onContribute={() => setContributeOpen(true)}
+              onContribute={() => navigate(`/nextus/actors?domain=${levelPath.length > 0 ? domainTree[levelPath[0].index]?.id : selectedItem?.id}`)}
               onPrev={handlePrev}
               onNext={handleNext}
               level={navState.level}
@@ -310,8 +310,8 @@ export default function DomainExplorer() {
       </main>
 
       <ContributeModal
-        isOpen={contributeOpen}
-        onClose={() => setContributeOpen(false)}
+        isOpen={false}
+        onClose={() => {}}
         domainName={selectedItem?.name ?? 'this domain'}
       />
     </div>

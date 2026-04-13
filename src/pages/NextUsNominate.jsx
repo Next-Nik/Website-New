@@ -96,6 +96,8 @@ export function NextUsNominatePage() {
   const [done, setDone]     = useState(false)
   const [error, setError]   = useState(null)
 
+  const [nominatedId, setNominatedId] = useState(null)
+
   function set(field, value) { setForm(f => ({ ...f, [field]: value })) }
 
   const selectedGoal = DOMAIN_GOALS[form.domain_id]
@@ -111,7 +113,7 @@ export function NextUsNominatePage() {
     setError(null)
 
     // Write to nextus_actors with vetting_status = 'nominated'
-    const { error: saveError } = await supabase.from('nextus_actors').insert({
+    const { data: inserted, error: saveError } = await supabase.from('nextus_actors').insert({
       name:            form.name.trim(),
       type:            form.type,
       website:         form.website.trim() || null,
@@ -124,7 +126,7 @@ export function NextUsNominatePage() {
       nominator_email: form.nominator_email.trim() || null,
       seeded_by:       'community',
       vetting_status:  'nominated',
-    })
+    }).select('id').single()
 
     // Also write to waitlist so nominator gets follow-up
     await supabase.from('nextus_waitlist').insert({
@@ -140,6 +142,7 @@ export function NextUsNominatePage() {
       return
     }
 
+    if (inserted?.id) setNominatedId(inserted.id)
     setDone(true)
   }
 
@@ -154,11 +157,22 @@ export function NextUsNominatePage() {
           <h2 style={{ ...serif, fontSize: '30px', fontWeight: 300, color: dark, marginBottom: '14px' }}>
             Nomination received.
           </h2>
-          <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '32px', maxWidth: '420px', margin: '0 auto 32px' }}>
-            Thank you. We'll review the nomination and place them on the map if they meet the criteria. We'll be in touch.
+          <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '12px', maxWidth: '420px', margin: '0 auto 12px' }}>
+            The profile is in the review queue. We'll place it on the map once it meets the criteria and be in touch at the email you provided.
           </p>
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button onClick={() => { setForm(EMPTY); setDone(false) }}
+          {nominatedId && (
+            <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.50)', lineHeight: 1.65, marginBottom: '32px', maxWidth: '420px', margin: '0 auto 32px' }}>
+              If this is your organisation, you can claim and manage the profile now.
+            </p>
+          )}
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '32px' }}>
+            {nominatedId && (
+              <button onClick={() => navigate(`/nextus/actors/${nominatedId}/manage`)}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: 'none', background: '#C8922A', color: '#FFFFFF', cursor: 'pointer' }}>
+                Manage this profile →
+              </button>
+            )}
+            <button onClick={() => { setForm(EMPTY); setDone(false); setNominatedId(null) }}
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: gold, cursor: 'pointer' }}>
               Nominate another
             </button>
@@ -197,6 +211,9 @@ export function NextUsNominatePage() {
         <h1 style={{ ...serif, fontSize: 'clamp(28px,4vw,42px)', fontWeight: 300, color: dark, lineHeight: 1.1, marginBottom: '14px' }}>
           Know someone doing the work?
         </h1>
+        <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(168,114,26,0.75)', lineHeight: 1.6, marginBottom: '14px' }}>
+          Nominating your own organisation? That's welcome — fill it in as the submitter.
+        </p>
         <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '16px', maxWidth: '480px' }}>
           The most important actors on this map won't be found by algorithm. If you know an organisation or project doing genuine work toward a Horizon Goal — place them here.
         </p>

@@ -39,6 +39,7 @@ import { NextUsMapPage }       from './pages/NextUsMap'
 import { NextUsNominatePage }  from './pages/NextUsNominate'
 import { NextUsContributorPage } from './pages/NextUsContributor'
 import { NextUsContributorsPage } from './pages/NextUsContributors'
+import { NextUsFocusPage }        from './pages/NextUsFocus'
 import { WorkWithNikPage, PodcastPage } from './pages/WorkAndPodcast'
 import { LoginPage }         from './pages/Login'
 import { PrivacyPage, TermsPage } from './pages/Legal'
@@ -97,6 +98,7 @@ function AppInner() {
         <Route path="/nextus/nominate"               element={<NextUsNominatePage />} />
         <Route path="/nextus/contributors/:id"       element={<NextUsContributorPage />} />
         <Route path="/nextus/contributors"             element={<NextUsContributorsPage />} />
+        <Route path="/nextus/focus/:slug"              element={<NextUsFocusPage />} />
         <Route path="/work-with-nik"   element={<WorkWithNikPage />} />
         <Route path="/podcast"         element={<PodcastPage />} />
         <Route path="/pricing"         element={<PricingPage />} />

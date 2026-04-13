@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
@@ -229,6 +229,78 @@ function ModeSelector({ value, onChange }) {
   )
 }
 
+// ── Focus search/select ──────────────────────────────────────
+
+function FocusSearch({ value, onChange }) {
+  const [query, setQuery]       = useState('')
+  const [results, setResults]   = useState([])
+  const [searching, setSearching] = useState(false)
+  const [open, setOpen]         = useState(false)
+  const debounce                = useRef(null)
+
+  useEffect(() => {
+    if (query.trim().length < 2) { setResults([]); return }
+    clearTimeout(debounce.current)
+    debounce.current = setTimeout(async () => {
+      setSearching(true)
+      const { data } = await supabase
+        .from('nextus_focuses')
+        .select('id, name, type, slug')
+        .ilike('name', `%${query.trim()}%`)
+        .order('type').limit(12)
+      setResults(data || [])
+      setSearching(false)
+    }, 280)
+  }, [query])
+
+  function select(focus) { onChange(focus); setQuery(''); setResults([]); setOpen(false) }
+  function clear() { onChange(null); setQuery(''); setResults([]) }
+
+  const TYPE_LABEL = {
+    planet:'Planet', continent:'Continent', nation:'Nation',
+    province:'Province / Territory', city:'City', neighbourhood:'Neighbourhood', organisation:'Organisation',
+  }
+
+  return (
+    <div style={{ position: 'relative' }}>
+      {value ? (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.55)', background: 'rgba(200,146,42,0.04)' }}>
+          <div>
+            <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: '#0F1523' }}>{value.name}</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.12em', color: '#A8721A', marginLeft: '10px' }}>{TYPE_LABEL[value.type] || value.type}</span>
+          </div>
+          <button onClick={clear} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: 'rgba(15,21,35,0.35)', lineHeight: 1, padding: '0 0 0 10px' }}>×</button>
+        </div>
+      ) : (
+        <div style={{ position: 'relative' }}>
+          <input
+            value={query}
+            onChange={e => { setQuery(e.target.value); setOpen(true) }}
+            onFocus={() => setOpen(true)}
+            placeholder="Search — e.g. British Columbia, Vancouver…"
+            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: '#0F1523', padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
+          />
+          {open && query.trim().length >= 2 && (
+            <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 200, background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '0 0 8px 8px', boxShadow: '0 8px 24px rgba(15,21,35,0.10)', maxHeight: '240px', overflowY: 'auto' }}>
+              {searching && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.40)', padding: '12px 16px' }}>Searching…</div>}
+              {!searching && results.length === 0 && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.40)', padding: '12px 16px' }}>No results for "{query}"</div>}
+              {results.map(f => (
+                <button key={f.id} onClick={() => select(f)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 16px', background: 'none', border: 'none', borderBottom: '1px solid rgba(200,146,42,0.10)', cursor: 'pointer', textAlign: 'left' }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,146,42,0.05)'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                >
+                  <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: '#0F1523' }}>{f.name}</span>
+                  <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.12em', color: '#A8721A' }}>{TYPE_LABEL[f.type] || f.type}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Tab: Profile Edit ────────────────────────────────────────
 
 function ProfileTab({ actor, onSave, toast }) {
@@ -244,6 +316,9 @@ function ProfileTab({ actor, onSave, toast }) {
     location_name: actor.location_name || '',
     alignment_score: actor.alignment_score ?? '',
   })
+  const [focus, setFocus] = useState(
+    actor.focus_id ? { id: actor.focus_id, name: actor.focus?.name || '', type: actor.focus?.type || '' } : null
+  )
   const [saving, setSaving] = useState(false)
 
   function set(field, value) {
@@ -272,6 +347,7 @@ function ProfileTab({ actor, onSave, toast }) {
       scale:          form.scale || null,
       location_name:  form.location_name.trim() || null,
       alignment_score: form.alignment_score !== '' ? parseFloat(form.alignment_score) : null,
+      focus_id:       focus?.id || null,
       updated_at:     new Date().toISOString(),
     }).eq('id', actor.id)
     setSaving(false)
@@ -308,6 +384,12 @@ function ProfileTab({ actor, onSave, toast }) {
             <Label>Location</Label>
             <TextInput value={form.location_name} onChange={v => set('location_name', v)} placeholder="e.g. Nairobi, Kenya" />
           </div>
+        </div>
+
+        <div style={{ marginBottom: '20px' }}>
+          <Label>Focus</Label>
+          <FocusSearch value={focus} onChange={setFocus} />
+          <Hint>Place this actor on the geographic map. Search for a country, province, city, or neighbourhood.</Hint>
         </div>
 
         <div style={{ marginBottom: '20px' }}>
@@ -1463,7 +1545,7 @@ export function NextUsActorManagePage() {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from('nextus_actors').select('*').eq('id', id).single()
+      const { data } = await supabase.from('nextus_actors').select('*, focus:focus_id(id, name, type, slug)').eq('id', id).single()
       setActor(data)
       setLoading(false)
     }
@@ -1485,7 +1567,7 @@ export function NextUsActorManagePage() {
   }, [user, authLoading, actor, loading])
 
   async function reloadActor() {
-    const { data } = await supabase.from('nextus_actors').select('*').eq('id', id).single()
+    const { data } = await supabase.from('nextus_actors').select('*, focus:focus_id(id, name, type, slug)').eq('id', id).single()
     setActor(data)
   }
 

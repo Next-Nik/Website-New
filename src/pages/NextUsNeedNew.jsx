@@ -13,6 +13,7 @@ const parch = '#FAFAF7'
 
 const NEED_TYPES = [
   { value: 'skills',       label: 'Skills',       desc: 'A specific expertise or capability — writing, design, research, translation, code, etc.' },
+  { value: 'creative',     label: 'Creative',     desc: 'A creative contribution — film, photography, illustration, music, writing, design, performance.' },
   { value: 'capital',      label: 'Capital',       desc: 'Financial resources — grants, investment, donations, sponsorship.' },
   { value: 'time',         label: 'Time',          desc: 'Hands on deck — volunteer hours, short-term help, ongoing availability.' },
   { value: 'resources',    label: 'Resources',     desc: 'Tools, equipment, data, infrastructure, space, or materials.' },
@@ -88,12 +89,13 @@ export function NextUsNeedNewPage() {
   const navigate     = useNavigate()
   const { user, loading: authLoading } = useAuth()
 
-  const [actor, setActor]     = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving]   = useState(false)
-  const [saved, setSaved]     = useState(false)
-  const [form, setForm]       = useState(EMPTY_FORM)
-  const [error, setError]     = useState(null)
+  const [actor, setActor]       = useState(null)
+  const [loading, setLoading]   = useState(true)
+  const [hasOfferings, setHasOfferings] = useState(null)
+  const [saving, setSaving]     = useState(false)
+  const [saved, setSaved]       = useState(false)
+  const [form, setForm]         = useState(EMPTY_FORM)
+  const [error, setError]       = useState(null)
 
   function setField(field, value) {
     setForm(f => ({ ...f, [field]: value }))
@@ -101,8 +103,12 @@ export function NextUsNeedNewPage() {
 
   useEffect(() => {
     async function load() {
-      const { data } = await supabase.from('nextus_actors').select('id, name, domain_id, profile_owner, claimed, verified').eq('id', id).single()
-      setActor(data)
+      const [{ data: actorData }, { count }] = await Promise.all([
+        supabase.from('nextus_actors').select('id, name, domain_id, profile_owner, claimed, verified').eq('id', id).single(),
+        supabase.from('nextus_actor_offerings').select('*', { count: 'exact', head: true }).eq('actor_id', id),
+      ])
+      setActor(actorData)
+      setHasOfferings((count || 0) > 0)
       setLoading(false)
     }
     load()
@@ -152,6 +158,29 @@ export function NextUsNeedNewPage() {
         <Nav activePath="nextus" />
         <div style={{ maxWidth: '640px', margin: '0 auto', padding: '120px 40px' }}>
           <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.45)' }}>Loading…</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Offering gate — enforce give-first structurally
+  if (hasOfferings === false) {
+    return (
+      <div style={{ background: parch, minHeight: '100vh' }}>
+        <Nav activePath="nextus" />
+        <div style={{ maxWidth: '560px', margin: '0 auto', padding: '120px 40px', textAlign: 'center' }}>
+          <h2 style={{ ...serif, fontSize: '26px', fontWeight: 300, color: dark, marginBottom: '14px' }}>
+            Add an offering first.
+          </h2>
+          <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '32px' }}>
+            Before posting needs, {actor?.name || 'your organisation'} needs at least one offering on record — something you give to the world. Contributors want to know what you're building before they decide to help build it with you.
+          </p>
+          <button
+            onClick={() => navigate(`/nextus/actors/${id}/manage?tab=offerings`)}
+            style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', padding: '12px 28px', borderRadius: '40px', border: 'none', background: '#C8922A', color: '#FFFFFF', cursor: 'pointer' }}
+          >
+            Add an offering →
+          </button>
         </div>
       </div>
     )
@@ -280,6 +309,7 @@ export function NextUsNeedNewPage() {
               onChange={v => setField('title', v)}
               placeholder={
                 form.need_type === 'skills'       ? 'e.g. Social media copywriter for our monthly campaign' :
+                form.need_type === 'creative'     ? 'e.g. Short documentary about our reforestation work' :
                 form.need_type === 'capital'      ? 'e.g. Seed funding for Phase 2 expansion' :
                 form.need_type === 'time'         ? 'e.g. Research assistant for 10 hours' :
                 form.need_type === 'partnerships' ? 'e.g. Partner organisation in East Africa' :
@@ -301,14 +331,16 @@ export function NextUsNeedNewPage() {
             />
           </Field>
 
-          {/* Skills (conditional) */}
-          {form.need_type === 'skills' && (
+          {/* Skills / creative detail (conditional) */}
+          {(form.need_type === 'skills' || form.need_type === 'creative') && (
             <Field>
-              <Label>Skills required</Label>
+              <Label>{form.need_type === 'creative' ? 'Creative specifics' : 'Skills required'}</Label>
               <TextInput
                 value={form.skills_required}
                 onChange={v => setField('skills_required', v)}
-                placeholder="e.g. Copywriting, Canva, Spanish"
+                placeholder={form.need_type === 'creative'
+                  ? 'e.g. Documentary, photography, illustration, animation'
+                  : 'e.g. Copywriting, Canva, Spanish'}
               />
               <Hint>Comma-separated. These appear as searchable tags on the need.</Hint>
             </Field>

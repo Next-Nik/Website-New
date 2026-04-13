@@ -40,25 +40,7 @@ const NODE_R    = 40
 const SPIN_DPS  = 60
 const SPIN_MS   = 2000
 
-const SCALE_POINTS = [10,9.5,9,8.5,8,7.5,7,6.5,6,5.5,5,4.5,4,3.5,3,2.5,2,1.5,1,0.5,0]
-
-const TIER_MAP = {
-  10:'World-Class', 9.5:'Exemplar+', 9:'Exemplar', 8.5:'Fluent+', 8:'Fluent',
-  7.5:'Capable+', 7:'Capable', 6.5:'Functional+', 6:'Functional', 5.5:'Plateau+',
-  5:'Threshold', 4.5:'Friction+', 4:'Friction', 3.5:'Strain+', 3:'Strain',
-  2.5:'Crisis+', 2:'Crisis', 1.5:'Emergency+', 1:'Emergency', 0.5:'Emergency−', 0:'Ground Zero'
-}
-
-const LABEL_MAP = {
-  10:'Best in the world', 9.5:'Elite professional', 9:'Professional',
-  8.5:'Elite ranked amateur', 8:'High level ranked amateur',
-  7.5:'Elite recreational player', 7:'High level recreational player',
-  6.5:'Elite casual athlete', 6:'Casual athlete', 5.5:'Making an effort (occasionally)',
-  5:'— The Line —', 4.5:'Teetering on the edge', 4:'Attempting to get off the couch',
-  3.5:'Leaving an indent on the couch', 3:'Afraid to look in the mirror',
-  2.5:'Danger to oneself', 2:'Barely functioning', 1.5:'Hurting real bad / numb',
-  1:'Almost dead', 0.5:'Flickering', 0:'Ground Zero'
-}
+import { SCALE_POINTS, TIER_MAP, LABEL_MAP, SIGNATURE_MAP, getScoreColor, HORIZON_NOTE } from '../../constants/horizonScale'
 
 // Domain step stages — drives node visual state
 // 0 = not started, 1 = avatar done, 2 = score done, 3 = complete
@@ -68,14 +50,6 @@ function getDomainStage(data) {
   if (data.currentScore !== undefined) return 2
   if (data.avatarFinal) return 1
   return 0
-}
-
-function getScoreColor(n) {
-  if (n >= 8)   return '#3B6B9E'
-  if (n >= 6.5) return '#5A8AB8'
-  if (n >= 5)   return '#8A8070'
-  if (n >= 3)   return '#8A7030'
-  return '#8A3030'
 }
 
 // Node fill based on stage — 4 visual states
@@ -142,10 +116,20 @@ function HourglassPicker({ onScore, horizonMode = false, currentScore }) {
         })}
       </div>
       {hovered !== null && (
-        <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid rgba(200,146,42,0.12)', display: 'flex', alignItems: 'baseline', gap: '10px' }}>
-          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', fontWeight: 600, color: getScoreColor(hovered) }}>{hovered}</span>
-          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.08em', color: getScoreColor(hovered) }}>{TIER_MAP[hovered]}</span>
-          <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>{LABEL_MAP[hovered]}</span>
+        <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '6px' }}>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', fontWeight: 600, color: getScoreColor(hovered) }}>{hovered}</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.08em', color: getScoreColor(hovered) }}>{TIER_MAP[hovered]}</span>
+            <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>{LABEL_MAP[hovered]}</span>
+          </div>
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.65, margin: 0 }}>
+            {SIGNATURE_MAP[hovered]}
+          </p>
+          {hovered >= 9.5 && (
+            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', fontStyle: 'italic', color: 'rgba(168,114,26,0.70)', lineHeight: 1.65, marginTop: '6px', marginBottom: 0 }}>
+              {HORIZON_NOTE}
+            </p>
+          )}
         </div>
       )}
       <ToolCompassPanel />

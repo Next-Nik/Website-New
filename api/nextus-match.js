@@ -36,7 +36,7 @@ const OFFER_NEED_AFFINITY = {
   capital:   ['capital'],
   community: ['partnerships', 'other'],
   knowledge: ['data', 'skills', 'other'],
-  creative:  ['skills', 'other'],
+  creative:  ['creative', 'skills', 'other'],  // creative gets its own bucket
   other:     ['other'],
 }
 
@@ -101,6 +101,23 @@ async function matchForContributor(userId, isAuthenticated) {
   const allTypes   = [...new Set((offers || []).map(o => o.offer_type).filter(Boolean))]
   const openToAdjacent = (offers || []).some(o => o.open_to_adjacent)
 
+  // If no offers yet, infer mode from Purpose Piece archetype
+  const ARCHETYPE_TO_MODE_MATCH = {
+    'Maker':      'expressive',
+    'Mirror':     'expressive',
+    'Exemplar':   'expressive',
+    'Connector':  'relational',
+    'Steward':    'functional',
+    'Guardian':   'functional',
+    'Explorer':   'intellectual',
+    'Sage':       'intellectual',
+    'Architect':  'intellectual',
+  }
+  const ppArchetype = ppData?.session?.tentative?.archetype?.archetype
+  if (allModes.length === 0 && ppArchetype && ARCHETYPE_TO_MODE_MATCH[ppArchetype]) {
+    allModes.push(ARCHETYPE_TO_MODE_MATCH[ppArchetype])
+  }
+
   // 3. Fetch orgs with open needs — filter by domain if we have coordinates
   let q = supabase
     .from('nextus_actors')
@@ -133,7 +150,9 @@ async function matchForContributor(userId, isAuthenticated) {
 
     for (const need of openNeeds) {
       const domainScore = scoreDomainMatch(allDomains, actor.domain_id)
-      const modeScore   = 0 // needs don't carry mode yet — future field
+      const modeScore   = allModes.length > 0
+        ? Math.max(...allModes.map(m => scoreModeMatch(m, need.contribution_mode || null)))
+        : 0
       const typeScore   = Math.max(
         ...allTypes.map(t => scoreTypeMatch(t, need.need_type))
       )
