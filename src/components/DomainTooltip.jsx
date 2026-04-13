@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-// ─── Life OS domain definitions ───────────────────────────────────────────────
+// ─── NextUs Self domain definitions ───────────────────────────────────────────────
 
 export const LIFEOS_TIPS = {
   'path':       { aliases: "Life's Mission · Purpose · Dharma · Soul Alignment", desc: "The work you were built to do — not your job title, your gift. The contribution that runs beneath whatever you do for income." },

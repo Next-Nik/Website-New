@@ -12,41 +12,41 @@ const STAGES = {
   baseline: {
     name: 'Baseline', question: 'Am I functioning?',
     desc: 'The floor everything else stands on. Safety and permission to exist at a nervous-system, body level. Without it, everything feels like threat, growth feels dangerous, and insight destabilises rather than liberates. The work here is regulation, containment, and finding ground.',
-    primary: { title: 'Foundation', sub: 'A guided audio practice to settle and re-establish ground.', url: '/tools/foundation', badge: 'Life OS Tool' },
-    above: { title: 'The Map', sub: 'When you have a little more ground, see where you actually are.', url: '/tools/map', badge: 'Life OS Tool' },
+    primary: { title: 'Horizon State', sub: 'A guided audio practice to settle and re-establish ground.', url: '/tools/foundation', badge: 'NextUs Self Tool' },
+    above: { title: 'The Map', sub: 'When you have a little more ground, see where you actually are.', url: '/tools/map', badge: 'NextUs Self Tool' },
     below: null,
     external: ['somatic therapy', 'trauma-informed support', 'nervous system regulation', 'polyvagal therapy']
   },
   autonomy: {
     name: 'Autonomy', question: 'Do I know what I want?',
     desc: 'Where the self starts moving again — not goals, not strategy, but desire. The work here is reclaiming the right to direct oneself and meeting the shame around wanting.',
-    primary: { title: 'Foundation', sub: 'Build the internal stability that makes self-direction possible.', url: '/tools/foundation', badge: 'Life OS Tool' },
-    above: { title: 'The Map', sub: 'An honest picture of where you are once you can see clearly.', url: '/tools/map', badge: 'Life OS Tool' },
+    primary: { title: 'Horizon State', sub: 'Build the internal stability that makes self-direction possible.', url: '/tools/foundation', badge: 'NextUs Self Tool' },
+    above: { title: 'The Map', sub: 'An honest picture of where you are once you can see clearly.', url: '/tools/map', badge: 'NextUs Self Tool' },
     below: null,
     external: ['inner child work', 'parts work / IFS', 'shame resilience', 'self-compassion practices']
   },
   calibration: {
     name: 'Calibration', question: 'Am I being honest with myself?',
     desc: 'Reality contact — honest self-assessment, mapping life domains, seeing patterns without collapse. This is where the picture becomes clear enough to navigate from.',
-    primary: { title: 'The Map', sub: 'Seven domains. One honest picture of where you are right now.', url: '/tools/map', badge: 'Life OS Tool' },
-    above: { title: 'Purpose Piece', sub: 'Find your contribution pattern — the role you are built to play.', url: '/tools/purpose-piece', badge: 'Life OS Tool' },
-    below: { title: 'Foundation', sub: 'If looking clearly feels like too much — this is where to start.', url: '/tools/foundation', badge: 'Life OS Tool' },
+    primary: { title: 'The Map', sub: 'Seven domains. One honest picture of where you are right now.', url: '/tools/map', badge: 'NextUs Self Tool' },
+    above: { title: 'Purpose Piece', sub: 'Find your contribution pattern — the role you are built to play.', url: '/tools/purpose-piece', badge: 'NextUs Self Tool' },
+    below: { title: 'Horizon State', sub: 'If looking clearly feels like too much — this is where to start.', url: '/tools/foundation', badge: 'NextUs Self Tool' },
     external: ['journalling practices', 'life audit frameworks', 'values clarification', 'honest self-assessment']
   },
   integration: {
     name: 'Integration', question: 'Am I whole?',
     desc: 'Metabolising past experience, reconciling contradictions, reducing internal fragmentation. This is where energy stops leaking and becomes available for something new.',
-    primary: { title: 'Purpose Piece', sub: 'Surface the contribution pattern that has been there all along.', url: '/tools/purpose-piece', badge: 'Life OS Tool' },
+    primary: { title: 'Purpose Piece', sub: 'Surface the contribution pattern that has been there all along.', url: '/tools/purpose-piece', badge: 'NextUs Self Tool' },
     above: { title: 'Work with Nik', sub: 'Identity-level work for people ready to do something with what they find.', url: '/work-with-nik', badge: 'Facilitated' },
-    below: { title: 'The Map', sub: 'See where the fragmentation shows up across your life domains.', url: '/tools/map', badge: 'Life OS Tool' },
+    below: { title: 'The Map', sub: 'See where the fragmentation shows up across your life domains.', url: '/tools/map', badge: 'NextUs Self Tool' },
     external: ['parts work / IFS', 'shadow work', 'narrative therapy', 'Jungian approaches']
   },
   agency: {
     name: 'Agency', question: 'Am I living by my own choices?',
     desc: 'Action becomes possible — not reactive effort, not proving, but true choice. Behaviour stabilises, discipline emerges naturally, self-trust begins to build.',
-    primary: { title: 'Target Sprint', sub: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.', url: '/tools/target-goals', badge: 'Life OS Tool' },
+    primary: { title: 'Target Sprint', sub: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.', url: '/tools/target-goals', badge: 'NextUs Self Tool' },
     above: { title: 'Work with Nik', sub: 'For people ready to act on what they have found.', url: '/work-with-nik', badge: 'Facilitated' },
-    below: { title: 'Purpose Piece', sub: 'Clarify what you are acting toward before you act.', url: '/tools/purpose-piece', badge: 'Life OS Tool' },
+    below: { title: 'Purpose Piece', sub: 'Clarify what you are acting toward before you act.', url: '/tools/purpose-piece', badge: 'NextUs Self Tool' },
     external: ['implementation intentions', 'habit architecture', 'values-based goal setting', 'accountability structures']
   },
   embodiment: {
@@ -54,7 +54,7 @@ const STAGES = {
     desc: 'Identity stops being conceptual — behaviour aligns with values, the nervous system tolerates expansion, relationships reorganise around who you actually are.',
     primary: { title: 'Work with Nik', sub: 'Identity-level work. The crossing from who you have been to who you are becoming.', url: '/work-with-nik', badge: 'Facilitated' },
     above: { title: 'NextUs', sub: 'Find where your fully expressed self belongs in the larger project.', url: '/nextus', badge: 'NextUs' },
-    below: { title: 'Target Sprint', sub: 'Operationalise the identity shift — three areas, ninety days.', url: '/tools/target-goals', badge: 'Life OS Tool' },
+    below: { title: 'Target Sprint', sub: 'Operationalise the identity shift — three areas, ninety days.', url: '/tools/target-goals', badge: 'NextUs Self Tool' },
     external: ['embodied leadership', 'somatic coaching', 'identity-level work', 'ontological coaching']
   },
   contribution: {
@@ -62,7 +62,7 @@ const STAGES = {
     desc: 'Meaning stabilises the psyche. Contribution integrates the self. Purpose regulates existential anxiety. This is not saviour energy — it is participation in reality.',
     primary: { title: 'NextUs', sub: 'The civilisational map — seven domains, and where your work belongs.', url: '/nextus', badge: 'NextUs' },
     above: null,
-    below: { title: 'Purpose Piece', sub: 'What did life ask you to bring? Your archetype, domain, and scale.', url: '/tools/purpose-piece', badge: 'Life OS Tool' },
+    below: { title: 'Purpose Piece', sub: 'What did life ask you to bring? Your archetype, domain, and scale.', url: '/tools/purpose-piece', badge: 'NextUs Self Tool' },
     external: ['systems thinking', 'theory of change', 'purpose-driven leadership', 'civilisational contribution']
   }
 }
@@ -276,7 +276,7 @@ export function HomePage() {
             </p>
           )}
           <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginTop: user ? '52px' : '0' }}>
-            <a href="/life-os" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>NextUs Self →</a>
+            <a href="/life-os" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Horizon Suite →</a>
             <a href="/nextus" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>NextUs World →</a>
           </div>
         </div>

@@ -22,7 +22,7 @@ const PHASES = [
     name: 'Embodying',
     tagline: 'Land it. Carry it forward.',
     description: 'The final phase integrates what has moved during the practice. This is not a wind-down \u2014 it is a deliberate transition back to life, bringing the regulated state with you rather than leaving it behind in the session.',
-    why: "Practices that don't close properly tend not to transfer. Embodying is the mechanism by which the Foundation session becomes a living resource rather than a moment that disappears on re-entry to the day.",
+    why: "Practices that don't close properly tend not to transfer. Embodying is the mechanism by which the Horizon State session becomes a living resource rather than a moment that disappears on re-entry to the day.",
     duration: '3 \u2013 5 min',
   },
 ]
@@ -116,7 +116,7 @@ export function ProtocolPanel() {
             }}>
               <div>
                 <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
-                  Foundation
+                  Horizon State
                 </span>
                 <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
                   The Protocol
@@ -147,7 +147,7 @@ export function ProtocolPanel() {
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
-                Foundation follows a non-negotiable sequence. Each phase creates the conditions the next requires. You cannot skip to Embodying from a dysregulated state and expect it to hold.
+                Horizon State follows a non-negotiable sequence. Each phase creates the conditions the next requires. You cannot skip to Embodying from a dysregulated state and expect it to hold.
               </p>
             </div>
 

@@ -181,9 +181,9 @@ function MapRedirect({ onSkip }) {
   return (
     <div style={{ maxWidth: '560px', margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
       <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>One step first</span>
-      <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,40px)', fontWeight: 300, ...dark, lineHeight: 1.1, marginBottom: '20px' }}>Expansion works best with your Map.</h2>
+      <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,40px)', fontWeight: 300, ...dark, lineHeight: 1.1, marginBottom: '20px' }}>Horizon Practice works best with your Map.</h2>
       <p style={{ ...serif, fontSize: '17px', fontWeight: 300, ...muted, lineHeight: 1.8, marginBottom: '16px' }}>
-        Expansion is built on your horizon goals — where you're going, what the gap is, who you're becoming on the way there. The Map gives North Star everything it needs to work with you properly.
+        Horizon Practice is built on your horizon goals — where you're going, what the gap is, who you're becoming on the way there. The Map gives North Star everything it needs to work with you properly.
       </p>
       <p style={{ ...serif, fontSize: '17px', fontWeight: 300, ...muted, lineHeight: 1.8, marginBottom: '40px' }}>
         Most people work through The Map over several days. It's the foundation this practice is built on — and the difference between a generic practice and one that's genuinely yours.
@@ -326,7 +326,7 @@ function SetupPhase({ mapData, onComplete, userId }) {
     <div style={{ maxWidth: '680px', margin: '0 auto', padding: 'clamp(88px,10vw,112px) clamp(20px,5vw,40px) 120px' }}>
 
       <div style={{ marginBottom: '52px' }}>
-        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Expansion · Setup</span>
+        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Horizon Practice · Setup</span>
         <h1 style={{ ...serif, fontSize: 'clamp(32px,5vw,52px)', fontWeight: 300, ...dark, lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '16px' }}>
           Let's build your<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>daily practice.</em>
         </h1>
@@ -1349,7 +1349,7 @@ export function ExpansionPage() {
   }
 
   return (
-    <AccessGate productKey="expansion" toolName="Expansion">
+    <AccessGate productKey="expansion" toolName="Horizon Practice">
       <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
         <Nav activePath="life-os" />
 
@@ -1367,7 +1367,7 @@ export function ExpansionPage() {
             {/* Tool header */}
             <div style={{ maxWidth: '820px', margin: '0 auto', padding: 'clamp(88px,10vw,112px) clamp(20px,5vw,40px) 0' }}>
               <div className="tool-header" style={{ marginBottom: '40px' }}>
-                <span className="tool-eyebrow">Life OS · Expansion</span>
+                <span className="tool-eyebrow">Horizon Suite · Horizon Practice</span>
                 <p style={{ ...serif, fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '8px 0 12px', maxWidth: '520px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                   A daily practical practice for becoming your{' '}
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>

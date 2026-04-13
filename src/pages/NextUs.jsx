@@ -291,7 +291,7 @@ export function NextUsPage() {
         {/* Domain map */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 40px 1fr', marginBottom: '64px', maxWidth: '640px' }}>
           <div style={{ borderBottom: '2px solid rgba(200,146,42,0.30)', paddingBottom: '12px', marginBottom: '0' }}>
-            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A' }}>Life OS · Personal</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A' }}>NextUs Self · Personal</span>
           </div>
           <div />
           <div style={{ borderBottom: '2px solid rgba(200,146,42,0.30)', paddingBottom: '12px', marginBottom: '0' }}>

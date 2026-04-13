@@ -127,10 +127,10 @@ export function PricingPage() {
           Start where you are.<br /><em style={{ color: '#A8721A' }}>Go as far as you need.</em>
         </h1>
         <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '64px', maxWidth: '520px' }}>
-          Every tool is available individually. Or get everything in one place with Life OS Complete — designed to pay for itself from the first month.
+          Every tool is available individually. Or get everything in one place with The Horizon Suite — designed to pay for itself from the first month.
         </p>
 
-        {/* Life OS Complete — featured */}
+        {/* The Horizon Suite — featured */}
         <div style={{ marginBottom: '48px' }}>
           <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '20px' }}>The full suite</span>
           <div style={{
@@ -141,9 +141,9 @@ export function PricingPage() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '24px' }}>
               <div style={{ flex: '1 1 300px' }}>
-                <div style={{ ...sc, fontSize: '20px', letterSpacing: '0.10em', color: '#A8721A', marginBottom: '10px' }}>Life OS Complete</div>
+                <div style={{ ...sc, fontSize: '20px', letterSpacing: '0.10em', color: '#A8721A', marginBottom: '10px' }}>The Horizon Suite</div>
                 <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '16px', maxWidth: '440px' }}>
-                  Foundation · Purpose Piece · The Map · Target Sprint · Expansion. All five tools. The full navigation system for your life. The bundle is designed so the maths is obvious — Foundation and Expansion subscriptions alone cost $44/month individually.
+                  Horizon State · Purpose Piece · The Map · Target Sprint · Horizon Practice. All five tools. The full navigation system for your life. The bundle is designed so the maths is obvious — Horizon State and Horizon Practice subscriptions alone cost $44/month individually.
                 </p>
                 <div style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)' }}>
                   Includes everything. Nothing else to buy.
@@ -176,8 +176,8 @@ export function PricingPage() {
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '20px' }}>Individual tools</span>
         <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '64px' }}>
           <ToolCard
-            name="Foundation"
-            desc="The regulated ground that makes everything else possible. Daily audio practice — nervous system first."
+            name="Horizon State"
+            desc="The regulated ground beneath everything. Nervous system capacity, built daily."
             monthly={15}
             yearly={120}
             monthlyLink={L.foundation_monthly}
@@ -202,8 +202,8 @@ export function PricingPage() {
             oneTimeLink={L.target_sprint}
           />
           <ToolCard
-            name="Expansion"
-            desc="Daily T.E.A. practice. Thoughts, Emotions, Actions — aligned with your Horizon Self. The practice that closes the gap."
+            name="Horizon Practice"
+            desc="Daily practice. The return. T.E.A. — Thoughts, Emotions, Actions — aligned with your horizon."
             monthly={29}
             yearly={229}
             monthlyLink={L.expansion_monthly}
@@ -220,7 +220,7 @@ export function PricingPage() {
                 A 12-week cohort for people ready to do real work in the company of others doing the same. Six to eight people. A defined arc — from honest mapping through to purpose, horizon, and a 90-day sprint forward. Facilitated by Nik. Small enough that everyone is genuinely seen.
               </p>
               <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
-                Life OS Complete included for the duration. The Map and Purpose Piece completed before the cohort begins.
+                The Horizon Suite included for the duration. The Map and Purpose Piece completed before the cohort begins.
               </p>
             </div>
             <div style={{ flex: '0 1 220px' }}>
@@ -259,7 +259,7 @@ export function PricingPage() {
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', marginLeft: '6px' }}>/ month</span>
               </div>
               <div style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginBottom: '20px' }}>
-                Three-month minimum. Life OS Complete included.
+                Three-month minimum. The Horizon Suite included.
               </div>
               <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                 Book a discovery call →
@@ -277,12 +277,12 @@ export function PricingPage() {
               a: 'Yes. Purpose Piece and The Map are yours to return to as many times as you like — life changes, and your answers will too. Target Sprint is a one-time purchase per sprint; past sprints are always available to review.',
             },
             {
-              q: "What's included in Life OS Complete?",
-              a: 'All five tools — Foundation, Purpose Piece, The Map, Target Sprint, and Expansion — for as long as your subscription is active. Nothing else to buy.',
+              q: "What's included in The Horizon Suite?",
+              a: 'All five tools — Horizon State, Purpose Piece, The Map, Target Sprint, and Horizon Practice — for as long as your subscription is active. Nothing else to buy.',
             },
             {
               q: "What's Group Horizon?",
-              a: 'A 12-week cohort of six to eight people, facilitated by Nik. A defined arc from honest mapping through to purpose, horizon, and a 90-day sprint forward. Life OS Complete included. The Map and Purpose Piece are completed before the cohort begins — so you start at depth, not from scratch.',
+              a: 'A 12-week cohort of six to eight people, facilitated by Nik. A defined arc from honest mapping through to purpose, horizon, and a 90-day sprint forward. The Horizon Suite included. The Map and Purpose Piece are completed before the cohort begins — so you start at depth, not from scratch.',
             },
             {
               q: 'Is there a free trial?',

@@ -75,7 +75,7 @@ function GateCard({ toolName, variant, discountPct = 0 }) {
       heading: 'Get access.',
       body: discountPct > 0
         ? `You have a ${discountPct}% discount available.`
-        : 'This tool is part of the Life OS suite.',
+        : 'This tool is part of the Horizon Suite.',
       cta: 'See pricing →',
       ctaHref: '/pricing',
     },

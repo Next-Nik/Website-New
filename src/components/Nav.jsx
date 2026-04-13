@@ -16,7 +16,7 @@ export function Nav({ activePath }) {
     : null
 
   const links = [
-    { to: '/life-os',       label: 'Life OS',       key: 'life-os'       },
+    { to: '/life-os',       label: 'Horizon Suite',       key: 'life-os'       },
     { to: '/nextus',        label: 'NextUs',        key: 'nextus'        },
     { to: '/work-with-nik', label: 'Work with Nik', key: 'work-with-nik' },
     { to: '/about',         label: 'About',         key: 'about'         },
@@ -118,7 +118,7 @@ export function Nav({ activePath }) {
           {/* Life OS section */}
           <div className="nav-mobile-section">
             <Link to="/life-os" onClick={closeMobile} className="nav-mobile-link nav-mobile-link--heading">
-              <span>Life OS</span>
+              <span>Horizon Suite</span>
               <span style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
                 color: 'rgba(15,21,35,0.38)', fontWeight: 400, letterSpacing: 0 }}>
                 Tools for your life

@@ -4,14 +4,14 @@ import { Link } from 'react-router-dom'
 const TOOLS = [
   {
     path: '/tools/expansion',
-    name: 'Expansion',
+    name: 'Horizon Practice',
     subtitle: 'Daily becoming practice',
     hook: 'T.E.A. daily practice, skill development, and thought loop work toward your Horizon Self.',
     eyebrow: 'Become',
   },
   {
     path: '/tools/foundation',
-    name: 'Foundation',
+    name: 'Horizon State',
     subtitle: 'Daily regulation practice',
     hook: 'Regulated nervous system first. A guided audio practice that builds the internal floor everything else runs on.',
     eyebrow: 'Ground first',
@@ -127,7 +127,7 @@ export function ToolCompassPanel() {
             }}>
               <div>
                 <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
-                  Life OS
+                  Horizon Suite
                 </span>
                 <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
                   Where do I start?

@@ -62,7 +62,7 @@ export function AboutPage() {
 
       {/* ── SECTION ONE — NEXTUS ── */}
       <div className="about-section" style={page}>
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '14px' }}>NextUs · Life OS</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '14px' }}>NextUs · Horizon Suite</span>
         <h1 style={{ ...serif, fontSize: 'clamp(40px,5.5vw,64px)', fontWeight: 300, ...gold, lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '16px' }}>
           A life worth living,<br />a future worth building.
         </h1>
@@ -87,7 +87,7 @@ export function AboutPage() {
           NextUs operates at the civilisational scale — a coordination layer for the people working across the domains of the future. Sense-making, orientation, and visibility for a fragmented world.
         </p>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px' }}>
-          Life OS operates at the personal scale — a navigation framework for individuals. Seven domains. Honest mapping. Tools that build the capacity to move from clarity rather than compensation.
+          The Horizon Suite operates at the personal scale — a navigation framework for individuals. Seven domains. Honest mapping. Tools that build the capacity to move from clarity rather than compensation.
         </p>
 
         <div style={{ borderLeft: '3px solid #C8922A', padding: '18px 0 18px 28px', margin: '40px 0' }}>
@@ -100,20 +100,20 @@ export function AboutPage() {
 
         <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>The tools.</h2>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px' }}>
-          Life OS is the personal navigation layer. Each tool is built for a specific stage of the journey.
+          The Horizon Suite is the personal navigation layer. Each tool is built for a specific stage of the journey.
         </p>
 
         <div style={{ margin: '28px 0' }}>
-          <ToolRow name="Foundation" desc="The nervous system layer. Capacity before content — the floor that makes everything else sustainable." />
+          <ToolRow name="Horizon State" desc="The nervous system layer. Capacity before content — the floor that makes everything else sustainable." />
           <ToolRow name="Purpose Piece" desc="The pattern beneath how you're naturally built to contribute. Not a personality test — recognition." />
           <ToolRow name="The Map" desc="Seven domains. Three steps each. An honest picture of where you are and where you want to be." />
           <ToolRow name="Target Sprint" desc="Focused sprint planning across your three most urgent domains. From horizon to next action." />
-          <ToolRow name="Expansion" desc="Daily becoming practice. T.E.A. alignment, skill development, and thought loop work toward your Horizon Self." />
+          <ToolRow name="Horizon Practice" desc="Daily practice. The return. T.E.A. alignment, skill development, and thought loop work." />
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', marginTop: '52px', paddingTop: '44px', borderTop: '1px solid rgba(200,146,42,0.20)', alignItems: 'center' }}>
           <a href="/tools/orienteering" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Find your entry point →</a>
-          <a href="/life-os" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Explore Life OS →</a>
+          <a href="/life-os" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Explore the Horizon Suite →</a>
         </div>
       </div>
 

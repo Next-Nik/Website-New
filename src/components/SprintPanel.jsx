@@ -205,7 +205,7 @@ export function SprintPanel({ context = 'default' }) {
             }}>
               <div>
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>
-                  Life OS
+                  Horizon Suite
                 </span>
                 <h2 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1 }}>
                   Target Sprint

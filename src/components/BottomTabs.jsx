@@ -41,7 +41,7 @@ function MoreIcon({ active }) {
 
 function MoreMenu({ onClose }) {
   const lifeOSLinks = [
-    { label: 'Life OS',   path: '/life-os',   desc: 'Overview of all tools' },
+    { label: 'Horizon Suite',   path: '/life-os',   desc: 'Overview of all tools' },
   ]
 
   const nextusLinks = [
@@ -77,7 +77,7 @@ function MoreMenu({ onClose }) {
 
         {/* Life OS */}
         <div style={{ padding: '12px 20px 6px' }}>
-          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: '#A8721A', textTransform: 'uppercase' }}>Life OS</span>
+          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: '#A8721A', textTransform: 'uppercase' }}>Horizon Suite</span>
         </div>
         {lifeOSLinks.map(l => (
           <Link key={l.path} to={l.path} onClick={onClose} style={{

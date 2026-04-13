@@ -128,7 +128,7 @@ export function DomainsPanel() {
             }}>
               <div>
                 <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
-                  Life OS
+                  Horizon Suite
                 </span>
                 <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
                   The Seven Domains
@@ -159,7 +159,7 @@ export function DomainsPanel() {
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
-                Life OS maps seven domains of a full life. Each domain holds a life's mission question {'\u2014'} the honest question to sit with, not once, but again and again.
+                The Horizon Suite maps seven domains of a full life. Each domain holds a life's mission question {'\u2014'} the honest question to sit with, not once, but again and again.
               </p>
             </div>
 

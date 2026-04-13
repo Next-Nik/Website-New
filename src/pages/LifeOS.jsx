@@ -18,7 +18,7 @@ const DOMAINS = [
 ]
 
 const SHARE_RECS = {
-  foundation: { tool: 'Foundation', url: '/tools/foundation', desc: 'When someone is depleted, the first move is never to add more \u2014 it\u2019s to restore the ground. Foundation is a 20-minute guided audio practice for regulation.' },
+  foundation: { tool: 'Horizon State', url: '/tools/foundation', desc: 'When someone is depleted, the first move is never to add more \u2014 it\u2019s to restore the ground. Horizon State is a 20-minute guided practice for nervous system regulation — the floor beneath everything.' },
   map:        { tool: 'The Map',    url: '/tools/map',        desc: 'When someone doesn\u2019t know where they are, a map is everything. The Map gives an honest picture of their whole life across seven domains \u2014 in ten minutes.' },
   purpose:    { tool: 'Purpose Piece', url: '/tools/purpose-piece', desc: 'When someone is capable but not yet fully alive in what they do, the question isn\u2019t what \u2014 it\u2019s where. Purpose Piece surfaces the role they\u2019re built to play.' },
   leap:       { tool: 'Horizon Leap', url: 'https://calendly.com/nikwood/talk-to-nik', desc: 'When the pattern keeps returning despite the work, the work needed is different. Horizon Leap is identity-level work facilitated by Nik. Start with a conversation.' },
@@ -33,12 +33,12 @@ export function LifeOSPage() {
 
       {/* Hero */}
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: 'clamp(88px,10vw,112px) clamp(20px,5vw,40px) 80px' }}>
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Life OS</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>The Horizon Suite</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '24px' }}>
           The personal<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>navigation layer.</em>
         </h1>
         <p style={{ ...serif, fontSize: '19px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '16px', maxWidth: '580px' }}>
-          Life OS is a set of tools for seeing your life clearly and navigating it deliberately. Not a productivity system. Not a self-help programme. A navigation layer \u2014 showing you where you are, where you\u2019re going, and what the gaps are between them.
+          The Horizon Suite is a set of tools for seeing your life clearly and navigating it deliberately. Not a productivity system. Not a self-help programme. A navigation layer \u2014 showing you where you are, where you\u2019re going, and what the gaps are between them.
         </p>
         <p style={{ ...serif, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '520px' }}>
           Built on seven domains that cover the full terrain of a human life \u2014 from your daily aliveness to your deepest sense of purpose.
@@ -72,7 +72,7 @@ export function LifeOSPage() {
             The full terrain of a human life.
           </h2>
           <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '36px', maxWidth: '540px' }}>
-            Seven areas. Not performance buckets to optimise \u2014 dimensions of a whole life. When one fails structurally, it pulls on everything else. Life OS makes the whole picture visible at once.
+            Seven areas. Not performance buckets to optimise \u2014 dimensions of a whole life. When one fails structurally, it pulls on everything else. The Horizon Suite makes the whole picture visible at once.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
@@ -99,7 +99,7 @@ export function LifeOSPage() {
             The same seven domains.<br />Two scales.
           </h3>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.85)', lineHeight: 1.75, marginBottom: '12px', maxWidth: '520px' }}>
-            The seven Life OS domains map directly onto the seven domains of NextUs \u2014 the civilisational architecture. What you build in yourself is the same structure as what humanity is building collectively.
+            The seven Horizon Suite domains map directly onto the seven domains of NextUs \u2014 the civilisational architecture. What you build in yourself is the same structure as what humanity is building collectively.
           </p>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, maxWidth: '480px' }}>
             Personal navigation and civilisational navigation are the same physics, operating at different scales.
@@ -118,7 +118,7 @@ export function LifeOSPage() {
 
             <div id="foundation" style={{ padding: '28px 32px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Daily regulation practice</span>
-              <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>Foundation</h3>
+              <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>Horizon State</h3>
               <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
                 Regulated baseline. The floor beneath everything. A 20-minute guided audio practice that restores the nervous system before anything else is attempted. You cannot build on a depleted ground.
               </p>
@@ -154,9 +154,9 @@ export function LifeOSPage() {
 
             <div id="expansion" style={{ padding: '28px 32px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Daily becoming practice</span>
-              <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>Expansion</h3>
+              <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>Horizon Practice</h3>
               <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
-                Daily T.E.A. practice — Thoughts, Emotions, Actions — aligned with your Horizon Self. Skill development and thought loop work toward the person you're becoming. The practice that closes the gap.
+                Daily practice. The return. T.E.A. — Thoughts, Emotions, Actions — skill development and thought loop work toward your horizon.
               </p>
               <a href="/login?redirect=/tools/expansion" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '2px' }}>Get access →</a>
             </div>

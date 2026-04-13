@@ -269,7 +269,7 @@ function AuthModal({ onDismiss }) {
         <span style={{ display: 'block', ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Foundation</span>
         <h2 style={{ ...sc, fontSize: '1.625rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.2, marginBottom: '10px' }}>Sign in to listen.</h2>
         <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, ...meta, lineHeight: 1.7, marginBottom: '24px' }}>
-          Foundation is part of Life OS {'\u2014'} a free account keeps your progress and gives you access to the full protocol.
+          Horizon State is part of the Horizon Suite {'\u2014'} a free account keeps your progress and gives you access to the full protocol.
         </p>
         <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', width: '100%', padding: '14px', textAlign: 'center', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...sc, fontSize: '1.125rem', letterSpacing: '0.16em', ...gold, textDecoration: 'none', marginBottom: '12px' }}>
           Sign in or create account {'\u2192'}
@@ -609,13 +609,13 @@ export function FoundationPage() {
   if (authLoading || accessLoading) return <div className="loading" />
 
   return (
-    <AccessGate productKey="foundation" toolName="Foundation">
+    <AccessGate productKey="foundation" toolName="Horizon State">
     <div className="page-shell">
       <style>{MOBILE_STYLES}</style>
       <Nav activePath="life-os" />
       <div className="tool-wrap">
         <div className="tool-header">
-          <span className="tool-eyebrow">Life OS {'\u00B7'} Foundation</span>
+          <span className="tool-eyebrow">Horizon Suite {'\u00B7'} Horizon State</span>
           <p style={{ ...serif, fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '8px 0 12px', maxWidth: '520px' }}>
             Build the regulated ground that makes everything else possible.
           </p>

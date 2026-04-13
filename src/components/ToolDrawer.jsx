@@ -9,8 +9,8 @@ const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const TOOLS = [
   {
     key:   'foundation',
-    label: 'Foundation',
-    subtitle: 'Daily regulation practice',
+    label: 'Horizon State',
+    subtitle: 'Capacity infrastructure',
     path:  '/tools/foundation',
     desc:  'Regulated baseline. The floor beneath everything.',
     color: '#A8721A',
@@ -41,10 +41,10 @@ const TOOLS = [
   },
   {
     key:   'expansion',
-    label: 'Expansion',
-    subtitle: 'Daily becoming practice',
+    label: 'Horizon Practice',
+    subtitle: 'Daily practice',
     path:  '/tools/expansion',
-    desc:  'Who are you becoming, one day at a time? T.E.A. practice, skill development, and thought loop work toward your Horizon Self.',
+    desc:  'The daily return. T.E.A. practice, skill development, and thought loop work.',
     color: '#A8721A',
   },
 ]
@@ -220,7 +220,7 @@ export function ToolDrawer({ open, onClose }) {
           <div style={{ marginBottom: '32px' }}>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em',
               color: '#A8721A', textTransform: 'uppercase', display: 'block',
-              marginBottom: '16px' }}>Life OS</span>
+              marginBottom: '16px' }}>Horizon Suite</span>
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
