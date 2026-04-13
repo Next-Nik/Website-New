@@ -52,6 +52,21 @@ const STAGE_QUESTION_LABELS = {
 }
 const STAGE_TOTALS = { archetype: 5, domain: 3, scale: 2 }
 
+const STAGE_INTROS = {
+  archetype: {
+    label: 'Contribution Archetype',
+    desc:  'Five behavioural questions. I\'m looking for what you actually did — not what you think you\'d do. Answer from your life as it is right now.',
+  },
+  domain: {
+    label: 'Global Domain',
+    desc:  'Three attentional questions. This is about what pulls you — what you find yourself caring about even when nobody asks you to.',
+  },
+  scale: {
+    label: 'Engagement Scale',
+    desc:  'Two questions. Almost philosophical. Take your time. There are no right answers — only honest ones.',
+  },
+}
+
 const PLACEHOLDERS = {
   archetype:    'Tell me what happened\u2026',
   domain:       'Tell me what you see\u2026',
@@ -614,6 +629,8 @@ export function PurposePiecePage() {
   const [readyToLock,   setReadyToLock]   = useState(false)
   const [showDeepGate,  setShowDeepGate]  = useState(false)
   const [showCentreModal, setShowCentreModal] = useState(false)
+  // headerOpen tracks whether the stage intro panel is expanded, keyed by stage name
+  const [headerOpen,    setHeaderOpen]    = useState({ archetype: true, domain: true, scale: true })
   const [showWelcome, setShowWelcome] = useState(() => {
     // Skip welcome modal if a valid in-progress session already exists in sessionStorage
     try {
@@ -775,7 +792,11 @@ export function PurposePiecePage() {
     const nextIdx = dir === 'next'
       ? Math.min(idx + 1, STAGE_ORDER.length - 1)
       : Math.max(idx - 1, 0)
-    if (session) setSession(prev => ({ ...prev, stage: STAGE_ORDER[nextIdx] }))
+    const nextStage = STAGE_ORDER[nextIdx]
+    setSession(prev => ({ ...prev, stage: nextStage }))
+    if (nextStage !== stage) {
+      setHeaderOpen(prev => ({ ...prev, [nextStage]: true }))
+    }
   }
 
   // Direct stage jump — called when user clicks a wedge on the disc
@@ -785,6 +806,11 @@ export function PurposePiecePage() {
     if (key === stage) return // already on this stage
     setSession(prev => ({ ...prev, stage: key }))
     setStageComplete(false)
+    // Re-open the header for the stage we're jumping to
+    setHeaderOpen(prev => ({ ...prev, [key]: true }))
+    // Fetch correct Q1 for the target stage from the API
+    setThinking(true)
+    callAPI([]).then(d => { setThinking(false); handleResponse(d) }).catch(() => setThinking(false))
   }
 
   function handleCentreClick() {
@@ -925,6 +951,11 @@ export function PurposePiecePage() {
     addMsg('user', text)
     setInput('')
     if (textareaRef.current) textareaRef.current.style.height = 'auto'
+    // Collapse the stage intro header after first answer
+    const currentStage = sessionRef.current?.stage
+    if (currentStage && ['archetype','domain','scale'].includes(currentStage)) {
+      setHeaderOpen(prev => ({ ...prev, [currentStage]: false }))
+    }
     setThinking(true)
     // Minimum 800ms delay so responses feel conversational not instantaneous
     const [d] = await Promise.allSettled([
@@ -999,51 +1030,78 @@ export function PurposePiecePage() {
 
     return (
       <div>
-        {/* Pinned question + progress */}
-        {activeQuestionStage && session?.currentQuestion && (
-          <div style={{ marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>
-                  {activeQuestionStage.charAt(0).toUpperCase() + activeQuestionStage.slice(1)}
+        {/* ── Stage intro panel — collapsible, pull tab at top ── */}
+        {activeQuestionStage && (
+          <div style={{ marginBottom: '20px' }}>
+            {/* Pull tab — always visible */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0' }}>
+              <button
+                onClick={() => setHeaderOpen(prev => ({ ...prev, [activeQuestionStage]: !prev[activeQuestionStage] }))}
+                style={{
+                  background: 'rgba(200,146,42,0.06)',
+                  border: '1px solid rgba(200,146,42,0.22)',
+                  borderBottom: headerOpen[activeQuestionStage] ? 'none' : '1px solid rgba(200,146,42,0.22)',
+                  borderRadius: headerOpen[activeQuestionStage] ? '8px 8px 0 0' : '8px',
+                  padding: '4px 20px 3px',
+                  cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase' }}>
+                  {STAGE_INTROS[activeQuestionStage]?.label}
                 </span>
-                {/* Info icon — opens reference panel for this stage */}
                 {(activeQuestionStage === 'archetype' || activeQuestionStage === 'domain') && (
                   <button
-                    onClick={activeQuestionStage === 'archetype' ? openArchetypePanel : openDomainPanel}
-                    title={activeQuestionStage === 'archetype' ? 'Nine Archetypes' : 'Seven Domains'}
+                    onClick={e => { e.stopPropagation(); activeQuestionStage === 'archetype' ? openArchetypePanel() : openDomainPanel() }}
                     style={{
                       background: 'none', border: '1px solid rgba(200,146,42,0.35)',
-                      borderRadius: '50%', width: '18px', height: '18px',
+                      borderRadius: '50%', width: '14px', height: '14px',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       cursor: 'pointer', padding: 0, flexShrink: 0,
-                      color: 'rgba(200,146,42,0.6)', fontSize: '11px',
+                      color: 'rgba(200,146,42,0.6)', fontSize: '9px',
                       fontFamily: 'Georgia, serif', lineHeight: 1,
-                      transition: 'all 0.15s',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.7)'; e.currentTarget.style.color = '#A8721A' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.35)'; e.currentTarget.style.color = 'rgba(200,146,42,0.6)' }}
                   >
                     i
                   </button>
                 )}
-              </div>
-              <span style={{ ...sc, fontSize: '17px', color: 'rgba(200,146,42,0.55)', letterSpacing: '0.08em' }}>
-                {qIdx + 1} of {stageTotal}
-              </span>
+                <span style={{ color: 'rgba(200,146,42,0.4)', fontSize: '10px', marginLeft: '2px' }}>
+                  {headerOpen[activeQuestionStage] ? '▲' : '▼'}
+                </span>
+              </button>
             </div>
-            <div style={{ ...serif, fontSize: '1.125rem', color: '#0F1523', lineHeight: 1.7, whiteSpace: 'pre-line' }}>
-              {session.currentQuestion}
-            </div>
-          </div>
-        )}
 
-        {/* Reference trigger */}
-        {activeQuestionStage && (
-          <ReferenceTrigger stage={activeQuestionStage}
-            onOpenArchetypes={openArchetypePanel}
-            onOpenDomains={openDomainPanel}
-          />
+            {/* Collapsible panel body */}
+            {headerOpen[activeQuestionStage] && (
+              <div style={{
+                border: '1px solid rgba(200,146,42,0.22)',
+                borderTop: 'none',
+                borderRadius: '0 0 10px 10px',
+                padding: '16px 20px 18px',
+                background: 'rgba(200,146,42,0.03)',
+                animation: 'ppFadeUp 0.25s ease both',
+              }}>
+                <p style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.62)', lineHeight: 1.65, marginBottom: '14px' }}>
+                  {STAGE_INTROS[activeQuestionStage]?.desc}
+                </p>
+                {session?.currentQuestion && (
+                  <div style={{ ...serif, fontSize: '1.125rem', color: '#0F1523', lineHeight: 1.7, whiteSpace: 'pre-line', paddingTop: '12px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
+                    {session.currentQuestion}
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(200,146,42,0.45)' }}>
+                    {qIdx + 1} of {stageTotal}
+                  </span>
+                  <ReferenceTrigger stage={activeQuestionStage}
+                    onOpenArchetypes={openArchetypePanel}
+                    onOpenDomains={openDomainPanel}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Confirmation label */}
@@ -1053,9 +1111,12 @@ export function PurposePiecePage() {
           </div>
         )}
 
-        {/* Chat thread */}
+        {/* Chat thread — filter out any bubble that duplicates currentQuestion */}
         <div className="chat-thread" style={{ marginBottom: '16px' }}>
           {messages.map(m => {
+            // Never render an assistant bubble whose content matches the pinned question
+            if (m.type === 'assistant' && session?.currentQuestion &&
+                m.content?.trim() === session.currentQuestion?.trim()) return null
             if (m.type === 'user')      return <div key={m.id} className="bubble bubble-user">{m.content}</div>
             if (m.type === 'assistant') return <div key={m.id} className="bubble bubble-assistant">{m.content}</div>
             if (m.type === 'html')      return <div key={m.id} className="bubble bubble-assistant" dangerouslySetInnerHTML={{ __html: m.content }} />
