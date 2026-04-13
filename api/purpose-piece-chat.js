@@ -931,6 +931,20 @@ async function handleQuestionPhase(session, latestInput, res) {
 
   const entry = transcript[qi];
 
+  // ── Auto-advance / empty call — just surface the current question ───────────
+  // The stage opening auto-advance fires an empty API call. Return currentQuestion
+  // without treating it as a user answer.
+  if (!latestInput) {
+    session.currentQuestion = session.currentQuestion || questions[qi].text;
+    return res.status(200).json({
+      questionLabel: `${capitalise(stage)} · ${qi + 1} of ${total}`,
+      session,
+      stage,
+      questionIndex: qi,
+      inputMode:     "text"
+    });
+  }
+
   // ── Duplicate message guard ──────────────────────────────────────────────────
   // Two identical consecutive messages — treat as re-send, not a new answer
   const lastMsg = session.lastUserMessage || null;
@@ -977,8 +991,9 @@ async function handleQuestionPhase(session, latestInput, res) {
       }
 
       session.currentQuestion = questions[session.questionIndex].text;
+      // Do NOT send question as `message` — the pinned header renders currentQuestion.
+      // Sending both causes duplicate display.
       return res.status(200).json({
-        message:       questions[session.questionIndex].text,
         questionLabel: `${capitalise(stage)} · ${session.questionIndex + 1} of ${total}`,
         session,
         stage,
@@ -1054,8 +1069,7 @@ async function handleQuestionPhase(session, latestInput, res) {
           questionIndex: session.questionIndex,
           inputMode:     "text"
         });
-      }
-    }
+      }    }
 
     session.probeCount = 0;
     session.questionIndex++;
@@ -1064,8 +1078,9 @@ async function handleQuestionPhase(session, latestInput, res) {
       return await handleStageComplete(session, res);
     }
 
+    session.currentQuestion = questions[session.questionIndex].text;
+    // Do NOT send question as `message` — pinned header renders currentQuestion.
     return res.status(200).json({
-      message:       questions[session.questionIndex].text,
       questionLabel: `${capitalise(stage)} · ${session.questionIndex + 1} of ${total}`,
       session,
       stage,
@@ -1123,6 +1138,9 @@ async function handleStageComplete(session, res, prefixMessage = null) {
     const opening  = STAGE_OPENINGS[nextStage];
     const questions = getStageQuestions(nextStage);
     const total    = getStageTotalQuestions(nextStage);
+
+    // Pre-set currentQuestion so the pinned header is ready after auto-advance
+    session.currentQuestion = questions[0].text;
 
     return res.status(200).json({
       message:       opening,
@@ -1299,8 +1317,10 @@ module.exports = async (req, res) => {
       session = createSession();
       session.stage = "archetype";
       session.currentQuestion = ARCHETYPE_QUESTIONS[0].text;
+      // Do NOT send the question as `message` — the pinned question header
+      // already renders `currentQuestion`. Sending it as `message` too causes
+      // it to appear twice (once pinned, once as a chat bubble).
       return res.status(200).json({
-        message:       ARCHETYPE_QUESTIONS[0].text,
         questionLabel: `Archetype · 1 of ${ARCHETYPE_QUESTIONS.length}`,
         session,
         stage:         "archetype",
@@ -1324,8 +1344,8 @@ module.exports = async (req, res) => {
     // ── Welcome → first archetype question ───────────────────────────────────
     if (session.stage === "welcome") {
       session.stage = "archetype";
+      session.currentQuestion = ARCHETYPE_QUESTIONS[0].text;
       return res.status(200).json({
-        message:       ARCHETYPE_QUESTIONS[0].text,
         questionLabel: `Archetype · 1 of ${ARCHETYPE_QUESTIONS.length}`,
         session,
         stage:         "archetype",
