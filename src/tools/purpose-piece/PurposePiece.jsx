@@ -994,9 +994,31 @@ export function PurposePiecePage() {
         {activeQuestionStage && session?.currentQuestion && (
           <div style={{ marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>
-                {activeQuestionStage.charAt(0).toUpperCase() + activeQuestionStage.slice(1)}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>
+                  {activeQuestionStage.charAt(0).toUpperCase() + activeQuestionStage.slice(1)}
+                </span>
+                {/* Info icon — opens reference panel for this stage */}
+                {(activeQuestionStage === 'archetype' || activeQuestionStage === 'domain') && (
+                  <button
+                    onClick={activeQuestionStage === 'archetype' ? openArchetypePanel : openDomainPanel}
+                    title={activeQuestionStage === 'archetype' ? 'Nine Archetypes' : 'Seven Domains'}
+                    style={{
+                      background: 'none', border: '1px solid rgba(200,146,42,0.35)',
+                      borderRadius: '50%', width: '18px', height: '18px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', padding: 0, flexShrink: 0,
+                      color: 'rgba(200,146,42,0.6)', fontSize: '11px',
+                      fontFamily: 'Georgia, serif', lineHeight: 1,
+                      transition: 'all 0.15s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.7)'; e.currentTarget.style.color = '#A8721A' }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.35)'; e.currentTarget.style.color = 'rgba(200,146,42,0.6)' }}
+                  >
+                    i
+                  </button>
+                )}
+              </div>
               <span style={{ ...sc, fontSize: '17px', color: 'rgba(200,146,42,0.55)', letterSpacing: '0.08em' }}>
                 {qIdx + 1} of {stageTotal}
               </span>

@@ -1957,10 +1957,12 @@ export function ProfilePage() {
           <TargetSprintSlot sprintData={sprintData} />
         </Slot>
 
+        <div id="foundation">
         <Slot title="Foundation" eyebrow="Life OS"
           linkLabel="Open" linkUrl="/tools/foundation">
           <FoundationSlot foundationData={foundationData} />
         </Slot>
+        </div>
 
         <Slot title="NextUs" eyebrow="The larger work"
           linkLabel="Explore" linkUrl="/nextus" defaultOpen={!!claimedActor || !!purposeData?.profile?.civilisational_statement}>

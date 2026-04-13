@@ -223,7 +223,7 @@ function AudioPlayer({ url, onEnded, onNearEnd, locked }) {
         </p>
       )}
       <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>
-        Foundation {'\u00B7'} Baseline {'\u00B7'} 20 min
+        Horizon State {'\u00B7'} Foundation {'\u00B7'} 20 min
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <button
@@ -397,144 +397,296 @@ function FoundationReview({ user, sessions }) {
 function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAfterComplete }) {
   const today = getLocalDateStr()
 
-  // Derive today's before/after from session history
   const todayBefore = sessions.find(s => s.checkin_stage === 'before' && s.completed_at?.startsWith(today))
   const todayAfter  = sessions.find(s => s.checkin_stage === 'after'  && s.completed_at?.startsWith(today))
 
-  // Local state — pre-filled from today's data if it exists
-  const [beforeResult,  setBeforeResult]  = useState(todayBefore ? { value: todayBefore.value, note: todayBefore.note } : null)
-  const [afterResult,   setAfterResult]   = useState(todayAfter  ? { value: todayAfter.value,  note: todayAfter.note  } : null)
+  const [beforeValue,   setBeforeValue]   = useState(todayBefore?.value ?? 5)
+  const [beforeNote,    setBeforeNote]    = useState(todayBefore?.note  ?? '')
+  const [afterValue,    setAfterValue]    = useState(todayAfter?.value  ?? 5)
+  const [afterNote,     setAfterNote]     = useState(todayAfter?.note   ?? '')
+  const [beforeDone,    setBeforeDone]    = useState(!!todayBefore)
   const [afterUnlocked, setAfterUnlocked] = useState(!!todayAfter)
+  const [afterDone,     setAfterDone]     = useState(!!todayAfter)
+  const [saving,        setSaving]        = useState(false)
   const [showModal,     setShowModal]     = useState(false)
 
-  // Resync if sessions loads after mount
   useEffect(() => {
-    if (!beforeResult) {
+    if (!beforeDone) {
       const b = sessions.find(s => s.checkin_stage === 'before' && s.completed_at?.startsWith(today))
-      if (b) setBeforeResult({ value: b.value, note: b.note })
+      if (b) { setBeforeValue(b.value); setBeforeNote(b.note ?? ''); setBeforeDone(true) }
     }
-    if (!afterResult) {
+    if (!afterDone) {
       const a = sessions.find(s => s.checkin_stage === 'after' && s.completed_at?.startsWith(today))
-      if (a) { setAfterResult({ value: a.value, note: a.note }); setAfterUnlocked(true) }
+      if (a) { setAfterValue(a.value); setAfterNote(a.note ?? ''); setAfterUnlocked(true); setAfterDone(true) }
     }
   }, [sessions])
 
-  const isDone = !!afterResult
-
-  // Unauth
-  if (!user) {
-    return (
-      <div>
-        <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
-          <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', opacity: 0.35 }}>
-            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase' }}>Before</span>
-            <FlameGlyph value={5} size={64} ghost />
-          </div>
-          <div style={{ flex: 1, minWidth: '220px' }}>
-            <div style={{ padding: '20px 22px', background: 'rgba(15,21,35,0.02)', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', opacity: 0.6 }}>
-              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>Foundation {'\u00B7'} Baseline {'\u00B7'} 20 min</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <button onClick={() => setShowModal(true)} style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', ...gold, fontSize: '18px' }}>{'\u25B6'}</button>
-                <div style={{ flex: 1, height: '4px', background: 'rgba(200,146,42,0.15)', borderRadius: '2px' }} />
-              </div>
-            </div>
-          </div>
-          <div style={{ flex: '0 0 auto', opacity: 0.18 }}>
-            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
-            <FlameGlyph value={5} size={64} ghost />
-          </div>
-        </div>
-        {showModal && <AuthModal onDismiss={() => setShowModal(false)} />}
-      </div>
-    )
+  async function saveCheckin(stage, value, note) {
+    if (!user?.id) return
+    const now       = new Date()
+    const nowStr    = now.toISOString()
+    const dateStr   = getLocalDateStr(now)
+    const weekId    = getWeekId(now)
+    const monthId   = getMonthId(now)
+    const quarterId = getQuarterId(now)
+    const yearId    = getYearId(now)
+    const periodId  = `${dateStr}-foundation-baseline-${stage}`
+    await supabase.from('pulse_entries').upsert({
+      user_id: user.id, type: 'foundation_checkin', period_id: periodId,
+      source: 'foundation', audio_phase: 'baseline', checkin_stage: stage,
+      week_id: weekId, month_id: monthId, quarter_id: quarterId, year_id: yearId,
+      value, note: note || null, completed_at: nowStr, updated_at: nowStr,
+    }, { onConflict: 'user_id,type,period_id' })
   }
 
-  // Done for today
-  if (isDone) {
+  async function handleBegin() {
+    if (!user) { setShowModal(true); return }
+    setSaving(true)
+    try { await saveCheckin('before', beforeValue, beforeNote) } catch(e) { console.warn(e) }
+    setSaving(false)
+    setBeforeDone(true)
+  }
+
+  async function handleSave() {
+    setSaving(true)
+    try {
+      await saveCheckin('after', afterValue, afterNote)
+      const updatedSessions = [
+        ...sessions.filter(s => !(s.checkin_stage === 'after' && s.completed_at?.startsWith(today))),
+        { checkin_stage: 'after', value: afterValue, note: afterNote, completed_at: new Date().toISOString(), week_id: getWeekId(), month_id: getMonthId(), quarter_id: getQuarterId(), year_id: getYearId() },
+      ]
+      const currentBefore = { value: beforeValue, note: beforeNote }
+      onAfterComplete?.({ value: afterValue, note: afterNote, timestamp: new Date().toISOString() }, currentBefore, updatedSessions)
+    } catch(e) { console.warn(e) }
+    setSaving(false)
+    setAfterDone(true)
+  }
+
+  // Done state
+  if (afterDone) {
+    const delta = afterValue - beforeValue
+    const weekSessions = sessions.filter(s => s.checkin_stage === 'after' && s.week_id === getWeekId()).length
+    const sessionCount = weekSessions > 0 ? weekSessions : 1
+
     return (
       <div>
-        <FlameDelta before={beforeResult.value} after={afterResult.value} />
-        <div style={{ textAlign: 'center', marginTop: '20px' }}>
-          <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, lineHeight: 1.75, marginBottom: '16px' }}>
-            {afterResult.value > beforeResult.value
-              ? "The audio did something. That's the data."
-              : afterResult.value < beforeResult.value
-              ? "Honest is what matters here. The pattern shows over time."
-              : "The ground holds even when nothing shifts. That's sometimes the work."}
+        <FlameDelta before={beforeValue} after={afterValue} />
+        <div style={{ textAlign: 'center', marginTop: '24px' }}>
+          <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, lineHeight: 1.75, marginBottom: '6px' }}>
+            Done. See you tomorrow.
           </p>
-          <button
-            onClick={() => { setBeforeResult(null); setAfterResult(null); setAfterUnlocked(false) }}
-            style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold, background: 'none', border: 'none', cursor: 'pointer' }}
-          >
-            Listen again {'\u2192'}
-          </button>
+          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(200,146,42,0.55)', marginBottom: '20px' }}>
+            {sessionCount} session{sessionCount !== 1 ? 's' : ''} this week
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => { setBeforeDone(false); setAfterDone(false); setAfterUnlocked(false); setBeforeValue(5); setAfterValue(5); setBeforeNote(''); setAfterNote('') }}
+              style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold, background: 'none', border: 'none', cursor: 'pointer' }}
+            >
+              Listen again {'\u2192'}
+            </button>
+            <a href="/profile#foundation" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(200,146,42,0.6)', textDecoration: 'none' }}>
+              View your journal {'\u2192'}
+            </a>
+          </div>
         </div>
       </div>
     )
   }
 
-  // Active session
+  const colStyle = { display: 'flex', flexDirection: 'column', alignItems: 'center' }
+
   return (
     <div>
-      <div className="baseline-layout" style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+      <style>{`
+        .hs-baseline-grid {
+          display: grid;
+          grid-template-columns: 1fr 1.6fr 1fr;
+          gap: 20px;
+          align-items: start;
+        }
+        @media (max-width: 640px) {
+          .hs-baseline-grid {
+            grid-template-columns: 1fr;
+            gap: 28px;
+          }
+          .hs-col-after {
+            order: 3;
+          }
+        }
+      `}</style>
 
-        {/* LEFT — Before flame */}
-        <div style={{
-          flex: '0 0 auto', minWidth: '120px',
-          opacity: beforeResult ? 0.35 : 1,
-          transition: 'opacity 0.6s ease',
-        }} className="baseline-before">
-          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>Before</span>
-          <FlamePicker
-            audioPhase="baseline"
-            stage="before"
-            locked={!!beforeResult}
-            onComplete={data => { setBeforeResult(data) }}
-            onSkip={() => setBeforeResult({ value: 5, note: '' })}
+      <div className="hs-baseline-grid">
+
+        {/* ── LEFT — Before ── */}
+        <div style={{ ...colStyle, opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
+          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>
+            Before
+          </span>
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '12px' }}>
+            Before {'\u00B7'} Foundation
+          </span>
+          <p style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginBottom: '20px', lineHeight: 1.55 }}>
+            Where is the flame right now?
+          </p>
+
+          <div style={{ pointerEvents: beforeDone ? 'none' : 'auto', marginBottom: '14px' }}>
+            <FlameSlider
+              value={beforeValue}
+              onChange={setBeforeValue}
+              ghostValue={null}
+            />
+          </div>
+
+          <textarea
+            value={beforeNote}
+            onChange={e => setBeforeNote(e.target.value)}
+            placeholder="what walked in with you today\u2026"
+            rows={2}
+            disabled={beforeDone}
+            style={{
+              width: '100%', padding: '10px 14px',
+              fontFamily: "'Cormorant Garamond',Georgia,serif",
+              fontSize: '1rem', fontStyle: 'italic',
+              color: 'rgba(15,21,35,0.72)',
+              background: 'rgba(200,146,42,0.025)',
+              border: '1px solid rgba(200,146,42,0.18)',
+              borderRadius: '8px', outline: 'none',
+              resize: 'none', lineHeight: 1.6, marginBottom: '14px',
+              transition: 'border-color 0.2s', boxSizing: 'border-box',
+            }}
+            onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
+            onBlur={e => { e.target.style.borderColor = 'rgba(200,146,42,0.18)' }}
           />
+
+          {!beforeDone && (
+            <button
+              onClick={handleBegin}
+              disabled={saving}
+              style={{
+                width: '100%', padding: '12px',
+                ...sc, fontSize: '1.125rem', letterSpacing: '0.14em',
+                color: '#A8721A',
+                background: 'rgba(200,146,42,0.05)',
+                border: '1.5px solid rgba(200,146,42,0.78)',
+                borderRadius: '40px', cursor: saving ? 'default' : 'pointer',
+                transition: 'all 0.2s', opacity: saving ? 0.6 : 1,
+              }}
+            >
+              Begin {'\u2192'}
+            </button>
+          )}
         </div>
 
-        {/* CENTRE — Audio */}
-        <div className="baseline-audio" style={{ flex: 1, minWidth: '220px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', minHeight: '540px' }}>
-          {audioLoading && <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted }}>Loading audio...</p>}
-          {audioError   && <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
+        {/* ── CENTRE — Audio ── */}
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+          {audioLoading && (
+            <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted }}>Loading audio…</p>
+          )}
+          {audioError && (
+            <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>
+          )}
           {!audioLoading && !audioError && audioUrl && (
             <AudioPlayer
               url={audioUrl}
-              locked={!beforeResult}
+              locked={!beforeDone}
               onNearEnd={() => setAfterUnlocked(true)}
               onEnded={() => setAfterUnlocked(true)}
             />
           )}
+          {/* No user — show locked placeholder */}
+          {!user && !audioLoading && !audioError && (
+            <div style={{
+              padding: '20px 22px',
+              background: 'rgba(15,21,35,0.02)',
+              border: '1.5px solid rgba(200,146,42,0.2)',
+              borderRadius: '14px', opacity: 0.6,
+            }}>
+              <p style={{ ...serif, fontSize: '1.3125rem', fontStyle: 'italic', ...muted, marginBottom: '14px', lineHeight: 1.6 }}>
+                Check-in to unlock the audio.
+              </p>
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>
+                Horizon State {'\u00B7'} Foundation {'\u00B7'} 20 min
+              </div>
+              <button
+                onClick={() => setShowModal(true)}
+                style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', ...gold, fontSize: '18px' }}
+              >
+                {'\u25B6'}
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* RIGHT — After flame */}
-        <div style={{
-          flex: '0 0 auto', minWidth: '120px',
-          opacity: afterUnlocked ? 1 : 0.18,
-          transition: 'opacity 0.8s ease',
-          pointerEvents: afterUnlocked ? 'auto' : 'none',
-        }} className="baseline-after">
-          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '12px', textAlign: 'center' }}>After</span>
-          <FlamePicker
-            audioPhase="baseline"
-            stage="after"
-            locked={!afterUnlocked}
-            ghostValue={beforeResult?.value ?? null}
-            onComplete={data => {
-              setAfterResult(data)
-              // Build updated sessions list with new after entry for summary computation
-              const updatedSessions = [
-                ...sessions.filter(s => !(s.checkin_stage === 'after' && s.completed_at?.startsWith(today))),
-                { checkin_stage: 'after',  value: data.value, note: data.note, completed_at: new Date().toISOString(), week_id: getWeekId(), month_id: getMonthId(), quarter_id: getQuarterId(), year_id: getYearId() },
-              ]
-              const currentBefore = beforeResult || sessions.find(s => s.checkin_stage === 'before' && s.completed_at?.startsWith(today))
-              onAfterComplete?.(data, currentBefore, updatedSessions)
+        {/* ── RIGHT — After ── */}
+        <div
+          className="hs-col-after"
+          style={{
+            ...colStyle,
+            opacity: afterUnlocked ? 1 : 0.22,
+            transition: 'opacity 0.8s ease',
+            pointerEvents: afterUnlocked ? 'auto' : 'none',
+          }}
+        >
+          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>
+            After
+          </span>
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '12px' }}>
+            After {'\u00B7'} Foundation
+          </span>
+          <p style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginBottom: '20px', lineHeight: 1.55 }}>
+            And now{'\u2014'}?
+          </p>
+
+          <div style={{ marginBottom: '14px' }}>
+            <FlameSlider
+              value={afterValue}
+              onChange={setAfterValue}
+              ghostValue={beforeDone ? beforeValue : null}
+            />
+          </div>
+
+          <textarea
+            value={afterNote}
+            onChange={e => setAfterNote(e.target.value)}
+            placeholder="What I\u2019m stepping away with\u2026"
+            rows={2}
+            style={{
+              width: '100%', padding: '10px 14px',
+              fontFamily: "'Cormorant Garamond',Georgia,serif",
+              fontSize: '1rem', fontStyle: 'italic',
+              color: 'rgba(15,21,35,0.72)',
+              background: 'rgba(200,146,42,0.025)',
+              border: '1px solid rgba(200,146,42,0.18)',
+              borderRadius: '8px', outline: 'none',
+              resize: 'none', lineHeight: 1.6, marginBottom: '14px',
+              transition: 'border-color 0.2s', boxSizing: 'border-box',
             }}
+            onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
+            onBlur={e => { e.target.style.borderColor = 'rgba(200,146,42,0.18)' }}
           />
+
+          {afterUnlocked && (
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              style={{
+                width: '100%', padding: '12px',
+                ...sc, fontSize: '1.125rem', letterSpacing: '0.14em',
+                color: '#A8721A',
+                background: 'rgba(200,146,42,0.05)',
+                border: '1.5px solid rgba(200,146,42,0.78)',
+                borderRadius: '40px', cursor: saving ? 'default' : 'pointer',
+                transition: 'all 0.2s', opacity: saving ? 0.6 : 1,
+              }}
+            >
+              {saving ? 'Saving\u2026' : 'Save \u2713'}
+            </button>
+          )}
         </div>
 
       </div>
+      {showModal && <AuthModal onDismiss={() => setShowModal(false)} />}
     </div>
   )
 }
@@ -582,6 +734,7 @@ export function FoundationPage() {
   const [audioLoading, setAudioLoading] = useState(false)
   const [audioError,   setAudioError]   = useState(null)
   const [sessions,     setSessions]     = useState([])
+  const [activePhase,  setActivePhase]  = useState('foundation')
 
   useEffect(() => {
     if (!user) return
@@ -629,49 +782,93 @@ export function FoundationPage() {
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.2)', margin: '40px 0' }} />
 
-        <PhaseBlock
-          number="Phase 1"
-          name="Baseline"
-          desc="Regulated internal stability — the floor you stand on. Check in before and after to see what the audio actually does to your system."
-        >
-          <BaselineCard
-            user={user}
-            audioUrl={audioUrl}
-            audioLoading={audioLoading}
-            audioError={audioError}
-            sessions={sessions}
-            onAfterComplete={async (afterData, beforeData, updatedSessions) => {
-              await writeSummary(user, updatedSessions, afterData, beforeData)
-              // Write to North Star cross-tool memory — stable note, deduplicates on every completion
-              supabase.from('north_star_notes').upsert(
-                { user_id: user.id, tool: 'foundation', note: 'Foundation Baseline practice active.' },
-                { onConflict: 'user_id,tool,note' }
-              )
-            }}
-          />
-        </PhaseBlock>
+        {/* ── Phase tab toggle ── */}
+        {(() => {
+          const phases = [
+            { key: 'foundation',  label: 'Foundation',  number: '1' },
+            { key: 'calibration', label: 'Calibration', number: '2' },
+            { key: 'embodying',   label: 'Embodying',   number: '3' },
+          ]
 
-        {user && sessions.length > 0 && (
-          <FoundationReview user={user} sessions={sessions} />
-        )}
+          return (
+            <div>
+              {/* Tab bar */}
+              <div style={{ display: 'flex', gap: '0', marginBottom: '32px', borderBottom: '1px solid rgba(200,146,42,0.2)' }}>
+                {phases.map(p => {
+                  const isActive = activePhase === p.key
+                  const isLocked = p.key !== 'foundation'
+                  return (
+                    <button
+                      key={p.key}
+                      onClick={() => setActivePhase(p.key)}
+                      style={{
+                        ...sc, fontSize: '15px', letterSpacing: '0.16em',
+                        padding: '12px 20px',
+                        background: 'none', border: 'none', cursor: 'pointer',
+                        color: isActive ? '#A8721A' : isLocked ? 'rgba(200,146,42,0.3)' : 'rgba(200,146,42,0.55)',
+                        borderBottom: isActive ? '2px solid #A8721A' : '2px solid transparent',
+                        marginBottom: '-1px',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: 'inherit', display: 'block', marginBottom: '2px', opacity: 0.7 }}>
+                        Phase {p.number}
+                      </span>
+                      {p.label}
+                    </button>
+                  )
+                })}
+              </div>
 
-        {/* Phase 2 — Calibration: coming in next release */}
-        <PhaseBlock
-          number="Phase 2"
-          name="Calibration"
-          desc="Developing the capacity to move your state deliberately — not just recover from it."
-        >
-          <PhasePlaceholder title="Calibration" />
-        </PhaseBlock>
+              {/* Phase 1 — Foundation */}
+              {activePhase === 'foundation' && (
+                <div>
+                  <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, ...meta, lineHeight: 1.75, marginBottom: '24px' }}>
+                    Regulated internal stability — the floor you stand on. Check in before and after to see what the audio actually does to your system.
+                  </p>
+                  <BaselineCard
+                    user={user}
+                    audioUrl={audioUrl}
+                    audioLoading={audioLoading}
+                    audioError={audioError}
+                    sessions={sessions}
+                    onAfterComplete={async (afterData, beforeData, updatedSessions) => {
+                      await writeSummary(user, updatedSessions, afterData, beforeData)
+                      supabase.from('north_star_notes').upsert(
+                        { user_id: user.id, tool: 'foundation', note: 'Foundation Baseline practice active.' },
+                        { onConflict: 'user_id,tool,note' }
+                      )
+                    }}
+                  />
+                </div>
+              )}
 
-        {/* Phase 3 — Embodying: coming in next release */}
-        <PhaseBlock
-          number="Phase 3"
-          name="Embodying"
-          desc="Living from a regulated ground — not as practice, but as your natural state."
-        >
-          <PhasePlaceholder title="Embodying" />
-        </PhaseBlock>
+              {/* Phase 2 — Calibration (coming) */}
+              {activePhase === 'calibration' && (
+                <div style={{ padding: '40px 0', textAlign: 'center' }}>
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(200,146,42,0.4)', display: 'block', marginBottom: '12px' }}>
+                    Coming soon
+                  </span>
+                  <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.7, maxWidth: '380px', margin: '0 auto' }}>
+                    Developing the capacity to move your state deliberately — not just recover from it.
+                  </p>
+                </div>
+              )}
+
+              {/* Phase 3 — Embodying (coming) */}
+              {activePhase === 'embodying' && (
+                <div style={{ padding: '40px 0', textAlign: 'center' }}>
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(200,146,42,0.4)', display: 'block', marginBottom: '12px' }}>
+                    Coming soon
+                  </span>
+                  <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.7, maxWidth: '380px', margin: '0 auto' }}>
+                    Living from a regulated ground — not as practice, but as your natural state.
+                  </p>
+                </div>
+              )}
+            </div>
+          )
+        })()}
 
         <QuoteBlock text="It has helped me reset my baseline in the middle of the day — to relax, let go, and create space for a more supportive inner story. One that naturally inspires aligned action rather than effort or striving." cite="David William Pierce" />
         <QuoteBlock text="There was this sense of feeling held throughout. His presence is unmistakably there." cite="David William Pierce" />
