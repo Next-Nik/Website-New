@@ -282,10 +282,10 @@ function finalSynthesisPrompt(session) {
     const d = DOMAINS.find(d => d.id === id);
     if (!d) return "";
     return `${d.label} — "${d.stewardshipQuestion}"
-  Score: ${data.currentScore}/10
+  Score: ${data.score}/10
   Character: ${data.characterBrief || data.avatarList || "not captured"}
-  Current reality: ${data.realityFinal || "not captured"}
-  Horizon Goal: ${data.horizonText || "not captured"}`;
+  Current reality: ${data.placement || "not captured"}
+  Horizon Goal: ${data.horizon || "not captured"}`;
   }).filter(Boolean).join("\n\n");
 
   return `You are the Life OS assessment engine delivering the final map.
@@ -317,8 +317,8 @@ Respond ONLY with valid JSON, no markdown:
 function lifeHorizonPrompt(session) {
   const horizons = Object.entries(session.domainData).map(([id, data]) => {
     const d = DOMAINS.find(d => d.id === id);
-    if (!d || !data.horizonText) return null;
-    return `${d.label}: "${data.horizonText}"`;
+    if (!d || !data.horizon) return null;
+    return `${d.label}: "${data.horizon}"`;
   }).filter(Boolean).join("\n");
 
   return `You have the seven domain Horizon Goals that someone expressed for their own life during a Life OS assessment. Each is their honest answer to "if a genie granted your wish here, what would it be?"
