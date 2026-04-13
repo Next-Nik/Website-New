@@ -1943,21 +1943,21 @@ export function ProfilePage() {
             color: 'rgba(15,21,35,0.72)' }}>{user.email}</p>
         </div>
 
-        <Slot title="The Map" eyebrow="NextUs Self" linkLabel="Open" linkUrl="/tools/map">
+        <Slot title="The Map" eyebrow="Life OS" linkLabel="Open" linkUrl="/tools/map">
           <MapSlot mapData={mapData} sprintData={sprintData} />
         </Slot>
 
-        <Slot title="Purpose Piece" eyebrow="NextUs Self"
+        <Slot title="Purpose Piece" eyebrow="Life OS"
           linkLabel="Open" linkUrl="/tools/purpose-piece">
           <PurposePieceSlot purposeData={purposeData} userId={user?.id} />
         </Slot>
 
-        <Slot title="Target Sprint" eyebrow="NextUs Self"
+        <Slot title="Target Sprint" eyebrow="Life OS"
           linkLabel="Open" linkUrl="/tools/target-goals">
           <TargetSprintSlot sprintData={sprintData} />
         </Slot>
 
-        <Slot title="Horizon State" eyebrow="NextUs Self"
+        <Slot title="Foundation" eyebrow="Life OS"
           linkLabel="Open" linkUrl="/tools/foundation">
           <FoundationSlot foundationData={foundationData} />
         </Slot>

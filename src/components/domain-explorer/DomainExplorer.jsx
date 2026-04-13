@@ -14,10 +14,6 @@ const HEP_FADE_IN_DELAY    = 0
 const HEP_START_DELAY      = 0
 // ─────────────────────────────────────────────────────────────────────────────
 
-// ── PLACEHOLDER — replace with real import when ContributeModal is built ─────
-function ContributeModal() { return null }
-// ─────────────────────────────────────────────────────────────────────────────
-
 const OVERVIEW_TEXT = `The Overview Effect is what astronauts report when they first see Earth from space — a sudden, irreversible recognition of the whole. The boundaries dissolve. The fragmentation that seemed inevitable from inside it becomes obviously contingent from outside it.
 
 From that vantage point, a question becomes possible that is very hard to ask from inside the noise:

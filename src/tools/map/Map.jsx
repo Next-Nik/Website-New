@@ -1167,7 +1167,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
 
       {/* Hero */}
       <div style={{ padding: '28px 28px 22px', borderBottom: '1px solid rgba(200,146,42,0.1)', background: 'rgba(200,146,42,0.03)' }}>
-        <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '12px' }}>Your Horizon Suite Map</div>
+        <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '12px' }}>Your Life OS Map</div>
         {mapData?.stage && (
           <div style={{ display: 'inline-block', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '6px', padding: '4px 14px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px' }}>{mapData.stage}</div>
         )}
@@ -1770,7 +1770,7 @@ export function MapPage() {
 
         {/* Header */}
         <div className="tool-header">
-          <span className="tool-eyebrow">NextUs Self · The Map</span>
+          <span className="tool-eyebrow">Life OS · The Map</span>
           <h1 className="tool-title">From where you are<br />to where you want to be.</h1>
           <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.6 }}>
             An honest picture. Seven domains. Three steps each.
