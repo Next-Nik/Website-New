@@ -233,6 +233,7 @@ function OrienteeringEmbed() {
 }
 
 export function HomePage() {
+  const { user } = useAuth()
   const [activeStage, setActiveStage] = useState(null)
   const panelRef = useRef(null)
 
