@@ -757,3 +757,198 @@
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* ── FOCUS BAR ─────────────────────────────────────────────── */
+
+.focusBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.focusTrigger {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(200,146,42,0.06);
+  border: 1px solid rgba(200,146,42,0.35);
+  border-radius: 40px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.focusTrigger:hover {
+  background: rgba(200,146,42,0.12);
+  border-color: rgba(200,146,42,0.60);
+}
+
+.focusEyebrow {
+  font-family: 'Cormorant SC', Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: rgba(168,114,26,0.70);
+}
+
+.focusName {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 15px;
+  color: #A8721A;
+}
+
+.focusChevron {
+  font-size: 10px;
+  color: rgba(168,114,26,0.60);
+  line-height: 1;
+}
+
+.focusClear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: rgba(15,21,35,0.35);
+  line-height: 1;
+  padding: 0 4px;
+  transition: color 0.15s;
+}
+
+.focusClear:hover { color: rgba(15,21,35,0.65); }
+
+.focusDropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 200;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(200,146,42,0.30);
+  border-radius: 12px;
+  box-shadow: 0 8px 28px rgba(15,21,35,0.12);
+  min-width: 280px;
+  max-width: 340px;
+  overflow: hidden;
+}
+
+.focusSearchWrap {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(200,146,42,0.12);
+}
+
+.focusInput {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 15px;
+  color: #0F1523;
+  width: 100%;
+  border: 1px solid rgba(200,146,42,0.28);
+  border-radius: 6px;
+  padding: 8px 12px;
+  outline: none;
+  background: #FAFAF7;
+}
+
+.focusSearching {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 14px;
+  color: rgba(15,21,35,0.40);
+  padding: 10px 14px;
+  margin: 0;
+}
+
+.focusOption {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 14px;
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(200,146,42,0.08);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+}
+
+.focusOption:hover { background: rgba(200,146,42,0.06); }
+.focusOption:last-child { border-bottom: none; }
+
+.focusOptionName {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 15px;
+  color: #0F1523;
+}
+
+.focusOptionType {
+  font-family: 'Cormorant SC', Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #A8721A;
+}
+
+/* ── FOCUS ACTORS SECTION ──────────────────────────────────── */
+
+.focusActorsSection {
+  background: rgba(200,146,42,0.03);
+  border: 1px solid rgba(200,146,42,0.18);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+}
+
+.focusActorsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.focusActorsLabel {
+  font-family: 'Cormorant SC', Georgia, serif;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: rgba(15,21,35,0.55);
+}
+
+.statusBadge {
+  font-family: 'Cormorant SC', Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  padding: 3px 10px;
+  border-radius: 40px;
+  border: 1px solid;
+  background: transparent;
+}
+
+.focusEmpty {
+  padding: 6px 0 4px;
+}
+
+.focusEmptyText {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 15px;
+  color: rgba(15,21,35,0.55);
+  margin: 0 0 4px;
+  line-height: 1.6;
+}
+
+.focusEmptyHint {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 14px;
+  font-style: italic;
+  color: #A8721A;
+  margin: 0;
+}
+
+.focusPageLink {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: 'Cormorant SC', Georgia, serif;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: #A8721A;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.focusPageLink:hover { opacity: 0.7; }

@@ -1,7 +1,7 @@
 // ── QUALITATIVE BANDS ─────────────────────────────────────────────────────────
 // Imported from shared Horizon Scale constants.
 // The local definition below is retired — use getQualitativeBand from horizonScale.js
-export { getQualitativeBand } from '../constants/horizonScale'
+export { getQualitativeBand } from '../../constants/horizonScale'
 
 // dataStatus: signals to the UI whether numbers are illustrative or verified
 // 'illustrative' = placeholder shape, Decision Analytics not yet run

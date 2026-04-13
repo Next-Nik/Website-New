@@ -1,6 +1,112 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CURRENT_STATE, SCALE_LABELS, DATA_STATUS } from "./currentState";
 import styles from "./DomainPanel.module.css";
+import { supabase } from "../../hooks/useSupabase";
+
+// ── FOCUS STATUS ──────────────────────────────────────────────────────────────
+const STATUS_CONFIG = {
+  thriving:  { label: 'Thriving',   color: '#2A6B3A' },
+  underway:  { label: 'Underway',   color: '#2A4A8A' },
+  underloved:{ label: 'Underloved', color: '#8A6B2A' },
+  unmapped:  { label: 'Unmapped',   color: 'rgba(15,21,35,0.35)' },
+}
+
+function computeStatus(actorCount, goalSet) {
+  if (!goalSet && actorCount === 0) return 'unmapped'
+  if (goalSet && actorCount >= 3)  return 'thriving'
+  if (goalSet && actorCount > 0)   return 'underway'
+  if (actorCount > 0 && !goalSet)  return 'underway'
+  if (goalSet && actorCount === 0) return 'underloved'
+  return 'unmapped'
+}
+
+// ── FOCUS SEARCH ──────────────────────────────────────────────────────────────
+function FocusSelector({ current, onSelect, onClear }) {
+  const [open, setOpen]       = useState(false)
+  const [query, setQuery]     = useState('')
+  const [results, setResults] = useState([])
+  const [busy, setBusy]       = useState(false)
+  const debounce              = useRef(null)
+  const wrapRef               = useRef(null)
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  useEffect(() => {
+    if (query.trim().length < 2) { setResults([]); return }
+    clearTimeout(debounce.current)
+    debounce.current = setTimeout(async () => {
+      setBusy(true)
+      const { data } = await supabase
+        .from('nextus_focuses')
+        .select('id, name, type, slug')
+        .ilike('name', `%${query.trim()}%`)
+        .order('type').limit(10)
+      setResults(data || [])
+      setBusy(false)
+    }, 280)
+  }, [query])
+
+  const TYPE_LABEL = {
+    planet:'Planet', continent:'Continent', nation:'Nation',
+    province:'Province', city:'City', neighbourhood:'Neighbourhood',
+    organisation:'Organisation',
+  }
+
+  return (
+    <div ref={wrapRef} className={styles.focusBar}>
+      <button className={styles.focusTrigger} onClick={() => setOpen(o => !o)}>
+        <span className={styles.focusEyebrow}>Viewing</span>
+        <span className={styles.focusName}>{current ? current.name : 'Global'}</span>
+        <span className={styles.focusChevron}>{open ? '▴' : '▾'}</span>
+      </button>
+
+      {current && (
+        <button className={styles.focusClear} onClick={onClear} title="Return to global view">×</button>
+      )}
+
+      {open && (
+        <div className={styles.focusDropdown}>
+          <div className={styles.focusSearchWrap}>
+            <input
+              autoFocus
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="Country, province, city…"
+              className={styles.focusInput}
+            />
+          </div>
+
+          {!query && (
+            <button className={styles.focusOption} onClick={() => { onClear(); setOpen(false) }}>
+              <span className={styles.focusOptionName}>Global</span>
+              <span className={styles.focusOptionType}>Planet</span>
+            </button>
+          )}
+
+          {busy && <p className={styles.focusSearching}>Searching…</p>}
+
+          {!busy && query.trim().length >= 2 && results.length === 0 && (
+            <p className={styles.focusSearching}>No results</p>
+          )}
+
+          {results.map(f => (
+            <button key={f.id} className={styles.focusOption}
+              onClick={() => { onSelect(f); setOpen(false); setQuery('') }}>
+              <span className={styles.focusOptionName}>{f.name}</span>
+              <span className={styles.focusOptionType}>{TYPE_LABEL[f.type] || f.type}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ── ILLUSTRATIVE PREVIEW COMPONENT ───────────────────────────────────────────
 // Shows the structure of the Current State layer — not content.
@@ -90,9 +196,43 @@ export default function DomainPanel({
   rootDomainId,
 }) {
   const [fieldExpanded, setFieldExpanded] = useState(false);
-  const isPlaceholder = item.horizonGoal === "placeholder";
+  const [activeFocus, setActiveFocus]     = useState(null);
+  const [focusActors, setFocusActors]     = useState([]);
+  const [focusGoal, setFocusGoal]         = useState(null);
+  const [focusLoading, setFocusLoading]   = useState(false);
 
+  const isPlaceholder = item.horizonGoal === "placeholder";
   const cs = level === 0 && item.id ? CURRENT_STATE[item.id] : null;
+
+  // When focus changes, fetch actors and local goal for this domain
+  useEffect(() => {
+    if (!activeFocus || !item.id) {
+      setFocusActors([])
+      setFocusGoal(null)
+      return
+    }
+    setFocusLoading(true)
+    Promise.all([
+      supabase
+        .from('nextus_actors')
+        .select('id, name, scale, winning, website')
+        .eq('focus_id', activeFocus.id)
+        .eq('domain_id', item.id)
+        .order('winning', { ascending: false })
+        .limit(20),
+      supabase
+        .from('nextus_focus_goals')
+        .select('horizon_goal')
+        .eq('focus_id', activeFocus.id)
+        .eq('domain_id', item.id)
+        .eq('status', 'ratified')
+        .maybeSingle(),
+    ]).then(([{ data: actors }, { data: goal }]) => {
+      setFocusActors(actors || [])
+      setFocusGoal(goal?.horizon_goal || null)
+      setFocusLoading(false)
+    })
+  }, [activeFocus, item.id])
 
   const isUserDomain = userData?.domain === item.id;
   const userScale = userData?.scale;
@@ -184,7 +324,12 @@ export default function DomainPanel({
 
 
       <p className={styles.horizonGoal}>
-        {isPlaceholder ? (
+        {activeFocus && focusGoal ? (
+          <>
+            <span className={styles.goalLabel}>Local horizon —</span>{" "}
+            {focusGoal}
+          </>
+        ) : isPlaceholder ? (
           <span className={styles.comingSoon}>Horizon goal being mapped —</span>
         ) : (
           <>
@@ -193,6 +338,76 @@ export default function DomainPanel({
           </>
         )}
       </p>
+
+      {/* Focus context bar — z-axis navigation */}
+      <FocusSelector
+        current={activeFocus}
+        onSelect={f => { setActiveFocus(f); setFieldExpanded(false) }}
+        onClear={() => { setActiveFocus(null); setFocusActors([]); setFocusGoal(null) }}
+      />
+
+      {/* Focus actors — shown when a Focus is active */}
+      {activeFocus && (
+        <div className={styles.focusActorsSection}>
+          <div className={styles.focusActorsHeader}>
+            <span className={styles.focusActorsLabel}>In the Field — {activeFocus.name}</span>
+            {!focusLoading && (() => {
+              const status = computeStatus(focusActors.length, !!focusGoal)
+              const cfg = STATUS_CONFIG[status]
+              return (
+                <span className={styles.statusBadge} style={{ color: cfg.color, borderColor: cfg.color }}>
+                  {cfg.label}
+                </span>
+              )
+            })()}
+          </div>
+
+          {focusLoading && <p className={styles.focusSearching}>Loading…</p>}
+
+          {!focusLoading && focusActors.length === 0 && (
+            <div className={styles.focusEmpty}>
+              <p className={styles.focusEmptyText}>
+                No actors registered in {activeFocus.name} for this domain yet.
+              </p>
+              <p className={styles.focusEmptyHint}>
+                This is an opportunity — and a need.
+              </p>
+            </div>
+          )}
+
+          {!focusLoading && focusActors.length > 0 && (
+            <div className={styles.actorsRow}>
+              {focusActors.slice(0, fieldExpanded ? focusActors.length : 4).map((actor) => (
+                <a
+                  key={actor.id}
+                  href={`/nextus/actors/${actor.id}`}
+                  className={`${styles.actorChip} ${actor.winning ? '' : styles.actorChipMuted}`}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <div className={`${styles.actorDot} ${actor.winning ? styles.actorDotWinning : styles.actorDotMuted}`} />
+                  <span className={styles.actorName}>{actor.name}</span>
+                  <span className={styles.actorScale}>· {SCALE_LABELS[actor.scale] || actor.scale}</span>
+                </a>
+              ))}
+            </div>
+          )}
+
+          {!focusLoading && focusActors.length > 4 && (
+            <button className={styles.seeAllBtn} onClick={() => setFieldExpanded(e => !e)}>
+              {fieldExpanded ? 'Show less' : `See all ${focusActors.length} →`}
+            </button>
+          )}
+
+          {activeFocus?.slug && (
+            <a
+              href={`/nextus/focus/${activeFocus.slug}`}
+              className={styles.focusPageLink}
+            >
+              Full {activeFocus.name} picture →
+            </a>
+          )}
+        </div>
+      )}
 
       {item.description && item.description !== "placeholder" && (
         <p className={styles.description}>{item.description}</p>
