@@ -309,9 +309,9 @@ function getNextStage(stage) {
 // These set the register for each stage — behavioural, attentional, confessional.
 
 const STAGE_OPENINGS = {
-  archetype: `Five questions. Each one is behavioural — I’m looking for what you actually did, not what you think you’d do.
+  archetype: `Five questions, each anchored to something real. I’m looking for what you actually did — not what you think you’d do, not the version you’d be proud of. The instinct underneath the action.
 
-Answer from your life as it is right now. Not the version you’re working toward.`,
+Answer from your life as it is right now. Not who you’re working toward.`,
 
   domain: `Good. Now a different kind of question.
 
@@ -324,17 +324,17 @@ There are three questions. Answer honestly, not aspirationally.`,
 These two questions are almost philosophical. Take your time with them. There are no right answers — only honest ones.`
 };
 
-// ─── Welcome ──────────────────────────────────────────────────────────────────
+// ─── Welcome ──────────────────────────────────────────────────────────────────────────────
 
-const WELCOME = `You have a specific role in the future of humanity. This is how we find it.
+const WELCOME = `Something in you already knows what you’re built for. This finds it, and puts language to it.
 
-Three conversations. Each one finding something different about you — not what you've done or what you believe about yourself, but the underlying shape of how you move through the world.
+Three conversations. Each one finding something different — not what you’ve done or what you believe about yourself, but the underlying shape of how you actually move through the world.
 
-Answer as yourself right now. Not who you're working toward. Not who you think you should be.
+The first is behavioural. The second is attentional. The third is almost philosophical. The gear shifts deliberately.
 
-Your answers reveal three things: your contribution archetype, your domain, and your scale. Together — your Purpose Piece.
+Answer as yourself right now. Not who you’re working toward.
 
-Ready?`;
+Your answers reveal three coordinates: your contribution archetype, your domain, and your scale. Together — your Purpose Piece.`;
 
 // ─── Tentative coordinate extraction ─────────────────────────────────────────
 // After each stage completes, run a lightweight Claude call to extract
