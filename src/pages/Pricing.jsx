@@ -191,7 +191,7 @@ export function PricingPage() {
           />
           <ToolCard
             name="Purpose Piece"
-            desc="Your archetype, domain, and scale of contribution. Reveals the Godspark coordinates — what you're built to do."
+            desc="Something in you already knows what you're built for. Purpose Piece finds your contribution archetype, your domain, and your scale — and puts language to it."
             oneTime={39}
             oneTimeLink={L.purpose_piece}
           />

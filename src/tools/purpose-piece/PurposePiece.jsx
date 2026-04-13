@@ -55,15 +55,15 @@ const STAGE_TOTALS = { archetype: 5, domain: 3, scale: 2 }
 const STAGE_INTROS = {
   archetype: {
     label: 'Contribution Archetype',
-    desc:  'Five behavioural questions. I\'m looking for what you actually did — not what you think you\'d do. Answer from your life as it is right now.',
+    desc:  'Five questions, each anchored to something real. I\'m looking for what you actually did — not what you think you\'d do, not the version you\'d be proud of. The instinct underneath the action. Answer from your life as it is right now.',
   },
   domain: {
     label: 'Global Domain',
-    desc:  'Three attentional questions. This is about what pulls you — what you find yourself caring about even when nobody asks you to.',
+    desc:  'A different kind of question now. Less about what you do, more about what pulls you — what you find yourself caring about even when nobody asked you to. Three questions. Answer honestly, not aspirationally.',
   },
   scale: {
     label: 'Engagement Scale',
-    desc:  'Two questions. Almost philosophical. Take your time. There are no right answers — only honest ones.',
+    desc:  'Two questions. Almost philosophical. Where your work mattering actually looks like, and what you feel genuinely responsible for — not just interested in. Take your time. There are no right answers here, only honest ones.',
   },
 }
 
@@ -545,12 +545,31 @@ function CentreModal({ wedgeStates, onClose, onGoToStage }) {
 function WelcomeModal({ onBegin }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
-      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '460px', width: '100%', textAlign: 'center' }}>
-        <span style={{ display: 'block', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '17px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
-        <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>Find your fit.</h2>
-        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
-          Most people are capable of far more than they’re currently expressing. Usually the missing piece isn’t effort — it’s fit. This finds your fit.
+      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '480px', width: '100%' }}>
+        <span style={{ display: 'block', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '20px' }}>Purpose Piece</span>
+        <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(1.5rem, 4vw, 1.875rem)', fontWeight: 300, color: '#0F1523', marginBottom: '20px', lineHeight: 1.3 }}>
+          Something in you already knows what you’re built for. This finds it, and puts language to it.
+        </h2>
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '12px' }}>
+          There’s a kind of lostness that doesn’t show on the outside. You’ve built things. Contributed. Worked hard and often effectively. But underneath the activity is a question that won’t go away: <em>am I in the right territory?</em>
         </p>
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '28px' }}>
+          Purpose Piece finds three things: your contribution archetype — how you’re naturally built to move. Your domain — where your care actually lives. Your scale — the size of the problem you feel genuinely responsible for. Ten questions across three conversations. Twenty to thirty minutes. At the end, you’ll know.
+        </p>
+        <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', paddingTop: '20px', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', gap: '24px' }}>
+            {[
+              { label: 'Archetype', sub: '5 questions' },
+              { label: 'Domain',    sub: '3 questions' },
+              { label: 'Scale',     sub: '2 questions' },
+            ].map(item => (
+              <div key={item.label}>
+                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>{item.label}</div>
+                <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginTop: '2px' }}>{item.sub}</div>
+              </div>
+            ))}
+          </div>
+        </div>
         <button onClick={onBegin} style={{
           display: 'block', width: '100%', padding: '15px 24px', borderRadius: '40px',
           border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)',
@@ -567,7 +586,6 @@ function WelcomeModal({ onBegin }) {
     </div>
   )
 }
-
 function AuthModal() {
   const returnUrl = encodeURIComponent(window.location.href)
   return (
@@ -576,7 +594,7 @@ function AuthModal() {
         <span style={{ display: 'block', ...sc, fontSize: '17px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
         <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px', lineHeight: 1.1 }}>Sign in to begin.</h2>
         <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '28px' }}>
-          Each of us has a distinct role in shaping the future of life on earth. An archetype, a domain, a scale — three coordinates that together make your Purpose Piece. Find your fit.
+          Something in you already knows what you're built for. Purpose Piece finds your contribution archetype, your domain, and your scale — the three coordinates that together make your Purpose Piece.
         </p>
         <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '15px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
           Sign in or create account {'\u2192'}
@@ -1208,17 +1226,12 @@ export function PurposePiecePage() {
         {/* Header */}
         <div style={{ marginBottom: '28px' }}>
           <span className="tool-eyebrow">NextUs Self {'\u00b7'} Purpose Piece</span>
-          {!showReveal && !session && (
-            <p style={{ ...serif, fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '8px 0 12px', maxWidth: '520px' }}>
-              Organisational Archetype, Global Domain, Scale of Focus = your Purpose Piece.
-            </p>
-          )}
           <h1 style={{ ...sc, fontSize: 'clamp(26px,6vw,34px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.05, margin: '8px 0 10px' }}>
             {showReveal ? 'Your Purpose Piece' : 'Find your fit.'}
           </h1>
           {!showReveal && !session && (
             <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, maxWidth: '440px' }}>
-              Most people are capable of far more than they’re currently expressing. Usually the missing piece isn’t effort — it’s fit. This finds your fit.
+              Something in you already knows what you’re built for. This finds it, and puts language to it.
             </p>
           )}
         </div>
