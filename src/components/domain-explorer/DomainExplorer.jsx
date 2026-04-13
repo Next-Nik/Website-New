@@ -309,11 +309,6 @@ export default function DomainExplorer() {
         </div>
       </main>
 
-      <ContributeModal
-        isOpen={false}
-        onClose={() => {}}
-        domainName={selectedItem?.name ?? 'this domain'}
-      />
     </div>
   )
 }
