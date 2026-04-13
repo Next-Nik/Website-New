@@ -1082,15 +1082,10 @@ export function PurposePiecePage() {
                 background: 'rgba(200,146,42,0.03)',
                 animation: 'ppFadeUp 0.25s ease both',
               }}>
-                <p style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.62)', lineHeight: 1.65, marginBottom: '14px' }}>
+                <p style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.62)', lineHeight: 1.65, marginBottom: '0' }}>
                   {STAGE_INTROS[activeQuestionStage]?.desc}
                 </p>
-                {session?.currentQuestion && (
-                  <div style={{ ...serif, fontSize: '1.125rem', color: '#0F1523', lineHeight: 1.7, whiteSpace: 'pre-line', paddingTop: '12px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
-                    {session.currentQuestion}
-                  </div>
-                )}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
                   <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(200,146,42,0.45)' }}>
                     {qIdx + 1} of {stageTotal}
                   </span>
@@ -1113,6 +1108,10 @@ export function PurposePiecePage() {
 
         {/* Chat thread — filter out any bubble that duplicates currentQuestion */}
         <div className="chat-thread" style={{ marginBottom: '16px' }}>
+          {/* Show current question as opening bubble if thread has no content yet */}
+          {activeQuestionStage && session?.currentQuestion && messages.filter(m => m.type === 'user' || m.type === 'assistant').length === 0 && (
+            <div className="bubble bubble-assistant">{session.currentQuestion}</div>
+          )}
           {messages.map(m => {
             // Never render an assistant bubble whose content matches the pinned question
             if (m.type === 'assistant' && session?.currentQuestion &&
