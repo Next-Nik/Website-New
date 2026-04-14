@@ -48,22 +48,22 @@ const WEDGE_KEYS = ['archetype', 'domain', 'scale']
 const STAGE_QUESTION_LABELS = {
   archetype: ['The Moment', 'The Frustration', 'The Pressure', 'The Cost', 'The Shadow'],
   domain:    ['The Pull', 'The Anger', 'The Unpaid Work'],
-  scale:     ['The Scene', 'The Responsibility'],
+  scale:     ['The Scene', 'The Responsibility', 'The Obligation'],
 }
-const STAGE_TOTALS = { archetype: 5, domain: 3, scale: 2 }
+const STAGE_TOTALS = { archetype: 5, domain: 3, scale: 3 }
 
 const STAGE_INTROS = {
   archetype: {
     label: 'Contribution Archetype',
-    desc:  'Five questions, each anchored to something real. I\'m looking for what you actually did — not what you think you\'d do, not the version you\'d be proud of. The instinct underneath the action. Answer from your life as it is right now.',
+    desc:  'Behavioural. Five questions, each anchored in something that actually happened. Not your best version — what you actually did. The instinct underneath the action.',
   },
   domain: {
     label: 'Global Domain',
-    desc:  'A different kind of question now. Less about what you do, more about what pulls you — what you find yourself caring about even when nobody asked you to. Three questions. Answer honestly, not aspirationally.',
+    desc:  'Attentional. Not asking what you do — asking what pulls you. What you find yourself caring about even when nobody asked you to. Answer honestly, not aspirationally.',
   },
   scale: {
     label: 'Engagement Scale',
-    desc:  'Two questions. Almost philosophical. Where your work mattering actually looks like, what you feel drawn to, and genuinely responsible for — not just interested in. Take your time. There are no right answers here, only honest ones.',
+    desc:  'Felt responsibility. Not what you\'ve done or what interests you — what you\'re actually on the hook for. What would remain undone in you. Take your time.',
   },
 }
 
@@ -452,8 +452,8 @@ function StageTransition({ nextStage, onContinue, loading = false }) {
     confirmation: {
       eyebrow: 'Scale \u2713',
       heading: 'All three found.',
-      body:    'Before anything locks, let\u2019s make sure what emerged actually fits.',
-      cta:     'Review your coordinates \u2192',
+      body:    'Three conversations. Three coordinates. Your Purpose Piece is ready.',
+      cta:     'See your Purpose Piece \u2192',
     },
   }
 
@@ -654,14 +654,20 @@ export function PurposePiecePage() {
   const [input,         setInput]         = useState('')
   const [stageComplete, setStageComplete] = useState({ archetype: false, domain: false, scale: false })
   const [showReveal,    setShowReveal]    = useState(false)
+  const [profileCard,   setProfileCard]   = useState(null)    // Phase 4 HTML — shown first
+  const [mirrorText,    setMirrorText]    = useState(null)    // Phase 3 mirror — shown after pause
+  const [showMirror,    setShowMirror]    = useState(false)   // true after 6s auto-advance
+  const [showCorrection, setShowCorrection] = useState(false) // optional post-mirror correction
   const [readyToLock,   setReadyToLock]   = useState(false)
   const [showDeepGate,  setShowDeepGate]  = useState(false)
   const [confirmLoading, setConfirmLoading] = useState(false)
+  const confirmCalledRef = useRef(false)
   const [pendingMsg,    setPendingMsg]    = useState(null)
   const [backVisible,   setBackVisible]   = useState(false)
   const backTimerRef = useRef(null)
   const [showCentreModal, setShowCentreModal] = useState(false)
   const [headerOpen,    setHeaderOpen]    = useState({ archetype: true, domain: true, scale: true })
+  const [stageIsProbe,  setStageIsProbe]  = useState({ archetype: false, domain: false, scale: false })
 
   // Convenience — active stage's state
   const messages        = stageMessages[activeStage]  || []
@@ -805,7 +811,7 @@ export function PurposePiecePage() {
           // Determine which stages are already complete from saved transcripts
           const archetypeDone = (s.archetypeTranscript?.length ?? 0) >= 5
           const domainDone    = (s.domainTranscript?.length    ?? 0) >= 3
-          const scaleDone     = (s.scaleTranscript?.length     ?? 0) >= 2
+          const scaleDone     = (s.scaleTranscript?.length     ?? 0) >= 3
 
           // Mark completed stages so the disc and UI reflect progress
           setStageComplete({ archetype: archetypeDone, domain: domainDone, scale: scaleDone })
@@ -813,7 +819,7 @@ export function PurposePiecePage() {
           // Restore stageQuestion for each incomplete stage from its own question index
           const ARCHETYPE_QS = ['Think of a recent moment where something around you was off — and you either stepped in or you didn\'t. It doesn\'t have to be dramatic.\n\nWhat happened, and what did you do?','What keeps going wrong around you that bothers you, even when it\'s not your problem?\n\nName one specific example.','Describe a moment where you had to make a real decision with no clear right answer and something actually at stake.\n\nWhat did you do?','What does your way of operating cost you that others don\'t seem to pay?\n\nBe specific.','When has your biggest strength made things worse?\n\nGive me a specific moment.']
           const DOMAIN_QS    = ['What\'s broken in the world that you can\'t stop thinking about, even though nobody\'s asking you to care?\n\nWhat is it specifically?','What makes you angrier than it seems to make everyone else?\n\nWhat does it look like when you see it?','What do you keep doing just because you love it, even though nobody asked for it and nobody\'s paying you?\n\nWhat is it, and what keeps pulling you back?']
-          const SCALE_QS     = ['Picture your work actually making a difference. What does that scene look like?\n\nWho\'s there and how many people?','What\'s the biggest problem you feel personally responsible for doing something about, not just interested in, but actually on the hook for?\n\nWhat is it?']
+          const SCALE_QS     = ['Picture your work actually making a difference. What does that scene look like?\n\nWho\'s there and how many people?','What\'s the biggest problem you feel personally responsible for doing something about, not just interested in, but actually on the hook for?\n\nWhat is it?','What\'s something you haven\'t done yet that keeps coming back to you — not as a goal you\'re working toward, but as something that would feel like unfinished business if you never got to it?\n\nWhat is it, and why does it keep returning?']
 
           const qi = s.questionIndex || { archetype: 0, domain: 0, scale: 0 }
           const restoredQ = {
@@ -862,7 +868,7 @@ export function PurposePiecePage() {
              : activeStage === 'archetype' ? 1 : 0,
     domain:    (session?.domainTranscript?.length ?? 0) >= 3 ? 2
              : activeStage === 'domain' ? 1 : 0,
-    scale:     (session?.scaleTranscript?.length ?? 0) >= 2 ? 2
+    scale:     (session?.scaleTranscript?.length ?? 0) >= 3 ? 2
              : activeStage === 'scale' ? 1 : 0,
   }
 
@@ -997,6 +1003,8 @@ export function PurposePiecePage() {
       if (data.session.currentQuestion) {
         setStageQuestion(prev => ({ ...prev, [s]: data.session.currentQuestion }))
       }
+      // Track whether current question is a probe (follow-up) for visual distinction
+      setStageIsProbe(prev => ({ ...prev, [s]: !!data.isProbe }))
     }
 
     // Message — add to the target stage's thread
@@ -1021,25 +1029,58 @@ export function PurposePiecePage() {
       return
     }
 
-    // Synthesis auto-advance to framing
+    // Profile card arrives first (stage: 'synthesis') — show it, then auto-advance to mirror
     if (data.stage === 'synthesis') {
+      // Profile card — set it and show the reveal screen
+      if (data.isHtml && data.message) {
+        setProfileCard(data.message)
+        setShowReveal(true)
+        // Save profile and north star notes
+        if (user?.id && data.profile) {
+          ;(async () => { try {
+            const { data: ex } = await supabase.from('purpose_piece_results').select('id').eq('user_id', user.id).limit(1).maybeSingle()
+            if (ex?.id) {
+              await supabase.from('purpose_piece_results').update({ status: 'complete', session: data.session, profile: data.profile, completed_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', ex.id)
+            } else {
+              await supabase.from('purpose_piece_results').insert({ user_id: user.id, status: 'complete', session: data.session, profile: data.profile, completed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+            }
+          } catch {} })()
+        }
+        if (user?.id && data.session?.tentative) {
+          const t = data.session.tentative
+          const ppNotes = [
+            t.archetype?.archetype ? `Organisational Archetype: ${t.archetype.archetype}` : null,
+            t.domain?.domain       ? `Global Domain: ${t.domain.domain}` : null,
+            t.scale?.scale         ? `Scale of Focus: ${t.scale.scale}` : null,
+          ].filter(Boolean)
+          if (ppNotes.length) {
+            try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'purpose-piece') } catch {}
+            try { await supabase.from('north_star_notes').insert(ppNotes.map(note => ({ user_id: user.id, tool: 'purpose-piece', note }))) } catch {}
+          }
+        }
+        try {
+          const t = data.session?.tentative || {}
+          sessionStorage.setItem('pp_first_look', JSON.stringify({
+            archetype:        t.archetype?.archetype,
+            domain:           t.domain?.domain,
+            scale:            t.scale?.scale,
+            synthesis:        data.session?.synthesis,
+            internal_signals: data.session?.synthesis?.internal_signals,
+            transcript: [
+              ...(data.session?.archetypeTranscript || []),
+              ...(data.session?.domainTranscript    || []),
+              ...(data.session?.scaleTranscript     || []),
+            ],
+          }))
+        } catch {}
+      }
+      // Auto-advance to mirror after pause
       setTimeout(async () => {
         setThinking(true)
         try {
           const d = await callAPI([])
-          if (user?.id && data.session?.tentative) {
-            const t = data.session.tentative
-            const ppNotes = [
-              t.archetype?.archetype ? `Organisational Archetype: ${t.archetype.archetype}` : null,
-              t.domain?.domain       ? `Global Domain: ${t.domain.domain}` : null,
-              t.scale?.scale         ? `Scale of Focus: ${t.scale.scale}` : null,
-            ].filter(Boolean)
-            if (ppNotes.length) {
-              try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'purpose-piece') } catch {}
-              try { await supabase.from('north_star_notes').insert(ppNotes.map(note => ({ user_id: user.id, tool: 'purpose-piece', note }))) } catch {}
-            }
-          }
-          setThinking(false); handleResponse(d)
+          setThinking(false)
+          handleResponse(d)
         } catch { setThinking(false) }
       }, data.advanceDelay || 6000)
       return
@@ -1058,32 +1099,11 @@ export function PurposePiecePage() {
     if (data.readyToLock) setReadyToLock(true)
 
     if (data.complete) {
-      setShowReveal(true)
-      if (user?.id && data.profile) {
-        ;(async () => { try {
-          const { data: ex } = await supabase.from('purpose_piece_results').select('id').eq('user_id', user.id).limit(1).maybeSingle()
-          if (ex?.id) {
-            await supabase.from('purpose_piece_results').update({ status: 'complete', session: data.session, profile: data.profile, completed_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', ex.id)
-          } else {
-            await supabase.from('purpose_piece_results').insert({ user_id: user.id, status: 'complete', session: data.session, profile: data.profile, completed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-          }
-        } catch {} })()
+      // Mirror arrives — show it below the profile card
+      if (data.isMirror && data.message) {
+        setMirrorText(data.message)
+        setShowMirror(true)
       }
-      try {
-        const t = data.session?.tentative || {}
-        sessionStorage.setItem('pp_first_look', JSON.stringify({
-          archetype:        t.archetype?.archetype,
-          domain:           t.domain?.domain,
-          scale:            t.scale?.scale,
-          synthesis:        data.session?.synthesis,
-          internal_signals: data.session?.synthesis?.internal_signals,
-          transcript: [
-            ...(data.session?.archetypeTranscript || []),
-            ...(data.session?.domainTranscript    || []),
-            ...(data.session?.scaleTranscript     || []),
-          ],
-        }))
-      } catch {}
     }
   }
 
@@ -1095,7 +1115,8 @@ export function PurposePiecePage() {
 
   async function send() {
     const text = input.trim()
-    if (!text || thinking || showReveal || pendingMsg) return
+    // Allow send during correction conversation even though showReveal is true
+    if (!text || thinking || (showReveal && !showCorrection) || pendingMsg) return
 
     // Clear any existing Back timer
     if (backTimerRef.current) clearTimeout(backTimerRef.current)
@@ -1156,24 +1177,46 @@ export function PurposePiecePage() {
   }
 
   async function continueToNextStage() {
+    if (confirmCalledRef.current) return
+    confirmCalledRef.current = true
     setConfirmLoading(true)
     setThinking(true)
     try {
-      const confirmSession = { ...sessionRef.current, stage: 'confirmation' }
+      // Send stage: 'reveal' — triggers extraction then profile card (Phase 4)
+      const revealSession = { ...sessionRef.current, stage: 'reveal' }
       const res = await fetch('/tools/purpose-piece/api/chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [], session: confirmSession, userId: user?.id })
+        body: JSON.stringify({ messages: [], session: revealSession, userId: user?.id })
       })
       if (!res.ok) throw new Error(`API ${res.status}`)
       const d = await res.json()
       setThinking(false)
       setConfirmLoading(false)
-      setActiveStage('confirmation')
-      handleResponse(d, 'confirmation')
+      handleResponse(d)
     } catch {
       setThinking(false)
       setConfirmLoading(false)
       addMsg('assistant', 'Something went wrong. Please try again.', activeStage)
+    }
+  }
+
+  async function openCorrection() {
+    // Optional post-mirror correction conversation
+    setShowCorrection(true)
+    setActiveStage('confirmation')
+    setThinking(true)
+    try {
+      const correctionSession = { ...sessionRef.current, stage: 'correction' }
+      const res = await fetch('/tools/purpose-piece/api/chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [], session: correctionSession, userId: user?.id })
+      })
+      if (!res.ok) throw new Error(`API ${res.status}`)
+      const d = await res.json()
+      setThinking(false)
+      handleResponse(d, 'confirmation')
+    } catch {
+      setThinking(false)
     }
   }
 
@@ -1191,22 +1234,87 @@ export function PurposePiecePage() {
 
   // ── Content ────────────────────────────────────────────────────────────────
   function renderContent() {
-    // Reveal
+    // Reveal — profile card first, then mirror after pause, then optional correction + deep dive
     if (showReveal) {
-      const outputMsg = messages.slice().reverse().find(m => m.type === 'html')
       return (
         <div className="pp-fade-up">
-          {outputMsg
-            ? <div dangerouslySetInnerHTML={{ __html: outputMsg.content }} />
+
+          {/* Profile card */}
+          {profileCard
+            ? <div dangerouslySetInnerHTML={{ __html: profileCard }} />
             : <div style={{ ...serif, fontSize: '1.25rem', ...muted, fontStyle: 'italic' }}>Building your Purpose Piece…</div>
           }
-          <div style={{ marginTop: '24px', textAlign: 'center', paddingBottom: '40px' }}>
-            <button onClick={goDeeper} style={btnStyle}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
-              onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
-              Go deeper {'\u2192'}
-            </button>
-          </div>
+
+          {/* Thinking indicator while mirror loads */}
+          {profileCard && !showMirror && thinking && (
+            <div style={{ padding: '32px 0 8px' }}>
+              <ThinkingDots />
+            </div>
+          )}
+
+          {/* Mirror — appears after 6s auto-advance */}
+          {showMirror && mirrorText && (
+            <div style={{
+              marginTop: '40px',
+              padding: '36px 32px',
+              background: '#FAFAF7',
+              border: '1px solid rgba(200,146,42,0.18)',
+              borderLeft: '3px solid rgba(200,146,42,0.45)',
+              borderRadius: '12px',
+              animation: 'ppFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both',
+            }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: 'rgba(200,146,42,0.6)', textTransform: 'uppercase', marginBottom: '20px' }}>
+                The mirror
+              </div>
+              <p style={{ ...serif, fontSize: '1.1875rem', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, whiteSpace: 'pre-line', margin: 0 }}>
+                {mirrorText}
+              </p>
+            </div>
+          )}
+
+          {/* Post-mirror actions */}
+          {showMirror && (
+            <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-start', paddingBottom: '40px' }}>
+              <button onClick={goDeeper} style={btnStyle}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
+                onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
+                Go deeper {'\u2192'}
+              </button>
+              {!showCorrection && (
+                <button onClick={openCorrection}
+                  style={{ background: 'none', border: 'none', ...serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.2)' }}>
+                  Something doesn&#39;t fit
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Optional correction conversation */}
+          {showCorrection && (
+            <div style={{ marginTop: '16px' }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
+                Correction
+              </div>
+              <div className="chat-thread" style={{ marginBottom: '16px' }}>
+                {(stageMessages['confirmation'] || []).map(m => {
+                  if (m.type === 'user')      return <div key={m.id} className="bubble bubble-user">{m.content}</div>
+                  if (m.type === 'assistant') return <div key={m.id} className="bubble bubble-assistant">{m.content}</div>
+                  return null
+                })}
+                {thinking && <ThinkingDots />}
+                <div ref={bottomRef} />
+              </div>
+              <div className="input-area" id="pp-input-area">
+                <textarea ref={textareaRef} value={input}
+                  onChange={e => { setInput(e.target.value); resizeTextarea() }}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
+                  placeholder={'Tell me what doesn\u2019t fit\u2026'}
+                  rows={1} disabled={thinking}
+                />
+                <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
+              </div>
+            </div>
+          )}
         </div>
       )
     }
@@ -1328,6 +1436,13 @@ export function PurposePiecePage() {
             marginBottom: '16px',
             animation: 'ppFadeUp 0.3s ease both',
           }}>
+            {/* Probe indicator */}
+            {stageIsProbe[activeStage] && (
+              <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: 'rgba(200,146,42,0.55)', textTransform: 'uppercase', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ display: 'inline-block', width: '16px', height: '1px', background: 'rgba(200,146,42,0.4)' }} />
+                Follow-up
+              </div>
+            )}
             {/* Question text */}
             <div style={{ ...serif, fontSize: '1.1875rem', color: '#0F1523', lineHeight: 1.75, whiteSpace: 'pre-line', marginBottom: '24px' }}>
               {currentQuestion}
