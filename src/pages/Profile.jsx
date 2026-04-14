@@ -216,7 +216,7 @@ function HorizonWheel({ domains, currentScores, horizonScores, size = 340, onNod
         strokeWidth="1.5"
         strokeLinejoin="round" />
 
-      {/* Score dots — clickable */}
+      {/* Score dots — current position */}
       {domains.map((d, i) => {
         const s = currentScores[d.id]
         if (s == null) return null
@@ -228,6 +228,17 @@ function HorizonWheel({ domains, currentScores, horizonScores, size = 340, onNod
           strokeWidth={isActive ? 2 : 1.5}
           style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
           onClick={() => onNodeClick && onNodeClick(d.id)} />
+      })}
+
+      {/* Horizon dots — target position */}
+      {hasHorizon && domains.map((d, i) => {
+        const h = horizonScores[d.id]
+        if (h == null) return null
+        const [x, y] = pt(i, h)
+        return <circle key={i} cx={x} cy={y} r="3"
+          fill="rgba(90,138,184,0.7)"
+          stroke="#FAFAF7"
+          strokeWidth="1.5" />
       })}
 
       {/* Domain labels — clickable */}
@@ -1911,45 +1922,48 @@ export function ProfilePage() {
   const [foundationData, setFoundationData] = useState(null)
   const [claimedActor,   setClaimedActor]   = useState(null)
   const [horizonProfile, setHorizonProfile] = useState(null)
-  const [localMapData,   setLocalMapData]   = useState(null)
+  const [localMapData,   setLocalMapData]   = useState(() => {
+    try {
+      const raw = localStorage.getItem('lifeos_themap_v4')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (parsed.domainData && Object.keys(parsed.domainData).length > 0) {
+          return parsed.domainData
+        }
+      }
+    } catch {}
+    return null
+  })
   const [dataLoading,    setDataLoading]    = useState(true)
   const [activeNode,     setActiveNode]     = useState(null)
 
-  // Compute scores from best available source — used by mirror AND tool rail
+  // Compute scores from all sources, layered — used by mirror AND tool rail
+  // localStorage < map_results < horizon_profile (per domain, additive)
   const profileCurrentScores = {}
   const profileHorizonScores = {}
+  if (localMapData) {
+    Object.entries(localMapData).forEach(([k, d]) => {
+      if (d?.currentScore !== undefined) profileCurrentScores[k] = d.currentScore
+      if (d?.horizonScore !== undefined) profileHorizonScores[k] = d.horizonScore
+    })
+  }
+  if (mapData?.session?.domainData) {
+    const dd = mapData.session.domainData
+    Object.entries(dd).forEach(([k, d]) => {
+      if (d?.currentScore !== undefined) profileCurrentScores[k] = d.currentScore
+      if (d?.horizonScore !== undefined) profileHorizonScores[k] = d.horizonScore
+    })
+  }
   if (horizonProfile && Object.keys(horizonProfile).length > 0) {
     const domainKeys = ['path','spark','body','finances','connection','inner_game','signal']
     domainKeys.forEach(k => {
       if (horizonProfile[k]?.currentScore !== undefined) profileCurrentScores[k] = horizonProfile[k].currentScore
       if (horizonProfile[k]?.horizonScore !== undefined) profileHorizonScores[k] = horizonProfile[k].horizonScore
     })
-  } else if (mapData?.session?.domainData) {
-    const dd = mapData.session.domainData
-    Object.entries(dd).forEach(([k, d]) => {
-      if (d?.currentScore !== undefined) profileCurrentScores[k] = d.currentScore
-      if (d?.horizonScore !== undefined) profileHorizonScores[k] = d.horizonScore
-    })
-  } else if (localMapData) {
-    Object.entries(localMapData).forEach(([k, d]) => {
-      if (d?.currentScore !== undefined) profileCurrentScores[k] = d.currentScore
-      if (d?.horizonScore !== undefined) profileHorizonScores[k] = d.horizonScore
-    })
   }
   const hasScores = Object.keys(profileCurrentScores).length > 0
 
-  // Read localStorage on mount — client side only
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem('lifeos_themap_v4')
-      if (raw) {
-        const parsed = JSON.parse(raw)
-        if (parsed.domainData && Object.keys(parsed.domainData).length > 0) {
-          setLocalMapData(parsed.domainData)
-        }
-      }
-    } catch {}
-  }, [])
+  
 
   useEffect(() => {
     if (authLoading) return
@@ -2090,16 +2104,22 @@ export function ProfilePage() {
             return 'Crisis'
           }
 
-          // Prefer horizon_profile, fall back to map_results
-          if (horizonProfile && Object.keys(horizonProfile).length > 0) {
-            dataSource = 'profile'
-            lifeHorizon = horizonProfile['life']?.horizonGoal || null
+          // Build scores from ALL sources, layered — horizon_profile wins per-domain,
+          // map_results fills gaps, localStorage fills remaining gaps.
+          // This means partial horizon_profile data doesn't blank out the rest of the wheel.
+
+          // Layer 3 (lowest priority): localStorage
+          if (localMapData && Object.keys(localMapData).length > 0) {
+            dataSource = 'local'
             domainKeys.forEach(k => {
-              if (horizonProfile[k]?.currentScore !== undefined) currentScores[k] = horizonProfile[k].currentScore
-              if (horizonProfile[k]?.horizonScore !== undefined) horizonScores[k] = horizonProfile[k].horizonScore
-              if (horizonProfile[k]?.horizonGoal)               horizonGoals[k]  = horizonProfile[k].horizonGoal
+              if (localMapData[k]?.currentScore !== undefined) currentScores[k] = localMapData[k].currentScore
+              if (localMapData[k]?.horizonScore !== undefined) horizonScores[k] = localMapData[k].horizonScore
+              if (localMapData[k]?.horizonText)                horizonGoals[k]  = localMapData[k].horizonText
             })
-          } else if (mapData?.session?.domainData) {
+          }
+
+          // Layer 2: Supabase map_results (overwrites localStorage per domain)
+          if (mapData?.session?.domainData) {
             dataSource = 'map'
             const dd = mapData.session.domainData
             lifeHorizon = mapData.horizon_goal_user || mapData.map_data?.life_horizon_draft || null
@@ -2108,12 +2128,16 @@ export function ProfilePage() {
               if (dd[k]?.horizonScore !== undefined) horizonScores[k] = dd[k].horizonScore
               if (dd[k]?.horizonText)                horizonGoals[k]  = dd[k].horizonText
             })
-          } else if (localMapData && Object.keys(localMapData).length > 0) {
-            dataSource = 'local'
+          }
+
+          // Layer 1 (highest priority): horizon_profile — overwrites per locked domain only
+          if (horizonProfile && Object.keys(horizonProfile).length > 0) {
+            dataSource = 'profile'
+            lifeHorizon = horizonProfile['life']?.horizonGoal || lifeHorizon
             domainKeys.forEach(k => {
-              if (localMapData[k]?.currentScore !== undefined) currentScores[k] = localMapData[k].currentScore
-              if (localMapData[k]?.horizonScore !== undefined) horizonScores[k] = localMapData[k].horizonScore
-              if (localMapData[k]?.horizonText)                horizonGoals[k]  = localMapData[k].horizonText
+              if (horizonProfile[k]?.currentScore !== undefined) currentScores[k] = horizonProfile[k].currentScore
+              if (horizonProfile[k]?.horizonScore !== undefined) horizonScores[k] = horizonProfile[k].horizonScore
+              if (horizonProfile[k]?.horizonGoal)               horizonGoals[k]  = horizonProfile[k].horizonGoal
             })
           }
 

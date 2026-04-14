@@ -1773,8 +1773,13 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
                           ? completedSubDomains.reduce((s, d) => s + d.currentScore, 0) / completedSubDomains.length
                           : horizonScore
                         const avgScore = Math.round(avg * 10) / 10
-                        // FIX #5: real horizon text from synthesis
-                        const horizonText = synthesis.split('\n\n')[0] || synthesis.substring(0, 200)
+                        // Build horizon text from sub-domain goals — the actual aspirations.
+                        // Synthesis is North Star's reflection on current state, not a horizon goal.
+                        const subHorizons = completedSubDomains
+                          .filter(s => s.horizonText)
+                          .map(s => `${s.label}: ${s.horizonText}`)
+                          .join(' · ')
+                        const horizonText = subHorizons || 'Connection horizon set across sub-domains'
                         const final = {
                           domainId: domain.id,
                           subDomains, synthesis,
