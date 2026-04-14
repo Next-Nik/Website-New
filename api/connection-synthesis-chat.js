@@ -5,13 +5,14 @@
 
 const Anthropic = require('@anthropic-ai/sdk')
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+const { getNorthStarContext, formatNorthStarContext } = require('./_north-star')
 
 // ─── North Star Identity ───────────────────────────────────────────────────
 const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the Horizon Suite ecosystem. You are consistent across every tool: The Map, Horizon State, Orienteering, Purpose Piece, Target Sprint, and Horizon Practice. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
 
-const SYSTEM = `${NORTH_STAR_IDENTITY}
+const SYSTEM = (northStarContext) => `${NORTH_STAR_IDENTITY}
 
-You are synthesising a person's Connection domain from The Map. Connection holds their full relational landscape — every relationship context they have chosen to map. This may include Intimate/Romantic, Family, Friendship, Collaborators, Community, and any custom sub-domains they have added.
+${northStarContext ? northStarContext + '\n\n' : ''}You are synthesising a person's Connection domain from The Map. Connection holds their full relational landscape — every relationship context they have chosen to map. This may include Intimate/Romantic, Family, Friendship, Collaborators, Community, and any custom sub-domains they have added.
 
 CRITICAL: You have access to any clarifying context the person has provided for each sub-domain. Read this carefully before responding. If someone is in a non-traditional relationship structure, a blended family, or any other context that differs from conventional assumptions — honour that context completely. Your synthesis must reflect their actual life, not a template.
 
@@ -30,7 +31,7 @@ VOICE: Warm, precise, direct. Under 300 words. No lists — flowing paragraphs. 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { subDomains } = req.body
+  const { subDomains, userId } = req.body
   // subDomains: array of { id, label, currentScore, horizonScore, horizonText, context, active }
 
   if (!subDomains || !Array.isArray(subDomains)) {
@@ -41,6 +42,15 @@ module.exports = async (req, res) => {
 
   if (activeSubDomains.length === 0) {
     return res.status(400).json({ error: 'No completed sub-domains to synthesise' })
+  }
+
+  // FIX #6: load North Star context when userId provided
+  let northStarContext = ''
+  if (userId) {
+    try {
+      const ctx = await getNorthStarContext(userId)
+      northStarContext = formatNorthStarContext(ctx)
+    } catch {}
   }
 
   const subDomainSummary = activeSubDomains.map(s => {
@@ -58,7 +68,7 @@ module.exports = async (req, res) => {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 600,
-      system: SYSTEM,
+      system: SYSTEM(northStarContext),
       messages: [{ role: 'user', content: prompt }],
     })
 

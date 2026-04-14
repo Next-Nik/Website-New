@@ -1963,21 +1963,64 @@ export function ProfilePage() {
         </div>
 
         {/* ── Living Profile Mirror ─────────────────────────────────────────── */}
-        {horizonProfile && Object.keys(horizonProfile).length > 0 && (() => {
+        {(() => {
           const domainKeys   = ['path','spark','body','finances','connection','inner_game','signal']
           const domainLabels = ['Path','Spark','Body','Finances','Connection','Inner Game','Signal']
-          const lifeHorizon  = horizonProfile['life']
           const domains      = domainKeys.map((k, i) => ({ id: k, label: domainLabels[i] }))
 
           const currentScores = {}
           const horizonScores = {}
-          domainKeys.forEach(k => {
-            if (horizonProfile[k]?.currentScore !== undefined) currentScores[k] = horizonProfile[k].currentScore
-            if (horizonProfile[k]?.horizonScore !== undefined) horizonScores[k] = horizonProfile[k].horizonScore
-          })
+          const horizonGoals  = {}
+          const archetypes    = {}
+          let   lifeHorizon   = null
+          let   dataSource    = null
+
+          // Prefer horizon_profile (live, cross-tool data)
+          if (horizonProfile && Object.keys(horizonProfile).length > 0) {
+            dataSource = 'profile'
+            lifeHorizon = horizonProfile['life']?.horizonGoal || null
+            domainKeys.forEach(k => {
+              if (horizonProfile[k]?.currentScore !== undefined) currentScores[k] = horizonProfile[k].currentScore
+              if (horizonProfile[k]?.horizonScore !== undefined) horizonScores[k] = horizonProfile[k].horizonScore
+              if (horizonProfile[k]?.horizonGoal)               horizonGoals[k]   = horizonProfile[k].horizonGoal
+              if (horizonProfile[k]?.avatarArchetype)            archetypes[k]     = horizonProfile[k].avatarArchetype
+            })
+          }
+          // Fall back to map_results session data
+          else if (mapData?.session?.domainData) {
+            dataSource = 'map'
+            const dd = mapData.session.domainData
+            lifeHorizon = mapData.horizon_goal_user || mapData.map_data?.life_horizon_draft || null
+            domainKeys.forEach(k => {
+              if (dd[k]?.currentScore !== undefined) currentScores[k] = dd[k].currentScore
+              if (dd[k]?.horizonScore !== undefined) horizonScores[k] = dd[k].horizonScore
+              if (dd[k]?.horizonText)                horizonGoals[k]  = dd[k].horizonText
+            })
+          }
 
           const hasScores  = Object.keys(currentScores).length > 0
           const hasHorizon = Object.keys(horizonScores).length > 0
+
+          // True empty — nothing started
+          if (!hasScores && !dataSource) {
+            return (
+              <div style={{ marginBottom: '56px', padding: '32px 28px',
+                background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)',
+                borderTop: '3px solid rgba(200,146,42,0.25)', borderRadius: '12px',
+                textAlign: 'center' }}>
+                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em',
+                  color: 'rgba(200,146,42,0.55)', marginBottom: '16px' }}>YOUR MAP IS EMPTY</div>
+                <p style={{ ...serif, fontSize: '18px', fontWeight: 300, fontStyle: 'italic',
+                  color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, margin: '0 0 20px' }}>
+                  Complete The Map and your profile will come alive here — seven domains, your scores, your horizons, all in one place.
+                </p>
+                <a href="/tools/map" style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em',
+                  color: '#A8721A', textDecoration: 'none' }}>
+                  Start The Map →
+                </a>
+              </div>
+            )
+          }
 
           return (
             <div style={{ marginBottom: '56px', padding: '32px 28px',
@@ -1986,14 +2029,14 @@ export function ProfilePage() {
               boxShadow: '0 2px 12px rgba(200,146,42,0.06)' }}>
 
               {/* Life horizon statement */}
-              {lifeHorizon?.horizonGoal && (
+              {lifeHorizon && (
                 <div style={{ marginBottom: '28px', paddingBottom: '24px',
                   borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
                   <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em',
                     color: '#A8721A', marginBottom: '10px' }}>LIFE HORIZON</div>
                   <p style={{ ...serif, fontSize: '20px', fontWeight: 300, fontStyle: 'italic',
                     color: '#0F1523', lineHeight: 1.7, margin: 0 }}>
-                    {lifeHorizon.horizonGoal}
+                    {lifeHorizon}
                   </p>
                 </div>
               )}
@@ -2021,9 +2064,12 @@ export function ProfilePage() {
               {hasScores && (
                 <div>
                   {domainKeys.map((k, i) => {
-                    const d = horizonProfile[k]
-                    if (!d?.currentScore && d?.currentScore !== 0) return null
-                    const color = getTierColor(d.currentScore)
+                    const score   = currentScores[k]
+                    const horizon = horizonScores[k]
+                    const goal    = horizonGoals[k]
+                    const arch    = archetypes[k]
+                    if (score === undefined) return null
+                    const color = getTierColor(score)
                     return (
                       <div key={k} style={{ display: 'flex', alignItems: 'flex-start',
                         gap: '12px', padding: '10px 0',
@@ -2032,32 +2078,46 @@ export function ProfilePage() {
                           color: 'rgba(15,21,35,0.65)', width: '110px', flexShrink: 0,
                           paddingTop: '2px' }}>{domainLabels[i]}</div>
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          {d.horizonGoal && (
+                          {goal && (
                             <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
                               color: 'rgba(15,21,35,0.65)', lineHeight: 1.55, margin: '0 0 4px',
                               overflow: 'hidden', display: '-webkit-box',
                               WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                              {d.horizonGoal}
+                              {goal}
                             </p>
                           )}
-                          {d.avatarArchetype && (
+                          {arch && (
                             <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em',
-                              color: 'rgba(15,21,35,0.35)' }}>{d.avatarArchetype}</div>
+                              color: 'rgba(15,21,35,0.35)' }}>{arch}</div>
                           )}
                         </div>
                         <div style={{ flexShrink: 0, textAlign: 'right', paddingTop: '2px' }}>
                           <span style={{ ...sc, fontSize: '18px', fontWeight: 600,
-                            color, letterSpacing: '0.04em' }}>{d.currentScore}</span>
-                          {d.horizonScore !== undefined && (
+                            color, letterSpacing: '0.04em' }}>{score}</span>
+                          {horizon !== undefined && (
                             <span style={{ ...sc, fontSize: '14px',
                               color: 'rgba(90,138,184,0.8)', marginLeft: '4px' }}>
-                              → {d.horizonScore}
+                              → {horizon}
                             </span>
                           )}
                         </div>
                       </div>
                     )
                   })}
+                </div>
+              )}
+
+              {/* In-progress nudge if map not complete */}
+              {dataSource === 'map' && !mapData?.complete && hasScores && (
+                <div style={{ marginTop: '16px', padding: '12px 16px',
+                  background: 'rgba(200,146,42,0.03)', borderRadius: '8px',
+                  border: '1px solid rgba(200,146,42,0.12)' }}>
+                  <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
+                    color: 'rgba(15,21,35,0.45)', margin: '0 0 6px' }}>
+                    The Map is in progress — {Object.keys(currentScores).length} of 7 domains scored.
+                  </p>
+                  <a href="/tools/map" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em',
+                    color: '#A8721A', textDecoration: 'none' }}>Continue The Map →</a>
                 </div>
               )}
 
@@ -2069,25 +2129,6 @@ export function ProfilePage() {
             </div>
           )
         })()}
-
-        {/* Empty state — no horizon profile yet */}
-        {(!horizonProfile || Object.keys(horizonProfile).length === 0) && (
-          <div style={{ marginBottom: '56px', padding: '32px 28px',
-            background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)',
-            borderTop: '3px solid rgba(200,146,42,0.25)', borderRadius: '12px',
-            textAlign: 'center' }}>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em',
-              color: 'rgba(200,146,42,0.55)', marginBottom: '16px' }}>YOUR MAP IS EMPTY</div>
-            <p style={{ ...serif, fontSize: '18px', fontWeight: 300, fontStyle: 'italic',
-              color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, margin: '0 0 20px' }}>
-              Complete The Map and your profile will come alive here — seven domains, your scores, your horizons, all in one place.
-            </p>
-            <a href="/tools/map" style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em',
-              color: '#A8721A', textDecoration: 'none' }}>
-              Start The Map →
-            </a>
-          </div>
-        )}
 
         <Slot title="The Map" eyebrow="Life OS" linkLabel="Open" linkUrl="/tools/map">
           <MapSlot mapData={mapData} sprintData={sprintData} />
