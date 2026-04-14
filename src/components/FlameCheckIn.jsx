@@ -157,7 +157,7 @@ function useIsMobile() {
   return mobile
 }
 
-function FlameSlider({ value, onChange, ghostValue = null }) {
+export function FlameSlider({ value, onChange, ghostValue = null }) {
   const trackRef  = useRef(null)
   const dragging  = useRef(false)
   const lastValue = useRef(value)
