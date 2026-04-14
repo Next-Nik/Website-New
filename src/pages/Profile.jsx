@@ -2061,8 +2061,10 @@ export function ProfilePage() {
             return 'Crisis'
           }
 
-          // Prefer horizon_profile, fall back to map_results
-          if (horizonProfile && Object.keys(horizonProfile).length > 0) {
+          // Prefer horizon_profile only if it has substantial coverage (4+ domains),
+          // otherwise fall back to map_results which has full domain data
+          const horizonProfileDomains = horizonProfile ? Object.keys(horizonProfile).filter(k => k !== 'life' && horizonProfile[k]?.currentScore !== undefined) : []
+          if (horizonProfile && horizonProfileDomains.length >= 4) {
             dataSource = 'profile'
             lifeHorizon = horizonProfile['life']?.horizonGoal || null
             domainKeys.forEach(k => {
