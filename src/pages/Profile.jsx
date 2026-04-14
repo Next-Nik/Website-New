@@ -2065,6 +2065,23 @@ export function ProfilePage() {
               if (dd[k]?.horizonScore !== undefined) horizonScores[k] = dd[k].horizonScore
               if (dd[k]?.horizonText)                horizonGoals[k]  = dd[k].horizonText
             })
+          } else {
+            // Last resort — read from localStorage directly
+            try {
+              const raw = localStorage.getItem('lifeos_themap_v4')
+              if (raw) {
+                const parsed = JSON.parse(raw)
+                const dd = parsed.domainData || {}
+                if (Object.keys(dd).length > 0) {
+                  dataSource = 'local'
+                  domainKeys.forEach(k => {
+                    if (dd[k]?.currentScore !== undefined) currentScores[k] = dd[k].currentScore
+                    if (dd[k]?.horizonScore !== undefined) horizonScores[k] = dd[k].horizonScore
+                    if (dd[k]?.horizonText)                horizonGoals[k]  = dd[k].horizonText
+                  })
+                }
+              }
+            } catch {}
           }
 
           const hasScores  = Object.keys(currentScores).length > 0
@@ -2074,7 +2091,7 @@ export function ProfilePage() {
           // Contextual next action
           const nextAction = !hasScores
             ? { label: 'Begin The Map', url: '/tools/map' }
-            : dataSource === 'map' && !mapDone
+            : (dataSource === 'map' || dataSource === 'local') && !mapDone
             ? { label: `Continue The Map — ${Object.keys(currentScores).length} of 7 domains`, url: '/tools/map' }
             : sprintData && ['started','active'].includes(sprintData.status)
             ? { label: 'Your sprint is active', url: '/tools/target-goals' }
