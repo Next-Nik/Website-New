@@ -4,7 +4,7 @@ import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
 import { supabase } from '../../hooks/useSupabase'
-import { FlamePicker, FlameGlyph, FlameSlider } from '../../components/FlameCheckIn'
+import { FlamePicker, FlameGlyph } from '../../components/FlameCheckIn'
 import { ProtocolPanel } from '../../components/ProtocolPanel'
 import { AccessGate } from '../../components/AccessGate'
 
@@ -409,6 +409,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
   const [afterDone,     setAfterDone]     = useState(!!todayAfter)
   const [saving,        setSaving]        = useState(false)
   const [showModal,     setShowModal]     = useState(false)
+  const [showBeginPopup, setShowBeginPopup] = useState(true)
 
   useEffect(() => {
     if (!beforeDone) {
@@ -464,10 +465,8 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
 
   // Done state
   if (afterDone) {
-    const delta = afterValue - beforeValue
     const weekSessions = sessions.filter(s => s.checkin_stage === 'after' && s.week_id === getWeekId()).length
     const sessionCount = weekSessions > 0 ? weekSessions : 1
-
     return (
       <div>
         <FlameDelta before={beforeValue} after={afterValue} />
@@ -480,7 +479,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', alignItems: 'center', flexWrap: 'wrap' }}>
             <button
-              onClick={() => { setBeforeDone(false); setAfterDone(false); setAfterUnlocked(false); setBeforeValue(5); setAfterValue(5); setBeforeNote(''); setAfterNote('') }}
+              onClick={() => { setBeforeDone(false); setAfterDone(false); setAfterUnlocked(false); setBeforeValue(5); setAfterValue(5); setBeforeNote(''); setAfterNote(''); setShowBeginPopup(true) }}
               style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold, background: 'none', border: 'none', cursor: 'pointer' }}
             >
               Listen again {'\u2192'}
@@ -494,203 +493,270 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
     )
   }
 
-  const colStyle = { display: 'flex', flexDirection: 'column', alignItems: 'center' }
-
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       <style>{`
+        /* ── Desktop: three-column grid ── */
         .hs-baseline-grid {
           display: grid;
           grid-template-columns: 1fr 1.6fr 1fr;
           gap: 20px;
           align-items: start;
         }
+
+        /* ── Mobile: one-screen layout ── */
         @media (max-width: 640px) {
           .hs-baseline-grid {
-            grid-template-columns: 1fr;
-            gap: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
           }
-          .hs-col-after {
-            order: 3;
+          /* Flames row: Before | After side by side */
+          .hs-flames-row {
+            display: flex;
+            gap: 12px;
+            justify-content: space-between;
+            margin-bottom: 16px;
           }
+          .hs-flame-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          /* Audio: full width, compact */
+          .hs-audio-mobile {
+            margin-bottom: 16px;
+          }
+          /* Journal: full width, swaps content */
+          .hs-journal-mobile {
+            margin-bottom: 12px;
+          }
+          /* Hide desktop columns on mobile */
+          .hs-col-before-desktop,
+          .hs-col-after-desktop,
+          .hs-col-audio-desktop {
+            display: none !important;
+          }
+          /* Show mobile-only sections */
+          .hs-mobile-only {
+            display: flex !important;
+          }
+        }
+        @media (min-width: 641px) {
+          .hs-mobile-only { display: none !important; }
+          .hs-col-before-desktop,
+          .hs-col-after-desktop,
+          .hs-col-audio-desktop { display: flex !important; }
         }
       `}</style>
 
-      <div className="hs-baseline-grid">
-
-        {/* ── LEFT — Before ── */}
-        <div style={{ ...colStyle, opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
-          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>
-            Before
+      {/* ── Begin popup — fires every visit, click anywhere dismisses ── */}
+      {showBeginPopup && (
+        <div
+          onClick={() => setShowBeginPopup(false)}
+          style={{
+            position: 'absolute', inset: 0, zIndex: 10,
+            background: 'rgba(250,250,247,0.96)',
+            borderRadius: '12px',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center', justifyContent: 'center',
+            padding: '32px 28px', textAlign: 'center',
+            cursor: 'pointer',
+            backdropFilter: 'blur(2px)',
+            minHeight: '320px',
+          }}
+        >
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
+            Horizon State {'\u00B7'} Foundation
           </span>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '12px' }}>
-            Before {'\u00B7'} Foundation
-          </span>
-          <p style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginBottom: '20px', lineHeight: 1.55 }}>
-            Where is the flame right now?
+          <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '24px', maxWidth: '320px' }}>
+            Regulated internal stability {'\u2014'} the floor you stand on. Check in before and after to see what the audio actually does to your system.
           </p>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.55)' }}>
+            Tap anywhere to begin
+          </span>
+        </div>
+      )}
 
-          <div style={{ pointerEvents: beforeDone ? 'none' : 'auto', marginBottom: '14px' }}>
-            <FlameSlider
-              value={beforeValue}
-              onChange={setBeforeValue}
-              ghostValue={null}
-            />
+      {/* ══ MOBILE LAYOUT ══════════════════════════════════════════════════════ */}
+      <div className="hs-mobile-only" style={{ flexDirection: 'column' }}>
+
+        {/* Flames row — Before | After side by side */}
+        <div className="hs-flames-row">
+          {/* Before flame */}
+          <div className="hs-flame-col">
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: beforeDone ? 'rgba(168,114,26,0.38)' : '#A8721A', textTransform: 'uppercase', marginBottom: '8px' }}>
+              Before
+            </span>
+            <div style={{ pointerEvents: beforeDone ? 'none' : 'auto', opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
+              <FlameSlider value={beforeValue} onChange={setBeforeValue} ghostValue={null} />
+            </div>
           </div>
 
-          <textarea
-            value={beforeNote}
-            onChange={e => setBeforeNote(e.target.value)}
-            placeholder="what walked in with you today\u2026"
-            rows={2}
-            disabled={beforeDone}
-            style={{
-              width: '100%', padding: '10px 14px',
-              fontFamily: "'Cormorant Garamond',Georgia,serif",
-              fontSize: '1rem', fontStyle: 'italic',
-              color: 'rgba(15,21,35,0.72)',
-              background: 'rgba(200,146,42,0.025)',
-              border: '1px solid rgba(200,146,42,0.18)',
-              borderRadius: '8px', outline: 'none',
-              resize: 'none', lineHeight: 1.6, marginBottom: '14px',
-              transition: 'border-color 0.2s', boxSizing: 'border-box',
-            }}
-            onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
-            onBlur={e => { e.target.style.borderColor = 'rgba(200,146,42,0.18)' }}
-          />
-
-          {!beforeDone && (
-            <button
-              onClick={handleBegin}
-              disabled={saving}
-              style={{
-                width: '100%', padding: '12px',
-                ...sc, fontSize: '1.125rem', letterSpacing: '0.14em',
-                color: '#A8721A',
-                background: 'rgba(200,146,42,0.05)',
-                border: '1.5px solid rgba(200,146,42,0.78)',
-                borderRadius: '40px', cursor: saving ? 'default' : 'pointer',
-                transition: 'all 0.2s', opacity: saving ? 0.6 : 1,
-              }}
-            >
-              Begin {'\u2192'}
-            </button>
-          )}
+          {/* After flame */}
+          <div className="hs-flame-col" style={{ opacity: afterUnlocked ? 1 : 0.22, transition: 'opacity 0.8s ease', pointerEvents: afterUnlocked ? 'auto' : 'none' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '8px' }}>
+              After
+            </span>
+            <FlameSlider value={afterValue} onChange={setAfterValue} ghostValue={beforeDone ? beforeValue : null} />
+          </div>
         </div>
 
-        {/* ── CENTRE — Audio ── */}
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-          {audioLoading && (
-            <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted }}>Loading audio…</p>
-          )}
-          {audioError && (
-            <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>
-          )}
+        {/* Audio — full width */}
+        <div className="hs-audio-mobile">
+          {audioLoading && <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted }}>Loading audio{'\u2026'}</p>}
+          {audioError  && <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
           {!audioLoading && !audioError && audioUrl && (
-            <AudioPlayer
-              url={audioUrl}
-              locked={!beforeDone}
-              onNearEnd={() => setAfterUnlocked(true)}
-              onEnded={() => setAfterUnlocked(true)}
-            />
+            <AudioPlayer url={audioUrl} locked={!beforeDone} onNearEnd={() => setAfterUnlocked(true)} onEnded={() => setAfterUnlocked(true)} />
           )}
-          {/* No user — show locked placeholder */}
           {!user && !audioLoading && !audioError && (
-            <div style={{
-              padding: '20px 22px',
-              background: 'rgba(15,21,35,0.02)',
-              border: '1.5px solid rgba(200,146,42,0.2)',
-              borderRadius: '14px', opacity: 0.6,
-            }}>
-              <p style={{ ...serif, fontSize: '1.3125rem', fontStyle: 'italic', ...muted, marginBottom: '14px', lineHeight: 1.6 }}>
-                Check-in to unlock the audio.
-              </p>
-              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>
-                Horizon State {'\u00B7'} Foundation {'\u00B7'} 20 min
-              </div>
-              <button
-                onClick={() => setShowModal(true)}
-                style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', ...gold, fontSize: '18px' }}
-              >
-                {'\u25B6'}
-              </button>
+            <div style={{ padding: '20px 22px', background: 'rgba(15,21,35,0.02)', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', opacity: 0.6 }}>
+              <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, marginBottom: '10px', lineHeight: 1.6 }}>Check-in to unlock the audio.</p>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...muted }}>Horizon State {'\u00B7'} Foundation {'\u00B7'} 20 min</div>
             </div>
           )}
         </div>
 
-        {/* ── RIGHT — After ── */}
-        <div
-          className="hs-col-after"
-          style={{
-            ...colStyle,
-            opacity: afterUnlocked ? 1 : 0.22,
-            transition: 'opacity 0.8s ease',
-            pointerEvents: afterUnlocked ? 'auto' : 'none',
-          }}
-        >
-          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>
-            After
-          </span>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '12px' }}>
-            After {'\u00B7'} Foundation
-          </span>
-          <p style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginBottom: '20px', lineHeight: 1.55 }}>
-            And now{'\u2014'}?
-          </p>
+        {/* Journal window — swaps between Before and After */}
+        <div className="hs-journal-mobile">
+          {!afterUnlocked ? (
+            /* Before journal */
+            <>
+              <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginBottom: '8px', textAlign: 'center' }}>
+                Where is the flame right now?
+              </p>
+              <textarea
+                value={beforeNote}
+                onChange={e => setBeforeNote(e.target.value)}
+                placeholder={'what walked in with you today\u2026'}
+                rows={3}
+                disabled={beforeDone}
+                style={{
+                  width: '100%', padding: '10px 14px',
+                  fontFamily: "'Cormorant Garamond',Georgia,serif",
+                  fontSize: '1rem', fontStyle: 'italic',
+                  color: 'rgba(15,21,35,0.72)',
+                  background: 'rgba(200,146,42,0.025)',
+                  border: '1px solid rgba(200,146,42,0.18)',
+                  borderRadius: '8px', outline: 'none',
+                  resize: 'none', lineHeight: 1.6,
+                  transition: 'border-color 0.2s', boxSizing: 'border-box',
+                  opacity: beforeDone ? 0.5 : 1,
+                }}
+                onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
+                onBlur={e => { e.target.style.borderColor = 'rgba(200,146,42,0.18)' }}
+              />
+              {!beforeDone && (
+                <button onClick={handleBegin} disabled={saving} style={{
+                  width: '100%', padding: '12px', marginTop: '10px',
+                  ...sc, fontSize: '1rem', letterSpacing: '0.14em', color: '#A8721A',
+                  background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)',
+                  borderRadius: '40px', cursor: saving ? 'default' : 'pointer',
+                  transition: 'all 0.2s', opacity: saving ? 0.6 : 1,
+                }}>Begin {'\u2192'}</button>
+              )}
+            </>
+          ) : (
+            /* After journal — same space */
+            <>
+              <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginBottom: '8px', textAlign: 'center' }}>
+                And now{'\u2014'}?
+              </p>
+              <textarea
+                value={afterNote}
+                onChange={e => setAfterNote(e.target.value)}
+                placeholder={'What I\u2019m stepping away with\u2026'}
+                rows={3}
+                style={{
+                  width: '100%', padding: '10px 14px',
+                  fontFamily: "'Cormorant Garamond',Georgia,serif",
+                  fontSize: '1rem', fontStyle: 'italic',
+                  color: 'rgba(15,21,35,0.72)',
+                  background: 'rgba(200,146,42,0.025)',
+                  border: '1px solid rgba(200,146,42,0.18)',
+                  borderRadius: '8px', outline: 'none',
+                  resize: 'none', lineHeight: 1.6,
+                  transition: 'border-color 0.2s', boxSizing: 'border-box',
+                }}
+                onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
+                onBlur={e => { e.target.style.borderColor = 'rgba(200,146,42,0.18)' }}
+              />
+              <button onClick={handleSave} disabled={saving} style={{
+                width: '100%', padding: '12px', marginTop: '10px',
+                ...sc, fontSize: '1rem', letterSpacing: '0.14em', color: '#A8721A',
+                background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)',
+                borderRadius: '40px', cursor: saving ? 'default' : 'pointer',
+                transition: 'all 0.2s', opacity: saving ? 0.6 : 1,
+              }}>{saving ? 'Saving\u2026' : 'Save \u2713'}</button>
+            </>
+          )}
+        </div>
+      </div>
 
-          <div style={{ marginBottom: '14px' }}>
-            <FlameSlider
-              value={afterValue}
-              onChange={setAfterValue}
-              ghostValue={beforeDone ? beforeValue : null}
-            />
+      {/* ══ DESKTOP LAYOUT ═════════════════════════════════════════════════════ */}
+      <div className="hs-baseline-grid">
+
+        {/* Before */}
+        <div className="hs-col-before-desktop" style={{ flexDirection: 'column', alignItems: 'center', opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
+          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>Before</span>
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '12px' }}>Before {'\u00B7'} Foundation</span>
+          <p style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginBottom: '20px', lineHeight: 1.55 }}>Where is the flame right now?</p>
+          <div style={{ pointerEvents: beforeDone ? 'none' : 'auto', marginBottom: '14px' }}>
+            <FlameSlider value={beforeValue} onChange={setBeforeValue} ghostValue={null} />
           </div>
-
-          <textarea
-            value={afterNote}
-            onChange={e => setAfterNote(e.target.value)}
-            placeholder="What I\u2019m stepping away with\u2026"
-            rows={2}
-            style={{
-              width: '100%', padding: '10px 14px',
-              fontFamily: "'Cormorant Garamond',Georgia,serif",
-              fontSize: '1rem', fontStyle: 'italic',
-              color: 'rgba(15,21,35,0.72)',
-              background: 'rgba(200,146,42,0.025)',
-              border: '1px solid rgba(200,146,42,0.18)',
-              borderRadius: '8px', outline: 'none',
-              resize: 'none', lineHeight: 1.6, marginBottom: '14px',
-              transition: 'border-color 0.2s', boxSizing: 'border-box',
-            }}
+          <textarea value={beforeNote} onChange={e => setBeforeNote(e.target.value)}
+            placeholder={'what walked in with you today\u2026'} rows={2} disabled={beforeDone}
+            style={{ width: '100%', padding: '10px 14px', fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.025)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
             onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
             onBlur={e => { e.target.style.borderColor = 'rgba(200,146,42,0.18)' }}
           />
+          {!beforeDone && (
+            <button onClick={handleBegin} disabled={saving} style={{ width: '100%', padding: '12px', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', color: '#A8721A', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>Begin {'\u2192'}</button>
+          )}
+        </div>
 
+        {/* Audio */}
+        <div className="hs-col-audio-desktop" style={{ flexDirection: 'column', justifyContent: 'flex-start' }}>
+          {audioLoading && <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted }}>Loading audio{'\u2026'}</p>}
+          {audioError  && <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
+          {!audioLoading && !audioError && audioUrl && (
+            <AudioPlayer url={audioUrl} locked={!beforeDone} onNearEnd={() => setAfterUnlocked(true)} onEnded={() => setAfterUnlocked(true)} />
+          )}
+          {!user && !audioLoading && !audioError && (
+            <div style={{ padding: '20px 22px', background: 'rgba(15,21,35,0.02)', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', opacity: 0.6 }}>
+              <p style={{ ...serif, fontSize: '1.3125rem', fontStyle: 'italic', ...muted, marginBottom: '14px', lineHeight: 1.6 }}>Check-in to unlock the audio.</p>
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>Horizon State {'\u00B7'} Foundation {'\u00B7'} 20 min</div>
+              <button onClick={() => setShowModal(true)} style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', ...gold, fontSize: '18px' }}>{'\u25B6'}</button>
+            </div>
+          )}
+        </div>
+
+        {/* After */}
+        <div className="hs-col-after-desktop" style={{ flexDirection: 'column', alignItems: 'center', opacity: afterUnlocked ? 1 : 0.22, transition: 'opacity 0.8s ease', pointerEvents: afterUnlocked ? 'auto' : 'none' }}>
+          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>After</span>
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '12px' }}>After {'\u00B7'} Foundation</span>
+          <p style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginBottom: '20px', lineHeight: 1.55 }}>And now{'\u2014'}?</p>
+          <div style={{ marginBottom: '14px' }}>
+            <FlameSlider value={afterValue} onChange={setAfterValue} ghostValue={beforeDone ? beforeValue : null} />
+          </div>
+          <textarea value={afterNote} onChange={e => setAfterNote(e.target.value)}
+            placeholder={'What I\u2019m stepping away with\u2026'} rows={2}
+            style={{ width: '100%', padding: '10px 14px', fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.025)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
+            onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
+            onBlur={e => { e.target.style.borderColor = 'rgba(200,146,42,0.18)' }}
+          />
           {afterUnlocked && (
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              style={{
-                width: '100%', padding: '12px',
-                ...sc, fontSize: '1.125rem', letterSpacing: '0.14em',
-                color: '#A8721A',
-                background: 'rgba(200,146,42,0.05)',
-                border: '1.5px solid rgba(200,146,42,0.78)',
-                borderRadius: '40px', cursor: saving ? 'default' : 'pointer',
-                transition: 'all 0.2s', opacity: saving ? 0.6 : 1,
-              }}
-            >
-              {saving ? 'Saving\u2026' : 'Save \u2713'}
-            </button>
+            <button onClick={handleSave} disabled={saving} style={{ width: '100%', padding: '12px', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', color: '#A8721A', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>{saving ? 'Saving\u2026' : 'Save \u2713'}</button>
           )}
         </div>
 
       </div>
+
       {showModal && <AuthModal onDismiss={() => setShowModal(false)} />}
     </div>
   )
 }
-
 // ─── Phase helpers ────────────────────────────────────────────────────────────
 
 function PhaseBlock({ number, name, desc, children }) {
@@ -823,9 +889,6 @@ export function FoundationPage() {
               {/* Phase 1 — Foundation */}
               {activePhase === 'foundation' && (
                 <div>
-                  <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, ...meta, lineHeight: 1.75, marginBottom: '24px' }}>
-                    Regulated internal stability — the floor you stand on. Check in before and after to see what the audio actually does to your system.
-                  </p>
                   <BaselineCard
                     user={user}
                     audioUrl={audioUrl}

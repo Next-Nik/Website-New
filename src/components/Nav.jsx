@@ -112,6 +112,17 @@ export function Nav({ activePath }) {
         </div>
       </nav>
 
+      {/* Mobile auth bar — centered sign in / profile, always visible on mobile */}
+      <div className="nav-auth-mobile">
+        {user ? (
+          <Link to="/profile" className="nav-profile-dot" title="Your profile" onClick={closeMobile}>
+            {initial}
+          </Link>
+        ) : (
+          <Link to="/login" className="nav-sign-in" onClick={closeMobile} style={{ display: 'flex' }}>Sign in</Link>
+        )}
+      </div>
+
       {/* Mobile dropdown */}
       {mobileOpen && (
         <div className="nav-mobile-menu">
@@ -181,6 +192,16 @@ export function Nav({ activePath }) {
           border-color: rgba(200,146,42,0.78);
           color: #A8721A;
           background: rgba(200,146,42,0.06);
+        }
+
+        /* ── Mobile auth bar — centered sign in / profile ── */
+        .nav-auth-mobile {
+          display: none;
+          width: 100%;
+          justify-content: center;
+          align-items: center;
+          padding: 8px 0 4px;
+          border-bottom: 1px solid rgba(200,146,42,0.12);
         }
 
         /* ── Sign in ── */
@@ -280,9 +301,9 @@ export function Nav({ activePath }) {
         /* ── Responsive breakpoints ── */
         @media (max-width: 640px) {
           .nav-centre      { display: none !important; }
-          .nav-sign-in     { display: none !important; }
           .nav-hamburger   { display: flex !important; }
           .nav-mobile-menu { display: flex !important; }
+          .nav-auth-mobile { display: flex !important; }
         }
       `}</style>
     </>
