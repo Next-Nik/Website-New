@@ -794,8 +794,42 @@ export function PurposePiecePage() {
           .limit(1)
           .maybeSingle()
 
-        if (started) {
+        if (started?.session) {
+          const s = started.session
+          setSession(s)
           setShowWelcome(false)
+          startedRef.current = true
+
+          // Determine which stages are already complete from saved transcripts
+          const archetypeDone = (s.archetypeTranscript?.length ?? 0) >= 5
+          const domainDone    = (s.domainTranscript?.length    ?? 0) >= 3
+          const scaleDone     = (s.scaleTranscript?.length     ?? 0) >= 2
+
+          // Mark completed stages so the disc and UI reflect progress
+          setStageComplete({ archetype: archetypeDone, domain: domainDone, scale: scaleDone })
+
+          // Restore stageQuestion for each incomplete stage from its own question index
+          const ARCHETYPE_QS = ['Think of a recent moment where something around you was off — and you either stepped in or you didn\'t. It doesn\'t have to be dramatic.\n\nWhat happened, and what did you do?','What keeps going wrong around you that bothers you, even when it\'s not your problem?\n\nName one specific example.','Describe a moment where you had to make a real decision with no clear right answer and something actually at stake.\n\nWhat did you do?','What does your way of operating cost you that others don\'t seem to pay?\n\nBe specific.','When has your biggest strength made things worse?\n\nGive me a specific moment.']
+          const DOMAIN_QS    = ['What\'s broken in the world that you can\'t stop thinking about, even though nobody\'s asking you to care?\n\nWhat is it specifically?','What makes you angrier than it seems to make everyone else?\n\nWhat does it look like when you see it?','What do you keep doing just because you love it, even though nobody asked for it and nobody\'s paying you?\n\nWhat is it, and what keeps pulling you back?']
+          const SCALE_QS     = ['Picture your work actually making a difference. What does that scene look like?\n\nWho\'s there and how many people?','What\'s the biggest problem you feel personally responsible for doing something about, not just interested in, but actually on the hook for?\n\nWhat is it?']
+
+          const qi = s.questionIndex || { archetype: 0, domain: 0, scale: 0 }
+          const restoredQ = {
+            archetype: archetypeDone ? null : (ARCHETYPE_QS[typeof qi === 'object' ? (qi.archetype ?? 0) : 0] || null),
+            domain:    domainDone    ? null : (DOMAIN_QS[typeof qi === 'object'    ? (qi.domain    ?? 0) : 0] || null),
+            scale:     scaleDone     ? null : (SCALE_QS[typeof qi === 'object'     ? (qi.scale     ?? 0) : 0] || null),
+          }
+          setStageQuestion(restoredQ)
+
+          // Navigate to first incomplete stage
+          const firstIncomplete = !archetypeDone ? 'archetype' : !domainDone ? 'domain' : !scaleDone ? 'scale' : 'archetype'
+          setActiveStage(firstIncomplete)
+
+          // Start only incomplete stages — completed ones need no API call
+          if (!archetypeDone) startStage('archetype', s)
+          if (!domainDone)    startStage('domain',    s)
+          if (!scaleDone)     startStage('scale',     s)
+          return
         } else {
           setShowWelcome(prev => prev === null ? true : prev)
         }
