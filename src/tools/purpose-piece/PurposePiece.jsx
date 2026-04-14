@@ -435,7 +435,7 @@ function ReferenceTrigger({ stage, onOpenArchetypes, onOpenDomains }) {
 
 // ─── Stage transition ─────────────────────────────────────────────────────────
 
-function StageTransition({ nextStage, onContinue }) {
+function StageTransition({ nextStage, onContinue, loading = false }) {
   const content = {
     domain: {
       eyebrow: 'Archetype \u2713',
@@ -475,10 +475,11 @@ function StageTransition({ nextStage, onContinue }) {
       <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.75, marginBottom: '24px' }}>
         {c.body}
       </p>
-      <button onClick={onContinue} style={btnStyle}
-        onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
+      <button onClick={loading ? undefined : onContinue}
+        style={{ ...btnStyle, opacity: loading ? 0.55 : 1, cursor: loading ? 'default' : 'pointer' }}
+        onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' } }}
         onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
-        {c.cta}
+        {loading ? 'Reading everything\u2026' : c.cta}
       </button>
     </div>
   )
@@ -655,6 +656,7 @@ export function PurposePiecePage() {
   const [showReveal,    setShowReveal]    = useState(false)
   const [readyToLock,   setReadyToLock]   = useState(false)
   const [showDeepGate,  setShowDeepGate]  = useState(false)
+  const [confirmLoading, setConfirmLoading] = useState(false)
   const [pendingMsg,    setPendingMsg]    = useState(null)
   const [backVisible,   setBackVisible]   = useState(false)
   const backTimerRef = useRef(null)
@@ -1154,6 +1156,7 @@ export function PurposePiecePage() {
   }
 
   async function continueToNextStage() {
+    setConfirmLoading(true)
     setThinking(true)
     try {
       const confirmSession = { ...sessionRef.current, stage: 'confirmation' }
@@ -1164,9 +1167,12 @@ export function PurposePiecePage() {
       if (!res.ok) throw new Error(`API ${res.status}`)
       const d = await res.json()
       setThinking(false)
+      setConfirmLoading(false)
+      setActiveStage('confirmation')
       handleResponse(d, 'confirmation')
     } catch {
       setThinking(false)
+      setConfirmLoading(false)
       addMsg('assistant', 'Something went wrong. Please try again.', activeStage)
     }
   }
@@ -1207,10 +1213,11 @@ export function PurposePiecePage() {
 
     // Stage completion state
     const activeQuestionStage = ['archetype','domain','scale'].includes(stage) ? stage : null
-    if (stageComplete[activeQuestionStage] && activeQuestionStage) {
+    const activeWedgeDone = activeQuestionStage ? wedgeStates[activeQuestionStage] === 2 : false
+    if ((stageComplete[activeQuestionStage] || activeWedgeDone) && activeQuestionStage) {
       // If all three are done, show the confirmation transition
       if (allWedgesDone) {
-        return <StageTransition nextStage="confirmation" onContinue={continueToNextStage} />
+        return <StageTransition nextStage="confirmation" onContinue={continueToNextStage} loading={confirmLoading} />
       }
       // Otherwise show a simple done state — nudge to the wheel
       const stageLabels = { archetype: 'Contribution Archetype', domain: 'Global Domain', scale: 'Engagement Scale' }
