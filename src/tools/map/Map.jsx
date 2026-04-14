@@ -547,6 +547,33 @@ const btnStyle = {
   padding: '12px 20px', cursor: 'pointer',
 }
 
+// ─── Shared sub-components (module scope — stable identity across renders) ────
+
+function ChatInput({ value, onChange, onSend, placeholder, disabled }) {
+  return (
+    <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+      <textarea
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSend(value) } }}
+        placeholder={placeholder}
+        rows={2}
+        disabled={disabled}
+        style={{ flex: 1, padding: '10px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', outline: 'none', resize: 'none', lineHeight: 1.55 }}
+      />
+      <button onClick={() => onSend(value)} disabled={!value.trim() || disabled} style={{ ...btnStyle, padding: '10px 16px', alignSelf: 'flex-end', opacity: !value.trim() || disabled ? 0.4 : 1, fontSize: '1.125rem', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>Send</button>
+    </div>
+  )
+}
+
+function LockBtn({ onClick, label }) {
+  return (
+    <button onClick={onClick} style={{ ...btnStyle, display: 'block', width: '100%', textAlign: 'center', marginTop: '16px' }}>
+      {label}
+    </button>
+  )
+}
+
 // ─── Domain Step — full 3-step conversation flow ──────────────────────────────
 
 function DomainStep({ domain, existingData, onComplete, onUpdate }) {
@@ -686,7 +713,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
         }),
       })
       const data = await res.json()
-      const aiMsg = { role: 'assistant', content: data.message, canLock: data.canLock, suggestedScore: data.suggestedScore }
+      const aiMsg = { role: 'assistant', content: data.message, canLock: data.canLock, suggestedScore: data.suggestedScore, cleanedReality: data.cleanedReality || null }
       const updated = [...next, aiMsg]
       setScoreMsgs(updated)
       if (data.cleanedReality) setRealityFinal(data.cleanedReality)
@@ -788,33 +815,6 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           <div className="typing-indicator"><span /><span /><span /></div>
         </div>
       </div>
-    )
-  }
-
-  function ChatInput({ value, onChange, onSend, placeholder, disabled }) {
-    return (
-      <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-        <textarea
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); onSend(value) } }}
-          placeholder={placeholder}
-          rows={2}
-          disabled={disabled}
-          style={{ flex: 1, padding: '10px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', outline: 'none', resize: 'none', lineHeight: 1.55 }}
-        />
-        <button onClick={() => onSend(value)} disabled={!value.trim() || disabled} style={{ ...btnStyle, padding: '10px 16px', alignSelf: 'flex-end', opacity: !value.trim() || disabled ? 0.4 : 1, fontSize: '1.125rem', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>Update draft</button>
-      </div>
-    )
-  }
-
-  // ── Lock button ─────────────────────────────────────────────
-
-  function LockBtn({ onClick, label }) {
-    return (
-      <button onClick={onClick} style={{ ...btnStyle, display: 'block', width: '100%', textAlign: 'center', marginTop: '16px' }}>
-        {label}
-      </button>
     )
   }
 
@@ -1028,7 +1028,17 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           {/* Score conversation */}
           {scoreMsgs.length > 0 && (
             <div style={{ marginTop: '16px' }}>
-              {scoreMsgs.map((m, i) => <ChatBubble key={i} msg={m} />)}
+              {scoreMsgs.map((m, i) => (
+                <div key={i}>
+                  {m.role === 'assistant' && m.cleanedReality && (
+                    <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderLeft: '3px solid rgba(200,146,42,0.35)', borderRadius: '8px', marginBottom: '10px' }}>
+                      <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px' }}>YOUR REALITY · CLEANED</div>
+                      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, margin: 0 }}>{m.cleanedReality}</p>
+                    </div>
+                  )}
+                  <ChatBubble msg={m} />
+                </div>
+              ))}
               {thinking && <ThinkingBubble />}
             </div>
           )}
