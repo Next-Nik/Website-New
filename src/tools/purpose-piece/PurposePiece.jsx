@@ -1055,8 +1055,10 @@ export function PurposePiecePage() {
             t.scale?.scale         ? `Scale of Focus: ${t.scale.scale}` : null,
           ].filter(Boolean)
           if (ppNotes.length) {
-            try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'purpose-piece') } catch {}
-            try { await supabase.from('north_star_notes').insert(ppNotes.map(note => ({ user_id: user.id, tool: 'purpose-piece', note }))) } catch {}
+            ;(async () => {
+              try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'purpose-piece') } catch {}
+              try { await supabase.from('north_star_notes').insert(ppNotes.map(note => ({ user_id: user.id, tool: 'purpose-piece', note }))) } catch {}
+            })()
           }
         }
         try {
