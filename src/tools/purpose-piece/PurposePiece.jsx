@@ -638,27 +638,50 @@ export function PurposePiecePage() {
   const navigate  = useNavigate()
   const isMobile  = useIsMobile()
 
+  // ── Shared session — holds all three transcripts and synthesis state ──────────
   const [session,       setSession]       = useState(null)
-  const [messages,      setMessages]      = useState([])
+
+  // ── Per-stage independent state ────────────────────────────────────────────
+  // Each stage is its own conversation: own messages, own currentQuestion, own thinking state.
+  const STAGES = ['archetype', 'domain', 'scale']
+  const [stageMessages,  setStageMessages]  = useState({ archetype: [], domain: [], scale: [] })
+  const [stageQuestion,  setStageQuestion]  = useState({ archetype: null, domain: null, scale: null })
+  const [stageThinking,  setStageThinking]  = useState({ archetype: false, domain: false, scale: false })
+  const [stageStarted,   setStageStarted]   = useState({ archetype: false, domain: false, scale: false })
+
+  const [activeStage,   setActiveStage]   = useState('archetype')  // which viewport is showing
   const [input,         setInput]         = useState('')
-  const [thinking,      setThinking]      = useState(false)
-  const [stageComplete, setStageComplete] = useState(false)
+  const [stageComplete, setStageComplete] = useState({ archetype: false, domain: false, scale: false })
   const [showReveal,    setShowReveal]    = useState(false)
   const [readyToLock,   setReadyToLock]   = useState(false)
   const [showDeepGate,  setShowDeepGate]  = useState(false)
-  const [pendingMsg,    setPendingMsg]    = useState(null)   // text held during Back window
-  const [backVisible,   setBackVisible]   = useState(false)  // Back button visible
+  const [pendingMsg,    setPendingMsg]    = useState(null)
+  const [backVisible,   setBackVisible]   = useState(false)
   const backTimerRef = useRef(null)
   const [showCentreModal, setShowCentreModal] = useState(false)
-  // headerOpen tracks whether the stage intro panel is expanded, keyed by stage name
   const [headerOpen,    setHeaderOpen]    = useState({ archetype: true, domain: true, scale: true })
+
+  // Convenience — active stage's state
+  const messages        = stageMessages[activeStage]  || []
+  const currentQuestion = stageQuestion[activeStage]  || null
+  const thinking        = stageThinking[activeStage]  || false
+
+  // Per-stage setters
+  function addMsg(type, content, targetStage) {
+    const s = targetStage || activeStage
+    setStageMessages(prev => ({ ...prev, [s]: [...(prev[s] || []), { id: Date.now() + Math.random(), type, content }] }))
+  }
+  function setThinking(val, targetStage) {
+    const s = targetStage || activeStage
+    setStageThinking(prev => ({ ...prev, [s]: val }))
+  }
   const [showWelcome, setShowWelcome] = useState(() => {
     // Skip welcome modal if a valid in-progress session already exists in sessionStorage
     try {
       const raw = sessionStorage.getItem(SS_KEY)
       if (raw) {
         const s = JSON.parse(raw)
-        if (s.session?.currentQuestion && s.messages?.length > 0) return false
+        if (s.session && s.stageMessages) return false
       }
     } catch {}
     // Don't show yet — wait for Supabase check to determine if returning user
@@ -720,14 +743,16 @@ export function PurposePiecePage() {
       const raw = sessionStorage.getItem(SS_KEY)
       if (raw) {
         const saved = JSON.parse(raw)
-        if (
-          saved.session &&
-          saved.session.status !== 'complete' &&
-          saved.session.currentQuestion &&
-          saved.messages?.length > 0
-        ) {
+        if (saved.session && saved.session.status !== 'complete' && saved.stageMessages) {
           setSession(saved.session)
-          setMessages(saved.messages || [])
+          setStageMessages(saved.stageMessages || { archetype: [], domain: [], scale: [] })
+          setStageQuestion(saved.stageQuestion || { archetype: null, domain: null, scale: null })
+          if (saved.activeStage) setActiveStage(saved.activeStage)
+          // Start any stage that hasn't been initialised yet
+          const started = saved.stageMessages
+          if (!started.archetype?.length) startStage('archetype', saved.session)
+          if (!started.domain?.length)    startStage('domain',    saved.session)
+          if (!started.scale?.length)     startStage('scale',     saved.session)
           return
         }
       }
@@ -782,27 +807,27 @@ export function PurposePiecePage() {
     checkExisting()
   }, [user?.id])
 
-  // Persist to sessionStorage
+  // Persist to sessionStorage — save per-stage messages + shared session
   useEffect(() => {
     if (!session) return
-    try { sessionStorage.setItem(SS_KEY, JSON.stringify({ session, messages })) } catch {}
-  }, [session, messages])
+    try { sessionStorage.setItem(SS_KEY, JSON.stringify({ session, stageMessages, stageQuestion, activeStage })) } catch {}
+  }, [session, stageMessages, stageQuestion, activeStage])
 
   // Derived
-  const stage = session?.stage || 'welcome'
+  const stage = activeStage  // viewport stage — independent of session.stage
   const qIdx  = (() => {
     const qi = session?.questionIndex
-    if (typeof qi === 'object' && qi !== null) return qi[stage] ?? 0
+    if (typeof qi === 'object' && qi !== null) return qi[activeStage] ?? 0
     return typeof qi === 'number' ? qi : 0
   })()
 
   const wedgeStates = {
     archetype: (session?.archetypeTranscript?.length ?? 0) >= 5 ? 2
-             : stage === 'archetype' ? 1 : 0,
+             : activeStage === 'archetype' ? 1 : 0,
     domain:    (session?.domainTranscript?.length ?? 0) >= 3 ? 2
-             : stage === 'domain' ? 1 : 0,
+             : activeStage === 'domain' ? 1 : 0,
     scale:     (session?.scaleTranscript?.length ?? 0) >= 2 ? 2
-             : stage === 'scale' ? 1 : 0,
+             : activeStage === 'scale' ? 1 : 0,
   }
 
   const allWedgesDone = WEDGE_KEYS.every(k => wedgeStates[k] === 2)
@@ -811,31 +836,29 @@ export function PurposePiecePage() {
   // Cycle stages with prev/next buttons — sequential by default, clamped at ends
   const STAGE_ORDER = ['archetype', 'domain', 'scale', 'confirmation']
   function handleWedgeNav(dir) {
-    if (!session) return
-    const current = STAGE_ORDER.includes(stage) ? stage : 'archetype'
+    const current = STAGE_ORDER.includes(activeStage) ? activeStage : 'archetype'
     const idx = STAGE_ORDER.indexOf(current)
     const nextIdx = dir === 'next'
       ? Math.min(idx + 1, STAGE_ORDER.length - 1)
       : Math.max(idx - 1, 0)
     const nextStage = STAGE_ORDER[nextIdx]
-    setSession(prev => ({ ...prev, stage: nextStage }))
-    if (nextStage !== stage) {
-      setHeaderOpen(prev => ({ ...prev, [nextStage]: true }))
-    }
+    if (nextStage === activeStage) return
+    setActiveStage(nextStage)
+    setHeaderOpen(prev => ({ ...prev, [nextStage]: true }))
+    setInput('')
+    if (backTimerRef.current) { clearTimeout(backTimerRef.current); setPendingMsg(null); setBackVisible(false) }
   }
 
-  // Direct stage jump — called when user clicks a wedge on the disc
+  // Direct stage jump — switches the active viewport only
+  // Each stage is already running independently; no API call needed here
   function handleWedgeClick(key) {
-    if (!session) return
     if (!['archetype', 'domain', 'scale'].includes(key)) return
-    if (key === stage) return // already on this stage
-    setSession(prev => ({ ...prev, stage: key }))
-    setStageComplete(false)
-    // Re-open the header for the stage we're jumping to
+    if (key === activeStage) return
+    setActiveStage(key)
+    setStageComplete(prev => ({ ...prev, [activeStage]: false }))
     setHeaderOpen(prev => ({ ...prev, [key]: true }))
-    // Fetch correct Q1 for the target stage from the API
-    setThinking(true)
-    callAPI([]).then(d => { setThinking(false); handleResponse(d) }).catch(() => setThinking(false))
+    setInput('')
+    if (backTimerRef.current) { clearTimeout(backTimerRef.current); setPendingMsg(null); setBackVisible(false) }
   }
 
   function handleCentreClick() {
@@ -846,7 +869,26 @@ export function PurposePiecePage() {
     }
   }
 
-  // API
+  // ── Stage refs — one per stage for independent API calls ──────────────────
+  const stageSessionRef = useRef({ archetype: null, domain: null, scale: null })
+  const stageStartedRef = useRef({ archetype: false, domain: false, scale: false })
+
+  // API call — always sends stage-specific session slice
+  async function callStageAPI(msgs, targetStage) {
+    const s = targetStage || activeStage
+    // Build a stage-specific session: shared base + override stage
+    const stageSession = sessionRef.current
+      ? { ...sessionRef.current, stage: s }
+      : null
+    const res = await fetch('/tools/purpose-piece/api/chat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: msgs, session: stageSession, userId: user?.id })
+    })
+    if (!res.ok) throw new Error(`API ${res.status}`)
+    return res.json()
+  }
+
+  // Legacy callAPI for confirmation/synthesis/framing stages
   async function callAPI(msgs) {
     const res = await fetch('/tools/purpose-piece/api/chat', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -856,29 +898,81 @@ export function PurposePiecePage() {
     return res.json()
   }
 
-  async function startTool() {
-    setThinking(true)
-    try { const d = await callAPI([]); setThinking(false); handleResponse(d) }
-    catch { setThinking(false); addMsg('assistant', 'Something went wrong. Please refresh.') }
+  // Start a single stage — fetches its opening question independently
+  async function startStage(targetStage, existingSession) {
+    if (stageStartedRef.current[targetStage]) return
+    stageStartedRef.current[targetStage] = true
+    setThinking(true, targetStage)
+    try {
+      const stageSession = existingSession
+        ? { ...existingSession, stage: targetStage }
+        : null
+      const res = await fetch('/tools/purpose-piece/api/chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [], session: stageSession, userId: user?.id })
+      })
+      if (!res.ok) throw new Error(`API ${res.status}`)
+      const d = await res.json()
+      // Update shared session once (first stage to respond sets it)
+      if (d.session && !sessionRef.current) setSession(d.session)
+      else if (d.session) setSession(prev => ({ ...prev, stage: prev?.stage || targetStage }))
+      // Set this stage's question
+      if (d.session?.currentQuestion) {
+        setStageQuestion(prev => ({ ...prev, [targetStage]: d.session.currentQuestion }))
+      }
+      if (d.message) addMsg('assistant', d.message, targetStage)
+    } catch { /* silent — stage will show empty state */ }
+    setThinking(false, targetStage)
   }
 
-  function handleResponse(data) {
-    if (data.session) setSession(data.session)
+  async function startTool() {
+    setThinking(true)
+    try {
+      // Bootstrap: create session with first API call, then start all three stages
+      const res = await fetch('/tools/purpose-piece/api/chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [], session: null, userId: user?.id })
+      })
+      if (!res.ok) throw new Error(`API ${res.status}`)
+      const d = await res.json()
+      const baseSession = d.session
+      setSession(baseSession)
+      if (d.session?.currentQuestion) {
+        setStageQuestion(prev => ({ ...prev, archetype: d.session.currentQuestion }))
+      }
+      if (d.message) addMsg('assistant', d.message, 'archetype')
+      stageStartedRef.current.archetype = true
+      setThinking(false)
+      // Start domain and scale in parallel
+      startStage('domain', baseSession)
+      startStage('scale',  baseSession)
+    } catch {
+      setThinking(false)
+      addMsg('assistant', 'Something went wrong. Please refresh.', 'archetype')
+    }
+  }
+  function handleResponse(data, targetStage) {
+    const s = targetStage || activeStage
 
-    // Complete output is HTML — inject directly, not as escaped text
-    if (data.message) {
-      if (data.isHtml) addMsg('html', data.message)
-      else addMsg('assistant', data.message)
+    // Update shared session
+    if (data.session) {
+      setSession(data.session)
+      // Update this stage's currentQuestion
+      if (data.session.currentQuestion) {
+        setStageQuestion(prev => ({ ...prev, [s]: data.session.currentQuestion }))
+      }
     }
 
-    // Stage complete — save progress to Supabase so profile shows current stage
-    if (data.stageComplete) {
-      setStageComplete(true)
+    // Message — add to the target stage's thread
+    if (data.message) {
+      if (data.isHtml) addMsg('html', data.message, s)
+      else addMsg('assistant', data.message, s)
+    }
+
+    // Stage complete for a question stage — mark it
+    if (data.stageComplete && ['archetype','domain','scale'].includes(s)) {
+      setStageComplete(prev => ({ ...prev, [s]: true }))
       if (user?.id && data.session) {
-        const completedStages = []
-        if (data.session.archetypeTranscript?.length > 0) completedStages.push('archetype')
-        if (data.session.domainTranscript?.length > 0) completedStages.push('domain')
-        if (data.session.scaleTranscript?.length > 0) completedStages.push('scale')
         ;(async () => { try {
           const { data: ex } = await supabase.from('purpose_piece_results').select('id').eq('user_id', user.id).limit(1).maybeSingle()
           if (ex?.id) {
@@ -895,42 +989,40 @@ export function PurposePiecePage() {
     if (data.stage === 'synthesis') {
       setTimeout(async () => {
         setThinking(true)
-        try { const d = await callAPI([])
-
-      // Write to North Star cross-tool memory
-      if (user?.id && session?.tentative) {
-        const t = session.tentative
-        const ppNotes = [
-          t.archetype?.archetype ? `Organisational Archetype: ${t.archetype.archetype}` : null,
-          t.domain?.domain       ? `Global Domain: ${t.domain.domain}` : null,
-          t.scale?.scale         ? `Scale of Focus: ${t.scale.scale}` : null,
-        ].filter(Boolean)
-        if (ppNotes.length) {
-          try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'purpose-piece') } catch {}
-          try { await supabase.from('north_star_notes').insert(ppNotes.map(note => ({ user_id: user.id, tool: 'purpose-piece', note }))) } catch {}
-        }
-      }; setThinking(false); handleResponse(d) } catch { setThinking(false) }
+        try {
+          const d = await callAPI([])
+          if (user?.id && data.session?.tentative) {
+            const t = data.session.tentative
+            const ppNotes = [
+              t.archetype?.archetype ? `Organisational Archetype: ${t.archetype.archetype}` : null,
+              t.domain?.domain       ? `Global Domain: ${t.domain.domain}` : null,
+              t.scale?.scale         ? `Scale of Focus: ${t.scale.scale}` : null,
+            ].filter(Boolean)
+            if (ppNotes.length) {
+              try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'purpose-piece') } catch {}
+              try { await supabase.from('north_star_notes').insert(ppNotes.map(note => ({ user_id: user.id, tool: 'purpose-piece', note }))) } catch {}
+            }
+          }
+          setThinking(false); handleResponse(d)
+        } catch { setThinking(false) }
       }, data.advanceDelay || 6000)
       return
     }
 
-    // Auto-advance (welcome, stage openings)
+    // Auto-advance (stage openings)
     if (data.autoAdvance) {
       setTimeout(async () => {
-        setThinking(true)
-        try { const d = await callAPI([]); setThinking(false); handleResponse(d) } catch { setThinking(false) }
-      }, data.advanceDelay || 2000)
+        setThinking(true, s)
+        try { const d = await callStageAPI([], s); setThinking(false, s); handleResponse(d, s) }
+        catch { setThinking(false, s) }
+      }, data.advanceDelay || 2500)
       return
     }
 
-    // Server signals AI is ready to lock — show explicit button.
-    // handleLock sends a canonical message so server doesn't also try
-    // to infer lock intent from freetext (avoids dual-path conflict).
     if (data.readyToLock) setReadyToLock(true)
 
     if (data.complete) {
       setShowReveal(true)
-      // Save profile
       if (user?.id && data.profile) {
         ;(async () => { try {
           const { data: ex } = await supabase.from('purpose_piece_results').select('id').eq('user_id', user.id).limit(1).maybeSingle()
@@ -941,7 +1033,6 @@ export function PurposePiecePage() {
           }
         } catch {} })()
       }
-      // Save for Deep Dive
       try {
         const t = data.session?.tentative || {}
         sessionStorage.setItem('pp_first_look', JSON.stringify({
@@ -958,10 +1049,6 @@ export function PurposePiecePage() {
         }))
       } catch {}
     }
-  }
-
-  function addMsg(type, content) {
-    setMessages(prev => [...prev, { id: Date.now() + Math.random(), type, content }])
   }
 
   function resizeTextarea() {
@@ -981,32 +1068,33 @@ export function PurposePiecePage() {
     if (textareaRef.current) textareaRef.current.style.height = 'auto'
 
     // Collapse stage intro header after first answer
-    const currentStage = sessionRef.current?.stage
-    if (currentStage && ['archetype','domain','scale'].includes(currentStage)) {
-      setHeaderOpen(prev => ({ ...prev, [currentStage]: false }))
+    if (['archetype','domain','scale'].includes(activeStage)) {
+      setHeaderOpen(prev => ({ ...prev, [activeStage]: false }))
     }
 
     // Hold message in pendingMsg — show Back button for 4 seconds
     setPendingMsg(text)
     setBackVisible(true)
 
+    const sendingStage = activeStage
     backTimerRef.current = setTimeout(async () => {
       setBackVisible(false)
       setPendingMsg(null)
-      addMsg('user', text)
-      setThinking(true)
-      const [d] = await Promise.allSettled([
-        callAPI([{ role: 'user', content: text }]),
-        new Promise(r => setTimeout(r, 800))
-      ])
-      setThinking(false)
+      addMsg('user', text, sendingStage)
+      setThinking(true, sendingStage)
+      const isQuestionStage = ['archetype','domain','scale'].includes(sendingStage)
+      const apiCall = isQuestionStage
+        ? callStageAPI([{ role: 'user', content: text }], sendingStage)
+        : callAPI([{ role: 'user', content: text }])
+      const [d] = await Promise.allSettled([apiCall, new Promise(r => setTimeout(r, 800))])
+      setThinking(false, sendingStage)
       if (d.status === 'fulfilled') {
-        handleResponse(d.value)
+        handleResponse(d.value, sendingStage)
       } else {
-        const lastQ = sessionRef.current?.currentQuestion
+        const lastQ = stageQuestion[sendingStage] || sessionRef.current?.currentQuestion
         addMsg('assistant', lastQ
           ? `Lost my thread for a second — still with you.\n\n${lastQ}`
-          : 'Lost my thread for a second. Please try again.')
+          : 'Lost my thread for a second. Please try again.', sendingStage)
       }
     }, 4000)
   }
@@ -1016,10 +1104,9 @@ export function PurposePiecePage() {
     setInput(pendingMsg || '')
     setPendingMsg(null)
     setBackVisible(false)
-    // Re-open stage header if it was just collapsed
-    const currentStage = sessionRef.current?.stage
-    if (currentStage && ['archetype','domain','scale'].includes(currentStage)) {
-      setHeaderOpen(prev => ({ ...prev, [currentStage]: true }))
+    // Re-open stage header
+    if (['archetype','domain','scale'].includes(activeStage)) {
+      setHeaderOpen(prev => ({ ...prev, [activeStage]: true }))
     }
     setTimeout(() => textareaRef.current?.focus(), 50)
   }
@@ -1029,14 +1116,25 @@ export function PurposePiecePage() {
     setReadyToLock(false)
     setThinking(true)
     try { const d = await callAPI([{ role: 'user', content: 'Yes, lock it in.' }]); setThinking(false); handleResponse(d) }
-    catch { setThinking(false); const lastQ = sessionRef.current?.currentQuestion; addMsg('assistant', lastQ ? `Lost my thread for a second — still with you.\n\n${lastQ}` : 'Lost my thread for a second. Please try again.') }
+    catch { setThinking(false); const lastQ = sessionRef.current?.currentQuestion; addMsg('assistant', lastQ ? `Lost my thread for a second — still with you.\n\n${lastQ}` : 'Lost my thread for a second. Please try again.', activeStage) }
   }
 
   async function continueToNextStage() {
-    setStageComplete(false)
     setThinking(true)
-    try { const d = await callAPI([]); setThinking(false); handleResponse(d) }
-    catch { setThinking(false); addMsg('assistant', 'Something went wrong. Please try again.') }
+    try {
+      const confirmSession = { ...sessionRef.current, stage: 'confirmation' }
+      const res = await fetch('/tools/purpose-piece/api/chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [], session: confirmSession, userId: user?.id })
+      })
+      if (!res.ok) throw new Error(`API ${res.status}`)
+      const d = await res.json()
+      setThinking(false)
+      handleResponse(d, 'confirmation')
+    } catch {
+      setThinking(false)
+      addMsg('assistant', 'Something went wrong. Please try again.', activeStage)
+    }
   }
 
   function goDeeper() {
@@ -1073,10 +1171,32 @@ export function PurposePiecePage() {
       )
     }
 
-    // Stage transition
+    // Stage completion state
     const activeQuestionStage = ['archetype','domain','scale'].includes(stage) ? stage : null
-    if (stageComplete && activeQuestionStage) {
-      return <StageTransition nextStage={nextStageMap[activeQuestionStage]} onContinue={continueToNextStage} />
+    if (stageComplete[activeQuestionStage] && activeQuestionStage) {
+      // If all three are done, show the confirmation transition
+      if (allWedgesDone) {
+        return <StageTransition nextStage="confirmation" onContinue={continueToNextStage} />
+      }
+      // Otherwise show a simple done state — nudge to the wheel
+      const stageLabels = { archetype: 'Contribution Archetype', domain: 'Global Domain', scale: 'Engagement Scale' }
+      return (
+        <div style={{
+          background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)',
+          borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '12px',
+          padding: '28px 24px', animation: 'ppFadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both',
+        }}>
+          <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '10px' }}>
+            {stageLabels[activeQuestionStage]} {'✓'}
+          </div>
+          <h3 style={{ ...sc, fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>
+            This one is done.
+          </h3>
+          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.75 }}>
+            Move to another section on the wheel, or come back to this one any time.
+          </p>
+        </div>
+      )
     }
 
     return (
@@ -1158,7 +1278,7 @@ export function PurposePiecePage() {
         )}
 
         {/* ── Question window — clean, focused, one question at a time ── */}
-        {activeQuestionStage && session?.currentQuestion && (
+        {activeQuestionStage && currentQuestion && (
           <div style={{
             background: '#FFFFFF',
             border: '1.5px solid rgba(200,146,42,0.22)',
@@ -1169,7 +1289,7 @@ export function PurposePiecePage() {
           }}>
             {/* Question text */}
             <div style={{ ...serif, fontSize: '1.1875rem', color: '#0F1523', lineHeight: 1.75, whiteSpace: 'pre-line', marginBottom: '24px' }}>
-              {session.currentQuestion}
+              {currentQuestion}
             </div>
 
             {/* Pending message preview — shown during Back window */}
@@ -1302,7 +1422,7 @@ export function PurposePiecePage() {
         <CentreModal
           wedgeStates={wedgeStates}
           onClose={() => setShowCentreModal(false)}
-          onGoToStage={key => { if (session) setSession(prev => ({ ...prev, stage: key })) }}
+          onGoToStage={key => { handleWedgeClick(key) }}
         />
       )}
       <ArchetypeReferencePanel />
