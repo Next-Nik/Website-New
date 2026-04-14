@@ -662,6 +662,7 @@ export function PurposePiecePage() {
   const [showDeepGate,  setShowDeepGate]  = useState(false)
   const [confirmLoading, setConfirmLoading] = useState(false)
   const confirmCalledRef = useRef(false)
+  const lockBtnRef      = useRef(null)
   const [pendingMsg,    setPendingMsg]    = useState(null)
   const [backVisible,   setBackVisible]   = useState(false)
   const backTimerRef = useRef(null)
@@ -1103,7 +1104,10 @@ export function PurposePiecePage() {
       return
     }
 
-    if (data.readyToLock) setReadyToLock(true)
+    if (data.readyToLock) {
+      setReadyToLock(true)
+      setTimeout(() => lockBtnRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100)
+    }
 
     if (data.complete) {
       // Mirror arrives — show it below the profile card
@@ -1546,7 +1550,7 @@ export function PurposePiecePage() {
 
         {/* Lock confirmation */}
         {readyToLock && (
-          <div style={{ marginBottom: '14px' }}>
+          <div ref={lockBtnRef} style={{ marginBottom: '14px' }}>
             <button onClick={handleLock} style={{ ...btnStyle, background: 'rgba(200,146,42,0.1)' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
               onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>

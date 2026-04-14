@@ -1317,9 +1317,11 @@ async function handleConfirmation(session, latestInput, res, northStarCtx) {
     session.confirmationHistory.push({ role: "user", content: latestInput });
   }
 
-  // Client-driven lock: the "Yes, lock it in" button sends this exact phrase.
-  // This is the single authoritative lock trigger — no freetext inference.
-  if (latestInput && latestInput.trim().toLowerCase() === "yes, lock it in.") {
+  // Lock trigger: the "Yes, lock it in" button sends the canonical phrase,
+  // but also catch clear freetext affirmations so the loop can't persist.
+  const lockPhrases = ["yes, lock it in.", "yes, lock it in", "lock it in", "lock it", "that fits. lock it.", "lock it.", "that fits", "yes lock it", "confirm", "yes, confirmed", "confirmed"]
+  const isLockSignal = latestInput && lockPhrases.some(p => latestInput.trim().toLowerCase() === p)
+  if (isLockSignal) {
     session.stage = "thinking";
     return res.status(200).json({
       message:      "Reading everything together now.\n\nThis takes a moment.",
@@ -1387,7 +1389,8 @@ async function handleConfirmation(session, latestInput, res, northStarCtx) {
     // original extraction results.
     try {
       const lastUserMsg = session.confirmationHistory.filter(m => m.role === "user").slice(-1)[0]?.content || "";
-      if (lastUserMsg && lastUserMsg.toLowerCase() !== "yes, lock it in.") {
+      const lockPhrasesCheck = ["yes, lock it in.", "yes, lock it in", "lock it in", "lock it", "that fits. lock it.", "lock it.", "that fits", "yes lock it", "confirm", "yes, confirmed", "confirmed"]
+      if (lastUserMsg && !lockPhrasesCheck.some(p => lastUserMsg.toLowerCase() === p)) {
         const correctionCheck = await anthropic.messages.create({
           model:      "claude-sonnet-4-20250514",
           max_tokens: 300,
