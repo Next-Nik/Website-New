@@ -880,8 +880,14 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
         <div>
           {!avatarLocked || editingAvatar ? (
             <>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '20px' }}>
-                Create a construct of "Best in the World" for you in {domain.label}. Think of it like you're creating a character for a movie or a video game. Feel free to reference real people, fictional characters, or make elements up from scratch.
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '8px' }}>
+                Create a construct of "Best in the World" for you in {domain.label}. Think of it like you're writing a character for a stage play — someone who could walk into a room and be immediately recognised as the pinnacle of this domain for someone like you.
+              </p>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '8px' }}>
+                The list is raw material, not a shrine. You're not asking "which of these people do you want to be" — you're asking "what character emerges when you take the best of what each of these people represents and forge it into something that doesn't exist yet."
+              </p>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px' }}>
+                The character is the destination. The references are the ingredients.
               </p>
 
               {/* Doc-style input — before first AI exchange */}
@@ -901,7 +907,6 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                     <textarea
                       value={avatarDoc?.essence || ''}
                       onChange={e => setAvatarDoc(d => ({ ...d, essence: e.target.value }))}
-                      onBlur={e => { const next = { ...avatarDoc, essence: e.target.value }; setAvatarDoc(next); save({ avatarDoc: next }) }}
                       placeholder="Describe the qualities, the presence, the way this person operates..."
                       rows={3}
                       style={{ width: '100%', padding: '4px 0 12px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: '#0F1523', background: 'transparent', border: 'none', outline: 'none', resize: 'none', lineHeight: 1.7 }}
@@ -916,7 +921,6 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                     <textarea
                       value={avatarDoc?.references || ''}
                       onChange={e => setAvatarDoc(d => ({ ...d, references: e.target.value }))}
-                      onBlur={e => { const next = { ...avatarDoc, references: e.target.value }; setAvatarDoc(next); save({ avatarDoc: next }) }}
                       placeholder="Real people, fictional characters, composites... name them and what you're borrowing from each"
                       rows={3}
                       style={{ width: '100%', padding: '4px 0 12px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: '#0F1523', background: 'transparent', border: 'none', outline: 'none', resize: 'none', lineHeight: 1.7 }}
@@ -931,7 +935,6 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                     <textarea
                       value={avatarDoc?.other || ''}
                       onChange={e => setAvatarDoc(d => ({ ...d, other: e.target.value }))}
-                      onBlur={e => { const next = { ...avatarDoc, other: e.target.value }; setAvatarDoc(next); save({ avatarDoc: next }) }}
                       placeholder="Anything else — energy, values, how they move through the world..."
                       rows={2}
                       style={{ width: '100%', padding: '4px 0 12px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: '#0F1523', background: 'transparent', border: 'none', outline: 'none', resize: 'none', lineHeight: 1.7 }}
@@ -949,6 +952,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                         ].filter(Boolean).join('\n\n')
                         if (!composed.trim()) return
                         setAvatarDraft(composed)
+                        onUpdate(buildData({ avatarDoc, avatarDraft: composed }))
                         sendAvatarMessage(composed)
                       }}
                       disabled={thinking || !((avatarDoc?.essence || avatarDoc?.references || avatarDoc?.other))}
@@ -1045,7 +1049,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           )}
 
           {currentScore !== undefined && realityDraft.trim() && scoreMsgs.length === 0 && !thinking && (
-            <button onClick={() => sendScoreMessage(realityDraft, currentScore)} style={{ ...btnStyle, marginTop: '12px' }}>
+            <button onClick={() => { onUpdate(buildData({ realityDraft, currentScore })); sendScoreMessage(realityDraft, currentScore) }} style={{ ...btnStyle, marginTop: '12px' }}>
               Send for reflection →
             </button>
           )}
@@ -1100,7 +1104,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
               )}
 
               {horizonScore !== undefined && horizonText.trim() && horizonMsgs.length === 0 && !thinking && (
-                <button onClick={() => sendHorizonMessage(horizonText, horizonScore)} style={{ ...btnStyle, marginTop: '12px' }}>
+                <button onClick={() => { onUpdate(buildData({ horizonText, horizonScore })); sendHorizonMessage(horizonText, horizonScore) }} style={{ ...btnStyle, marginTop: '12px' }}>
                   Send for reflection →
                 </button>
               )}
