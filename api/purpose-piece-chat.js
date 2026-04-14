@@ -238,19 +238,26 @@ function isThin(answer, stage, qi) {
   const lower = answer.toLowerCase().trim();
   const words  = answer.trim().split(/\s+/).filter(Boolean);
 
-  // Cost and shadow questions are abstract — lower word minimum
-  const minWords = (stage === "archetype" && qi >= 3) ? 15
-                 : (stage === "domain")               ? 18
-                 : (stage === "scale")                ? 12
-                 : 20;
+  // Domain and scale questions invite felt-sense, structural, and philosophical answers.
+  // Word count and action-verb checks are wrong signals here — a 12-word answer that
+  // names a civilisational responsibility is not thin. Delegate to claudeSignalCheck instead.
+  if (stage === "domain" || stage === "scale") {
+    // Only catch pure deflection — single words, "I don't know", complete non-answers
+    if (words.length < 5) return true;
+    const deflectorCount = GENERIC_DEFLECTORS.filter(d => lower.includes(d)).length;
+    if (deflectorCount >= 2) return true;
+    return false; // claudeSignalCheck handles deeper evaluation
+  }
 
+  // Archetype: behavioural questions — keep word count + grounding checks
+  const minWords = (qi >= 3) ? 15 : 20; // cost/shadow questions are naturally shorter
   if (words.length < minWords) return true;
 
   const deflectorCount = GENERIC_DEFLECTORS.filter(d => lower.includes(d)).length;
   if (deflectorCount >= 2) return true;
 
-  // Behavioural questions need grounding — attentional and scale questions do not
-  if (stage === "archetype" && qi <= 2) {
+  // Behavioural questions (Q1-Q3) need situational grounding
+  if (qi <= 2) {
     const hasTime    = TIME_ANCHORS.some(t => lower.includes(t));
     const hasAction  = ACTION_VERBS.some(v => lower.includes(v));
     const hasSetting = /\b(work|office|home|family|friend|community|meeting|team|partner|colleague|school|hospital|city|neighbourhood|neighborhood|organisation|organization)\b/.test(lower);
@@ -260,14 +267,24 @@ function isThin(answer, stage, qi) {
   return false;
 }
 
-async function claudeSignalCheck(question, answer) {
+// Stage and question-aware signal check.
+// Archetype questions need behavioural specificity.
+// Domain questions need genuine care/attention signal — abstract answers are valid.
+// Scale questions need felt responsibility signal — structural framing is valid.
+async function claudeSignalCheck(question, answer, stage = "archetype", qi = 0) {
+  const criteria = stage === "scale"
+    ? `This is a scale/responsibility question. Valid answers include: naming a civilisational or global problem, expressing felt personal responsibility for a large system, philosophical framing of where one's work belongs. Do NOT mark thin just because the answer lacks a concrete local example. Mark thin only if the answer is pure deflection, completely vague, or says nothing about felt responsibility.`
+    : stage === "domain"
+    ? `This is a domain/attention question. Valid answers include: naming a field, systemic problem, or area of deep care, even abstractly. Answers like "the frame humanity uses" or "collective sense-making" or "the conditions for human flourishing" are strong signal. Mark thin only if the answer is completely empty of care or attention signal.`
+    : `This is a behavioural question. The answer should describe something the person actually did or experienced. Look for: a real situation, an action taken or avoided, something at stake. Mark thin if the answer is entirely abstract with no situational grounding.`;
+
   try {
     const response = await anthropic.messages.create({
       model:      "claude-sonnet-4-20250514",
-      max_tokens: 1000,
+      max_tokens: 300,
       messages:   [{
         role:    "user",
-        content: `Evaluate signal quality for a behavioural assessment answer.\n\nQuestion: "${question}"\nAnswer: "${answer}"\n\nReturn JSON only:\n{"has_signal": true or false, "missing": ["concrete_example","specificity","stakes","honesty"], "one_probe_question": "single best follow-up"}`
+        content: `Evaluate signal quality for this assessment answer.\n\nQuestion: "${question}"\nAnswer: "${answer}"\n\nEvaluation criteria:\n${criteria}\n\nReturn JSON only:\n{"has_signal": true or false, "one_probe_question": "single best follow-up if needed, else null"}`
       }]
     });
     return extractJSON(response.content[0].text);
@@ -370,10 +387,12 @@ Your answers reveal three coordinates: your contribution archetype, your domain,
 // the tentative coordinate from that stage's transcript.
 // This is fast and cheap — not the full synthesis.
 
-async function extractTentativeArchetype(transcript) {
+async function extractTentativeArchetype(transcript, northStarCtx = null) {
   const text = transcript.map((e, i) =>
     `Q${i+1} — ${ARCHETYPE_QUESTIONS[i].label}\n${ARCHETYPE_QUESTIONS[i].text}\nAnswer: ${e.answer}${e.thin ? " [evasive]" : ""}`
   ).join("\n\n---\n\n");
+
+  const northStarBlock = northStarCtx ? `\n\nCONTEXT ABOUT THIS PERSON FROM THEIR LIFE OS WORK:\n${formatNorthStarContext(northStarCtx)}\nUse this context to interpret their answers more accurately. Prior work in the ecosystem is strong signal.` : "";
 
   const response = await anthropic.messages.create({
     model:      "claude-sonnet-4-20250514",
@@ -398,7 +417,7 @@ Maker's story of effectiveness: "I built X." The story is about the thing made.
 Architect's story of effectiveness: "I designed the process/structure for X." The story is about the container.
 Maker frustrated when they can't ship. Architect frustrated when the structure is wrong — when the same problems keep recurring because nobody fixed the conditions.
 
-ANSWERS:\n${text}
+ANSWERS:\n${text}${northStarBlock}
 
 Return JSON only:
 {
@@ -415,10 +434,12 @@ Return JSON only:
   return extractJSON(response.content[0].text);
 }
 
-async function extractTentativeDomain(transcript) {
+async function extractTentativeDomain(transcript, northStarCtx = null) {
   const text = transcript.map((e, i) =>
     `Q${i+1} — ${DOMAIN_QUESTIONS[i].label}\n${DOMAIN_QUESTIONS[i].text}\nAnswer: ${e.answer}${e.thin ? " [evasive]" : ""}`
   ).join("\n\n---\n\n");
+
+  const northStarBlockD = northStarCtx ? `\n\nCONTEXT FROM THEIR ECOSYSTEM WORK:\n${formatNorthStarContext(northStarCtx)}\nUse this to read their domain answers in context. If they have prior tool work pointing to a clear domain, weight it.` : "";
 
   const response = await anthropic.messages.create({
     model:      "claude-sonnet-4-20250514",
@@ -436,14 +457,22 @@ THE SEVEN DOMAINS:
 - LEGACY: Long-term thinking, intergenerational work, preservation, deep time.
 - VISION: Future imagination, possibility, coordination, collective direction.
 
+IMPORTANT READING INSTRUCTIONS:
+- Domain answers are attentional, not behavioural. Abstract, structural, or philosophical answers are valid and often carry the strongest signal.
+- If someone names the frame, the coordination layer, the game humanity is playing, the conditions for civilisational direction — that is VISION, regardless of whether they gave a concrete local example.
+- If someone names what humans need to develop, know, or become — that is HUMAN BEING.
+- If answers were thin or evasive, read the direction of avoidance as signal. What they couldn't name is often as revealing as what they did.
+- NEVER return "unclear" as the domain. If signal is genuinely ambiguous, return the closest fit with confidence "thin" and explain the ambiguity in reasoning. A best-fit guess is always more useful than "unclear".
+- Cross-reference with any archetype signal if present: an Architect who talks about coordination and collective direction is almost certainly VISION.
+
 ANSWERS:\n${text}
 
 Return JSON only:
 {
-  "domain": "single domain name exactly as listed above",
+  "domain": "single domain name exactly as listed above — never 'unclear'",
   "confidence": "strong | blended | thin",
   "secondary": "second domain if blended, else null",
-  "reasoning": "2-3 sentences — specific evidence cited"
+  "reasoning": "2-3 sentences — specific evidence cited, including what thin/evasive answers signal"
 }`
     }]
   });
@@ -451,10 +480,12 @@ Return JSON only:
   return extractJSON(response.content[0].text);
 }
 
-async function extractTentativeScale(transcript) {
+async function extractTentativeScale(transcript, northStarCtx = null) {
   const text = transcript.map((e, i) =>
     `Q${i+1} — ${SCALE_QUESTIONS[i].label}\n${SCALE_QUESTIONS[i].text}\nAnswer: ${e.answer}${e.thin ? " [evasive]" : ""}`
   ).join("\n\n---\n\n");
+
+  const northStarBlockS = northStarCtx ? `\n\nCONTEXT FROM THEIR ECOSYSTEM WORK:\n${formatNorthStarContext(northStarCtx)}\nUse this when interpreting felt responsibility — prior work describing civilisational or global concerns is strong signal for scale.` : "";
 
   const response = await anthropic.messages.create({
     model:      "claude-sonnet-4-20250514",
@@ -472,18 +503,30 @@ THE SEVEN SCALES (coherence bandwidth, not ambition level):
 - CONTINENT: Multi-national, transboundary challenges.
 - GLOBAL: International, planetary systems, cross-border coordination.
 
-IMPORTANT: Scale is coherence bandwidth — where the person can act with full presence and genuine effectiveness. Not where they aspire to operate. Not the scale of their interests. Where their felt responsibility actually lives.
+CRITICAL READING INSTRUCTIONS:
+Scale is coherence bandwidth — where felt responsibility lives, not where examples are drawn from.
 
-A person can think at global scale and operate most effectively at neighbourhood scale. Both are real. Name where effectiveness actually lives, not where intellectual interest goes.
+THE MOST COMMON CALIBRATION ERROR: Probes asked the person to give concrete examples. They gave local examples because that's what probes produce. The extraction then reads the examples as the scale signal and misses the responsibility statement entirely. DO NOT do this.
 
-ANSWERS:\n${text}
+WEIGHTING RULES:
+1. The direct answer to "What's the biggest problem you feel personally responsible for?" is the PRIMARY scale signal. Weight it at 70%.
+2. The scene described in Q1 (who's there, how many people) is secondary. Weight it at 30%.
+3. Probe-produced examples are context, not signal. Do not let them override the responsibility statement.
+
+If someone says they feel responsible for the frame humanity uses to navigate itself, the game civilisation is playing, how humans collectively make decisions — that is GLOBAL, regardless of what examples they gave under probe pressure.
+
+If someone describes responsibility for their immediate relationships and household — that is HOME or NEIGHBOURHOOD.
+
+Scale tension is real and useful: name it if genuine. But do not manufacture tension by contrasting probe examples (local) against the responsibility statement (global) — that tension is an artifact of the probe process, not a real tension in the person.
+
+ANSWERS:\n${text}${northStarBlockS}
 
 Return JSON only:
 {
   "scale": "single scale name exactly as listed above",
   "confidence": "strong | blended | thin",
-  "tension": "if interest scale differs from effectiveness scale, describe the tension — else null",
-  "reasoning": "2-3 sentences — specific evidence cited"
+  "tension": "genuine tension between felt responsibility and current reach, or null — do not manufacture tension from probe examples vs responsibility statement",
+  "reasoning": "2-3 sentences — weight the responsibility statement as primary signal, name what the person said they feel on the hook for"
 }`
     }]
   });
@@ -660,13 +703,19 @@ async function runPhase3(session) {
     `[${e.stage.toUpperCase()}] ${e.label}\nQ: ${e.question}\nA: ${e.answer}${e.thin ? "\n[Note: Answer was thin/evasive — treat avoidance as signal]" : ""}`
   ).join("\n\n---\n\n");
 
+  // Include confirmation conversation so synthesis sees any corrections or clarifications
+  const confirmationSummary = session.confirmationHistory?.length
+    ? "\n\nCONFIRMATION CONVERSATION (coordinate corrections and clarifications):\n" +
+      session.confirmationHistory.map(m => `${m.role === "user" ? "Person" : "North Star"}: ${m.content}`).join("\n")
+    : "";
+
   const response = await anthropic.messages.create({
     model:      "claude-sonnet-4-20250514",
     max_tokens: 1200,
     system:     PHASE3_SYSTEM,
     messages:   [{
       role:    "user",
-      content: `Here are the ten answers across three stages:\n\n${transcriptText}\n\nConfirmed coordinates:\nArchetype: ${session.tentative.archetype.archetype}\nDomain: ${session.tentative.domain.domain}\nScale: ${session.tentative.scale.scale}`
+      content: `Here are the ten answers across three stages:\n\n${transcriptText}${confirmationSummary}\n\nConfirmed coordinates (use these — they reflect any corrections from the confirmation conversation):\nArchetype: ${session.tentative.archetype.archetype}\nDomain: ${session.tentative.domain.domain}\nScale: ${session.tentative.scale.scale}`
     }]
   });
 
@@ -952,7 +1001,7 @@ function renderPhase4(p4) {
 // ─── Question phase handler ───────────────────────────────────────────────────
 // Shared across archetype, domain, and scale stages.
 
-async function handleQuestionPhase(session, latestInput, res) {
+async function handleQuestionPhase(session, latestInput, res, northStarCtx = null) {
   const stage     = session.stage;
   const qi        = getQI(session, stage);
   const questions = getStageQuestions(stage);
@@ -1015,7 +1064,7 @@ async function handleQuestionPhase(session, latestInput, res) {
       setQI(session, stage, nextQI);
 
       if (nextQI >= total) {
-        return await handleStageComplete(session, res);
+        return await handleStageComplete(session, res, null, northStarCtx);
       }
 
       session.currentQuestion = questions[nextQI].text;
@@ -1065,7 +1114,7 @@ async function handleQuestionPhase(session, latestInput, res) {
 
   if (!thin || pc >= 2) {
     if (pc >= 2 && thin) {
-      const check = await claudeSignalCheck(questions[qi].text, combined);
+      const check = await claudeSignalCheck(questions[qi].text, combined, stage, qi);
       entry.thin  = !check.has_signal;
 
       if (!check.has_signal && pc === 2) {
@@ -1088,7 +1137,7 @@ async function handleQuestionPhase(session, latestInput, res) {
         setQI(session, stage, nextQI);
 
         if (nextQI >= total) {
-          return await handleStageComplete(session, res, "Let's keep moving. I'll work with what's here.");
+          return await handleStageComplete(session, res, "Let's keep moving. I'll work with what's here.", northStarCtx);
         }
 
         session.currentQuestion = questions[nextQI].text;
@@ -1108,7 +1157,7 @@ async function handleQuestionPhase(session, latestInput, res) {
     setQI(session, stage, nextQI);
 
     if (nextQI >= total) {
-      return await handleStageComplete(session, res);
+      return await handleStageComplete(session, res, null, northStarCtx);
     }
 
     session.currentQuestion = questions[nextQI].text;
@@ -1141,18 +1190,18 @@ function capitalise(str) {
 // Called when all questions in a stage are answered.
 // Extracts tentative coordinate, then either opens next stage or confirmation.
 
-async function handleStageComplete(session, res, prefixMessage = null) {
+async function handleStageComplete(session, res, prefixMessage = null, northStarCtx = null) {
   const completedStage = session.stage;
 
   // Extract tentative coordinate for completed stage
   try {
     if (completedStage === "archetype") {
       session.tentative = session.tentative || {};
-      session.tentative.archetype = await extractTentativeArchetype(session.archetypeTranscript);
+      session.tentative.archetype = await extractTentativeArchetype(session.archetypeTranscript, northStarCtx);
     } else if (completedStage === "domain") {
-      session.tentative.domain = await extractTentativeDomain(session.domainTranscript);
+      session.tentative.domain = await extractTentativeDomain(session.domainTranscript, northStarCtx);
     } else if (completedStage === "scale") {
-      session.tentative.scale = await extractTentativeScale(session.scaleTranscript);
+      session.tentative.scale = await extractTentativeScale(session.scaleTranscript, northStarCtx);
     }
   } catch (e) {
     console.error(`Tentative extraction failed for ${completedStage}:`, e);
@@ -1266,11 +1315,11 @@ async function handleConfirmation(session, latestInput, res, northStarCtx) {
     try {
       session.tentative = session.tentative || {};
       if (!session.tentative.archetype && session.archetypeTranscript?.length)
-        session.tentative.archetype = await extractTentativeArchetype(session.archetypeTranscript);
+        session.tentative.archetype = await extractTentativeArchetype(session.archetypeTranscript, northStarCtx);
       if (!session.tentative.domain && session.domainTranscript?.length)
-        session.tentative.domain = await extractTentativeDomain(session.domainTranscript);
+        session.tentative.domain = await extractTentativeDomain(session.domainTranscript, northStarCtx);
       if (!session.tentative.scale && session.scaleTranscript?.length)
-        session.tentative.scale = await extractTentativeScale(session.scaleTranscript);
+        session.tentative.scale = await extractTentativeScale(session.scaleTranscript, northStarCtx);
     } catch (e) {
       console.error("Tentative recovery failed:", e);
       return res.status(500).json({ error: "Could not recover coordinates. Please try again." });
@@ -1304,6 +1353,48 @@ async function handleConfirmation(session, latestInput, res, northStarCtx) {
 
     const reply = response.content[0].text.trim();
     session.confirmationHistory.push({ role: "assistant", content: reply });
+
+    // ── Extract any coordinate corrections from the conversation ────────────
+    // After each turn, run a lightweight check to see if confirmed coordinates
+    // differ from the tentative ones, and update session.tentative accordingly.
+    // This ensures synthesis and framing use corrected coordinates, not the
+    // original extraction results.
+    try {
+      const lastUserMsg = session.confirmationHistory.filter(m => m.role === "user").slice(-1)[0]?.content || "";
+      if (lastUserMsg && lastUserMsg.toLowerCase() !== "yes, lock it in.") {
+        const correctionCheck = await anthropic.messages.create({
+          model:      "claude-sonnet-4-20250514",
+          max_tokens: 300,
+          messages:   [{
+            role:    "user",
+            content: `The user is in a confirmation conversation about their Purpose Piece coordinates.
+Current coordinates: Archetype: ${session.tentative.archetype?.archetype}, Domain: ${session.tentative.domain?.domain}, Scale: ${session.tentative.scale?.scale}
+User's last message: "${lastUserMsg}"
+Assistant's reply: "${reply}"
+
+If the user has clearly corrected or agreed to change one or more coordinates, extract the corrections.
+If coordinates are being confirmed as-is or the conversation is exploratory, return no changes.
+
+Return JSON only:
+{
+  "archetype_correction": "corrected archetype name or null",
+  "domain_correction": "corrected domain name or null",
+  "scale_correction": "corrected scale name or null"
+}`
+          }]
+        });
+        const corrections = extractJSON(correctionCheck.content[0].text);
+        if (corrections.archetype_correction) {
+          session.tentative.archetype = { ...session.tentative.archetype, archetype: corrections.archetype_correction, confidence: "confirmed", reasoning: `Corrected in confirmation conversation to: ${corrections.archetype_correction}` };
+        }
+        if (corrections.domain_correction) {
+          session.tentative.domain = { ...session.tentative.domain, domain: corrections.domain_correction, confidence: "confirmed", reasoning: `Corrected in confirmation conversation to: ${corrections.domain_correction}` };
+        }
+        if (corrections.scale_correction) {
+          session.tentative.scale = { ...session.tentative.scale, scale: corrections.scale_correction, confidence: "confirmed", reasoning: `Corrected in confirmation conversation to: ${corrections.scale_correction}` };
+        }
+      }
+    } catch { /* non-fatal — corrections are best-effort */ }
 
     // AI signals readiness — front-end shows the explicit "Yes, lock it in" button.
     const readySignals = ["ready to see", "ready to lock", "shall we", "want to proceed", "good to go"];
@@ -1438,7 +1529,7 @@ module.exports = async (req, res) => {
 
     // ── Question stages ───────────────────────────────────────────────────────
     if (["archetype", "domain", "scale"].includes(session.stage)) {
-      return await handleQuestionPhase(session, latestInput, res);
+      return await handleQuestionPhase(session, latestInput, res, northStarCtx);
     }
 
     // ── Confirmation ──────────────────────────────────────────────────────────
