@@ -1915,6 +1915,29 @@ export function ProfilePage() {
   const [dataLoading,    setDataLoading]    = useState(true)
   const [activeNode,     setActiveNode]     = useState(null)
 
+  // Compute scores from best available source — used by mirror AND tool rail
+  const profileCurrentScores = {}
+  const profileHorizonScores = {}
+  if (horizonProfile && Object.keys(horizonProfile).length > 0) {
+    const domainKeys = ['path','spark','body','finances','connection','inner_game','signal']
+    domainKeys.forEach(k => {
+      if (horizonProfile[k]?.currentScore !== undefined) profileCurrentScores[k] = horizonProfile[k].currentScore
+      if (horizonProfile[k]?.horizonScore !== undefined) profileHorizonScores[k] = horizonProfile[k].horizonScore
+    })
+  } else if (mapData?.session?.domainData) {
+    const dd = mapData.session.domainData
+    Object.entries(dd).forEach(([k, d]) => {
+      if (d?.currentScore !== undefined) profileCurrentScores[k] = d.currentScore
+      if (d?.horizonScore !== undefined) profileHorizonScores[k] = d.horizonScore
+    })
+  } else if (localMapData) {
+    Object.entries(localMapData).forEach(([k, d]) => {
+      if (d?.currentScore !== undefined) profileCurrentScores[k] = d.currentScore
+      if (d?.horizonScore !== undefined) profileHorizonScores[k] = d.horizonScore
+    })
+  }
+  const hasScores = Object.keys(profileCurrentScores).length > 0
+
   // Read localStorage on mount — client side only
   useEffect(() => {
     try {
@@ -2342,32 +2365,573 @@ export function ProfilePage() {
         })()}
 
 
-        <Slot title="The Map" eyebrow="Life OS" linkLabel="Open" linkUrl="/tools/map">
-          <MapSlot mapData={mapData} sprintData={sprintData} />
-        </Slot>
+        {/* ══════════════════════════════════════════════════════════════════
+            ACTIVE SPRINT — only when a sprint is running
+        ══════════════════════════════════════════════════════════════════ */}
+        {sprintData && sprintData.domains?.length > 0 ? (
+          <div style={{ marginBottom: '48px', padding: '28px',
+            background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)',
+            borderTop: '3px solid rgba(200,146,42,0.72)', borderRadius: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline',
+              justifyContent: 'space-between', marginBottom: '20px' }}>
+              <div>
+                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.22em',
+                  color: '#A8721A', marginBottom: '6px' }}>ACTIVE SPRINT</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  {(() => {
+                    const target = sprintData.target_date
+                    if (!target) return null
+                    const days = Math.ceil((new Date(target) - new Date()) / 86400000)
+                    const urgent = days <= 14
+                    return (
+                      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em',
+                        color: urgent ? '#8A3030' : '#A8721A',
+                        background: urgent ? 'rgba(138,48,48,0.06)' : 'rgba(200,146,42,0.06)',
+                        border: `1px solid ${urgent ? 'rgba(138,48,48,0.2)' : 'rgba(200,146,42,0.2)'}`,
+                        borderRadius: '40px', padding: '3px 10px' }}>
+                        {days > 0 ? `${days} days left` : `${Math.abs(days)} days overdue`}
+                      </span>
+                    )
+                  })()}
+                </div>
+              </div>
+              <a href="/tools/target-goals" style={{ ...sc, fontSize: '13px',
+                letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none' }}>
+                Open sprint →
+              </a>
+            </div>
 
-        <Slot title="Purpose Piece" eyebrow="Life OS"
-          linkLabel="Open" linkUrl="/tools/purpose-piece">
-          <PurposePieceSlot purposeData={purposeData} userId={user?.id} />
-        </Slot>
+            {/* Sprint domain rows */}
+            {(() => {
+              const dd = sprintData.domain_data ?? {}
+              const domains = sprintData.domains ?? []
 
-        <Slot title="Target Sprint" eyebrow="Life OS"
-          linkLabel="Open" linkUrl="/tools/target-goals">
-          <TargetSprintSlot sprintData={sprintData} />
-        </Slot>
+              // Overall task progress
+              let totalTasks = 0, doneTasks = 0
+              domains.forEach(id => {
+                const d = dd[id] ?? {}
+                totalTasks += (d.tasks ?? []).length
+                doneTasks  += Object.values(d.taskChecked ?? {}).filter(Boolean).length
+              })
+              const pct = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0
 
-        <div id="foundation">
-        <Slot title="Foundation" eyebrow="Life OS"
-          linkLabel="Open" linkUrl="/tools/foundation">
-          <FoundationSlot foundationData={foundationData} />
-        </Slot>
+              // Next unchecked task
+              let nextMove = null
+              const byCompletion = [...domains].sort((a, b) => {
+                const da = dd[a] ?? {}, db = dd[b] ?? {}
+                const aPct = (da.tasks ?? []).length > 0
+                  ? Object.values(da.taskChecked ?? {}).filter(Boolean).length / da.tasks.length : 1
+                const bPct = (db.tasks ?? []).length > 0
+                  ? Object.values(db.taskChecked ?? {}).filter(Boolean).length / db.tasks.length : 1
+                return aPct - bPct
+              })
+              for (const id of byCompletion) {
+                const d = dd[id] ?? {}
+                const tasks = d.tasks ?? []
+                const checked = d.taskChecked ?? {}
+                const first = tasks.find((_, i) => !checked[i])
+                if (first) {
+                  const idx = DOMAIN_KEYS.indexOf(id)
+                  nextMove = {
+                    domain: idx >= 0 ? DOMAIN_LABELS[idx] : id,
+                    task: typeof first === 'string' ? first : first.text || first.label || String(first)
+                  }
+                  break
+                }
+              }
+
+              return (
+                <>
+                  {/* Overall progress bar */}
+                  {totalTasks > 0 && (
+                    <div style={{ marginBottom: '20px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between',
+                        marginBottom: '6px' }}>
+                        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
+                          color: 'rgba(15,21,35,0.72)' }}>
+                          {doneTasks} of {totalTasks} tasks complete
+                        </span>
+                        <span style={{ ...sc, fontSize: '12px', color: '#A8721A' }}>{pct}%</span>
+                      </div>
+                      <div style={{ height: '4px', background: 'rgba(200,146,42,0.12)',
+                        borderRadius: '2px', overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${pct}%`,
+                          background: '#A8721A', borderRadius: '2px',
+                          transition: 'width 0.4s ease' }} />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Domain rows */}
+                  {domains.map(id => {
+                    const d = dd[id] ?? {}
+                    const idx = DOMAIN_KEYS.indexOf(id)
+                    const label = idx >= 0 ? DOMAIN_LABELS[idx] : id
+                    const tasks = d.tasks ?? []
+                    const tDone = Object.values(d.taskChecked ?? {}).filter(Boolean).length
+                    const mDone = Object.values(d.milestoneChecked ?? {}).filter(Boolean).length
+                    const mTotal = (d.milestones ?? []).length
+                    const complete = tasks.length > 0 && tDone === tasks.length
+                    const score = profileCurrentScores[id]
+                    const horizon = profileHorizonScores[id]
+
+                    return (
+                      <div key={id} style={{ display: 'flex', alignItems: 'center',
+                        gap: '14px', padding: '12px 0',
+                        borderBottom: '1px solid rgba(200,146,42,0.07)' }}>
+                        <div style={{ width: '96px', flexShrink: 0 }}>
+                          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
+                            color: complete ? '#2D6A4F' : '#0F1523' }}>
+                            {complete ? '✓ ' : ''}{label}
+                          </div>
+                          {score !== undefined && (
+                            <div style={{ ...sc, fontSize: '11px', color: '#A8721A',
+                              marginTop: '2px' }}>
+                              {score}{horizon !== undefined ? ` → ${horizon}` : ''}
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          {d.targetGoal && (
+                            <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+                              color: 'rgba(15,21,35,0.72)', lineHeight: 1.5, margin: '0 0 6px',
+                              overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                              {d.targetGoal}
+                            </p>
+                          )}
+                          {tasks.length > 0 && (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <div style={{ flex: 1, height: '3px',
+                                background: 'rgba(200,146,42,0.12)', borderRadius: '2px' }}>
+                                <div style={{ height: '100%',
+                                  width: `${tasks.length > 0 ? (tDone/tasks.length)*100 : 0}%`,
+                                  background: complete ? '#2D6A4F' : '#A8721A',
+                                  borderRadius: '2px' }} />
+                              </div>
+                              <span style={{ ...sc, fontSize: '11px', flexShrink: 0,
+                                color: complete ? '#2D6A4F' : 'rgba(15,21,35,0.72)' }}>
+                                {tDone}/{tasks.length}
+                              </span>
+                              {mTotal > 0 && (
+                                <span style={{ ...sc, fontSize: '11px', flexShrink: 0,
+                                  color: 'rgba(15,21,35,0.72)' }}>
+                                  · {mDone}/{mTotal} milestones
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+
+                  {/* Next move */}
+                  {nextMove && (
+                    <div style={{ marginTop: '16px', padding: '14px 16px',
+                      background: 'rgba(200,146,42,0.04)',
+                      border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '10px' }}>
+                      <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em',
+                        color: '#A8721A', marginBottom: '6px' }}>
+                        NEXT MOVE · {nextMove.domain.toUpperCase()}
+                      </div>
+                      <p style={{ ...serif, fontSize: '15px', color: '#0F1523',
+                        lineHeight: 1.6, margin: 0 }}>{nextMove.task}</p>
+                    </div>
+                  )}
+                </>
+              )
+            })()}
+          </div>
+        ) : (
+          /* No active sprint */
+          <div style={{ marginBottom: '48px', padding: '20px 24px',
+            background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)',
+            borderRadius: '12px', display: 'flex', alignItems: 'center',
+            justifyContent: 'space-between', gap: '16px' }}>
+            <div>
+              <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.22em',
+                color: 'rgba(200,146,42,0.6)', marginBottom: '4px' }}>TARGET SPRINT</div>
+              <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+                color: 'rgba(15,21,35,0.72)', margin: 0 }}>
+                No active sprint. Choose 3 domains and set your 90-day arc.
+              </p>
+            </div>
+            <a href="/tools/target-goals" style={{ ...sc, fontSize: '13px',
+              letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none',
+              padding: '10px 20px', border: '1px solid rgba(200,146,42,0.35)',
+              borderRadius: '40px', flexShrink: 0, background: 'rgba(200,146,42,0.04)' }}>
+              Begin →
+            </a>
+          </div>
+        )}
+
+        {/* ══════════════════════════════════════════════════════════════════
+            DAILY PRACTICE + HORIZON STATE — two panels side by side
+        ══════════════════════════════════════════════════════════════════ */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px',
+          marginBottom: '48px' }}>
+
+          {/* ── Horizon Practice ───────────────────────────────────────── */}
+          <div style={{ padding: '24px', background: '#FFFFFF',
+            border: '1px solid rgba(200,146,42,0.2)',
+            borderTop: '3px solid rgba(200,146,42,0.55)', borderRadius: '12px' }}>
+            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.22em',
+              color: '#A8721A', marginBottom: '14px' }}>HORIZON PRACTICE</div>
+
+            {foundationData ? (() => {
+              const {
+                streak_days = 0, sessions_total = 0, sessions_week = 0,
+                last_session_at, spark_data = [], phase = 'baseline',
+                last_before, last_after, avg_delta,
+              } = foundationData
+              const today = new Date().toISOString().slice(0, 10)
+              const practicedToday = last_session_at?.slice(0, 10) === today
+              const lastDelta = last_before != null && last_after != null
+                ? last_after - last_before : null
+
+              // 7-day rhythm dots — last 7 days
+              const sessionDates = new Set(
+                (spark_data || []).map(s => s.date?.slice(0, 10)).filter(Boolean)
+              )
+              const dots = Array.from({ length: 7 }, (_, i) => {
+                const d = new Date()
+                d.setDate(d.getDate() - (6 - i))
+                return {
+                  date: d.toISOString().slice(0, 10),
+                  done: sessionDates.has(d.toISOString().slice(0, 10)),
+                }
+              })
+
+              const phaseLabel = phase === 'baseline' ? 'Baseline'
+                : phase === 'calibrating' ? 'Calibrating' : 'Embodying'
+
+              return (
+                <div>
+                  {/* Today status */}
+                  <div style={{ marginBottom: '16px', padding: '12px 14px',
+                    background: practicedToday
+                      ? 'rgba(45,106,79,0.04)' : 'rgba(200,146,42,0.03)',
+                    border: `1px solid ${practicedToday
+                      ? 'rgba(45,106,79,0.2)' : 'rgba(200,146,42,0.18)'}`,
+                    borderRadius: '10px',
+                    display: 'flex', alignItems: 'center',
+                    justifyContent: 'space-between', gap: '10px' }}>
+                    {practicedToday ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em',
+                          color: '#2D6A4F' }}>TODAY ✓</span>
+                        {lastDelta !== null && (
+                          <span style={{ ...sc, fontSize: '13px',
+                            color: lastDelta >= 0 ? '#2D6A4F' : '#8A3030' }}>
+                            {lastDelta >= 0 ? '+' : ''}{lastDelta}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
+                        color: 'rgba(15,21,35,0.72)' }}>
+                        {sessions_total > 0 ? 'Ready when you are.' : 'Start your first session.'}
+                      </span>
+                    )}
+                    {!practicedToday && (
+                      <a href="/tools/foundation" style={{ ...sc, fontSize: '12px',
+                        letterSpacing: '0.14em', color: '#A8721A',
+                        textDecoration: 'none', flexShrink: 0 }}>
+                        Practice →
+                      </a>
+                    )}
+                  </div>
+
+                  {/* 7-day rhythm dots */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between',
+                    marginBottom: '14px' }}>
+                    {dots.map((dot, i) => (
+                      <div key={i} title={dot.date}
+                        style={{ width: '28px', height: '28px', borderRadius: '50%',
+                          background: dot.done
+                            ? 'rgba(45,106,79,0.15)' : 'rgba(200,146,42,0.06)',
+                          border: `1.5px solid ${dot.done
+                            ? 'rgba(45,106,79,0.4)' : 'rgba(200,146,42,0.15)'}`,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {dot.done && (
+                          <div style={{ width: '8px', height: '8px', borderRadius: '50%',
+                            background: '#2D6A4F' }} />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Stats */}
+                  <div style={{ display: 'flex', gap: '12px', marginBottom: '14px' }}>
+                    {streak_days > 0 && (
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ ...sc, fontSize: '22px', fontWeight: 600,
+                          color: '#A8721A', lineHeight: 1 }}>{streak_days}</div>
+                        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
+                          color: 'rgba(15,21,35,0.72)', marginTop: '2px' }}>
+                          DAY STREAK
+                        </div>
+                      </div>
+                    )}
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ ...sc, fontSize: '22px', fontWeight: 600,
+                        color: '#A8721A', lineHeight: 1 }}>{sessions_week}</div>
+                      <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
+                        color: 'rgba(15,21,35,0.72)', marginTop: '2px' }}>
+                        THIS WEEK
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ ...sc, fontSize: '22px', fontWeight: 600,
+                        color: '#A8721A', lineHeight: 1 }}>{sessions_total}</div>
+                      <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
+                        color: 'rgba(15,21,35,0.72)', marginTop: '2px' }}>
+                        TOTAL
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Phase */}
+                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                    color: '#A8721A', padding: '4px 10px',
+                    border: '1px solid rgba(200,146,42,0.3)',
+                    borderRadius: '40px', display: 'inline-block',
+                    background: 'rgba(200,146,42,0.05)' }}>
+                    {phaseLabel}
+                  </div>
+                </div>
+              )
+            })() : (
+              <div>
+                <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+                  color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: '0 0 16px' }}>
+                  Daily nervous system practice. 20 minutes. The return.
+                </p>
+                <a href="/tools/foundation" style={{ ...sc, fontSize: '13px',
+                  letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none',
+                  padding: '10px 18px', border: '1px solid rgba(200,146,42,0.35)',
+                  borderRadius: '40px', background: 'rgba(200,146,42,0.04)',
+                  display: 'inline-block' }}>
+                  Begin Horizon State →
+                </a>
+              </div>
+            )}
+          </div>
+
+          {/* ── Horizon State time view ─────────────────────────────── */}
+          <div style={{ padding: '24px', background: '#FFFFFF',
+            border: '1px solid rgba(200,146,42,0.2)',
+            borderTop: '3px solid rgba(200,146,42,0.35)', borderRadius: '12px' }}>
+            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.22em',
+              color: '#A8721A', marginBottom: '14px' }}>REGULATION PATTERN</div>
+
+            {foundationData ? (() => {
+              const { spark_data = [], sessions_total = 0, avg_delta } = foundationData
+
+              // Build weekly buckets for last 4 weeks
+              const weeks = Array.from({ length: 4 }, (_, wi) => {
+                const label = wi === 0 ? 'This week'
+                  : wi === 1 ? 'Last week' : `${wi + 1} weeks ago`
+                const start = new Date()
+                start.setDate(start.getDate() - (wi * 7) - 6)
+                const end = new Date()
+                end.setDate(end.getDate() - (wi * 7))
+                return { label, start, end, sessions: 0, avgDelta: null, deltas: [] }
+              })
+
+              spark_data.forEach(s => {
+                const d = new Date(s.date)
+                weeks.forEach(w => {
+                  if (d >= w.start && d <= w.end) {
+                    w.sessions++
+                    if (s.before != null && s.after != null) {
+                      w.deltas.push(s.after - s.before)
+                    }
+                  }
+                })
+              })
+              weeks.forEach(w => {
+                if (w.deltas.length > 0) {
+                  w.avgDelta = Math.round(
+                    (w.deltas.reduce((a, b) => a + b, 0) / w.deltas.length) * 10
+                  ) / 10
+                }
+              })
+
+              // Monthly count
+              const thisMonthStart = new Date()
+              thisMonthStart.setDate(1)
+              const sessionsMonth = spark_data.filter(s =>
+                new Date(s.date) >= thisMonthStart
+              ).length
+
+              // All-time avg delta
+              const deltaSign = avg_delta != null ? (avg_delta > 0 ? '+' : '') : ''
+
+              return (
+                <div>
+                  {/* Week/month at a glance */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr',
+                    gap: '8px', marginBottom: '20px' }}>
+                    {[
+                      { label: 'This month', value: sessionsMonth, unit: 'sessions' },
+                      { label: 'Avg lift', value: avg_delta != null ? `${deltaSign}${avg_delta}` : '—', unit: 'per session' },
+                    ].map(({ label, value, unit }) => (
+                      <div key={label} style={{ padding: '10px 12px',
+                        background: 'rgba(200,146,42,0.04)',
+                        border: '1px solid rgba(200,146,42,0.15)',
+                        borderRadius: '8px', textAlign: 'center' }}>
+                        <div style={{ ...sc, fontSize: '20px', fontWeight: 600,
+                          color: '#A8721A', lineHeight: 1 }}>{value}</div>
+                        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em',
+                          color: 'rgba(15,21,35,0.72)', marginTop: '3px' }}>{label}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* 4-week pattern */}
+                  <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em',
+                    color: 'rgba(15,21,35,0.72)', marginBottom: '10px' }}>
+                    WEEKLY PATTERN
+                  </div>
+                  {[...weeks].reverse().map((w, i) => {
+                    const maxS = Math.max(...weeks.map(x => x.sessions), 1)
+                    const barPct = (w.sessions / maxS) * 100
+                    return (
+                      <div key={i} style={{ display: 'flex', alignItems: 'center',
+                        gap: '10px', marginBottom: '8px' }}>
+                        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+                          color: 'rgba(15,21,35,0.72)', width: '68px', flexShrink: 0,
+                          textAlign: 'right' }}>{w.label}</div>
+                        <div style={{ flex: 1, height: '6px',
+                          background: 'rgba(200,146,42,0.08)', borderRadius: '3px' }}>
+                          <div style={{ height: '100%', width: `${barPct}%`,
+                            background: i === 3 ? '#A8721A' : 'rgba(200,146,42,0.5)',
+                            borderRadius: '3px' }} />
+                        </div>
+                        <div style={{ ...sc, fontSize: '10px',
+                          color: 'rgba(15,21,35,0.72)', width: '16px', flexShrink: 0 }}>
+                          {w.sessions}
+                        </div>
+                        {w.avgDelta !== null && (
+                          <div style={{ ...sc, fontSize: '10px', flexShrink: 0,
+                            color: w.avgDelta >= 0 ? '#2D6A4F' : '#8A3030' }}>
+                            {w.avgDelta >= 0 ? '+' : ''}{w.avgDelta}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+
+                  {sessions_total === 0 && (
+                    <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+                      color: 'rgba(15,21,35,0.72)', margin: '8px 0 0' }}>
+                      No sessions yet — pattern builds as you practise.
+                    </p>
+                  )}
+                </div>
+              )
+            })() : (
+              <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+                color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>
+                Your regulation pattern across the week, month, and over time appears here once you begin Horizon State.
+              </p>
+            )}
+          </div>
         </div>
 
-        <Slot title="NextUs" eyebrow="The larger work"
-          linkLabel="Explore" linkUrl="/nextus" defaultOpen={!!claimedActor || !!purposeData?.profile?.civilisational_statement}>
-          <NextUsSlot purposeData={purposeData} userId={user?.id} claimedActor={claimedActor} />
-        </Slot>
+        {/* ══════════════════════════════════════════════════════════════════
+            TOOL RAIL — all tools, one line each
+        ══════════════════════════════════════════════════════════════════ */}
+        <div style={{ marginBottom: '48px', padding: '24px 28px',
+          background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)',
+          borderRadius: '12px' }}>
+          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.22em',
+            color: 'rgba(200,146,42,0.72)', marginBottom: '16px' }}>
+            THE HORIZON SUITE
+          </div>
 
+          {[
+            {
+              name: 'Horizon State',
+              url: '/tools/foundation',
+              status: foundationData
+                ? (foundationData.phase === 'embodying' ? 'complete'
+                  : 'active') : null,
+              detail: foundationData
+                ? `${foundationData.sessions_total} sessions · ${
+                    foundationData.phase === 'baseline' ? 'Baseline'
+                    : foundationData.phase === 'calibrating' ? 'Calibrating'
+                    : 'Embodying'}`
+                : 'Nervous system regulation',
+            },
+            {
+              name: 'Purpose Piece',
+              url: '/tools/purpose-piece',
+              status: purposeData?.status === 'complete' ? 'complete'
+                : purposeData ? 'active' : null,
+              detail: purposeData?.profile?.archetype
+                ? `${purposeData.profile.archetype}`
+                : 'Contribution archetype, domain, and scale',
+            },
+            {
+              name: 'The Map',
+              url: '/tools/map',
+              status: mapData?.complete ? 'complete'
+                : (hasScores) ? 'active' : null,
+              detail: hasScores
+                ? `${Object.keys(profileCurrentScores).length} of 7 domains`
+                : '7-domain coherence audit',
+            },
+            {
+              name: 'Target Sprint',
+              url: '/tools/target-goals',
+              status: sprintData?.status === 'complete' ? 'complete'
+                : sprintData?.domains?.length > 0 ? 'active' : null,
+              detail: sprintData?.domains?.length > 0
+                ? `${sprintData.domains.map(id => {
+                    const idx = DOMAIN_KEYS.indexOf(id)
+                    return idx >= 0 ? DOMAIN_LABELS[idx] : id
+                  }).join(' · ')}`
+                : '90-day sprint across 3 domains',
+            },
+            {
+              name: 'Horizon Practice',
+              url: '/tools/expansion',
+              status: foundationData?.sessions_total > 0 ? 'active' : null,
+              detail: foundationData?.sessions_total > 0
+                ? `${foundationData.streak_days || 0} day streak · ${foundationData.sessions_week || 0} this week`
+                : 'Daily T.E.A. practice',
+            },
+          ].map(({ name, url, status, detail }) => (
+            <a key={name} href={url} style={{ textDecoration: 'none',
+              display: 'flex', alignItems: 'center', gap: '14px',
+              padding: '12px 0',
+              borderBottom: '1px solid rgba(200,146,42,0.07)' }}>
+              {/* Status glyph */}
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%',
+                flexShrink: 0,
+                background: status === 'complete' ? '#2D6A4F'
+                  : status === 'active' ? '#A8721A'
+                  : 'rgba(200,146,42,0.2)',
+                border: status ? 'none' : '1.5px solid rgba(200,146,42,0.3)' }} />
+              {/* Name */}
+              <div style={{ ...sc, fontSize: '14px', letterSpacing: '0.08em',
+                color: '#0F1523', width: '130px', flexShrink: 0 }}>{name}</div>
+              {/* Detail */}
+              <div style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+                color: 'rgba(15,21,35,0.72)', flex: 1, minWidth: 0,
+                overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                {detail}
+              </div>
+              {/* Arrow */}
+              <div style={{ ...sc, fontSize: '13px', color: '#A8721A',
+                flexShrink: 0 }}>→</div>
+            </a>
+          ))}
+        </div>
+
+        {/* Sign out */}
         <div style={{ textAlign: 'center', paddingTop: '48px',
           borderTop: '1px solid rgba(200,146,42,0.15)', marginTop: '24px' }}>
           <button onClick={signOut}
