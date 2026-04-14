@@ -901,6 +901,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                     <textarea
                       value={avatarDoc?.essence || ''}
                       onChange={e => setAvatarDoc(d => ({ ...d, essence: e.target.value }))}
+                      onBlur={e => { const next = { ...avatarDoc, essence: e.target.value }; setAvatarDoc(next); save({ avatarDoc: next }) }}
                       placeholder="Describe the qualities, the presence, the way this person operates..."
                       rows={3}
                       style={{ width: '100%', padding: '4px 0 12px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: '#0F1523', background: 'transparent', border: 'none', outline: 'none', resize: 'none', lineHeight: 1.7 }}
@@ -915,6 +916,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                     <textarea
                       value={avatarDoc?.references || ''}
                       onChange={e => setAvatarDoc(d => ({ ...d, references: e.target.value }))}
+                      onBlur={e => { const next = { ...avatarDoc, references: e.target.value }; setAvatarDoc(next); save({ avatarDoc: next }) }}
                       placeholder="Real people, fictional characters, composites... name them and what you're borrowing from each"
                       rows={3}
                       style={{ width: '100%', padding: '4px 0 12px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: '#0F1523', background: 'transparent', border: 'none', outline: 'none', resize: 'none', lineHeight: 1.7 }}
@@ -929,6 +931,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                     <textarea
                       value={avatarDoc?.other || ''}
                       onChange={e => setAvatarDoc(d => ({ ...d, other: e.target.value }))}
+                      onBlur={e => { const next = { ...avatarDoc, other: e.target.value }; setAvatarDoc(next); save({ avatarDoc: next }) }}
                       placeholder="Anything else — energy, values, how they move through the world..."
                       rows={2}
                       style={{ width: '100%', padding: '4px 0 12px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: '#0F1523', background: 'transparent', border: 'none', outline: 'none', resize: 'none', lineHeight: 1.7 }}
