@@ -30,8 +30,9 @@ const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present thr
 function createSession() {
   return {
     stage:               "archetype",
-    questionIndex:       0,
-    probeCount:          0,
+    // Per-stage independent counters — enables non-linear navigation
+    questionIndex:       { archetype: 0, domain: 0, scale: 0 },
+    probeCount:          { archetype: 0, domain: 0, scale: 0 },
     archetypeTranscript: [],
     domainTranscript:    [],
     scaleTranscript:     [],
@@ -39,6 +40,36 @@ function createSession() {
     synthesis:           null,
     status:              "active"
   };
+}
+
+// ─── Per-stage index helpers ──────────────────────────────────────────────────
+// Read/write questionIndex and probeCount by stage name.
+// Handles both old flat sessions (number) and new per-stage sessions (object).
+
+function getQI(session, stage) {
+  const qi = session.questionIndex;
+  if (typeof qi === "object" && qi !== null) return qi[stage] ?? 0;
+  return typeof qi === "number" ? qi : 0; // legacy fallback
+}
+
+function setQI(session, stage, value) {
+  if (typeof session.questionIndex !== "object" || session.questionIndex === null) {
+    session.questionIndex = { archetype: 0, domain: 0, scale: 0 };
+  }
+  session.questionIndex[stage] = value;
+}
+
+function getPC(session, stage) {
+  const pc = session.probeCount;
+  if (typeof pc === "object" && pc !== null) return pc[stage] ?? 0;
+  return typeof pc === "number" ? pc : 0;
+}
+
+function setPC(session, stage, value) {
+  if (typeof session.probeCount !== "object" || session.probeCount === null) {
+    session.probeCount = { archetype: 0, domain: 0, scale: 0 };
+  }
+  session.probeCount[stage] = value;
 }
 
 // ─── Question sets ────────────────────────────────────────────────────────────
@@ -319,9 +350,7 @@ The last set was about what you do. This one is about what pulls your attention 
 
 There are three questions. Answer honestly, not aspirationally.`,
 
-  scale: `Last set.
-
-These two questions are almost philosophical. Take your time with them. There are no right answers — only honest ones.`
+  scale: `Two questions. Almost philosophical. Where your work mattering actually looks like, what you feel drawn to, and genuinely responsible for — not just interested in. Take your time. There are no right answers here, only honest ones.`
 };
 
 // ─── Welcome ──────────────────────────────────────────────────────────────────────────────
@@ -925,7 +954,7 @@ function renderPhase4(p4) {
 
 async function handleQuestionPhase(session, latestInput, res) {
   const stage     = session.stage;
-  const qi        = session.questionIndex;
+  const qi        = getQI(session, stage);
   const questions = getStageQuestions(stage);
   const probes    = getStageProbes(stage);
   const transcript = getStageTranscript(session);
@@ -933,10 +962,8 @@ async function handleQuestionPhase(session, latestInput, res) {
 
   const entry = transcript[qi];
 
-  // ── Auto-advance / empty call — just surface the current question ───────────
-  // The stage opening auto-advance fires an empty API call. Return currentQuestion
-  // without treating it as a user answer.
-  // Always derive from current stage questions — never carry over stale value from prior stage.
+  // ── Auto-advance / empty call — surface the correct question for this stage ─────────
+  // Always derive from current stage + current stage's questionIndex.
   if (!latestInput) {
     session.currentQuestion = questions[qi].text;
     return res.status(200).json({
@@ -948,9 +975,7 @@ async function handleQuestionPhase(session, latestInput, res) {
     });
   }
 
-  // ── Duplicate message guard ──────────────────────────────────────────────────
-  // Two identical consecutive messages — treat as re-send, not a new answer.
-  // Do NOT send message — currentQuestion in session already populates the pinned header.
+  // ── Duplicate message guard ─────────────────────────────────────────────────────────────
   const lastMsg = session.lastUserMessage || null;
   if (latestInput === lastMsg && entry) {
     return res.status(200).json({
@@ -962,9 +987,8 @@ async function handleQuestionPhase(session, latestInput, res) {
   }
   session.lastUserMessage = latestInput;
 
-  // ── First answer to this question ──────────────────────────────────────────
+  // ── First answer to this question ──────────────────────────────────────────────────────────────────
   if (!entry) {
-    // Confusion detection — user doesn't understand the question
     if (isConfused(latestInput)) {
       const reframe = CONFUSION_REFRAMES[stage]?.[qi];
       if (reframe) {
@@ -983,29 +1007,27 @@ async function handleQuestionPhase(session, latestInput, res) {
 
     if (!thin) {
       transcript.push({ question: questions[qi].text, answer: latestInput, probes: [], thin: false });
-      session.probeCount  = 0;
-      session.questionIndex++;
+      setPC(session, stage, 0);
+      const nextQI = qi + 1;
+      setQI(session, stage, nextQI);
 
-      // Stage complete
-      if (session.questionIndex >= total) {
+      if (nextQI >= total) {
         return await handleStageComplete(session, res);
       }
 
-      session.currentQuestion = questions[session.questionIndex].text;
-      // Do NOT send question as `message` — the pinned header renders currentQuestion.
-      // Sending both causes duplicate display.
+      session.currentQuestion = questions[nextQI].text;
       return res.status(200).json({
-        questionLabel: `${capitalise(stage)} · ${session.questionIndex + 1} of ${total}`,
+        questionLabel: `${capitalise(stage)} · ${nextQI + 1} of ${total}`,
         session,
         stage,
-        questionIndex: session.questionIndex,
+        questionIndex: nextQI,
         inputMode:     "text"
       });
     }
 
     // Thin — probe 1
     transcript.push({ question: questions[qi].text, answer: latestInput, probes: [], thin: false });
-    session.probeCount = 1;
+    setPC(session, stage, 1);
     return res.status(200).json({
       message:   probes[qi][0],
       session,
@@ -1015,8 +1037,7 @@ async function handleQuestionPhase(session, latestInput, res) {
     });
   }
 
-  // ── Responding to a probe ───────────────────────────────────────────────────
-  // Confusion mid-probe — offer reframe
+  // ── Responding to a probe ──────────────────────────────────────────────────────────────────────
   if (isConfused(latestInput)) {
     const reframe = CONFUSION_REFRAMES[stage]?.[qi];
     if (reframe) {
@@ -1031,18 +1052,19 @@ async function handleQuestionPhase(session, latestInput, res) {
     }
   }
 
-  const probeIndex = Math.min(session.probeCount - 1, probes[qi].length - 1);
+  const pc         = getPC(session, stage);
+  const probeIndex = Math.min(pc - 1, probes[qi].length - 1);
   entry.probes.push({ probe: probes[qi][probeIndex], response: latestInput });
   const combined = entry.answer + " " + entry.probes.map(p => p.response).join(" ");
   const thin     = isThin(combined, stage, qi);
 
-  if (!thin || session.probeCount >= 2) {
-    if (session.probeCount >= 2 && thin) {
+  if (!thin || pc >= 2) {
+    if (pc >= 2 && thin) {
       const check = await claudeSignalCheck(questions[qi].text, combined);
       entry.thin  = !check.has_signal;
 
-      if (!check.has_signal && session.probeCount === 2) {
-        session.probeCount = 3;
+      if (!check.has_signal && pc === 2) {
+        setPC(session, stage, 3);
         return res.status(200).json({
           message:   "I want to make sure I'm reading this clearly. Can you give me one specific example — a real moment, even a small one?",
           session,
@@ -1052,46 +1074,48 @@ async function handleQuestionPhase(session, latestInput, res) {
         });
       }
 
-      if (session.probeCount >= 3) {
-        entry.thin           = true;
-        session.probeCount   = 0;
-        session.questionIndex++;
+      if (pc >= 3) {
+        entry.thin = true;
+        setPC(session, stage, 0);
+        const nextQI = qi + 1;
+        setQI(session, stage, nextQI);
 
-        if (session.questionIndex >= total) {
+        if (nextQI >= total) {
           return await handleStageComplete(session, res, "Let's keep moving. I'll work with what's here.");
         }
 
-        session.currentQuestion = questions[session.questionIndex].text;
+        session.currentQuestion = questions[nextQI].text;
         return res.status(200).json({
           message:       "Let's keep moving. I'll work with what's here.",
-          questionLabel: `${capitalise(stage)} · ${session.questionIndex + 1} of ${total}`,
+          questionLabel: `${capitalise(stage)} · ${nextQI + 1} of ${total}`,
           session,
           stage,
-          questionIndex: session.questionIndex,
+          questionIndex: nextQI,
           inputMode:     "text"
         });
-      }    }
+      }
+    }
 
-    session.probeCount = 0;
-    session.questionIndex++;
+    setPC(session, stage, 0);
+    const nextQI = qi + 1;
+    setQI(session, stage, nextQI);
 
-    if (session.questionIndex >= total) {
+    if (nextQI >= total) {
       return await handleStageComplete(session, res);
     }
 
-    session.currentQuestion = questions[session.questionIndex].text;
-    // Do NOT send question as `message` — pinned header renders currentQuestion.
+    session.currentQuestion = questions[nextQI].text;
     return res.status(200).json({
-      questionLabel: `${capitalise(stage)} · ${session.questionIndex + 1} of ${total}`,
+      questionLabel: `${capitalise(stage)} · ${nextQI + 1} of ${total}`,
       session,
       stage,
-      questionIndex: session.questionIndex,
+      questionIndex: nextQI,
       inputMode:     "text"
     });
   }
 
   // Still thin — probe 2
-  session.probeCount = 2;
+  setPC(session, stage, 2);
   return res.status(200).json({
     message:   probes[qi][Math.min(1, probes[qi].length - 1)],
     session,
@@ -1100,7 +1124,6 @@ async function handleQuestionPhase(session, latestInput, res) {
     isProbe:   true
   });
 }
-
 function capitalise(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -1129,10 +1152,8 @@ async function handleStageComplete(session, res, prefixMessage = null) {
 
   const nextStage = getNextStage(completedStage);
 
-  // Advance to next stage
-  session.stage         = nextStage;
-  session.questionIndex = 0;
-  session.probeCount    = 0;
+  // Advance to next stage — per-stage counters remain independent
+  session.stage = nextStage;
 
   // Opening next question stage
   if (nextStage === "domain" || nextStage === "scale") {

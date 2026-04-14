@@ -63,7 +63,7 @@ const STAGE_INTROS = {
   },
   scale: {
     label: 'Engagement Scale',
-    desc:  'Two questions. Almost philosophical. Where your work mattering actually looks like, and what you feel genuinely responsible for — not just interested in. Take your time. There are no right answers here, only honest ones.',
+    desc:  'Two questions. Almost philosophical. Where your work mattering actually looks like, what you feel drawn to, and genuinely responsible for — not just interested in. Take your time. There are no right answers here, only honest ones.',
   },
 }
 
@@ -790,7 +790,11 @@ export function PurposePiecePage() {
 
   // Derived
   const stage = session?.stage || 'welcome'
-  const qIdx  = session?.questionIndex ?? 0
+  const qIdx  = (() => {
+    const qi = session?.questionIndex
+    if (typeof qi === 'object' && qi !== null) return qi[stage] ?? 0
+    return typeof qi === 'number' ? qi : 0
+  })()
 
   const wedgeStates = {
     archetype: (session?.archetypeTranscript?.length ?? 0) >= 5 ? 2
