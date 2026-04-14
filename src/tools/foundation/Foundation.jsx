@@ -411,6 +411,47 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
   const [showModal,     setShowModal]     = useState(false)
   const [showBeginPopup, setShowBeginPopup] = useState(true)
 
+  // Mobile audio state — shared between play button and scrubber
+  const mobileAudioRef   = useRef(null)
+  const mobileNearEndRef = useRef(false)
+  const [mobilePlaying,  setMobilePlaying]  = useState(false)
+  const [mobileCurrent,  setMobileCurrent]  = useState(0)
+  const [mobileDuration, setMobileDuration] = useState(0)
+  const [mobileLoaded,   setMobileLoaded]   = useState(false)
+
+  useEffect(() => {
+    if (!audioUrl) return
+    const a = new Audio(audioUrl)
+    a.preload = 'metadata'
+    mobileAudioRef.current = a
+    a.addEventListener('loadedmetadata', () => { setMobileDuration(a.duration); setMobileLoaded(true) })
+    a.addEventListener('timeupdate', () => {
+      setMobileCurrent(a.currentTime)
+      if (!mobileNearEndRef.current && a.duration > 0 && (a.duration - a.currentTime) <= 60) {
+        mobileNearEndRef.current = true
+        setAfterUnlocked(true)
+      }
+    })
+    a.addEventListener('ended', () => { setMobilePlaying(false); setMobileCurrent(0); a.currentTime = 0; setAfterUnlocked(true) })
+    return () => { a.pause(); a.src = '' }
+  }, [audioUrl])
+
+  function mobileToggle() {
+    if (!beforeDone) return
+    const a = mobileAudioRef.current; if (!a) return
+    if (a.paused) { a.play(); setMobilePlaying(true) }
+    else          { a.pause(); setMobilePlaying(false) }
+  }
+
+  function mobileFmt(s) {
+    if (!s || isNaN(s)) return '--:--'
+    const m = Math.floor(s / 60)
+    const sec = String(Math.floor(s % 60)).padStart(2, '0')
+    return m + ':' + sec
+  }
+
+  const mobilePct = mobileDuration ? (mobileCurrent / mobileDuration) * 100 : 0
+
   useEffect(() => {
     if (!beforeDone) {
       const b = sessions.find(s => s.checkin_stage === 'before' && s.completed_at?.startsWith(today))
@@ -494,7 +535,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
   }
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', minHeight: '420px' }}>
       <style>{`
         /* ── Desktop: three-column grid ── */
         .hs-baseline-grid {
@@ -556,15 +597,13 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
         <div
           onClick={() => setShowBeginPopup(false)}
           style={{
-            position: 'absolute', inset: 0, zIndex: 10,
-            background: 'rgba(250,250,247,0.96)',
-            borderRadius: '12px',
+            position: 'fixed', inset: 0, zIndex: 100,
+            background: 'rgba(250,250,247,0.97)',
             display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center',
-            padding: '32px 28px', textAlign: 'center',
+            padding: '40px 32px', textAlign: 'center',
             cursor: 'pointer',
-            backdropFilter: 'blur(2px)',
-            minHeight: '320px',
+            backdropFilter: 'blur(4px)',
           }}
         >
           <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
@@ -579,119 +618,137 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
         </div>
       )}
 
-      {/* ══ MOBILE LAYOUT ══════════════════════════════════════════════════════ */}
+      {/* ══ MOBILE LAYOUT ════════════════════════════════════════════════════════ */}
       <div className="hs-mobile-only" style={{ flexDirection: 'column' }}>
 
-        {/* Flames row — Before | After side by side */}
-        <div className="hs-flames-row">
+        {/* Lock / unlock status — above flames */}
+        <div style={{ textAlign: 'center', marginBottom: '12px' }}>
+          {!beforeDone ? (
+            <span style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)' }}>
+              Check in to unlock the audio.
+            </span>
+          ) : !afterUnlocked ? (
+            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase' }}>
+              Horizon State {'·'} Foundation {'·'} 20 min
+            </span>
+          ) : (
+            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase' }}>
+              Horizon State {'·'} Foundation {'·'} 20 min
+            </span>
+          )}
+        </div>
+
+        {/* Flames row with play button centered between */}
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '16px', gap: '8px' }}>
+
           {/* Before flame */}
-          <div className="hs-flame-col">
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: beforeDone ? 'rgba(168,114,26,0.38)' : '#A8721A', textTransform: 'uppercase', marginBottom: '8px' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: beforeDone ? 'rgba(168,114,26,0.38)' : '#A8721A', textTransform: 'uppercase', marginBottom: '8px' }}>
               Before
             </span>
             <div style={{ pointerEvents: beforeDone ? 'none' : 'auto', opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
               <FlameSlider value={beforeValue} onChange={setBeforeValue} ghostValue={null} />
             </div>
+            <span style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', color: beforeDone ? 'rgba(168,114,26,0.38)' : 'rgba(15,21,35,0.45)', marginTop: '6px' }}>
+              {beforeDone ? 'saved' : 'Where is the flame?'}
+            </span>
+          </div>
+
+          {/* Play button — centered between flames */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '28px', flexShrink: 0 }}>
+            <button
+              onClick={mobileToggle}
+              disabled={!beforeDone || !mobileLoaded}
+              aria-label={mobilePlaying ? 'Pause' : 'Play'}
+              style={{
+                width: '52px', height: '52px', borderRadius: '50%',
+                background: mobilePlaying ? 'rgba(200,146,42,0.1)' : 'rgba(200,146,42,0.05)',
+                border: `1.5px solid ${beforeDone ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.25)'}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                cursor: beforeDone && mobileLoaded ? 'pointer' : 'not-allowed',
+                flexShrink: 0, color: '#A8721A', fontSize: '18px',
+                transition: 'all 0.2s',
+                opacity: beforeDone ? 1 : 0.4,
+              }}
+            >
+              {mobilePlaying ? '⏸' : '▶'}
+            </button>
           </div>
 
           {/* After flame */}
-          <div className="hs-flame-col" style={{ opacity: afterUnlocked ? 1 : 0.22, transition: 'opacity 0.8s ease', pointerEvents: afterUnlocked ? 'auto' : 'none' }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '8px' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: afterUnlocked ? 1 : 0.22, transition: 'opacity 0.8s ease', pointerEvents: afterUnlocked ? 'auto' : 'none' }}>
+            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '8px' }}>
               After
             </span>
             <FlameSlider value={afterValue} onChange={setAfterValue} ghostValue={beforeDone ? beforeValue : null} />
+            <span style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginTop: '6px' }}>
+              And now{'—'}?
+            </span>
           </div>
         </div>
 
-        {/* Audio — full width */}
-        <div className="hs-audio-mobile">
-          {audioLoading && <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted }}>Loading audio{'\u2026'}</p>}
-          {audioError  && <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
-          {!audioLoading && !audioError && audioUrl && (
-            <AudioPlayer url={audioUrl} locked={!beforeDone} onNearEnd={() => setAfterUnlocked(true)} onEnded={() => setAfterUnlocked(true)} />
-          )}
-          {!user && !audioLoading && !audioError && (
-            <div style={{ padding: '20px 22px', background: 'rgba(15,21,35,0.02)', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', opacity: 0.6 }}>
-              <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, marginBottom: '10px', lineHeight: 1.6 }}>Check-in to unlock the audio.</p>
-              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...muted }}>Horizon State {'\u00B7'} Foundation {'\u00B7'} 20 min</div>
-            </div>
-          )}
-        </div>
-
-        {/* Journal window — swaps between Before and After */}
-        <div className="hs-journal-mobile">
+        {/* Journal window — swaps Before → After */}
+        <div style={{ marginBottom: '12px' }}>
           {!afterUnlocked ? (
-            /* Before journal */
             <>
-              <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginBottom: '8px', textAlign: 'center' }}>
-                Where is the flame right now?
-              </p>
               <textarea
                 value={beforeNote}
                 onChange={e => setBeforeNote(e.target.value)}
-                placeholder={'what walked in with you today\u2026'}
+                placeholder={'what walked in with you today…'}
                 rows={3}
                 disabled={beforeDone}
-                style={{
-                  width: '100%', padding: '10px 14px',
-                  fontFamily: "'Cormorant Garamond',Georgia,serif",
-                  fontSize: '1rem', fontStyle: 'italic',
-                  color: 'rgba(15,21,35,0.72)',
-                  background: 'rgba(200,146,42,0.025)',
-                  border: '1px solid rgba(200,146,42,0.18)',
-                  borderRadius: '8px', outline: 'none',
-                  resize: 'none', lineHeight: 1.6,
-                  transition: 'border-color 0.2s', boxSizing: 'border-box',
-                  opacity: beforeDone ? 0.5 : 1,
-                }}
+                style={{ width: '100%', padding: '10px 14px', fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.025)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, transition: 'border-color 0.2s', boxSizing: 'border-box', opacity: beforeDone ? 0.5 : 1 }}
                 onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
                 onBlur={e => { e.target.style.borderColor = 'rgba(200,146,42,0.18)' }}
               />
               {!beforeDone && (
-                <button onClick={handleBegin} disabled={saving} style={{
-                  width: '100%', padding: '12px', marginTop: '10px',
-                  ...sc, fontSize: '1rem', letterSpacing: '0.14em', color: '#A8721A',
-                  background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)',
-                  borderRadius: '40px', cursor: saving ? 'default' : 'pointer',
-                  transition: 'all 0.2s', opacity: saving ? 0.6 : 1,
-                }}>Begin {'\u2192'}</button>
+                <button onClick={handleBegin} disabled={saving} style={{ width: '100%', padding: '12px', marginTop: '10px', ...sc, fontSize: '1rem', letterSpacing: '0.14em', color: '#A8721A', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>
+                  Begin {'→'}
+                </button>
               )}
             </>
           ) : (
-            /* After journal — same space */
             <>
-              <p style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginBottom: '8px', textAlign: 'center' }}>
-                And now{'\u2014'}?
-              </p>
               <textarea
                 value={afterNote}
                 onChange={e => setAfterNote(e.target.value)}
-                placeholder={'What I\u2019m stepping away with\u2026'}
+                placeholder={'What I’m stepping away with…'}
                 rows={3}
-                style={{
-                  width: '100%', padding: '10px 14px',
-                  fontFamily: "'Cormorant Garamond',Georgia,serif",
-                  fontSize: '1rem', fontStyle: 'italic',
-                  color: 'rgba(15,21,35,0.72)',
-                  background: 'rgba(200,146,42,0.025)',
-                  border: '1px solid rgba(200,146,42,0.18)',
-                  borderRadius: '8px', outline: 'none',
-                  resize: 'none', lineHeight: 1.6,
-                  transition: 'border-color 0.2s', boxSizing: 'border-box',
-                }}
+                style={{ width: '100%', padding: '10px 14px', fontFamily: "'Cormorant Garamond',Georgia,serif", fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.025)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, transition: 'border-color 0.2s', boxSizing: 'border-box' }}
                 onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
                 onBlur={e => { e.target.style.borderColor = 'rgba(200,146,42,0.18)' }}
               />
-              <button onClick={handleSave} disabled={saving} style={{
-                width: '100%', padding: '12px', marginTop: '10px',
-                ...sc, fontSize: '1rem', letterSpacing: '0.14em', color: '#A8721A',
-                background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)',
-                borderRadius: '40px', cursor: saving ? 'default' : 'pointer',
-                transition: 'all 0.2s', opacity: saving ? 0.6 : 1,
-              }}>{saving ? 'Saving\u2026' : 'Save \u2713'}</button>
+              <button onClick={handleSave} disabled={saving} style={{ width: '100%', padding: '12px', marginTop: '10px', ...sc, fontSize: '1rem', letterSpacing: '0.14em', color: '#A8721A', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>
+                {saving ? 'Saving…' : 'Save ✓'}
+              </button>
             </>
           )}
         </div>
+
+        {/* Audio scrubber — below journal, visible once before is done */}
+        {beforeDone && audioUrl && (
+          <div style={{ marginTop: '4px', marginBottom: '8px' }}>
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.5)', textAlign: 'center', marginBottom: '8px' }}>
+              Horizon State {'·'} Foundation {'·'} 20 min
+            </div>
+            <div
+              onClick={e => {
+                const a = mobileAudioRef.current
+                if (!a || !mobileDuration) return
+                const rect = e.currentTarget.getBoundingClientRect()
+                a.currentTime = ((e.clientX - rect.left) / rect.width) * mobileDuration
+              }}
+              style={{ width: '100%', height: '4px', background: 'rgba(200,146,42,0.15)', borderRadius: '2px', cursor: 'pointer', position: 'relative', marginBottom: '4px' }}
+            >
+              <div style={{ height: '100%', width: mobilePct + '%', background: '#C8922A', borderRadius: '2px', transition: 'width 0.1s linear' }} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.4)' }}>{mobileFmt(mobileCurrent)}</span>
+              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.4)' }}>{mobileFmt(mobileDuration)}</span>
+            </div>
+          </div>
+        )}
+
       </div>
 
       {/* ══ DESKTOP LAYOUT ═════════════════════════════════════════════════════ */}
