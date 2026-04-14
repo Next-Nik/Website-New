@@ -141,7 +141,7 @@ function ScoreBar({ label, score, horizonScore }) {
       </div>
       <div style={{ width: '88px', flexShrink: 0, textAlign: 'right' }}>
         <span style={{ ...sc, fontSize: '1.25rem', fontWeight: 600, color, lineHeight: 1 }}>{score}</span>
-        <span style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.55)' }}>/10</span>
+        <span style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>/10</span>
         <div style={{ ...serif, fontSize: '15px', color, marginTop: '1px', opacity: 0.85 }}>
           {getTierLabel(score)}
         </div>
@@ -151,7 +151,7 @@ function ScoreBar({ label, score, horizonScore }) {
 }
 
 // ─── Map spider web ───────────────────────────────────────────────────────────
-function HorizonWheel({ domains, currentScores, horizonScores, size = 340 }) {
+function HorizonWheel({ domains, currentScores, horizonScores, size = 340, onNodeClick, activeNode }) {
   const cx = size / 2, cy = size / 2
   const maxR = (size / 2) * 0.62
   const n = domains.length
@@ -216,35 +216,40 @@ function HorizonWheel({ domains, currentScores, horizonScores, size = 340 }) {
         strokeWidth="1.5"
         strokeLinejoin="round" />
 
-      {/* Score dots */}
+      {/* Score dots — clickable */}
       {domains.map((d, i) => {
         const s = currentScores[d.id]
         if (s == null) return null
         const [x, y] = pt(i, s)
-        return <circle key={i} cx={x} cy={y} r="4"
+        const isActive = activeNode === d.id
+        return <circle key={i} cx={x} cy={y} r={isActive ? 6 : 4}
           fill={getTierColor(s)}
-          stroke="#FAFAF7"
-          strokeWidth="1.5" />
+          stroke={isActive ? '#A8721A' : '#FAFAF7'}
+          strokeWidth={isActive ? 2 : 1.5}
+          style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+          onClick={() => onNodeClick && onNodeClick(d.id)} />
       })}
 
-      {/* Domain labels */}
+      {/* Domain labels — clickable */}
       {domains.map((d, i) => {
         const [lx, ly] = ptFull(i, 1.22)
         const s = currentScores[d.id]
-        const color = s != null ? getTierColor(s) : 'rgba(15,21,35,0.3)'
+        const isActive = activeNode === d.id
+        const color = s != null ? getTierColor(s) : 'rgba(15,21,35,0.72)'
         const anchor = Math.abs(lx - cx) < 10 ? 'middle' : lx < cx ? 'end' : 'start'
         return (
-          <g key={i}>
+          <g key={i} style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+            onClick={() => onNodeClick && onNodeClick(d.id)}>
             <text x={lx} y={ly - 5} textAnchor={anchor} dominantBaseline="middle"
               fontFamily="'Cormorant SC', Georgia, serif"
               fontSize="11" fontWeight="600" letterSpacing="0.8"
-              fill="rgba(15,21,35,0.72)">
+              fill={isActive ? '#A8721A' : 'rgba(15,21,35,0.88)'}>
               {d.label}
             </text>
             {s != null && (
               <text x={lx} y={ly + 9} textAnchor={anchor} dominantBaseline="middle"
                 fontFamily="'Cormorant Garamond', Georgia, serif"
-                fontSize="11" fill={color} opacity="0.9">
+                fontSize="11" fill={isActive ? '#A8721A' : color}>
                 {s}
               </text>
             )}
@@ -285,7 +290,7 @@ function MapSlot({ mapData, sprintData }) {
             {doneCount} of 7 domains scored
           </span>
           {activeDomainLabel && (
-            <span style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>
+            <span style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>
               Currently: {activeDomainLabel}
             </span>
           )}
@@ -301,7 +306,7 @@ function MapSlot({ mapData, sprintData }) {
                 padding: '3px 10px', borderRadius: '40px',
                 background: done ? 'rgba(45,106,79,0.08)' : inProgress ? 'rgba(200,146,42,0.08)' : 'rgba(15,21,35,0.04)',
                 border: `1px solid ${done ? 'rgba(45,106,79,0.35)' : inProgress ? 'rgba(200,146,42,0.35)' : 'rgba(15,21,35,0.12)'}`,
-                color: done ? '#2D6A4F' : inProgress ? '#A8721A' : 'rgba(15,21,35,0.4)',
+                color: done ? '#2D6A4F' : inProgress ? '#A8721A' : 'rgba(15,21,35,0.72)',
               }}>
                 {done ? '✓ ' : ''}{domainLabels[i]}
               </span>
@@ -377,11 +382,11 @@ function MapSlot({ mapData, sprintData }) {
             <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '10px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <div style={{ width: '24px', height: '2px', background: 'rgba(200,146,42,0.72)' }} />
-                <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.55)', letterSpacing: '0.1em' }}>Now</span>
+                <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.72)', letterSpacing: '0.1em' }}>Now</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <div style={{ width: '24px', height: '0', borderTop: '2px dashed rgba(90,138,184,0.6)' }} />
-                <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.55)', letterSpacing: '0.1em' }}>Horizon</span>
+                <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.72)', letterSpacing: '0.1em' }}>Horizon</span>
               </div>
             </div>
           )}
@@ -447,7 +452,7 @@ function MapSlot({ mapData, sprintData }) {
 
       {mapData.completed_at && (
         <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
-          color: 'rgba(15,21,35,0.45)', marginTop: '16px' }}>
+          color: 'rgba(15,21,35,0.72)', marginTop: '16px' }}>
           Completed {new Date(mapData.completed_at).toLocaleDateString('en-GB',
             { day: 'numeric', month: 'long', year: 'numeric' })}
         </p>
@@ -604,7 +609,7 @@ function PurposePieceSlot({ purposeData, userId }) {
               <div style={{ ...serif, fontSize: '18px', fontWeight: 300, color: '#0F1523' }}>
                 {archetype}
                 {secondary && (
-                  <span style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.55)',
+                  <span style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)',
                     fontStyle: 'italic', marginLeft: '6px' }}>+ {secondary}</span>
                 )}
               </div>
@@ -659,7 +664,7 @@ function PurposePieceSlot({ purposeData, userId }) {
 
       {purposeData.completed_at && (
         <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
-          color: 'rgba(15,21,35,0.45)', marginTop: '16px' }}>
+          color: 'rgba(15,21,35,0.72)', marginTop: '16px' }}>
           Completed {new Date(purposeData.completed_at).toLocaleDateString('en-GB',
             { day: 'numeric', month: 'long', year: 'numeric' })}
         </p>
@@ -678,7 +683,7 @@ function SprintProgressBar({ done, total, color = '#A8721A' }) {
           borderRadius: '2px', transition: 'width 0.6s ease' }} />
       </div>
       <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em',
-        color: 'rgba(15,21,35,0.55)', flexShrink: 0 }}>{done}/{total}</span>
+        color: 'rgba(15,21,35,0.72)', flexShrink: 0 }}>{done}/{total}</span>
     </div>
   )
 }
@@ -775,7 +780,7 @@ function TargetSprintSlot({ sprintData }) {
           <Eyebrow style={{ marginBottom: '2px' }}>90-day sprint</Eyebrow>
           {(endLabel || targetDate) && (
             <span style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
-              color: 'rgba(15,21,35,0.55)' }}>
+              color: 'rgba(15,21,35,0.72)' }}>
               {endLabel || new Date(targetDate).toLocaleDateString('en-GB',
                 { day: 'numeric', month: 'long', year: 'numeric' })}
             </span>
@@ -800,7 +805,7 @@ function TargetSprintSlot({ sprintData }) {
             <div style={{ marginBottom: totalMilestones > 0 ? '10px' : 0 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em',
-                  color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>Tasks</span>
+                  color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase' }}>Tasks</span>
                 <span style={{ ...sc, fontSize: '15px', color: doneTasks === totalTasks ? '#2D6A4F' : '#A8721A' }}>
                   {doneTasks === totalTasks ? 'All done' : `${Math.round((doneTasks/totalTasks)*100)}%`}
                 </span>
@@ -813,7 +818,7 @@ function TargetSprintSlot({ sprintData }) {
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em',
-                  color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>Milestones</span>
+                  color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase' }}>Milestones</span>
                 <span style={{ ...sc, fontSize: '15px', color: doneMilestones === totalMilestones ? '#2D6A4F' : '#A8721A' }}>
                   {doneMilestones === totalMilestones ? 'All done' : `${Math.round((doneMilestones/totalMilestones)*100)}%`}
                 </span>
@@ -907,7 +912,7 @@ function TargetSprintSlot({ sprintData }) {
             {/* Setup gaps */}
             {missing.length > 0 && !goal && (
               <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
-                color: 'rgba(15,21,35,0.45)', margin: '6px 0 0' }}>
+                color: 'rgba(15,21,35,0.72)', margin: '6px 0 0' }}>
                 Still needed: {missing.join(', ')}.{' '}
                 <a href="/tools/target-goals" style={{ color: '#A8721A', textDecoration: 'none' }}>
                   Set up {'→'}
@@ -918,7 +923,7 @@ function TargetSprintSlot({ sprintData }) {
             {/* Milestone count */}
             {milestones.length > 0 && (
               <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em',
-                color: 'rgba(15,21,35,0.45)', marginTop: '8px' }}>
+                color: 'rgba(15,21,35,0.72)', marginTop: '8px' }}>
                 {mDone}/{milestones.length} milestones
               </div>
             )}
@@ -928,7 +933,7 @@ function TargetSprintSlot({ sprintData }) {
 
       {sprintData.created_at && (
         <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
-          color: 'rgba(15,21,35,0.45)', marginTop: '8px' }}>
+          color: 'rgba(15,21,35,0.72)', marginTop: '8px' }}>
           Started {new Date(sprintData.created_at).toLocaleDateString('en-GB',
             { day: 'numeric', month: 'long', year: 'numeric' })}
         </p>
@@ -1015,7 +1020,7 @@ function FoundationSlot({ foundationData }) {
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                 <FlameBar value={last_before} color="rgba(200,146,42,0.7)" size={12} />
-                <span style={{ ...sc, fontSize: '17px', color: 'rgba(15,21,35,0.4)' }}>{'→'}</span>
+                <span style={{ ...sc, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>{'→'}</span>
                 <FlameBar value={last_after} color="#2D6A4F" size={12} />
                 <span style={{ ...sc, fontSize: '17px', fontWeight: 600,
                   color: lastDelta >= 0 ? '#2D6A4F' : '#8A3030' }}>
@@ -1024,16 +1029,16 @@ function FoundationSlot({ foundationData }) {
               </div>
               {(last_before_note || last_after_note) && (
                 <div style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
-                  color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, marginTop: '4px' }}>
+                  color: 'rgba(15,21,35,0.72)', lineHeight: 1.5, marginTop: '4px' }}>
                   {last_before_note && <span>'{last_before_note}'</span>}
-                  {last_before_note && last_after_note && <span style={{ margin: '0 6px', color: 'rgba(15,21,35,0.3)' }}>→</span>}
+                  {last_before_note && last_after_note && <span style={{ margin: '0 6px', color: 'rgba(15,21,35,0.72)' }}>→</span>}
                   {last_after_note  && <span>'{last_after_note}'</span>}
                 </div>
               )}
             </div>
           ) : (
             <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
-              color: 'rgba(15,21,35,0.55)', margin: 0 }}>Session complete.</p>
+              color: 'rgba(15,21,35,0.72)', margin: 0 }}>Session complete.</p>
           )}
         </div>
       ) : (
@@ -1063,7 +1068,7 @@ function FoundationSlot({ foundationData }) {
               <div style={{ ...sc, fontSize: '20px', fontWeight: 600, color: '#A8721A',
                 lineHeight: 1 }}>{streak_days}</div>
               <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em',
-                color: 'rgba(15,21,35,0.45)', marginTop: '3px' }}>
+                color: 'rgba(15,21,35,0.72)', marginTop: '3px' }}>
                 DAY{streak_days !== 1 ? 'S' : ''} STREAK
               </div>
             </div>
@@ -1075,7 +1080,7 @@ function FoundationSlot({ foundationData }) {
               <div style={{ ...sc, fontSize: '20px', fontWeight: 600, color: '#A8721A',
                 lineHeight: 1 }}>{sessions_week}</div>
               <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em',
-                color: 'rgba(15,21,35,0.45)', marginTop: '3px' }}>THIS WEEK</div>
+                color: 'rgba(15,21,35,0.72)', marginTop: '3px' }}>THIS WEEK</div>
             </div>
           )}
           {avg_delta !== null && avg_delta !== 0 && (
@@ -1087,7 +1092,7 @@ function FoundationSlot({ foundationData }) {
                 {deltaSign}{avg_delta}
               </div>
               <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em',
-                color: 'rgba(15,21,35,0.45)', marginTop: '3px' }}>AVG LIFT</div>
+                color: 'rgba(15,21,35,0.72)', marginTop: '3px' }}>AVG LIFT</div>
             </div>
           )}
           <div style={{ padding: '10px 14px', background: 'rgba(200,146,42,0.05)',
@@ -1096,7 +1101,7 @@ function FoundationSlot({ foundationData }) {
             <div style={{ ...sc, fontSize: '20px', fontWeight: 600, color: '#A8721A',
               lineHeight: 1 }}>{sessions_total}</div>
             <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em',
-              color: 'rgba(15,21,35,0.45)', marginTop: '3px' }}>TOTAL</div>
+              color: 'rgba(15,21,35,0.72)', marginTop: '3px' }}>TOTAL</div>
           </div>
         </div>
       )}
@@ -1108,12 +1113,12 @@ function FoundationSlot({ foundationData }) {
           <div style={{ display: 'flex', gap: '16px', marginTop: '6px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
               <div style={{ width: '16px', height: '2px', background: 'rgba(200,146,42,0.5)' }} />
-              <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.45)',
+              <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
                 letterSpacing: '0.1em' }}>BEFORE</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
               <div style={{ width: '16px', height: '2px', background: 'rgba(45,106,79,0.7)' }} />
-              <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.45)',
+              <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
                 letterSpacing: '0.1em' }}>AFTER</span>
             </div>
           </div>
@@ -1140,7 +1145,7 @@ function FoundationSlot({ foundationData }) {
             padding: '3px 10px', borderRadius: '40px',
             background: p.active ? 'rgba(200,146,42,0.08)' : 'rgba(15,21,35,0.03)',
             border: `1px solid ${p.active ? 'rgba(200,146,42,0.35)' : 'rgba(15,21,35,0.1)'}`,
-            color: p.active ? '#A8721A' : 'rgba(15,21,35,0.3)',
+            color: p.active ? '#A8721A' : 'rgba(15,21,35,0.72)',
           }}>
             {p.active ? '● ' : '○ '}{p.label}
           </span>
@@ -1261,7 +1266,7 @@ function OfferChips({ options, selected, onChange, multi = false }) {
               {o.label}
             </div>
             {o.desc && (
-              <div style={{ ...serif_, fontSize: '12px', color: 'rgba(15,21,35,0.45)', marginTop: '2px', lineHeight: 1.4 }}>
+              <div style={{ ...serif_, fontSize: '12px', color: 'rgba(15,21,35,0.72)', marginTop: '2px', lineHeight: 1.4 }}>
                 {o.desc}
               </div>
             )}
@@ -1327,7 +1332,7 @@ function ContributorOfferForm({ initial = EMPTY_OFFER, onSave, onCancel, saving 
         <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '8px' }}>
           Domains — where do you want this to go?
         </label>
-        <p style={{ ...serif_, fontSize: '13px', color: 'rgba(15,21,35,0.45)', marginBottom: '10px', lineHeight: 1.5 }}>
+        <p style={{ ...serif_, fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginBottom: '10px', lineHeight: 1.5 }}>
           Leave empty to stay open to any. Select to focus.
         </p>
         <OfferChips
@@ -1361,7 +1366,7 @@ function ContributorOfferForm({ initial = EMPTY_OFFER, onSave, onCancel, saving 
             onChange={e => set('open_to_adjacent', e.target.checked)}
             style={{ marginTop: '3px', accentColor: gold_ }}
           />
-          <span style={{ ...serif_, fontSize: '14px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.6 }}>
+          <span style={{ ...serif_, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
             Open to adjacent enquiries — orgs can reach out even if I'm not an exact match for what they need
           </span>
         </label>
@@ -1395,7 +1400,7 @@ function ContributorOfferForm({ initial = EMPTY_OFFER, onSave, onCancel, saving 
         </button>
         <button
           onClick={onCancel}
-          style={{ ...sc_, fontSize: '14px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.20)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}
+          style={{ ...sc_, fontSize: '14px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.20)', background: 'transparent', color: 'rgba(15,21,35,0.72)', cursor: 'pointer' }}
         >
           Cancel
         </button>
@@ -1427,14 +1432,14 @@ function ContributorOfferCard({ offer, onEdit, onToggleActive, onDelete }) {
             <span style={{ ...sc_, fontSize: '11px', letterSpacing: '0.12em', color: gold_, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '4px', padding: '2px 8px' }}>
               {typeLabel}
             </span>
-            <span style={{ ...sc_, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.45)', background: 'rgba(15,21,35,0.04)', border: '1px solid rgba(15,21,35,0.08)', borderRadius: '4px', padding: '2px 8px' }}>
+            <span style={{ ...sc_, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.72)', background: 'rgba(15,21,35,0.04)', border: '1px solid rgba(15,21,35,0.08)', borderRadius: '4px', padding: '2px 8px' }}>
               {modeLabel}
             </span>
-            <span style={{ ...sc_, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)' }}>
+            <span style={{ ...sc_, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.72)' }}>
               {returnLabel}
             </span>
             {!offer.is_active && (
-              <span style={{ ...sc_, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.35)' }}>
+              <span style={{ ...sc_, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.72)' }}>
                 Paused
               </span>
             )}
@@ -1443,21 +1448,21 @@ function ContributorOfferCard({ offer, onEdit, onToggleActive, onDelete }) {
             {offer.title}
           </p>
           {offer.description && (
-            <p style={{ ...serif_, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65 }}>
+            <p style={{ ...serif_, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
               {offer.description.slice(0, 120)}{offer.description.length > 120 ? '…' : ''}
             </p>
           )}
           {offer.domain_ids?.length > 0 && (
             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '6px' }}>
               {offer.domain_ids.map(d => (
-                <span key={d} style={{ ...sc_, fontSize: '10px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)', background: 'rgba(15,21,35,0.04)', borderRadius: '4px', padding: '2px 7px' }}>
+                <span key={d} style={{ ...sc_, fontSize: '10px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.72)', background: 'rgba(15,21,35,0.04)', borderRadius: '4px', padding: '2px 7px' }}>
                   {NEXTUS_DOMAINS.find(nd => nd.value === d)?.label || d}
                 </span>
               ))}
             </div>
           )}
           {offer.availability && (
-            <p style={{ ...sc_, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)', marginTop: '6px' }}>
+            <p style={{ ...sc_, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.72)', marginTop: '6px' }}>
               {offer.availability}
             </p>
           )}
@@ -1471,7 +1476,7 @@ function ContributorOfferCard({ offer, onEdit, onToggleActive, onDelete }) {
           </button>
           <button
             onClick={() => onToggleActive(offer)}
-            style={{ ...sc_, fontSize: '12px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.15)', background: 'transparent', color: 'rgba(15,21,35,0.50)', cursor: 'pointer' }}
+            style={{ ...sc_, fontSize: '12px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.15)', background: 'transparent', color: 'rgba(15,21,35,0.72)', cursor: 'pointer' }}
           >
             {offer.is_active ? 'Pause' : 'Resume'}
           </button>
@@ -1592,7 +1597,7 @@ function ContributorOfferSection({ userId, purposeData }) {
           <span style={{ ...sc_, fontSize: '12px', letterSpacing: '0.18em', color: gold_, display: 'block', marginBottom: '4px' }}>
             What you're putting on the table
           </span>
-          <p style={{ ...serif_, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, margin: 0, maxWidth: '380px' }}>
+          <p style={{ ...serif_, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: 0, maxWidth: '380px' }}>
             Skills, creativity, time, or resources you're willing to offer the ecosystem.
             {ppArchetype && ` As a ${ppArchetype}, your offer is already placed in context.`}
           </p>
@@ -1610,7 +1615,7 @@ function ContributorOfferSection({ userId, purposeData }) {
       {/* Purpose Piece seed prompt */}
       {offers.length === 0 && !adding && ppDomain && (
         <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px', padding: '14px 18px', marginBottom: '12px' }}>
-          <p style={{ ...serif_, fontSize: '14px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, marginBottom: '10px' }}>
+          <p style={{ ...serif_, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, marginBottom: '10px' }}>
             Your Purpose Piece output has pre-filled your domain. Add your first offer and it will be discoverable by orgs working in that space.
           </p>
           <button
@@ -1624,7 +1629,7 @@ function ContributorOfferSection({ userId, purposeData }) {
 
       {/* Empty — no PP data */}
       {offers.length === 0 && !adding && !ppDomain && (
-        <p style={{ ...serif_, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginBottom: '8px' }}>
+        <p style={{ ...serif_, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginBottom: '8px' }}>
           No offers yet.{' '}
           <button onClick={() => setAdding(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc_, fontSize: '13px', letterSpacing: '0.12em', color: gold_, padding: 0 }}>
             Add one →
@@ -1748,7 +1753,7 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
 
       {!statement && !archetype && (
         <div style={{ marginBottom: '24px' }}>
-          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.65)', marginBottom: '14px', lineHeight: 1.7 }}>
+          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginBottom: '14px', lineHeight: 1.7 }}>
             Complete Purpose Piece to discover where your contribution belongs in the larger work.
           </p>
           <a href="/tools/purpose-piece" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none' }}>
@@ -1769,7 +1774,7 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
           >
             View your contributor profile →
           </a>
-          <span style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.40)', marginLeft: '10px' }}>
+          <span style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginLeft: '10px' }}>
             This is what orgs see when they find you
           </span>
         </div>
@@ -1796,7 +1801,7 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
             <Eyebrow style={{ marginBottom: 0 }}>Your contributions</Eyebrow>
             {hasContribs && (
               <button onClick={toggleVisibility} disabled={savingVis}
-                style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                 {savingVis ? '...' : visibility === 'public' ? 'Make private' : 'Make public'}
               </button>
             )}
@@ -1805,16 +1810,16 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
           {/* Pending contributions */}
           {pending.length > 0 && (
             <div style={{ marginBottom: '16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '10px', padding: '14px 16px' }}>
-              <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.40)', marginBottom: '10px' }}>Pending confirmation</p>
+              <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.72)', marginBottom: '10px' }}>Pending confirmation</p>
               {pending.map(c => (
                 <div key={c.id} style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '7px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
                   <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: '#A8721A', background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '4px', padding: '2px 8px' }}>
                     {CONTRIB_LABEL[c.contribution_type] || c.contribution_type}
                   </span>
-                  <a href={'/nextus/actors/' + c.nextus_actors?.id} style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.70)', flex: 1, textDecoration: 'none' }}>
+                  <a href={'/nextus/actors/' + c.nextus_actors?.id} style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', flex: 1, textDecoration: 'none' }}>
                     {c.nextus_actors?.name || 'Unknown'}
                   </a>
-                  <span style={{ ...serif, fontSize: '12px', color: 'rgba(15,21,35,0.35)', fontStyle: 'italic' }}>awaiting confirmation</span>
+                  <span style={{ ...serif, fontSize: '12px', color: 'rgba(15,21,35,0.72)', fontStyle: 'italic' }}>awaiting confirmation</span>
                 </div>
               ))}
             </div>
@@ -1822,7 +1827,7 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
 
           {!hasContribs ? (
             <div>
-              <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '14px' }}>
+              <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '14px' }}>
                 {pending.length > 0
                   ? 'Your confirmed contributions will appear here once the organisation confirms your work.'
                   : 'Your confirmed contributions will appear here as a record of what you have actually done in the world.'}
@@ -1839,46 +1844,46 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
                 {summary.total_hours > 0 && (
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ ...serif, fontSize: '24px', fontWeight: 300, color: '#0F1523', lineHeight: 1 }}>{summary.total_hours}</div>
-                    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginTop: '4px' }}>hours</div>
+                    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', marginTop: '4px' }}>hours</div>
                   </div>
                 )}
                 {summary.total_capital > 0 && (
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ ...serif, fontSize: '24px', fontWeight: 300, color: '#0F1523', lineHeight: 1 }}>${summary.total_capital}</div>
-                    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginTop: '4px' }}>capital</div>
+                    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', marginTop: '4px' }}>capital</div>
                   </div>
                 )}
                 {summary.skills_count > 0 && (
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ ...serif, fontSize: '24px', fontWeight: 300, color: '#0F1523', lineHeight: 1 }}>{summary.skills_count}</div>
-                    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginTop: '4px' }}>skills</div>
+                    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', marginTop: '4px' }}>skills</div>
                   </div>
                 )}
                 {summary.community_count > 0 && (
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ ...serif, fontSize: '24px', fontWeight: 300, color: '#0F1523', lineHeight: 1 }}>{summary.community_count}</div>
-                    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginTop: '4px' }}>community</div>
+                    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', marginTop: '4px' }}>community</div>
                   </div>
                 )}
               </div>
 
-              <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.40)', marginBottom: '16px' }}>
+              <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginBottom: '16px' }}>
                 {visibility === 'public' ? 'Visible on your public profile.' : 'Hidden — your icon shows but details are private.'}
               </p>
 
               {contribs.length > 0 && (
                 <div style={{ marginBottom: '16px' }}>
-                  <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.40)', marginBottom: '10px' }}>Recent confirmed</p>
+                  <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.72)', marginBottom: '10px' }}>Recent confirmed</p>
                   {contribs.map(c => (
                     <div key={c.id} style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
                       <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: '#A8721A', background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '4px', padding: '2px 8px' }}>
                         {CONTRIB_LABEL[c.contribution_type] || c.contribution_type}
                       </span>
-                      <a href={'/nextus/actors/' + c.nextus_actors?.id} style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.70)', flex: 1, textDecoration: 'none' }}>
+                      <a href={'/nextus/actors/' + c.nextus_actors?.id} style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', flex: 1, textDecoration: 'none' }}>
                         {c.nextus_actors?.name || 'Unknown'}
                       </a>
                       {c.nextus_actors?.domain_id && (
-                        <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.35)' }}>{DOMAIN_LABEL[c.nextus_actors.domain_id]}</span>
+                        <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.72)' }}>{DOMAIN_LABEL[c.nextus_actors.domain_id]}</span>
                       )}
                     </div>
                   ))}
@@ -1908,6 +1913,7 @@ export function ProfilePage() {
   const [horizonProfile, setHorizonProfile] = useState(null)
   const [localMapData,   setLocalMapData]   = useState(null)
   const [dataLoading,    setDataLoading]    = useState(true)
+  const [activeNode,     setActiveNode]     = useState(null)
 
   // Read localStorage on mount — client side only
   useEffect(() => {
@@ -2061,10 +2067,8 @@ export function ProfilePage() {
             return 'Crisis'
           }
 
-          // Prefer horizon_profile only if it has substantial coverage (4+ domains),
-          // otherwise fall back to map_results which has full domain data
-          const horizonProfileDomains = horizonProfile ? Object.keys(horizonProfile).filter(k => k !== 'life' && horizonProfile[k]?.currentScore !== undefined) : []
-          if (horizonProfile && horizonProfileDomains.length >= 4) {
+          // Prefer horizon_profile, fall back to map_results
+          if (horizonProfile && Object.keys(horizonProfile).length > 0) {
             dataSource = 'profile'
             lifeHorizon = horizonProfile['life']?.horizonGoal || null
             domainKeys.forEach(k => {
@@ -2115,7 +2119,7 @@ export function ProfilePage() {
                 <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
                   color: 'rgba(200,146,42,0.5)', marginBottom: '20px' }}>YOUR MAP IS EMPTY</div>
                 <p style={{ ...serif, fontSize: '19px', fontWeight: 300, fontStyle: 'italic',
-                  color: 'rgba(15,21,35,0.5)', lineHeight: 1.75, margin: '0 0 28px',
+                  color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, margin: '0 0 28px',
                   maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
                   Complete The Map and your profile will come alive here.
                 </p>
@@ -2152,26 +2156,116 @@ export function ProfilePage() {
                   currentScores={currentScores}
                   horizonScores={horizonScores}
                   size={340}
+                  activeNode={activeNode}
+                  onNodeClick={id => setActiveNode(activeNode === id ? null : id)}
                 />
               </div>
 
               {/* Legend */}
               {hasHorizon && (
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '24px',
-                  marginBottom: '40px' }}>
+                  marginBottom: activeNode ? '20px' : '40px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <div style={{ width: '20px', height: '2px', background: 'rgba(200,146,42,0.65)' }} />
                     <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em',
-                      color: 'rgba(15,21,35,0.4)' }}>Now</span>
+                      color: 'rgba(15,21,35,0.72)' }}>Now</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <div style={{ width: '20px', height: '0',
                       borderTop: '2px dashed rgba(90,138,184,0.5)' }} />
                     <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em',
-                      color: 'rgba(15,21,35,0.4)' }}>Horizon</span>
+                      color: 'rgba(15,21,35,0.72)' }}>Horizon</span>
                   </div>
                 </div>
               )}
+
+              {/* Domain detail panel — appears on node click */}
+              {activeNode && (() => {
+                const idx    = domainKeys.indexOf(activeNode)
+                const label  = domainLabels[idx]
+                const score  = currentScores[activeNode]
+                const horizon= horizonScores[activeNode]
+                const goal   = horizonGoals[activeNode]
+                const dd     = mapData?.session?.domainData?.[activeNode] || localMapData?.[activeNode]
+                const reality= dd?.realityFinal || dd?.realityDraft || null
+                const avatar = dd?.avatarFinal || null
+                const color  = tierColor(score)
+                return (
+                  <div style={{ marginBottom: '32px', padding: '24px',
+                    background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)',
+                    borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '12px',
+                    animation: 'fadeUp 0.2s ease-out' }}>
+
+                    <div style={{ display: 'flex', alignItems: 'flex-start',
+                      justifyContent: 'space-between', marginBottom: '16px' }}>
+                      <div style={{ ...sc, fontSize: '16px', letterSpacing: '0.14em',
+                        color: '#A8721A' }}>{label}</div>
+                      <div style={{ textAlign: 'right' }}>
+                        <span style={{ ...serif, fontSize: '26px', fontWeight: 300,
+                          color, lineHeight: 1 }}>{score}</span>
+                        {horizon !== undefined && (
+                          <span style={{ ...serif, fontSize: '18px',
+                            color: 'rgba(90,138,184,0.85)', marginLeft: '6px' }}>
+                            → {horizon}
+                          </span>
+                        )}
+                        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em',
+                          color, marginTop: '3px' }}>{tierLabel(score)}</div>
+                      </div>
+                    </div>
+
+                    {avatar && (
+                      <div style={{ marginBottom: '16px', paddingBottom: '16px',
+                        borderBottom: '1px solid rgba(200,146,42,0.1)' }}>
+                        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em',
+                          color: '#A8721A', marginBottom: '8px' }}>AVATAR</div>
+                        <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+                          color: '#0F1523', lineHeight: 1.7, margin: 0 }}>
+                          {avatar}
+                        </p>
+                      </div>
+                    )}
+
+                    {reality && (
+                      <div style={{ marginBottom: goal ? '16px' : 0,
+                        paddingBottom: goal ? '16px' : 0,
+                        borderBottom: goal ? '1px solid rgba(200,146,42,0.1)' : 'none' }}>
+                        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em',
+                          color: '#A8721A', marginBottom: '8px' }}>WHERE I AM NOW</div>
+                        <p style={{ ...serif, fontSize: '15px', color: '#0F1523',
+                          lineHeight: 1.75, margin: 0 }}>
+                          {reality}
+                        </p>
+                      </div>
+                    )}
+
+                    {goal && (
+                      <div>
+                        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em',
+                          color: '#A8721A', marginBottom: '8px' }}>HORIZON GOAL</div>
+                        <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+                          color: '#0F1523', lineHeight: 1.75, margin: 0 }}>
+                          {goal}
+                        </p>
+                      </div>
+                    )}
+
+                    {!reality && !goal && !avatar && (
+                      <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+                        color: 'rgba(15,21,35,0.72)', margin: 0 }}>
+                        Continue The Map to fill this domain in.
+                      </p>
+                    )}
+
+                    <button onClick={() => setActiveNode(null)}
+                      style={{ marginTop: '16px', background: 'none', border: 'none',
+                        cursor: 'pointer', ...sc, fontSize: '12px', letterSpacing: '0.14em',
+                        color: 'rgba(15,21,35,0.72)', padding: 0 }}>
+                      Close ×
+                    </button>
+                  </div>
+                )
+              })()}
 
               {/* Domain rows — breathing, no boxes */}
               <div style={{ marginBottom: '36px' }}>
@@ -2190,7 +2284,7 @@ export function ProfilePage() {
 
                       {/* Domain name */}
                       <div style={{ ...sc, fontSize: '14px', letterSpacing: '0.08em',
-                        color: 'rgba(15,21,35,0.6)', width: '106px', flexShrink: 0,
+                        color: '#0F1523', width: '106px', flexShrink: 0,
                         paddingTop: '3px' }}>
                         {domainLabels[i]}
                       </div>
@@ -2199,14 +2293,12 @@ export function ProfilePage() {
                       <div style={{ flex: 1, minWidth: 0 }}>
                         {goal ? (
                           <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
-                            color: 'rgba(15,21,35,0.62)', lineHeight: 1.6, margin: 0,
-                            overflow: 'hidden', display: '-webkit-box',
-                            WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                            color: '#0F1523', lineHeight: 1.6, margin: 0 }}>
                             {goal}
                           </p>
                         ) : (
                           <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
-                            color: 'rgba(15,21,35,0.28)', margin: 0 }}>
+                            color: 'rgba(15,21,35,0.72)', margin: 0 }}>
                             Horizon not yet set
                           </p>
                         )}

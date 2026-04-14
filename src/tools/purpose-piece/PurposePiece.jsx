@@ -1086,11 +1086,18 @@ export function PurposePiecePage() {
       return
     }
 
-    // Auto-advance (stage openings)
+    // Auto-advance (stage openings OR thinking → synthesis transition)
     if (data.autoAdvance) {
+      // 'thinking' stage must use callAPI (sends session unmodified, stage: 'thinking')
+      // All other autoAdvance calls (stage openings) use callStageAPI
+      const isThinkingAdvance = data.stage === 'thinking'
       setTimeout(async () => {
         setThinking(true, s)
-        try { const d = await callStageAPI([], s); setThinking(false, s); handleResponse(d, s) }
+        try {
+          const d = isThinkingAdvance ? await callAPI([]) : await callStageAPI([], s)
+          setThinking(false, s)
+          handleResponse(d, s)
+        }
         catch { setThinking(false, s) }
       }, data.advanceDelay || 2500)
       return
