@@ -122,6 +122,10 @@ const SCALE_QUESTIONS = [
   {
     label: "The Responsibility",
     text:  "What's the biggest problem you feel personally responsible for doing something about, not just interested in, but actually on the hook for?\n\nWhat is it?"
+  },
+  {
+    label: "The Obligation",
+    text:  "What's something you haven't done yet that keeps coming back to you — not as a goal you're working toward, but as something that would feel like unfinished business if you never got to it?\n\nWhat is it, and why does it keep returning?"
   }
 ];
 
@@ -173,6 +177,10 @@ const SCALE_PROBES = [
   [
     "What problem keeps you up at night because you feel like it's on you to do something about it?",
     "Give me an example of something you care about but don't feel responsible for. Now give me something you actually feel on the hook for. What's different?"
+  ],
+  [
+    "What makes this feel like unfinished business rather than just something on a list? Is there a person, a moment, or a window you're aware of closing?",
+    "If you never got to it — what specifically would feel incomplete? What would remain undone in you?"
   ]
 ];
 
@@ -357,17 +365,23 @@ function getNextStage(stage) {
 // These set the register for each stage — behavioural, attentional, confessional.
 
 const STAGE_OPENINGS = {
-  archetype: `Five questions, each anchored to something real. I’m looking for what you actually did — not what you think you’d do, not the version you’d be proud of. The instinct underneath the action.
+  archetype: `Five questions. Each one anchored in something that actually happened.
 
-Answer from your life as it is right now. Not who you’re working toward.`,
+I'm not looking for your best version of yourself — I'm looking for what you actually did. The instinct underneath the action, not the intention on top of it.
 
-  domain: `Good. Now a different kind of question.
+Answer from your life as it is right now.`,
 
-The last set was about what you do. This one is about what pulls your attention — what you find yourself caring about even when you have no reason to.
+  domain: `Different gear now.
 
-There are three questions. Answer honestly, not aspirationally.`,
+The last set was behavioural — what you did, what you stepped into, what it cost you. This one is attentional. I'm not asking what you do. I'm asking what pulls you. What you find yourself caring about even when nobody asked you to, even when it has nothing to do with you.
 
-  scale: `Two questions. Almost philosophical. Where your work mattering actually looks like, what you feel drawn to, and genuinely responsible for — not just interested in. Take your time. There are no right answers here, only honest ones.`
+Three questions. Answer honestly, not aspirationally. The gap between what you wish you cared about and what you actually can't stop thinking about is the signal.`,
+
+  scale: `Last set. And a different register entirely.
+
+These questions are almost philosophical. Not asking what you've done or what pulls your attention — asking about felt responsibility. What you're actually on the hook for. What would remain undone in you.
+
+Three questions. Take your time. There are no right answers. Only honest ones.`
 };
 
 // ─── Welcome ──────────────────────────────────────────────────────────────────────────────
@@ -494,7 +508,7 @@ async function extractTentativeScale(transcript, northStarCtx = null) {
       role:    "user",
       content: `Based on these answers, identify the most coherent scale of operation.
 
-THE SEVEN SCALES (coherence bandwidth, not ambition level):
+THE EIGHT SCALES (coherence bandwidth, not ambition level):
 - HOME: Immediate household, closest relationships. Deeply personal, highly intimate.
 - NEIGHBOURHOOD: Local community, face-to-face networks. Direct relationships.
 - CITY: Urban systems, institutional engagement, civic scale.
@@ -502,6 +516,7 @@ THE SEVEN SCALES (coherence bandwidth, not ambition level):
 - COUNTRY: National systems, cross-community, governance and culture.
 - CONTINENT: Multi-national, transboundary challenges.
 - GLOBAL: International, planetary systems, cross-border coordination.
+- CIVILISATIONAL: Species-level, intergenerational, 100+ year timelines. The frame humanity operates inside.
 
 CRITICAL READING INSTRUCTIONS:
 Scale is coherence bandwidth — where felt responsibility lives, not where examples are drawn from.
@@ -519,11 +534,14 @@ If someone describes responsibility for their immediate relationships and househ
 
 Scale tension is real and useful: name it if genuine. But do not manufacture tension by contrasting probe examples (local) against the responsibility statement (global) — that tension is an artifact of the probe process, not a real tension in the person.
 
+NOTE ON THE OBLIGATION QUESTION (Q3 of this stage):
+This question asks about unfinished business — something that keeps returning as a felt duty rather than an aspiration. It is often the most honest signal of scale. If the person names something at civilisational or species level here, weight it heavily. The obligation question bypasses aspiration-thinking and surfaces genuine felt responsibility.
+
 ANSWERS:\n${text}${northStarBlockS}
 
 Return JSON only:
 {
-  "scale": "single scale name exactly as listed above",
+  "scale": "single scale name exactly as listed above — CIVILISATIONAL is a valid option for species-level felt responsibility",
   "confidence": "strong | blended | thin",
   "tension": "genuine tension between felt responsibility and current reach, or null — do not manufacture tension from probe examples vs responsibility statement",
   "reasoning": "2-3 sentences — weight the responsibility statement as primary signal, name what the person said they feel on the hook for"
@@ -715,7 +733,7 @@ async function runPhase3(session) {
     system:     PHASE3_SYSTEM,
     messages:   [{
       role:    "user",
-      content: `Here are the ten answers across three stages:\n\n${transcriptText}${confirmationSummary}\n\nConfirmed coordinates (use these — they reflect any corrections from the confirmation conversation):\nArchetype: ${session.tentative.archetype.archetype}\nDomain: ${session.tentative.domain.domain}\nScale: ${session.tentative.scale.scale}`
+      content: `Here are the ten answers across three stages:\n\n${transcriptText}${confirmationSummary}\n\nConfirmed coordinates (use these — they reflect any corrections from the confirmation conversation):\nArchetype: ${session.tentative.archetype.archetype}\nDomain: ${session.tentative.domain.domain}\nScale: ${session.tentative.scale.scale}${session.p4Profile ? `\n\nNOTE: The profile card has already named the coordinates. The mirror should go deeper — not repeat the labels but find the felt truth underneath what was just named.` : ""}`
     }]
   });
 
@@ -776,8 +794,8 @@ Scale is coherence bandwidth, not ambition or current reach. The person who thin
 
 STRUCTURE:
 
-Section 1 — Signal (1 paragraph, 1-3 sentences):
-Compress the Initial Reflection throughline. Open with the instinct, not the archetype name.
+Section 1 — Pattern (1 paragraph, 1-3 sentences):
+Compress the throughline into the sharpest possible statement of how this person moves. Open with "The way you move through..." or "You are..." — not with the archetype name. This is the bridge from the mirror to the label. Make it feel earned.
 
 Section 2 — Archetype (1 paragraph):
 "The contribution archetype most aligned with this movement is [Archetype]."
@@ -825,7 +843,7 @@ Could any sentence in Sections 2-5 appear in a generic archetype profile? If yes
 
 OUTPUT — return JSON only, no other text:
 {
-  "signal_restatement":    "1 paragraph",
+  "pattern_restatement":   "1 paragraph",
   "archetype_frame":       "1 paragraph",
   "domain_frame":          "1 paragraph",
   "scale_frame":           "1 paragraph",
@@ -856,14 +874,21 @@ async function runPhase4(session) {
     ...session.scaleTranscript.map((e, i)     => `[SCALE] ${SCALE_QUESTIONS[i].label}: ${e.answer}${e.thin ? " [thin]" : ""}`)
   ].join("\n\n");
 
-  const payload = `INITIAL REFLECTION:\n${session.synthesis.synthesis_text}
-
-INTERNAL SIGNALS:\n${JSON.stringify(session.synthesis.internal_signals, null, 2)}
-
-CONFIRMED COORDINATES:
+  // Phase 4 now runs BEFORE Phase 3 (mirror). Build from transcripts and coordinates directly.
+  const payload = `CONFIRMED COORDINATES:
 Archetype: ${arch.archetype}${arch.secondary ? ` (blended with ${arch.secondary})` : ""}
-Domain: ${dom.domain}
-Scale: ${scale.scale}${scale.tension ? `\nScale tension: ${scale.tension}` : ""}
+Archetype confidence: ${arch.confidence}
+Archetype reasoning: ${arch.reasoning}
+Cost signal: ${arch.cost_signal || ""}
+
+Domain: ${dom.domain}${dom.secondary ? ` (blended with ${dom.secondary})` : ""}
+Domain confidence: ${dom.confidence}
+Domain reasoning: ${dom.reasoning}
+
+Scale: ${scale.scale}
+Scale confidence: ${scale.confidence}
+Scale tension: ${scale.tension || "none"}
+Scale reasoning: ${scale.reasoning}
 
 ALL ANSWERS:\n${allTranscript}
 
@@ -907,8 +932,8 @@ function renderPhase4(p4) {
     </div>
 
     <div class="profile-section">
-      <div class="profile-section-label">Signal</div>
-      <p>${esc(p4.signal_restatement)}</p>
+      <div class="profile-section-label">Pattern</div>
+      <p>${esc(p4.pattern_restatement)}</p>
     </div>
 
     <div class="profile-section">
@@ -1280,10 +1305,8 @@ async function handleConfirmation(session, latestInput, res, northStarCtx) {
   // If confirmationHistory already exists, return it as-is (idempotent).
   if (!latestInput) {
     if (session.confirmationHistory.length > 0) {
-      // Already opened — return last assistant message
-      const last = [...session.confirmationHistory].reverse().find(m => m.role === "assistant");
+      // Already opened — return session state only, no new message (prevents duplicate bubbles)
       return res.status(200).json({
-        message:   last?.content || "Ready when you are.",
         session,
         stage:     "confirmation",
         inputMode: "text",
@@ -1320,6 +1343,9 @@ async function handleConfirmation(session, latestInput, res, northStarCtx) {
         session.tentative.domain = await extractTentativeDomain(session.domainTranscript, northStarCtx);
       if (!session.tentative.scale && session.scaleTranscript?.length)
         session.tentative.scale = await extractTentativeScale(session.scaleTranscript, northStarCtx);
+      // Clear stale confirmation history so the conversation starts fresh
+      // with the newly extracted coordinates, not the old fallback message
+      session.confirmationHistory = [];
     } catch (e) {
       console.error("Tentative recovery failed:", e);
       return res.status(500).json({ error: "Could not recover coordinates. Please try again." });
@@ -1415,8 +1441,40 @@ Return JSON only:
 }
 
 // ─── Synthesis pipeline ───────────────────────────────────────────────────────
+// Order: thinking → profile card (Phase 4) → auto-advance 6s → mirror (Phase 3)
+// The profile names and structures. The mirror goes deeper.
+// Confirmation conversation is optional, triggered post-mirror by the person.
 
 async function runSynthesis(session, res) {
+  // Phase 4 fires first — profile card with all coordinates named
+  let p4;
+  try {
+    p4 = await runPhase4(session);
+  } catch (e) {
+    console.error("Phase 4 error:", e);
+    return res.status(500).json({ error: "Framing failed", details: e.message });
+  }
+
+  session.stage = "framing";
+
+  // Save profile to session so mirror (Phase 3) has access to confirmed coordinates
+  session.p4Profile = p4;
+
+  return res.status(200).json({
+    message:                   renderPhase4(p4),
+    isHtml:                    true,
+    session,
+    stage:                     "synthesis",   // frontend treats this as the first reveal
+    inputMode:                 "none",
+    autoAdvance:               true,
+    advanceDelay:              6000,           // 6-second pause before mirror fires
+    profile:                   p4,
+    identity_statement_system: p4.civilisational_statement || null
+  });
+}
+
+async function runFraming(session, res) {
+  // Phase 3 fires second — mirror reflection, unlabelled, going deeper
   let synthesis;
   try {
     synthesis = await runPhase3(session);
@@ -1426,40 +1484,17 @@ async function runSynthesis(session, res) {
   }
 
   session.synthesis = synthesis;
-  session.stage     = "framing";
+  session.status    = "complete";
+  session.stage     = "complete";
 
   return res.status(200).json({
     message:      synthesis.synthesis_text,
     sections:     synthesis.sections,
     session,
-    stage:        "synthesis",
+    stage:        "complete",
     inputMode:    "none",
-    autoAdvance:  true,
-    advanceDelay: 6000
-  });
-}
-
-async function runFraming(session, res) {
-  let p4;
-  try {
-    p4 = await runPhase4(session);
-  } catch (e) {
-    console.error("Phase 4 error:", e);
-    return res.status(500).json({ error: "Framing failed", details: e.message });
-  }
-
-  session.status = "complete";
-  session.stage  = "complete";
-
-  return res.status(200).json({
-    message:                   renderPhase4(p4),
-    isHtml:                    true,
-    session,
-    stage:                     "complete",
-    inputMode:                 "none",
-    complete:                  true,
-    profile:                   p4,
-    identity_statement_system: p4.civilisational_statement || null
+    complete:     true,
+    isMirror:     true,   // frontend uses this to apply mirror card styling
   });
 }
 
@@ -1532,19 +1567,35 @@ module.exports = async (req, res) => {
       return await handleQuestionPhase(session, latestInput, res, northStarCtx);
     }
 
-    // ── Confirmation ──────────────────────────────────────────────────────────
-    if (session.stage === "confirmation") {
-      return await handleConfirmation(session, latestInput, res, northStarCtx);
+    // ── Reveal — "See your Purpose Piece" button fires this ─────────────────
+    // Triggered by client sending stage: 'reveal' with empty messages.
+    // Runs extraction if needed, then fires profile card (Phase 4).
+    if (session.stage === "reveal") {
+      session.stage = "thinking";
+      return await runSynthesis(session, res);
     }
 
-    // ── Thinking → synthesis ──────────────────────────────────────────────────
+    // ── Thinking → profile card (Phase 4) ────────────────────────────────────
     if (session.stage === "thinking") {
       return await runSynthesis(session, res);
     }
 
-    // ── Framing ───────────────────────────────────────────────────────────────
+    // ── Framing → mirror (Phase 3) ────────────────────────────────────────────
     if (session.stage === "framing") {
       return await runFraming(session, res);
+    }
+
+    // ── Correction — optional post-mirror confirmation conversation ───────────
+    // Triggered voluntarily by the person after seeing their full Purpose Piece.
+    // Not a mandatory gate. Corrections write back to session.tentative.
+    if (session.stage === "correction") {
+      session.stage = "confirmation";
+      return await handleConfirmation(session, latestInput, res, northStarCtx);
+    }
+
+    // ── Confirmation (ongoing turns) ──────────────────────────────────────────
+    if (session.stage === "confirmation") {
+      return await handleConfirmation(session, latestInput, res, northStarCtx);
     }
 
     return res.status(200).json({ message: "Something went wrong. Please refresh.", session, inputMode: "text" });
