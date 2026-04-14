@@ -4,7 +4,7 @@ import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
 import { supabase } from '../../hooks/useSupabase'
-import { FlamePicker, FlameGlyph } from '../../components/FlameCheckIn'
+import { FlamePicker, FlameGlyph, FlameSlider } from '../../components/FlameCheckIn'
 import { ProtocolPanel } from '../../components/ProtocolPanel'
 import { AccessGate } from '../../components/AccessGate'
 
