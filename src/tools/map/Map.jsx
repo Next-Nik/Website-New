@@ -1087,15 +1087,6 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
         <div>
           {!horizonLocked || step === 'horizon' ? (
             <>
-              {/* Permission-to-challenge moment */}
-              {horizonMsgs.length === 0 && (
-                <div style={{ padding: '16px 18px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderLeft: '3px solid rgba(200,146,42,0.4)', borderRadius: '10px', marginBottom: '16px' }}>
-                  <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, margin: 0 }}>
-                    I'm going to challenge you here, just to pressure test your answer. If afterwards you choose to stay with what you wrote, that's great. If you choose to alter or edit any part of it — or the whole thing — that's also great. We're aiming for the truth of your life here, so let's get it.
-                  </p>
-                </div>
-              )}
-
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '8px' }}>
                 If the genie granted your wish in {domain.label}, what would it be?
               </p>
@@ -1106,7 +1097,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
               <textarea
                 value={horizonText}
                 onChange={e => setHorizonText(e.target.value)}
-                placeholder="What would your life look like if this area were genuinely good?"
+                placeholder="What does this area look like in your full yes life?"
                 rows={3}
                 style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '12px' }}
               />
@@ -1443,7 +1434,7 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, ac
               <textarea
                 value={horizonText}
                 onChange={e => setHorizonText(e.target.value)}
-                placeholder="If this area was exactly where you want it — what would that look like?"
+                placeholder="What does this relationship look like in your full yes life?"
                 rows={2}
                 style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.22)', background: '#FAFAF7', ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.78)', resize: 'vertical', outline: 'none', lineHeight: 1.6, marginBottom: '8px', boxSizing: 'border-box' }}
               />
@@ -1476,6 +1467,8 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate }) {
   const [synthesis,    setSynthesis]    = useState(existingData?.synthesis || '')
   const [synthesising, setSynthesising] = useState(false)
   const [synthesisDone, setSynthesisDone] = useState(!!existingData?.synthesis)
+  const [horizonScore,  setHorizonScore]  = useState(existingData?.horizonScore)
+  const [horizonLocked, setHorizonLocked] = useState(!!existingData?.horizonLocked)
 
   const activeSubDomains    = subDomains.filter(s => s.active)
   const completedSubDomains = activeSubDomains.filter(s => s.horizonText && s.currentScore !== undefined)
@@ -1575,12 +1568,71 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate }) {
       )}
 
       {synthesisDone && synthesis && (
-        <div style={{ marginTop: '20px', padding: '20px 22px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.20)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '10px' }}>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '10px' }}>North Star {'·'} Connection synthesis</div>
-          {synthesis.split('\n\n').map((p, i) => (
-            <p key={i} style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.8, margin: i > 0 ? '12px 0 0' : 0 }}>{p}</p>
-          ))}
-        </div>
+        <>
+          {/* North Star synthesis reflection */}
+          <div style={{ marginTop: '20px', padding: '20px 22px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.20)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '10px' }}>
+            <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '10px' }}>North Star {'·'} Connection</div>
+            {synthesis.split('\n\n').map((p, i) => (
+              <p key={i} style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.8, margin: i > 0 ? '12px 0 0' : 0 }}>{p}</p>
+            ))}
+          </div>
+
+          {/* Horizon goal — score + lock */}
+          {!horizonLocked ? (
+            <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
+              <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>Now — where do you want to be?</div>
+              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, marginBottom: '16px' }}>
+                Given everything across your relational life — what score would feel like your full yes? Not perfection. The score that would mean this domain is genuinely alive for you.
+              </p>
+              <HourglassPicker
+                onScore={n => { setHorizonScore(n); updateSubDomain({ id: 'connection', horizonScore: n }) }}
+                horizonMode
+                currentScore={horizonScore}
+              />
+              {horizonScore !== undefined && (
+                <div style={{ marginTop: '16px' }}>
+                  <LockBtn
+                    onClick={() => {
+                      setHorizonLocked(true)
+                      const avg = completedSubDomains.length
+                        ? completedSubDomains.reduce((s, d) => s + d.currentScore, 0) / completedSubDomains.length
+                        : horizonScore
+                      const final = {
+                        ...existingData,
+                        subDomains,
+                        synthesis,
+                        currentScore: Math.round(avg * 10) / 10,
+                        horizonScore,
+                        horizonText: 'See sub-domain horizons',
+                        horizonLocked: true,
+                      }
+                      onUpdate(final)
+                      onComplete(final)
+                    }}
+                    label={`Lock in my horizon →`}
+                  />
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Done state — mirrors DomainStep's locked horizon summary */
+            <div style={{ marginTop: '20px' }}>
+              <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '10px' }}>
+                <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>YOUR HORIZON · CONNECTION</div>
+                <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '10px' }}>
+                  Across your relational landscape — sub-domain goals set above.
+                </p>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.35)', background: 'rgba(200,146,42,0.06)' }}>
+                  <span style={{ ...sc, fontSize: '1.3125rem', color: '#A8721A' }}>Horizon: {horizonScore}</span>
+                  <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: '#A8721A' }}>{TIER_MAP[horizonScore]}</span>
+                </div>
+              </div>
+              <button onClick={() => setHorizonLocked(false)} style={{ ...serif, fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                Edit →
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   )

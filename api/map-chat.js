@@ -11,7 +11,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const { getNorthStarContext, formatNorthStarContext } = require('./_north-star');
 
 // ─── North Star Identity ───────────────────────────────────────────────────
-const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the NextUs Life OS ecosystem. You are consistent across every tool: The Map, Foundation, Orienteering, Purpose Piece, Target Sprint, and Expansion. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
+const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the Horizon Suite ecosystem. You are consistent across every tool: The Map, Horizon State, Orienteering, Purpose Piece, Target Sprint, and Horizon Practice. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
 
 
 
@@ -225,7 +225,7 @@ function thinnessResponse(step, probeCount) {
 
 // ─── Placement inference prompt ───────────────────────────────────────────────
 function placementInferencePrompt(session, domain) {
-  return `You are the Life OS assessment engine. Infer honest placement for ${domain.label}.
+  return `You are the Horizon Suite assessment engine. Infer honest placement for ${domain.label}.
 
 Life's mission question: "${domain.stewardshipQuestion}"
 Avatar character: ${session.domainData[domain.id]?.characterBrief || session.domainData[domain.id]?.avatarList || "not captured"}
@@ -265,7 +265,7 @@ Respond ONLY with valid JSON, no markdown:
 
 // ─── Avatar synthesis prompt ──────────────────────────────────────────────────
 function avatarSynthesisPrompt(session, domain) {
-  return `You are the Life OS assessment engine. Synthesise a character brief for ${domain.label}.
+  return `You are the Horizon Suite assessment engine. Synthesise a character brief for ${domain.label}.
 
 Avatar list: ${session.domainData[domain.id]?.avatarList || ""}
 Character description: ${session.domainData[domain.id]?.avatarCharacter || ""}
@@ -288,14 +288,14 @@ function finalSynthesisPrompt(session) {
   Horizon Goal: ${data.horizon || "not captured"}`;
   }).filter(Boolean).join("\n\n");
 
-  return `You are the Life OS assessment engine delivering the final map.
+  return `You are the Horizon Suite assessment engine delivering the final map.
 
 Domain data:
 ${domainSummaries}
 
 Brain synthesis: ${session.brainAnswer || "not provided"}
 
-Produce the final Life OS map.
+Produce the final Horizon Suite map.
 
 STAGE — identify from score patterns:
 Stabilisation: Multiple domains 2-4, needs stabilisation before development work
@@ -321,7 +321,7 @@ function lifeHorizonPrompt(session) {
     return `${d.label}: "${data.horizon}"`;
   }).filter(Boolean).join("\n");
 
-  return `You have the seven domain Horizon Goals that someone expressed for their own life during a Life OS assessment. Each is their honest answer to "if a genie granted your wish here, what would it be?"
+  return `You have the seven domain Horizon Goals that someone expressed for their own life during a Horizon Suite assessment. Each is their honest answer to "if a genie granted your wish here, what would it be?"
 
 Their seven domain horizons:
 ${horizons}
@@ -363,7 +363,7 @@ module.exports = async (req, res) => {
         session,
         phase: "domain",
         phaseLabel: "Path — 1 of 7",
-        message: `Welcome to Life OS.\n\nThis is the beginning of seeing your life clearly — all of it, across seven domains. Not where you wish you were. Where you actually are. And where you genuinely want to go.\n\nIn each domain, three steps. First, you'll build a character — who represents 10/10 for someone like you specifically. Then you'll describe where you honestly are right now. Then the genie question: if your wish were granted here, what would it actually be?\n\nNo right answers. Only honest ones. About 20–30 minutes.\n\nLet's begin.\n\n${DOMAINS[0].avatarPrompt}`,
+        message: `Welcome to The Map.\n\nThis is the beginning of seeing your life clearly — all of it, across seven domains. Not where you wish you were. Where you actually are. And where you genuinely want to go.\n\nIn each domain, three steps. First, you'll build a character — who represents 10/10 for someone like you specifically. Then you'll describe where you honestly are right now. Then the genie question: if your wish were granted here, what would it actually be?\n\nNo right answers. Only honest ones. About 20–30 minutes.\n\nLet's begin.\n\n${DOMAINS[0].avatarPrompt}`,
         inputMode: "text"
       });
     }
@@ -419,7 +419,7 @@ module.exports = async (req, res) => {
       return res.json({
         session,
         phase: "complete",
-        phaseLabel: "Your Life OS Map",
+        phaseLabel: "Your Map",
         complete: true,
         mapData: synthData,
         inputMode: "none"
@@ -580,21 +580,97 @@ module.exports = async (req, res) => {
           return res.json({ session, phase: "domain", phaseLabel: `${domain.label} — Horizon Goal`, message: thinnessResponse("horizon", 0), inputMode: "text" });
         }
 
-        // Calibration probe — catches Avatar conflation (runs once per domain)
+        // Horizon reception — North Star reads the goal and responds appropriately.
+        // First pass: receive the dream. Only probe if something specific warrants it.
         if (!session.domainData[domainId].horizonCalibrated) {
           session.domainData[domainId].horizonCalibrated = true;
           session.domainData[domainId].horizonDraft = userMessage;
 
+          const nsBlockHorizon = northStarCtx ? '\n\n' + formatNorthStarContext(northStarCtx) : '';
+          const horizonReceptionPrompt = `${NORTH_STAR_IDENTITY}
+
+You are receiving someone's Horizon Goal for the ${domain.label} domain. This is a pivotal moment.
+
+Their goal: "${userMessage}"
+
+Their current placement score: ${session.domainData[domainId].score || 'not yet recorded'}/10
+Their avatar (their 10/10 character): ${session.domainData[domainId].characterBrief || 'not recorded'}
+
+YOUR JOB:
+Receive this goal. Read it on its own terms. This is someone daring to say what they actually want — treat that with the weight it deserves.
+
+BEFORE you respond, run this internal check (do NOT name or explain the check — just run it silently):
+1. Is this GRANDIOSE/PERFORMATIVE? Signs: the goal is about status or being seen rather than contribution; there's "look at me" energy that's disconnected from any actual through-line in what they've shared; it reads like a fantasy costume rather than a genuine scaled-up version of who they are.
+2. Is this PLAYING IT SAFE? Signs: the goal is noticeably smaller than what their avatar and placement suggest they actually want; they're hedging or underselling; there's a whiff of "I don't want to say the real thing."
+
+IF NEITHER FLAG IS TRIGGERED — the goal is genuine, whether small or large — your response is:
+- Receive it. Land it. Let them feel that you've actually taken it in.
+- One brief, warm observation that shows you've heard the specific thing they said (not a generic affirmation).
+- Move on. Do NOT interrogate it. Do NOT ask them to prove it. Do NOT tilt your head.
+- End by signalling you're moving to the next domain OR that this closes the domain, naturally.
+
+IF GRANDIOSE FLAG: gently, curiously — not skeptically — ask what a day looks like with that granted. "I want to make sure we have the real one" framing. Warm, not suspicious.
+
+IF PLAYING IT SAFE FLAG: give them permission to go bigger. Something like: "That's one answer. Is there a bigger one you're not saying?"
+
+VOICE: Warm, precise, direct. Short — 2 to 4 sentences. This is not the place for a long reflection. Receive and move.
+${nsBlockHorizon}`;
+
+          const horizonReceptionResponse = await anthropic.messages.create({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 200,
+            messages: [{ role: "user", content: horizonReceptionPrompt }]
+          });
+
+          const receptionMessage = horizonReceptionResponse.content[0].text.trim();
+
+          // Check if North Star's response is probing (contains a question) — if so, hold at horizon step
+          const isProbing = receptionMessage.includes('?');
+
+          if (isProbing) {
+            // North Star found something worth pressing — hold for one more response
+            return res.json({
+              session,
+              phase: "domain",
+              phaseLabel: `${domain.label} — Horizon Goal`,
+              message: receptionMessage,
+              inputMode: "text"
+            });
+          }
+
+          // North Star received it cleanly — store the draft as final and move on
+          session.domainData[domainId].horizon = userMessage;
+          session.domainData[domainId].horizonReception = receptionMessage;
+
+          const nextIndex = session.domainIndex + 1;
+
+          if (nextIndex >= DOMAINS.length) {
+            session.phase = "brain";
+            return res.json({
+              session,
+              phase: "brain",
+              phaseLabel: "Brain — The Synthesis Question",
+              message: receptionMessage + "\n\n" + BRAIN_PROMPT,
+              inputMode: "text"
+            });
+          }
+
+          session.domainIndex = nextIndex;
+          session.domainStep = "avatar";
+          session.phase = "domain";
+          session.probeCount = 0;
+
+          const nextDomainAfterReception = DOMAINS[nextIndex];
           return res.json({
             session,
             phase: "domain",
-            phaseLabel: `${domain.label} — Horizon Goal`,
-            message: `If you woke up tomorrow with that granted — what's the first thing you'd notice was different? What would your actual day look like?\n\nSometimes the wish and the character are the same thing. Sometimes they're not. Just want to make sure we have the real one.`,
+            phaseLabel: `${nextDomainAfterReception.label} — ${nextIndex + 1} of 7`,
+            message: receptionMessage + "\n\n" + nextDomainAfterReception.avatarPrompt,
             inputMode: "text"
           });
         }
 
-        // Store final Horizon Goal
+        // Store final Horizon Goal (reached only if first pass was a probe)
         session.domainData[domainId].horizon = userMessage;
 
         const nextIndex = session.domainIndex + 1;
@@ -634,7 +710,7 @@ module.exports = async (req, res) => {
     return res.json({ session, phase: session.phase, message: "Let's keep going.", inputMode: "text" });
 
   } catch (err) {
-    console.error("Life OS engine error:", err);
+    console.error("Map engine error:", err);
     return res.status(500).json({ error: "Something went wrong. Please try again." });
   }
 };

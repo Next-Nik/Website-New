@@ -8,7 +8,7 @@ const Anthropic = require('@anthropic-ai/sdk')
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 const { getNorthStarContext, formatNorthStarContext } = require('./_north-star')
 
-const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the NextUs Life OS ecosystem. You are consistent across every tool: The Map, Foundation, Orienteering, Purpose Piece, Target Sprint, and Expansion. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
+const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the Horizon Suite ecosystem. You are consistent across every tool: The Map, Horizon State, Orienteering, Purpose Piece, Target Sprint, and Horizon Practice. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
 
 const DOMAIN_LABELS = {
   path:       'Path',
@@ -45,12 +45,12 @@ function buildSynthesisPrompt(domainData, northStarCtx) {
 
   return `${NORTH_STAR_IDENTITY}
 
-You are delivering the final Life OS map for this person.
+You are delivering the final Horizon Suite map for this person.
 
 Domain data:
 ${domainSummaries}${nsBlock}
 
-Produce the final Life OS map.
+Produce the final Horizon Suite map.
 
 STAGE — identify from score patterns:
 Stabilisation: Multiple domains 2-4, needs stabilisation before development work
@@ -74,7 +74,7 @@ function buildHorizonPrompt(domainData) {
     return `${label}: "${data.horizonText}"`
   }).filter(Boolean).join('\n')
 
-  return `You have the seven domain Horizon Goals that someone expressed for their own life during a Life OS assessment. Each is their honest answer to "if a genie granted your wish here, what would it be?"
+  return `You have the seven domain Horizon Goals that someone expressed for their own life during a Horizon Suite assessment. Each is their honest answer to "if a genie granted your wish here, what would it be?"
 
 Their domain horizons:
 ${horizons || '(not yet captured)'}

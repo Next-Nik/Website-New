@@ -8,7 +8,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const { getNorthStarContext, formatNorthStarContext } = require('./_north-star');
 
 // ─── North Star Identity ───────────────────────────────────────────────────
-const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the NextUs Life OS ecosystem. You are consistent across every tool: The Map, Foundation, Orienteering, Purpose Piece, Target Sprint, and Expansion. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
+const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the Horizon Suite ecosystem. You are consistent across every tool: The Map, Horizon State, Orienteering, Purpose Piece, Target Sprint, and Horizon Practice. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
 
 
 
@@ -63,7 +63,7 @@ async function recommendDomains(scores, hasMapData) {
 
   const system = `${VOICE}
 
-You are the Target Sprint advisor for Life OS. You help people choose the three domains to focus on for the next quarter.
+You are the Target Sprint advisor for the Horizon Suite. You help people choose the three domains to focus on for the next quarter.
 
 Your role is to surface the most catalytic domains — not just the lowest scores, but the ones where focused effort will unlock movement in others.
 
