@@ -1906,7 +1906,21 @@ export function ProfilePage() {
   const [foundationData, setFoundationData] = useState(null)
   const [claimedActor,   setClaimedActor]   = useState(null)
   const [horizonProfile, setHorizonProfile] = useState(null)
+  const [localMapData,   setLocalMapData]   = useState(null)
   const [dataLoading,    setDataLoading]    = useState(true)
+
+  // Read localStorage on mount — client side only
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('lifeos_themap_v4')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (parsed.domainData && Object.keys(parsed.domainData).length > 0) {
+          setLocalMapData(parsed.domainData)
+        }
+      }
+    } catch {}
+  }, [])
 
   useEffect(() => {
     if (authLoading) return
@@ -2065,23 +2079,13 @@ export function ProfilePage() {
               if (dd[k]?.horizonScore !== undefined) horizonScores[k] = dd[k].horizonScore
               if (dd[k]?.horizonText)                horizonGoals[k]  = dd[k].horizonText
             })
-          } else {
-            // Last resort — read from localStorage directly
-            try {
-              const raw = localStorage.getItem('lifeos_themap_v4')
-              if (raw) {
-                const parsed = JSON.parse(raw)
-                const dd = parsed.domainData || {}
-                if (Object.keys(dd).length > 0) {
-                  dataSource = 'local'
-                  domainKeys.forEach(k => {
-                    if (dd[k]?.currentScore !== undefined) currentScores[k] = dd[k].currentScore
-                    if (dd[k]?.horizonScore !== undefined) horizonScores[k] = dd[k].horizonScore
-                    if (dd[k]?.horizonText)                horizonGoals[k]  = dd[k].horizonText
-                  })
-                }
-              }
-            } catch {}
+          } else if (localMapData && Object.keys(localMapData).length > 0) {
+            dataSource = 'local'
+            domainKeys.forEach(k => {
+              if (localMapData[k]?.currentScore !== undefined) currentScores[k] = localMapData[k].currentScore
+              if (localMapData[k]?.horizonScore !== undefined) horizonScores[k] = localMapData[k].horizonScore
+              if (localMapData[k]?.horizonText)                horizonGoals[k]  = localMapData[k].horizonText
+            })
           }
 
           const hasScores  = Object.keys(currentScores).length > 0
