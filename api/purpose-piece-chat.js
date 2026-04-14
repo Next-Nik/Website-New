@@ -978,6 +978,8 @@ async function handleQuestionPhase(session, latestInput, res) {
   // ── Duplicate message guard ─────────────────────────────────────────────────────────────
   const lastMsg = session.lastUserMessage || null;
   if (latestInput === lastMsg && entry) {
+    // Return current question so the frontend can re-render rather than silently stalling
+    session.currentQuestion = questions[qi].text;
     return res.status(200).json({
       session,
       stage,
@@ -992,6 +994,7 @@ async function handleQuestionPhase(session, latestInput, res) {
     if (isConfused(latestInput)) {
       const reframe = CONFUSION_REFRAMES[stage]?.[qi];
       if (reframe) {
+        session.currentQuestion = reframe;
         return res.status(200).json({
           message:   reframe,
           session,
@@ -1028,6 +1031,7 @@ async function handleQuestionPhase(session, latestInput, res) {
     // Thin — probe 1
     transcript.push({ question: questions[qi].text, answer: latestInput, probes: [], thin: false });
     setPC(session, stage, 1);
+    session.currentQuestion = probes[qi][0];
     return res.status(200).json({
       message:   probes[qi][0],
       session,
@@ -1041,6 +1045,7 @@ async function handleQuestionPhase(session, latestInput, res) {
   if (isConfused(latestInput)) {
     const reframe = CONFUSION_REFRAMES[stage]?.[qi];
     if (reframe) {
+      session.currentQuestion = reframe;
       return res.status(200).json({
         message:   reframe,
         session,
@@ -1065,8 +1070,10 @@ async function handleQuestionPhase(session, latestInput, res) {
 
       if (!check.has_signal && pc === 2) {
         setPC(session, stage, 3);
+        const probe3Text = "I want to make sure I'm reading this clearly. Can you give me one specific example — a real moment, even a small one?";
+        session.currentQuestion = probe3Text;
         return res.status(200).json({
-          message:   "I want to make sure I'm reading this clearly. Can you give me one specific example — a real moment, even a small one?",
+          message:   probe3Text,
           session,
           stage,
           inputMode: "text",
@@ -1116,8 +1123,10 @@ async function handleQuestionPhase(session, latestInput, res) {
 
   // Still thin — probe 2
   setPC(session, stage, 2);
+  const probe2Text = probes[qi][Math.min(1, probes[qi].length - 1)];
+  session.currentQuestion = probe2Text;
   return res.status(200).json({
-    message:   probes[qi][Math.min(1, probes[qi].length - 1)],
+    message:   probe2Text,
     session,
     stage,
     inputMode: "text",
