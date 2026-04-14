@@ -547,6 +547,37 @@ const btnStyle = {
   padding: '12px 20px', cursor: 'pointer',
 }
 
+function ChatBubble({ msg }) {
+  const isUser = msg.role === 'user'
+  return (
+    <div style={{ display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start', marginBottom: '10px' }}>
+      <div style={{
+        maxWidth: '88%',
+        padding: '12px 16px',
+        borderRadius: isUser ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
+        background: isUser ? 'rgba(200,146,42,0.07)' : '#FFFFFF',
+        border: isUser ? '1px solid rgba(200,146,42,0.22)' : '1px solid rgba(200,146,42,0.15)',
+        fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300,
+        color: isUser ? 'rgba(15,21,35,0.72)' : 'rgba(15,21,35,0.78)',
+        lineHeight: 1.72,
+        fontStyle: isUser ? 'italic' : 'normal',
+      }}>
+        {msg.content}
+      </div>
+    </div>
+  )
+}
+
+function ThinkingBubble() {
+  return (
+    <div style={{ display: 'flex', marginBottom: '10px' }}>
+      <div style={{ padding: '14px 18px', borderRadius: '14px 14px 14px 4px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)' }}>
+        <div className="typing-indicator"><span /><span /><span /></div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Shared sub-components (module scope — stable identity across renders) ────
 
 function ChatInput({ value, onChange, onSend, placeholder, disabled }) {
@@ -649,7 +680,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
         body: JSON.stringify({ domain: domain.id, messages: next, avatarDraft }),
       })
       const data = await res.json()
-      const aiMsg = { role: 'assistant', content: data.message, canLock: data.canLock }
+      const aiMsg = { role: 'assistant', content: data.message, canLock: data.canLock, cleanedDraft: data.cleanedDraft || null }
       const updated = [...next, aiMsg]
       setAvatarMessages(updated)
       if (data.cleanedDraft) setAvatarDraft(data.cleanedDraft)
@@ -783,39 +814,6 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
     setHorizonLocked(true)
     save({ horizonLocked: true, horizonScore, horizonText })
     setStep('done')
-  }
-
-  // ── Chat message renderer ────────────────────────────────────
-
-  function ChatBubble({ msg }) {
-    const isUser = msg.role === 'user'
-    return (
-      <div style={{ display: 'flex', justifyContent: isUser ? 'flex-end' : 'flex-start', marginBottom: '10px' }}>
-        <div style={{
-          maxWidth: '88%',
-          padding: '12px 16px',
-          borderRadius: isUser ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-          background: isUser ? 'rgba(200,146,42,0.07)' : '#FFFFFF',
-          border: isUser ? '1px solid rgba(200,146,42,0.22)' : '1px solid rgba(200,146,42,0.15)',
-          fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300,
-          color: isUser ? 'rgba(15,21,35,0.72)' : 'rgba(15,21,35,0.78)',
-          lineHeight: 1.72,
-          fontStyle: isUser ? 'italic' : 'normal',
-        }}>
-          {msg.content}
-        </div>
-      </div>
-    )
-  }
-
-  function ThinkingBubble() {
-    return (
-      <div style={{ display: 'flex', marginBottom: '10px' }}>
-        <div style={{ padding: '14px 18px', borderRadius: '14px 14px 14px 4px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)' }}>
-          <div className="typing-indicator"><span /><span /><span /></div>
-        </div>
-      </div>
-    )
   }
 
   // ── Render ──────────────────────────────────────────────────
@@ -967,7 +965,17 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
               {/* Conversation — after first AI exchange */}
               {avatarMessages.length > 0 && (
                 <div style={{ marginBottom: '8px' }}>
-                  {avatarMessages.map((m, i) => <ChatBubble key={i} msg={m} />)}
+                  {avatarMessages.map((m, i) => (
+                    <div key={i}>
+                      {m.role === 'assistant' && m.cleanedDraft && (
+                        <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderLeft: '3px solid rgba(200,146,42,0.35)', borderRadius: '8px', marginBottom: '10px' }}>
+                          <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px' }}>YOUR AVATAR DRAFT · CLEANED</div>
+                          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, margin: 0, whiteSpace: 'pre-wrap' }}>{m.cleanedDraft}</p>
+                        </div>
+                      )}
+                      <ChatBubble msg={m} />
+                    </div>
+                  ))}
                   {thinking && <ThinkingBubble />}
                 </div>
               )}

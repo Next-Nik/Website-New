@@ -130,9 +130,11 @@ Treat each submitted draft as the current truth. Don't reference earlier version
 RESPONSE FORMAT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+The cleanedDraft is shown to the user automatically in a separate document block. Do NOT repeat or quote it in your message. Your message should begin with your actual response — the throughline, the evaluation, the challenge if needed — never with "Here's your cleaned draft."
+
 Always respond with valid JSON:
 {
-  "message": "your response here",
+  "message": "your response here — do not repeat the cleaned draft, it is shown separately",
   "canLock": true or false,
   "cleanedDraft": "lightly edited version of their text (first exchange only, or when they update their draft)"
 }
