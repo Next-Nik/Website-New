@@ -413,6 +413,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
 
   // Mobile audio state — shared between play button and scrubber
   const mobileAudioRef   = useRef(null)
+  const mobileProgressRef = useRef(null)
   const mobileNearEndRef = useRef(false)
   const [mobilePlaying,  setMobilePlaying]  = useState(false)
   const [mobileCurrent,  setMobileCurrent]  = useState(0)
@@ -650,29 +651,33 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
               <FlameSlider value={beforeValue} onChange={setBeforeValue} ghostValue={null} />
             </div>
             <span style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', color: beforeDone ? 'rgba(168,114,26,0.38)' : 'rgba(15,21,35,0.45)', marginTop: '6px' }}>
-              {beforeDone ? 'saved' : 'Where is the flame?'}
+              {beforeDone ? 'saved' : ''}
             </span>
           </div>
 
-          {/* Play button — centered between flames */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '28px', flexShrink: 0 }}>
+          {/* Full audio player — centered between flames */}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '12px', flexShrink: 0, gap: '8px', width: '100%', maxWidth: '80px' }}>
+            {/* Play/Pause button */}
             <button
               onClick={mobileToggle}
               disabled={!beforeDone || !mobileLoaded}
               aria-label={mobilePlaying ? 'Pause' : 'Play'}
               style={{
-                width: '52px', height: '52px', borderRadius: '50%',
+                width: '48px', height: '48px', borderRadius: '50%',
                 background: mobilePlaying ? 'rgba(200,146,42,0.1)' : 'rgba(200,146,42,0.05)',
                 border: `1.5px solid ${beforeDone ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.25)'}`,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: beforeDone && mobileLoaded ? 'pointer' : 'not-allowed',
-                flexShrink: 0, color: '#A8721A', fontSize: '18px',
-                transition: 'all 0.2s',
-                opacity: beforeDone ? 1 : 0.4,
+                flexShrink: 0, color: '#A8721A', fontSize: '16px',
+                transition: 'all 0.2s', opacity: beforeDone ? 1 : 0.4,
               }}
             >
               {mobilePlaying ? '⏸' : '▶'}
             </button>
+            {/* Time display */}
+            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.06em', color: 'rgba(15,21,35,0.4)', textAlign: 'center' }}>
+              {mobileFmt(mobileCurrent)} / {mobileFmt(mobileDuration)}
+            </span>
           </div>
 
           {/* After flame */}
@@ -682,10 +687,36 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
             </span>
             <FlameSlider value={afterValue} onChange={setAfterValue} ghostValue={beforeDone ? beforeValue : null} />
             <span style={{ ...serif, fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginTop: '6px' }}>
-              And now{'—'}?
+              {''}
             </span>
           </div>
         </div>
+
+        {/* Scrubber — full width below flames */}
+        {beforeDone && (
+          <div
+            ref={mobileProgressRef}
+            onClick={e => {
+              const rect = mobileProgressRef.current?.getBoundingClientRect()
+              if (!rect) return
+              const a = mobileAudioRef.current
+              if (!a || !mobileDuration) return
+              a.currentTime = ((e.clientX - rect.left) / rect.width) * mobileDuration
+            }}
+            style={{
+              width: '100%', height: '3px', marginBottom: '16px',
+              background: 'rgba(200,146,42,0.15)', borderRadius: '2px',
+              cursor: 'pointer', position: 'relative',
+            }}
+          >
+            <div style={{
+              position: 'absolute', left: 0, top: 0, height: '100%',
+              width: `${mobilePct}%`,
+              background: 'rgba(200,146,42,0.65)', borderRadius: '2px',
+              transition: 'width 0.5s linear',
+            }} />
+          </div>
+        )}
 
         {/* Journal window — swaps Before → After */}
         <div style={{ marginBottom: '12px' }}>
