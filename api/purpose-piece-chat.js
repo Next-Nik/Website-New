@@ -1319,8 +1319,10 @@ async function handleConfirmation(session, latestInput, res, northStarCtx) {
 
   // Lock trigger: the "Yes, lock it in" button sends the canonical phrase,
   // but also catch clear freetext affirmations so the loop can't persist.
-  const lockPhrases = ["yes, lock it in.", "yes, lock it in", "lock it in", "lock it", "that fits. lock it.", "lock it.", "that fits", "yes lock it", "confirm", "yes, confirmed", "confirmed"]
-  const isLockSignal = latestInput && lockPhrases.some(p => latestInput.trim().toLowerCase() === p)
+  // Lock phrases: only unambiguous explicit lock signals, scoped to confirmation stage only
+  // Do NOT include short common words like "confirm", "confirmed", "that fits" — they appear in normal answers
+  const lockPhrases = ["yes, lock it in.", "yes, lock it in", "lock it in", "lock it.", "that fits. lock it.", "yes lock it in", "lock it in."]
+  const isLockSignal = session.stage === "confirmation" && latestInput && lockPhrases.some(p => latestInput.trim().toLowerCase() === p)
   if (isLockSignal) {
     session.stage = "thinking";
     return res.status(200).json({
@@ -1389,7 +1391,7 @@ async function handleConfirmation(session, latestInput, res, northStarCtx) {
     // original extraction results.
     try {
       const lastUserMsg = session.confirmationHistory.filter(m => m.role === "user").slice(-1)[0]?.content || "";
-      const lockPhrasesCheck = ["yes, lock it in.", "yes, lock it in", "lock it in", "lock it", "that fits. lock it.", "lock it.", "that fits", "yes lock it", "confirm", "yes, confirmed", "confirmed"]
+      const lockPhrasesCheck = ["yes, lock it in.", "yes, lock it in", "lock it in", "lock it.", "that fits. lock it.", "yes lock it in", "lock it in."]
       if (lastUserMsg && !lockPhrasesCheck.some(p => lastUserMsg.toLowerCase() === p)) {
         const correctionCheck = await anthropic.messages.create({
           model:      "claude-sonnet-4-20250514",
