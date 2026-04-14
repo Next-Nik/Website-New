@@ -607,13 +607,13 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
             backdropFilter: 'blur(4px)',
           }}
         >
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
             Horizon State {'\u00B7'} Foundation
           </span>
-          <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '24px', maxWidth: '320px' }}>
+          <p style={{ ...serif, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '320px' }}>
             Regulated internal stability {'\u2014'} the floor you stand on. Check in before and after to see what the audio actually does to your system.
           </p>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.55)' }}>
+          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.78)' }}>
             Tap anywhere to begin
           </span>
         </div>
@@ -675,7 +675,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
               {mobilePlaying ? '⏸' : '▶'}
             </button>
             {/* Time display */}
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.06em', color: 'rgba(15,21,35,0.4)', textAlign: 'center' }}>
+            <span style={{ ...sc, fontSize: '14px', letterSpacing: '0.06em', color: 'rgba(15,21,35,0.72)', textAlign: 'center' }}>
               {mobileFmt(mobileCurrent)} / {mobileFmt(mobileDuration)}
             </span>
           </div>
