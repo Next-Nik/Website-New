@@ -1225,11 +1225,29 @@ async function handleStageComplete(session, res, prefixMessage = null) {
 
 async function handleConfirmation(session, latestInput, res, northStarCtx) {
   session.confirmationHistory = session.confirmationHistory || [];
-  session.confirmationHistory.push({ role: "user", content: latestInput });
+
+  // ── Opening call — empty latestInput means "open the confirmation" ────────
+  // This fires when the client sends stage: 'confirmation' with no user message.
+  // If confirmationHistory already exists, return it as-is (idempotent).
+  if (!latestInput) {
+    if (session.confirmationHistory.length > 0) {
+      // Already opened — return last assistant message
+      const last = [...session.confirmationHistory].reverse().find(m => m.role === "assistant");
+      return res.status(200).json({
+        message:   last?.content || "Ready when you are.",
+        session,
+        stage:     "confirmation",
+        inputMode: "text",
+      });
+    }
+    // Fresh open — run confirmation opening (falls through to build below)
+  } else {
+    session.confirmationHistory.push({ role: "user", content: latestInput });
+  }
 
   // Client-driven lock: the "Yes, lock it in" button sends this exact phrase.
   // This is the single authoritative lock trigger — no freetext inference.
-  if (latestInput.trim().toLowerCase() === "yes, lock it in.") {
+  if (latestInput && latestInput.trim().toLowerCase() === "yes, lock it in.") {
     session.stage = "thinking";
     return res.status(200).json({
       message:      "Reading everything together now.\n\nThis takes a moment.",
@@ -1241,10 +1259,41 @@ async function handleConfirmation(session, latestInput, res, northStarCtx) {
     });
   }
 
+  // ── Ensure tentative coordinates exist before building confirmation prompt ──
+  // They may be missing if the session was restored from Supabase and tentative
+  // extraction never ran (e.g. cross-device restore or interrupted session).
+  if (!session.tentative?.archetype || !session.tentative?.domain || !session.tentative?.scale) {
+    try {
+      session.tentative = session.tentative || {};
+      if (!session.tentative.archetype && session.archetypeTranscript?.length)
+        session.tentative.archetype = await extractTentativeArchetype(session.archetypeTranscript);
+      if (!session.tentative.domain && session.domainTranscript?.length)
+        session.tentative.domain = await extractTentativeDomain(session.domainTranscript);
+      if (!session.tentative.scale && session.scaleTranscript?.length)
+        session.tentative.scale = await extractTentativeScale(session.scaleTranscript);
+    } catch (e) {
+      console.error("Tentative recovery failed:", e);
+      return res.status(500).json({ error: "Could not recover coordinates. Please try again." });
+    }
+  }
+
+  // Guard: if still missing after recovery attempt, bail gracefully
+  if (!session.tentative?.archetype || !session.tentative?.domain || !session.tentative?.scale) {
+    return res.status(200).json({
+      message:   "Something went wrong recovering your coordinates. Please refresh and try again.",
+      session,
+      stage:     "confirmation",
+      inputMode: "text",
+    });
+  }
+
   // Continue confirmation conversation
   try {
     const confirmPrompt = buildConfirmationPrompt(session);
-    const apiMessages   = session.confirmationHistory.map(m => ({ role: m.role, content: m.content }));
+    // If history is empty (opening call), seed with the standard opening request
+    const apiMessages = session.confirmationHistory.length > 0
+      ? session.confirmationHistory.map(m => ({ role: m.role, content: m.content }))
+      : [{ role: "user", content: "Present the three tentative coordinates and open the confirmation conversation." }];
 
     const response = await anthropic.messages.create({
       model:      "claude-sonnet-4-20250514",
