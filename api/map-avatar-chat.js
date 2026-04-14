@@ -82,7 +82,7 @@ module.exports = async function handler(req, res) {
   try {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 600,
+      max_tokens: 1200,
       system: SYSTEM_PROMPT(domain),
       messages: messages.map(m => ({
         role: m.role === 'user' ? 'user' : 'assistant',
@@ -95,7 +95,8 @@ module.exports = async function handler(req, res) {
 
     // Try to parse JSON response
     try {
-      const jsonMatch = raw.match(/\{[\s\S]*\}/)
+      const cleaned = raw.replace(/```json|```/g, '').trim()
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}/)
       if (jsonMatch) {
         parsed = JSON.parse(jsonMatch[0])
       } else {
