@@ -646,6 +646,9 @@ export function PurposePiecePage() {
   const [showReveal,    setShowReveal]    = useState(false)
   const [readyToLock,   setReadyToLock]   = useState(false)
   const [showDeepGate,  setShowDeepGate]  = useState(false)
+  const [pendingMsg,    setPendingMsg]    = useState(null)   // text held during Back window
+  const [backVisible,   setBackVisible]   = useState(false)  // Back button visible
+  const backTimerRef = useRef(null)
   const [showCentreModal, setShowCentreModal] = useState(false)
   // headerOpen tracks whether the stage intro panel is expanded, keyed by stage name
   const [headerOpen,    setHeaderOpen]    = useState({ archetype: true, domain: true, scale: true })
@@ -965,32 +968,58 @@ export function PurposePiecePage() {
 
   async function send() {
     const text = input.trim()
-    if (!text || thinking || showReveal) return
-    addMsg('user', text)
+    if (!text || thinking || showReveal || pendingMsg) return
+
+    // Clear any existing Back timer
+    if (backTimerRef.current) clearTimeout(backTimerRef.current)
+
     setInput('')
     if (textareaRef.current) textareaRef.current.style.height = 'auto'
-    // Collapse the stage intro header after first answer
+
+    // Collapse stage intro header after first answer
     const currentStage = sessionRef.current?.stage
     if (currentStage && ['archetype','domain','scale'].includes(currentStage)) {
       setHeaderOpen(prev => ({ ...prev, [currentStage]: false }))
     }
-    setThinking(true)
-    // Minimum 800ms delay so responses feel conversational not instantaneous
-    const [d] = await Promise.allSettled([
-      callAPI([{ role: 'user', content: text }]),
-      new Promise(r => setTimeout(r, 800))
-    ])
-    setThinking(false)
-    if (d.status === 'fulfilled') {
-      handleResponse(d.value)
-    } else {
-      // Error recovery — restore last question so user isn't stuck
-      const lastQ = sessionRef.current?.currentQuestion
-      addMsg('assistant', lastQ
-        ? `Lost my thread for a second — still with you.\n\n${lastQ}`
-        : 'Lost my thread for a second. Please try again.')
-    }
+
+    // Hold message in pendingMsg — show Back button for 4 seconds
+    setPendingMsg(text)
+    setBackVisible(true)
+
+    backTimerRef.current = setTimeout(async () => {
+      setBackVisible(false)
+      setPendingMsg(null)
+      addMsg('user', text)
+      setThinking(true)
+      const [d] = await Promise.allSettled([
+        callAPI([{ role: 'user', content: text }]),
+        new Promise(r => setTimeout(r, 800))
+      ])
+      setThinking(false)
+      if (d.status === 'fulfilled') {
+        handleResponse(d.value)
+      } else {
+        const lastQ = sessionRef.current?.currentQuestion
+        addMsg('assistant', lastQ
+          ? `Lost my thread for a second — still with you.\n\n${lastQ}`
+          : 'Lost my thread for a second. Please try again.')
+      }
+    }, 4000)
   }
+
+  function handleBack() {
+    if (backTimerRef.current) clearTimeout(backTimerRef.current)
+    setInput(pendingMsg || '')
+    setPendingMsg(null)
+    setBackVisible(false)
+    // Re-open stage header if it was just collapsed
+    const currentStage = sessionRef.current?.stage
+    if (currentStage && ['archetype','domain','scale'].includes(currentStage)) {
+      setHeaderOpen(prev => ({ ...prev, [currentStage]: true }))
+    }
+    setTimeout(() => textareaRef.current?.focus(), 50)
+  }
+
 
   async function handleLock() {
     setReadyToLock(false)
@@ -1124,25 +1153,109 @@ export function PurposePiecePage() {
           </div>
         )}
 
-        {/* Chat thread — filter out any bubble that duplicates currentQuestion */}
-        <div className="chat-thread" style={{ marginBottom: '16px' }}>
-          {/* Show current question as opening bubble if thread has no content yet */}
-          {activeQuestionStage && session?.currentQuestion && messages.filter(m => m.type === 'user' || m.type === 'assistant').length === 0 && (
-            <div className="bubble bubble-assistant">{session.currentQuestion}</div>
-          )}
-          {messages.map(m => {
-            // Never render an assistant bubble whose content matches the pinned question
-            if (m.type === 'assistant' && session?.currentQuestion &&
-                m.content?.trim() === session.currentQuestion?.trim()) return null
-            if (m.type === 'user')      return <div key={m.id} className="bubble bubble-user">{m.content}</div>
-            if (m.type === 'assistant') return <div key={m.id} className="bubble bubble-assistant">{m.content}</div>
-            if (m.type === 'html')      return <div key={m.id} className="bubble bubble-assistant" dangerouslySetInnerHTML={{ __html: m.content }} />
-            if (m.type === 'label')     return <div key={m.id} style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', padding: '8px 0 4px' }}>{m.content}</div>
-            return null
-          })}
-          {thinking && <ThinkingDots />}
-          <div ref={bottomRef} />
-        </div>
+        {/* ── Question window — clean, focused, one question at a time ── */}
+        {activeQuestionStage && session?.currentQuestion && (
+          <div style={{
+            background: '#FFFFFF',
+            border: '1.5px solid rgba(200,146,42,0.22)',
+            borderRadius: '12px',
+            padding: '28px 28px 24px',
+            marginBottom: '16px',
+            animation: 'ppFadeUp 0.3s ease both',
+          }}>
+            {/* Question text */}
+            <div style={{ ...serif, fontSize: '1.1875rem', color: '#0F1523', lineHeight: 1.75, whiteSpace: 'pre-line', marginBottom: '24px' }}>
+              {session.currentQuestion}
+            </div>
+
+            {/* Pending message preview — shown during Back window */}
+            {pendingMsg && (
+              <div style={{
+                ...serif, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)',
+                fontStyle: 'italic', lineHeight: 1.65,
+                padding: '12px 16px',
+                background: 'rgba(200,146,42,0.04)',
+                borderRadius: '8px',
+                marginBottom: '12px',
+                borderLeft: '2px solid rgba(200,146,42,0.25)',
+              }}>
+                {pendingMsg}
+              </div>
+            )}
+
+            {/* Back button — visible for 4s after send */}
+            {backVisible && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                <button
+                  onClick={handleBack}
+                  style={{
+                    ...sc, fontSize: '13px', letterSpacing: '0.14em',
+                    color: '#A8721A', background: 'rgba(200,146,42,0.06)',
+                    border: '1px solid rgba(200,146,42,0.35)',
+                    borderRadius: '40px', padding: '6px 16px',
+                    cursor: 'pointer', transition: 'all 0.15s',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(200,146,42,0.65)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(200,146,42,0.35)'}
+                >
+                  ← Back
+                </button>
+                <span style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.35)' }}>
+                  Sending in a moment…
+                </span>
+              </div>
+            )}
+
+            {/* Input — hidden during Back window and when thinking */}
+            {!backVisible && !thinking && !showReveal && !readyToLock && (
+              <div className="input-area" id="pp-input-area" style={{ marginBottom: 0 }}>
+                <textarea ref={textareaRef} value={input}
+                  onChange={e => { setInput(e.target.value); resizeTextarea() }}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
+                  onFocus={() => { setTimeout(() => document.getElementById('pp-input-area')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 300) }}
+                  placeholder={PLACEHOLDERS[stage] || 'Type your answer…'}
+                  rows={1} disabled={thinking || !!pendingMsg}
+                />
+                <button className="btn-send" onClick={send} disabled={!input.trim() || thinking || !!pendingMsg}>Send</button>
+              </div>
+            )}
+
+            {/* Thinking state */}
+            {thinking && (
+              <div style={{ paddingTop: '4px' }}>
+                <ThinkingDots />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Confirmation + full chat thread for non-question stages */}
+        {!activeQuestionStage && (
+          <>
+            <div className="chat-thread" style={{ marginBottom: '16px' }}>
+              {messages.map(m => {
+                if (m.type === 'user')      return <div key={m.id} className="bubble bubble-user">{m.content}</div>
+                if (m.type === 'assistant') return <div key={m.id} className="bubble bubble-assistant">{m.content}</div>
+                if (m.type === 'html')      return <div key={m.id} className="bubble bubble-assistant" dangerouslySetInnerHTML={{ __html: m.content }} />
+                if (m.type === 'label')     return <div key={m.id} style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', padding: '8px 0 4px' }}>{m.content}</div>
+                return null
+              })}
+              {thinking && <ThinkingDots />}
+              <div ref={bottomRef} />
+            </div>
+            {!showReveal && !readyToLock && (
+              <div className="input-area" id="pp-input-area">
+                <textarea ref={textareaRef} value={input}
+                  onChange={e => { setInput(e.target.value); resizeTextarea() }}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
+                  placeholder={PLACEHOLDERS[stage] || 'Type your answer\u2026'}
+                  rows={1} disabled={thinking}
+                />
+                <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
+              </div>
+            )}
+          </>
+        )}
 
         {/* Lock confirmation */}
         {readyToLock && (
@@ -1155,26 +1268,7 @@ export function PurposePiecePage() {
           </div>
         )}
 
-        {/* Input */}
-        {!showReveal && !readyToLock && (
-          <>
-            <div className="input-area" id="pp-input-area">
-              <textarea ref={textareaRef} value={input}
-                onChange={e => { setInput(e.target.value); resizeTextarea() }}
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-                onFocus={() => { setTimeout(() => document.getElementById('pp-input-area')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 300) }}
-                placeholder={PLACEHOLDERS[stage] || 'Type your answer\u2026'}
-                rows={1} disabled={thinking}
-              />
-              <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
-            </div>
-            <div style={{ textAlign: 'center', marginTop: '12px' }}>
-              <button onClick={() => {}} style={{ background: 'none', border: 'none', ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.35)', cursor: 'default', padding: 0 }}>
-                Your progress is saved automatically.
-              </button>
-            </div>
-          </>
-        )}
+
       </div>
     )
   }
