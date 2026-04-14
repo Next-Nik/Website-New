@@ -1853,6 +1853,7 @@ export function ProfilePage() {
   const [sprintData,     setSprintData]     = useState(null)
   const [foundationData, setFoundationData] = useState(null)
   const [claimedActor,   setClaimedActor]   = useState(null)
+  const [horizonProfile, setHorizonProfile] = useState(null)
   const [dataLoading,    setDataLoading]    = useState(true)
 
   useEffect(() => {
@@ -1864,7 +1865,7 @@ export function ProfilePage() {
   async function loadData() {
     setDataLoading(true)
     try {
-      const [mapRes, ppRes, sprintRes, foundationRes, actorRes] = await Promise.all([
+      const [mapRes, ppRes, sprintRes, foundationRes, actorRes, horizonRes] = await Promise.all([
         supabase
           .from('map_results')
           .select('session, completed_at, map_data, horizon_goal_user, horizon_goal_system, complete')
@@ -1897,12 +1898,30 @@ export function ProfilePage() {
           .select('id, name, domain_id, subdomain_id, scale, winning, verified')
           .eq('profile_owner', user.id)
           .maybeSingle(),
+        supabase
+          .from('horizon_profile')
+          .select('domain, current_score, horizon_score, horizon_goal, avatar_archetype, source, last_updated')
+          .eq('user_id', user.id),
       ])
       if (mapRes.data)        setMapData(mapRes.data)
       if (ppRes.data)         setPurposeData(ppRes.data)
       if (sprintRes.data)     setSprintData(sprintRes.data)
       if (foundationRes.data) setFoundationData(foundationRes.data)
       if (actorRes.data)      setClaimedActor(actorRes.data)
+      if (horizonRes.data?.length) {
+        const profile = {}
+        for (const row of horizonRes.data) {
+          profile[row.domain] = {
+            currentScore:    row.current_score,
+            horizonScore:    row.horizon_score,
+            horizonGoal:     row.horizon_goal,
+            avatarArchetype: row.avatar_archetype,
+            source:          row.source,
+            lastUpdated:     row.last_updated,
+          }
+        }
+        setHorizonProfile(profile)
+      }
     } catch {}
     setDataLoading(false)
   }
@@ -1942,6 +1961,133 @@ export function ProfilePage() {
           <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
             color: 'rgba(15,21,35,0.72)' }}>{user.email}</p>
         </div>
+
+        {/* ── Living Profile Mirror ─────────────────────────────────────────── */}
+        {horizonProfile && Object.keys(horizonProfile).length > 0 && (() => {
+          const domainKeys   = ['path','spark','body','finances','connection','inner_game','signal']
+          const domainLabels = ['Path','Spark','Body','Finances','Connection','Inner Game','Signal']
+          const lifeHorizon  = horizonProfile['life']
+          const domains      = domainKeys.map((k, i) => ({ id: k, label: domainLabels[i] }))
+
+          const currentScores = {}
+          const horizonScores = {}
+          domainKeys.forEach(k => {
+            if (horizonProfile[k]?.currentScore !== undefined) currentScores[k] = horizonProfile[k].currentScore
+            if (horizonProfile[k]?.horizonScore !== undefined) horizonScores[k] = horizonProfile[k].horizonScore
+          })
+
+          const hasScores  = Object.keys(currentScores).length > 0
+          const hasHorizon = Object.keys(horizonScores).length > 0
+
+          return (
+            <div style={{ marginBottom: '56px', padding: '32px 28px',
+              background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)',
+              borderTop: '3px solid rgba(200,146,42,0.72)', borderRadius: '12px',
+              boxShadow: '0 2px 12px rgba(200,146,42,0.06)' }}>
+
+              {/* Life horizon statement */}
+              {lifeHorizon?.horizonGoal && (
+                <div style={{ marginBottom: '28px', paddingBottom: '24px',
+                  borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
+                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em',
+                    color: '#A8721A', marginBottom: '10px' }}>LIFE HORIZON</div>
+                  <p style={{ ...serif, fontSize: '20px', fontWeight: 300, fontStyle: 'italic',
+                    color: '#0F1523', lineHeight: 1.7, margin: 0 }}>
+                    {lifeHorizon.horizonGoal}
+                  </p>
+                </div>
+              )}
+
+              {/* Wheel */}
+              {hasScores && (
+                <div style={{ marginBottom: '24px' }}>
+                  <MapWeb domains={domains} currentScores={currentScores} horizonScores={horizonScores} />
+                  {hasHorizon && (
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '12px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ width: '20px', height: '2px', background: 'rgba(200,146,42,0.72)' }} />
+                        <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.45)', letterSpacing: '0.1em' }}>Now</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <div style={{ width: '20px', height: '0', borderTop: '2px dashed rgba(90,138,184,0.6)' }} />
+                        <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.45)', letterSpacing: '0.1em' }}>Horizon</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Domain rows */}
+              {hasScores && (
+                <div>
+                  {domainKeys.map((k, i) => {
+                    const d = horizonProfile[k]
+                    if (!d?.currentScore && d?.currentScore !== 0) return null
+                    const color = getTierColor(d.currentScore)
+                    return (
+                      <div key={k} style={{ display: 'flex', alignItems: 'flex-start',
+                        gap: '12px', padding: '10px 0',
+                        borderBottom: '1px solid rgba(200,146,42,0.07)' }}>
+                        <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.06em',
+                          color: 'rgba(15,21,35,0.65)', width: '110px', flexShrink: 0,
+                          paddingTop: '2px' }}>{domainLabels[i]}</div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          {d.horizonGoal && (
+                            <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
+                              color: 'rgba(15,21,35,0.65)', lineHeight: 1.55, margin: '0 0 4px',
+                              overflow: 'hidden', display: '-webkit-box',
+                              WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                              {d.horizonGoal}
+                            </p>
+                          )}
+                          {d.avatarArchetype && (
+                            <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em',
+                              color: 'rgba(15,21,35,0.35)' }}>{d.avatarArchetype}</div>
+                          )}
+                        </div>
+                        <div style={{ flexShrink: 0, textAlign: 'right', paddingTop: '2px' }}>
+                          <span style={{ ...sc, fontSize: '18px', fontWeight: 600,
+                            color, letterSpacing: '0.04em' }}>{d.currentScore}</span>
+                          {d.horizonScore !== undefined && (
+                            <span style={{ ...sc, fontSize: '14px',
+                              color: 'rgba(90,138,184,0.8)', marginLeft: '4px' }}>
+                              → {d.horizonScore}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+
+              {/* Source note */}
+              <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+                color: 'rgba(15,21,35,0.35)', marginTop: '16px', marginBottom: 0 }}>
+                Updates as you work across the suite.
+              </p>
+            </div>
+          )
+        })()}
+
+        {/* Empty state — no horizon profile yet */}
+        {(!horizonProfile || Object.keys(horizonProfile).length === 0) && (
+          <div style={{ marginBottom: '56px', padding: '32px 28px',
+            background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)',
+            borderTop: '3px solid rgba(200,146,42,0.25)', borderRadius: '12px',
+            textAlign: 'center' }}>
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em',
+              color: 'rgba(200,146,42,0.55)', marginBottom: '16px' }}>YOUR MAP IS EMPTY</div>
+            <p style={{ ...serif, fontSize: '18px', fontWeight: 300, fontStyle: 'italic',
+              color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, margin: '0 0 20px' }}>
+              Complete The Map and your profile will come alive here — seven domains, your scores, your horizons, all in one place.
+            </p>
+            <a href="/tools/map" style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em',
+              color: '#A8721A', textDecoration: 'none' }}>
+              Start The Map →
+            </a>
+          </div>
+        )}
 
         <Slot title="The Map" eyebrow="Life OS" linkLabel="Open" linkUrl="/tools/map">
           <MapSlot mapData={mapData} sprintData={sprintData} />
