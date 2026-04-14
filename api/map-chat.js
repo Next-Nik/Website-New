@@ -389,7 +389,7 @@ module.exports = async (req, res) => {
         }),
         anthropic.messages.create({
           model: "claude-sonnet-4-20250514",
-          max_tokens: 300,
+          max_tokens: 1000,
           messages: [{ role: "user", content: lifeHorizonPrompt(session) }]
         })
       ]);
@@ -481,7 +481,7 @@ module.exports = async (req, res) => {
 
         const synthResponse = await anthropic.messages.create({
           model: "claude-sonnet-4-20250514",
-          max_tokens: 400,
+          max_tokens: 1000,
           messages: [{ role: "user", content: avatarSynthesisPrompt(session, domain) }]
         });
 
@@ -545,7 +545,7 @@ module.exports = async (req, res) => {
 
         const inferResponse = await anthropic.messages.create({
           model: "claude-sonnet-4-20250514",
-          max_tokens: 600,
+          max_tokens: 1000,
           messages: [{ role: "user", content: placementInferencePrompt(session, domain) }]
         });
 
@@ -618,7 +618,7 @@ ${nsBlockHorizon}`;
 
           const horizonReceptionResponse = await anthropic.messages.create({
             model: "claude-sonnet-4-20250514",
-            max_tokens: 200,
+            max_tokens: 1000,
             messages: [{ role: "user", content: horizonReceptionPrompt }]
           });
 

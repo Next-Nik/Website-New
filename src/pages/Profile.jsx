@@ -151,16 +151,29 @@ function ScoreBar({ label, score, horizonScore }) {
 }
 
 // ─── Map spider web ───────────────────────────────────────────────────────────
-function MapWeb({ domains, currentScores, horizonScores }) {
-  const size = 200
+function HorizonWheel({ domains, currentScores, horizonScores, size = 340 }) {
   const cx = size / 2, cy = size / 2
-  const maxR = (size / 2) * 0.68
+  const maxR = (size / 2) * 0.62
   const n = domains.length
+
+  function getTierColor(v) {
+    if (v == null) return 'rgba(200,146,42,0.2)'
+    if (v >= 8) return '#3B6B9E'
+    if (v >= 6.5) return '#5A8AB8'
+    if (v >= 5) return '#8A8070'
+    if (v >= 3) return '#8A7030'
+    return '#8A3030'
+  }
 
   function pt(i, v) {
     const a = (Math.PI * 2 * i) / n - Math.PI / 2
     const r = (Math.min(v ?? 0, 10) / 10) * maxR
     return [cx + r * Math.cos(a), cy + r * Math.sin(a)]
+  }
+
+  function ptFull(i, scale = 1) {
+    const a = (Math.PI * 2 * i) / n - Math.PI / 2
+    return [cx + maxR * scale * Math.cos(a), cy + maxR * scale * Math.sin(a)]
   }
 
   const currentPts = domains.map((d, i) => pt(i, currentScores[d.id] ?? 0).join(',')).join(' ')
@@ -170,41 +183,80 @@ function MapWeb({ domains, currentScores, horizonScores }) {
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}
       style={{ display: 'block', margin: '0 auto', overflow: 'visible' }}>
+
+      {/* Grid rings */}
       {[2, 4, 6, 8, 10].map(v => {
         const pts = domains.map((_, i) => pt(i, v).join(',')).join(' ')
         return <polygon key={v} points={pts} fill="none"
-          stroke={v === 5 ? 'rgba(138,48,48,0.25)' : 'rgba(200,146,42,0.10)'}
-          strokeWidth={v === 5 ? 1.5 : 1}
+          stroke={v === 5 ? 'rgba(138,48,48,0.2)' : 'rgba(200,146,42,0.08)'}
+          strokeWidth={v === 5 ? 1.5 : 0.75}
           strokeDasharray={v === 5 ? '3 3' : 'none'} />
       })}
+
+      {/* Spokes */}
       {domains.map((_, i) => {
-        const [x, y] = pt(i, 10)
+        const [x, y] = ptFull(i)
         return <line key={i} x1={cx} y1={cy} x2={x} y2={y}
-          stroke="rgba(200,146,42,0.10)" strokeWidth="1" />
+          stroke="rgba(200,146,42,0.07)" strokeWidth="0.75" />
       })}
+
+      {/* Horizon shape */}
       {hasHorizon && (
-        <polygon points={horizonPts} fill="rgba(90,138,184,0.07)"
-          stroke="rgba(90,138,184,0.5)" strokeWidth="1.5" strokeDasharray="4 3" />
+        <polygon points={horizonPts}
+          fill="rgba(90,138,184,0.06)"
+          stroke="rgba(90,138,184,0.4)"
+          strokeWidth="1.5"
+          strokeDasharray="4 3" />
       )}
-      <polygon points={currentPts} fill="rgba(200,146,42,0.12)"
-        stroke="rgba(200,146,42,0.72)" strokeWidth="1.5" />
+
+      {/* Current shape */}
+      <polygon points={currentPts}
+        fill="rgba(200,146,42,0.10)"
+        stroke="rgba(200,146,42,0.65)"
+        strokeWidth="1.5"
+        strokeLinejoin="round" />
+
+      {/* Score dots */}
       {domains.map((d, i) => {
-        const a = (Math.PI * 2 * i) / n - Math.PI / 2
-        const r = maxR + 18
-        const x = cx + r * Math.cos(a)
-        const y = cy + r * Math.sin(a)
         const s = currentScores[d.id]
-        const color = s !== undefined ? getTierColor(s) : 'rgba(15,21,35,0.28)'
+        if (s == null) return null
+        const [x, y] = pt(i, s)
+        return <circle key={i} cx={x} cy={y} r="4"
+          fill={getTierColor(s)}
+          stroke="#FAFAF7"
+          strokeWidth="1.5" />
+      })}
+
+      {/* Domain labels */}
+      {domains.map((d, i) => {
+        const [lx, ly] = ptFull(i, 1.22)
+        const s = currentScores[d.id]
+        const color = s != null ? getTierColor(s) : 'rgba(15,21,35,0.3)'
+        const anchor = Math.abs(lx - cx) < 10 ? 'middle' : lx < cx ? 'end' : 'start'
         return (
-          <text key={i} x={x} y={y} textAnchor="middle" dominantBaseline="middle"
-            fontFamily="'Cormorant SC',Georgia,serif" fontSize="19" fontWeight="600"
-            letterSpacing="0.5" fill={color}>
-            {d.label.substring(0, 3).toUpperCase()}
-          </text>
+          <g key={i}>
+            <text x={lx} y={ly - 5} textAnchor={anchor} dominantBaseline="middle"
+              fontFamily="'Cormorant SC', Georgia, serif"
+              fontSize="11" fontWeight="600" letterSpacing="0.8"
+              fill="rgba(15,21,35,0.72)">
+              {d.label}
+            </text>
+            {s != null && (
+              <text x={lx} y={ly + 9} textAnchor={anchor} dominantBaseline="middle"
+                fontFamily="'Cormorant Garamond', Georgia, serif"
+                fontSize="11" fill={color} opacity="0.9">
+                {s}
+              </text>
+            )}
+          </g>
         )
       })}
     </svg>
   )
+}
+
+function MapWeb({ domains, currentScores, horizonScores }) {
+  return <HorizonWheel domains={domains} currentScores={currentScores} horizonScores={horizonScores} size={200} />
 }
 
 
@@ -1971,23 +2023,40 @@ export function ProfilePage() {
           const currentScores = {}
           const horizonScores = {}
           const horizonGoals  = {}
-          const archetypes    = {}
-          let   lifeHorizon   = null
-          let   dataSource    = null
+          let lifeHorizon     = null
+          let dataSource      = null
 
-          // Prefer horizon_profile (live, cross-tool data)
+          function tierColor(v) {
+            if (v == null) return 'rgba(15,21,35,0.28)'
+            if (v >= 8)   return '#3B6B9E'
+            if (v >= 6.5) return '#5A8AB8'
+            if (v >= 5)   return '#8A8070'
+            if (v >= 3)   return '#8A7030'
+            return '#8A3030'
+          }
+
+          function tierLabel(v) {
+            if (v == null) return ''
+            if (v >= 9)   return 'Exemplar'
+            if (v >= 8)   return 'Fluent'
+            if (v >= 7)   return 'Capable'
+            if (v >= 6.5) return 'Functional+'
+            if (v >= 5)   return 'Functional'
+            if (v >= 4)   return 'Friction'
+            if (v >= 3)   return 'Strain'
+            return 'Crisis'
+          }
+
+          // Prefer horizon_profile, fall back to map_results
           if (horizonProfile && Object.keys(horizonProfile).length > 0) {
             dataSource = 'profile'
             lifeHorizon = horizonProfile['life']?.horizonGoal || null
             domainKeys.forEach(k => {
               if (horizonProfile[k]?.currentScore !== undefined) currentScores[k] = horizonProfile[k].currentScore
               if (horizonProfile[k]?.horizonScore !== undefined) horizonScores[k] = horizonProfile[k].horizonScore
-              if (horizonProfile[k]?.horizonGoal)               horizonGoals[k]   = horizonProfile[k].horizonGoal
-              if (horizonProfile[k]?.avatarArchetype)            archetypes[k]     = horizonProfile[k].avatarArchetype
+              if (horizonProfile[k]?.horizonGoal)               horizonGoals[k]  = horizonProfile[k].horizonGoal
             })
-          }
-          // Fall back to map_results session data
-          else if (mapData?.session?.domainData) {
+          } else if (mapData?.session?.domainData) {
             dataSource = 'map'
             const dd = mapData.session.domainData
             lifeHorizon = mapData.horizon_goal_user || mapData.map_data?.life_horizon_draft || null
@@ -2000,22 +2069,37 @@ export function ProfilePage() {
 
           const hasScores  = Object.keys(currentScores).length > 0
           const hasHorizon = Object.keys(horizonScores).length > 0
+          const mapDone    = mapData?.complete || (dataSource === 'profile' && Object.keys(currentScores).length === 7)
 
-          // True empty — nothing started
-          if (!hasScores && !dataSource) {
+          // Contextual next action
+          const nextAction = !hasScores
+            ? { label: 'Begin The Map', url: '/tools/map' }
+            : dataSource === 'map' && !mapDone
+            ? { label: `Continue The Map — ${Object.keys(currentScores).length} of 7 domains`, url: '/tools/map' }
+            : sprintData && ['started','active'].includes(sprintData.status)
+            ? { label: 'Your sprint is active', url: '/tools/target-goals' }
+            : mapDone
+            ? { label: 'Open your morning practice', url: '/tools/foundation' }
+            : { label: 'Begin Target Sprint', url: '/tools/target-goals' }
+
+          // True empty
+          if (!hasScores) {
             return (
-              <div style={{ marginBottom: '56px', padding: '32px 28px',
+              <div style={{ marginBottom: '56px', padding: '48px 32px',
                 background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)',
-                borderTop: '3px solid rgba(200,146,42,0.25)', borderRadius: '12px',
+                borderTop: '3px solid rgba(200,146,42,0.25)', borderRadius: '16px',
                 textAlign: 'center' }}>
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em',
-                  color: 'rgba(200,146,42,0.55)', marginBottom: '16px' }}>YOUR MAP IS EMPTY</div>
-                <p style={{ ...serif, fontSize: '18px', fontWeight: 300, fontStyle: 'italic',
-                  color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, margin: '0 0 20px' }}>
-                  Complete The Map and your profile will come alive here — seven domains, your scores, your horizons, all in one place.
+                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
+                  color: 'rgba(200,146,42,0.5)', marginBottom: '20px' }}>YOUR MAP IS EMPTY</div>
+                <p style={{ ...serif, fontSize: '19px', fontWeight: 300, fontStyle: 'italic',
+                  color: 'rgba(15,21,35,0.5)', lineHeight: 1.75, margin: '0 0 28px',
+                  maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
+                  Complete The Map and your profile will come alive here.
                 </p>
-                <a href="/tools/map" style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em',
-                  color: '#A8721A', textDecoration: 'none' }}>
+                <a href="/tools/map" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em',
+                  color: '#A8721A', textDecoration: 'none',
+                  padding: '12px 28px', border: '1px solid rgba(200,146,42,0.4)',
+                  borderRadius: '40px', background: 'rgba(200,146,42,0.04)' }}>
                   Start The Map →
                 </a>
               </div>
@@ -2023,112 +2107,125 @@ export function ProfilePage() {
           }
 
           return (
-            <div style={{ marginBottom: '56px', padding: '32px 28px',
-              background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)',
-              borderTop: '3px solid rgba(200,146,42,0.72)', borderRadius: '12px',
-              boxShadow: '0 2px 12px rgba(200,146,42,0.06)' }}>
+            <div style={{ marginBottom: '64px' }}>
 
-              {/* Life horizon statement */}
+              {/* Life horizon — large, italic, anchoring */}
               {lifeHorizon && (
-                <div style={{ marginBottom: '28px', paddingBottom: '24px',
+                <div style={{ marginBottom: '36px', paddingBottom: '32px',
                   borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
-                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em',
-                    color: '#A8721A', marginBottom: '10px' }}>LIFE HORIZON</div>
-                  <p style={{ ...serif, fontSize: '20px', fontWeight: 300, fontStyle: 'italic',
-                    color: '#0F1523', lineHeight: 1.7, margin: 0 }}>
+                  <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.24em',
+                    color: 'rgba(200,146,42,0.6)', marginBottom: '12px' }}>LIFE HORIZON</div>
+                  <p style={{ ...serif, fontSize: 'clamp(19px,2.8vw,24px)', fontWeight: 300,
+                    fontStyle: 'italic', color: '#0F1523', lineHeight: 1.65, margin: 0 }}>
                     {lifeHorizon}
                   </p>
                 </div>
               )}
 
-              {/* Wheel */}
-              {hasScores && (
-                <div style={{ marginBottom: '24px' }}>
-                  <MapWeb domains={domains} currentScores={currentScores} horizonScores={horizonScores} />
-                  {hasHorizon && (
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginTop: '12px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <div style={{ width: '20px', height: '2px', background: 'rgba(200,146,42,0.72)' }} />
-                        <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.45)', letterSpacing: '0.1em' }}>Now</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <div style={{ width: '20px', height: '0', borderTop: '2px dashed rgba(90,138,184,0.6)' }} />
-                        <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.45)', letterSpacing: '0.1em' }}>Horizon</span>
-                      </div>
-                    </div>
-                  )}
+              {/* Wheel — large, centred, breathing */}
+              <div style={{ marginBottom: '12px' }}>
+                <HorizonWheel
+                  domains={domains}
+                  currentScores={currentScores}
+                  horizonScores={horizonScores}
+                  size={340}
+                />
+              </div>
+
+              {/* Legend */}
+              {hasHorizon && (
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '24px',
+                  marginBottom: '40px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                    <div style={{ width: '20px', height: '2px', background: 'rgba(200,146,42,0.65)' }} />
+                    <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em',
+                      color: 'rgba(15,21,35,0.4)' }}>Now</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
+                    <div style={{ width: '20px', height: '0',
+                      borderTop: '2px dashed rgba(90,138,184,0.5)' }} />
+                    <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em',
+                      color: 'rgba(15,21,35,0.4)' }}>Horizon</span>
+                  </div>
                 </div>
               )}
 
-              {/* Domain rows */}
-              {hasScores && (
-                <div>
-                  {domainKeys.map((k, i) => {
-                    const score   = currentScores[k]
-                    const horizon = horizonScores[k]
-                    const goal    = horizonGoals[k]
-                    const arch    = archetypes[k]
-                    if (score === undefined) return null
-                    const color = getTierColor(score)
-                    return (
-                      <div key={k} style={{ display: 'flex', alignItems: 'flex-start',
-                        gap: '12px', padding: '10px 0',
-                        borderBottom: '1px solid rgba(200,146,42,0.07)' }}>
-                        <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.06em',
-                          color: 'rgba(15,21,35,0.65)', width: '110px', flexShrink: 0,
-                          paddingTop: '2px' }}>{domainLabels[i]}</div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          {goal && (
-                            <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
-                              color: 'rgba(15,21,35,0.65)', lineHeight: 1.55, margin: '0 0 4px',
-                              overflow: 'hidden', display: '-webkit-box',
-                              WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                              {goal}
-                            </p>
-                          )}
-                          {arch && (
-                            <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em',
-                              color: 'rgba(15,21,35,0.35)' }}>{arch}</div>
-                          )}
-                        </div>
-                        <div style={{ flexShrink: 0, textAlign: 'right', paddingTop: '2px' }}>
-                          <span style={{ ...sc, fontSize: '18px', fontWeight: 600,
-                            color, letterSpacing: '0.04em' }}>{score}</span>
+              {/* Domain rows — breathing, no boxes */}
+              <div style={{ marginBottom: '36px' }}>
+                {domainKeys.map((k, i) => {
+                  const score   = currentScores[k]
+                  const horizon = horizonScores[k]
+                  const goal    = horizonGoals[k]
+                  if (score === undefined) return null
+                  const color = tierColor(score)
+                  const gap   = horizon !== undefined ? horizon - score : null
+
+                  return (
+                    <div key={k} style={{ display: 'flex', alignItems: 'flex-start',
+                      gap: '16px', padding: '14px 0',
+                      borderBottom: '1px solid rgba(200,146,42,0.07)' }}>
+
+                      {/* Domain name */}
+                      <div style={{ ...sc, fontSize: '14px', letterSpacing: '0.08em',
+                        color: 'rgba(15,21,35,0.6)', width: '106px', flexShrink: 0,
+                        paddingTop: '3px' }}>
+                        {domainLabels[i]}
+                      </div>
+
+                      {/* Horizon goal */}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        {goal ? (
+                          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+                            color: 'rgba(15,21,35,0.62)', lineHeight: 1.6, margin: 0,
+                            overflow: 'hidden', display: '-webkit-box',
+                            WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                            {goal}
+                          </p>
+                        ) : (
+                          <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
+                            color: 'rgba(15,21,35,0.28)', margin: 0 }}>
+                            Horizon not yet set
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Score + gap */}
+                      <div style={{ flexShrink: 0, textAlign: 'right', paddingTop: '2px' }}>
+                        <div>
+                          <span style={{ ...serif, fontSize: '22px', fontWeight: 300,
+                            color, lineHeight: 1 }}>{score}</span>
                           {horizon !== undefined && (
-                            <span style={{ ...sc, fontSize: '14px',
-                              color: 'rgba(90,138,184,0.8)', marginLeft: '4px' }}>
+                            <span style={{ ...serif, fontSize: '15px',
+                              color: 'rgba(90,138,184,0.75)', marginLeft: '5px' }}>
                               → {horizon}
                             </span>
                           )}
                         </div>
+                        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+                          color, opacity: 0.75, marginTop: '2px' }}>
+                          {tierLabel(score)}
+                        </div>
                       </div>
-                    )
-                  })}
-                </div>
-              )}
+                    </div>
+                  )
+                })}
+              </div>
 
-              {/* In-progress nudge if map not complete */}
-              {dataSource === 'map' && !mapData?.complete && hasScores && (
-                <div style={{ marginTop: '16px', padding: '12px 16px',
-                  background: 'rgba(200,146,42,0.03)', borderRadius: '8px',
-                  border: '1px solid rgba(200,146,42,0.12)' }}>
-                  <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
-                    color: 'rgba(15,21,35,0.45)', margin: '0 0 6px' }}>
-                    The Map is in progress — {Object.keys(currentScores).length} of 7 domains scored.
-                  </p>
-                  <a href="/tools/map" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em',
-                    color: '#A8721A', textDecoration: 'none' }}>Continue The Map →</a>
-                </div>
-              )}
-
-              {/* Source note */}
-              <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
-                color: 'rgba(15,21,35,0.35)', marginTop: '16px', marginBottom: 0 }}>
-                Updates as you work across the suite.
-              </p>
+              {/* Single contextual action */}
+              <div style={{ textAlign: 'center', paddingTop: '8px' }}>
+                <a href={nextAction.url}
+                  style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em',
+                    color: '#A8721A', textDecoration: 'none',
+                    padding: '13px 28px', border: '1px solid rgba(200,146,42,0.35)',
+                    borderRadius: '40px', background: 'rgba(200,146,42,0.04)',
+                    display: 'inline-block', transition: 'all 0.2s' }}>
+                  {nextAction.label} →
+                </a>
+              </div>
             </div>
           )
         })()}
+
 
         <Slot title="The Map" eyebrow="Life OS" linkLabel="Open" linkUrl="/tools/map">
           <MapSlot mapData={mapData} sprintData={sprintData} />

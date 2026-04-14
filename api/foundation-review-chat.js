@@ -117,7 +117,7 @@ module.exports = async (req, res) => {
 
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 600,
+      max_tokens: 1000,
       system,
       messages: [{ role: 'user', content: prompt }],
     })

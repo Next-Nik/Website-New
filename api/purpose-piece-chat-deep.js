@@ -432,7 +432,7 @@ module.exports = async (req, res) => {
       const tensionSystemPrompt = buildTensionPrompt(firstLook);
       const openingResponse = await anthropic.messages.create({
         model:      "claude-sonnet-4-20250514",
-        max_tokens: 400,
+        max_tokens: 1000,
         messages:   [{
           role: "user",
           content: `Open the deep experience. The person has just arrived from the First Look. Generate the opening reflection based on your instructions.`
@@ -486,7 +486,7 @@ module.exports = async (req, res) => {
         const mirrorPrompt = buildMirrorPrompt(session.firstLook, session.conversationHistory);
         const mirrorResponse = await anthropic.messages.create({
           model:      "claude-sonnet-4-20250514",
-          max_tokens: 600,
+          max_tokens: 1000,
           messages:   [{ role: "user", content: "Write the full mirror now." }],
           system:     mirrorPrompt
         });
@@ -522,7 +522,7 @@ module.exports = async (req, res) => {
 
         const shadowResponse = await anthropic.messages.create({
           model:      "claude-sonnet-4-20250514",
-          max_tokens: 500,
+          max_tokens: 1000,
           system:     shadowSystem,
           messages:   apiMessages
         });

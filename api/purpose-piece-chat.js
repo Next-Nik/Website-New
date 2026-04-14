@@ -264,7 +264,7 @@ async function claudeSignalCheck(question, answer) {
   try {
     const response = await anthropic.messages.create({
       model:      "claude-sonnet-4-20250514",
-      max_tokens: 200,
+      max_tokens: 1000,
       messages:   [{
         role:    "user",
         content: `Evaluate signal quality for a behavioural assessment answer.\n\nQuestion: "${question}"\nAnswer: "${answer}"\n\nReturn JSON only:\n{"has_signal": true or false, "missing": ["concrete_example","specificity","stakes","honesty"], "one_probe_question": "single best follow-up"}`
@@ -377,7 +377,7 @@ async function extractTentativeArchetype(transcript) {
 
   const response = await anthropic.messages.create({
     model:      "claude-sonnet-4-20250514",
-    max_tokens: 600,
+    max_tokens: 1000,
     messages:   [{
       role:    "user",
       content: `Based on these five behavioural answers, identify the most likely contribution archetype.
@@ -422,7 +422,7 @@ async function extractTentativeDomain(transcript) {
 
   const response = await anthropic.messages.create({
     model:      "claude-sonnet-4-20250514",
-    max_tokens: 400,
+    max_tokens: 1000,
     messages:   [{
       role:    "user",
       content: `Based on these attentional answers, identify the most likely domain.
@@ -458,7 +458,7 @@ async function extractTentativeScale(transcript) {
 
   const response = await anthropic.messages.create({
     model:      "claude-sonnet-4-20250514",
-    max_tokens: 400,
+    max_tokens: 1000,
     messages:   [{
       role:    "user",
       content: `Based on these answers, identify the most coherent scale of operation.
@@ -1184,7 +1184,7 @@ async function handleStageComplete(session, res, prefixMessage = null) {
       const confirmPrompt = buildConfirmationPrompt(session);
       const response = await anthropic.messages.create({
         model:      "claude-sonnet-4-20250514",
-        max_tokens: 500,
+        max_tokens: 1000,
         messages:   [{
           role:    "user",
           content: "Present the three tentative coordinates and open the confirmation conversation."
@@ -1239,7 +1239,7 @@ async function handleConfirmation(session, latestInput, res, northStarCtx) {
 
     const response = await anthropic.messages.create({
       model:      "claude-sonnet-4-20250514",
-      max_tokens: 500,
+      max_tokens: 1000,
       system:     northStarCtx ? confirmPrompt + '\n\n' + formatNorthStarContext(northStarCtx) : confirmPrompt,
       messages:   apiMessages
     });

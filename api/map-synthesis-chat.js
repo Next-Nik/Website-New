@@ -110,7 +110,7 @@ module.exports = async (req, res) => {
       }),
       anthropic.messages.create({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 300,
+        max_tokens: 800,
         messages: [{ role: 'user', content: buildHorizonPrompt(domainData) }],
       }),
     ])

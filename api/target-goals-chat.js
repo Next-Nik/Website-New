@@ -82,7 +82,7 @@ Return JSON only:
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
-    max_tokens: 500,
+    max_tokens: 1000,
     system,
     messages: [{ role: "user", content: `Domain scores${hasMapData ? " (from The Map)" : " (self-reported)"}:\n${scoreLines}\n\nRecommend three focus domains for the next quarter.` }]
   });
@@ -218,7 +218,7 @@ async function generateMilestones(domain, targetGoal, horizonText, currentStateS
   const d = DOMAINS[domain] || { label: domain, frame: domain };
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
-    max_tokens: 600,
+    max_tokens: 1000,
     messages: [{
       role: "user",
       content: `Domain: ${d.label} — ${d.frame}
@@ -247,7 +247,7 @@ async function generateTasks(domain, targetGoal, milestoneText, milestoneIndex) 
   const d = DOMAINS[domain] || { label: domain, frame: domain };
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
-    max_tokens: 500,
+    max_tokens: 1000,
     messages: [{
       role: "user",
       content: `Domain: ${d.label}
@@ -301,7 +301,7 @@ module.exports = async (req, res) => {
           : m
       );
       const response = await anthropic.messages.create({
-        model: "claude-sonnet-4-20250514", max_tokens: 600, system, messages: apiMessages
+        model: "claude-sonnet-4-20250514", max_tokens: 1000, system, messages: apiMessages
       });
       const parsed = extractJSON(response.content[0].text);
       return res.json(parsed);
@@ -319,7 +319,7 @@ module.exports = async (req, res) => {
           : m
       );
       const response = await anthropic.messages.create({
-        model: "claude-sonnet-4-20250514", max_tokens: 600, system, messages: apiMessages
+        model: "claude-sonnet-4-20250514", max_tokens: 1000, system, messages: apiMessages
       });
       const parsed = extractJSON(response.content[0].text);
       return res.json(parsed);
