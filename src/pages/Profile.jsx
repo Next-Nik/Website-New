@@ -230,15 +230,18 @@ function HorizonWheel({ domains, currentScores, horizonScores, size = 340, onNod
           onClick={() => onNodeClick && onNodeClick(d.id)} />
       })}
 
-      {/* Horizon dots — target position */}
+      {/* Horizon dots — target position, clickable */}
       {hasHorizon && domains.map((d, i) => {
         const h = horizonScores[d.id]
         if (h == null) return null
         const [x, y] = pt(i, h)
-        return <circle key={i} cx={x} cy={y} r="3"
+        const isActive = activeNode === d.id
+        return <circle key={i} cx={x} cy={y} r={isActive ? 5 : 3}
           fill="rgba(90,138,184,0.7)"
-          stroke="#FAFAF7"
-          strokeWidth="1.5" />
+          stroke={isActive ? '#5A8AB8' : '#FAFAF7'}
+          strokeWidth={isActive ? 2 : 1.5}
+          style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
+          onClick={() => onNodeClick && onNodeClick(d.id)} />
       })}
 
       {/* Domain labels — clickable */}
@@ -2243,22 +2246,32 @@ export function ProfilePage() {
                     borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '12px',
                     animation: 'fadeUp 0.2s ease-out' }}>
 
+                    {/* Header row — label, score, close */}
                     <div style={{ display: 'flex', alignItems: 'flex-start',
                       justifyContent: 'space-between', marginBottom: '16px' }}>
-                      <div style={{ ...sc, fontSize: '16px', letterSpacing: '0.14em',
-                        color: '#A8721A' }}>{label}</div>
-                      <div style={{ textAlign: 'right' }}>
-                        <span style={{ ...serif, fontSize: '26px', fontWeight: 300,
-                          color, lineHeight: 1 }}>{score}</span>
-                        {horizon !== undefined && (
-                          <span style={{ ...serif, fontSize: '18px',
-                            color: 'rgba(90,138,184,0.85)', marginLeft: '6px' }}>
-                            → {horizon}
-                          </span>
-                        )}
-                        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em',
-                          color, marginTop: '3px' }}>{tierLabel(score)}</div>
+                      <div>
+                        <div style={{ ...sc, fontSize: '16px', letterSpacing: '0.14em',
+                          color: '#A8721A', marginBottom: '4px' }}>{label}</div>
+                        <div>
+                          <span style={{ ...serif, fontSize: '26px', fontWeight: 300,
+                            color, lineHeight: 1 }}>{score}</span>
+                          {horizon !== undefined && (
+                            <span style={{ ...serif, fontSize: '18px',
+                              color: 'rgba(90,138,184,0.85)', marginLeft: '6px' }}>
+                              → {horizon}
+                            </span>
+                          )}
+                          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em',
+                            color, marginLeft: '8px' }}>{tierLabel(score)}</span>
+                        </div>
                       </div>
+                      <button onClick={() => setActiveNode(null)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer',
+                          padding: '2px 6px', lineHeight: 1, flexShrink: 0,
+                          ...sc, fontSize: '18px', color: 'rgba(15,21,35,0.35)',
+                          marginLeft: '12px', marginTop: '-2px' }}>
+                        ×
+                      </button>
                     </div>
 
                     {avatar && (
@@ -2304,12 +2317,6 @@ export function ProfilePage() {
                       </p>
                     )}
 
-                    <button onClick={() => setActiveNode(null)}
-                      style={{ marginTop: '16px', background: 'none', border: 'none',
-                        cursor: 'pointer', ...sc, fontSize: '12px', letterSpacing: '0.14em',
-                        color: 'rgba(15,21,35,0.72)', padding: 0 }}>
-                      Close ×
-                    </button>
                   </div>
                 )
               })()}
