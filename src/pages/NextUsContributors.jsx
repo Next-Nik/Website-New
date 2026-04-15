@@ -144,14 +144,14 @@ const DOMAIN_LABEL = {
 }
 
 const ARCHETYPE_CONTRIBUTION = {
-  'Architect':  'designing the structural conditions',
-  'Maker':      'building what doesn't exist yet',
-  'Connector':  'weaving relationships and networks',
-  'Catalyst':   'accelerating what's already moving',
-  'Sage':       'offering wisdom and perspective',
-  'Mirror':     'reflecting truth back',
-  'Steward':    'tending and developing what exists',
-  'Legacy':     'working across generations',
+  Architect:  'designing the structural conditions',
+  Maker:      "building what doesn't exist yet",
+  Connector:  'weaving relationships and networks',
+  Catalyst:   "accelerating what's already moving",
+  Sage:       'offering wisdom and perspective',
+  Mirror:     'reflecting truth back',
+  Steward:    'tending and developing what exists',
+  Legacy:     'working across generations',
 }
 
 export function NextUsContributorsPage() {
@@ -204,7 +204,7 @@ export function NextUsContributorsPage() {
             <h2 style={{ ...serif, fontSize: 'clamp(22px,3.5vw,32px)', fontWeight: 300, color: dark, lineHeight: 1.2, marginBottom: '10px' }}>
               {ppArchetype
                 ? `You're here as a ${ppArchetype}${ppDomain ? ` in ${domainLabel}` : ''}.`
-                : 'You've arrived with your coordinates.'}
+                : "You've arrived with your coordinates."}
             </h2>
             <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '24px', maxWidth: '560px' }}>
               {ppArchetype
