@@ -1298,19 +1298,10 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
       {(mapData?.life_horizon_draft || horizonText) && (
         <div style={{ padding: '20px 28px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
           <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>Your Life Horizon</div>
-          <div style={{ position: 'relative' }}>
-            <textarea value={horizonText} onChange={e => setHorizonText(e.target.value)} disabled={horizonLocked}
-              placeholder="Write your own Life Horizon — in your own voice."
-              rows={4} style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.78)', background: '#FFFFFF', border: horizonLocked ? '1px solid rgba(200,146,42,0.3)' : '1.5px dashed rgba(200,146,42,0.4)', borderRadius: '10px', resize: 'vertical', outline: 'none', lineHeight: 1.7, marginBottom: '8px', opacity: horizonLocked ? 0.85 : 1, boxSizing: 'border-box' }}
-            />
-            {horizonLocked && (
-              <button
-                onClick={() => { userEditingRef.current = true; setHorizonLocked(false) }}
-                style={{ position: 'absolute', bottom: '18px', right: '10px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontStyle: 'italic', color: '#A8721A', background: 'rgba(250,250,247,0.95)', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '20px', padding: '3px 12px', cursor: 'pointer', lineHeight: 1.4 }}>
-                Edit
-              </button>
-            )}
-          </div>
+          <textarea value={horizonText} onChange={e => setHorizonText(e.target.value)} disabled={horizonLocked}
+            placeholder="Write your own Life Horizon — in your own voice."
+            rows={4} style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.78)', background: '#FFFFFF', border: horizonLocked ? '1px solid rgba(200,146,42,0.3)' : '1.5px dashed rgba(200,146,42,0.4)', borderRadius: '10px', resize: 'vertical', outline: 'none', lineHeight: 1.7, marginBottom: '8px', opacity: horizonLocked ? 0.85 : 1, boxSizing: 'border-box' }}
+          />
           {mapData?.life_horizon_draft && (
             <>
               <button onClick={() => setDraftVisible(v => !v)} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: '10px', display: 'block' }}>
@@ -1331,9 +1322,16 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
               <button onClick={lockHorizon} style={btnStyle}>Lock this as my Life Horizon ✓</button>
             )}
             {horizonLocked && (
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', margin: 0 }}>
-                <span style={{ color: '#A8721A', fontStyle: 'normal', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', letterSpacing: '0.1em' }}>✓ Locked.</span>{' '}This is your Life Horizon.
-              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', margin: 0 }}>
+                  <span style={{ color: '#A8721A', fontStyle: 'normal', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', letterSpacing: '0.1em' }}>✓ Locked.</span>{' '}This is your Life Horizon.
+                </p>
+                <button
+                  onClick={() => { userEditingRef.current = true; setHorizonLocked(false) }}
+                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontStyle: 'italic', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(200,146,42,0.4)', flexShrink: 0 }}>
+                  Edit
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -1953,6 +1951,68 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
 }
 
 
+// ─── MapNextSteps — end this + bridge to next tools ─────────────────────────
+function MapNextSteps({ compact = false }) {
+  const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+
+  if (compact) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
+        <a href="/tools/target-goals" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 18px', display: 'inline-block' }}>
+          Start a Target Sprint →
+        </a>
+        <a href="/tools/expansion" style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', display: 'inline-block' }}>
+          Or begin your daily practice →
+        </a>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ marginTop: '32px', padding: '32px 28px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)', borderLeft: '3px solid rgba(200,146,42,0.45)', borderRadius: '12px' }}>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: 'rgba(200,146,42,0.7)', textTransform: 'uppercase', marginBottom: '16px' }}>
+        What comes next
+      </div>
+      <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '28px' }}>
+        The Map shows you the picture. The next tools help you move.
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <a href="/tools/target-goals"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.55)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}
+          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+          onMouseLeave={e => e.currentTarget.style.transform = ''}>
+          <div>
+            <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#A8721A', marginBottom: '4px' }}>Target Sprint</div>
+            <div style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.65)' }}>Three areas. Ninety days. A clear level-up.</div>
+          </div>
+          <span style={{ ...sc, fontSize: '1.25rem', color: '#A8721A', flexShrink: 0, marginLeft: '16px' }}>→</span>
+        </a>
+        <a href="/tools/expansion"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}
+          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+          onMouseLeave={e => e.currentTarget.style.transform = ''}>
+          <div>
+            <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Horizon Practice</div>
+            <div style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.65)' }}>Build the daily practice that closes the gap.</div>
+          </div>
+          <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.4)', flexShrink: 0, marginLeft: '16px' }}>→</span>
+        </a>
+        <a href="/tools/purpose-piece"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}
+          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+          onMouseLeave={e => e.currentTarget.style.transform = ''}>
+          <div>
+            <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Purpose Piece</div>
+            <div style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.65)' }}>Find your archetype, domain, and scale of contribution.</div>
+          </div>
+          <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.4)', flexShrink: 0, marginLeft: '16px' }}>→</span>
+        </a>
+      </div>
+    </div>
+  )
+}
+
 export function MapPage() {
   const { user, loading: authLoading }    = useAuth()
   const { tier, loading: accessLoading }  = useAccess('map')
@@ -2027,6 +2087,15 @@ export function MapPage() {
             setCurrentScores(scores)
             setHorizonScores(hscores)
           }
+          // Retroactively mark complete if all 7 domains are done but DB not yet updated
+          const allDoneOnLoad = DOMAINS.every(d => getDomainStage(safeDomainData[d.id]) === 3)
+          if (allDoneOnLoad && !data.complete) {
+            supabase.from('map_results').upsert({
+              user_id: user.id, complete: true, phase: 'complete',
+              updated_at: new Date().toISOString(),
+            }, { onConflict: 'user_id' }).then(() => {}).catch(() => {})
+          }
+
           if (data.complete && data.map_data) {
             setPhase('results')
             setMapData(data.map_data)
@@ -2319,9 +2388,10 @@ export function MapPage() {
                       <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginBottom: '14px' }}>
                         Take your time. Edit anything you want. When you're ready —
                       </p>
-                      <button onClick={runSynthesis} style={{ ...btnStyle, fontSize: '1.125rem', padding: '14px 28px' }}>
-                        Review your map →
+                      <button onClick={runSynthesis} style={{ ...btnStyle, fontSize: '1.125rem', padding: '14px 28px', marginBottom: '12px', display: 'block', width: '100%' }}>
+                        See your full map →
                       </button>
+                      <MapNextSteps compact />
                     </div>
                   )}
                 </div>
@@ -2424,9 +2494,10 @@ export function MapPage() {
                         <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginBottom: '14px' }}>
                           Take your time. Edit anything you want. When you're ready —
                         </p>
-                        <button onClick={runSynthesis} style={{ ...btnStyle, fontSize: '1.125rem', padding: '14px 28px' }}>
-                          Review your map →
+                        <button onClick={runSynthesis} style={{ ...btnStyle, fontSize: '1.125rem', padding: '14px 28px', marginBottom: '12px' }}>
+                          See your full map →
                         </button>
+                        <MapNextSteps compact />
                       </div>
                     )}
                   </div>
@@ -2478,6 +2549,7 @@ export function MapPage() {
               currentScores={currentScores}
               horizonScores={horizonScores}
             />
+            <MapNextSteps />
           </>
         )}
 
