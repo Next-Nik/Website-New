@@ -784,6 +784,9 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
   const d  = DOMAIN_BY_ID[domainId]
   const dd = domainData[domainId] || {}
 
+  // Guard against null/missing domainId — prevents render crash during phase transition
+  if (!domainId || !d) return null
+
   // Current active step — first incomplete
   const activeStep = STEPS.find(s => {
     if (s === 'current_state') return !dd.currentStateSummary

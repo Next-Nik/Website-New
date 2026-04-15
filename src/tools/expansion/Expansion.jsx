@@ -589,7 +589,7 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId }) {
       prompt: sprintData?.active
         ? `Your sprint domains are ${sprintData.domains?.join(', ')}. What would your Horizon Self do — and did you take action toward your sprint goals today?`
         : mapData?.focusDomains?.length
-        ? `Your focus areas from The Map are ${mapData.focusDomains.map(id => id.charAt(0).toUpperCase() + id.slice(1).replace('_', ' ')).join(', ')}. What would your Horizon Self do? Where did you move in those areas today — and where did your old self show up?`
+        ? `Your focus areas from The Map are ${mapData.focusDomains.map(id => ({path:'Path',spark:'Spark',body:'Body',finances:'Finances',connection:'Connection',inner_game:'Inner Game',signal:'Signal'})[id] || id).join(', ')}. What would your Horizon Self do? Where did you move in those areas today — and where did your old self show up?`
         : 'What would your Horizon Self do in the situations you faced today? Where did you act from your Horizon Self — and where did your old self show up?',
       next: 'reflection',
     },
@@ -1186,12 +1186,23 @@ export function ExpansionPage() {
             focusReasoning: mapRow.map_data?.focus_reasoning,
             lifeHorizon: mapRow.horizon_goal_user || mapRow.map_data?.life_horizon_draft,
             domains: mapRow.session?.domainData
-              ? Object.fromEntries(
-                  Object.entries(mapRow.session.domainData).map(([id, d]) => [
-                    id,
-                    { id, label: d.label || id, currentScore: d.currentScore, horizon: d.horizonText || d.horizon }
-                  ])
-                )
+              ? (() => {
+                  const DOMAIN_LABELS_MAP = {
+                    path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances',
+                    connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal',
+                  }
+                  const result = {}
+                  Object.entries(mapRow.session.domainData).forEach(([id, d]) => {
+                    if (!DOMAIN_LABELS_MAP[id]) return
+                    result[id] = {
+                      id,
+                      label: DOMAIN_LABELS_MAP[id],
+                      currentScore: d.currentScore,
+                      horizon: (d.horizonText && d.horizonText !== 'See sub-domain horizons') ? d.horizonText : null,
+                    }
+                  })
+                  return result
+                })()
               : null,
           })
         }

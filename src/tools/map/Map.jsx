@@ -1900,7 +1900,8 @@ export function MapPage() {
           setCurrentScores(scores)
           setHorizonScores(hscores)
         }
-        if (parsed.phase) setPhase(parsed.phase)
+        // Only restore 'results' phase if Supabase will have mapData — otherwise show mapping
+        if (parsed.phase && parsed.phase !== 'results') setPhase(parsed.phase)
       }
     } catch {}
   }, [])
@@ -1928,7 +1929,13 @@ export function MapPage() {
             setCurrentScores(scores)
             setHorizonScores(hscores)
           }
-          if (data.complete) { setPhase('results'); setMapData(data.map_data) }
+          if (data.complete && data.map_data) {
+            setPhase('results')
+            setMapData(data.map_data)
+          } else {
+            // Has domain data but no completed synthesis — show mapping view
+            setPhase('mapping')
+          }
           setShowWelcome(false)
         } else if (data && !data.session?.domainData) {
           // Row exists but session is empty/corrupt — treat as returning user, skip welcome
