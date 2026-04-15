@@ -484,6 +484,7 @@ ANSWERS:\n${text}
 Return JSON only:
 {
   "domain": "single domain name exactly as listed above — never 'unclear'",
+  "domain_id": "slugified domain for platform use: human-being | society | nature | technology | finance-economy | legacy | vision",
   "confidence": "strong | blended | thin",
   "secondary": "second domain if blended, else null",
   "reasoning": "2-3 sentences — specific evidence cited, including what thin/evasive answers signal"
@@ -1068,11 +1069,17 @@ function renderPhase4(p4) {
 
       </div>
 
-      <!-- Go deeper footer -->
-      <div style="padding:24px 28px;background:rgba(200,146,42,0.03);border-top:1px solid rgba(200,146,42,0.10);">
-        <div style="${sc};font-size:11px;letter-spacing:0.22em;text-transform:uppercase;${gold};margin-bottom:10px;">First Look</div>
-        <p style="${serif};font-size:16px;font-weight:300;line-height:1.75;${muted};margin:0 0 16px;">This is your instinct as it reads from the outside. The shape is here. What isn't here yet is the tension — what this costs you at the bone, where the instinct breaks, and what it has been asking of you that you haven't fully faced. That's the second conversation.</p>
-        <button class="pp-action-btn" onclick="window.App&&window.App.goDeeper()">Go deeper →</button>
+      <!-- NextUs placement footer -->
+      <div style="${sc};font-size:11px;letter-spacing:0.22em;text-transform:uppercase;${gold};margin-bottom:10px;">Your Place in the Work</div>
+      <div style="padding:28px 28px 32px;background:rgba(200,146,42,0.03);border-top:1px solid rgba(200,146,42,0.10);">
+        <p style="${serif};font-size:16px;font-weight:300;line-height:1.75;${muted};margin:0 0 20px;">You know where you are. NextUs is where that lands — the map of who's doing the work, where the gaps are, and who could use what you carry.</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button class="pp-action-btn" onclick="window.App&&window.App.goToNextUs()" style="text-align:center;">See who could use you →</button>
+          <button class="pp-ghost-btn" onclick="window.App&&window.App.goToTerrain()" style="text-align:center;">Find your terrain →</button>
+        </div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(200,146,42,0.10);">
+          <button onclick="window.App&&window.App.goDeeper()" style="background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',Georgia,serif;font-size:14px;font-style:italic;color:rgba(15,21,35,0.45);padding:0;">Or go deeper into what this means for you →</button>
+        </div>
       </div>
 
     </div>

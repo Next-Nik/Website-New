@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Nav } from '../components/Nav'
+import { supabase } from '../hooks/useSupabase'
 import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -107,6 +108,9 @@ const FAQS = [
 
 function FAQ({ item }) {
   const [open, setOpen] = useState(false)
+  const archetypeDesc = ARCHETYPE_CONTRIBUTION[ppArchetype] || 'contributing'
+  const domainLabel   = DOMAIN_LABEL[ppDomain] || ppDomain || 'your domain'
+
   return (
     <div
       style={{
@@ -133,12 +137,151 @@ function FAQ({ item }) {
   )
 }
 
+const DOMAIN_LABEL = {
+  'vision': 'Vision', 'nature': 'Nature', 'society': 'Society',
+  'technology': 'Technology', 'finance-economy': 'Finance & Economy',
+  'legacy': 'Legacy', 'human-being': 'Human Being',
+}
+
+const ARCHETYPE_CONTRIBUTION = {
+  'Architect':  'designing the structural conditions',
+  'Maker':      'building what doesn't exist yet',
+  'Connector':  'weaving relationships and networks',
+  'Catalyst':   'accelerating what's already moving',
+  'Sage':       'offering wisdom and perspective',
+  'Mirror':     'reflecting truth back',
+  'Steward':    'tending and developing what exists',
+  'Legacy':     'working across generations',
+}
+
 export function NextUsContributorsPage() {
-  const navigate = useNavigate()
+  const navigate     = useNavigate()
+  const [searchParams] = useSearchParams()
+
+  const ppFrom      = searchParams.get('pp_from')
+  const ppArchetype = searchParams.get('pp_archetype')
+  const ppDomain    = searchParams.get('pp_domain')
+  const ppScale     = searchParams.get('pp_scale')
+  const arrivedFromPP = ppFrom === 'purpose-piece'
+
+  const [matches,      setMatches]      = useState([])
+  const [matchLoading, setMatchLoading] = useState(false)
+  const [matchDone,    setMatchDone]    = useState(false)
+
+  // Fire match engine if arrived from Purpose Piece
+  useEffect(() => {
+    if (!arrivedFromPP) return
+    async function runMatch() {
+      setMatchLoading(true)
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user?.id) { setMatchDone(true); setMatchLoading(false); return }
+        const res = await fetch('/api/nextus-match', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: 'for_contributor', user_id: user.id }),
+        })
+        const data = await res.json()
+        setMatches(data.matches || [])
+      } catch {}
+      setMatchLoading(false)
+      setMatchDone(true)
+    }
+    runMatch()
+  }, [arrivedFromPP])
 
   return (
     <div style={{ background: parch, minHeight: '100vh' }}>
       <Nav activePath="nextus" />
+
+      {/* Arrival banner — shown when coming from Purpose Piece */}
+      {arrivedFromPP && (
+        <div style={{ background: 'linear-gradient(135deg, rgba(200,146,42,0.08) 0%, rgba(200,146,42,0.03) 100%)', borderBottom: '1px solid rgba(200,146,42,0.18)', padding: '40px 40px 36px' }}>
+          <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: gold, marginBottom: '12px' }}>
+              YOUR PURPOSE PIECE · PLACED
+            </div>
+            <h2 style={{ ...serif, fontSize: 'clamp(22px,3.5vw,32px)', fontWeight: 300, color: dark, lineHeight: 1.2, marginBottom: '10px' }}>
+              {ppArchetype
+                ? `You're here as a ${ppArchetype}${ppDomain ? ` in ${domainLabel}` : ''}.`
+                : 'You've arrived with your coordinates.'}
+            </h2>
+            <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '24px', maxWidth: '560px' }}>
+              {ppArchetype
+                ? `Your instinct is ${archetypeDesc}. The organisations below are working in ${domainLabel} — and some of them need exactly what you carry.`
+                : `The organisations below are working in your domain. Some of them have open needs that align with what you carry.`}
+            </p>
+
+            {/* Match results */}
+            {matchLoading && (
+              <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)' }}>
+                Reading the map for you…
+              </p>
+            )}
+
+            {matchDone && matches.length > 0 && (
+              <div>
+                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.45)', marginBottom: '14px' }}>
+                  WHO COULD USE YOU
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+                  {matches.slice(0, 4).map(m => (
+                    <div
+                      key={m.actor_id}
+                      onClick={() => navigate(`/nextus/actors/${m.actor_id}`)}
+                      style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.20)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '8px', padding: '14px 18px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}
+                      onMouseEnter={e => e.currentTarget.style.borderLeftColor = '#C8922A'}
+                      onMouseLeave={e => e.currentTarget.style.borderLeftColor = 'rgba(200,146,42,0.55)'}
+                    >
+                      <div>
+                        <div style={{ ...serif, fontSize: '16px', fontWeight: 400, color: dark, marginBottom: '4px' }}>{m.name}</div>
+                        {m.best_need?.title && (
+                          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold }}>
+                            Open need: {m.best_need.title}
+                          </div>
+                        )}
+                        {m.description && (
+                          <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginTop: '4px' }}>
+                            {m.description.length > 120 ? m.description.slice(0, 120) + '…' : m.description}
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.35)', flexShrink: 0 }}>View →</div>
+                    </div>
+                  ))}
+                </div>
+                {matches.length > 4 && (
+                  <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)' }}>
+                    + {matches.length - 4} more in your domain
+                  </p>
+                )}
+              </div>
+            )}
+
+            {matchDone && matches.length === 0 && (
+              <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '8px', padding: '18px 20px' }}>
+                <p style={{ ...serif, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, margin: '0 0 8px' }}>
+                  The map is being populated. You're among the first to arrive in {domainLabel}.
+                </p>
+                <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', margin: 0 }}>
+                  When organisations working here post their needs, you'll be exactly who they find.
+                </p>
+              </div>
+            )}
+
+            {/* Terrain link */}
+            <div style={{ marginTop: '20px' }}>
+              <button
+                onClick={() => navigate(`/nextus/map${ppDomain ? '?domain=' + ppDomain : ''}`)}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textUnderlineOffset: '3px' }}
+              >
+                Explore the {domainLabel} terrain on the map →
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       <style>{`
         @media (max-width: 640px) {

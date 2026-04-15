@@ -735,6 +735,44 @@ export function PurposePiecePage() {
         if (lockBtn)   lockBtn.style.display = 'none'
         if (lockedMsg) lockedMsg.style.display = 'block'
       },
+      goToNextUs() {
+        const t = sessionRef.current?.tentative || {}
+        const archetype = t.archetype?.archetype || ''
+        const domain    = t.domain?.domain || ''
+        const scale     = t.scale?.scale || ''
+        const DOMAIN_SLUG = {
+          'VISION': 'vision', 'Vision': 'vision',
+          'NATURE': 'nature', 'Nature': 'nature',
+          'SOCIETY': 'society', 'Society': 'society',
+          'TECHNOLOGY': 'technology', 'Technology': 'technology',
+          'FINANCE & ECONOMY': 'finance-economy', 'Finance & Economy': 'finance-economy',
+          'LEGACY': 'legacy', 'Legacy': 'legacy',
+          'HUMAN BEING': 'human-being', 'Human Being': 'human-being',
+        }
+        const domainSlug = DOMAIN_SLUG[domain] || domain.toLowerCase().replace(/[^a-z]+/g, '-')
+        const params = new URLSearchParams()
+        if (archetype) params.set('pp_archetype', archetype)
+        if (domainSlug) params.set('pp_domain', domainSlug)
+        if (scale)     params.set('pp_scale', scale)
+        params.set('pp_from', 'purpose-piece')
+        navigate(`/nextus/contributors?${params.toString()}`)
+      },
+      goToTerrain() {
+        const t = sessionRef.current?.tentative || {}
+        const domain = t.domain?.domain || ''
+        const DOMAIN_SLUG = {
+          'VISION': 'vision', 'Vision': 'vision',
+          'NATURE': 'nature', 'Nature': 'nature',
+          'SOCIETY': 'society', 'Society': 'society',
+          'TECHNOLOGY': 'technology', 'Technology': 'technology',
+          'FINANCE & ECONOMY': 'finance-economy', 'Finance & Economy': 'finance-economy',
+          'LEGACY': 'legacy', 'Legacy': 'legacy',
+          'HUMAN BEING': 'human-being', 'Human Being': 'human-being',
+        }
+        const domainSlug = DOMAIN_SLUG[domain] || domain.toLowerCase().replace(/[^a-z]+/g, '-')
+        const params = domainSlug ? `?domain=${domainSlug}` : ''
+        navigate(`/nextus/map${params}`)
+      },
       goDeeper() {
         const unlocked = localStorage.getItem('pp_deep_unlocked') === 'true'
         if (!unlocked) { setShowDeepGate(true) }
