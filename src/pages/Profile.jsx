@@ -216,13 +216,13 @@ function HorizonWheel({ domains, currentScores, horizonScores, size = 340, onNod
         strokeWidth="1.5"
         strokeLinejoin="round" />
 
-      {/* Score dots — current position */}
+      {/* Current score dots — where I am now */}
       {domains.map((d, i) => {
         const s = currentScores[d.id]
         if (s == null) return null
         const [x, y] = pt(i, s)
         const isActive = activeNode === d.id
-        return <circle key={i} cx={x} cy={y} r={isActive ? 6 : 4}
+        return <circle key={i} cx={x} cy={y} r={isActive ? 5 : 3}
           fill={getTierColor(s)}
           stroke={isActive ? '#A8721A' : '#FAFAF7'}
           strokeWidth={isActive ? 2 : 1.5}
@@ -230,16 +230,16 @@ function HorizonWheel({ domains, currentScores, horizonScores, size = 340, onNod
           onClick={() => onNodeClick && onNodeClick(d.id)} />
       })}
 
-      {/* Horizon dots — target position, clickable */}
+      {/* Horizon dots — where I'm going, larger and more inviting */}
       {hasHorizon && domains.map((d, i) => {
         const h = horizonScores[d.id]
         if (h == null) return null
         const [x, y] = pt(i, h)
         const isActive = activeNode === d.id
-        return <circle key={i} cx={x} cy={y} r={isActive ? 5 : 3}
-          fill="rgba(90,138,184,0.7)"
-          stroke={isActive ? '#5A8AB8' : '#FAFAF7'}
-          strokeWidth={isActive ? 2 : 1.5}
+        return <circle key={i} cx={x} cy={y} r={isActive ? 8 : 6}
+          fill={isActive ? 'rgba(90,138,184,0.9)' : 'rgba(90,138,184,0.18)'}
+          stroke={isActive ? '#5A8AB8' : 'rgba(90,138,184,0.7)'}
+          strokeWidth="1.5"
           style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
           onClick={() => onNodeClick && onNodeClick(d.id)} />
       })}
