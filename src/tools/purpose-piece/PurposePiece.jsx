@@ -1210,9 +1210,13 @@ export function PurposePiecePage() {
         handleResponse(d.value, sendingStage)
       } else {
         const lastQ = stageQuestion[sendingStage] || sessionRef.current?.currentQuestion
-        addMsg('assistant', lastQ
-          ? `Lost my thread for a second — still with you.\n\n${lastQ}`
-          : 'Lost my thread for a second. Please try again.', sendingStage)
+        const errMsg = d.reason?.message || ''
+        const isServerError = errMsg.includes('500') || errMsg.includes('Internal')
+        addMsg('assistant', isServerError
+          ? `Something went wrong on my end — please try sending that again.${lastQ ? '\n\n' + lastQ : ''}`
+          : lastQ
+            ? `Lost my thread for a second — still with you.\n\n${lastQ}`
+            : 'Lost my thread for a second. Please try again.', sendingStage)
       }
     }, 4000)
   }

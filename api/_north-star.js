@@ -19,9 +19,8 @@ async function getNorthStarContext(userId) {
   try {
     const { data, error } = await supabase
       .from('north_star_notes')
-      .select('tool, note, created_at')
+      .select('tool, note')
       .eq('user_id', userId)
-      .order('created_at', { ascending: false })
     if (error || !data?.length) return null
 
     // Build a structured context object from the notes

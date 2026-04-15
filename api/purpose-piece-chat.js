@@ -303,7 +303,7 @@ async function claudeSignalCheck(question, answer, stage = "archetype", qi = 0) 
 
 // ─── JSON extractor ───────────────────────────────────────────────────────────
 
-function extractJSON(text) {
+function extractJSON(text, fallback = null) {
   let clean = text.trim()
     .replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
   try { return JSON.parse(clean); } catch {}
@@ -312,6 +312,24 @@ function extractJSON(text) {
   if (start !== -1 && end !== -1) {
     try { return JSON.parse(clean.slice(start, end + 1)); } catch {}
   }
+  // Last resort — try to extract individual fields with regex rather than throwing
+  const scaleMatch = clean.match(/"scale"\s*:\s*"([^"]+)"/i)
+  const confMatch  = clean.match(/"confidence"\s*:\s*"([^"]+)"/i)
+  const archMatch  = clean.match(/"archetype"\s*:\s*"([^"]+)"/i)
+  const domMatch   = clean.match(/"domain_id"\s*:\s*"([^"]+)"/i)
+  if (scaleMatch || archMatch || domMatch) {
+    return {
+      scale:      scaleMatch?.[1]  || null,
+      archetype:  archMatch?.[1]   || null,
+      domain_id:  domMatch?.[1]    || null,
+      confidence: confMatch?.[1]   || 'thin',
+      tension:    null,
+      reasoning:  'Extracted from partial response.',
+      ...(fallback || {}),
+    }
+  }
+  // Return fallback rather than throwing — prevents 500 from crashing the session
+  if (fallback !== null) return fallback
   throw new Error("Could not extract JSON: " + text.slice(0, 200));
 }
 
@@ -445,7 +463,7 @@ Return JSON only:
     }]
   });
 
-  return extractJSON(response.content[0].text);
+  return extractJSON(response.content[0].text, { archetype: null, confidence: 'thin', reasoning: 'Could not extract — treating as thin signal.', cost_signal: null, movement_style: null });
 }
 
 async function extractTentativeDomain(transcript, northStarCtx = null) {
@@ -491,7 +509,7 @@ Return JSON only:
     }]
   });
 
-  return extractJSON(response.content[0].text);
+  return extractJSON(response.content[0].text, { domain_id: null, domain_name: null, confidence: 'thin', secondary: null, reasoning: 'Could not extract — treating as thin signal.' });
 }
 
 async function extractTentativeScale(transcript, northStarCtx = null) {
@@ -549,7 +567,7 @@ Return JSON only:
     }]
   });
 
-  return extractJSON(response.content[0].text);
+  return extractJSON(response.content[0].text, { scale: null, confidence: 'thin', tension: null, reasoning: 'Could not extract — treating as thin signal.' });
 }
 
 // ─── Confirmation system prompt ───────────────────────────────────────────────
