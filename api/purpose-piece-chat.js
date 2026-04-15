@@ -897,7 +897,7 @@ HORIZON GOAL FOR THEIR DOMAIN:\n"${horizonGoal}"\n\nUse this exact text in the c
 
   const response = await anthropic.messages.create({
     model:      "claude-sonnet-4-20250514",
-    max_tokens: 2000,
+    max_tokens: 1200,
     system:     PHASE4_SYSTEM,
     messages:   [{ role: "user", content: payload }]
   });
@@ -1515,7 +1515,6 @@ Return JSON only:
 
 async function runSynthesis(session, res) {
   // Guard: if tentative coordinates are missing, extract them now before Phase 4
-  // This can happen if the frontend's session merge lost tentative data
   if (!session.tentative?.archetype || !session.tentative?.domain || !session.tentative?.scale) {
     try {
       session.tentative = session.tentative || {};
@@ -1529,41 +1528,46 @@ async function runSynthesis(session, res) {
       console.error("Tentative recovery in runSynthesis failed:", e);
       return res.status(500).json({ error: "Could not extract coordinates. Please try again." });
     }
-    // If still missing after recovery, bail
     if (!session.tentative?.archetype || !session.tentative?.domain || !session.tentative?.scale) {
       return res.status(500).json({ error: "Missing coordinates — please refresh and try again." });
     }
   }
 
-  // Phase 4 fires first — profile card with all coordinates named
-  let p4;
+  // Run Phase 4 (profile card) and Phase 3 (mirror) in parallel — cuts total time roughly in half
+  let p4, synthesis;
   try {
-    p4 = await runPhase4(session);
+    [p4, synthesis] = await Promise.all([
+      runPhase4(session),
+      runPhase3(session),
+    ]);
   } catch (e) {
-    console.error("Phase 4 error:", e);
-    return res.status(500).json({ error: "Framing failed", details: e.message });
+    console.error("Synthesis error:", e);
+    return res.status(500).json({ error: "Synthesis failed", details: e.message });
   }
 
-  session.stage = "framing";
-
-  // Save profile to session so mirror (Phase 3) has access to confirmed coordinates
+  session.stage    = "complete";
+  session.status   = "complete";
+  session.synthesis = synthesis;
   session.p4Profile = p4;
 
+  // Return everything at once — profile card + mirror in a single response
   return res.status(200).json({
     message:                   renderPhase4(p4),
     isHtml:                    true,
+    mirrorText:                synthesis.synthesis_text,
+    sections:                  synthesis.sections,
     session,
-    stage:                     "synthesis",   // frontend treats this as the first reveal
+    stage:                     "complete",
     inputMode:                 "none",
-    autoAdvance:               true,
-    advanceDelay:              6000,           // 6-second pause before mirror fires
+    complete:                  true,
+    isMirror:                  true,
     profile:                   p4,
-    identity_statement_system: p4.civilisational_statement || null
+    identity_statement_system: p4.civilisational_statement || null,
   });
 }
 
+// runFraming kept for backwards compatibility but no longer called in normal flow
 async function runFraming(session, res) {
-  // Phase 3 fires second — mirror reflection, unlabelled, going deeper
   let synthesis;
   try {
     synthesis = await runPhase3(session);
@@ -1571,19 +1575,17 @@ async function runFraming(session, res) {
     console.error("Phase 3 error:", e);
     return res.status(500).json({ error: "Reflection failed", details: e.message });
   }
-
   session.synthesis = synthesis;
   session.status    = "complete";
   session.stage     = "complete";
-
   return res.status(200).json({
-    message:      synthesis.synthesis_text,
-    sections:     synthesis.sections,
+    message:   synthesis.synthesis_text,
+    sections:  synthesis.sections,
     session,
-    stage:        "complete",
-    inputMode:    "none",
-    complete:     true,
-    isMirror:     true,   // frontend uses this to apply mirror card styling
+    stage:     "complete",
+    inputMode: "none",
+    complete:  true,
+    isMirror:  true,
   });
 }
 

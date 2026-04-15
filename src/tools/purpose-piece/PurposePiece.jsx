@@ -475,12 +475,28 @@ function StageTransition({ nextStage, onContinue, loading = false }) {
       <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.75, marginBottom: '24px' }}>
         {c.body}
       </p>
-      <button onClick={loading ? undefined : onContinue}
-        style={{ ...btnStyle, opacity: loading ? 0.55 : 1, cursor: loading ? 'default' : 'pointer' }}
-        onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' } }}
-        onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
-        {loading ? 'Reading everything\u2026' : c.cta}
-      </button>
+      {loading ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ ...btnStyle, opacity: 0.7, cursor: 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+            <span style={{ display: 'inline-flex', gap: '4px', alignItems: 'center' }}>
+              <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#FFFFFF', animation: 'ppDot 1.2s ease-in-out infinite', animationDelay: '0s' }} />
+              <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#FFFFFF', animation: 'ppDot 1.2s ease-in-out infinite', animationDelay: '0.2s' }} />
+              <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#FFFFFF', animation: 'ppDot 1.2s ease-in-out infinite', animationDelay: '0.4s' }} />
+            </span>
+            Reading everything
+          </div>
+          <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.40)', margin: 0, textAlign: 'center', lineHeight: 1.6 }}>
+            North Star is reading all three conversations together. Usually under 15 seconds.
+          </p>
+        </div>
+      ) : (
+        <button onClick={onContinue}
+          style={{ ...btnStyle }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
+          {c.cta}
+        </button>
+      )}
     </div>
   )
 }
@@ -1122,62 +1138,64 @@ export function PurposePiecePage() {
       return
     }
 
-    // Profile card arrives first (stage: 'synthesis') — show it, then auto-advance to mirror
+    // Complete — profile card + mirror arrive together in one response
+    if (data.stage === 'complete' && data.isHtml && data.message) {
+      setProfileCard(data.message)
+      setShowReveal(true)
+      // Mirror arrives in same response
+      if (data.mirrorText) {
+        setMirrorText(data.mirrorText)
+        setShowMirror(true)
+      }
+      // Save profile and north star notes
+      if (user?.id && data.profile) {
+        ;(async () => { try {
+          const { data: ex, error: exErr } = await supabase.from('purpose_piece_results').select('id').eq('user_id', user.id).limit(1).maybeSingle()
+          if (!exErr && ex?.id) {
+            await supabase.from('purpose_piece_results').update({ status: 'complete', session: data.session, profile: data.profile, completed_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', ex.id)
+          } else {
+            await supabase.from('purpose_piece_results').insert({ user_id: user.id, status: 'complete', session: data.session, profile: data.profile, completed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+          }
+        } catch {} })()
+      }
+      if (user?.id && data.session?.tentative) {
+        const t = data.session.tentative
+        const ppNotes = [
+          t.archetype?.archetype ? `Organisational Archetype: ${t.archetype.archetype}` : null,
+          t.domain?.domain       ? `Global Domain: ${t.domain.domain}` : null,
+          t.scale?.scale         ? `Scale of Focus: ${t.scale.scale}` : null,
+        ].filter(Boolean)
+        if (ppNotes.length) {
+          ;(async () => {
+            try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'purpose-piece') } catch {}
+            try { await supabase.from('north_star_notes').insert(ppNotes.map(note => ({ user_id: user.id, tool: 'purpose-piece', note }))) } catch {}
+          })()
+        }
+      }
+      try {
+        const t = data.session?.tentative || {}
+        sessionStorage.setItem('pp_first_look', JSON.stringify({
+          archetype:        t.archetype?.archetype,
+          domain:           t.domain?.domain,
+          scale:            t.scale?.scale,
+          synthesis:        data.session?.synthesis,
+          internal_signals: data.session?.synthesis?.internal_signals,
+          transcript: [
+            ...(data.session?.archetypeTranscript || []),
+            ...(data.session?.domainTranscript    || []),
+            ...(data.session?.scaleTranscript     || []),
+          ],
+        }))
+      } catch {}
+      return
+    }
+
+    // Legacy: stage === 'synthesis' (old two-phase flow, kept for safety)
     if (data.stage === 'synthesis') {
-      // Profile card — set it and show the reveal screen
       if (data.isHtml && data.message) {
         setProfileCard(data.message)
         setShowReveal(true)
-        // Save profile and north star notes
-        if (user?.id && data.profile) {
-          ;(async () => { try {
-            const { data: ex, error: exErr } = await supabase.from('purpose_piece_results').select('id').eq('user_id', user.id).limit(1).maybeSingle()
-            if (!exErr && ex?.id) {
-              await supabase.from('purpose_piece_results').update({ status: 'complete', session: data.session, profile: data.profile, completed_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', ex.id)
-            } else {
-              await supabase.from('purpose_piece_results').insert({ user_id: user.id, status: 'complete', session: data.session, profile: data.profile, completed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
-            }
-          } catch {} })()
-        }
-        if (user?.id && data.session?.tentative) {
-          const t = data.session.tentative
-          const ppNotes = [
-            t.archetype?.archetype ? `Organisational Archetype: ${t.archetype.archetype}` : null,
-            t.domain?.domain       ? `Global Domain: ${t.domain.domain}` : null,
-            t.scale?.scale         ? `Scale of Focus: ${t.scale.scale}` : null,
-          ].filter(Boolean)
-          if (ppNotes.length) {
-            ;(async () => {
-              try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'purpose-piece') } catch {}
-              try { await supabase.from('north_star_notes').insert(ppNotes.map(note => ({ user_id: user.id, tool: 'purpose-piece', note }))) } catch {}
-            })()
-          }
-        }
-        try {
-          const t = data.session?.tentative || {}
-          sessionStorage.setItem('pp_first_look', JSON.stringify({
-            archetype:        t.archetype?.archetype,
-            domain:           t.domain?.domain,
-            scale:            t.scale?.scale,
-            synthesis:        data.session?.synthesis,
-            internal_signals: data.session?.synthesis?.internal_signals,
-            transcript: [
-              ...(data.session?.archetypeTranscript || []),
-              ...(data.session?.domainTranscript    || []),
-              ...(data.session?.scaleTranscript     || []),
-            ],
-          }))
-        } catch {}
       }
-      // Auto-advance to mirror after pause
-      setTimeout(async () => {
-        setThinking(true)
-        try {
-          const d = await callAPI([])
-          setThinking(false)
-          handleResponse(d)
-        } catch { setThinking(false) }
-      }, data.advanceDelay || 6000)
       return
     }
 
@@ -1377,20 +1395,35 @@ export function PurposePiecePage() {
             </div>
           )}
 
-          {/* Post-mirror actions */}
+          {/* Post-mirror actions — NextUs placement CTAs */}
           {showMirror && (
-            <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-start', paddingBottom: '40px' }}>
-              <button onClick={goDeeper} style={btnStyle}
+            <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'stretch', paddingBottom: '40px' }}>
+              <button
+                onClick={() => { if (window.App) window.App.goToNextUs() }}
+                style={{ ...btnStyle }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
                 onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
-                Go deeper {'\u2192'}
+                See who could use you {'\u2192'}
               </button>
-              {!showCorrection && (
-                <button onClick={openCorrection}
+              <button
+                onClick={() => { if (window.App) window.App.goToTerrain() }}
+                style={{ ...btnStyle, background: 'transparent', color: '#A8721A', border: '1.5px solid rgba(200,146,42,0.55)' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#A8721A' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)' }}>
+                Find your terrain {'\u2192'}
+              </button>
+              <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '4px' }}>
+                <button onClick={goDeeper}
                   style={{ background: 'none', border: 'none', ...serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.2)' }}>
-                  Something doesn&#39;t fit
+                  Go deeper {'\u2192'}
                 </button>
-              )}
+                {!showCorrection && (
+                  <button onClick={openCorrection}
+                    style={{ background: 'none', border: 'none', ...serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.2)' }}>
+                    Something doesn&#39;t fit
+                  </button>
+                )}
+              </div>
             </div>
           )}
 
@@ -1697,6 +1730,7 @@ export function PurposePiecePage() {
           .pp-breadcrumb-label { font-size: 15px !important; }
         }
         @keyframes ppFadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes ppDot { 0%,80%,100%{opacity:0.25;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
         .pp-fade-up { animation: ppFadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both; }
       `}</style>
 
