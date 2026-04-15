@@ -1046,6 +1046,12 @@ export function PurposePiecePage() {
             ? data.session.domainTranscript : prev.domainTranscript,
           scaleTranscript: (data.session.scaleTranscript?.length ?? 0) >= (prev.scaleTranscript?.length ?? 0)
             ? data.session.scaleTranscript : prev.scaleTranscript,
+          // Tentative: never overwrite an extracted coordinate with null
+          tentative: {
+            archetype: data.session.tentative?.archetype || prev.tentative?.archetype || null,
+            domain:    data.session.tentative?.domain    || prev.tentative?.domain    || null,
+            scale:     data.session.tentative?.scale     || prev.tentative?.scale     || null,
+          },
         }
       })
       // Update this stage's currentQuestion
@@ -1210,13 +1216,9 @@ export function PurposePiecePage() {
         handleResponse(d.value, sendingStage)
       } else {
         const lastQ = stageQuestion[sendingStage] || sessionRef.current?.currentQuestion
-        const errMsg = d.reason?.message || ''
-        const isServerError = errMsg.includes('500') || errMsg.includes('Internal')
-        addMsg('assistant', isServerError
-          ? `Something went wrong on my end — please try sending that again.${lastQ ? '\n\n' + lastQ : ''}`
-          : lastQ
-            ? `Lost my thread for a second — still with you.\n\n${lastQ}`
-            : 'Lost my thread for a second. Please try again.', sendingStage)
+        addMsg('assistant', lastQ
+          ? `Lost my thread for a second — still with you.\n\n${lastQ}`
+          : 'Lost my thread for a second. Please try again.', sendingStage)
       }
     }, 4000)
   }

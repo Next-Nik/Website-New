@@ -303,7 +303,7 @@ async function claudeSignalCheck(question, answer, stage = "archetype", qi = 0) 
 
 // ─── JSON extractor ───────────────────────────────────────────────────────────
 
-function extractJSON(text, fallback = null) {
+function extractJSON(text) {
   let clean = text.trim()
     .replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();
   try { return JSON.parse(clean); } catch {}
@@ -312,24 +312,6 @@ function extractJSON(text, fallback = null) {
   if (start !== -1 && end !== -1) {
     try { return JSON.parse(clean.slice(start, end + 1)); } catch {}
   }
-  // Last resort — try to extract individual fields with regex rather than throwing
-  const scaleMatch = clean.match(/"scale"\s*:\s*"([^"]+)"/i)
-  const confMatch  = clean.match(/"confidence"\s*:\s*"([^"]+)"/i)
-  const archMatch  = clean.match(/"archetype"\s*:\s*"([^"]+)"/i)
-  const domMatch   = clean.match(/"domain_id"\s*:\s*"([^"]+)"/i)
-  if (scaleMatch || archMatch || domMatch) {
-    return {
-      scale:      scaleMatch?.[1]  || null,
-      archetype:  archMatch?.[1]   || null,
-      domain_id:  domMatch?.[1]    || null,
-      confidence: confMatch?.[1]   || 'thin',
-      tension:    null,
-      reasoning:  'Extracted from partial response.',
-      ...(fallback || {}),
-    }
-  }
-  // Return fallback rather than throwing — prevents 500 from crashing the session
-  if (fallback !== null) return fallback
   throw new Error("Could not extract JSON: " + text.slice(0, 200));
 }
 
@@ -463,7 +445,7 @@ Return JSON only:
     }]
   });
 
-  return extractJSON(response.content[0].text, { archetype: null, confidence: 'thin', reasoning: 'Could not extract — treating as thin signal.', cost_signal: null, movement_style: null });
+  return extractJSON(response.content[0].text);
 }
 
 async function extractTentativeDomain(transcript, northStarCtx = null) {
@@ -509,7 +491,7 @@ Return JSON only:
     }]
   });
 
-  return extractJSON(response.content[0].text, { domain_id: null, domain_name: null, confidence: 'thin', secondary: null, reasoning: 'Could not extract — treating as thin signal.' });
+  return extractJSON(response.content[0].text);
 }
 
 async function extractTentativeScale(transcript, northStarCtx = null) {
@@ -567,7 +549,7 @@ Return JSON only:
     }]
   });
 
-  return extractJSON(response.content[0].text, { scale: null, confidence: 'thin', tension: null, reasoning: 'Could not extract — treating as thin signal.' });
+  return extractJSON(response.content[0].text);
 }
 
 // ─── Confirmation system prompt ───────────────────────────────────────────────
@@ -1469,6 +1451,27 @@ Return JSON only:
 // Confirmation conversation is optional, triggered post-mirror by the person.
 
 async function runSynthesis(session, res) {
+  // Guard: if tentative coordinates are missing, extract them now before Phase 4
+  // This can happen if the frontend's session merge lost tentative data
+  if (!session.tentative?.archetype || !session.tentative?.domain || !session.tentative?.scale) {
+    try {
+      session.tentative = session.tentative || {};
+      if (!session.tentative.archetype && session.archetypeTranscript?.length)
+        session.tentative.archetype = await extractTentativeArchetype(session.archetypeTranscript);
+      if (!session.tentative.domain && session.domainTranscript?.length)
+        session.tentative.domain = await extractTentativeDomain(session.domainTranscript);
+      if (!session.tentative.scale && session.scaleTranscript?.length)
+        session.tentative.scale = await extractTentativeScale(session.scaleTranscript);
+    } catch (e) {
+      console.error("Tentative recovery in runSynthesis failed:", e);
+      return res.status(500).json({ error: "Could not extract coordinates. Please try again." });
+    }
+    // If still missing after recovery, bail
+    if (!session.tentative?.archetype || !session.tentative?.domain || !session.tentative?.scale) {
+      return res.status(500).json({ error: "Missing coordinates — please refresh and try again." });
+    }
+  }
+
   // Phase 4 fires first — profile card with all coordinates named
   let p4;
   try {
