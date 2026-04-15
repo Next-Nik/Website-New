@@ -909,117 +909,115 @@ HORIZON GOAL FOR THEIR DOMAIN:\n"${horizonGoal}"\n\nUse this exact text in the c
 function renderPhase4(p4) {
   const archetypeMatch = p4.archetype_frame.match(/archetype most aligned with this (?:movement )?is ([\w]+)/i);
   const archetypeName  = archetypeMatch ? archetypeMatch[1] : "Your Archetype";
+  const domainMatch    = p4.domain_frame.match(/domain.*?is ([A-Z][a-z &]+)/i);
+  const domainName     = domainMatch ? domainMatch[1].trim() : "";
+  const scaleMatch     = p4.scale_frame.match(/scale.*?is ([A-Z][a-zA-Z/\s]+?)[\.\,]/);
+  const scaleName      = scaleMatch ? scaleMatch[1].trim() : "";
 
-  const domainMatch = p4.domain_frame.match(/domain.*?is ([A-Z][a-z &]+)/i);
-  const domainName  = domainMatch ? domainMatch[1].trim() : "";
+  const serif  = "font-family:\'Cormorant Garamond\',Georgia,serif";
+  const sc     = "font-family:\'Cormorant SC\',Georgia,serif";
+  const gold   = "color:#A8721A";
+  const dark   = "color:#0F1523";
+  const muted  = "color:rgba(15,21,35,0.65)";
+  const border = "border:1px solid rgba(200,146,42,0.18)";
 
-  const scaleMatch = p4.scale_frame.match(/scale.*?is ([A-Z][a-zA-Z/\s]+?)[\.\,]/);
-  const scaleName  = scaleMatch ? scaleMatch[1].trim() : "";
+  const section = (label, body) => `
+    <div style="margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid rgba(200,146,42,0.10);">
+      <div style="${sc};font-size:11px;letter-spacing:0.22em;text-transform:uppercase;${gold};margin-bottom:10px;">${label}</div>
+      <p style="${serif};font-size:17px;font-weight:300;line-height:1.8;${dark};margin:0;">${body}</p>
+    </div>`;
 
-  const resourcesHtml = p4.resources.map(r =>
-    `<div class="profile-resource">
-      <div class="profile-resource-title">${esc(r.title)}</div>
-      <div class="profile-resource-why">${esc(r.why)}</div>
-    </div>`
-  ).join("");
+  const resourcesHtml = (p4.resources || []).map(r => `
+    <div style="margin-bottom:16px;">
+      <div style="${serif};font-size:16px;font-weight:500;${dark};margin-bottom:4px;">${esc(r.title)}</div>
+      <div style="${serif};font-size:15px;font-weight:300;line-height:1.7;${muted};">${esc(r.why)}</div>
+    </div>`).join("");
 
-  return `<div class="profile-card">
+  const actionRow = (tier, text) => `
+    <div style="display:flex;gap:16px;margin-bottom:14px;align-items:flex-start;">
+      <div style="${sc};font-size:11px;letter-spacing:0.16em;${gold};text-transform:uppercase;width:80px;flex-shrink:0;padding-top:3px;">${tier}</div>
+      <div style="${serif};font-size:16px;font-weight:300;line-height:1.7;${dark};">${text}</div>
+    </div>`;
 
-    <div class="profile-hero">
-      <div class="profile-card-heading">Your Purpose Piece</div>
-      <div class="profile-archetype-name">${esc(archetypeName)}</div>
-      <div class="profile-meta">${esc(domainName)}<span class="profile-meta-divider">·</span>${esc(scaleName)}</div>
-    </div>
+  return `<div style="font-size:0;">
+    <style>
+      @keyframes ppCardIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+      .pp-profile-card { animation: ppCardIn 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+      .pp-note-field { width:100%;box-sizing:border-box;padding:12px 16px;${serif};font-size:16px;font-weight:300;line-height:1.7;color:#0F1523;background:rgba(200,146,42,0.02);border:1px solid rgba(200,146,42,0.22);border-radius:8px;outline:none;resize:vertical;min-height:80px; }
+      .pp-note-field:focus { border-color:rgba(200,146,42,0.5); }
+      .pp-action-btn { display:inline-block;padding:10px 22px;border-radius:40px;border:1px solid rgba(168,114,26,0.7);background:#C8922A;color:#FFFFFF;${sc};font-size:13px;letter-spacing:0.12em;cursor:pointer;text-decoration:none;transition:opacity 0.15s; }
+      .pp-action-btn:hover { opacity:0.85; }
+      .pp-ghost-btn { display:inline-block;padding:10px 22px;border-radius:40px;border:1px solid rgba(200,146,42,0.35);background:transparent;color:#A8721A;${sc};font-size:13px;letter-spacing:0.12em;cursor:pointer;transition:border-color 0.15s; }
+      .pp-ghost-btn:hover { border-color:rgba(200,146,42,0.7); }
+    </style>
 
-    <div class="profile-section">
-      <div class="profile-section-label">Pattern</div>
-      <p>${esc(p4.pattern_restatement)}</p>
-    </div>
+    <div class="pp-profile-card" style="font-size:16px;background:#FFFFFF;border:1px solid rgba(200,146,42,0.2);border-left:3px solid rgba(200,146,42,0.55);border-radius:12px;overflow:hidden;">
 
-    <div class="profile-section">
-      <div class="profile-section-label">Archetype</div>
-      <p>${esc(p4.archetype_frame)}</p>
-    </div>
-
-    <div class="profile-section">
-      <div class="profile-section-label">Domain</div>
-      <p>${esc(p4.domain_frame)}</p>
-    </div>
-
-    <div class="profile-section">
-      <div class="profile-section-label">Scale</div>
-      <p>${esc(p4.scale_frame)}</p>
-    </div>
-
-    <div class="profile-section">
-      <div class="profile-section-label">Responsibility</div>
-      <p>${esc(p4.responsibility)}</p>
-    </div>
-
-    <div class="profile-section profile-section-actions">
-      <div class="profile-section-label">What this looks like</div>
-      <div class="profile-actions">
-        <div class="profile-action">
-          <span class="profile-action-tier">This week</span>
-          <span>${esc(p4.actions.light)}</span>
-        </div>
-        <div class="profile-action">
-          <span class="profile-action-tier">Ongoing</span>
-          <span>${esc(p4.actions.medium)}</span>
-        </div>
-        <div class="profile-action">
-          <span class="profile-action-tier">Structural</span>
-          <span>${esc(p4.actions.deep)}</span>
+      <!-- Hero -->
+      <div style="padding:32px 28px 28px;background:linear-gradient(135deg,rgba(200,146,42,0.06) 0%,rgba(200,146,42,0.02) 100%);border-bottom:1px solid rgba(200,146,42,0.12);">
+        <div style="${sc};font-size:11px;letter-spacing:0.24em;text-transform:uppercase;${gold};margin-bottom:12px;">Your Purpose Piece</div>
+        <div style="${sc};font-size:clamp(28px,5vw,38px);font-weight:400;${dark};line-height:1.1;margin-bottom:10px;">${esc(archetypeName)}</div>
+        <div style="${serif};font-size:16px;font-weight:300;${muted};">
+          ${domainName ? esc(domainName) : ""}${domainName && scaleName ? ' <span style="margin:0 8px;opacity:0.4;">·</span> ' : ""}${scaleName ? esc(scaleName) : ""}
         </div>
       </div>
-    </div>
 
-    <div class="profile-section profile-section-resources">
-      <div class="profile-section-label">Worth exploring</div>
-      <div class="profile-resources">${resourcesHtml}</div>
-    </div>
+      <!-- Body sections -->
+      <div style="padding:28px 28px 0;">
+        ${section("Pattern", esc(p4.pattern_restatement || ""))}
+        ${section("Archetype", esc(p4.archetype_frame || ""))}
+        ${section("Domain", esc(p4.domain_frame || ""))}
+        ${section("Scale", esc(p4.scale_frame || ""))}
+        ${section("Responsibility", esc(p4.responsibility || ""))}
 
-    <div class="profile-closing">This is what you carry. The question now is what you do with it.</div>
-
-    <div class="profile-nexus">
-      <div class="profile-nexus-eyebrow">Your Place in the Larger Map</div>
-      <p class="profile-nexus-statement">${esc(p4.civilisational_statement || "")}</p>
-      <p class="profile-nexus-body">NextUs is a living map of where humanity actually is across seven domains — and where the people showing up for the gap between where we are and where we could be are working. Your Purpose Piece is your entry point.</p>
-      <a href="https://nextus.world" class="profile-nexus-link">Explore the civilisational map &rarr;</a>
-    </div>
-
-    <div class="profile-personal-note-section">
-      <div class="profile-section-label">In Your Own Words</div>
-      <textarea
-        id="ppPersonalNote"
-        class="pp-note-textarea"
-        placeholder="What does this actually mean to you? Write it in your own voice — the version that sounds like you."
-        oninput="App.onPpNoteInput(this.value)"
-      ></textarea>
-      <p class="pp-note-hint">When you've written your own version, it leads. The profile sits behind it.</p>
-      <div id="ppToolOutputToggle" style="margin-top:14px;">
-        <button class="pp-expand-btn" onclick="App.togglePpProfile()" id="ppExpandBtn">
-          See your Purpose Piece profile →
-        </button>
-        <div id="ppProfileSummary" style="display:none;" class="pp-profile-summary">
-          <p><strong>${esc(archetypeName)}</strong> · ${esc(domainName)} · ${esc(scaleName)}</p>
-          <p style="margin-top:8px;font-style:italic;color:rgba(15,21,35,0.55);">${esc(p4.signal_restatement || "")}</p>
+        <!-- What this looks like -->
+        <div style="margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid rgba(200,146,42,0.10);">
+          <div style="${sc};font-size:11px;letter-spacing:0.22em;text-transform:uppercase;${gold};margin-bottom:16px;">What this looks like</div>
+          ${p4.actions ? actionRow("This week", esc(p4.actions.light || "")) + actionRow("Ongoing", esc(p4.actions.medium || "")) + actionRow("Structural", esc(p4.actions.deep || "")) : ""}
         </div>
-      </div>
-      <button class="pp-lock-btn" id="ppLockBtn" onclick="App.lockPpNote()" style="display:none;">
-        Lock this as my statement ✓
-      </button>
-      <div class="pp-locked-msg" id="ppLockedMsg" style="display:none;">
-        <span>✓ Locked.</span> Your words lead now.
-      </div>
-    </div>
 
-    <div class="profile-threshold">
-      <div class="profile-threshold-eyebrow">First Look</div>
-      <p class="profile-threshold-body">This is your instinct as it reads from the outside. The shape is here. What isn't here yet is the tension — what this costs you at the bone, where the instinct breaks, and what it has been asking of you that you haven't fully faced. That's the second conversation.</p>
-      <button class="btn-go-deeper" onclick="App.goDeeper()">Go deeper &rarr;</button>
-    </div>
+        <!-- Worth exploring -->
+        ${resourcesHtml ? `<div style="margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid rgba(200,146,42,0.10);">
+          <div style="${sc};font-size:11px;letter-spacing:0.22em;text-transform:uppercase;${gold};margin-bottom:16px;">Worth exploring</div>
+          ${resourcesHtml}
+        </div>` : ""}
 
+        <!-- Closing line -->
+        <div style="${serif};font-size:17px;font-style:italic;font-weight:300;${muted};margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid rgba(200,146,42,0.10);">
+          This is what you carry. The question now is what you do with it.
+        </div>
+
+        <!-- Civilisational statement -->
+        <div style="margin-bottom:28px;padding:20px 22px;background:rgba(200,146,42,0.04);border-radius:8px;border:1px solid rgba(200,146,42,0.14);">
+          <div style="${sc};font-size:11px;letter-spacing:0.22em;text-transform:uppercase;${gold};margin-bottom:10px;">Your Place in the Larger Map</div>
+          ${p4.civilisational_statement ? `<p style="${serif};font-size:16px;font-weight:300;line-height:1.8;${dark};margin:0 0 12px;">${esc(p4.civilisational_statement)}</p>` : ""}
+          <p style="${serif};font-size:15px;font-weight:300;line-height:1.7;${muted};margin:0 0 14px;">NextUs is a living map of where humanity actually is across seven domains — and where the people showing up for the gap between where we are and where we could be are working. Your Purpose Piece is your entry point.</p>
+          <a href="https://nextus.world" style="${sc};font-size:13px;letter-spacing:0.12em;${gold};text-decoration:none;border-bottom:1px solid rgba(200,146,42,0.35);padding-bottom:2px;">Explore the civilisational map →</a>
+        </div>
+
+        <!-- In Your Own Words -->
+        <div style="margin-bottom:28px;">
+          <div style="${sc};font-size:11px;letter-spacing:0.22em;text-transform:uppercase;${gold};margin-bottom:12px;">In Your Own Words</div>
+          <textarea id="ppPersonalNote" class="pp-note-field"
+            placeholder="What does this actually mean to you? Write it in your own voice — the version that sounds like you."
+            oninput="window.App&&window.App.onPpNoteInput(this.value)"></textarea>
+          <p style="${serif};font-size:14px;font-style:italic;${muted};margin:8px 0 14px;line-height:1.6;">When you've written your own version, it leads. The profile sits behind it.</p>
+          <button class="pp-ghost-btn" id="ppLockBtn" onclick="window.App&&window.App.lockPpNote()" style="display:none;margin-top:4px;">
+            Lock this as my statement ✓
+          </button>
+          <div id="ppLockedMsg" style="display:none;${serif};font-size:15px;font-style:italic;${gold};margin-top:8px;">✓ Locked. Your words lead now.</div>
+        </div>
+
+      </div>
+
+      <!-- Go deeper footer -->
+      <div style="padding:24px 28px;background:rgba(200,146,42,0.03);border-top:1px solid rgba(200,146,42,0.10);">
+        <div style="${sc};font-size:11px;letter-spacing:0.22em;text-transform:uppercase;${gold};margin-bottom:10px;">First Look</div>
+        <p style="${serif};font-size:16px;font-weight:300;line-height:1.75;${muted};margin:0 0 16px;">This is your instinct as it reads from the outside. The shape is here. What isn't here yet is the tension — what this costs you at the bone, where the instinct breaks, and what it has been asking of you that you haven't fully faced. That's the second conversation.</p>
+        <button class="pp-action-btn" onclick="window.App&&window.App.goDeeper()">Go deeper →</button>
+      </div>
+
+    </div>
   </div>`;
 }
 

@@ -1093,8 +1093,8 @@ export function PurposePiecePage() {
         // Save profile and north star notes
         if (user?.id && data.profile) {
           ;(async () => { try {
-            const { data: ex } = await supabase.from('purpose_piece_results').select('id').eq('user_id', user.id).limit(1).maybeSingle()
-            if (ex?.id) {
+            const { data: ex, error: exErr } = await supabase.from('purpose_piece_results').select('id').eq('user_id', user.id).limit(1).maybeSingle()
+            if (!exErr && ex?.id) {
               await supabase.from('purpose_piece_results').update({ status: 'complete', session: data.session, profile: data.profile, completed_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', ex.id)
             } else {
               await supabase.from('purpose_piece_results').insert({ user_id: user.id, status: 'complete', session: data.session, profile: data.profile, completed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
@@ -1630,8 +1630,8 @@ export function PurposePiecePage() {
       {user && showWelcome === true && <WelcomeModal onBegin={async () => {
         if (user?.id) {
           try {
-            const { data: ex } = await supabase.from('purpose_piece_results').select('id').eq('user_id', user.id).limit(1).maybeSingle()
-            if (ex?.id) {
+            const { data: ex, error: exErr } = await supabase.from('purpose_piece_results').select('id').eq('user_id', user.id).limit(1).maybeSingle()
+            if (!exErr && ex?.id) {
               await supabase.from('purpose_piece_results').update({ status: 'started', updated_at: new Date().toISOString() }).eq('id', ex.id)
             } else {
               await supabase.from('purpose_piece_results').insert({ user_id: user.id, status: 'started', updated_at: new Date().toISOString() })
