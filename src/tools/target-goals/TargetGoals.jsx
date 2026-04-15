@@ -1292,21 +1292,31 @@ export function TargetGoalsPage() {
 
   async function loadMapData() {
     try {
+      // Load the most recent map — complete or in-progress.
+      // Stars show whenever the user has scored at least 4 domains,
+      // regardless of whether they ran the final synthesis.
       const { data } = await supabase
-        .from('map_results').select('session, completed_at, complete, phase')
+        .from('map_results').select('session, completed_at, complete')
         .eq('user_id', user.id)
         .order('updated_at', { ascending: false }).limit(1).maybeSingle()
+
       if (data?.session?.domainData) {
-        setMapData(data.session)
-        setHasMapData(true)
         const s = {}, h = {}
         Object.entries(data.session.domainData).forEach(([id, d]) => {
+          if (!d || typeof d !== 'object') return
           if (d?.currentScore !== undefined) s[id] = d.currentScore
           else if (d?.score !== undefined)   s[id] = d.score
           if (d?.horizonScore !== undefined) h[id] = d.horizonScore
         })
-        setScores(s); setHorizonScores(h)
-        getRecommendation(s, true)
+        // Use map data if at least 4 domains are scored
+        const scoredCount = Object.keys(s).length
+        if (scoredCount >= 4) {
+          setMapData(data.session)
+          setHasMapData(true)
+          setScores(s)
+          setHorizonScores(h)
+          getRecommendation(s, true)
+        }
       }
     } catch {}
   }

@@ -1159,10 +1159,28 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
 // ─── Results Card ─────────────────────────────────────────────────────────────
 
 function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
-  const [horizonText,   setHorizonText]   = useState('')
+  const [horizonText,   setHorizonText]   = useState(() => {
+    // Restore from localStorage if previously locked
+    try { return localStorage.getItem('lifeos_map_horizon_locked') || '' } catch { return '' }
+  })
   const [draftVisible,  setDraftVisible]  = useState(false)
-  const [horizonLocked, setHorizonLocked] = useState(false)
+  const [horizonLocked, setHorizonLocked] = useState(() => {
+    try { return !!localStorage.getItem('lifeos_map_horizon_locked') } catch { return false }
+  })
   const { user } = useAuth()
+
+  // Also restore from Supabase on mount (more reliable than localStorage)
+  useEffect(() => {
+    if (!user?.id) return
+    supabase.from('map_results').select('horizon_goal_user').eq('user_id', user.id)
+      .order('updated_at', { ascending: false }).limit(1).maybeSingle()
+      .then(({ data }) => {
+        if (data?.horizon_goal_user) {
+          setHorizonText(data.horizon_goal_user)
+          setHorizonLocked(true)
+        }
+      }).catch(() => {})
+  }, [user?.id])
 
   const focusDomains = mapData?.focus_domains || []
 
@@ -1892,28 +1910,45 @@ export function MapPage() {
     hasLoadedRef.current = true
     async function load() {
       try {
-        const { data } = await supabase.from('map_results').select('*').eq('user_id', user.id).order('updated_at', { ascending: false }).limit(1).maybeSingle()
-        if (data?.session?.domainData) {
-          setDomainData(data.session.domainData)
+        const { data, error } = await supabase.from('map_results').select('*').eq('user_id', user.id).order('updated_at', { ascending: false }).limit(1).maybeSingle()
+        if (error) throw error
+
+        if (data?.session?.domainData && typeof data.session.domainData === 'object') {
+          // Safely restore domain data — skip malformed entries
+          const safeDomainData = {}
           const scores = {}, hscores = {}
           Object.entries(data.session.domainData).forEach(([id, d]) => {
+            if (!d || typeof d !== 'object') return
+            safeDomainData[id] = d
             if (d.currentScore !== undefined) scores[id] = d.currentScore
             if (d.horizonScore !== undefined) hscores[id] = d.horizonScore
           })
-          setCurrentScores(scores)
-          setHorizonScores(hscores)
-          if (data.complete || data.phase === 'complete') { setPhase('results'); setMapData(data.map_data) }
-          // Returning user — skip welcome modal
+          if (Object.keys(safeDomainData).length > 0) {
+            setDomainData(safeDomainData)
+            setCurrentScores(scores)
+            setHorizonScores(hscores)
+          }
+          if (data.complete) { setPhase('results'); setMapData(data.map_data) }
+          setShowWelcome(false)
+        } else if (data && !data.session?.domainData) {
+          // Row exists but session is empty/corrupt — treat as returning user, skip welcome
           setShowWelcome(false)
         } else {
-          // No Supabase record — fresh user, show welcome
+          // No record — fresh user
           setShowWelcome(prev => prev === null ? true : prev)
         }
       } catch {
-        setShowWelcome(prev => prev === null ? true : prev)
+        // On any error, unblock the UI — default to showing the map
+        setShowWelcome(prev => prev === null ? false : prev)
       }
     }
     load()
+
+    // Safety net: if Supabase never responds, unblock UI after 8 seconds
+    const timeout = setTimeout(() => {
+      setShowWelcome(prev => prev === null ? false : prev)
+    }, 8000)
+    return () => clearTimeout(timeout)
   }, [user])
 
   // Persist to localStorage on every change
@@ -2045,7 +2080,7 @@ export function MapPage() {
 
         {/* Header */}
         <div className="tool-header">
-          <span className="tool-eyebrow">Life OS · The Map</span>
+          <span className="tool-eyebrow">Horizon Suite · The Map</span>
           <h1 className="tool-title">From where you are<br />to where you want to be.</h1>
           <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.6 }}>
             An honest picture. Seven domains. Three steps each.
