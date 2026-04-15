@@ -119,7 +119,7 @@ function useToolStatuses(user) {
             .order('updated_at', { ascending: false })
             .limit(1).maybeSingle(),
           supabase.from('purpose_piece_results')
-            .select('status')
+            .select('status, session')
             .eq('user_id', user.id)
             .order('updated_at', { ascending: false })
             .limit(1).maybeSingle(),
@@ -141,7 +141,12 @@ function useToolStatuses(user) {
           s.map = (mapRes.data.complete || mapRes.data.phase === 'complete') ? 'complete' : 'active'
         }
         if (ppRes.data?.status) {
-          s['purpose-piece'] = ppRes.data.status === 'complete' ? 'complete' : 'active'
+          // Complete if status flag is set, OR all 3 stage transcripts exist (answered all questions)
+          const ppSession = ppRes.data.session
+          const allStagesDone = ppSession?.archetypeTranscript?.length >= 5 &&
+                                ppSession?.domainTranscript?.length >= 3 &&
+                                ppSession?.scaleTranscript?.length >= 3
+          s['purpose-piece'] = (ppRes.data.status === 'complete' || allStagesDone) ? 'complete' : 'active'
         }
         if (sprintRes.data?.status) {
           s['target-goals'] = sprintRes.data.status === 'active' ? 'active' : sprintRes.data.status

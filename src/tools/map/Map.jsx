@@ -798,6 +798,11 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
       const aiMsg = { role: 'assistant', content: data.message, canLock: data.canLock }
       const updated = [...next, aiMsg]
       setHorizonMsgs(updated)
+      // When North Star signals ready to lock, surface its version in the textarea
+      // so the user locks the refined text, not their rough draft
+      if (data.canLock && data.message) {
+        setHorizonText(data.message)
+      }
       setThinking(false)
     } catch {
       setHorizonMsgs([...next, { role: 'assistant', content: 'Something went wrong. Try again.' }])
@@ -1094,12 +1099,17 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                 Not the avatar — that's best in the world. Your life. You don't have to want 10.
               </p>
 
+              {horizonMsgs.some(m => m.canLock) && (
+                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>
+                  ✓ North Star's version — edit freely, then lock
+                </div>
+              )}
               <textarea
                 value={horizonText}
                 onChange={e => setHorizonText(e.target.value)}
                 placeholder="What does this area look like in your full yes life?"
                 rows={3}
-                style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '12px' }}
+                style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', background: horizonMsgs.some(m => m.canLock) ? 'rgba(200,146,42,0.04)' : 'rgba(200,146,42,0.02)', border: horizonMsgs.some(m => m.canLock) ? '1.5px solid rgba(200,146,42,0.45)' : '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '12px' }}
               />
 
               <HourglassPicker onScore={handleHorizonScoreSelect} horizonMode currentScore={horizonScore} />
@@ -1283,33 +1293,46 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
         </div>
       )}
 
-      {/* Life horizon draft */}
-      {mapData?.life_horizon_draft && (
+      {/* Life horizon — always show if there's a draft or the user has written something */}
+      {(mapData?.life_horizon_draft || horizonText) && (
         <div style={{ padding: '20px 28px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
           <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>Your Life Horizon</div>
           <textarea value={horizonText} onChange={e => setHorizonText(e.target.value)} disabled={horizonLocked}
             placeholder="Write your own Life Horizon — in your own voice."
-            rows={4} style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.78)', background: '#FFFFFF', border: horizonLocked ? '1px solid rgba(200,146,42,0.3)' : '1.5px dashed rgba(200,146,42,0.4)', borderRadius: '10px', resize: 'vertical', outline: 'none', lineHeight: 1.7, marginBottom: '8px', opacity: horizonLocked ? 0.7 : 1 }}
+            rows={4} style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.78)', background: '#FFFFFF', border: horizonLocked ? '1px solid rgba(200,146,42,0.3)' : '1.5px dashed rgba(200,146,42,0.4)', borderRadius: '10px', resize: 'vertical', outline: 'none', lineHeight: 1.7, marginBottom: '8px', opacity: horizonLocked ? 0.85 : 1 }}
           />
-          <button onClick={() => setDraftVisible(v => !v)} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: '10px', display: 'block' }}>
-            {draftVisible ? 'Hide draft ↑' : 'See what The Map drafted →'}
-          </button>
-          {draftVisible && (
-            <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '10px', marginBottom: '12px' }}>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '10px' }}>{mapData.life_horizon_draft}</p>
-              <button onClick={() => { setHorizonText(mapData.life_horizon_draft); setDraftVisible(false) }} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                Use this as my starting point →
+          {mapData?.life_horizon_draft && (
+            <>
+              <button onClick={() => setDraftVisible(v => !v)} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: '10px', display: 'block' }}>
+                {draftVisible ? 'Hide draft ↑' : 'See what The Map drafted →'}
               </button>
-            </div>
+              {draftVisible && (
+                <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '10px', marginBottom: '12px' }}>
+                  <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '10px' }}>{mapData.life_horizon_draft}</p>
+                  <button onClick={() => { setHorizonText(mapData.life_horizon_draft); setDraftVisible(false) }} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                    Use this as my starting point →
+                  </button>
+                </div>
+              )}
+            </>
           )}
-          {!horizonLocked && horizonText.trim() && (
-            <button onClick={lockHorizon} style={btnStyle}>Lock this as my Life Horizon ✓</button>
-          )}
-          {horizonLocked && (
-            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>
-              <span style={{ color: '#A8721A', fontStyle: 'normal', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', letterSpacing: '0.1em' }}>✓ Locked.</span>{' '}This is your Life Horizon.
-            </p>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            {!horizonLocked && horizonText.trim() && (
+              <button onClick={lockHorizon} style={btnStyle}>Lock this as my Life Horizon ✓</button>
+            )}
+            {horizonLocked && (
+              <>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', margin: 0 }}>
+                  <span style={{ color: '#A8721A', fontStyle: 'normal', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', letterSpacing: '0.1em' }}>✓ Locked.</span>{' '}This is your Life Horizon.
+                </p>
+                <button
+                  onClick={() => setHorizonLocked(false)}
+                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.2)', flexShrink: 0 }}>
+                  Edit
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -1512,6 +1535,9 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
   // FIX #4: horizonScore in ConnectionDomainStep state, not stale closure
   const [horizonScore,  setHorizonScore]  = useState(existingData?.horizonScore)
   const [horizonLocked, setHorizonLocked] = useState(!!existingData?.horizonLocked)
+  const [horizonText,   setHorizonText]   = useState(existingData?.horizonText || '')
+  const [horizonMsgs,   setHorizonMsgs]   = useState(existingData?.horizonMsgs || [])
+  const [horizonThink,  setHorizonThink]  = useState(false)
   const [saveIndicator, setSaveIndicator] = useState(false)
 
   const activeSubDomains    = subDomains.filter(s => s.active)
@@ -1779,10 +1805,77 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
               <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
                 <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>Now — where do you want to be?</div>
                 <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, marginBottom: '16px' }}>
-                  Given everything across your relational life — what score would feel like your full yes?
+                  Given everything across your relational life — what does connection look like in your full yes life?
                 </p>
-                <HourglassPicker onScore={n => setHorizonScore(n)} horizonMode currentScore={horizonScore} />
-                {horizonScore !== undefined && (
+                <textarea
+                  value={horizonText}
+                  onChange={e => setHorizonText(e.target.value)}
+                  placeholder="What does this relationship landscape look like in your full yes life?"
+                  rows={3}
+                  style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '12px', boxSizing: 'border-box' }}
+                />
+                <HourglassPicker onScore={n => { setHorizonScore(n); onUpdate({ ...existingData, subDomains, horizonScore: n }) }} horizonMode currentScore={horizonScore} />
+
+                {/* Horizon reflection chat */}
+                {horizonMsgs.length > 0 && (
+                  <div style={{ marginTop: '16px' }}>
+                    {horizonMsgs.map((m, i) => <ChatBubble key={i} msg={m} />)}
+                    {horizonThink && <ThinkingBubble />}
+                  </div>
+                )}
+
+                {horizonScore !== undefined && horizonText.trim() && horizonMsgs.length === 0 && !horizonThink && (
+                  <button
+                    onClick={async () => {
+                      const msg = `[Horizon: ${horizonScore}] ${horizonText}`
+                      setHorizonMsgs([{ role: 'user', content: msg }])
+                      setHorizonThink(true)
+                      try {
+                        const res = await fetch('/api/map-scoring-chat', {
+                          method: 'POST', headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ mode: 'horizon', domain: 'connection', avatarFinal, currentScore: existingData?.currentScore, messages: [{ role: 'user', content: msg }], horizonScore, horizonText })
+                        })
+                        const data = await res.json()
+                        setHorizonMsgs([{ role: 'user', content: msg }, { role: 'assistant', content: data.message, canLock: data.canLock }])
+                        if (data.canLock && data.message) setHorizonText(data.message)
+                      } catch {
+                        setHorizonMsgs(p => [...p, { role: 'assistant', content: 'Something went wrong. Please try again.' }])
+                      }
+                      setHorizonThink(false)
+                    }}
+                    style={{ ...btnStyle, marginTop: '12px' }}
+                  >
+                    Send for reflection →
+                  </button>
+                )}
+
+                {horizonMsgs.length > 0 && !horizonThink && (
+                  <ChatInput
+                    value={''}
+                    onChange={() => {}}
+                    onSend={async text => {
+                      const next = [...horizonMsgs, { role: 'user', content: text }]
+                      setHorizonMsgs(next)
+                      setHorizonThink(true)
+                      try {
+                        const res = await fetch('/api/map-scoring-chat', {
+                          method: 'POST', headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ mode: 'horizon', domain: 'connection', avatarFinal, currentScore: existingData?.currentScore, messages: next, horizonScore, horizonText })
+                        })
+                        const data = await res.json()
+                        setHorizonMsgs(p => [...p, { role: 'assistant', content: data.message, canLock: data.canLock }])
+                        if (data.canLock && data.message) setHorizonText(data.message)
+                      } catch {
+                        setHorizonMsgs(p => [...p, { role: 'assistant', content: 'Something went wrong. Please try again.' }])
+                      }
+                      setHorizonThink(false)
+                    }}
+                    placeholder="Respond here…"
+                    disabled={horizonThink}
+                  />
+                )}
+
+                {horizonScore !== undefined && horizonText.trim() && (horizonMsgs.some(m => m.canLock) || horizonMsgs.length >= 2) && !horizonThink && (
                   <div style={{ marginTop: '16px' }}>
                     <LockBtn
                       onClick={() => {
@@ -1798,6 +1891,7 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
                           .map(s => `${s.label}: ${s.horizonText}`)
                           .join(' · ')
                         const horizonText = subHorizons || 'Connection horizon set across sub-domains'
+                        const horizonTextFinal = horizonText.trim() || completedSubDomains.filter(s => s.horizonText).map(s => `${s.label}: ${s.horizonText}`).join(' · ') || 'Connection horizon set across sub-domains'
                         const final = {
                           domainId: domain.id,
                           subDomains, synthesis,
@@ -1805,7 +1899,8 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
                           avatarDoc, avatarMessages: avatarMsgs,
                           currentScore: avgScore,
                           horizonScore,
-                          horizonText,
+                          horizonText: horizonTextFinal,
+                          horizonMsgs,
                           horizonLocked: true,
                         }
                         onUpdate(final)
@@ -1992,11 +2087,13 @@ export function MapPage() {
   async function saveSession(allData) {
     if (!user?.id) return
     try {
+      // Mark complete when all 7 domains reach stage 3 — doesn't require synthesis
+      const allDone = DOMAINS.every(d => getDomainStage(allData[d.id]) === 3)
       await supabase.from('map_results').upsert({
         user_id:    user.id,
         session:    { domainData: allData, currentScores, horizonScores },
-        phase:      'mapping',
-        complete:   false,
+        phase:      allDone ? 'complete' : 'mapping',
+        complete:   allDone,
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id' })
     } catch {}
