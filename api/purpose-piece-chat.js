@@ -927,6 +927,15 @@ function renderPhase4(p4) {
       <p style="${serif};font-size:17px;font-weight:300;line-height:1.8;${dark};margin:0;">${body}</p>
     </div>`;
 
+  const sectionWithPopup = (label, body, popupType, popupName) => `
+    <div style="margin-bottom:28px;padding-bottom:28px;border-bottom:1px solid rgba(200,146,42,0.10);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <div style="${sc};font-size:11px;letter-spacing:0.22em;text-transform:uppercase;${gold};">${label}</div>
+        <button onclick="window.ppShowPopup('${popupType}','${popupName}')" style="background:none;border:1px solid rgba(200,146,42,0.35);border-radius:50%;width:16px;height:16px;cursor:pointer;${sc};font-size:10px;${gold};line-height:1;padding:0;display:inline-flex;align-items:center;justify-content:center;" title="What is this?">?</button>
+      </div>
+      <p style="${serif};font-size:17px;font-weight:300;line-height:1.8;${dark};margin:0;">${body}</p>
+    </div>`;
+
   const resourcesHtml = (p4.resources || []).map(r => `
     <div style="margin-bottom:16px;">
       <div style="${serif};font-size:16px;font-weight:500;${dark};margin-bottom:4px;">${esc(r.title)}</div>
@@ -953,21 +962,70 @@ function renderPhase4(p4) {
 
     <div class="pp-profile-card" style="font-size:16px;background:#FFFFFF;border:1px solid rgba(200,146,42,0.2);border-left:3px solid rgba(200,146,42,0.55);border-radius:12px;overflow:hidden;">
 
+      <!-- Popup overlay -->
+      <div id="pp-popup-overlay" onclick="this.style.display='none'" style="display:none;position:fixed;inset:0;background:rgba(15,21,35,0.45);z-index:9999;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;">
+        <div onclick="event.stopPropagation()" style="background:#FAFAF7;border:1px solid rgba(200,146,42,0.25);border-radius:12px;padding:32px 28px;max-width:480px;width:100%;position:relative;max-height:80vh;overflow-y:auto;">
+          <button onclick="document.getElementById('pp-popup-overlay').style.display='none'" style="position:absolute;top:14px;right:16px;background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;color:rgba(15,21,35,0.4);line-height:1;">✕</button>
+          <div id="pp-popup-label" style="font-family:'Cormorant SC',Georgia,serif;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#A8721A;margin-bottom:10px;"></div>
+          <div id="pp-popup-name" style="font-family:'Cormorant SC',Georgia,serif;font-size:24px;font-weight:400;color:#0F1523;margin-bottom:14px;line-height:1.2;"></div>
+          <p id="pp-popup-body" style="font-family:'Cormorant Garamond',Georgia,serif;font-size:16px;font-weight:300;line-height:1.8;color:rgba(15,21,35,0.78);margin:0;"></p>
+        </div>
+      </div>
+      <script>
+        (function() {
+          var ARCHETYPES = {
+            "Architect": "Designs the structural conditions that determine what becomes possible at all. Doesn\'t build the thing — designs the container the thing lives inside. Energised by making the system sound, not shipping the output. Frustrated when the same problems keep recurring because nobody fixed the conditions producing them.",
+            "Maker": "Builds what doesn\'t exist. Takes concepts to creation. Comfortable with iteration and values function over perfection. Energised by shipping — by the thing existing in the world rather than just being imagined.",
+            "Connector": "Weaves relationships, bridges people, creates belonging and networks. Sees who needs who before anyone else does. Facilitates without dominating. Values emergence over control.",
+            "Catalyst": "Accelerates what\'s already moving. Sees latent potential and activates it. Doesn\'t need to start things — finds things at the edge of ignition and provides the spark. Moves on once the momentum is self-sustaining.",
+            "Sage": "Holds wisdom and offers perspective that clarifies. Sees signals across time. Values understanding over action. Holds complexity without needing to simplify it for comfort.",
+            "Mirror": "Contributes by reflecting truth — makes the invisible visible or the unbearable bearable. Artists, writers, anyone whose work is expression so complete that others recognise themselves in it. Felt before understood.",
+            "Steward": "Tends what exists. Protects, maintains, and develops over time. Energised by care and continuity rather than creation. Values depth of investment over breadth of reach.",
+            "Legacy": "Thinks in generations. Takes on work whose results won\'t arrive in their lifetime. Energised by deep time, preservation, and the conditions they\'re creating for people they\'ll never meet."
+          };
+          var DOMAINS = {
+            "Vision": "Future imagination, possibility, coordination, collective direction. The work of deciding where humanity is going — and building the infrastructure to get there together.",
+            "Nature": "The living systems that sustain all life. Ecosystems, biodiversity, climate, the relationship between human civilisation and the planet it depends on.",
+            "Society": "The structures humans live inside — institutions, governance, culture, community, the conditions of belonging and exclusion.",
+            "Mind": "How humans think, learn, make meaning, and understand themselves. Psychology, philosophy, education, consciousness, the inner architecture of human experience.",
+            "Body": "Human health, physicality, and the conditions that allow bodies to thrive. Medicine, movement, nutrition, the lived experience of being embodied.",
+            "Economy": "How resources, value, and exchange are structured. What gets rewarded, what gets funded, what the system makes possible or forecloses.",
+            "Technology": "The tools humans build and how those tools reshape what\'s possible. Infrastructure, systems, the designed environment of human capability."
+          };
+          var SCALES = {
+            "Personal": "The immediate circle — self, family, close relationships. Work whose impact is felt directly and personally.",
+            "Local": "A community, neighbourhood, or city. Work that changes the conditions for a defined group of people in a place.",
+            "National": "A country or large institution. Work operating at the scale of policy, culture, or systems that affect millions.",
+            "Global": "Cross-border systems and challenges. Work that operates without regard to national boundaries.",
+            "Civilisational": "The species-level game. Work whose felt responsibility is humanity itself — the long arc, the conditions for human civilisation to continue and evolve."
+          };
+          window.ppShowPopup = function(type, name) {
+            var data = type === \'archetype\' ? ARCHETYPES : type === \'domain\' ? DOMAINS : SCALES;
+            var labelMap = {archetype: \'Contribution Archetype\', domain: \'Global Domain\', scale: \'Engagement Scale\'};
+            document.getElementById(\'pp-popup-label\').textContent = labelMap[type] || type;
+            document.getElementById(\'pp-popup-name\').textContent = name;
+            document.getElementById(\'pp-popup-body\').textContent = data[name] || \'\';
+            var overlay = document.getElementById(\'pp-popup-overlay\');
+            overlay.style.display = \'flex\';
+          };
+        })();
+      </script>
+
       <!-- Hero -->
       <div style="padding:32px 28px 28px;background:linear-gradient(135deg,rgba(200,146,42,0.06) 0%,rgba(200,146,42,0.02) 100%);border-bottom:1px solid rgba(200,146,42,0.12);">
         <div style="${sc};font-size:11px;letter-spacing:0.24em;text-transform:uppercase;${gold};margin-bottom:12px;">Your Purpose Piece</div>
-        <div style="${sc};font-size:clamp(28px,5vw,38px);font-weight:400;${dark};line-height:1.1;margin-bottom:10px;">${esc(archetypeName)}</div>
-        <div style="${serif};font-size:16px;font-weight:300;${muted};">
-          ${domainName ? esc(domainName) : ""}${domainName && scaleName ? ' <span style="margin:0 8px;opacity:0.4;">·</span> ' : ""}${scaleName ? esc(scaleName) : ""}
+        <div style="${sc};font-size:clamp(28px,5vw,38px);font-weight:600;${dark};line-height:1.1;margin-bottom:10px;cursor:pointer;border-bottom:2px solid rgba(200,146,42,0.3);display:inline-block;" onclick="window.ppShowPopup(\'archetype\',\'${esc(archetypeName)}\')" title="Learn about this archetype">${esc(archetypeName)}</div>
+        <div style="${serif};font-size:16px;font-weight:300;${muted};margin-top:8px;">
+          ${domainName ? `<span style="cursor:pointer;font-weight:500;color:#0F1523;border-bottom:1px solid rgba(200,146,42,0.4);" onclick="window.ppShowPopup(\'domain\',\'${esc(domainName)}\')">${esc(domainName)}</span>` : ""}${domainName && scaleName ? '<span style="margin:0 8px;opacity:0.4;">·</span>' : ""}${scaleName ? `<span style="cursor:pointer;font-weight:500;color:#0F1523;border-bottom:1px solid rgba(200,146,42,0.4);" onclick="window.ppShowPopup(\'scale\',\'${esc(scaleName)}\')">${esc(scaleName)}</span>` : ""}
         </div>
       </div>
 
       <!-- Body sections -->
       <div style="padding:28px 28px 0;">
         ${section("Pattern", esc(p4.pattern_restatement || ""))}
-        ${section("Archetype", esc(p4.archetype_frame || ""))}
-        ${section("Domain", esc(p4.domain_frame || ""))}
-        ${section("Scale", esc(p4.scale_frame || ""))}
+        ${sectionWithPopup("Archetype", esc(p4.archetype_frame || ""), "archetype", esc(archetypeName))}
+        ${sectionWithPopup("Domain", esc(p4.domain_frame || ""), "domain", esc(domainName))}
+        ${sectionWithPopup("Scale", esc(p4.scale_frame || ""), "scale", esc(scaleName))}
         ${section("Responsibility", esc(p4.responsibility || ""))}
 
         <!-- What this looks like -->
