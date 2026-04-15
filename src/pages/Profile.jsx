@@ -248,25 +248,30 @@ function HorizonWheel({ domains, currentScores, horizonScores, size = 340, onNod
       {domains.map((d, i) => {
         const [lx, ly] = ptFull(i, 1.22)
         const s = currentScores[d.id]
+        const h = horizonScores[d.id]
         const isActive = activeNode === d.id
         const color = s != null ? getTierColor(s) : 'rgba(15,21,35,0.72)'
         const anchor = Math.abs(lx - cx) < 10 ? 'middle' : lx < cx ? 'end' : 'start'
+        const scoreText = s != null ? (h != null ? ` ${s}→${h}` : ` ${s}`) : ''
         return (
           <g key={i} style={{ cursor: onNodeClick ? 'pointer' : 'default' }}
             onClick={() => onNodeClick && onNodeClick(d.id)}>
-            <text x={lx} y={ly - 5} textAnchor={anchor} dominantBaseline="middle"
+            <text x={lx} y={ly} textAnchor={anchor} dominantBaseline="middle"
               fontFamily="'Cormorant SC', Georgia, serif"
               fontSize="11" fontWeight="600" letterSpacing="0.8"
               fill={isActive ? '#A8721A' : 'rgba(15,21,35,0.88)'}>
               {d.label}
+              {scoreText && (
+                <tspan
+                  fontFamily="'Cormorant Garamond', Georgia, serif"
+                  fontWeight="400"
+                  fontSize="10"
+                  fill={isActive ? '#A8721A' : color}
+                  letterSpacing="0">
+                  {scoreText}
+                </tspan>
+              )}
             </text>
-            {s != null && (
-              <text x={lx} y={ly + 9} textAnchor={anchor} dominantBaseline="middle"
-                fontFamily="'Cormorant Garamond', Georgia, serif"
-                fontSize="11" fill={isActive ? '#A8721A' : color}>
-                {s}
-              </text>
-            )}
           </g>
         )
       })}

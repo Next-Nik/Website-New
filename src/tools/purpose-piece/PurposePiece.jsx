@@ -956,9 +956,26 @@ export function PurposePiecePage() {
       })
       if (!res.ok) throw new Error(`API ${res.status}`)
       const d = await res.json()
-      // Update shared session once (first stage to respond sets it)
-      if (d.session && !sessionRef.current) setSession(d.session)
-      else if (d.session) setSession(prev => ({ ...prev, stage: prev?.stage || targetStage }))
+      // Update shared session — use safe merge so startStage opening calls
+      // never overwrite a more-advanced questionIndex from a parallel stage
+      if (d.session && !sessionRef.current) {
+        setSession(d.session)
+      } else if (d.session) {
+        setSession(prev => {
+          if (!prev) return d.session
+          const incomingQI = d.session.questionIndex || {}
+          const prevQI     = prev.questionIndex || {}
+          return {
+            ...prev,
+            // Never let a startStage opening call (qi=0) overwrite an advanced index
+            questionIndex: {
+              archetype: Math.max(prevQI.archetype ?? 0, incomingQI.archetype ?? 0),
+              domain:    Math.max(prevQI.domain    ?? 0, incomingQI.domain    ?? 0),
+              scale:     Math.max(prevQI.scale     ?? 0, incomingQI.scale     ?? 0),
+            },
+          }
+        })
+      }
       // Set this stage's question
       if (d.session?.currentQuestion) {
         setStageQuestion(prev => ({ ...prev, [targetStage]: d.session.currentQuestion }))
@@ -997,9 +1014,40 @@ export function PurposePiecePage() {
   function handleResponse(data, targetStage) {
     const s = targetStage || activeStage
 
-    // Update shared session
+    // Update shared session — merge carefully to avoid race conditions.
+    // Three stages run in parallel; a late response from one stage must never
+    // overwrite a more-advanced questionIndex or transcript from another stage.
     if (data.session) {
-      setSession(data.session)
+      setSession(prev => {
+        if (!prev) return data.session
+        const incomingQI = data.session.questionIndex || {}
+        const prevQI     = prev.questionIndex || {}
+        const incomingPC = data.session.probeCount || {}
+        const prevPC     = prev.probeCount || {}
+        return {
+          ...prev,
+          ...data.session,
+          // Always keep the highest questionIndex per stage
+          questionIndex: {
+            archetype: Math.max(prevQI.archetype ?? 0, incomingQI.archetype ?? 0),
+            domain:    Math.max(prevQI.domain    ?? 0, incomingQI.domain    ?? 0),
+            scale:     Math.max(prevQI.scale     ?? 0, incomingQI.scale     ?? 0),
+          },
+          // Always keep the most recent probeCount for the active stage, preserve others
+          probeCount: {
+            archetype: s === 'archetype' ? (incomingPC.archetype ?? 0) : Math.max(prevPC.archetype ?? 0, incomingPC.archetype ?? 0),
+            domain:    s === 'domain'    ? (incomingPC.domain    ?? 0) : Math.max(prevPC.domain    ?? 0, incomingPC.domain    ?? 0),
+            scale:     s === 'scale'     ? (incomingPC.scale     ?? 0) : Math.max(prevPC.scale     ?? 0, incomingPC.scale     ?? 0),
+          },
+          // Transcripts: keep the longer one per stage (more answers = more progress)
+          archetypeTranscript: (data.session.archetypeTranscript?.length ?? 0) >= (prev.archetypeTranscript?.length ?? 0)
+            ? data.session.archetypeTranscript : prev.archetypeTranscript,
+          domainTranscript: (data.session.domainTranscript?.length ?? 0) >= (prev.domainTranscript?.length ?? 0)
+            ? data.session.domainTranscript : prev.domainTranscript,
+          scaleTranscript: (data.session.scaleTranscript?.length ?? 0) >= (prev.scaleTranscript?.length ?? 0)
+            ? data.session.scaleTranscript : prev.scaleTranscript,
+        }
+      })
       // Update this stage's currentQuestion
       if (data.session.currentQuestion) {
         setStageQuestion(prev => ({ ...prev, [s]: data.session.currentQuestion }))
