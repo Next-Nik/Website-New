@@ -1170,22 +1170,22 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
 
 function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
   const [horizonText,   setHorizonText]   = useState(() => {
-    // Restore from localStorage if previously locked
     try { return localStorage.getItem('lifeos_map_horizon_locked') || '' } catch { return '' }
   })
   const [draftVisible,  setDraftVisible]  = useState(false)
   const [horizonLocked, setHorizonLocked] = useState(() => {
     try { return !!localStorage.getItem('lifeos_map_horizon_locked') } catch { return false }
   })
+  const userEditingRef = useRef(false)  // true when user has clicked Edit — blocks effect re-lock
   const { user } = useAuth()
 
-  // Also restore from Supabase on mount (more reliable than localStorage)
+  // Restore from Supabase on mount — but never re-lock if user has clicked Edit
   useEffect(() => {
     if (!user?.id) return
     supabase.from('map_results').select('horizon_goal_user').eq('user_id', user.id)
       .order('updated_at', { ascending: false }).limit(1).maybeSingle()
       .then(({ data }) => {
-        if (data?.horizon_goal_user) {
+        if (data?.horizon_goal_user && !userEditingRef.current) {
           setHorizonText(data.horizon_goal_user)
           setHorizonLocked(true)
         }
@@ -1196,6 +1196,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
 
   async function lockHorizon() {
     if (!horizonText.trim()) return
+    userEditingRef.current = false
     try { localStorage.setItem('lifeos_map_horizon_locked', horizonText) } catch {}
     if (user?.id) {
       try {
@@ -1297,10 +1298,19 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
       {(mapData?.life_horizon_draft || horizonText) && (
         <div style={{ padding: '20px 28px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
           <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>Your Life Horizon</div>
-          <textarea value={horizonText} onChange={e => setHorizonText(e.target.value)} disabled={horizonLocked}
-            placeholder="Write your own Life Horizon — in your own voice."
-            rows={4} style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.78)', background: '#FFFFFF', border: horizonLocked ? '1px solid rgba(200,146,42,0.3)' : '1.5px dashed rgba(200,146,42,0.4)', borderRadius: '10px', resize: 'vertical', outline: 'none', lineHeight: 1.7, marginBottom: '8px', opacity: horizonLocked ? 0.85 : 1 }}
-          />
+          <div style={{ position: 'relative' }}>
+            <textarea value={horizonText} onChange={e => setHorizonText(e.target.value)} disabled={horizonLocked}
+              placeholder="Write your own Life Horizon — in your own voice."
+              rows={4} style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.78)', background: '#FFFFFF', border: horizonLocked ? '1px solid rgba(200,146,42,0.3)' : '1.5px dashed rgba(200,146,42,0.4)', borderRadius: '10px', resize: 'vertical', outline: 'none', lineHeight: 1.7, marginBottom: '8px', opacity: horizonLocked ? 0.85 : 1, boxSizing: 'border-box' }}
+            />
+            {horizonLocked && (
+              <button
+                onClick={() => { userEditingRef.current = true; setHorizonLocked(false) }}
+                style={{ position: 'absolute', bottom: '18px', right: '10px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontStyle: 'italic', color: '#A8721A', background: 'rgba(250,250,247,0.95)', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '20px', padding: '3px 12px', cursor: 'pointer', lineHeight: 1.4 }}>
+                Edit
+              </button>
+            )}
+          </div>
           {mapData?.life_horizon_draft && (
             <>
               <button onClick={() => setDraftVisible(v => !v)} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: '10px', display: 'block' }}>
@@ -1316,21 +1326,14 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
               )}
             </>
           )}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <div>
             {!horizonLocked && horizonText.trim() && (
               <button onClick={lockHorizon} style={btnStyle}>Lock this as my Life Horizon ✓</button>
             )}
             {horizonLocked && (
-              <>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', margin: 0 }}>
-                  <span style={{ color: '#A8721A', fontStyle: 'normal', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', letterSpacing: '0.1em' }}>✓ Locked.</span>{' '}This is your Life Horizon.
-                </p>
-                <button
-                  onClick={() => setHorizonLocked(false)}
-                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.2)', flexShrink: 0 }}>
-                  Edit
-                </button>
-              </>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', margin: 0 }}>
+                <span style={{ color: '#A8721A', fontStyle: 'normal', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', letterSpacing: '0.1em' }}>✓ Locked.</span>{' '}This is your Life Horizon.
+              </p>
             )}
           </div>
         </div>
