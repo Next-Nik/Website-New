@@ -1293,8 +1293,8 @@ export function TargetGoalsPage() {
   async function loadMapData() {
     try {
       const { data } = await supabase
-        .from('map_results').select('session, completed_at')
-        .eq('user_id', user.id).eq('complete', true)
+        .from('map_results').select('session, completed_at, complete, phase')
+        .eq('user_id', user.id)
         .order('updated_at', { ascending: false }).limit(1).maybeSingle()
       if (data?.session?.domainData) {
         setMapData(data.session)

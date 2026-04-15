@@ -1180,7 +1180,10 @@ export function ExpansionPage() {
         if (mapRow) {
           setMapData({
             stage: mapRow.map_data?.stage,
+            stageDescription: mapRow.map_data?.stage_description,
+            overallReflection: mapRow.map_data?.overall_reflection,
             focusDomains: mapRow.map_data?.focus_domains,
+            focusReasoning: mapRow.map_data?.focus_reasoning,
             lifeHorizon: mapRow.horizon_goal_user || mapRow.map_data?.life_horizon_draft,
             domains: mapRow.session?.domainData
               ? Object.fromEntries(

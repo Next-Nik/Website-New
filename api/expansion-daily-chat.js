@@ -89,7 +89,19 @@ module.exports = async (req, res) => {
             .map(([id, d]) => `${d.label}: ${d.currentScore}/10 → horizon "${d.horizon || "not set"}"`)
             .join("\n")
         : "";
-      parts.push(`MAP DATA:\nStage: ${context.mapData.stage || "unknown"}\nDomains:\n${domainSummary}`);
+      const dragDomains = context.mapData.domains
+        ? Object.entries(context.mapData.domains)
+            .filter(([, d]) => d.currentScore !== undefined && d.currentScore < 5)
+            .map(([, d]) => d.label)
+        : [];
+      let mapBlock = `MAP DATA:\nStage: ${context.mapData.stage || "unknown"}`;
+      if (context.mapData.stageDescription) mapBlock += `\nStage context: ${context.mapData.stageDescription}`;
+      mapBlock += `\nFocus domains: ${(context.mapData.focusDomains || []).join(", ")}`;
+      if (dragDomains.length) mapBlock += `\nSystem drag (below 5): ${dragDomains.join(", ")}`;
+      mapBlock += `\nLife horizon: ${context.mapData.lifeHorizon || "not set"}`;
+      mapBlock += `\n\nDomain scores:\n${domainSummary}`;
+      if (context.mapData.overallReflection) mapBlock += `\n\nNorth Star synthesis (background context — do not quote):\n${context.mapData.overallReflection}`;
+      parts.push(mapBlock);
     }
 
     if (context.sprintActive && context.sprintDomains) {

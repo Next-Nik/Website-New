@@ -50,7 +50,7 @@ function formatNorthStarContext(ctx) {
     'map': 'The Map',
     'purpose-piece': 'Purpose Piece',
     'target-goals': 'Target Sprint',
-    'expansion': 'Expansion',
+    'expansion': 'Horizon Practice',
     'foundation': 'Foundation',
     'orienteering': 'Orienteering',
   }

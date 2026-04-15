@@ -116,7 +116,23 @@ module.exports = async (req, res) => {
           .join("\n")
       : "";
 
-    systemWithContext += `\n\nMAP DATA FOR THIS PERSON:\nDevelopmental stage: ${mapData.stage || "unknown"}\nFocus domains: ${(mapData.focusDomains || []).join(", ")}\n\nDomain scores and horizon goals:\n${domainSummary}\n\nLife horizon: ${mapData.lifeHorizon || "not yet set"}`;
+    const dragDomains = mapData.domains
+      ? Object.entries(mapData.domains)
+          .filter(([, d]) => d.currentScore !== undefined && d.currentScore < 5)
+          .map(([, d]) => d.label)
+      : [];
+
+    let mapBlock = "\n\nMAP DATA FOR THIS PERSON:";
+    mapBlock += `\nDevelopmental stage: ${mapData.stage || "unknown"}`;
+    if (mapData.stageDescription) mapBlock += `\nStage context: ${mapData.stageDescription}`;
+    mapBlock += `\nFocus domains: ${(mapData.focusDomains || []).join(", ")}`;
+    if (mapData.focusReasoning) mapBlock += `\nWhy these domains: ${mapData.focusReasoning}`;
+    if (dragDomains.length) mapBlock += `\nSystem drag (below 5, address before optimising elsewhere): ${dragDomains.join(", ")}`;
+    mapBlock += `\n\nDomain scores and horizon goals:\n${domainSummary}`;
+    mapBlock += `\n\nLife horizon: ${mapData.lifeHorizon || "not yet set"}`;
+    if (mapData.overallReflection) mapBlock += `\n\nNorth Star synthesis of this person (use to understand who you are working with — do not quote verbatim):\n${mapData.overallReflection}`;
+
+    systemWithContext += mapBlock;
   }
 
   if (customGoals && !mapData) {

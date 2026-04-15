@@ -114,7 +114,7 @@ function useToolStatuses(user) {
       try {
         const [mapRes, ppRes, sprintRes, foundationRes] = await Promise.all([
           supabase.from('map_results')
-            .select('complete')
+            .select('complete, phase')
             .eq('user_id', user.id)
             .order('updated_at', { ascending: false })
             .limit(1).maybeSingle(),
@@ -138,10 +138,10 @@ function useToolStatuses(user) {
         const s = {}
 
         if (mapRes.data) {
-          s.map = mapRes.data.complete ? 'complete' : 'active'
+          s.map = (mapRes.data.complete || mapRes.data.phase === 'complete') ? 'complete' : 'active'
         }
         if (ppRes.data?.status) {
-          s['purpose-piece'] = ppRes.data.status
+          s['purpose-piece'] = ppRes.data.status === 'complete' ? 'complete' : 'active'
         }
         if (sprintRes.data?.status) {
           s['target-goals'] = sprintRes.data.status === 'active' ? 'active' : sprintRes.data.status

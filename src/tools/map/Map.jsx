@@ -1902,7 +1902,7 @@ export function MapPage() {
           })
           setCurrentScores(scores)
           setHorizonScores(hscores)
-          if (data.complete) { setPhase('results'); setMapData(data.map_data) }
+          if (data.complete || data.phase === 'complete') { setPhase('results'); setMapData(data.map_data) }
           // Returning user — skip welcome modal
           setShowWelcome(false)
         } else {
