@@ -1136,176 +1136,164 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
 
       {/* Step: Tasks */}
       {viewStep === 'tasks' && (
-        <div>
-          <h3 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px' }}>Tasks</h3>
-          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
-            The specific actions that move each milestone forward.
-          </p>
-          {(dd.milestones || []).map((m, mi) => {
-            const mTasks = (dd.tasks || []).filter(t => t.milestone === mi)
-            return (
-              <div key={mi} style={{ marginBottom: '20px', padding: '14px 16px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '10px' }}>
-                <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>Month {mi + 1}</div>
-                <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.6, marginBottom: '12px' }}>{m.text}</div>
-                {mTasks.length > 0 ? (
-                  <div>
-                    <EditableList
-                      items={mTasks}
-                      onSave={items => {
-                        const other = (dd.tasks || []).filter(t => t.milestone !== mi)
-                        update({ tasks: [...other, ...items.map(t => ({ ...t, milestone: mi }))] })
-                      }}
-                      renderItem={(task, i) => (
-                        <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', padding: '5px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(200,146,42,0.06)' }}>
-                          <span style={{ ...gold, fontSize: '1.1875rem', lineHeight: 1.55, flexShrink: 0, marginTop: '1px' }}>·</span>
-                          <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.55 }}>{task.text}</div>
-                        </div>
-                      )}
-                      itemKey="text"
-                      addLabel="+ Add task"
-                    />
-                    <button onClick={() => generateTasks(mi)} disabled={generating}
-                      style={{ ...sc, fontSize: '17px', letterSpacing: '0.1em', ...muted, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginTop: '6px', opacity: generating ? 0.5 : 1 }}>
-                      {generating ? 'Regenerating…' : 'Regenerate tasks'}
-                    </button>
-                  </div>
-                ) : (
-                  <Btn onClick={() => generateTasks(mi)} disabled={generating} style={{ padding: '8px 18px', fontSize: '15px' }}>
-                    {generating ? 'Generating…' : 'Generate tasks →'}
-                  </Btn>
-                )}
+        <TasksStep
+          dd={dd}
+          domainId={domainId}
+          targetDate={targetDate}
+          generating={generating}
+          update={update}
+          generateTasks={generateTasks}
+          sc={sc}
+          serif={serif}
+          gold={gold}
+          muted={muted}
+          meta={meta}
+        />
+      )}
+    </div>
+  )
+}
+
+// ─── Tasks Step ──────────────────────────────────────────────────────────────
+
+function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks, sc, serif, gold, muted, meta }) {
+  const [calAdded, setCalAdded] = React.useState({})
+
+  const domain = DOMAIN_BY_ID[domainId]?.label || domainId
+
+  function milestoneDate(index) {
+    if (!targetDate) return null
+    const end = new Date(targetDate)
+    const d = new Date(end)
+    d.setDate(d.getDate() - (2 - index) * 30)
+    return d
+  }
+
+  function toGCalDate(d) {
+    if (!d) return ''
+    return d.toISOString().replace(/[-:]/g, '').slice(0, 8)
+  }
+
+  function addToGCal(key, title, date, description) {
+    const dateStr = toGCalDate(date)
+    const url = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+      + '&text=' + encodeURIComponent(title)
+      + '&dates=' + dateStr + '/' + dateStr
+      + '&details=' + encodeURIComponent(description)
+    window.open(url, '_blank')
+    setCalAdded(prev => ({ ...prev, [key]: true }))
+  }
+
+  const calBtnStyle = {
+    display: 'inline-flex', alignItems: 'center', gap: '4px',
+    fontFamily: "'Cormorant SC', Georgia, serif",
+    fontSize: '13px', letterSpacing: '0.1em',
+    color: '#A8721A', background: 'none',
+    border: '1px solid rgba(200,146,42,0.35)',
+    borderRadius: '20px', padding: '3px 10px',
+    cursor: 'pointer', flexShrink: 0,
+    transition: 'all 0.2s',
+  }
+
+  const calIcon = (
+    <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+      <rect x="1" y="2" width="12" height="11" rx="2" stroke="#A8721A" strokeWidth="1.4"/>
+      <path d="M1 6h12" stroke="#A8721A" strokeWidth="1.4"/>
+      <path d="M4 1v2M10 1v2" stroke="#A8721A" strokeWidth="1.4" strokeLinecap="round"/>
+    </svg>
+  )
+
+  return (
+    <div>
+      <h3 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px' }}>Tasks</h3>
+      <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+        The specific actions that move each milestone forward. Add any item to your calendar with one tap.
+      </p>
+
+      {(dd.milestones || []).map((m, mi) => {
+        const mTasks = (dd.tasks || []).filter(t => t.milestone === mi)
+        const date = milestoneDate(mi)
+        const milestoneKey = 'milestone-' + mi
+        const milestoneAdded = calAdded[milestoneKey]
+
+        const milestoneDesc = [m.text, m.why || '', 'Tasks:', ...mTasks.map(t => '• ' + t.text)].filter(Boolean).join('\n')
+
+        return (
+          <div key={mi} style={{ marginBottom: '20px', padding: '14px 16px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '10px' }}>
+
+            {/* Milestone header row */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px', marginBottom: '4px' }}>
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>
+                Month {mi + 1}
+                {milestoneAdded && <span style={{ marginLeft: '6px', color: '#2D6A4F' }}>✓</span>}
               </div>
-            )
-          })}
-          {dd.tasks?.length > 0 && (() => {
-            // Build milestone dates from targetDate
-            function milestoneDate(index) {
-              if (!targetDate) return null
-              const end = new Date(targetDate)
-              const offset = (2 - index) * 30 // Month 3 = 0 days before end, Month 2 = 30, Month 1 = 60
-              const d = new Date(end)
-              d.setDate(d.getDate() - offset)
-              return d
-            }
+              {date && (
+                <button
+                  style={{ ...calBtnStyle, color: milestoneAdded ? '#2D6A4F' : '#A8721A', borderColor: milestoneAdded ? 'rgba(45,106,79,0.4)' : 'rgba(200,146,42,0.35)' }}
+                  onClick={() => addToGCal(milestoneKey, domain + ' — Month ' + (mi + 1) + ' Milestone', date, milestoneDesc)}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.06)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                >
+                  {milestoneAdded ? '✓ Added' : (<>{calIcon} + Calendar</>)}
+                </button>
+              )}
+            </div>
 
-            function toICSDate(d) {
-              if (!d) return ''
-              return d.toISOString().replace(/[-:]/g, '').slice(0, 8)
-            }
+            {/* Milestone text */}
+            <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.6, marginBottom: '12px' }}>{m.text}</div>
 
-            function downloadICS() {
-              const domain = DOMAIN_BY_ID[domainId]?.label || domainId
-              const lines = [
-                'BEGIN:VCALENDAR',
-                'VERSION:2.0',
-                'PRODID:-//NextUs//Target Sprint//EN',
-                'CALSCALE:GREGORIAN',
-                'METHOD:PUBLISH',
-              ]
-
-              ;(dd.milestones || []).forEach((m, mi) => {
-                const mTasks = (dd.tasks || []).filter(t => t.milestone === mi)
-                const date = milestoneDate(mi)
-                if (!date) return
-                const dateStr = toICSDate(date)
-                const uid = `target-sprint-${domainId}-month${mi + 1}-${Date.now()}@nextus.world`
-                const taskList = mTasks.map(t => `• ${t.text}`).join('\n')
-                const description = [
-                  `${domain} · Month ${mi + 1} Milestone`,
-                  '',
-                  m.text,
-                  m.why ? `\n${m.why}` : '',
-                  taskList ? `\nTasks:\n${taskList}` : '',
-                ].filter(Boolean).join('\\n').split('\n').join('\\n')
-
-
-                lines.push(
-                  'BEGIN:VEVENT',
-                  `UID:${uid}`,
-                  `DTSTART;VALUE=DATE:${dateStr}`,
-                  `DTEND;VALUE=DATE:${dateStr}`,
-                  `SUMMARY:${domain} — Month ${mi + 1} Milestone`,
-                  `DESCRIPTION:${description}`,
-                  'END:VEVENT',
-                )
-              })
-
-              lines.push('END:VCALENDAR')
-              const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' })
-              const url = URL.createObjectURL(blob)
-              const a = document.createElement('a')
-              a.href = url
-              a.download = `target-sprint-${domainId}-milestones.ics`
-              document.body.appendChild(a)
-              a.click()
-              document.body.removeChild(a)
-              URL.revokeObjectURL(url)
-            }
-
-            return (
-              <div style={{ marginTop: '8px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
-                <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.65, marginBottom: '14px' }}>
-                  This domain is set up. Use the arrows or wheel to move to the next one.
-                </p>
-                {targetDate && (() => {
-                  function openGoogleCalendar() {
-                    // Open one Google Calendar tab per milestone, pre-filled
-                    ;(dd.milestones || []).forEach((m, mi) => {
-                      const mTasks = (dd.tasks || []).filter(t => t.milestone === mi)
-                      const date = milestoneDate(mi)
-                      if (!date) return
-                      const dateStr = toICSDate(date)
-                      const domain = DOMAIN_BY_ID[domainId]?.label || domainId
-                      const title = encodeURIComponent(`${domain} — Month ${mi + 1} Milestone`)
-                      const taskList = mTasks.map(t => t.text).join('\n')
-
-                      const details = encodeURIComponent([
-                        m.text,
-                        m.why ? ('\n' + m.why) : '',
-                        taskList ? ('\nTasks:\n' + taskList) : '',
-                      ].filter(Boolean).join('\n'))
-
-
-
-                      const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dateStr}/${dateStr}&details=${details}`
-                      window.open(url, '_blank')
-                    })
-                  }
-
-                  const calIcon = (
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
-                      <rect x="1" y="2" width="12" height="11" rx="2" stroke="#A8721A" strokeWidth="1.2"/>
-                      <path d="M1 6h12" stroke="#A8721A" strokeWidth="1.2"/>
-                      <path d="M4 1v2M10 1v2" stroke="#A8721A" strokeWidth="1.2" strokeLinecap="round"/>
-                    </svg>
-                  )
-
-                  const btnBase = { display: 'inline-flex', alignItems: 'center', gap: '8px', ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', background: 'none', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '30px', padding: '8px 18px', cursor: 'pointer', transition: 'all 0.2s' }
-
-                  return (
-                    <div>
-                      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '10px' }}>Add milestones to calendar</div>
-                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                        <button onClick={openGoogleCalendar} style={btnBase}
-                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.06)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
-                          onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.4)' }}>
-                          {calIcon} Google Calendar
-                        </button>
-                        <button onClick={downloadICS} style={btnBase}
-                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.06)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
-                          onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.4)' }}>
-                          {calIcon} Apple Calendar
-                        </button>
+            {/* Tasks */}
+            {mTasks.length > 0 ? (
+              <div>
+                <EditableList
+                  items={mTasks}
+                  onSave={items => {
+                    const other = (dd.tasks || []).filter(t => t.milestone !== mi)
+                    update({ tasks: [...other, ...items.map(t => ({ ...t, milestone: mi }))] })
+                  }}
+                  renderItem={(task, i) => {
+                    const taskKey = 'task-' + mi + '-' + i
+                    const taskAdded = calAdded[taskKey]
+                    return (
+                      <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', padding: '6px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(200,146,42,0.06)' }}>
+                        <span style={{ color: '#A8721A', fontSize: '1.1875rem', lineHeight: 1.55, flexShrink: 0, marginTop: '1px' }}>·</span>
+                        <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.55, flex: 1 }}>{task.text}</div>
+                        {date && (
+                          <button
+                            style={{ ...calBtnStyle, color: taskAdded ? '#2D6A4F' : '#A8721A', borderColor: taskAdded ? 'rgba(45,106,79,0.4)' : 'rgba(200,146,42,0.35)' }}
+                            onClick={() => addToGCal(taskKey, task.text, date, m.text + '\n\nTask: ' + task.text)}
+                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.06)' }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                          >
+                            {taskAdded ? '✓' : calIcon}
+                          </button>
+                        )}
                       </div>
-                      <p style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginTop: '8px', lineHeight: 1.5 }}>
-                        Google opens each milestone in a new tab. Apple downloads a file — open it to add all three at once.
-                      </p>
-                    </div>
-                  )
-                })()}
+                    )
+                  }}
+                  itemKey="text"
+                  addLabel="+ Add task"
+                />
+                <button onClick={() => generateTasks(mi)} disabled={generating}
+                  style={{ ...sc, fontSize: '17px', letterSpacing: '0.1em', ...muted, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', marginTop: '6px', opacity: generating ? 0.5 : 1 }}>
+                  {generating ? 'Regenerating…' : 'Regenerate tasks'}
+                </button>
               </div>
-            )
-          })()}
+            ) : (
+              <button onClick={() => generateTasks(mi)} disabled={generating}
+                style={{ display: 'inline-block', padding: '8px 18px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', cursor: 'pointer', opacity: generating ? 0.5 : 1 }}>
+                {generating ? 'Generating…' : 'Generate tasks →'}
+              </button>
+            )}
+          </div>
+        )
+      })}
+
+      {dd.tasks?.length > 0 && (
+        <div style={{ marginTop: '8px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
+          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.65 }}>
+            This domain is set up. Use the arrows or wheel to move to the next one.
+          </p>
         </div>
       )}
     </div>
