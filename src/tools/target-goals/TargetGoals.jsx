@@ -928,7 +928,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
                 Set horizon →
               </Btn>
             </div>
-          ) : (
+          ) : !hasMapData || !(mapDomain.realityFinal || mapDomain.realityDraft) ? (
             <ChatPanel
               mode="current_state"
               domainId={domainId}
@@ -939,7 +939,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
                 if (data.canLock && data.summary) update({ currentStateSummary: data.summary })
               }}
             />
-          )}
+          ) : null}
         </div>
       )}
 
@@ -1415,44 +1415,40 @@ export function TargetGoalsPage() {
   async function saveToSupabase() {
     if (!user?.id) return
     try {
-      // Core payload — columns that must exist
-      const corePayload = {
+      const now = new Date().toISOString()
+      // Core — guaranteed columns only
+      const core = {
         user_id: user.id, domains: selectedDomains,
         quarter_type: quarterType, target_date: targetDate,
         domain_data: domainData, status: 'active',
-        updated_at: new Date().toISOString(),
+        updated_at: now,
       }
-      // Extended columns — may not exist in all schema versions, added silently
-      const extPayload = {
-        ...corePayload,
-        end_date_label: endDateLabel,
-        scores_at_start: scores,
-        horizon_scores: horizonScores,
-        has_map_data: hasMapData,
-        session_phase: phase,
-        active_domain_id: activeDomainId,
-      }
-      if (sessionId) {
-        // Try extended first, fall back to core if 400
-        const { error } = await supabase.from('target_goal_sessions')
-          .update({ ...extPayload, updated_at: new Date().toISOString() }).eq('id', sessionId)
-        if (error) {
-          await supabase.from('target_goal_sessions')
-            .update({ ...corePayload, updated_at: new Date().toISOString() }).eq('id', sessionId)
-        }
-      } else {
+      // Extended — progressively add optional columns
+      const ext1 = { ...core, end_date_label: endDateLabel, scores_at_start: scores, horizon_scores: horizonScores, has_map_data: hasMapData }
+      const ext2 = { ...ext1, session_phase: phase, active_domain_id: activeDomainId }
+
+      async function tryInsert(payload) {
         const { data, error } = await supabase.from('target_goal_sessions')
-          .insert({ ...extPayload, created_at: new Date().toISOString() })
-          .select('id').single()
-        if (error) {
-          // Fall back to core columns only
-          const { data: d2 } = await supabase.from('target_goal_sessions')
-            .insert({ ...corePayload, created_at: new Date().toISOString() })
-            .select('id').single()
-          if (d2?.id) setSessionId(d2.id)
-        } else {
-          if (data?.id) setSessionId(data.id)
-        }
+          .insert({ ...payload, created_at: now }).select('id').single()
+        return { data, error }
+      }
+      async function tryUpdate(payload) {
+        const { error } = await supabase.from('target_goal_sessions')
+          .update(payload).eq('id', sessionId)
+        return { error }
+      }
+
+      if (sessionId) {
+        // Try most extended first, fall back progressively
+        let { error } = await tryUpdate(ext2)
+        if (error) ({ error } = await tryUpdate(ext1))
+        if (error) await tryUpdate(core)
+      } else {
+        // Insert: try most extended first, fall back progressively
+        let { data, error } = await tryInsert(ext2)
+        if (error) ({ data, error } = await tryInsert(ext1))
+        if (error) ({ data, error } = await tryInsert(core))
+        if (data?.id) setSessionId(data.id)
       }
 
       // Write to North Star cross-tool memory
