@@ -1090,6 +1090,15 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
 // ─── Phase: Select ────────────────────────────────────────────────────────────
 
 function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSelectedDomains, recommendation, onContinue }) {
+  // Score-based fallback: mark 3 lowest-scoring domains when recommendation hasn't resolved
+  const scoreFallbackRec = hasMapData && !recommendation?.recommended && Object.keys(scores).length > 0
+    ? DOMAINS
+        .filter(d => scores[d.id] !== undefined)
+        .sort((a, b) => scores[a.id] - scores[b.id])
+        .slice(0, 3)
+        .map(d => d.id)
+    : null
+
   return (
     <div>
       <Eyebrow>Target Sprint</Eyebrow>
@@ -1115,7 +1124,7 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: '10px', marginBottom: '24px' }}>
         {DOMAINS.map(d => {
           const sel   = selectedDomains.includes(d.id)
-          const isRec = recommendation?.recommended?.includes(d.id)
+          const isRec = recommendation?.recommended?.includes(d.id) || scoreFallbackRec?.includes(d.id)
           const rat   = recommendation?.rationale?.[d.id]
           const s     = scores[d.id]
           const dis   = !sel && selectedDomains.length >= 3
