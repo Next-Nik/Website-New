@@ -629,7 +629,7 @@ function SprintSummaryModal({ domains, domainData, onClose, onComplete }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '16px', padding: '32px 28px', maxWidth: '520px', width: '100%', maxHeight: '80vh', overflowY: 'auto' }}>
+      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '520px', width: '100%', maxHeight: '80vh', overflowY: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <Eyebrow>Your Target Sprint</Eyebrow>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.1rem', ...muted, padding: '4px' }}>×</button>

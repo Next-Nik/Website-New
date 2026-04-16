@@ -385,7 +385,7 @@ function FoundationReview({ user, sessions }) {
       {reviewText && (
         <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', padding: '16px 0 16px 20px' }}>
           <p style={{ ...serif, fontSize: '1.25rem', lineHeight: 1.85, ...meta, margin: 0 }}>{reviewText}</p>
-          {saved && <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(200,146,42,0.5)', display: 'block', marginTop: '12px' }}>Saved to your profile</span>}
+          {saved && <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', display: 'block', marginTop: '12px' }}>Saved to your profile</span>}
         </div>
       )}
     </div>
@@ -516,7 +516,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
           <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, lineHeight: 1.75, marginBottom: '6px' }}>
             Done. See you tomorrow.
           </p>
-          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(200,146,42,0.55)', marginBottom: '20px' }}>
+          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '20px' }}>
             {sessionCount} session{sessionCount !== 1 ? 's' : ''} this week
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -526,7 +526,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
             >
               Listen again {'\u2192'}
             </button>
-            <a href="/profile#foundation" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(200,146,42,0.6)', textDecoration: 'none' }}>
+            <a href="/profile#foundation" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>
               View your journal {'\u2192'}
             </a>
           </div>
@@ -613,7 +613,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
           <p style={{ ...serif, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '320px' }}>
             Regulated internal stability {'\u2014'} the floor you stand on. Check in before and after to see what the audio actually does to your system.
           </p>
-          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.78)' }}>
+          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A' }}>
             Tap anywhere to begin
           </span>
         </div>
@@ -759,7 +759,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
         {/* Audio scrubber — below journal, visible once before is done */}
         {beforeDone && audioUrl && (
           <div style={{ marginTop: '4px', marginBottom: '8px' }}>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(200,146,42,0.5)', textAlign: 'center', marginBottom: '8px' }}>
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', textAlign: 'center', marginBottom: '8px' }}>
               Horizon State {'·'} Foundation {'·'} 20 min
             </div>
             <div
@@ -997,7 +997,7 @@ export function FoundationPage() {
               {/* Phase 2 — Calibration (coming) */}
               {activePhase === 'calibration' && (
                 <div style={{ padding: '40px 0', textAlign: 'center' }}>
-                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(200,146,42,0.4)', display: 'block', marginBottom: '12px' }}>
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>
                     Coming soon
                   </span>
                   <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.7, maxWidth: '380px', margin: '0 auto' }}>
@@ -1009,7 +1009,7 @@ export function FoundationPage() {
               {/* Phase 3 — Embodying (coming) */}
               {activePhase === 'embodying' && (
                 <div style={{ padding: '40px 0', textAlign: 'center' }}>
-                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(200,146,42,0.4)', display: 'block', marginBottom: '12px' }}>
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>
                     Coming soon
                   </span>
                   <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.7, maxWidth: '380px', margin: '0 auto' }}>

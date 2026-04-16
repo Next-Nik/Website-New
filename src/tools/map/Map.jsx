@@ -1971,7 +1971,7 @@ function MapNextSteps({ compact = false }) {
 
   return (
     <div style={{ marginTop: '32px', padding: '32px 28px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)', borderLeft: '3px solid rgba(200,146,42,0.45)', borderRadius: '12px' }}>
-      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: 'rgba(200,146,42,0.7)', textTransform: 'uppercase', marginBottom: '16px' }}>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
         What comes next
       </div>
       <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '28px' }}>
