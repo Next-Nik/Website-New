@@ -1216,8 +1216,8 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
                   m.text,
                   m.why ? `\n${m.why}` : '',
                   taskList ? `\nTasks:\n${taskList}` : '',
-                ].filter(Boolean).join('\n').replace(/
-/g, '\n')
+                ].filter(Boolean).join('\\n').split('\n').join('\\n')
+
 
                 lines.push(
                   'BEGIN:VEVENT',
