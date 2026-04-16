@@ -9,7 +9,7 @@ const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const { getNorthStarContext, formatNorthStarContext } = require('./_north-star');
 
 // ─── North Star Identity ───────────────────────────────────────────────────
-const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the NextUs Life OS ecosystem. You are consistent across every tool: The Map, Foundation, Orienteering, Purpose Piece, Target Sprint, and Expansion. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
+const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the Horizon Suite ecosystem. You are consistent across every tool: The Map, Horizon State, Orienteering, Purpose Piece, Target Sprint, and Horizon Practice. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
 
 
 
@@ -105,7 +105,9 @@ module.exports = async (req, res) => {
     }
 
     if (context.sprintActive && context.sprintDomains) {
-      parts.push(`ACTIVE TARGET SPRINT:\nFocus domains: ${context.sprintDomains.join(", ")}\nThe Actions layer of today's T.E.A. check is about their sprint. Ask how they went with their sprint actions today.`);
+      const DOMAIN_LABELS = { path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances', connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal' };
+      const domainLabels = context.sprintDomains.map(id => DOMAIN_LABELS[id] || id).join(', ');
+      parts.push(`ACTIVE TARGET SPRINT:\nFocus domains: ${domainLabels}\nThe Actions layer of today's T.E.A. check is about their sprint. Ask how they went with their sprint actions today.`);
     }
 
     if (context.currentSkill) {

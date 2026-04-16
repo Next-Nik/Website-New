@@ -57,8 +57,9 @@ function extractJSON(text) {
 // ── Mode: recommend ───────────────────────────────────────────────────────────
 
 async function recommendDomains(scores, hasMapData) {
+  // Send both id and label so the model returns exact IDs in its JSON
   const scoreLines = Object.entries(scores)
-    .map(([id, score]) => `${DOMAINS[id]?.label || id}: ${score}/10`)
+    .map(([id, score]) => `${id} (${DOMAINS[id]?.label || id}): ${score}/10`)
     .join("\n");
 
   const system = `${VOICE}
@@ -70,6 +71,8 @@ Your role is to surface the most catalytic domains — not just the lowest score
 BOTTLENECK RULE: Any domain scoring below 5 is an active floor for all others. Name these — though the person has the final say.
 BALANCE WATCH: If scores cluster in one area (e.g. all strong in output/work, weak in relational/inner), notice this gently. One quiet observation.
 STRENGTH TRAP: People tend to train where they're already strong. If obvious choices are all above 6, notice whether something lower is being avoided.
+
+CRITICAL: The "recommended" array must contain the domain_id values exactly as given in the scores (e.g. "inner_game", "path", "finances") — not the label names. Use the id from before the parenthesis in each score line.
 
 Return JSON only:
 {
@@ -86,7 +89,22 @@ Return JSON only:
     system,
     messages: [{ role: "user", content: `Domain scores${hasMapData ? " (from The Map)" : " (self-reported)"}:\n${scoreLines}\n\nRecommend three focus domains for the next quarter.` }]
   });
-  return extractJSON(response.content[0].text);
+
+  const parsed = extractJSON(response.content[0].text);
+
+  // Normalise: if model returned labels instead of IDs, map them back
+  const labelToId = Object.fromEntries(
+    Object.entries(DOMAINS).map(([id, d]) => [d.label.toLowerCase().replace(/\s+/g, '_'), id])
+  );
+  if (Array.isArray(parsed.recommended)) {
+    parsed.recommended = parsed.recommended.map(v => {
+      if (DOMAINS[v]) return v; // already a valid ID
+      const norm = v.toLowerCase().replace(/\s+/g, '_');
+      return labelToId[norm] || v;
+    });
+  }
+
+  return parsed;
 }
 
 // ── Mode: current_state ───────────────────────────────────────────────────────

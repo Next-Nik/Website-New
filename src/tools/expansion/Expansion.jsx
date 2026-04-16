@@ -560,7 +560,7 @@ function SetupPhase({ mapData, onComplete, userId }) {
 
 // ─── Daily Check-in ───────────────────────────────────────────────────────────
 
-function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId }) {
+function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId, recentCheckins = [] }) {
   const [step, setStep] = useState('thoughts') // thoughts | emotions | actions | reflection | skill | done
   const [teaData, setTeaData] = useState({ thoughts: '', emotions: '', actions: '' })
   const [skillNote, setSkillNote] = useState('')
@@ -629,6 +629,12 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId }) {
       sprintActive: sprintData?.active || false,
       sprintDomains: sprintData?.domains || [],
       currentSkill: setupData.nowSkill || null,
+      recentCheckins: recentCheckins.slice(0, 7).map(c => ({
+        date: c.check_date,
+        thoughts: c.thoughts,
+        emotions: c.emotions,
+        actions: c.actions,
+      })),
     }
     try {
       const res = await fetch('/tools/expansion/api/daily-chat', {
@@ -665,6 +671,12 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId }) {
       sprintActive: sprintData?.active || false,
       sprintDomains: sprintData?.domains || [],
       currentSkill: setupData.nowSkill || null,
+      recentCheckins: recentCheckins.slice(0, 7).map(c => ({
+        date: c.check_date,
+        thoughts: c.thoughts,
+        emotions: c.emotions,
+        actions: c.actions,
+      })),
     }
     try {
       const res = await fetch('/tools/expansion/api/daily-chat', {
@@ -1120,7 +1132,12 @@ function Dashboard({ setupData, checkins, skills, sprintData, mapData, onCheckin
         <Card style={{ marginTop: '16px' }}>
           <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginBottom: '8px' }}>Active Target Sprint</div>
           <div style={{ ...serif, fontSize: '16px', fontWeight: 300, ...dark }}>Your sprint actions are the A in your T.E.A. practice.</div>
-          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', marginTop: '6px' }}>{sprintData.domains?.join(' · ')}</div>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', marginTop: '6px' }}>
+            {(() => {
+              const LABELS = { path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances', connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal' }
+              return (sprintData.domains || []).map(id => LABELS[id] || id).join(' · ')
+            })()}
+          </div>
         </Card>
       )}
     </div>
@@ -1468,6 +1485,7 @@ export function ExpansionPage() {
                   mapData={mapData}
                   onComplete={handleCheckinComplete}
                   userId={user?.id}
+                  recentCheckins={checkins}
                 />
               )}
 
