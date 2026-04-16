@@ -535,87 +535,131 @@ function StepStrip({ domainId, domainData, activeStep, onStepClick }) {
 // ─── Accomplishment Tally ─────────────────────────────────────────────────────
 
 function AccomplishmentTally({ domains, domainData, onCheck }) {
-  const [openDomain, setOpenDomain] = useState(null)
+  const [celebration, setCelebration] = useState(null) // { text, type } — shows briefly on completion
+
+  function handleCheck(domainId, type, milestoneIdx, taskIdx, checked) {
+    // Trigger celebration moment on completion (not on uncheck)
+    if (checked) {
+      const msgs = {
+        goal:      '🎯 Goal achieved. Next play.',
+        milestone: '✦ Milestone complete. Keep moving.',
+        task:      '· Done.',
+      }
+      setCelebration({ text: msgs[type] || '✓', type })
+      setTimeout(() => setCelebration(null), 2200)
+    }
+    onCheck(domainId, type, milestoneIdx, taskIdx, checked)
+  }
+
+  // Total progress across all domains
+  const totals = domains.reduce((acc, d) => {
+    const dd = domainData[d.id] || {}
+    if (!dd.targetGoal) return acc
+    const tasks = dd.tasks || []
+    const milestones = dd.milestones || []
+    acc.tasks += tasks.length
+    acc.tasksDone += tasks.filter((_, i) => dd.taskChecked?.[i]).length
+    acc.milestones += milestones.length
+    acc.milestonesDone += milestones.filter((_, i) => dd.milestoneChecked?.[i]).length
+    return acc
+  }, { tasks: 0, tasksDone: 0, milestones: 0, milestonesDone: 0 })
+
+  const pct = totals.tasks > 0 ? Math.round((totals.tasksDone / totals.tasks) * 100) : 0
 
   return (
-    <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '12px', padding: '20px 22px', marginTop: '28px' }}>
-      <Eyebrow>Accomplishment Tally</Eyebrow>
+    <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '12px', padding: '20px 22px', marginTop: '28px', position: 'relative' }}>
+
+      {/* Celebration flash */}
+      {celebration && (
+        <div style={{
+          position: 'absolute', top: '-44px', left: '50%', transform: 'translateX(-50%)',
+          background: '#0F1523', color: '#FAFAF7', borderRadius: '8px',
+          padding: '8px 18px', whiteSpace: 'nowrap',
+          fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em',
+          animation: 'tgFadeUp 0.3s ease both',
+          zIndex: 10,
+        }}>
+          {celebration.text}
+        </div>
+      )}
+
+      {/* Header + overall progress */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+        <Eyebrow style={{ marginBottom: 0 }}>Sprint Progress</Eyebrow>
+        <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#A8721A' }}>
+          {totals.tasksDone}/{totals.tasks} tasks
+        </span>
+      </div>
+
+      {/* Progress bar */}
+      <div style={{ height: '4px', background: 'rgba(200,146,42,0.12)', borderRadius: '2px', marginBottom: '20px', overflow: 'hidden' }}>
+        <div style={{ height: '100%', width: pct + '%', background: '#C8922A', borderRadius: '2px', transition: 'width 0.6s ease' }} />
+      </div>
+
+      {/* Domains */}
       {domains.map(d => {
         const dd = domainData[d.id] || {}
         if (!dd.targetGoal) return null
-        const isOpen = openDomain === d.id
-        const goalDone = !!dd.goalChecked
         const milestones = dd.milestones || []
         const tasks = dd.tasks || []
-        const milestoneDone = milestones.filter((_, i) => dd.milestoneChecked?.[i]).length
-        const taskDone = tasks.filter((_, i) => dd.taskChecked?.[i]).length
 
         return (
-          <div key={d.id} style={{ marginBottom: '12px', borderBottom: '1px solid rgba(200,146,42,0.1)', paddingBottom: '12px' }}>
-            <button onClick={() => setOpenDomain(isOpen ? null : d.id)}
-              style={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'space-between', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0' }}>
-              <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textTransform: 'uppercase' }}>{d.label}</span>
-              <span style={{ ...sc, fontSize: '15px', ...muted, letterSpacing: '0.1em' }}>
-                {taskDone}/{tasks.length} tasks · {milestoneDone}/{milestones.length} milestones
+          <div key={d.id} style={{ marginBottom: '20px', paddingBottom: '20px', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
+            {/* Domain label + goal */}
+            <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>{d.label}</div>
+            <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginBottom: '14px' }}>
+              <input type="checkbox" checked={!!dd.goalChecked}
+                onChange={e => handleCheck(d.id, 'goal', null, null, e.target.checked)}
+                style={{ marginTop: '4px', accentColor: '#C8922A', flexShrink: 0, width: '16px', height: '16px' }}
+              />
+              <span style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.6,
+                textDecoration: dd.goalChecked ? 'line-through' : 'none',
+                opacity: dd.goalChecked ? 0.45 : 1, transition: 'all 0.3s' }}>
+                {dd.targetGoal}
               </span>
-            </button>
+            </label>
 
-            {isOpen && (
-              <div style={{ marginTop: '10px' }}>
-                {/* Target Goal */}
-                <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginBottom: '12px' }}>
-                  <input type="checkbox" checked={!!goalDone}
-                    onChange={e => onCheck(d.id, 'goal', null, null, e.target.checked)}
-                    style={{ marginTop: '3px', accentColor: '#C8922A', flexShrink: 0 }}
-                  />
-                  <div>
-                    <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '2px' }}>Target Goal</div>
-                    <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.6, textDecoration: goalDone ? 'line-through' : 'none', opacity: goalDone ? 0.5 : 1 }}>
-                      {dd.targetGoal}
+            {/* Milestones + tasks */}
+            {milestones.map((m, mi) => {
+              const mDone = !!dd.milestoneChecked?.[mi]
+              const mTasks = tasks.filter(t => t.milestone === mi)
+              return (
+                <div key={mi} style={{ marginLeft: '26px', marginBottom: '12px' }}>
+                  <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginBottom: '6px' }}>
+                    <input type="checkbox" checked={mDone}
+                      onChange={e => handleCheck(d.id, 'milestone', mi, null, e.target.checked)}
+                      style={{ marginTop: '3px', accentColor: '#C8922A', flexShrink: 0, width: '15px', height: '15px' }}
+                    />
+                    <div>
+                      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '1px' }}>Month {mi + 1}</div>
+                      <div style={{ ...serif, fontSize: '1.125rem', ...meta, lineHeight: 1.55,
+                        textDecoration: mDone ? 'line-through' : 'none',
+                        opacity: mDone ? 0.45 : 1, transition: 'all 0.3s' }}>
+                        {m.text}
+                      </div>
                     </div>
-                  </div>
-                </label>
+                  </label>
 
-                {/* Milestones */}
-                {milestones.map((m, mi) => {
-                  const mDone = !!dd.milestoneChecked?.[mi]
-                  const mTasks = tasks.filter(t => t.milestone === mi)
-                  return (
-                    <div key={mi} style={{ marginLeft: '20px', marginBottom: '10px' }}>
-                      <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginBottom: '6px' }}>
-                        <input type="checkbox" checked={mDone}
-                          onChange={e => onCheck(d.id, 'milestone', mi, null, e.target.checked)}
-                          style={{ marginTop: '3px', accentColor: '#C8922A', flexShrink: 0 }}
+                  {mTasks.map((t, ti) => {
+                    const globalIdx = tasks.findIndex(x => x === t)
+                    const tDone = !!dd.taskChecked?.[globalIdx]
+                    return (
+                      <label key={ti} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginLeft: '26px', marginBottom: '5px' }}>
+                        <input type="checkbox" checked={tDone}
+                          onChange={e => handleCheck(d.id, 'task', mi, globalIdx, e.target.checked)}
+                          style={{ marginTop: '3px', accentColor: '#C8922A', flexShrink: 0, width: '14px', height: '14px' }}
                         />
-                        <div>
-                          <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.1em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '1px' }}>Month {mi + 1}</div>
-                          <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.55, textDecoration: mDone ? 'line-through' : 'none', opacity: mDone ? 0.5 : 1 }}>
-                            {m.text}
-                          </div>
-                        </div>
+                        <span style={{ ...serif, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55,
+                          textDecoration: tDone ? 'line-through' : 'none',
+                          opacity: tDone ? 0.38 : 1, transition: 'all 0.3s' }}>
+                          {t.text}
+                        </span>
                       </label>
-
-                      {/* Tasks under this milestone */}
-                      {mTasks.map((t, ti) => {
-                        const globalIdx = tasks.findIndex(x => x === t)
-                        const tDone = !!dd.taskChecked?.[globalIdx]
-                        return (
-                          <label key={ti} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginLeft: '20px', marginBottom: '4px' }}>
-                            <input type="checkbox" checked={tDone}
-                              onChange={e => onCheck(d.id, 'task', mi, globalIdx, e.target.checked)}
-                              style={{ marginTop: '3px', accentColor: '#C8922A', flexShrink: 0 }}
-                            />
-                            <span style={{ ...serif, fontSize: '1.125rem', ...muted, lineHeight: 1.55, textDecoration: tDone ? 'line-through' : 'none', opacity: tDone ? 0.45 : 1 }}>
-                              {t.text}
-                            </span>
-                          </label>
-                        )
-                      })}
-                    </div>
-                  )
-                })}
-              </div>
-            )}
+                    )
+                  })}
+                </div>
+              )
+            })}
           </div>
         )
       })}
@@ -863,9 +907,93 @@ function EditableList({ items, onSave, renderItem, addLabel = '+ Add', itemKey =
   )
 }
 
+
+// ─── Sprint Coach ──────────────────────────────────────────────────────────────
+
+function SprintCoach({ sprintContext, userId }) {
+  const [msgs,     setMsgs]     = useState([])
+  const [input,    setInput]    = useState('')
+  const [thinking, setThinking] = useState(false)
+  const startedRef = useRef(false)
+  const bottomRef  = useRef(null)
+  const taRef      = useRef(null)
+
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }) }, [msgs, thinking])
+
+  useEffect(() => {
+    if (startedRef.current) return
+    startedRef.current = true
+    start()
+  }, [])
+
+  async function call(messages) {
+    const res = await fetch('/tools/target-goals/api/sprint-coach', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages,
+        sprintContext,
+        userId,
+        todayDate: new Date().toISOString().slice(0, 10),
+      })
+    })
+    if (!res.ok) throw new Error('Coach unavailable')
+    return res.json()
+  }
+
+  async function start() {
+    setThinking(true)
+    try {
+      const d = await call([{ role: 'user', content: 'START' }])
+      setMsgs([{ role: 'assistant', content: d.message }])
+    } catch {
+      setMsgs([{ role: 'assistant', content: 'Something went wrong. Please refresh.' }])
+    }
+    setThinking(false)
+  }
+
+  async function send() {
+    const text = input.trim()
+    if (!text || thinking) return
+    const next = [...msgs, { role: 'user', content: text }]
+    setMsgs(next)
+    setInput('')
+    if (taRef.current) taRef.current.style.height = 'auto'
+    setThinking(true)
+    try {
+      const d = await call(next)
+      setMsgs(p => [...p, { role: 'assistant', content: d.message }])
+    } catch {
+      setMsgs(p => [...p, { role: 'assistant', content: 'Something went wrong. Please try again.' }])
+    }
+    setThinking(false)
+  }
+
+  return (
+    <div>
+      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '16px' }}>
+        North Star knows your full plan. Check in on execution, surface what's stuck, think through what's next.
+      </p>
+      <div className="chat-thread" style={{ marginBottom: '14px' }}>
+        {msgs.map((m, i) => <div key={i} className={`bubble bubble-${m.role}`}>{m.content}</div>)}
+        {thinking && <ThinkingDots />}
+        <div ref={bottomRef} />
+      </div>
+      <div className="input-area">
+        <textarea ref={taRef} value={input}
+          onChange={e => { setInput(e.target.value); if (taRef.current) { taRef.current.style.height = 'auto'; taRef.current.style.height = `${Math.min(taRef.current.scrollHeight, 120)}px` } }}
+          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
+          placeholder="What's happening with your sprint?"
+          rows={2} disabled={thinking}
+        />
+        <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
+      </div>
+    </div>
+  )
+}
+
 // ─── Domain Panel ─────────────────────────────────────────────────────────────
 
-function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData, targetDate, completedDomains, userId }) {
+function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData, targetDate, endDateLabel, completedDomains, userId, sprintDomains }) {
   const d  = DOMAIN_BY_ID[domainId]
   const dd = domainData[domainId] || {}
 
@@ -881,9 +1009,10 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
 
   const [viewStep,   setViewStep]   = useState(activeStep)
   const [generating, setGenerating] = useState(false)
+  const isSetup = !dd.tasks?.length // still in setup mode
 
-  // Sync viewStep when activeStep advances
-  useEffect(() => { setViewStep(activeStep) }, [activeStep])
+  // Sync viewStep when activeStep advances (only during setup)
+  useEffect(() => { if (isSetup) setViewStep(activeStep) }, [activeStep])
 
   // Null render AFTER all hooks — Rules of Hooks compliant
   if (!domainId || !d) return null
@@ -941,7 +1070,29 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
         </p>
       </div>
 
-      <StepStrip domainId={domainId} domainData={domainData} activeStep={viewStep} onStepClick={setViewStep} />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2px' }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <StepStrip domainId={domainId} domainData={domainData} activeStep={viewStep === 'coach' ? null : viewStep} onStepClick={setViewStep} />
+        </div>
+        {dd.tasks?.length > 0 && (
+          <button
+            onClick={() => setViewStep(viewStep === 'coach' ? 'tasks' : 'coach')}
+            style={{
+              flexShrink: 0, marginLeft: '12px',
+              fontFamily: "'Cormorant SC', Georgia, serif",
+              fontSize: '13px', letterSpacing: '0.14em',
+              color: viewStep === 'coach' ? '#FFFFFF' : '#A8721A',
+              background: viewStep === 'coach' ? '#A8721A' : 'rgba(200,146,42,0.06)',
+              border: '1px solid rgba(200,146,42,0.5)',
+              borderRadius: '20px', padding: '5px 14px',
+              cursor: 'pointer', transition: 'all 0.2s',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {viewStep === 'coach' ? '← Plan' : 'Coach →'}
+          </button>
+        )}
+      </div>
 
       {/* Step: Current State */}
       {viewStep === 'current_state' && (
@@ -1134,6 +1285,30 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
         </div>
       )}
 
+      {/* Step: Coach */}
+      {viewStep === 'coach' && dd.tasks?.length > 0 && (() => {
+        // Build sprint context for the coach — full plan + progress
+        const sprintContext = {
+          endDateLabel,
+          targetDate,
+          domains: (sprintDomains || [d]).map(sd => {
+            const sdd = domainData[sd.id] || {}
+            return {
+              id: sd.id,
+              label: sd.label,
+              targetGoal: sdd.targetGoal || '',
+              horizonText: sdd.horizonText || '',
+              milestones: sdd.milestones || [],
+              tasks: sdd.tasks || [],
+              milestoneChecked: sdd.milestoneChecked || {},
+              taskChecked: sdd.taskChecked || {},
+              goalChecked: sdd.goalChecked || false,
+            }
+          }),
+        }
+        return <SprintCoach key={domainId + '-coach'} sprintContext={sprintContext} userId={userId} />
+      })()}
+
       {/* Step: Tasks */}
       {viewStep === 'tasks' && (
         <TasksStep
@@ -1157,28 +1332,61 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
 // ─── Tasks Step ──────────────────────────────────────────────────────────────
 
 function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks, sc, serif, gold, muted, meta }) {
-  const [calAdded, setCalAdded] = useState({})
+  const [calAdded,      setCalAdded]      = useState({})
+  const [editingDate,   setEditingDate]   = useState(null) // 'milestone-0' | 'task-0-2' etc
 
   const domain = DOMAIN_BY_ID[domainId]?.label || domainId
 
-  function milestoneDate(index) {
+  // Default milestone date: calculated from targetDate, or stored on the object
+  function defaultMilestoneDate(index) {
     if (!targetDate) return null
     const end = new Date(targetDate)
     const d = new Date(end)
     d.setDate(d.getDate() - (2 - index) * 30)
-    return d
+    return d.toISOString().slice(0, 10)
   }
 
-  function toGCalDate(d) {
-    if (!d) return ''
-    return d.toISOString().replace(/[-:]/g, '').slice(0, 8)
+  function getMilestoneDate(m, index) {
+    return m.date || defaultMilestoneDate(index)
   }
 
-  function addToGCal(key, title, date, description) {
-    const dateStr = toGCalDate(date)
+  function getTaskDate(task, mi) {
+    if (task.date) return task.date
+    return getMilestoneDate((dd.milestones || [])[mi], mi)
+  }
+
+  function toGCalDate(dateStr) {
+    if (!dateStr) return ''
+    return dateStr.replace(/-/g, '')
+  }
+
+  function formatDisplayDate(dateStr) {
+    if (!dateStr) return ''
+    const d = new Date(dateStr + 'T12:00:00')
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  }
+
+  function saveMilestoneDate(mi, dateStr) {
+    const milestones = (dd.milestones || []).map((m, i) =>
+      i === mi ? { ...m, date: dateStr } : m
+    )
+    update({ milestones })
+    setEditingDate(null)
+  }
+
+  function saveTaskDate(mi, ti, dateStr) {
+    const mTasks = (dd.tasks || []).filter(t => t.milestone === mi)
+    const otherTasks = (dd.tasks || []).filter(t => t.milestone !== mi)
+    const updated = mTasks.map((t, i) => i === ti ? { ...t, date: dateStr } : t)
+    update({ tasks: [...otherTasks, ...updated] })
+    setEditingDate(null)
+  }
+
+  function addToGCal(key, title, dateStr, description) {
+    const dateFormatted = toGCalDate(dateStr)
     const url = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
       + '&text=' + encodeURIComponent(title)
-      + '&dates=' + dateStr + '/' + dateStr
+      + '&dates=' + dateFormatted + '/' + dateFormatted
       + '&details=' + encodeURIComponent(description)
     window.open(url, '_blank')
     setCalAdded(prev => ({ ...prev, [key]: true }))
@@ -1212,7 +1420,7 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
 
       {(dd.milestones || []).map((m, mi) => {
         const mTasks = (dd.tasks || []).filter(t => t.milestone === mi)
-        const date = milestoneDate(mi)
+        const mDate = getMilestoneDate(m, mi)
         const milestoneKey = 'milestone-' + mi
         const milestoneAdded = calAdded[milestoneKey]
 
@@ -1223,14 +1431,31 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
 
             {/* Milestone header row */}
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px', marginBottom: '4px' }}>
-              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>
-                Month {mi + 1}
-                {milestoneAdded && <span style={{ marginLeft: '6px', color: '#2D6A4F' }}>✓</span>}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>
+                  Month {mi + 1}
+                  {milestoneAdded && <span style={{ marginLeft: '6px', color: '#2D6A4F' }}>✓</span>}
+                </div>
+                {/* Editable milestone date */}
+                {editingDate === milestoneKey ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <input type="date" defaultValue={mDate}
+                      style={{ ...serif, fontSize: '1rem', color: 'rgba(15,21,35,0.78)', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '6px', padding: '2px 6px', background: '#FAFAF7' }}
+                      onChange={e => saveMilestoneDate(mi, e.target.value)}
+                    />
+                    <button onClick={() => setEditingDate(null)} style={{ background: 'none', border: 'none', ...muted, cursor: 'pointer', fontSize: '1.1rem', padding: '0 2px' }}>×</button>
+                  </div>
+                ) : (
+                  <button onClick={() => setEditingDate(milestoneKey)}
+                    style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: '3px' }}>
+                    {mDate ? formatDisplayDate(mDate) : 'Set date'}
+                  </button>
+                )}
               </div>
-              {date && (
+              {mDate && (
                 <button
                   style={{ ...calBtnStyle, color: milestoneAdded ? '#2D6A4F' : '#A8721A', borderColor: milestoneAdded ? 'rgba(45,106,79,0.4)' : 'rgba(200,146,42,0.35)' }}
-                  onClick={() => addToGCal(milestoneKey, domain + ' — Month ' + (mi + 1) + ' Milestone', date, milestoneDesc)}
+                  onClick={() => addToGCal(milestoneKey, domain + ' — Month ' + (mi + 1) + ' Milestone', mDate, milestoneDesc)}
                   onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.06)' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
                 >
@@ -1254,20 +1479,41 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
                   renderItem={(task, i) => {
                     const taskKey = 'task-' + mi + '-' + i
                     const taskAdded = calAdded[taskKey]
+                    const tDate = getTaskDate(task, mi)
+                    const isEditingTask = editingDate === taskKey
                     return (
-                      <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', padding: '6px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(200,146,42,0.06)' }}>
-                        <span style={{ color: '#A8721A', fontSize: '1.1875rem', lineHeight: 1.55, flexShrink: 0, marginTop: '1px' }}>·</span>
-                        <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.55, flex: 1 }}>{task.text}</div>
-                        {date && (
-                          <button
-                            style={{ ...calBtnStyle, color: taskAdded ? '#2D6A4F' : '#A8721A', borderColor: taskAdded ? 'rgba(45,106,79,0.4)' : 'rgba(200,146,42,0.35)' }}
-                            onClick={() => addToGCal(taskKey, task.text, date, m.text + '\n\nTask: ' + task.text)}
-                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.06)' }}
-                            onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
-                          >
-                            {taskAdded ? '✓' : calIcon}
-                          </button>
-                        )}
+                      <div key={i} style={{ padding: '7px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(200,146,42,0.06)' }}>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                          <span style={{ color: '#A8721A', fontSize: '1.1875rem', lineHeight: 1.55, flexShrink: 0, marginTop: '1px' }}>·</span>
+                          <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.55, flex: 1 }}>{task.text}</div>
+                          {tDate && (
+                            <button
+                              style={{ ...calBtnStyle, color: taskAdded ? '#2D6A4F' : '#A8721A', borderColor: taskAdded ? 'rgba(45,106,79,0.4)' : 'rgba(200,146,42,0.35)' }}
+                              onClick={() => addToGCal(taskKey, task.text, tDate, m.text + '\n\nTask: ' + task.text)}
+                              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.06)' }}
+                              onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
+                            >
+                              {taskAdded ? '✓' : calIcon}
+                            </button>
+                          )}
+                        </div>
+                        {/* Task date — shown below task text, editable */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginLeft: '20px', marginTop: '3px' }}>
+                          {isEditingTask ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <input type="date" defaultValue={tDate}
+                                style={{ ...serif, fontSize: '0.9375rem', color: 'rgba(15,21,35,0.72)', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '6px', padding: '2px 6px', background: '#FAFAF7' }}
+                                onChange={e => saveTaskDate(mi, i, e.target.value)}
+                              />
+                              <button onClick={() => setEditingDate(null)} style={{ background: 'none', border: 'none', ...muted, cursor: 'pointer', fontSize: '1.1rem', padding: '0 2px' }}>×</button>
+                            </div>
+                          ) : (
+                            <button onClick={() => setEditingDate(taskKey)}
+                              style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: '3px' }}>
+                              {tDate ? formatDisplayDate(tDate) : 'Set date'}
+                            </button>
+                          )}
+                        </div>
                       </div>
                     )
                   }}
@@ -1837,8 +2083,10 @@ export function TargetGoalsPage() {
                       hasMapData={hasMapData}
                       mapData={mapData}
                       targetDate={targetDate}
+                      endDateLabel={endDateLabel}
                       completedDomains={completedDomains}
                       userId={user?.id}
+                      sprintDomains={sprintDomains}
                     />
                   </div>
                 )}
