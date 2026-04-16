@@ -886,7 +886,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
               domainId={domainId}
               payload={{}}
               placeholder={`Where are you with ${d.label} right now?`}
-              userId={user?.id}
+              userId={userId}
               onComplete={data => {
                 if (data.canLock && data.summary) update({ currentStateSummary: data.summary })
               }}
@@ -932,7 +932,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
               domainId={domainId}
               payload={{ hasMapData, mapHorizonText: mapDomain.horizonText, mapHorizonScore: mapDomain.horizonScore }}
               placeholder="Describe where you'd wish to be…"
-              userId={user?.id}
+              userId={userId}
               onComplete={data => {
                 if (data.canLock && data.horizonText) update({ horizonText: data.horizonText })
               }}
@@ -979,7 +979,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
                 completedDomains,
               }}
               placeholder="What do you want to achieve this quarter?"
-              userId={user?.id}
+              userId={userId}
               onComplete={data => {
                 if (data.complete && data.data) {
                   update({
@@ -1151,7 +1151,7 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
 
 // ─── Phase: Quarter ───────────────────────────────────────────────────────────
 
-function PhaseQuarter({ quarterType, setQuarterType, setTargetDate, setEndDateLabel, onContinue }) {
+function PhaseQuarter({ quarterType, setQuarterType, setTargetDate, setEndDateLabel, onContinue, onBack }) {
   const today = new Date(), month = today.getMonth()
   const rolling = new Date(today); rolling.setDate(rolling.getDate() + 90)
   let qEnd
@@ -1188,7 +1188,12 @@ function PhaseQuarter({ quarterType, setQuarterType, setTargetDate, setEndDateLa
           </div>
         ))}
       </div>
-      <Btn onClick={onContinue} disabled={!quarterType}>Lock this in →</Btn>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+        <button onClick={onBack} style={{ background: 'none', border: 'none', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.1875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0 }}>
+          ← Back
+        </button>
+        <Btn onClick={onContinue} disabled={!quarterType}>Lock this in →</Btn>
+      </div>
     </div>
   )
 }
@@ -1504,6 +1509,7 @@ export function TargetGoalsPage() {
           <PhaseQuarter
             quarterType={quarterType} setQuarterType={setQuarterType}
             setTargetDate={setTargetDate} setEndDateLabel={setEndDateLabel}
+            onBack={() => setPhase('select')}
             onContinue={() => {
               setActiveDomainId(selectedDomains[0])
               setPhase('sprint')
