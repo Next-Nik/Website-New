@@ -79,53 +79,53 @@ function setPC(session, stage, value) {
 const ARCHETYPE_QUESTIONS = [
   {
     label: "The Moment",
-    text:  "Think of a recent moment where something around you was off — and you either stepped in or you didn't. It doesn't have to be dramatic.\n\nWhat happened, and what did you do?"
+    text:  "Think of a moment — recent or not — when something around you was off and something in you responded. It doesn't have to be a big story.\n\nWhat happened, and what did you do?"
   },
   {
     label: "The Frustration",
-    text:  "What keeps going wrong around you that bothers you, even when it's not your problem?\n\nName one specific example."
+    text:  "What keeps going wrong in the world that bothers you more than it probably should — even when it's got nothing to do with you?\n\nWhat is it, and what does it look like when you see it?"
   },
   {
     label: "The Pressure",
-    text:  "Describe a moment where you had to make a real decision with no clear right answer and something actually at stake.\n\nWhat did you do?"
+    text:  "Tell me about a moment when you had to make a real call — incomplete information, something actually at stake, no clean answer.\n\nWhat did you do?"
   },
   {
     label: "The Cost",
-    text:  "What does your way of operating cost you that others don't seem to pay?\n\nBe specific."
+    text:  "This one's worth sitting with. The way you move through the world — the instinct that's most yours — what does it cost you? Not what's generally hard. What does this particular thing ask of you that others don't seem to pay?"
   },
   {
     label: "The Shadow",
-    text:  "When has your biggest strength made things worse?\n\nGive me a specific moment."
+    text:  "When has the thing you're best at made things worse? A moment where your instinct went further than the situation needed — or where the way you naturally operate created the friction instead of resolving it."
   }
 ];
 
 const DOMAIN_QUESTIONS = [
   {
     label: "The Pull",
-    text:  "What's broken in the world that you can't stop thinking about, even though nobody's asking you to care?\n\nWhat is it specifically?"
+    text:  "What's broken in the world that you can't stop looking at — even when nobody's asking you to and it has nothing to do with you?\n\nWhat is it?"
   },
   {
     label: "The Anger",
-    text:  "What makes you angrier than it seems to make everyone else?\n\nWhat does it look like when you see it?"
+    text:  "What kind of wrong makes you angrier than seems reasonable? The thing that gets under your skin in a way that apparently doesn't get under everyone else's.\n\nWhat is it?"
   },
   {
     label: "The Unpaid Work",
-    text:  "What do you keep doing just because you love it, even though nobody asked for it and nobody's paying you?\n\nWhat is it, and what keeps pulling you back?"
+    text:  "What have you kept doing even though nobody asked for it and nobody paid for it — the thing you did because you just couldn't leave it alone?\n\nWhat was it, and what kept pulling you back?"
   }
 ];
 
 const SCALE_QUESTIONS = [
   {
     label: "The Scene",
-    text:  "Picture your work actually making a difference. What does that scene look like?\n\nWho's there and how many people?"
+    text:  "When you let yourself imagine your work actually mattering — really landing somewhere — what does that look like?\n\nWho's there? How many people? What's the relationship?"
   },
   {
     label: "The Responsibility",
-    text:  "What's the biggest problem you feel personally responsible for doing something about, not just interested in, but actually on the hook for?\n\nWhat is it?"
+    text:  "What's the problem you feel genuinely on the hook for — not just interested in, not just concerned about, but the one where some part of you knows it's yours to do something about?\n\nWhat is it?"
   },
   {
     label: "The Obligation",
-    text:  "What's something you haven't done yet that keeps coming back to you — not as a goal you're working toward, but as something that would feel like unfinished business if you never got to it?\n\nWhat is it, and why does it keep returning?"
+    text:  "What's something you haven't done yet that keeps coming back to you — not as a goal you're chasing, but as something that would feel like unfinished business if you never got to it?\n\nWhat is it, and why does it keep returning?"
   }
 ];
 
@@ -367,34 +367,32 @@ function getNextStage(stage) {
 const STAGE_OPENINGS = {
   archetype: `Five questions. Each one anchored in something that actually happened.
 
-I'm not looking for your best version of yourself — I'm looking for what you actually did. The instinct underneath the action, not the intention on top of it.
+We're watching what you actually do — not what you planned to do or think you should have done. The instinct shows up even when you weren't trying, even when you were half-buried. That's exactly why we're looking there.
 
-Answer from your life as it is right now.`,
+Answer from your life as it is. The real you keeps showing up regardless.`,
 
   domain: `Different gear now.
 
-The last set was behavioural — what you did, what you stepped into, what it cost you. This one is attentional. I'm not asking what you do. I'm asking what pulls you. What you find yourself caring about even when nobody asked you to, even when it has nothing to do with you.
+That last set was watching how you move. This one is about what you can't look away from — the thing that keeps pulling your attention even when nobody asked you to care and it has nothing to do with you.
 
-Three questions. Answer honestly, not aspirationally. The gap between what you wish you cared about and what you actually can't stop thinking about is the signal.`,
+Three questions. Don't answer aspirationally. The gap between what you wish you cared about and what you actually can't stop thinking about — that's the signal.`,
 
-  scale: `Last set. And a different register entirely.
+  scale: `Last set. And a completely different register.
 
-These questions are almost philosophical. Not asking what you've done or what pulls your attention — asking about felt responsibility. What you're actually on the hook for. What would remain undone in you.
+Two questions. Almost philosophical. Not asking what you've done or what pulls your attention — asking where your felt responsibility actually lives. What you're genuinely on the hook for.
 
-Three questions. Take your time. There are no right answers. Only honest ones.`
+Give yourself permission to answer honestly. The world is very good at making people smaller. This is not the time for that.`
 };
 
 // ─── Welcome ──────────────────────────────────────────────────────────────────────────────
 
-const WELCOME = `Something in you already knows what you’re built for. This finds it, and puts language to it.
+const WELCOME = `Somewhere underneath everything you’ve built, survived, and adapted to — there’s a shape that was always yours.
 
-Three conversations. Each one finding something different — not what you’ve done or what you believe about yourself, but the underlying shape of how you actually move through the world.
+Purpose Piece is going to find it.
 
-The first is behavioural. The second is attentional. The third is almost philosophical. The gear shifts deliberately.
+Three conversations. Each one looking for something different: the instinct that keeps showing up in how you actually move. The territory your care keeps returning to. The scale of what you feel genuinely responsible for.
 
-Answer as yourself right now. Not who you’re working toward.
-
-Your answers reveal three coordinates: your contribution archetype, your domain, and your scale. Together — your Purpose Piece.`;
+Ten questions. Your original frequency. Let’s go.`;
 
 // ─── Tentative coordinate extraction ─────────────────────────────────────────
 // After each stage completes, run a lightweight Claude call to extract

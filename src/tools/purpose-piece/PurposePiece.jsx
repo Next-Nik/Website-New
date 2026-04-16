@@ -55,15 +55,15 @@ const STAGE_TOTALS = { archetype: 5, domain: 3, scale: 3 }
 const STAGE_INTROS = {
   archetype: {
     label: 'Contribution Archetype',
-    desc:  'Behavioural. Five questions, each anchored in something that actually happened. Not your best version — what you actually did. The instinct underneath the action.',
+    desc:  'We\'re watching what you actually do — because that\'s where the real signal lives. Not the best version of yourself. Not the intention. The instinct that kept showing up even when the world was pressing down.',
   },
   domain: {
     label: 'Global Domain',
-    desc:  'Attentional. Not asking what you do — asking what pulls you. What you find yourself caring about even when nobody asked you to. Answer honestly, not aspirationally.',
+    desc:  'Not asking what you do. Asking what pulls you. What you find yourself caring about even when nobody asked you to and it has nothing to do with you. Don\'t be aspirational here. What do you actually keep looking at?',
   },
   scale: {
     label: 'Engagement Scale',
-    desc:  'Felt responsibility. Not what you\'ve done or what interests you — what you\'re actually on the hook for. What would remain undone in you. Take your time.',
+    desc:  'Give yourself permission to answer honestly. The world is very good at making people smaller. This is not that. Where does your felt responsibility actually live — not your current reach, not what seems reasonable to claim?',
   },
 }
 
@@ -134,6 +134,20 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
   const lastRef   = useRef(null)
   const phase     = useRef('spinning')
   const prevStage = useRef(activeStage)
+  // Pop animation tracking — fires when a wedge transitions to complete (state 2)
+  const [poppingWedge, setPoppingWedge] = useState(null)
+  const prevWedgeStatesRef = useRef(wedgeStates)
+  useEffect(() => {
+    const prev = prevWedgeStatesRef.current
+    WEDGE_KEYS.forEach(k => {
+      if ((prev[k] || 0) < 2 && (wedgeStates[k] || 0) === 2) {
+        setPoppingWedge(k)
+        setTimeout(() => setPoppingWedge(null), 600)
+      }
+    })
+    prevWedgeStatesRef.current = wedgeStates
+  }, [wedgeStates])
+
 
   // Initial mount spin
   useEffect(() => {
@@ -291,6 +305,7 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
 
         return (
           <g key={key}
+            className={poppingWedge === key ? 'pp-wedge-pop' : undefined}
             onClick={canClick ? (e) => { e.stopPropagation(); onWedgeClick(key) } : undefined}
             style={{ cursor: canClick ? 'pointer' : 'default' }}
             className={isActive && !isDone ? 'pp-pulse' : ''}
@@ -436,28 +451,28 @@ function ReferenceTrigger({ stage, onOpenArchetypes, onOpenDomains }) {
 // ─── Stage transition ─────────────────────────────────────────────────────────
 
 function StageTransition({ nextStage, onContinue, loading = false }) {
-  const content = {
+  const stageContent = {
     domain: {
-      eyebrow: 'Archetype \u2713',
-      heading: 'One coordinate found.',
-      body:    'Now a different kind of question. The last set was about what you do. This one is about what pulls your attention \u2014 even when you have no reason to care.',
-      cta:     'Find your domain \u2192',
+      eyebrow: 'Archetype ✓',
+      heading: 'How you move: found.',
+      body:    'Now a different gear entirely. The last set was watching your instinct in action. This one is about what you can’t look away from — the thing that pulls your attention even when you have no reason to care.',
+      cta:     'Find your domain →',
     },
     scale: {
-      eyebrow: 'Domain \u2713',
-      heading: 'Two coordinates found.',
-      body:    'Last set. These questions are almost philosophical. Take your time with them.',
-      cta:     'Find your scale \u2192',
+      eyebrow: 'Domain ✓',
+      heading: 'Where you care: found.',
+      body:    'Last set. Two questions. Almost philosophical. Give yourself permission to answer at full size — the world makes people smaller than they are. This is not the time for that.',
+      cta:     'Find your scale →',
     },
     confirmation: {
-      eyebrow: 'Scale \u2713',
-      heading: 'All three found.',
-      body:    'Three conversations. Three coordinates. Your Purpose Piece is ready.',
-      cta:     'See your Purpose Piece \u2192',
+      eyebrow: 'Scale ✓',
+      heading: 'All three coordinates are in.',
+      body:    'Three conversations complete. The shape that was always yours is about to have a name.',
+      cta:     'See your Purpose Piece →',
     },
   }
 
-  const c = content[nextStage]
+  const c = stageContent[nextStage]
   if (!c) return null
 
   return (
@@ -501,7 +516,6 @@ function StageTransition({ nextStage, onContinue, loading = false }) {
   )
 }
 
-// ─── ThinkingDots ────────────────────────────────────────────────────────────
 
 function ThinkingDots() {
   return (
@@ -563,26 +577,23 @@ function WelcomeModal({ onBegin }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '480px', width: '100%' }}>
-        <span style={{ display: 'block', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '20px' }}>Purpose Piece</span>
-        <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(1.5rem, 4vw, 1.875rem)', fontWeight: 300, color: '#0F1523', marginBottom: '20px', lineHeight: 1.3 }}>
-          Something in you already knows what you’re built for. This finds it, and puts language to it.
+        <span style={{ display: 'block', fontFamily: "\'Cormorant SC\', Georgia, serif", fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '20px' }}>Purpose Piece</span>
+        <h2 style={{ fontFamily: "\'Cormorant Garamond\', Georgia, serif", fontSize: 'clamp(1.5rem, 4vw, 1.875rem)', fontWeight: 300, color: '#0F1523', marginBottom: '20px', lineHeight: 1.3 }}>
+          Somewhere underneath everything you’ve built, survived, and adapted to — there’s a shape that was always yours.
         </h2>
-        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '12px' }}>
-          There’s a kind of lostness that doesn’t show on the outside. You’ve built things. Contributed. Worked hard and often effectively. But underneath the activity is a question that won’t go away: <em>am I in the right territory?</em>
-        </p>
-        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '28px' }}>
-          Purpose Piece finds three things: your contribution archetype — how you’re naturally built to move. Your domain — where your care actually lives. Your scale — the size of the problem you feel genuinely responsible for. Ten questions across three conversations. Twenty to thirty minutes. At the end, you’ll know.
+        <p style={{ fontFamily: "\'Cormorant Garamond\', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '28px' }}>
+          Purpose Piece finds three things: the instinct that keeps showing up in how you actually move through the world. The territory your care keeps returning to. The scale of what you feel genuinely responsible for. Ten questions across three conversations. At the end, you’ll have language for something you’ve always been doing.
         </p>
         <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', paddingTop: '20px', marginBottom: '24px' }}>
           <div style={{ display: 'flex', gap: '24px' }}>
             {[
-              { label: 'Archetype', sub: '5 questions' },
-              { label: 'Domain',    sub: '3 questions' },
-              { label: 'Scale',     sub: '2 questions' },
+              { label: 'Archetype', sub: 'how you move' },
+              { label: 'Domain',    sub: 'where you care' },
+              { label: 'Scale',     sub: 'what you’re on the hook for' },
             ].map(item => (
               <div key={item.label}>
-                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>{item.label}</div>
-                <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginTop: '2px' }}>{item.sub}</div>
+                <div style={{ fontFamily: "\'Cormorant SC\', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>{item.label}</div>
+                <div style={{ fontFamily: "\'Cormorant Garamond\', Georgia, serif", fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginTop: '2px' }}>{item.sub}</div>
               </div>
             ))}
           </div>
@@ -590,14 +601,14 @@ function WelcomeModal({ onBegin }) {
         <button onClick={onBegin} style={{
           display: 'block', width: '100%', padding: '15px 24px', borderRadius: '40px',
           border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)',
-          color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif",
+          color: '#A8721A', fontFamily: "\'Cormorant SC\', Georgia, serif",
           fontSize: '1.125rem', letterSpacing: '0.14em', cursor: 'pointer',
           transition: 'all 0.2s',
         }}
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
           onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
         >
-          Begin {'\u2192'}
+          Let’s find it {'\u2192'}
         </button>
       </div>
     </div>
@@ -1419,8 +1430,8 @@ export function PurposePiecePage() {
                 </button>
                 {!showCorrection && (
                   <button onClick={openCorrection}
-                    style={{ background: 'none', border: 'none', ...serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.2)' }}>
-                    Something doesn&#39;t fit
+                    style={{ background: 'none', border: 'none', ...serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.58)', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.3)' }}>
+                    The fit isn’t quite right →
                   </button>
                 )}
               </div>
@@ -1466,7 +1477,21 @@ export function PurposePiecePage() {
         return <StageTransition nextStage="confirmation" onContinue={continueToNextStage} loading={confirmLoading} />
       }
       // Otherwise show a simple done state — nudge to the wheel
-      const stageLabels = { archetype: 'Contribution Archetype', domain: 'Global Domain', scale: 'Engagement Scale' }
+      const stageCompletionCopy = {
+        archetype: {
+          headline: 'Archetype: in.',
+          body: 'The instinct underneath the action has been found. Pick up another section on the disc when you’re ready.'
+        },
+        domain: {
+          headline: 'Domain: in.',
+          body: 'The territory your care keeps returning to has been named. Two coordinates down.'
+        },
+        scale: {
+          headline: 'Scale: in.',
+          body: 'Where your felt responsibility lives has been found. All three coordinates are in.'
+        },
+      }
+      const stageCopy = stageCompletionCopy[activeQuestionStage] || { headline: 'Done.', body: 'Move to another section on the disc.' }
       return (
         <div style={{
           background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)',
@@ -1474,13 +1499,10 @@ export function PurposePiecePage() {
           padding: '28px 24px', animation: 'ppFadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both',
         }}>
           <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '10px' }}>
-            {stageLabels[activeQuestionStage]} {'✓'}
+            {stageCopy.headline}
           </div>
-          <h3 style={{ ...sc, fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>
-            This one is done.
-          </h3>
-          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.75 }}>
-            Move to another section on the wheel, or come back to this one any time.
+          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.75, margin: 0 }}>
+            {stageCopy.body}
           </p>
         </div>
       )
@@ -1731,6 +1753,8 @@ export function PurposePiecePage() {
         }
         @keyframes ppFadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
         @keyframes ppDot { 0%,80%,100%{opacity:0.25;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
+        @keyframes ppWedgePop { 0%{opacity:1;transform:scale(1)} 40%{opacity:0.85;transform:scale(1.06)} 100%{opacity:1;transform:scale(1)} }
+        .pp-wedge-pop { animation: ppWedgePop 0.55s cubic-bezier(0.16,1,0.3,1) both; }
         .pp-fade-up { animation: ppFadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both; }
       `}</style>
 
