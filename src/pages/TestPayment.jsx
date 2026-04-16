@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 // The $1 test price ID — mapped to product: 'map' in PRICE_MAP
@@ -54,27 +54,27 @@ export function TestPaymentPage() {
 
         {success ? (
           <>
-            <h1 style={{ ...serif, fontSize: '36px', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>Payment received.</h1>
-            <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '8px' }}>
+            <h1 style={{ ...body, fontSize: '36px', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>Payment received.</h1>
+            <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '8px' }}>
               Logged in as: {user?.email}
             </p>
-            <p style={{ ...serif, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
+            <p style={{ ...body, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
               Check the Supabase <strong>access</strong> table for a new row with your user ID and product: <strong>map</strong>.
             </p>
           </>
         ) : (
           <>
-            <h1 style={{ ...serif, fontSize: '36px', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>$1 Test Purchase</h1>
+            <h1 style={{ ...body, fontSize: '36px', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>$1 Test Purchase</h1>
             {user && (
-              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '8px' }}>
+              <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '8px' }}>
                 Logged in as: {user?.email}
               </p>
             )}
-            <p style={{ ...serif, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '40px' }}>
+            <p style={{ ...body, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '40px' }}>
               After paying, check the Supabase <strong>access</strong> table for a new row with your user ID and product: <strong>map</strong>.
             </p>
             {error && (
-              <p style={{ ...serif, fontSize: '15px', color: '#8A3030', marginBottom: '16px' }}>{error}</p>
+              <p style={{ ...body, fontSize: '15px', color: '#8A3030', marginBottom: '16px' }}>{error}</p>
             )}
             <button
               onClick={handlePay}

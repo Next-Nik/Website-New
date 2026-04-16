@@ -75,7 +75,7 @@
   left: 0;
   background: var(--dark);
   color: rgba(255,255,255,0.92);
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 19px;
   font-weight: 300;
   line-height: 1.7;
@@ -92,7 +92,7 @@
 }
 
 .domainName {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: clamp(36px, 5vw, 48px);
   font-weight: 300;
   letter-spacing: 0.01em;
@@ -292,7 +292,7 @@
 .actorDotMuted   { background: var(--text-meta); }
 
 .actorName {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 17px;
   font-weight: 300;
   color: var(--text-body);
@@ -308,7 +308,7 @@
 }
 
 .actorSlot {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 17px;
   font-weight: 300;
   color: var(--text-meta);
@@ -325,7 +325,7 @@
 }
 
 .entryPointText {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 19px;
   font-weight: 300;
   color: var(--text-body);
@@ -404,14 +404,14 @@
 }
 
 .previewIndicatorSlot {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 17px;
   font-weight: 300;
   color: var(--text-meta);
 }
 
 .previewIndicatorBlank {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 17px;
   font-weight: 300;
   color: var(--text-meta);
@@ -420,7 +420,7 @@
 .previewActors { margin-bottom: 16px; }
 
 .previewNote {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 17px;
   font-weight: 300;
   color: var(--text-meta);
@@ -454,7 +454,7 @@
 }
 
 .gapSignalReason {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 17px;
   font-weight: 300;
   color: var(--text-meta);
@@ -468,7 +468,7 @@
 }
 
 .scoreNumber {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 42px;
   font-weight: 300;
   color: var(--text-head);
@@ -493,7 +493,7 @@
 .scoreMeta { text-align: right; }
 
 .gapDistanceLabel {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 18px;
   font-weight: 300;
   color: var(--text-meta);
@@ -516,7 +516,7 @@
 }
 
 .indicatorLabel {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 18px;
   font-weight: 300;
   color: var(--text-body);
@@ -538,7 +538,7 @@
 .trend_flat { color: var(--text-meta); }
 
 .csNarrative {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 19px;
   font-weight: 300;
   color: var(--text-body);
@@ -559,7 +559,7 @@
 }
 
 .inFieldPersonalised {
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 17px;
   font-weight: 300;
   color: var(--gold-dk);
@@ -573,7 +573,7 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  font-family: 'Cormorant Garamond', serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 17px;
   font-weight: 300;
   color: var(--text-meta);
@@ -586,7 +586,7 @@
 .mailingList { margin-bottom: 24px; }
 
 .mailingLabel {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 19px;
   font-weight: 300;
   color: var(--text-body);
@@ -601,7 +601,7 @@
   border-right: none;
   background: var(--white);
   padding: 9px 12px;
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 19px;
   font-weight: 300;
   color: var(--text-body);
@@ -738,7 +738,7 @@
   transform: translateX(-50%) translateY(4px);
   background: var(--dark);
   color: rgba(255,255,255,0.88);
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 15px;
   font-weight: 300;
   line-height: 1.7;
@@ -793,7 +793,7 @@
 }
 
 .focusName {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 15px;
   color: #A8721A;
 }
@@ -837,7 +837,7 @@
 }
 
 .focusInput {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 15px;
   color: #0F1523;
   width: 100%;
@@ -849,7 +849,7 @@
 }
 
 .focusSearching {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 16px;
   color: rgba(15,21,35,0.55);
   padding: 10px 14px;
@@ -874,7 +874,7 @@
 .focusOption:last-child { border-bottom: none; }
 
 .focusOptionName {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 15px;
   color: #0F1523;
 }
@@ -925,7 +925,7 @@
 }
 
 .focusEmptyText {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 15px;
   color: rgba(15,21,35,0.55);
   margin: 0 0 4px;
@@ -933,9 +933,8 @@
 }
 
 .focusEmptyHint {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 16px;
-  font-style: italic;
   color: #A8721A;
   margin: 0;
 }

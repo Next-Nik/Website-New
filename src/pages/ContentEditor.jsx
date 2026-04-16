@@ -8,7 +8,7 @@ function isFounder(user) {
   return user?.user_metadata?.role === 'founder'
 }
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold  = '#A8721A'
 
@@ -55,7 +55,7 @@ function Toast({ message, onClose }) {
     <div style={{
       position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
       background: '#0F1523', color: '#FAFAF7',
-      ...serif, fontSize: '17px',
+      ...body, fontSize: '17px',
       padding: '12px 20px', borderRadius: '10px',
       boxShadow: '0 8px 28px rgba(15,21,35,0.3)',
     }}>{message}</div>
@@ -142,7 +142,7 @@ function ProductsTab({ toast }) {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between',
         alignItems: 'center', marginBottom: '20px' }}>
-        <h2 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: '#0F1523' }}>
+        <h2 style={{ ...body, fontSize: '22px', fontWeight: 300, color: '#0F1523' }}>
           Products
         </h2>
         <Btn onClick={() => showForm ? cancel() : setShowForm(true)}>
@@ -161,7 +161,7 @@ function ProductsTab({ toast }) {
               <input value={form.key} disabled={!!editing}
                 onChange={e => setForm(f => ({ ...f, key: e.target.value.toLowerCase().replace(/\s/g, '_') }))}
                 placeholder="e.g. map, foundation"
-                style={{ ...serif, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
+                style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
                   borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)',
                   background: editing ? 'rgba(200,146,42,0.04)' : '#FFFFFF',
                   outline: 'none', width: '100%' }} />
@@ -172,7 +172,7 @@ function ProductsTab({ toast }) {
               <input value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="e.g. The Map"
-                style={{ ...serif, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
+                style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
                   borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)',
                   background: '#FFFFFF', outline: 'none', width: '100%' }} />
             </div>
@@ -183,7 +183,7 @@ function ProductsTab({ toast }) {
             <input value={form.description}
               onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
               placeholder="Optional description"
-              style={{ ...serif, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
+              style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
                 borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)',
                 background: '#FFFFFF', outline: 'none', width: '100%' }} />
           </div>
@@ -191,7 +191,7 @@ function ProductsTab({ toast }) {
             <input type="checkbox" id="prod_active" checked={form.active}
               onChange={e => setForm(f => ({ ...f, active: e.target.checked }))}
               style={{ width: '16px', height: '16px', accentColor: gold }} />
-            <label htmlFor="prod_active" style={{ ...serif, fontSize: '17px', color: '#0F1523' }}>
+            <label htmlFor="prod_active" style={{ ...body, fontSize: '17px', color: '#0F1523' }}>
               Active (visible to access system)
             </label>
           </div>
@@ -204,7 +204,7 @@ function ProductsTab({ toast }) {
       )}
 
       {loading
-        ? <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p>
+        ? <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p>
         : products.map(p => (
           <div key={p.key} style={{ background: '#FFFFFF',
             border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px',
@@ -212,7 +212,7 @@ function ProductsTab({ toast }) {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '3px' }}>
-                <span style={{ ...serif, fontSize: '16px', fontWeight: 400, color: '#0F1523' }}>
+                <span style={{ ...body, fontSize: '16px', fontWeight: 400, color: '#0F1523' }}>
                   {p.name}
                 </span>
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em',
@@ -229,7 +229,7 @@ function ProductsTab({ toast }) {
                 )}
               </div>
               {p.description && (
-                <div style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
+                <div style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
                   {p.description}
                 </div>
               )}
@@ -296,10 +296,10 @@ function AnnouncementsTab({ toast }) {
       <div style={{ display: 'flex', justifyContent: 'space-between',
         alignItems: 'center', marginBottom: '20px' }}>
         <div>
-          <h2 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: '#0F1523', marginBottom: '4px' }}>
+          <h2 style={{ ...body, fontSize: '22px', fontWeight: 300, color: '#0F1523', marginBottom: '4px' }}>
             Announcements
           </h2>
-          <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>
+          <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
             Broadcasts shown in user profiles and tool headers.
           </p>
         </div>
@@ -315,7 +315,7 @@ function AnnouncementsTab({ toast }) {
               display: 'block', marginBottom: '4px' }}>Title</label>
             <input value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
               placeholder="Short, direct headline"
-              style={{ ...serif, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
+              style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
                 borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)',
                 background: '#FFFFFF', outline: 'none', width: '100%' }} />
           </div>
@@ -325,7 +325,7 @@ function AnnouncementsTab({ toast }) {
             <textarea value={form.body} onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
               placeholder="One to two sentences. Direct and specific."
               rows={3}
-              style={{ ...serif, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
+              style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px',
                 borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)',
                 background: '#FFFFFF', outline: 'none', width: '100%',
                 resize: 'vertical', lineHeight: 1.6 }} />
@@ -334,7 +334,7 @@ function AnnouncementsTab({ toast }) {
             <input type="checkbox" id="ann_active" checked={form.active}
               onChange={e => setForm(f => ({ ...f, active: e.target.checked }))}
               style={{ width: '16px', height: '16px', accentColor: gold }} />
-            <label htmlFor="ann_active" style={{ ...serif, fontSize: '17px', color: '#0F1523' }}>
+            <label htmlFor="ann_active" style={{ ...body, fontSize: '17px', color: '#0F1523' }}>
               Active (visible to users immediately)
             </label>
           </div>
@@ -346,12 +346,12 @@ function AnnouncementsTab({ toast }) {
       )}
 
       {loading
-        ? <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p>
+        ? <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p>
         : announcements.length === 0
         ? (
           <div style={{ padding: '32px', textAlign: 'center', border: '1px dashed rgba(200,146,42,0.30)',
             borderRadius: '14px' }}>
-            <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+            <p style={{ ...body, fontSize: '15px',
               color: 'rgba(15,21,35,0.72)', margin: 0 }}>
               No announcements yet.
             </p>
@@ -370,13 +370,13 @@ function AnnouncementsTab({ toast }) {
                   </span>
                   {!a.active && (
                     <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em',
-                      color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.05)',
+                      color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.55)',
                       borderRadius: '40px', padding: '2px 9px', border: '1px solid rgba(15,21,35,0.12)' }}>
                       inactive
                     </span>
                   )}
                 </div>
-                <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.88)',
+                <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.88)',
                   lineHeight: 1.65, margin: '0 0 8px' }}>{a.body}</p>
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em',
                   color: 'rgba(15,21,35,0.55)' }}>
@@ -499,7 +499,7 @@ function FocusGoalsTab({ toast }) {
   return (
     <div style={{ maxWidth: '680px' }}>
       <Eyebrow>Focus Goals</Eyebrow>
-      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '17px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '28px' }}>
+      <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '17px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '28px' }}>
         Set locally-ratified horizon goals for any Focus. These appear in the Domain Explorer when a visitor sets that Focus as their viewing context.
       </p>
 
@@ -511,9 +511,9 @@ function FocusGoalsTab({ toast }) {
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="Search — Canada, British Columbia, Vancouver…"
-          style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '17px', color: '#0F1523', padding: '11px 16px', borderRadius: '8px', width: '100%', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FAFAF7', outline: 'none' }}
+          style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '17px', color: '#0F1523', padding: '11px 16px', borderRadius: '8px', width: '100%', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FAFAF7', outline: 'none' }}
         />
-        {searching && <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.40)', marginTop: '8px' }}>Searching…</p>}
+        {searching && <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.55)', marginTop: '8px' }}>Searching…</p>}
         {results.length > 0 && (
           <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.25)', borderRadius: '8px', marginTop: '6px', overflow: 'hidden' }}>
             {results.map(f => (
@@ -522,7 +522,7 @@ function FocusGoalsTab({ toast }) {
                 onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,146,42,0.05)'}
                 onMouseLeave={e => e.currentTarget.style.background = 'none'}
               >
-                <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '17px', color: '#0F1523' }}>{f.name}</span>
+                <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '17px', color: '#0F1523' }}>{f.name}</span>
                 <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.12em', color: gold }}>{TYPE_LABEL[f.type] || f.type}</span>
               </button>
             ))}
@@ -535,9 +535,9 @@ function FocusGoalsTab({ toast }) {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid rgba(200,146,42,0.18)' }}>
             <div>
               <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '4px' }}>{TYPE_LABEL[selectedFocus.type] || selectedFocus.type}</span>
-              <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '22px', color: '#0F1523' }}>{selectedFocus.name}</span>
+              <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '22px', color: '#0F1523' }}>{selectedFocus.name}</span>
             </div>
-            <button onClick={() => setSelected(null)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.40)', background: 'none', border: 'none', cursor: 'pointer' }}>Change ×</button>
+            <button onClick={() => setSelected(null)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer' }}>Change ×</button>
           </div>
 
           {FOCUS_DOMAINS.map(domain => {
@@ -559,7 +559,7 @@ function FocusGoalsTab({ toast }) {
                     <button onClick={() => deleteGoal(domain.id)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(180,40,40,0.60)', background: 'none', border: 'none', cursor: 'pointer' }}>Remove</button>
                   )}
                 </div>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.38)', lineHeight: 1.6, marginBottom: '12px' }}>
+                <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '12px' }}>
                   Global: {domain.goal}
                 </p>
                 <textarea
@@ -567,7 +567,7 @@ function FocusGoalsTab({ toast }) {
                   onChange={e => setEditing(ed => ({ ...ed, [domain.id]: e.target.value }))}
                   placeholder={`Local horizon goal for ${selectedFocus.name} — ${domain.label}…`}
                   rows={3}
-                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', color: '#0F1523', padding: '10px 14px', borderRadius: '8px', width: '100%', border: '1.5px solid rgba(200,146,42,0.25)', background: draft ? '#FFFFFF' : 'rgba(200,146,42,0.02)', outline: 'none', resize: 'vertical', lineHeight: 1.65 }}
+                  style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: '#0F1523', padding: '10px 14px', borderRadius: '8px', width: '100%', border: '1.5px solid rgba(200,146,42,0.25)', background: draft ? '#FFFFFF' : 'rgba(200,146,42,0.02)', outline: 'none', resize: 'vertical', lineHeight: 1.65 }}
                 />
                 <div style={{ marginTop: '10px', display: 'flex', gap: '10px', alignItems: 'center' }}>
                   <Btn small variant="solid" disabled={!draft.trim() || saving[domain.id]} onClick={() => saveGoal(domain.id)}>
@@ -575,7 +575,7 @@ function FocusGoalsTab({ toast }) {
                   </Btn>
                   {isDirty && existing && (
                     <button onClick={() => setEditing(ed => ({ ...ed, [domain.id]: existing.horizon_goal }))}
-                      style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                      style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer' }}>
                       Reset
                     </button>
                   )}
@@ -650,10 +650,10 @@ function AskTab() {
 
   return (
     <div>
-      <h2 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: '#0F1523', marginBottom: '6px' }}>
+      <h2 style={{ ...body, fontSize: '22px', fontWeight: 300, color: '#0F1523', marginBottom: '6px' }}>
         Ask
       </h2>
-      <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)',
+      <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)',
         marginBottom: '28px' }}>
         Next-1 — your AI observer. Ask anything about the platform.
       </p>
@@ -665,7 +665,7 @@ function AskTab() {
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ask() } }}
           placeholder="How many users have completed The Map? What's the most common Purpose Piece archetype? What should I focus on this week?"
           rows={3}
-          style={{ ...serif, fontSize: '15px', color: '#0F1523', flex: 1,
+          style={{ ...body, fontSize: '15px', color: '#0F1523', flex: 1,
             padding: '12px 16px', borderRadius: '10px',
             border: '1.5px solid rgba(200,146,42,0.35)',
             background: '#FFFFFF', outline: 'none', resize: 'none', lineHeight: 1.6 }}
@@ -688,7 +688,7 @@ function AskTab() {
       )}
 
       {error && (
-        <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+        <div style={{ ...body, fontSize: '15px',
           color: 'rgba(15,21,35,0.72)', padding: '16px',
           background: 'rgba(200,146,42,0.04)', borderRadius: '10px',
           border: '1px solid rgba(200,146,42,0.20)' }}>{error}</div>
@@ -698,7 +698,7 @@ function AskTab() {
         <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)',
           borderRadius: '14px', padding: '24px' }}>
           <Eyebrow>Next-1</Eyebrow>
-          <div style={{ ...serif, fontSize: '16px', fontWeight: 300,
+          <div style={{ ...body, fontSize: '16px', fontWeight: 300,
             color: '#0F1523', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>
             {answer}
           </div>
@@ -734,11 +734,11 @@ export function ContentEditorPage() {
           color: gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>
           Founder
         </span>
-        <h1 style={{ ...serif, fontSize: 'clamp(32px,4vw,48px)', fontWeight: 300,
+        <h1 style={{ ...body, fontSize: 'clamp(32px,4vw,48px)', fontWeight: 300,
           color: '#0F1523', marginBottom: '8px', lineHeight: 1.08 }}>
           Content Editor
         </h1>
-        <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.72)',
+        <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.72)',
           marginBottom: '48px' }}>
           Products, announcements, and Next-1.
         </p>

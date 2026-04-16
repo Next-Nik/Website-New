@@ -7,7 +7,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../hooks/useSupabase'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 function getDestination() {
@@ -84,7 +84,7 @@ export function AuthCallbackPage() {
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>
           The Horizon Suite
         </span>
-        <p style={{ ...serif, fontSize: '20px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>
+        <p style={{ ...body, fontSize: '20px', color: 'rgba(15,21,35,0.55)' }}>
           {status}
         </p>
       </div>

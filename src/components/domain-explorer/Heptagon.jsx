@@ -372,7 +372,7 @@ export default function Heptagon({
             x={CX} y={CY}
             textAnchor="middle" dominantBaseline="middle"
             fill="rgba(200,146,42,0.78)" fontSize="31"
-            fontFamily="'Cormorant Garamond', Georgia, serif"
+            fontFamily="'Lora', Georgia, serif"
             fontWeight="300" fontStyle="normal"
             style={{ pointerEvents: 'none', userSelect: 'none' }}
           >

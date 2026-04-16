@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { ToolDrawer } from './ToolDrawer'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 function HomeIcon({ active }) {
@@ -88,7 +88,7 @@ function MoreMenu({ onClose }) {
             background: 'rgba(200,146,42,0.05)',
           }}>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: '#0F1523' }}>{l.label}</span>
-            <span style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{l.desc}</span>
+            <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{l.desc}</span>
           </Link>
         ))}
 
@@ -104,7 +104,7 @@ function MoreMenu({ onClose }) {
             background: 'rgba(200,146,42,0.05)',
           }}>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: '#0F1523' }}>{l.label}</span>
-            <span style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{l.desc}</span>
+            <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{l.desc}</span>
           </Link>
         ))}
 

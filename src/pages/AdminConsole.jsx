@@ -11,7 +11,7 @@ function isFounder(user) {
 }
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = '#A8721A'
 const bg    = '#FAFAF7'
 
@@ -55,7 +55,7 @@ function Input({ value, onChange, placeholder, type = 'text', style, onKeyDown }
       onKeyDown={onKeyDown}
       placeholder={placeholder}
       style={{
-        ...serif, fontSize: '15px', color: '#0F1523',
+        ...body, fontSize: '15px', color: '#0F1523',
         padding: '9px 14px', borderRadius: '8px',
         border: '1.5px solid rgba(200,146,42,0.35)',
         background: '#FFFFFF', outline: 'none', width: '100%',
@@ -69,7 +69,7 @@ function Select({ value, onChange, options, style }) {
   return (
     <select value={value} onChange={e => onChange(e.target.value)}
       style={{
-        ...serif, fontSize: '15px', color: '#0F1523',
+        ...body, fontSize: '15px', color: '#0F1523',
         padding: '9px 14px', borderRadius: '8px',
         border: '1.5px solid rgba(200,146,42,0.35)',
         background: '#FFFFFF', outline: 'none', ...style,
@@ -115,7 +115,7 @@ function Toast({ message, onClose }) {
     <div style={{
       position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
       background: '#0F1523', color: '#FAFAF7',
-      ...serif, fontSize: '17px',
+      ...body, fontSize: '17px',
       padding: '12px 20px', borderRadius: '10px',
       boxShadow: '0 8px 28px rgba(15,21,35,0.3)',
     }}>
@@ -185,11 +185,11 @@ function NowTab() {
     load()
   }, [])
 
-  if (loading) return <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p>
+  if (loading) return <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p>
 
   return (
     <div>
-      <h2 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: '#0F1523', marginBottom: '28px' }}>
+      <h2 style={{ ...body, fontSize: '22px', fontWeight: 300, color: '#0F1523', marginBottom: '28px' }}>
         Live snapshot
       </h2>
 
@@ -204,7 +204,7 @@ function NowTab() {
             { label: 'Active sprints',   value: stats.sprintCount ?? 0 },
           ].map(s => (
             <Card key={s.label} style={{ textAlign: 'center', padding: '20px 16px' }}>
-              <div style={{ ...serif, fontSize: '36px', fontWeight: 300,
+              <div style={{ ...body, fontSize: '36px', fontWeight: 300,
                 color: gold, lineHeight: 1, marginBottom: '6px' }}>{s.value}</div>
               <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em',
                 color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase' }}>{s.label}</div>
@@ -218,7 +218,7 @@ function NowTab() {
         <div>
           <Eyebrow>Recent signups</Eyebrow>
           {recent.users?.length === 0
-            ? <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>No users yet.</p>
+            ? <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>No users yet.</p>
             : recent.users?.map(u => {
               const name = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.email?.split('@')[0]
               return (
@@ -226,8 +226,8 @@ function NowTab() {
                   gap: '10px', padding: '9px 0',
                   borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ ...serif, fontSize: '17px', color: '#0F1523' }}>{name}</div>
-                    <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>{u.email}</div>
+                    <div style={{ ...body, fontSize: '17px', color: '#0F1523' }}>{name}</div>
+                    <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>{u.email}</div>
                   </div>
                   <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em',
                     color: 'rgba(15,21,35,0.55)', flexShrink: 0 }}>
@@ -243,13 +243,13 @@ function NowTab() {
         <div>
           <Eyebrow>Recent grants</Eyebrow>
           {recent.grants?.length === 0
-            ? <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>No grants yet.</p>
+            ? <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>No grants yet.</p>
             : recent.grants?.map(g => (
               <div key={g.id} style={{ display: 'flex', alignItems: 'center',
                 gap: '10px', padding: '9px 0',
                 borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
                 <div style={{ flex: 1 }}>
-                  <div style={{ ...serif, fontSize: '17px', color: '#0F1523' }}>
+                  <div style={{ ...body, fontSize: '17px', color: '#0F1523' }}>
                     {g.users?.email}
                   </div>
                   <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: gold }}>
@@ -317,7 +317,7 @@ function GroupsTab({ toast }) {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between',
         alignItems: 'center', marginBottom: '20px' }}>
-        <h2 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: '#0F1523' }}>
+        <h2 style={{ ...body, fontSize: '22px', fontWeight: 300, color: '#0F1523' }}>
           Groups
         </h2>
         <Btn onClick={() => setShowForm(s => !s)}>
@@ -366,7 +366,7 @@ function GroupsTab({ toast }) {
               checked={form.requires_approval}
               onChange={e => setForm(f => ({ ...f, requires_approval: e.target.checked }))}
               style={{ width: '16px', height: '16px', accentColor: gold }} />
-            <label htmlFor="req_approval" style={{ ...serif, fontSize: '17px', color: '#0F1523' }}>
+            <label htmlFor="req_approval" style={{ ...body, fontSize: '17px', color: '#0F1523' }}>
               Requires approval to join
             </label>
           </div>
@@ -374,27 +374,27 @@ function GroupsTab({ toast }) {
         </Card>
       )}
 
-      {loading ? <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p> : (
+      {loading ? <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p> : (
         groups.map(g => (
           <Card key={g.id}>
             <div style={{ display: 'flex', alignItems: 'flex-start',
               justifyContent: 'space-between', gap: '16px' }}>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                  <span style={{ ...serif, fontSize: '17px', fontWeight: 400, color: '#0F1523' }}>
+                  <span style={{ ...body, fontSize: '17px', fontWeight: 400, color: '#0F1523' }}>
                     {g.name}
                   </span>
                   <Badge label={g.active ? 'active' : 'inactive'}
-                    color={g.active ? '#3B6B4A' : 'rgba(15,21,35,0.4)'} />
+                    color={g.active ? '#3B6B4A' : 'rgba(15,21,35,0.55)'} />
                   {g.requires_approval && <Badge label="approval required" />}
                 </div>
-                <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)',
+                <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)',
                   marginBottom: '8px' }}>
                   Code: <strong style={{ color: gold }}>{g.code}</strong>
                   {g.grace_period_days > 0 && ` · ${g.grace_period_days}d grace period`}
                 </div>
                 {g.description && (
-                  <div style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
+                  <div style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
                     {g.description}
                   </div>
                 )}
@@ -489,15 +489,15 @@ function MembersTab({ toast }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px',
         padding: '12px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
         <div style={{ flex: 1 }}>
-          <div style={{ ...serif, fontSize: '15px', color: '#0F1523' }}>{name}</div>
-          <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
+          <div style={{ ...body, fontSize: '15px', color: '#0F1523' }}>{name}</div>
+          <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
             {u?.email}
             {u?.status !== 'active' && (
               <Badge label={u.status} color="#8A2020" />
             )}
           </div>
         </div>
-        <div style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.4)',
+        <div style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.55)',
           letterSpacing: '0.08em' }}>
           {new Date(m.joined_at).toLocaleDateString()}
         </div>
@@ -520,7 +520,7 @@ function MembersTab({ toast }) {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between',
         alignItems: 'center', marginBottom: '20px' }}>
-        <h2 style={{ ...serif, fontSize: '22px', fontWeight: 300 }}>Members</h2>
+        <h2 style={{ ...body, fontSize: '22px', fontWeight: 300 }}>Members</h2>
         <Select value={selectedGroup} onChange={setGroup}
           options={[{ value: '', label: 'Select a group…' },
             ...groups.map(g => ({ value: g.id, label: g.name }))]}
@@ -539,7 +539,7 @@ function MembersTab({ toast }) {
             <Btn onClick={addMember}>Add</Btn>
           </Card>
 
-          {loading ? <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p> : (
+          {loading ? <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p> : (
             <>
               {pending.length > 0 && (
                 <div style={{ marginBottom: '24px' }}>
@@ -550,7 +550,7 @@ function MembersTab({ toast }) {
               <div style={{ marginBottom: '24px' }}>
                 <Eyebrow>Active ({active.length})</Eyebrow>
                 {active.length === 0
-                  ? <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>No active members.</p>
+                  ? <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>No active members.</p>
                   : active.map(m => <MemberRow key={m.id} m={m} />)
                 }
               </div>
@@ -636,7 +636,7 @@ function EntitlementsTab({ toast }) {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between',
         alignItems: 'center', marginBottom: '20px' }}>
-        <h2 style={{ ...serif, fontSize: '22px', fontWeight: 300 }}>Entitlements</h2>
+        <h2 style={{ ...body, fontSize: '22px', fontWeight: 300 }}>Entitlements</h2>
         <Select value={selectedGroup} onChange={setGroup}
           options={[{ value: '', label: 'Select a group…' },
             ...groups.map(g => ({ value: g.id, label: g.name }))]}
@@ -718,7 +718,7 @@ function EntitlementsTab({ toast }) {
           )}
 
           {entitlements.length === 0
-            ? <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
+            ? <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
                 No entitlements yet for this group.
               </p>
             : entitlements.map(e => (
@@ -727,14 +727,14 @@ function EntitlementsTab({ toast }) {
                   justifyContent: 'space-between', gap: '12px' }}>
                   <div>
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '4px' }}>
-                      <span style={{ ...serif, fontSize: '15px', fontWeight: 400, color: '#0F1523' }}>
+                      <span style={{ ...body, fontSize: '15px', fontWeight: 400, color: '#0F1523' }}>
                         {products.find(p => p.key === e.product_key)?.name ?? e.product_key}
                       </span>
                       <Badge label={e.type} />
                       {e.type === 'access' && <Badge label={e.tier} color="#3B6B4A" />}
                       {e.type === 'discount' && <Badge label={`${e.discount_pct}% off`} />}
                     </div>
-                    <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
+                    <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
                       {e.uses_allowed ? `${e.uses_allowed} uses` : 'unlimited uses'}
                       {' · '}
                       {e.expires_after_days === null
@@ -744,7 +744,7 @@ function EntitlementsTab({ toast }) {
                         : `${e.expires_after_days}d from grant`}
                     </div>
                     {e.notes && (
-                      <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
+                      <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
                         marginTop: '4px' }}>{e.notes}</div>
                     )}
                   </div>
@@ -833,7 +833,7 @@ function UsersTab({ toast }) {
 
   return (
     <div>
-      <h2 style={{ ...serif, fontSize: '22px', fontWeight: 300, marginBottom: '20px' }}>Users</h2>
+      <h2 style={{ ...body, fontSize: '22px', fontWeight: 300, marginBottom: '20px' }}>Users</h2>
 
       {/* Search */}
       <Card style={{ display: 'flex', gap: '10px', alignItems: 'flex-end', marginBottom: '20px' }}>
@@ -859,10 +859,10 @@ function UsersTab({ toast }) {
             }} onClick={() => selectUser(u)}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div>
-                  <div style={{ ...serif, fontSize: '15px', color: '#0F1523' }}>
+                  <div style={{ ...body, fontSize: '15px', color: '#0F1523' }}>
                     {[u.first_name, u.last_name].filter(Boolean).join(' ') || '—'}
                   </div>
-                  <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
+                  <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
                     {u.email}
                   </div>
                 </div>
@@ -881,10 +881,10 @@ function UsersTab({ toast }) {
               <div style={{ display: 'flex', justifyContent: 'space-between',
                 alignItems: 'flex-start', marginBottom: '14px' }}>
                 <div>
-                  <div style={{ ...serif, fontSize: '18px', color: '#0F1523', marginBottom: '2px' }}>
+                  <div style={{ ...body, fontSize: '18px', color: '#0F1523', marginBottom: '2px' }}>
                     {[selected.first_name, selected.last_name].filter(Boolean).join(' ') || selected.email}
                   </div>
-                  <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
+                  <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
                     {selected.email}
                   </div>
                 </div>
@@ -916,7 +916,7 @@ function UsersTab({ toast }) {
                   <div key={gm.id} style={{ display: 'flex', alignItems: 'center',
                     gap: '10px', padding: '8px 0',
                     borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-                    <span style={{ ...serif, fontSize: '17px', color: '#0F1523', flex: 1 }}>
+                    <span style={{ ...body, fontSize: '17px', color: '#0F1523', flex: 1 }}>
                       {gm.groups?.name}
                     </span>
                     <Badge label={gm.status}
@@ -931,20 +931,20 @@ function UsersTab({ toast }) {
             <div style={{ marginBottom: '16px' }}>
               <Eyebrow>Individual access</Eyebrow>
               {userAccess.length === 0
-                ? <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
+                ? <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
                     No individual grants.
                   </p>
                 : userAccess.map(a => (
                   <div key={a.id} style={{ display: 'flex', alignItems: 'center',
                     gap: '10px', padding: '8px 0',
                     borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-                    <span style={{ ...serif, fontSize: '17px', color: '#0F1523', flex: 1 }}>
+                    <span style={{ ...body, fontSize: '17px', color: '#0F1523', flex: 1 }}>
                       {products.find(p => p.key === a.product)?.name ?? a.product}
                     </span>
                     <Badge label={a.tier} color="#3B6B4A" />
                     <Badge label={a.source} />
                     {a.expires_at && (
-                      <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.4)',
+                      <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.55)',
                         letterSpacing: '0.08em' }}>
                         exp {new Date(a.expires_at).toLocaleDateString()}
                       </span>
@@ -1004,11 +1004,11 @@ function GrantsTab() {
 
   return (
     <div>
-      <h2 style={{ ...serif, fontSize: '22px', fontWeight: 300, marginBottom: '20px' }}>
+      <h2 style={{ ...body, fontSize: '22px', fontWeight: 300, marginBottom: '20px' }}>
         Recent Grants
       </h2>
       {loading
-        ? <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p>
+        ? <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p>
         : grants.map(g => {
           const u = g.users
           const name = [u?.first_name, u?.last_name].filter(Boolean).join(' ') || u?.email
@@ -1016,20 +1016,20 @@ function GrantsTab() {
             <div key={g.id} style={{ display: 'flex', alignItems: 'center', gap: '12px',
               padding: '12px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
               <div style={{ flex: 1 }}>
-                <span style={{ ...serif, fontSize: '15px', color: '#0F1523' }}>{name}</span>
-                <span style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
+                <span style={{ ...body, fontSize: '15px', color: '#0F1523' }}>{name}</span>
+                <span style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
                   marginLeft: '10px' }}>{u?.email}</span>
               </div>
               <Badge label={g.product} />
               <Badge label={g.tier} color="#3B6B4A" />
               <Badge label={g.source} />
-              <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.4)',
+              <span style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.55)',
                 letterSpacing: '0.08em', flexShrink: 0 }}>
                 {new Date(g.granted_at).toLocaleDateString()}
               </span>
               {g.expires_at && (
                 <span style={{ ...sc, fontSize: '15px',
-                  color: new Date(g.expires_at) < new Date() ? '#8A2020' : 'rgba(15,21,35,0.4)',
+                  color: new Date(g.expires_at) < new Date() ? '#8A2020' : 'rgba(15,21,35,0.55)',
                   letterSpacing: '0.08em' }}>
                   {new Date(g.expires_at) < new Date() ? 'expired' : `exp ${new Date(g.expires_at).toLocaleDateString()}`}
                 </span>
@@ -1080,7 +1080,7 @@ function PlatformTab() {
     load()
   }, [])
 
-  if (loading) return <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>
+  if (loading) return <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>
 
   const statCards = [
     { label: 'Total Actors', value: stats.totalActors },
@@ -1096,7 +1096,7 @@ function PlatformTab() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '32px' }}>
         {statCards.map(s => (
           <Card key={s.label} style={{ textAlign: 'center', padding: '20px 12px' }}>
-            <div style={{ ...serif, fontSize: '32px', fontWeight: 300, color: '#0F1523', lineHeight: 1 }}>{s.value ?? 0}</div>
+            <div style={{ ...body, fontSize: '32px', fontWeight: 300, color: '#0F1523', lineHeight: 1 }}>{s.value ?? 0}</div>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginTop: '6px' }}>{s.label}</div>
           </Card>
         ))}
@@ -1105,12 +1105,12 @@ function PlatformTab() {
       <div style={{ marginBottom: '32px' }}>
         {(stats.domainCounts || []).map(d => (
           <Card key={d.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '14px 20px' }}>
-            <div style={{ ...serif, fontSize: '16px', color: '#0F1523', width: '160px', flexShrink: 0 }}>{d.name}</div>
+            <div style={{ ...body, fontSize: '16px', color: '#0F1523', width: '160px', flexShrink: 0 }}>{d.name}</div>
             <div style={{ flex: 1, height: '6px', background: 'rgba(200,146,42,0.12)', borderRadius: '3px', overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${(d.gap_score / 10) * 100}%`, background: d.gap_score < 4 ? '#8A3030' : d.gap_score < 6 ? '#8A7030' : '#2A6B3A', borderRadius: '3px' }} />
             </div>
             <div style={{ ...sc, fontSize: '13px', color: gold, width: '40px', textAlign: 'right' }}>{d.gap_score}/10</div>
-            <div style={{ width: '80px', textAlign: 'right', ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>{d.total_actors} actors</div>
+            <div style={{ width: '80px', textAlign: 'right', ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>{d.total_actors} actors</div>
             {d.gap_signal && <Badge label="gap" color="#8A3030" />}
             {d.data_status === 'verified' && <Badge label="verified" color="#2A6B3A" />}
           </Card>
@@ -1118,12 +1118,12 @@ function PlatformTab() {
       </div>
       {stats.pendingClaims > 0 && (
         <Card style={{ borderColor: 'rgba(200,146,42,0.60)', background: 'rgba(200,146,42,0.04)' }}>
-          <span style={{ ...serif, fontSize: '16px', color: '#0F1523' }}>{stats.pendingClaims} claim{stats.pendingClaims !== 1 ? 's' : ''} awaiting review \u2014 go to Actors tab</span>
+          <span style={{ ...body, fontSize: '16px', color: '#0F1523' }}>{stats.pendingClaims} claim{stats.pendingClaims !== 1 ? 's' : ''} awaiting review \u2014 go to Actors tab</span>
         </Card>
       )}
       {(stats.zeroActorDomains || []).length > 0 && (
         <Card style={{ borderColor: 'rgba(138,48,48,0.40)', background: 'rgba(138,48,48,0.03)' }}>
-          <span style={{ ...serif, fontSize: '16px', color: '#0F1523' }}>Empty domains: {stats.zeroActorDomains.map(d => d.name).join(', ')}</span>
+          <span style={{ ...body, fontSize: '16px', color: '#0F1523' }}>Empty domains: {stats.zeroActorDomains.map(d => d.name).join(', ')}</span>
         </Card>
       )}
     </div>
@@ -1304,26 +1304,26 @@ function ActorsTab({ toast }) {
             <Select value={filterWinning} onChange={setFilterWinning} options={[{ value: '', label: 'All actors' }, { value: 'winning', label: 'Winning' }, { value: 'underloved', label: 'Underloved' }]} />
             <Btn onClick={fetchActors} small>Search</Btn>
           </div>
-          {loading && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
-          {!loading && actors.length === 0 && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>No actors found.</p>}
+          {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+          {!loading && actors.length === 0 && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No actors found.</p>}
           {actors.map(a => (
             <Card key={a.id}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                    <span style={{ ...serif, fontSize: '17px', color: '#0F1523' }}>{a.name}</span>
+                    <span style={{ ...body, fontSize: '17px', color: '#0F1523' }}>{a.name}</span>
                     <Badge label={a.type} />
-                    {a.scale && <Badge label={a.scale} color="rgba(15,21,35,0.45)" />}
+                    {a.scale && <Badge label={a.scale} color="rgba(15,21,35,0.55)" />}
                     {a.winning && <Badge label="winning" color="#2A6B3A" />}
                     {a.claimed && <Badge label="claimed" color="#2A4A8A" />}
                     {a.verified && <Badge label="verified" color="#1A6B4A" />}
                   </div>
-                  <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
+                  <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
                     {a.domain_id && <span>{domainLabel(a.domain_id)}</span>}
                     {a.location_name && <span> \u00b7 {a.location_name}</span>}
                     {(a.lat && a.lng) && <span style={{ color: '#2A6B3A' }}> \u00b7 \ud83d\udccd mapped</span>}
                   </div>
-                  {a.description && <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>{a.description.slice(0, 160)}{a.description.length > 160 ? '...' : ''}</p>}
+                  {a.description && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>{a.description.slice(0, 160)}{a.description.length > 160 ? '...' : ''}</p>}
                 </div>
                 <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
                   <Btn small variant="ghost" onClick={() => toggleWinning(a)}>{a.winning ? 'Unmark' : 'Mark winning'}</Btn>
@@ -1362,7 +1362,7 @@ function ActorsTab({ toast }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}>
                       <input type="checkbox" id={`primary-${i}`} checked={d.is_primary || false}
                         onChange={e => setActorDomains(rows => rows.map((r, ri) => ({ ...r, is_primary: ri === i ? e.target.checked : false })))} />
-                      <label htmlFor={`primary-${i}`} style={{ ...serif, fontSize: '13px', cursor: 'pointer' }}>Primary</label>
+                      <label htmlFor={`primary-${i}`} style={{ ...body, fontSize: '13px', cursor: 'pointer' }}>Primary</label>
                     </div>
                     <button onClick={() => setActorDomains(rows => rows.filter((_, ri) => ri !== i))}
                       style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(138,48,48,0.7)', fontSize: '18px', lineHeight: 1, padding: '0 4px' }}>×</button>
@@ -1380,8 +1380,8 @@ function ActorsTab({ toast }) {
               <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Longitude</label><Input value={form.lng} onChange={v => setFormField('lng', v)} placeholder="e.g. 36.817" type="number" /></div>
             </div>
             <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Website</label><Input value={form.website} onChange={v => setFormField('website', v)} placeholder="https://..." /></div>
-            <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Description</label><textarea value={form.description} onChange={e => setFormField('description', e.target.value)} rows={3} style={{ ...serif, fontSize: '15px', color: '#0F1523', padding: '9px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical' }} /></div>
-            <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Impact Summary</label><textarea value={form.impact_summary} onChange={e => setFormField('impact_summary', e.target.value)} rows={2} style={{ ...serif, fontSize: '15px', color: '#0F1523', padding: '9px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical' }} /></div>
+            <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Description</label><textarea value={form.description} onChange={e => setFormField('description', e.target.value)} rows={3} style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical' }} /></div>
+            <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Impact Summary</label><textarea value={form.impact_summary} onChange={e => setFormField('impact_summary', e.target.value)} rows={2} style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical' }} /></div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
               <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Reach</label><Input value={form.reach} onChange={v => setFormField('reach', v)} placeholder="e.g. 40 countries" /></div>
               <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Alignment (0-10)</label><Input value={form.alignment_score} onChange={v => setFormField('alignment_score', v)} type="number" /></div>
@@ -1389,7 +1389,7 @@ function ActorsTab({ toast }) {
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <input type="checkbox" id="winning" checked={form.winning} onChange={e => setFormField('winning', e.target.checked)} />
-              <label htmlFor="winning" style={{ ...serif, fontSize: '15px', cursor: 'pointer' }}>Mark as winning</label>
+              <label htmlFor="winning" style={{ ...body, fontSize: '15px', cursor: 'pointer' }}>Mark as winning</label>
             </div>
             <div style={{ display: 'flex', gap: '12px', paddingTop: '8px' }}>
               <Btn onClick={saveActor} disabled={saving}>{saving ? 'Saving...' : mode === 'edit' ? 'Save Changes' : 'Add Actor'}</Btn>
@@ -1401,15 +1401,15 @@ function ActorsTab({ toast }) {
 
       {mode === 'claims' && (
         <div>
-          {claims.length === 0 && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>No pending claims.</p>}
+          {claims.length === 0 && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No pending claims.</p>}
           {claims.map(c => (
             <Card key={c.id}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
-                  <div style={{ ...serif, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>{c.nextus_actors?.name || c.actor_id}</div>
-                  <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>Claimant: {c.claimant_id} \u00b7 Method: {c.verification_method || 'not specified'}</div>
-                  <div style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.45)', marginTop: '4px' }}>Submitted: {new Date(c.submitted_at).toLocaleDateString()}</div>
-                  {c.notes && <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '6px' }}>{c.notes}</p>}
+                  <div style={{ ...body, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>{c.nextus_actors?.name || c.actor_id}</div>
+                  <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>Claimant: {c.claimant_id} \u00b7 Method: {c.verification_method || 'not specified'}</div>
+                  <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>Submitted: {new Date(c.submitted_at).toLocaleDateString()}</div>
+                  {c.notes && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '6px' }}>{c.notes}</p>}
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   <Btn small onClick={() => resolveClaim(c.id, c.actor_id, true)}>Approve</Btn>
@@ -1455,7 +1455,7 @@ function DomainDataTab({ toast }) {
   }
 
   const ta = (value, onChange, rows = 3, placeholder = '') => (
-    <textarea value={value} onChange={e => onChange(e.target.value)} rows={rows} placeholder={placeholder} style={{ ...serif, fontSize: '15px', color: '#0F1523', padding: '9px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.6 }} />
+    <textarea value={value} onChange={e => onChange(e.target.value)} rows={rows} placeholder={placeholder} style={{ ...body, fontSize: '15px', color: '#0F1523', padding: '9px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.6 }} />
   )
 
   return (
@@ -1465,7 +1465,7 @@ function DomainDataTab({ toast }) {
         {form && <Badge label={form.data_status} color={form.data_status === 'verified' ? '#2A6B3A' : gold} />}
         {form?.gap_signal && <Badge label="gap signal" color="#8A3030" />}
       </div>
-      {loading && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
       {form && !loading && (
         <div style={{ display: 'grid', gap: '16px', maxWidth: '720px' }}>
           <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Horizon Goal</label>{ta(form.horizon_goal, v => setField('horizon_goal', v), 2)}</div>
@@ -1474,10 +1474,10 @@ function DomainDataTab({ toast }) {
           <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr 1fr', gap: '12px', alignItems: 'end' }}>
             <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Gap Score (0-10)</label><Input value={form.gap_score} onChange={v => setField('gap_score', v)} type="number" placeholder="e.g. 4.1" /></div>
             <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Data Status</label><Select value={form.data_status} onChange={v => setField('data_status', v)} options={[{ value: 'illustrative', label: 'Illustrative' }, { value: 'verified', label: 'Verified' }]} /></div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingBottom: '2px' }}><input type="checkbox" id="gap_signal" checked={form.gap_signal} onChange={e => setField('gap_signal', e.target.checked)} /><label htmlFor="gap_signal" style={{ ...serif, fontSize: '15px', cursor: 'pointer' }}>Gap signal active</label></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingBottom: '2px' }}><input type="checkbox" id="gap_signal" checked={form.gap_signal} onChange={e => setField('gap_signal', e.target.checked)} /><label htmlFor="gap_signal" style={{ ...body, fontSize: '15px', cursor: 'pointer' }}>Gap signal active</label></div>
           </div>
           {form.gap_signal && <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Gap Reason</label><Input value={form.gap_reason} onChange={v => setField('gap_reason', v)} /></div>}
-          <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Indicators (JSON)</label><p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>Format: [&#123;"label":"...","value":"...","trend":"up|down|flat"&#125;]</p>{ta(form.indicators, v => setField('indicators', v), 5)}</div>
+          <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Indicators (JSON)</label><p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>Format: [&#123;"label":"...","value":"...","trend":"up|down|flat"&#125;]</p>{ta(form.indicators, v => setField('indicators', v), 5)}</div>
           <div><label style={{ ...sc, fontSize: '13px', color: gold, display: 'block', marginBottom: '4px' }}>Sources (JSON)</label>{ta(form.sources, v => setField('sources', v), 4)}</div>
           <div style={{ display: 'flex', gap: '12px', paddingTop: '4px' }}>
             <Btn onClick={save} disabled={saving}>{saving ? 'Saving...' : 'Save Domain'}</Btn>
@@ -1518,7 +1518,7 @@ function NeedsTab({ toast }) {
     toast('Need marked ' + status); fetchNeeds()
   }
 
-  const statusColor = { open: '#2A6B3A', in_progress: '#2A4A8A', fulfilled: gold, closed: 'rgba(15,21,35,0.45)' }
+  const statusColor = { open: '#2A6B3A', in_progress: '#2A4A8A', fulfilled: gold, closed: 'rgba(15,21,35,0.55)' }
 
   return (
     <div>
@@ -1528,18 +1528,18 @@ function NeedsTab({ toast }) {
         <Select value={filterDomain} onChange={setFilterDomain} options={[{ value: '', label: 'All domains' }, ...DOMAIN_LIST]} />
         <Btn onClick={fetchNeeds} small>Refresh</Btn>
       </div>
-      {loading && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
-      {!loading && needs.length === 0 && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>No needs found.</p>}
+      {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {!loading && needs.length === 0 && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No needs found.</p>}
       {needs.map(n => (
         <Card key={n.id}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px', flexWrap: 'wrap' }}>
-                <span style={{ ...serif, fontSize: '16px', color: '#0F1523' }}>{n.title}</span>
-                <Badge label={n.need_type} /><Badge label={n.size} color="rgba(15,21,35,0.45)" /><Badge label={n.status} color={statusColor[n.status]} />
+                <span style={{ ...body, fontSize: '16px', color: '#0F1523' }}>{n.title}</span>
+                <Badge label={n.need_type} /><Badge label={n.size} color="rgba(15,21,35,0.55)" /><Badge label={n.status} color={statusColor[n.status]} />
               </div>
-              <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>{n.nextus_actors?.name || 'Unknown'}{n.time_estimate && ' \u00b7 ' + n.time_estimate}</div>
-              {n.description && <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>{n.description.slice(0, 200)}{n.description.length > 200 ? '...' : ''}</p>}
+              <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>{n.nextus_actors?.name || 'Unknown'}{n.time_estimate && ' \u00b7 ' + n.time_estimate}</div>
+              {n.description && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>{n.description.slice(0, 200)}{n.description.length > 200 ? '...' : ''}</p>}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
               {n.status === 'open'        && <Btn small onClick={() => updateStatus(n.id, 'in_progress')}>In progress</Btn>}
@@ -1577,7 +1577,7 @@ function ContributionsTab({ toast }) {
 
   useEffect(() => { fetchContribs() }, [filterConfirmed, filterOutcome, filterType])
 
-  const typeColor = { hours: '#2A4A8A', capital: '#2A6B3A', skills: gold, resources: '#6B2A6B', community: '#2A6B6B', other: 'rgba(15,21,35,0.45)' }
+  const typeColor = { hours: '#2A4A8A', capital: '#2A6B3A', skills: gold, resources: '#6B2A6B', community: '#2A6B6B', other: 'rgba(15,21,35,0.55)' }
 
   return (
     <div>
@@ -1587,8 +1587,8 @@ function ContributionsTab({ toast }) {
         <Select value={filterType} onChange={setFilterType} options={[{ value: '', label: 'All types' }, ...['hours','capital','skills','resources','community','other'].map(t => ({ value: t, label: t }))]} />
         <Btn onClick={fetchContribs} small>Refresh</Btn>
       </div>
-      {loading && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
-      {!loading && contribs.length === 0 && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>No contributions found.</p>}
+      {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {!loading && contribs.length === 0 && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No contributions found.</p>}
       {contribs.map(c => (
         <Card key={c.id}>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
@@ -1596,12 +1596,12 @@ function ContributionsTab({ toast }) {
               <div style={{ display: 'flex', gap: '8px', marginBottom: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
                 <Badge label={c.contribution_type} color={typeColor[c.contribution_type]} />
                 {c.amount && <span style={{ ...sc, fontSize: '13px', color: gold }}>{c.contribution_type === 'capital' ? `${c.currency} ${c.amount}` : `${c.amount} hrs`}</span>}
-                {c.confirmed_by_actor ? <Badge label="confirmed" color="#2A6B3A" /> : <Badge label="unconfirmed" color="rgba(15,21,35,0.45)" />}
+                {c.confirmed_by_actor ? <Badge label="confirmed" color="#2A6B3A" /> : <Badge label="unconfirmed" color="rgba(15,21,35,0.55)" />}
                 {c.confirmed_by_actor && !c.outcome_reported && <Badge label="outcome missing" color="#8A3030" />}
               </div>
-              <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>To: {c.nextus_actors?.name || c.actor_id}{c.contribution_date && ' \u00b7 ' + c.contribution_date}</div>
-              {c.description && <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '4px', lineHeight: 1.6 }}>{c.description.slice(0, 160)}{c.description.length > 160 ? '...' : ''}</p>}
-              {c.outcome_report && <p style={{ ...serif, fontSize: '14px', color: '#2A6B3A', marginTop: '4px' }}>Outcome: {c.outcome_report.slice(0, 160)}</p>}
+              <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>To: {c.nextus_actors?.name || c.actor_id}{c.contribution_date && ' \u00b7 ' + c.contribution_date}</div>
+              {c.description && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '4px', lineHeight: 1.6 }}>{c.description.slice(0, 160)}{c.description.length > 160 ? '...' : ''}</p>}
+              {c.outcome_report && <p style={{ ...body, fontSize: '14px', color: '#2A6B3A', marginTop: '4px' }}>Outcome: {c.outcome_report.slice(0, 160)}</p>}
             </div>
           </div>
         </Card>
@@ -1651,28 +1651,28 @@ function WaitlistTab({ toast }) {
           <Eyebrow>By Domain</Eyebrow>
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '8px' }}>
             {Object.entries(byDomain).sort((a, b) => b[1] - a[1]).map(([domain, count]) => (
-              <div key={domain} style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.88)' }}>
+              <div key={domain} style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.88)' }}>
                 <span style={{ color: gold, fontWeight: 500 }}>{count}</span> {domain}
               </div>
             ))}
           </div>
         </Card>
       )}
-      {loading && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
-      {!loading && entries.length === 0 && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>No waitlist entries yet.</p>}
+      {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {!loading && entries.length === 0 && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No waitlist entries yet.</p>}
       {entries.map(e => (
         <Card key={e.id} style={{ padding: '14px 20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
             <div>
-              <div style={{ ...serif, fontSize: '16px', color: '#0F1523' }}>{e.email}</div>
-              <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>
+              <div style={{ ...body, fontSize: '16px', color: '#0F1523' }}>{e.email}</div>
+              <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>
                 {e.nextus_domains?.name || e.nextus_actors?.name || 'General interest'}
                 {e.contribution_types?.length > 0 && ' \u00b7 wants: ' + e.contribution_types.join(', ')}
                 {e.source && ' \u00b7 via ' + e.source}
               </div>
-              {e.note && <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '4px' }}>{e.note}</p>}
+              {e.note && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '4px' }}>{e.note}</p>}
             </div>
-            <div style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.45)', flexShrink: 0 }}>{new Date(e.created_at).toLocaleDateString()}</div>
+            <div style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)', flexShrink: 0 }}>{new Date(e.created_at).toLocaleDateString()}</div>
           </div>
         </Card>
       ))}
@@ -1740,34 +1740,34 @@ function NominationsTab({ toast }) {
       </div>
 
       {filter === 'nominated' && (
-        <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.50)', marginBottom: '20px', lineHeight: 1.6, maxWidth: '560px' }}>
+        <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '20px', lineHeight: 1.6, maxWidth: '560px' }}>
           Review each nomination. Approve if the work is genuinely aimed at the Horizon Goal for their domain and scale, and the nominator's description is honest. Reject if the fit isn't right.
         </div>
       )}
 
-      {loading && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
-      {!loading && nominations.length === 0 && <p style={{ ...serif, color: 'rgba(15,21,35,0.55)' }}>No {filter} nominations.</p>}
+      {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {!loading && nominations.length === 0 && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No {filter} nominations.</p>}
 
       {nominations.map(a => (
         <Card key={a.id} style={{ borderLeft: '3px solid rgba(200,146,42,0.40)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
             <div style={{ flex: 1 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                <span style={{ ...serif, fontSize: '18px', color: '#0F1523' }}>{a.name}</span>
+                <span style={{ ...body, fontSize: '18px', color: '#0F1523' }}>{a.name}</span>
                 <Badge label={a.type} />
-                {a.scale && <Badge label={a.scale} color="rgba(15,21,35,0.40)" />}
+                {a.scale && <Badge label={a.scale} color="rgba(15,21,35,0.55)" />}
                 {a.domain_id && <Badge label={domainLabel(a.domain_id)} color="#2A4A8A" />}
               </div>
-              {a.location_name && <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.50)', marginBottom: '6px' }}>{a.location_name}</div>}
+              {a.location_name && <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>{a.location_name}</div>}
               {a.website && <div style={{ marginBottom: '8px' }}><a href={a.website} target="_blank" rel="noopener noreferrer" style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold }}>{a.website}</a></div>}
               {a.description && (
                 <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', padding: '12px 14px', marginBottom: '8px' }}>
                   <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold, marginBottom: '6px' }}>Why they belong (nominator's words)</p>
-                  <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>{a.description}</p>
+                  <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>{a.description}</p>
                 </div>
               )}
-              {a.data_source && <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.40)' }}>Source: {a.data_source}</p>}
-              <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.35)' }}>Submitted: {new Date(a.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+              {a.data_source && <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>Source: {a.data_source}</p>}
+              <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>Submitted: {new Date(a.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
             </div>
             {filter === 'nominated' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
@@ -1818,11 +1818,11 @@ export function AdminConsolePage() {
       <Nav />
       <div style={{ maxWidth: '1040px', margin: '0 auto', padding: '96px 40px 120px' }}>
         <Eyebrow>Admin</Eyebrow>
-        <h1 style={{ ...serif, fontSize: 'clamp(32px,4vw,48px)', fontWeight: 300,
+        <h1 style={{ ...body, fontSize: 'clamp(32px,4vw,48px)', fontWeight: 300,
           color: '#0F1523', marginBottom: '8px', lineHeight: 1.08 }}>
           Console
         </h1>
-        <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)',
+        <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)',
           marginBottom: '48px' }}>
           Platform health, actors, domains, needs, contributions, waitlist, access.
         </p>

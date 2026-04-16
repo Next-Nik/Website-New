@@ -4,7 +4,7 @@ import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 
 const DOMAINS = [
   { id: 'path',          label: 'Path' },
@@ -211,7 +211,7 @@ export function SprintPanel({ context = 'default' }) {
                   Target Sprint
                 </h2>
               </div>
-              <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(15,21,35,0.45)', fontSize: '1.25rem', lineHeight: 1, padding: '4px', marginTop: '2px' }}>
+              <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(15,21,35,0.55)', fontSize: '1.25rem', lineHeight: 1, padding: '4px', marginTop: '2px' }}>
                 {'\u00D7'}
               </button>
             </div>
@@ -219,14 +219,14 @@ export function SprintPanel({ context = 'default' }) {
             {/* Content */}
             <div style={{ flex: 1, padding: '20px 24px 32px' }}>
               {loading && (
-                <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', textAlign: 'center', paddingTop: '40px' }}>
+                <p style={{ ...body, fontSize: '1.125rem', color: 'rgba(15,21,35,0.55)', textAlign: 'center', paddingTop: '40px' }}>
                   Loading your sprint{'\u2026'}
                 </p>
               )}
 
               {!loading && !sprint && (
                 <div style={{ paddingTop: '16px' }}>
-                  <p style={{ ...serif, fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '24px' }}>
+                  <p style={{ ...body, fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '24px' }}>
                     No active sprint yet. Pick three domains, set a 90-day target, and build goals worth moving toward.
                   </p>
                   <a href="/tools/target-goals" style={{
@@ -253,7 +253,7 @@ export function SprintPanel({ context = 'default' }) {
                         <span style={{ ...sc, fontSize: '15px', color: '#A8721A', flexShrink: 0, paddingTop: '2px' }}>{s.n}.</span>
                         <div>
                           <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.06em', color: '#0F1523', marginBottom: '2px' }}>{s.t}</div>
-                          <div style={{ ...serif, fontSize: '1.3125rem', color: 'rgba(15,21,35,0.65)', lineHeight: 1.6 }}>{s.d}</div>
+                          <div style={{ ...body, fontSize: '1.3125rem', color: 'rgba(15,21,35,0.65)', lineHeight: 1.6 }}>{s.d}</div>
                         </div>
                       </div>
                     ))}
@@ -268,7 +268,7 @@ export function SprintPanel({ context = 'default' }) {
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '20px', paddingBottom: '16px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
                       <span style={{ ...sc, fontSize: '2rem', fontWeight: 600, color: '#A8721A', lineHeight: 1 }}>{days}</span>
                       <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>days remaining</span>
-                      <span style={{ ...serif, fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.4)', marginLeft: 'auto' }}>{sprint.end_date_label?.split('\u2014')[0]?.trim()}</span>
+                      <span style={{ ...body, fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)', marginLeft: 'auto' }}>{sprint.end_date_label?.split('\u2014')[0]?.trim()}</span>
                     </div>
                   )}
 
@@ -293,16 +293,16 @@ export function SprintPanel({ context = 'default' }) {
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
                           <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: col, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>{dl?.label}{dl && <DomainTooltip domainKey={dl.id} system="lifeos" position="above" />}</span>
                           {s !== undefined && sp !== undefined && (
-                            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.4)' }}>
+                            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>
                               {s} {'\u2192'} {sp} {'\u00B7'} {TIER[sp] || ''}
                             </span>
                           )}
                         </div>
-                        <p style={{ ...serif, fontSize: '1.3125rem', color: 'rgba(15,21,35,0.8)', lineHeight: 1.6, marginBottom: g.identity_statement ? '8px' : 0 }}>
+                        <p style={{ ...body, fontSize: '1.3125rem', color: 'rgba(15,21,35,0.8)', lineHeight: 1.6, marginBottom: g.identity_statement ? '8px' : 0 }}>
                           {g.outcome_user || g.outcome_system}
                         </p>
                         {g.identity_statement && (
-                          <p style={{ ...serif, fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.55 }}>
+                          <p style={{ ...body, fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55 }}>
                             {'\u201C'}{g.identity_statement}{'\u201D'}
                           </p>
                         )}
@@ -329,7 +329,7 @@ export function SprintPanel({ context = 'default' }) {
                           return g[key] ? (
                             <div key={i} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
                               <span style={{ ...sc, fontSize: '15px', color: '#A8721A', flexShrink: 0, paddingTop: '2px', width: '80px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>{dl?.label}{dl && <DomainTooltip domainKey={dl.id} system="lifeos" position="above" />}</span>
-                              <span style={{ ...serif, fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55 }}>{g[key]}</span>
+                              <span style={{ ...body, fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55 }}>{g[key]}</span>
                             </div>
                           ) : null
                         })}

@@ -5,7 +5,7 @@ import { SiteFooter } from '../components/SiteFooter'
 import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold  = '#A8721A'
 const dark  = '#0F1523'
@@ -39,7 +39,7 @@ function Label({ children }) {
 
 function Hint({ children }) {
   return (
-    <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.50)', marginTop: '4px', lineHeight: 1.5 }}>
+    <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '4px', lineHeight: 1.5 }}>
       {children}
     </p>
   )
@@ -52,21 +52,21 @@ function Field({ children, style }) {
 function TextInput({ value, onChange, placeholder, type = 'text' }) {
   return (
     <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-      style={{ ...serif, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%' }} />
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%' }} />
   )
 }
 
 function TextArea({ value, onChange, placeholder, rows = 4 }) {
   return (
     <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows}
-      style={{ ...serif, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }} />
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }} />
   )
 }
 
 function SelectInput({ value, onChange, options }) {
   return (
     <select value={value} onChange={e => onChange(e.target.value)}
-      style={{ ...serif, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%' }}>
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', width: '100%' }}>
       {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
   )
@@ -157,7 +157,7 @@ export function NextUsNeedNewPage() {
       <div style={{ background: parch, minHeight: '100vh' }}>
         <Nav activePath="nextus" />
         <div style={{ maxWidth: '640px', margin: '0 auto', padding: '120px 40px' }}>
-          <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.45)' }}>Loading…</p>
+          <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.55)' }}>Loading…</p>
         </div>
       </div>
     )
@@ -169,10 +169,10 @@ export function NextUsNeedNewPage() {
       <div style={{ background: parch, minHeight: '100vh' }}>
         <Nav activePath="nextus" />
         <div style={{ maxWidth: '560px', margin: '0 auto', padding: '120px 40px', textAlign: 'center' }}>
-          <h2 style={{ ...serif, fontSize: '26px', fontWeight: 300, color: dark, marginBottom: '14px' }}>
+          <h2 style={{ ...body, fontSize: '26px', fontWeight: 300, color: dark, marginBottom: '14px' }}>
             Add an offering first.
           </h2>
-          <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '32px' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '32px' }}>
             Before posting needs, {actor?.name || 'your organisation'} needs at least one offering on record — something you give to the world. Contributors want to know what you're building before they decide to help build it with you.
           </p>
           <button
@@ -194,8 +194,8 @@ export function NextUsNeedNewPage() {
           <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(42,107,58,0.12)', border: '1.5px solid rgba(42,107,58,0.40)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
             <span style={{ color: '#2A6B3A', fontSize: '18px' }}>✓</span>
           </div>
-          <h2 style={{ ...serif, fontSize: '28px', fontWeight: 300, color: dark, marginBottom: '12px' }}>Need posted.</h2>
-          <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.60)', marginBottom: '32px', lineHeight: 1.7 }}>
+          <h2 style={{ ...body, fontSize: '28px', fontWeight: 300, color: dark, marginBottom: '12px' }}>Need posted.</h2>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.60)', marginBottom: '32px', lineHeight: 1.7 }}>
             Contributors will be able to see and respond to this need on your actor profile.
           </p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -204,7 +204,7 @@ export function NextUsNeedNewPage() {
               Post another need
             </button>
             <button onClick={() => navigate(`/nextus/actors/${id}`)}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.20)', background: 'transparent', color: 'rgba(15,21,35,0.60)', cursor: 'pointer' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.55)', background: 'transparent', color: 'rgba(15,21,35,0.60)', cursor: 'pointer' }}>
               Back to profile
             </button>
           </div>
@@ -229,7 +229,7 @@ export function NextUsNeedNewPage() {
 
         {/* Back */}
         <button onClick={() => navigate(`/nextus/actors/${id}`)} style={{
-          ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)',
+          ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)',
           background: 'none', border: 'none', cursor: 'pointer', marginBottom: '32px',
           padding: 0,
         }}>
@@ -239,10 +239,10 @@ export function NextUsNeedNewPage() {
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: gold, display: 'block', marginBottom: '12px' }}>
           {actor?.name} · Post a Need
         </span>
-        <h1 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,38px)', fontWeight: 300, color: dark, marginBottom: '12px', lineHeight: 1.1 }}>
+        <h1 style={{ ...body, fontSize: 'clamp(26px,3.5vw,38px)', fontWeight: 300, color: dark, marginBottom: '12px', lineHeight: 1.1 }}>
           What do you need?
         </h1>
-        <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.60)', marginBottom: '48px', lineHeight: 1.7, maxWidth: '480px' }}>
+        <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.60)', marginBottom: '48px', lineHeight: 1.7, maxWidth: '480px' }}>
           Be specific. The more precisely you describe what you need, the more likely the right person finds it. Contributors self-select — your job is to make it easy for the right one to say yes.
         </p>
 
@@ -295,7 +295,7 @@ export function NextUsNeedNewPage() {
                   }}
                 >
                   <div style={{ marginBottom: '4px' }}>{s.label}</div>
-                  <div style={{ ...serif, fontSize: '13px', fontStyle: 'normal', color: 'rgba(15,21,35,0.50)', letterSpacing: 0 }}>{s.desc}</div>
+                  <div style={{ ...body, fontSize: '13px', fontStyle: 'normal', color: 'rgba(15,21,35,0.55)', letterSpacing: 0 }}>{s.desc}</div>
                 </button>
               ))}
             </div>
@@ -392,7 +392,7 @@ export function NextUsNeedNewPage() {
           {/* Error */}
           {error && (
             <div style={{ background: 'rgba(138,48,48,0.06)', border: '1px solid rgba(138,48,48,0.30)', borderRadius: '8px', padding: '12px 16px', marginBottom: '24px' }}>
-              <p style={{ ...serif, fontSize: '15px', color: '#8A3030', margin: 0 }}>{error}</p>
+              <p style={{ ...body, fontSize: '15px', color: '#8A3030', margin: 0 }}>{error}</p>
             </div>
           )}
 
@@ -416,7 +416,7 @@ export function NextUsNeedNewPage() {
             <button
               type="button"
               onClick={() => navigate(`/nextus/actors/${id}`)}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: '13px 0' }}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '13px 0' }}
             >
               Cancel
             </button>

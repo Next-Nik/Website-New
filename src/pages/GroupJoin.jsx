@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth'
 import { Nav } from '../components/Nav'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = '#A8721A'
 
 /**
@@ -134,7 +134,7 @@ export function GroupJoinPage() {
           {state === 'idle' && !group && (
             <Card>
               <Eyebrow>Join a group</Eyebrow>
-              <h1 style={{ ...serif, fontSize: '28px', fontWeight: 300, color: '#0F1523',
+              <h1 style={{ ...body, fontSize: '28px', fontWeight: 300, color: '#0F1523',
                 marginBottom: '20px', lineHeight: 1.2 }}>
                 Enter your access code.
               </h1>
@@ -160,12 +160,12 @@ export function GroupJoinPage() {
           {state === 'idle' && group && !user && (
             <Card>
               <Eyebrow>{group.name}</Eyebrow>
-              <h1 style={{ ...serif, fontSize: '26px', fontWeight: 300, color: '#0F1523',
+              <h1 style={{ ...body, fontSize: '26px', fontWeight: 300, color: '#0F1523',
                 marginBottom: '10px', lineHeight: 1.2 }}>
                 Sign in to join.
               </h1>
               {group.description && (
-                <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
+                <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
                   lineHeight: 1.65, marginBottom: '24px' }}>
                   {group.description}
                 </p>
@@ -179,11 +179,11 @@ export function GroupJoinPage() {
             <Card>
               <div style={{ fontSize: '32px', marginBottom: '16px' }}>✦</div>
               <Eyebrow>{group?.name}</Eyebrow>
-              <h1 style={{ ...serif, fontSize: '26px', fontWeight: 300, color: '#0F1523',
+              <h1 style={{ ...body, fontSize: '26px', fontWeight: 300, color: '#0F1523',
                 marginBottom: '10px' }}>
                 You're in.
               </h1>
-              <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
+              <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
                 lineHeight: 1.65, marginBottom: '24px' }}>
                 Your access is active. Head to your profile to see what's available.
               </p>
@@ -195,11 +195,11 @@ export function GroupJoinPage() {
           {state === 'pending' && (
             <Card>
               <Eyebrow>{group?.name}</Eyebrow>
-              <h1 style={{ ...serif, fontSize: '26px', fontWeight: 300, color: '#0F1523',
+              <h1 style={{ ...body, fontSize: '26px', fontWeight: 300, color: '#0F1523',
                 marginBottom: '10px' }}>
                 Request received.
               </h1>
-              <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
+              <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
                 lineHeight: 1.65 }}>
                 This group requires approval. You'll hear from us once your request
                 has been reviewed. If you're in a hurry, reach out directly.
@@ -211,11 +211,11 @@ export function GroupJoinPage() {
           {state === 'already' && (
             <Card>
               <Eyebrow>{group?.name}</Eyebrow>
-              <h1 style={{ ...serif, fontSize: '26px', fontWeight: 300, color: '#0F1523',
+              <h1 style={{ ...body, fontSize: '26px', fontWeight: 300, color: '#0F1523',
                 marginBottom: '10px' }}>
                 You're already a member.
               </h1>
-              <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
+              <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
                 lineHeight: 1.65, marginBottom: '24px' }}>
                 Your access is active.
               </p>
@@ -226,11 +226,11 @@ export function GroupJoinPage() {
           {/* Not found */}
           {state === 'notfound' && (
             <Card>
-              <h1 style={{ ...serif, fontSize: '26px', fontWeight: 300, color: '#0F1523',
+              <h1 style={{ ...body, fontSize: '26px', fontWeight: 300, color: '#0F1523',
                 marginBottom: '10px' }}>
                 Code not found.
               </h1>
-              <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
+              <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
                 lineHeight: 1.65, marginBottom: '24px' }}>
                 {message || 'That link doesn’t match an active group. Check the code and try again.'}
               </p>
@@ -243,11 +243,11 @@ export function GroupJoinPage() {
           {/* Error */}
           {state === 'error' && (
             <Card>
-              <h1 style={{ ...serif, fontSize: '26px', fontWeight: 300, color: '#0F1523',
+              <h1 style={{ ...body, fontSize: '26px', fontWeight: 300, color: '#0F1523',
                 marginBottom: '10px' }}>
                 Something went wrong.
               </h1>
-              <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
+              <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
                 lineHeight: 1.65 }}>
                 {message}
               </p>

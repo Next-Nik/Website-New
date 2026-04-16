@@ -3,7 +3,7 @@ import { SiteFooter } from '../components/SiteFooter'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { GlossaryPanel } from '../components/GlossaryPanel'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
@@ -62,7 +62,7 @@ function ToolRow({ tool }) {
           <span style={{ ...sc, fontSize: '19px', letterSpacing: '0.08em', color: '#A8721A' }}>{tool.name}</span>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>{tool.time}</span>
         </div>
-        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0, maxWidth: '540px' }}>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0, maxWidth: '540px' }}>
           {tool.one_line}
         </p>
       </div>
@@ -97,18 +97,18 @@ export function ToolsPage() {
 
         {/* Header */}
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>The Horizon Suite</span>
-        <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
+        <h1 style={{ ...body, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           Five tools.<br /><span style={{ color: '#A8721A' }}>One navigation system.</span>
         </h1>
-        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '48px', maxWidth: '560px' }}>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '48px', maxWidth: '560px' }}>
           Each tool is built for a specific stage of the journey. You don\u2019t need all of them \u2014 and you don\u2019t need to start at the beginning.
         </p>
 
         {/* Front door CTA */}
         <div style={{ marginBottom: '40px', padding: '24px 28px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.25)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', flexWrap: 'wrap' }}>
           <div>
-            <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.6, margin: '0 0 4px' }}>Not sure where to start?</p>
-            <p style={{ ...serif, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', margin: 0 }}>Answer a few questions and find out where you are. No sign-in needed.</p>
+            <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.6, margin: '0 0 4px' }}>Not sure where to start?</p>
+            <p style={{ ...body, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', margin: 0 }}>Answer a few questions and find out where you are. No sign-in needed.</p>
           </div>
           <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '13px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>
             Find my starting point →

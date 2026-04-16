@@ -5,7 +5,7 @@ import { SiteFooter } from '../components/SiteFooter'
 import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold  = '#A8721A'
 const dark  = '#0F1523'
@@ -96,7 +96,7 @@ const NEED_TYPE_FILTERS = [
 function FilterSelect({ value, onChange, options }) {
   return (
     <select value={value} onChange={e => onChange(e.target.value)} style={{
-      ...serif, fontSize: '15px', color: dark,
+      ...body, fontSize: '15px', color: dark,
       padding: '10px 14px', borderRadius: '40px',
       border: '1.5px solid rgba(200,146,42,0.35)',
       background: '#FFFFFF', outline: 'none', cursor: 'pointer',
@@ -140,7 +140,7 @@ function ActorCard({ actor, onClick }) {
       cursor: 'pointer', transition: 'border-color 0.15s, box-shadow 0.15s',
       position: 'relative',
     }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(15,21,35,0.06)' }}
+      onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(15,21,35,0.55)' }}
       onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.20)'; e.currentTarget.style.boxShadow = 'none' }}
     >
       {/* Winning indicator */}
@@ -150,23 +150,23 @@ function ActorCard({ actor, onClick }) {
 
       {/* Type + scale */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
-        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)' }}>
+        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
           {actor.type}
         </span>
         {actor.scale && (
-          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)' }}>
+          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
             · {actor.scale}
           </span>
         )}
         {actor.location_name && (
-          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)' }}>
+          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
             · {actor.location_name}
           </span>
         )}
       </div>
 
       {/* Name */}
-      <h3 style={{ ...serif, fontSize: '20px', fontWeight: 300, color: dark, marginBottom: '6px', lineHeight: 1.2 }}>
+      <h3 style={{ ...body, fontSize: '20px', fontWeight: 300, color: dark, marginBottom: '6px', lineHeight: 1.2 }}>
         {actor.name}
       </h3>
 
@@ -189,7 +189,7 @@ function ActorCard({ actor, onClick }) {
 
       {/* Description */}
       {actor.description && (
-        <p style={{ ...serif, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, marginBottom: '14px' }}>
+        <p style={{ ...body, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, marginBottom: '14px' }}>
           {actor.description.length > 180 ? actor.description.slice(0, 180) + '…' : actor.description}
         </p>
       )}
@@ -198,14 +198,14 @@ function ActorCard({ actor, onClick }) {
       {hasNeeds && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: gold, flexShrink: 0 }} />
-          <span style={{ ...serif, fontSize: '14px', color: gold }}>
+          <span style={{ ...body, fontSize: '14px', color: gold }}>
             {actor.open_needs_count} open {actor.open_needs_count === 1 ? 'need' : 'needs'} — contributors welcome
           </span>
         </div>
       )}
 
       {!actor.claimed && (
-        <div style={{ marginTop: '10px', ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.45)', fontStyle: 'italic' }}>
+        <div style={{ marginTop: '10px', ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
           Is this you? Claim this profile →
         </div>
       )}
@@ -243,7 +243,7 @@ function MatchCard({ match, navigate }) {
       onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
     >
       {match.adjacent && (
-        <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.35)', display: 'block', marginBottom: '6px' }}>
+        <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', display: 'block', marginBottom: '6px' }}>
           Adjacent match
         </span>
       )}
@@ -259,16 +259,16 @@ function MatchCard({ match, navigate }) {
           </span>
         )}
       </div>
-      <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: dark, marginBottom: '4px', lineHeight: 1.3 }}>
+      <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: dark, marginBottom: '4px', lineHeight: 1.3 }}>
         {match.name}
       </p>
       {match.best_need && (
-        <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.45)', marginBottom: '4px' }}>
+        <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
           Needs: {match.best_need.title}
         </p>
       )}
       {match.description && (
-        <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>
+        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>
           {match.description.slice(0, 100)}{match.description.length > 100 ? '…' : ''}
         </p>
       )}
@@ -318,11 +318,11 @@ function MatchesPanel({ userId, navigate }) {
           <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, display: 'block', marginBottom: '4px' }}>
             Matched for you
           </span>
-          <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.6, margin: 0 }}>
+          <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.6, margin: 0 }}>
             Orgs whose open needs align with what you're offering.
           </p>
         </div>
-        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.40)' }}>
+        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
           {matches.length} match{matches.length !== 1 ? 'es' : ''}
         </span>
       </div>
@@ -336,7 +336,7 @@ function MatchesPanel({ userId, navigate }) {
       {matches.length > 3 && (
         <button
           onClick={() => setExpanded(e => !e)}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', marginTop: '16px', padding: 0 }}
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', marginTop: '16px', padding: 0 }}
         >
           {expanded ? 'Show fewer ↑' : `Show all ${matches.length} matches ↓`}
         </button>
@@ -434,10 +434,10 @@ export function NextUsActorsPage() {
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: gold, display: 'block', marginBottom: '12px' }}>
             NextUs · In the Field
           </span>
-          <h1 style={{ ...serif, fontSize: 'clamp(32px,4vw,52px)', fontWeight: 300, color: dark, lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '16px' }}>
+          <h1 style={{ ...body, fontSize: 'clamp(32px,4vw,52px)', fontWeight: 300, color: dark, lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '16px' }}>
             Who is doing the work.
           </h1>
-          <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', maxWidth: '560px', lineHeight: 1.7 }}>
+          <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', maxWidth: '560px', lineHeight: 1.7 }}>
             Organisations and projects working across the seven domains. What they're building, what they need, and where you fit.
           </p>
         </div>
@@ -449,7 +449,7 @@ export function NextUsActorsPage() {
               value={searchInput}
               onChange={e => setSearchInput(e.target.value)}
               placeholder="Search by name…"
-              style={{ ...serif, fontSize: '15px', color: dark, padding: '10px 14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', flex: 1 }}
+              style={{ ...body, fontSize: '15px', color: dark, padding: '10px 14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', flex: 1 }}
             />
             <button type="submit" style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '10px 18px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: gold, cursor: 'pointer' }}>Search</button>
           </form>
@@ -468,7 +468,7 @@ export function NextUsActorsPage() {
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' }}>
           <ViewToggle view={view} setView={setView} />
-          <span style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.45)' }}>
+          <span style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
             {loading ? 'Loading…' : `${total} in the field`}
           </span>
         </div>
@@ -482,7 +482,7 @@ export function NextUsActorsPage() {
             <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, marginBottom: '6px' }}>
               {DOMAIN_LABEL[domain]} · Horizon Goal
             </div>
-            <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.65, margin: 0 }}>
+            <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.65, margin: 0 }}>
               {DOMAIN_HORIZON[domain]}
             </p>
           </div>
@@ -490,14 +490,14 @@ export function NextUsActorsPage() {
 
         {/* Actor grid */}
         {loading && (
-          <div style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.45)', padding: '40px 0' }}>
+          <div style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', padding: '40px 0' }}>
             Loading actors…
           </div>
         )}
 
         {!loading && actors.length === 0 && (
           <div style={{ textAlign: 'center', padding: '80px 0' }}>
-            <p style={{ ...serif, fontSize: '20px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', marginBottom: '16px' }}>
+            <p style={{ ...body, fontSize: '20px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', marginBottom: '16px' }}>
               No actors found with those filters.
             </p>
             <button onClick={() => { setDomain(''); setScale(''); setType(''); setView('all'); setSearch(''); setSearchInput('') }}
@@ -520,10 +520,10 @@ export function NextUsActorsPage() {
         {/* Empty state if no actors at all */}
         {!loading && total === 0 && actors.length === 0 && !domain && !search && (
           <div style={{ textAlign: 'center', padding: '80px 0', maxWidth: '480px', margin: '0 auto' }}>
-            <p style={{ ...serif, fontSize: '20px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', marginBottom: '12px', lineHeight: 1.6 }}>
+            <p style={{ ...body, fontSize: '20px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', marginBottom: '12px', lineHeight: 1.6 }}>
               The map is being populated.
             </p>
-            <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.45)', lineHeight: 1.7 }}>
+            <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
               Organisations and projects working across the seven domains will appear here as the platform grows.
             </p>
           </div>

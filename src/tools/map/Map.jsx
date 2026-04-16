@@ -533,7 +533,7 @@ function AvatarEditPrompt({ onSaveAndReview, onJustSave, onCancel }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <button onClick={onSaveAndReview} style={btnStyle}>Save and review those steps →</button>
           <button onClick={onJustSave} style={{ ...btnStyle, background: 'transparent', border: '1px solid rgba(200,146,42,0.3)', color: 'rgba(15,21,35,0.72)' }}>Just save</button>
-          <button onClick={onCancel} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>Cancel</button>
+          <button onClick={onCancel} style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>Cancel</button>
         </div>
       </div>
     </div>
@@ -1011,7 +1011,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                 <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '8px' }}>YOUR AVATAR</div>
                 <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7 }}>{avatarFinal}</p>
               </div>
-              <button onClick={startEditAvatar} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <button onClick={startEditAvatar} style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                 Edit avatar ↗
               </button>
             </div>
@@ -1153,7 +1153,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                   <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.08em', color: '#A8721A' }}>{TIER_MAP[horizonScore]}</span>
                 </div>
               </div>
-              <button onClick={() => { setHorizonLocked(false); setStep('horizon') }} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <button onClick={() => { setHorizonLocked(false); setStep('horizon') }} style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                 Edit →
               </button>
             </div>
@@ -1246,7 +1246,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
                   {h && <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#A8721A', marginLeft: '4px' }}>{'\u2192'}{h}</span>}
                 </div>
               </div>
-              {isFocus && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', color: 'rgba(15,21,35,0.72)' }}>{d.question}</div>}
+              {isFocus && <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '0.9375rem', color: 'rgba(15,21,35,0.72)' }}>{d.question}</div>}
             </div>
           )
         })}
@@ -1276,7 +1276,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
         <div style={{ padding: '18px 28px', borderBottom: '1px solid rgba(200,146,42,0.05)' }}>
           <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>What The Pattern Shows</div>
           {mapData.overall_reflection.split('\n\n').map((p, i) => (
-            <p key={i} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", lineHeight: 1.8, color: 'rgba(15,21,35,0.72)', margin: i > 0 ? '12px 0 0' : 0 }}>{p}</p>
+            <p key={i} style={{ fontFamily: "'Lora', Georgia, serif", lineHeight: 1.8, color: 'rgba(15,21,35,0.72)', margin: i > 0 ? '12px 0 0' : 0 }}>{p}</p>
           ))}
         </div>
       )}
@@ -1304,7 +1304,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
           />
           {mapData?.life_horizon_draft && (
             <>
-              <button onClick={() => setDraftVisible(v => !v)} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: '10px', display: 'block' }}>
+              <button onClick={() => setDraftVisible(v => !v)} style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginBottom: '10px', display: 'block' }}>
                 {draftVisible ? 'Hide draft ↑' : 'See what The Map drafted →'}
               </button>
               {draftVisible && (
@@ -1323,7 +1323,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
             )}
             {horizonLocked && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', margin: 0 }}>
+                <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', margin: 0 }}>
                   <span style={{ color: '#A8721A', fontStyle: 'normal', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', letterSpacing: '0.1em' }}>✓ Locked.</span>{' '}This is your Life Horizon.
                 </p>
                 <button
@@ -1344,14 +1344,14 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
 
 function MapWelcomeModal({ onBegin }) {
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const body = { fontFamily: "'Lora', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '460px', width: '100%', textAlign: 'center' }}>
         <span style={{ display: 'block', ...sc, fontSize: '17px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>The Map</span>
         <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>An honest read.</h2>
-        <p style={{ ...serif, fontSize: '1.125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '32px' }}>
+        <p style={{ ...body, fontSize: '1.125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '32px' }}>
           Seven domains of your life. Where you are, where you want to be, and what the gap is telling you. Takes about ten minutes. Answer honestly — not aspirationally.
         </p>
         <button onClick={onBegin} style={{
@@ -1360,7 +1360,7 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
           color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif",
           fontSize: '15px', letterSpacing: '0.14em', cursor: 'pointer', transition: 'all 0.2s',
         }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.55)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
           onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
         >
           Begin {'\u2192'}
@@ -1426,7 +1426,7 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, ac
   const [context,      setContext]      = useState(data?.context || '')
   const [showContext,  setShowContext]  = useState(false)
   const [saved,        setSaved]        = useState(false)
-  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const body = { fontFamily: "'Lora', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
@@ -1470,7 +1470,7 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
                 onChange={e => { setContext(e.target.value); save({ context: e.target.value }) }}
                 placeholder="Any context that matters here — relationship structure, family dynamics, anything that helps North Star give relevant rather than generic advice..."
                 rows={3}
-                style={{ width: '100%', marginTop: '8px', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.22)', background: '#FAFAF7', ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)', resize: 'vertical', outline: 'none', lineHeight: 1.6, boxSizing: 'border-box' }}
+                style={{ width: '100%', marginTop: '8px', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.22)', background: '#FAFAF7', ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', resize: 'vertical', outline: 'none', lineHeight: 1.6, boxSizing: 'border-box' }}
               />
             )}
           </div>
@@ -1495,7 +1495,7 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
                 onChange={e => setHorizonText(e.target.value)}
                 placeholder="What does this relationship look like in your full yes life?"
                 rows={2}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.22)', background: '#FAFAF7', ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)', resize: 'vertical', outline: 'none', lineHeight: 1.6, marginBottom: '8px', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.22)', background: '#FAFAF7', ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', resize: 'vertical', outline: 'none', lineHeight: 1.6, marginBottom: '8px', boxSizing: 'border-box' }}
               />
               {horizonText.trim() && step !== 'done' && (
                 <button onClick={() => { setStep('done'); save({ horizonText, currentScore }) }}
@@ -1512,7 +1512,7 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
 }
 
 function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, userId }) {
-  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const body = { fontFamily: "'Lora', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
@@ -1940,7 +1940,7 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
                     <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.08em', color: '#A8721A' }}>{TIER_MAP[horizonScore]}</span>
                   </div>
                 </div>
-                <button onClick={() => setHorizonLocked(false)} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                <button onClick={() => setHorizonLocked(false)} style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                   Edit →
                 </button>
               </div>
@@ -1957,7 +1957,7 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
 // ─── MapNextSteps — end this + bridge to next tools ─────────────────────────
 function MapNextSteps({ compact = false }) {
   const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const body = { fontFamily: "'Lora', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
 
   if (compact) {
@@ -1966,7 +1966,7 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
         <a href="/tools/target-goals" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 18px', display: 'inline-block' }}>
           Start a Target Sprint →
         </a>
-        <a href="/tools/expansion" style={{ ...serif, fontSize: '1rem', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', display: 'inline-block' }}>
+        <a href="/tools/expansion" style={{ ...body, fontSize: '1rem', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', display: 'inline-block' }}>
           Or begin your daily practice →
         </a>
       </div>
@@ -1978,7 +1978,7 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
       <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
         What comes next
       </div>
-      <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '28px' }}>
+      <p style={{ ...body, fontSize: '1.25rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '28px' }}>
         The Map shows you the picture. The next tools help you move.
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1988,7 +1988,7 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
           onMouseLeave={e => e.currentTarget.style.transform = ''}>
           <div>
             <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#A8721A', marginBottom: '4px' }}>Target Sprint</div>
-            <div style={{ ...serif, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)' }}>Three areas. Ninety days. A clear level-up.</div>
+            <div style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)' }}>Three areas. Ninety days. A clear level-up.</div>
           </div>
           <span style={{ ...sc, fontSize: '1.25rem', color: '#A8721A', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>
@@ -1998,7 +1998,7 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
           onMouseLeave={e => e.currentTarget.style.transform = ''}>
           <div>
             <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Horizon Practice</div>
-            <div style={{ ...serif, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)' }}>Build the daily practice that closes the gap.</div>
+            <div style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)' }}>Build the daily practice that closes the gap.</div>
           </div>
           <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>
@@ -2008,7 +2008,7 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
           onMouseLeave={e => e.currentTarget.style.transform = ''}>
           <div>
             <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Purpose Piece</div>
-            <div style={{ ...serif, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)' }}>Find your archetype, domain, and scale of contribution.</div>
+            <div style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)' }}>Find your archetype, domain, and scale of contribution.</div>
           </div>
           <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>
@@ -2266,7 +2266,7 @@ export function MapPage() {
         <div className="tool-header">
           <span className="tool-eyebrow">Horizon Suite · The Map</span>
           <h1 className="tool-title">From where you are<br />to where you want to be.</h1>
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.6 }}>
             An honest picture. Seven domains. Three steps each.
           </p>
         </div>
@@ -2547,7 +2547,7 @@ export function MapPage() {
         {phase === 'results' && mapData && (
           <>
             <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={() => setPhase('mapping')} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer' }}>
+              <button onClick={() => setPhase('mapping')} style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer' }}>
                 ← Go back and edit
               </button>
             </div>

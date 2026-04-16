@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 const TOOLS = [
@@ -291,7 +291,7 @@ export function ToolDrawer({ open, onClose }) {
           <div style={{ marginBottom: '32px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '16px' }}>
               <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase' }}>NextUs</span>
-              <span style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>A life worth living, a future worth building.</span>
+              <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>A life worth living, a future worth building.</span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px' }}>
               {NEXTUS_PLATFORM.map(item => (
@@ -300,7 +300,7 @@ export function ToolDrawer({ open, onClose }) {
                   to={item.path}
                   onClick={onClose}
                   style={{ display: 'block', padding: '16px 18px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.22)', borderRadius: '14px', textDecoration: 'none', transition: 'all 0.18s' }}
-                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)' }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.55)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)' }}
                   onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.22)' }}
                 >
                   <div style={{ marginBottom: '4px' }}>
@@ -309,7 +309,7 @@ export function ToolDrawer({ open, onClose }) {
                   {item.subtitle && (
                     <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>{item.subtitle}</div>
                   )}
-                  <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, margin: 0 }}>{item.desc}</p>
+                  <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, margin: 0 }}>{item.desc}</p>
                 </Link>
               ))}
             </div>

@@ -5,7 +5,7 @@ import { SiteFooter } from '../components/SiteFooter'
 import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold  = '#A8721A'
 const dark  = '#0F1523'
@@ -105,27 +105,27 @@ function OfferCard({ offer, onReach, canReach }) {
           {/* Tags */}
           <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
             <Pill>{typeLabel}</Pill>
-            <Pill color="rgba(15,21,35,0.40)">{modeLabel}</Pill>
-            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)' }}>
+            <Pill color="rgba(15,21,35,0.55)">{modeLabel}</Pill>
+            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
               {returnLabel}
             </span>
           </div>
 
           {/* Title */}
-          <h4 style={{ ...serif, fontSize: '18px', fontWeight: 300, color: dark, marginBottom: '6px', lineHeight: 1.3 }}>
+          <h4 style={{ ...body, fontSize: '18px', fontWeight: 300, color: dark, marginBottom: '6px', lineHeight: 1.3 }}>
             {offer.title}
           </h4>
 
           {/* Mode description */}
           {modeDesc && (
-            <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginBottom: '8px' }}>
+            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
               {modeDesc}
             </p>
           )}
 
           {/* Description */}
           {offer.description && (
-            <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '10px' }}>
+            <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '10px' }}>
               {offer.description}
             </p>
           )}
@@ -136,7 +136,7 @@ function OfferCard({ offer, onReach, canReach }) {
               {offer.domain_ids.map(d => (
                 <span key={d} style={{
                   ...sc, fontSize: '11px', letterSpacing: '0.10em',
-                  color: 'rgba(15,21,35,0.45)',
+                  color: 'rgba(15,21,35,0.55)',
                   background: 'rgba(15,21,35,0.04)',
                   border: '1px solid rgba(15,21,35,0.08)',
                   borderRadius: '4px', padding: '2px 8px',
@@ -150,11 +150,11 @@ function OfferCard({ offer, onReach, canReach }) {
           {/* Availability + willing */}
           <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
             {offer.availability && (
-              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)' }}>
+              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
                 {offer.availability}
               </span>
             )}
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.35)' }}>
+            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
               {willingLabel}
             </span>
             {offer.open_to_adjacent && (
@@ -233,17 +233,17 @@ function ReachOutModal({ offer, contributor, user, onClose, onSuccess }) {
       }}>
         <button
           onClick={onClose}
-          style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px', color: 'rgba(15,21,35,0.40)', lineHeight: 1 }}
+          style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px', color: 'rgba(15,21,35,0.55)', lineHeight: 1 }}
         >×</button>
 
         <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, display: 'block', marginBottom: '8px' }}>
           Reaching out
         </span>
-        <h3 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: dark, lineHeight: 1.2, marginBottom: '6px' }}>
+        <h3 style={{ ...body, fontSize: '22px', fontWeight: 300, color: dark, lineHeight: 1.2, marginBottom: '6px' }}>
           {offer ? offer.title : `Contact ${contributor.display_name || 'this contributor'}`}
         </h3>
         {offer?.description && (
-          <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.50)', lineHeight: 1.6, marginBottom: '20px' }}>
+          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '20px' }}>
             {offer.description.slice(0, 120)}{offer.description.length > 120 ? '…' : ''}
           </p>
         )}
@@ -259,16 +259,16 @@ function ReachOutModal({ offer, contributor, user, onClose, onSuccess }) {
             onChange={e => setMessage(e.target.value)}
             placeholder="Tell them who you are, what you're working on, and why you think their offer is relevant to your work. Be specific — specific enquiries get responses."
             rows={5}
-            style={{ ...serif, fontSize: '14px', color: dark, padding: '11px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }}
+            style={{ ...body, fontSize: '14px', color: dark, padding: '11px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }}
           />
         </div>
 
-        <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.45)', lineHeight: 1.6, marginBottom: '20px' }}>
+        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '20px' }}>
           This message will be sent to the contributor. They decide whether to respond.
         </p>
 
         {error && (
-          <p style={{ ...serif, fontSize: '14px', color: '#8A3030', marginBottom: '16px' }}>{error}</p>
+          <p style={{ ...body, fontSize: '14px', color: '#8A3030', marginBottom: '16px' }}>{error}</p>
         )}
 
         <button
@@ -298,10 +298,10 @@ function AuthReachModal({ onClose }) {
       style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.60)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
     >
       <div style={{ background: parch, border: '1.5px solid rgba(200,146,42,0.40)', borderRadius: '14px', padding: '36px', maxWidth: '400px', width: '100%', position: 'relative' }}>
-        <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px', color: 'rgba(15,21,35,0.40)', lineHeight: 1 }}>×</button>
+        <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px', color: 'rgba(15,21,35,0.55)', lineHeight: 1 }}>×</button>
         <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, display: 'block', marginBottom: '12px' }}>Sign in to reach out</span>
-        <h3 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: dark, marginBottom: '12px' }}>Create an account to contact contributors.</h3>
-        <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.7, marginBottom: '24px' }}>
+        <h3 style={{ ...body, fontSize: '22px', fontWeight: 300, color: dark, marginBottom: '12px' }}>Create an account to contact contributors.</h3>
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.7, marginBottom: '24px' }}>
           Messages are tracked so contributors can see who's reaching out and why. An account gives you a presence on the platform too.
         </p>
         <button
@@ -325,8 +325,8 @@ function ReachOutSuccess({ onClose }) {
         <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(42,107,58,0.10)', border: '1.5px solid rgba(42,107,58,0.40)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
           <span style={{ color: '#2A6B3A', fontSize: '22px' }}>✓</span>
         </div>
-        <h3 style={{ ...serif, fontSize: '24px', fontWeight: 300, color: dark, marginBottom: '12px' }}>Message sent.</h3>
-        <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '28px' }}>
+        <h3 style={{ ...body, fontSize: '24px', fontWeight: 300, color: dark, marginBottom: '12px' }}>Message sent.</h3>
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '28px' }}>
           The contributor will see your message and decide whether to respond. Good luck.
         </p>
         <button
@@ -405,7 +405,7 @@ export function NextUsContributorPage() {
       <div style={{ background: parch, minHeight: '100vh' }}>
         <Nav activePath="nextus" />
         <div style={{ maxWidth: '740px', margin: '0 auto', padding: '120px 40px' }}>
-          <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.45)' }}>Loading…</p>
+          <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.55)' }}>Loading…</p>
         </div>
       </div>
     )
@@ -460,7 +460,7 @@ export function NextUsContributorPage() {
         {/* Back */}
         <button
           onClick={() => navigate('/nextus/contributors')}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '36px', padding: 0 }}
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '36px', padding: 0 }}
         >
           ← All contributors
         </button>
@@ -468,7 +468,7 @@ export function NextUsContributorPage() {
         {/* Owner banner */}
         {isOwner && (
           <div style={{ background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '12px', padding: '14px 20px', marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-            <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.65)', margin: 0 }}>
+            <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.65)', margin: 0 }}>
               This is your contributor profile. Manage your offers from your main profile page.
             </p>
             <a href="/profile" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, textDecoration: 'none' }}>
@@ -481,7 +481,7 @@ export function NextUsContributorPage() {
         {isDormant && !isOwner && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(15,21,35,0.25)' }} />
-            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.35)' }}>
+            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
               Last active {dormantDays} days ago
             </span>
           </div>
@@ -490,19 +490,19 @@ export function NextUsContributorPage() {
         {/* Meta pills */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '14px' }}>
           {archetype   && <Pill>{archetype}</Pill>}
-          {domainLabel && <Pill color="rgba(15,21,35,0.40)">{domainLabel}</Pill>}
-          {scale       && <Pill color="rgba(15,21,35,0.35)">{scale}</Pill>}
+          {domainLabel && <Pill color="rgba(15,21,35,0.55)">{domainLabel}</Pill>}
+          {scale       && <Pill color="rgba(15,21,35,0.55)">{scale}</Pill>}
         </div>
 
         {/* Name */}
-        <h1 style={{ ...serif, fontSize: 'clamp(28px,4.5vw,46px)', fontWeight: 300, color: dark, lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '20px' }}>
+        <h1 style={{ ...body, fontSize: 'clamp(28px,4.5vw,46px)', fontWeight: 300, color: dark, lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '20px' }}>
           {displayName}
         </h1>
 
         {/* Civilisational statement */}
         {statement && (
           <div style={{ borderLeft: '2px solid rgba(200,146,42,0.30)', paddingLeft: '20px', marginBottom: '32px' }}>
-            <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.80)', lineHeight: 1.75, margin: 0 }}>
+            <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.80)', lineHeight: 1.75, margin: 0 }}>
               {statement}
             </p>
           </div>
@@ -514,7 +514,7 @@ export function NextUsContributorPage() {
             <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
               {domainLabel} · Horizon Goal
             </div>
-            <p style={{ ...serif, fontSize: '14px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, margin: 0 }}>
+            <p style={{ ...body, fontSize: '14px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, margin: 0 }}>
               {horizonGoal}
             </p>
           </div>
@@ -524,10 +524,10 @@ export function NextUsContributorPage() {
         {offers.length > 0 && (
           <>
             <Divider />
-            <h2 style={{ ...serif, fontSize: 'clamp(20px,2.8vw,30px)', fontWeight: 300, color: dark, marginBottom: '10px' }}>
+            <h2 style={{ ...body, fontSize: 'clamp(20px,2.8vw,30px)', fontWeight: 300, color: dark, marginBottom: '10px' }}>
               What they're offering.
             </h2>
-            <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)', marginBottom: '28px', lineHeight: 1.65, maxWidth: '500px' }}>
+            <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', marginBottom: '28px', lineHeight: 1.65, maxWidth: '500px' }}>
               {displayName} has placed the following on the table for the ecosystem.
             </p>
             {offers.map(o => (
@@ -544,7 +544,7 @@ export function NextUsContributorPage() {
         {offers.length === 0 && !isOwner && (
           <>
             <Divider />
-            <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.7 }}>
+            <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
               No active offers listed yet.
             </p>
           </>
@@ -554,10 +554,10 @@ export function NextUsContributorPage() {
         {contributions.length > 0 && (
           <>
             <Divider />
-            <h2 style={{ ...serif, fontSize: 'clamp(20px,2.8vw,30px)', fontWeight: 300, color: dark, marginBottom: '10px' }}>
+            <h2 style={{ ...body, fontSize: 'clamp(20px,2.8vw,30px)', fontWeight: 300, color: dark, marginBottom: '10px' }}>
               Contribution record.
             </h2>
-            <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)', marginBottom: '28px', lineHeight: 1.65, maxWidth: '500px' }}>
+            <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', marginBottom: '28px', lineHeight: 1.65, maxWidth: '500px' }}>
               Confirmed contributions — loops that closed.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -575,7 +575,7 @@ export function NextUsContributorPage() {
                             {CONTRIB_TYPE_LABEL[c.contribution_type] || c.contribution_type}
                           </span>
                           {actorDomain && (
-                            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)' }}>
+                            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
                               {DOMAIN_LABEL[actorDomain] || actorDomain}
                             </span>
                           )}
@@ -586,18 +586,18 @@ export function NextUsContributorPage() {
                         {c.nextus_actors?.name && (
                           <a
                             href={`/nextus/actors/${c.nextus_actors.id}`}
-                            style={{ ...serif, fontSize: '16px', fontWeight: 300, color: dark, textDecoration: 'none' }}
+                            style={{ ...body, fontSize: '16px', fontWeight: 300, color: dark, textDecoration: 'none' }}
                           >
                             {c.nextus_actors.name}
                           </a>
                         )}
                         {c.description && (
-                          <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginTop: '4px' }}>
+                          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginTop: '4px' }}>
                             {c.description.slice(0, 120)}{c.description.length > 120 ? '…' : ''}
                           </p>
                         )}
                       </div>
-                      <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.35)', flexShrink: 0 }}>
+                      <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', flexShrink: 0 }}>
                         {new Date(c.created_at).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}
                       </span>
                     </div>
@@ -612,7 +612,7 @@ export function NextUsContributorPage() {
         {contributions.length === 0 && offers.length === 0 && !isOwner && (
           <>
             <Divider />
-            <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.7 }}>
+            <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
               No contributions recorded yet.
             </p>
           </>
@@ -622,13 +622,13 @@ export function NextUsContributorPage() {
         <div style={{ marginTop: '56px', paddingTop: '32px', borderTop: '1px solid rgba(200,146,42,0.15)', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
           <button
             onClick={() => navigate('/nextus/contributors')}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
           >
             ← All contributors
           </button>
           <button
             onClick={() => navigate('/nextus/actors')}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
           >
             Browse orgs →
           </button>

@@ -4,7 +4,7 @@ import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import { supabase } from '../hooks/useSupabase'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold  = '#A8721A'
 const dark  = '#0F1523'
@@ -55,27 +55,27 @@ function Label({ children, required }) {
 }
 
 function Hint({ children }) {
-  return <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.45)', marginTop: '5px', lineHeight: 1.5 }}>{children}</p>
+  return <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '5px', lineHeight: 1.5 }}>{children}</p>
 }
 
 function TextInput({ value, onChange, placeholder, type = 'text' }) {
   return (
     <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-      style={{ ...serif, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }} />
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }} />
   )
 }
 
 function TextArea({ value, onChange, placeholder, rows = 4 }) {
   return (
     <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows}
-      style={{ ...serif, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }} />
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }} />
   )
 }
 
 function SelectInput({ value, onChange, options }) {
   return (
     <select value={value} onChange={e => onChange(e.target.value)}
-      style={{ ...serif, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}>
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}>
       {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
   )
@@ -154,14 +154,14 @@ export function NextUsNominatePage() {
           <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(42,107,58,0.10)', border: '1.5px solid rgba(42,107,58,0.40)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px' }}>
             <span style={{ color: '#2A6B3A', fontSize: '22px' }}>✓</span>
           </div>
-          <h2 style={{ ...serif, fontSize: '30px', fontWeight: 300, color: dark, marginBottom: '14px' }}>
+          <h2 style={{ ...body, fontSize: '30px', fontWeight: 300, color: dark, marginBottom: '14px' }}>
             Nomination received.
           </h2>
-          <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '12px', maxWidth: '420px', margin: '0 auto 12px' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '12px', maxWidth: '420px', margin: '0 auto 12px' }}>
             The profile is in the review queue. We'll place it on the map once it meets the criteria and be in touch at the email you provided.
           </p>
           {nominatedId && (
-            <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.50)', lineHeight: 1.65, marginBottom: '32px', maxWidth: '420px', margin: '0 auto 32px' }}>
+            <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '32px', maxWidth: '420px', margin: '0 auto 32px' }}>
               If this is your organisation, you can claim and manage the profile now.
             </p>
           )}
@@ -177,7 +177,7 @@ export function NextUsNominatePage() {
               Nominate another
             </button>
             <button onClick={() => navigate('/nextus/actors')}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.20)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.55)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}>
               View actors
             </button>
           </div>
@@ -199,7 +199,7 @@ export function NextUsNominatePage() {
       <div className="nominate-main" style={{ maxWidth: '600px', margin: '0 auto', padding: '80px 40px 120px' }}>
 
         <button onClick={() => navigate('/nextus/actors')} style={{
-          ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)',
+          ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)',
           background: 'none', border: 'none', cursor: 'pointer', marginBottom: '32px', padding: 0,
         }}>
           ← Orgs in the Field
@@ -208,16 +208,16 @@ export function NextUsNominatePage() {
         <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: gold, display: 'block', marginBottom: '12px' }}>
           NextUs · Nominate
         </span>
-        <h1 style={{ ...serif, fontSize: 'clamp(28px,4vw,42px)', fontWeight: 300, color: dark, lineHeight: 1.1, marginBottom: '14px' }}>
+        <h1 style={{ ...body, fontSize: 'clamp(28px,4vw,42px)', fontWeight: 300, color: dark, lineHeight: 1.1, marginBottom: '14px' }}>
           Know someone doing the work?
         </h1>
-        <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(168,114,26,0.75)', lineHeight: 1.6, marginBottom: '14px' }}>
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(168,114,26,0.75)', lineHeight: 1.6, marginBottom: '14px' }}>
           Nominating your own organisation? That's welcome — fill it in as the submitter.
         </p>
-        <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '16px', maxWidth: '480px' }}>
+        <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '16px', maxWidth: '480px' }}>
           The most important actors on this map won't be found by algorithm. If you know an organisation or project doing genuine work toward a Horizon Goal — place them here.
         </p>
-        <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.45)', lineHeight: 1.65, marginBottom: '48px', maxWidth: '480px' }}>
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '48px', maxWidth: '480px' }}>
           Nominations are reviewed before going live. The criteria: is the work genuinely aimed at the Horizon Goal for their domain and scale? We're not looking for perfection — we're looking for direction and integrity.
         </p>
 
@@ -258,7 +258,7 @@ export function NextUsNominatePage() {
             {selectedGoal && (
               <div style={{ marginTop: '10px', borderLeft: '2px solid rgba(200,146,42,0.22)', paddingLeft: '14px' }}>
                 <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Horizon Goal</p>
-                <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, margin: 0 }}>{selectedGoal}</p>
+                <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, margin: 0 }}>{selectedGoal}</p>
               </div>
             )}
           </div>
@@ -278,7 +278,7 @@ export function NextUsNominatePage() {
           <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.15)', margin: '32px 0' }} />
 
           {/* Nominator */}
-          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.45)', marginBottom: '16px' }}>About you</p>
+          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '16px' }}>About you</p>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
             <div>
@@ -295,7 +295,7 @@ export function NextUsNominatePage() {
           {/* Error */}
           {error && (
             <div style={{ background: 'rgba(138,48,48,0.05)', border: '1px solid rgba(138,48,48,0.28)', borderRadius: '8px', padding: '12px 16px', marginBottom: '20px' }}>
-              <p style={{ ...serif, fontSize: '15px', color: '#8A3030', margin: 0 }}>{error}</p>
+              <p style={{ ...body, fontSize: '15px', color: '#8A3030', margin: 0 }}>{error}</p>
             </div>
           )}
 
@@ -312,7 +312,7 @@ export function NextUsNominatePage() {
               {saving ? 'Submitting...' : 'Submit nomination →'}
             </button>
             <button type="button" onClick={() => navigate('/nextus/actors')}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer' }}>
               Cancel
             </button>
           </div>

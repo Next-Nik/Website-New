@@ -120,7 +120,7 @@ export function Nav({ activePath }) {
           <div className="nav-mobile-section">
             <Link to="/life-os" onClick={closeMobile} className="nav-mobile-link nav-mobile-link--heading">
               <span>Horizon Suite</span>
-              <span style={{ ...serif, fontSize: '14px',
+              <span style={{ ...body, fontSize: '14px',
                 color: 'rgba(15,21,35,0.55)', fontWeight: 400, letterSpacing: 0 }}>
                 Tools for your life
               </span>

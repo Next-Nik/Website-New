@@ -4,7 +4,7 @@ import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import { supabase } from '../hooks/useSupabase'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold  = '#A8721A'
 const dark  = '#0F1523'
@@ -24,7 +24,7 @@ const STATUS = {
   thriving:   { label: 'Thriving',   color: '#2A6B3A', bg: 'rgba(42,107,58,0.07)',   border: 'rgba(42,107,58,0.25)',   desc: 'Goals set, actors present, momentum visible.' },
   underway:   { label: 'Underway',   color: '#2A4A8A', bg: 'rgba(42,74,138,0.07)',   border: 'rgba(42,74,138,0.25)',   desc: 'Moving, but room to grow.' },
   underloved: { label: 'Underloved', color: '#8A6B2A', bg: 'rgba(138,107,42,0.07)',  border: 'rgba(138,107,42,0.25)',  desc: 'The quiet crisis. Present but underpowered.' },
-  unmapped:   { label: 'Unmapped',   color: 'rgba(15,21,35,0.45)', bg: 'rgba(15,21,35,0.03)', border: 'rgba(15,21,35,0.12)', desc: 'No goals set, no actors registered. An opportunity and a need.' },
+  unmapped:   { label: 'Unmapped',   color: 'rgba(15,21,35,0.55)', bg: 'rgba(15,21,35,0.55)', border: 'rgba(15,21,35,0.55)', desc: 'No goals set, no actors registered. An opportunity and a need.' },
 }
 
 function computeStatus(actorCount, goalSet) {
@@ -89,10 +89,10 @@ function DomainCard({ domain, goal, actors, status, focusSlug, focusName }) {
       {/* Header */}
       <div className="domain-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', gap: '16px' }}>
         <div>
-          <h3 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: dark, marginBottom: '4px' }}>
+          <h3 style={{ ...body, fontSize: '22px', fontWeight: 300, color: dark, marginBottom: '4px' }}>
             {domain.label}
           </h3>
-          <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.40)', lineHeight: 1.5, maxWidth: '480px' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, maxWidth: '480px' }}>
             {goal || domain.globalGoal}
           </p>
           {goal && (
@@ -105,14 +105,14 @@ function DomainCard({ domain, goal, actors, status, focusSlug, focusName }) {
       </div>
 
       {/* Status description */}
-      <p style={{ ...serif, fontSize: '16px', color: cfg.color, marginBottom: '14px', fontStyle: 'italic' }}>
+      <p style={{ ...body, fontSize: '16px', color: cfg.color, marginBottom: '14px' }}>
         {cfg.desc}
       </p>
 
       {/* Actors */}
       {actors.length > 0 ? (
         <div>
-          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginBottom: '8px' }}>
+          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
             In the Field — {actors.length} actor{actors.length !== 1 ? 's' : ''}
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
@@ -121,7 +121,7 @@ function DomainCard({ domain, goal, actors, status, focusSlug, focusName }) {
                 key={a.id}
                 to={`/nextus/actors/${a.id}`}
                 style={{
-                  ...serif, fontSize: '16px', color: a.winning ? gold : 'rgba(15,21,35,0.55)',
+                  ...body, fontSize: '16px', color: a.winning ? gold : 'rgba(15,21,35,0.55)',
                   background: a.winning ? 'rgba(200,146,42,0.08)' : 'rgba(15,21,35,0.04)',
                   border: `1px solid ${a.winning ? 'rgba(200,146,42,0.30)' : 'rgba(15,21,35,0.10)'}`,
                   borderRadius: '6px', padding: '4px 12px',
@@ -137,7 +137,7 @@ function DomainCard({ domain, goal, actors, status, focusSlug, focusName }) {
           {actors.length > 3 && (
             <button onClick={() => setExpanded(e => !e)} style={{
               ...sc, fontSize: '12px', letterSpacing: '0.12em',
-              color: 'rgba(15,21,35,0.40)', background: 'none', border: 'none',
+              color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none',
               cursor: 'pointer', padding: 0,
             }}>
               {expanded ? 'Show fewer ↑' : `Show all ${actors.length} →`}
@@ -149,7 +149,7 @@ function DomainCard({ domain, goal, actors, status, focusSlug, focusName }) {
           background: 'rgba(15,21,35,0.02)', border: '1px dashed rgba(15,21,35,0.15)',
           borderRadius: '8px', padding: '14px 16px',
         }}>
-          <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.45)', margin: 0 }}>
+          <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', margin: 0 }}>
             No actors registered in {focusName} for this domain.
           </p>
           <Link to={`/nextus/actors?domain=${domain.id}`} style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold, textDecoration: 'none', marginTop: '6px', display: 'inline-block' }}>
@@ -179,7 +179,7 @@ function SummaryStrip({ domainData }) {
             background: cfg.bg, border: `1.5px solid ${cfg.border}`,
             borderRadius: '12px', padding: '16px 18px', textAlign: 'center',
           }}>
-            <div style={{ ...serif, fontSize: '32px', color: cfg.color, lineHeight: 1, marginBottom: '4px' }}>{count}</div>
+            <div style={{ ...body, fontSize: '32px', color: cfg.color, lineHeight: 1, marginBottom: '4px' }}>{count}</div>
             <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: cfg.color }}>{cfg.label}</div>
           </div>
         )
@@ -276,7 +276,7 @@ export function NextUsFocusPage() {
       <div style={{ background: parch, minHeight: '100vh' }}>
         <Nav activePath="nextus" />
         <div style={{ maxWidth: '860px', margin: '0 auto', padding: '120px 40px' }}>
-          <p style={{ ...serif, fontSize: '18px', color: 'rgba(15,21,35,0.40)' }}>Loading…</p>
+          <p style={{ ...body, fontSize: '18px', color: 'rgba(15,21,35,0.55)' }}>Loading…</p>
         </div>
       </div>
     )
@@ -287,7 +287,7 @@ export function NextUsFocusPage() {
       <div style={{ background: parch, minHeight: '100vh' }}>
         <Nav activePath="nextus" />
         <div style={{ maxWidth: '860px', margin: '0 auto', padding: '120px 40px' }}>
-          <p style={{ ...serif, fontSize: '18px', color: 'rgba(15,21,35,0.55)' }}>{error || 'Something went wrong.'}</p>
+          <p style={{ ...body, fontSize: '18px', color: 'rgba(15,21,35,0.55)' }}>{error || 'Something went wrong.'}</p>
           <button onClick={() => navigate(-1)} style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: gold, background: 'none', border: 'none', cursor: 'pointer', marginTop: '16px' }}>
             ← Go back
           </button>
@@ -320,9 +320,9 @@ export function NextUsFocusPage() {
               <span key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 {i > 0 && <span style={{ color: 'rgba(200,146,42,0.40)', fontSize: '14px' }}>›</span>}
                 {i < ancestors.length - 1 ? (
-                  <Link to={`/nextus/focus/${a.slug}`} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', textDecoration: 'none' }}
+                  <Link to={`/nextus/focus/${a.slug}`} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}
                     onMouseEnter={e => e.currentTarget.style.color = gold}
-                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(15,21,35,0.45)'}
+                    onMouseLeave={e => e.currentTarget.style.color = 'rgba(15,21,35,0.55)'}
                   >
                     {a.name}
                   </Link>
@@ -338,17 +338,17 @@ export function NextUsFocusPage() {
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, display: 'block', marginBottom: '8px' }}>
           {TYPE_LABEL[focus.type] || focus.type}
         </span>
-        <h1 style={{ ...serif, fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 300, color: dark, lineHeight: 1.1, marginBottom: '16px' }}>
+        <h1 style={{ ...body, fontSize: 'clamp(32px, 4.5vw, 52px)', fontWeight: 300, color: dark, lineHeight: 1.1, marginBottom: '16px' }}>
           {focus.name}
         </h1>
 
         {focus.description && (
-          <p style={{ ...serif, fontSize: '18px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '16px', maxWidth: '600px' }}>
+          <p style={{ ...body, fontSize: '18px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '16px', maxWidth: '600px' }}>
             {focus.description}
           </p>
         )}
 
-        <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.45)', marginBottom: '40px' }}>
+        <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', marginBottom: '40px' }}>
           {totalActors} actor{totalActors !== 1 ? 's' : ''} registered across all domains
         </p>
 
@@ -373,7 +373,7 @@ export function NextUsFocusPage() {
         {/* Child focuses */}
         {children.length > 0 && (
           <div style={{ marginBottom: '48px' }}>
-            <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.45)', marginBottom: '16px' }}>
+            <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', marginBottom: '16px' }}>
               Within {focus.name}
             </p>
             <div className="child-focuses" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
@@ -382,7 +382,7 @@ export function NextUsFocusPage() {
                   key={c.id}
                   to={`/nextus/focus/${c.slug}`}
                   style={{
-                    ...serif, fontSize: '16px', color: dark,
+                    ...body, fontSize: '16px', color: dark,
                     background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.22)',
                     borderRadius: '40px', padding: '8px 20px',
                     textDecoration: 'none', transition: 'border-color 0.15s',
@@ -400,7 +400,7 @@ export function NextUsFocusPage() {
         {/* Back nav */}
         <button onClick={() => navigate(-1)} style={{
           ...sc, fontSize: '13px', letterSpacing: '0.14em',
-          color: 'rgba(15,21,35,0.40)', background: 'none', border: 'none',
+          color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none',
           cursor: 'pointer', padding: 0,
         }}>
           ← Back

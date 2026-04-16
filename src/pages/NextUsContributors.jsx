@@ -4,7 +4,7 @@ import { Nav } from '../components/Nav'
 import { supabase } from '../hooks/useSupabase'
 import { SiteFooter } from '../components/SiteFooter'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold  = '#A8721A'
 const dark  = '#0F1523'
@@ -121,7 +121,7 @@ function FAQ({ item }) {
       onClick={() => setOpen(o => !o)}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
-        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: dark, lineHeight: 1.4, margin: 0 }}>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: dark, lineHeight: 1.4, margin: 0 }}>
           {item.q}
         </p>
         <span style={{ ...sc, fontSize: '18px', color: gold, flexShrink: 0, marginTop: '2px', lineHeight: 1 }}>
@@ -129,7 +129,7 @@ function FAQ({ item }) {
         </span>
       </div>
       {open && (
-        <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.8, marginTop: '14px', marginBottom: 0, maxWidth: '580px' }}>
+        <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.8, marginTop: '14px', marginBottom: 0, maxWidth: '580px' }}>
           {item.a}
         </p>
       )}
@@ -201,12 +201,12 @@ export function NextUsContributorsPage() {
             <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: gold, marginBottom: '12px' }}>
               YOUR PURPOSE PIECE · PLACED
             </div>
-            <h2 style={{ ...serif, fontSize: 'clamp(22px,3.5vw,32px)', fontWeight: 300, color: dark, lineHeight: 1.2, marginBottom: '10px' }}>
+            <h2 style={{ ...body, fontSize: 'clamp(22px,3.5vw,32px)', fontWeight: 300, color: dark, lineHeight: 1.2, marginBottom: '10px' }}>
               {ppArchetype
                 ? `You're here as a ${ppArchetype}${ppDomain ? ` in ${domainLabel}` : ''}.`
                 : "You've arrived with your coordinates."}
             </h2>
-            <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '24px', maxWidth: '560px' }}>
+            <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '24px', maxWidth: '560px' }}>
               {ppArchetype
                 ? `Your instinct is ${archetypeDesc}. The organisations below are working in ${domainLabel} — and some of them need exactly what you carry.`
                 : `The organisations below are working in your domain. Some of them have open needs that align with what you carry.`}
@@ -214,14 +214,14 @@ export function NextUsContributorsPage() {
 
             {/* Match results */}
             {matchLoading && (
-              <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)' }}>
+              <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
                 Reading the map for you…
               </p>
             )}
 
             {matchDone && matches.length > 0 && (
               <div>
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.45)', marginBottom: '14px' }}>
+                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', marginBottom: '14px' }}>
                   WHO COULD USE YOU
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
@@ -234,24 +234,24 @@ export function NextUsContributorsPage() {
                       onMouseLeave={e => e.currentTarget.style.borderLeftColor = 'rgba(200,146,42,0.55)'}
                     >
                       <div>
-                        <div style={{ ...serif, fontSize: '16px', fontWeight: 400, color: dark, marginBottom: '4px' }}>{m.name}</div>
+                        <div style={{ ...body, fontSize: '16px', fontWeight: 400, color: dark, marginBottom: '4px' }}>{m.name}</div>
                         {m.best_need?.title && (
                           <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold }}>
                             Open need: {m.best_need.title}
                           </div>
                         )}
                         {m.description && (
-                          <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginTop: '4px' }}>
+                          <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginTop: '4px' }}>
                             {m.description.length > 120 ? m.description.slice(0, 120) + '…' : m.description}
                           </div>
                         )}
                       </div>
-                      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.35)', flexShrink: 0 }}>View →</div>
+                      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', flexShrink: 0 }}>View →</div>
                     </div>
                   ))}
                 </div>
                 {matches.length > 4 && (
-                  <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)' }}>
+                  <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
                     + {matches.length - 4} more in your domain
                   </p>
                 )}
@@ -260,10 +260,10 @@ export function NextUsContributorsPage() {
 
             {matchDone && matches.length === 0 && (
               <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '8px', padding: '18px 20px' }}>
-                <p style={{ ...serif, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, margin: '0 0 8px' }}>
+                <p style={{ ...body, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, margin: '0 0 8px' }}>
                   The map is being populated. You're among the first to arrive in {domainLabel}.
                 </p>
-                <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', margin: 0 }}>
+                <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: 0 }}>
                   When organisations working here post their needs, you'll be exactly who they find.
                 </p>
               </div>
@@ -296,14 +296,14 @@ export function NextUsContributorsPage() {
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: gold, display: 'block', marginBottom: '16px' }}>
           NextUs · Contributors
         </span>
-        <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: dark, lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '24px' }}>
+        <h1 style={{ ...body, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: dark, lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '24px' }}>
           You have something<br />
-          <em style={{ fontStyle: 'italic', color: gold }}>the world needs.</em>
+          <em style={{, color: gold }}>the world needs.</em>
         </h1>
-        <p style={{ ...serif, fontSize: '19px', fontWeight: 300, color: dark, lineHeight: 1.8, marginBottom: '16px', maxWidth: '560px' }}>
+        <p style={{ ...body, fontSize: '19px', fontWeight: 300, color: dark, lineHeight: 1.8, marginBottom: '16px', maxWidth: '560px' }}>
           Not just your profession. Your craft, your capacity, your relational depth, your creative work. The full range of what you bring.
         </p>
-        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '48px', maxWidth: '500px' }}>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '48px', maxWidth: '500px' }}>
           NextUs is where that offer meets the organisations who need it — across seven civilisational domains, at every scale.
         </p>
         <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
@@ -328,7 +328,7 @@ export function NextUsContributorsPage() {
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: gold, display: 'block', marginBottom: '16px' }}>
             Is this for you?
           </span>
-          <h2 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,42px)', fontWeight: 300, color: dark, lineHeight: 1.12, marginBottom: '24px' }}>
+          <h2 style={{ ...body, fontSize: 'clamp(26px,3.5vw,42px)', fontWeight: 300, color: dark, lineHeight: 1.12, marginBottom: '24px' }}>
             You don't need a title.<br />You need a genuine offer.
           </h2>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '12px', marginBottom: '40px' }}>
@@ -353,7 +353,7 @@ export function NextUsContributorsPage() {
                 }}
               >
                 <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: gold, flexShrink: 0, marginTop: '8px' }} />
-                <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.75)', lineHeight: 1.65, margin: 0 }}>
+                <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.75)', lineHeight: 1.65, margin: 0 }}>
                   {item}
                 </p>
               </div>
@@ -368,10 +368,10 @@ export function NextUsContributorsPage() {
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: gold, display: 'block', marginBottom: '16px' }}>
             Four modes of contribution
           </span>
-          <h2 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.12, marginBottom: '16px' }}>
+          <h2 style={{ ...body, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.12, marginBottom: '16px' }}>
             The full breadth of what moves things forward.
           </h2>
-          <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '48px', maxWidth: '540px' }}>
+          <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '48px', maxWidth: '540px' }}>
             Civilisational change is not only built by developers and funders. The most powerful contributions are often expressive, relational, or intellectual — work that shifts how people see, feel, and move.
           </p>
 
@@ -381,12 +381,12 @@ export function NextUsContributorsPage() {
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '10px' }}>
                   {t.type}
                 </span>
-                <p style={{ ...serif, fontSize: '16px', color: dark, lineHeight: 1.75, marginBottom: '16px' }}>
+                <p style={{ ...body, fontSize: '16px', color: dark, lineHeight: 1.75, marginBottom: '16px' }}>
                   {t.desc}
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   {t.examples.map(e => (
-                    <span key={e} style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.45)' }}>
+                    <span key={e} style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
                       {e}
                     </span>
                   ))}
@@ -402,7 +402,7 @@ export function NextUsContributorsPage() {
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: gold, display: 'block', marginBottom: '16px' }}>
           What the platform gives you
         </span>
-        <h2 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.12, marginBottom: '48px' }}>
+        <h2 style={{ ...body, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.12, marginBottom: '48px' }}>
           More than a directory entry.
         </h2>
 
@@ -422,10 +422,10 @@ export function NextUsContributorsPage() {
                 {String(i + 1).padStart(2, '0')}
               </span>
               <div style={{ maxWidth: '560px' }}>
-                <p style={{ ...serif, fontSize: '19px', fontWeight: 300, color: dark, marginBottom: '8px', lineHeight: 1.3 }}>
+                <p style={{ ...body, fontSize: '19px', fontWeight: 300, color: dark, marginBottom: '8px', lineHeight: 1.3 }}>
                   {item.title}
                 </p>
-                <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.62)', lineHeight: 1.8, margin: 0 }}>
+                <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.62)', lineHeight: 1.8, margin: 0 }}>
                   {item.body}
                 </p>
               </div>
@@ -440,10 +440,10 @@ export function NextUsContributorsPage() {
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: gold, display: 'block', marginBottom: '16px' }}>
             You set the terms
           </span>
-          <h2 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.12, marginBottom: '16px' }}>
+          <h2 style={{ ...body, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.12, marginBottom: '16px' }}>
             What are you looking for in return?
           </h2>
-          <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '520px' }}>
+          <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '520px' }}>
             You choose. Nothing is assumed. Each offer carries its own terms, and you can have multiple offers with different return types.
           </p>
 
@@ -453,7 +453,7 @@ export function NextUsContributorsPage() {
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, display: 'block', marginBottom: '8px' }}>
                   {r.label}
                 </span>
-                <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, margin: 0 }}>
+                <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, margin: 0 }}>
                   {r.desc}
                 </p>
               </div>
@@ -461,7 +461,7 @@ export function NextUsContributorsPage() {
           </div>
 
           <div style={{ marginTop: '32px', paddingTop: '28px', borderTop: '1px solid rgba(200,146,42,0.15)', maxWidth: '520px' }}>
-            <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.75, margin: 0 }}>
+            <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, margin: 0 }}>
               The Reciprocal option is philosophically distinct. It means: I give freely to the ecosystem when the organisation is also giving back into it — not necessarily to me. It encodes the Honorable Harvest ethic structurally. Take only what you need. Give back more than you take.
             </p>
           </div>
@@ -473,7 +473,7 @@ export function NextUsContributorsPage() {
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: gold, display: 'block', marginBottom: '16px' }}>
           How to start
         </span>
-        <h2 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.12, marginBottom: '48px' }}>
+        <h2 style={{ ...body, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.12, marginBottom: '48px' }}>
           Three steps. No friction.
         </h2>
 
@@ -517,10 +517,10 @@ export function NextUsContributorsPage() {
               {step.n}
             </span>
             <div style={{ flex: 1, maxWidth: '560px' }}>
-              <p style={{ ...serif, fontSize: '20px', fontWeight: 300, color: dark, marginBottom: '8px', lineHeight: 1.2 }}>
+              <p style={{ ...body, fontSize: '20px', fontWeight: 300, color: dark, marginBottom: '8px', lineHeight: 1.2 }}>
                 {step.title}
               </p>
-              <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.62)', lineHeight: 1.8, marginBottom: '20px' }}>
+              <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.62)', lineHeight: 1.8, marginBottom: '20px' }}>
                 {step.body}
               </p>
               <a
@@ -551,7 +551,7 @@ export function NextUsContributorsPage() {
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: gold, display: 'block', marginBottom: '16px' }}>
             Questions
           </span>
-          <h2 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.12, marginBottom: '40px' }}>
+          <h2 style={{ ...body, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.12, marginBottom: '40px' }}>
             Things people ask.
           </h2>
           <div style={{ maxWidth: '640px' }}>
@@ -566,10 +566,10 @@ export function NextUsContributorsPage() {
       <section className="contrib-dark" style={{ background: dark, borderTop: '1.5px solid rgba(200,146,42,0.78)', padding: '96px 40px', textAlign: 'center' }}>
         <div style={{ maxWidth: '560px', margin: '0 auto' }}>
           <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.4, margin: '0 auto 40px' }} />
-          <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: 'rgba(255,255,255,0.92)', lineHeight: 1.1, marginBottom: '16px' }}>
+          <h2 style={{ ...body, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: 'rgba(255,255,255,0.92)', lineHeight: 1.1, marginBottom: '16px' }}>
             Your offer belongs somewhere.
           </h2>
-          <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(255,255,255,0.55)', lineHeight: 1.75, marginBottom: '48px' }}>
+          <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(255,255,255,0.55)', lineHeight: 1.75, marginBottom: '48px' }}>
             Find out where. Purpose Piece maps your contribution archetype to a specific domain and scale. It takes fifteen minutes and it changes how you see what you have to give.
           </p>
           <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>

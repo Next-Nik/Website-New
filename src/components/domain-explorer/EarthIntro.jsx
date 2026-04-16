@@ -106,7 +106,7 @@ export function EarthIntro({ onEntered }) {
         {labelAlpha > 0 && (
           <span style={{
             position: 'relative', zIndex: 2,
-            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontFamily: "'Lora', Georgia, serif",
             fontSize: `${Math.max(8, globeSize * 0.17)}px`,
             fontWeight: 300, color: '#A8721A',
             textAlign: 'center', lineHeight: 1.3,
@@ -128,7 +128,7 @@ export function EarthIntro({ onEntered }) {
         pointerEvents: 'none',
       }}>
         <p style={{
-          fontFamily: "'Cormorant Garamond', Georgia, serif",
+          fontFamily: "'Lora', Georgia, serif",
           fontSize: 'clamp(14px,2.8vw,19px)', fontWeight: 300,
           color: 'rgba(255,255,255,1)',
           lineHeight: 1.8, letterSpacing: '0.04em',
@@ -148,7 +148,7 @@ export function EarthIntro({ onEntered }) {
           </div>
           <span style={{
             fontFamily: "'Cormorant SC', Georgia, serif",
-            fontSize: '12px', letterSpacing: '0.22em', color: 'rgba(200,146,42,0.60)',
+            fontSize: '13px', letterSpacing: '0.22em', color: 'rgba(200,146,42,0.60)',
           }}>Enter</span>
         </div>
       </div>

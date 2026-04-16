@@ -8,7 +8,7 @@ const STATUS_CONFIG = {
   thriving:  { label: 'Thriving',   color: '#2A6B3A' },
   underway:  { label: 'Underway',   color: '#2A4A8A' },
   underloved:{ label: 'Underloved', color: '#8A6B2A' },
-  unmapped:  { label: 'Unmapped',   color: 'rgba(15,21,35,0.35)' },
+  unmapped:  { label: 'Unmapped',   color: 'rgba(15,21,35,0.55)' },
 }
 
 function computeStatus(actorCount, goalSet) {

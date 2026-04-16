@@ -5,7 +5,7 @@ import { SiteFooter } from '../components/SiteFooter'
 import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold  = '#A8721A'
 const dark  = '#0F1523'
@@ -99,27 +99,27 @@ function Label({ children, required }) {
 }
 
 function Hint({ children }) {
-  return <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.45)', marginTop: '5px', lineHeight: 1.5 }}>{children}</p>
+  return <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '5px', lineHeight: 1.5 }}>{children}</p>
 }
 
 function TextInput({ value, onChange, placeholder, type = 'text', disabled }) {
   return (
     <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} disabled={disabled}
-      style={{ ...serif, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: disabled ? 'rgba(200,146,42,0.03)' : '#FFFFFF', outline: 'none', width: '100%' }} />
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: disabled ? 'rgba(200,146,42,0.03)' : '#FFFFFF', outline: 'none', width: '100%' }} />
   )
 }
 
 function TextArea({ value, onChange, placeholder, rows = 4 }) {
   return (
     <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows}
-      style={{ ...serif, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }} />
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }} />
   )
 }
 
 function SelectInput({ value, onChange, options, disabled }) {
   return (
     <select value={value} onChange={e => onChange(e.target.value)} disabled={disabled}
-      style={{ ...serif, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}>
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}>
       {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
   )
@@ -129,7 +129,7 @@ function Btn({ onClick, children, variant = 'primary', disabled, small }) {
   const styles = {
     primary: { background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', color: gold },
     solid:   { background: '#C8922A', border: '1.5px solid rgba(168,114,26,0.8)', color: '#FFFFFF' },
-    ghost:   { background: 'transparent', border: '1px solid rgba(15,21,35,0.20)', color: 'rgba(15,21,35,0.55)' },
+    ghost:   { background: 'transparent', border: '1px solid rgba(15,21,35,0.55)', color: 'rgba(15,21,35,0.55)' },
     danger:  { background: 'rgba(138,48,48,0.05)', border: '1.5px solid rgba(138,48,48,0.40)', color: '#8A3030' },
   }
   return (
@@ -155,7 +155,7 @@ function SectionCard({ children, style }) {
 function Toast({ message, onClose }) {
   useEffect(() => { const t = setTimeout(onClose, 3000); return () => clearTimeout(t) }, [])
   return (
-    <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999, background: dark, color: '#FAFAF7', ...serif, fontSize: '16px', padding: '12px 22px', borderRadius: '10px', boxShadow: '0 8px 28px rgba(15,21,35,0.3)' }}>
+    <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999, background: dark, color: '#FAFAF7', ...body, fontSize: '16px', padding: '12px 22px', borderRadius: '10px', boxShadow: '0 8px 28px rgba(15,21,35,0.55)' }}>
       {message}
     </div>
   )
@@ -185,7 +185,7 @@ function DomainChips({ selected, onChange }) {
               padding: '6px 14px', borderRadius: '40px', cursor: 'pointer',
               border: on ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.25)',
               background: on ? 'rgba(200,146,42,0.10)' : 'transparent',
-              color: on ? gold : 'rgba(15,21,35,0.50)',
+              color: on ? gold : 'rgba(15,21,35,0.55)',
               transition: 'all 0.15s',
             }}
           >
@@ -219,7 +219,7 @@ function ModeSelector({ value, onChange }) {
             <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: on ? gold : 'rgba(15,21,35,0.70)', marginBottom: '3px' }}>
               {m.label}
             </div>
-            <div style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.50)', lineHeight: 1.4 }}>
+            <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.4 }}>
               {m.desc}
             </div>
           </button>
@@ -266,10 +266,10 @@ function FocusSearch({ value, onChange }) {
       {value ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.55)', background: 'rgba(200,146,42,0.04)' }}>
           <div>
-            <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: '#0F1523' }}>{value.name}</span>
+            <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#0F1523' }}>{value.name}</span>
             <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.12em', color: '#A8721A', marginLeft: '10px' }}>{TYPE_LABEL[value.type] || value.type}</span>
           </div>
-          <button onClick={clear} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: 'rgba(15,21,35,0.35)', lineHeight: 1, padding: '0 0 0 10px' }}>×</button>
+          <button onClick={clear} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px', color: 'rgba(15,21,35,0.55)', lineHeight: 1, padding: '0 0 0 10px' }}>×</button>
         </div>
       ) : (
         <div style={{ position: 'relative' }}>
@@ -278,18 +278,18 @@ function FocusSearch({ value, onChange }) {
             onChange={e => { setQuery(e.target.value); setOpen(true) }}
             onFocus={() => setOpen(true)}
             placeholder="Search — e.g. British Columbia, Vancouver…"
-            style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: '#0F1523', padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
+            style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#0F1523', padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
           />
           {open && query.trim().length >= 2 && (
             <div className="focus-search-dropdown" style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 200, background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '0 0 8px 8px', boxShadow: '0 8px 24px rgba(15,21,35,0.10)', maxHeight: '240px', overflowY: 'auto' }}>
-              {searching && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', color: 'rgba(15,21,35,0.40)', padding: '12px 16px' }}>Searching…</div>}
-              {!searching && results.length === 0 && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', color: 'rgba(15,21,35,0.40)', padding: '12px 16px' }}>No results for "{query}"</div>}
+              {searching && <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(15,21,35,0.55)', padding: '12px 16px' }}>Searching…</div>}
+              {!searching && results.length === 0 && <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(15,21,35,0.55)', padding: '12px 16px' }}>No results for "{query}"</div>}
               {results.map(f => (
                 <button key={f.id} onClick={() => select(f)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', padding: '10px 16px', background: 'none', border: 'none', borderBottom: '1px solid rgba(200,146,42,0.10)', cursor: 'pointer', textAlign: 'left' }}
                   onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,146,42,0.05)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'none'}
                 >
-                  <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: '#0F1523' }}>{f.name}</span>
+                  <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#0F1523' }}>{f.name}</span>
                   <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.12em', color: '#A8721A' }}>{TYPE_LABEL[f.type] || f.type}</span>
                 </button>
               ))}
@@ -505,7 +505,7 @@ function OfferingForm({ initial = EMPTY_OFFERING, onSave, onCancel, saving }) {
             onChange={e => set('is_flagship', e.target.checked)}
             style={{ width: '16px', height: '16px', accentColor: gold }}
           />
-          <span style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>
+          <span style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>
             This is our flagship offering
           </span>
         </label>
@@ -551,20 +551,20 @@ function OfferingCard({ offering, onEdit, onDelete, onToggleFlagship, saving }) 
             <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '4px', padding: '3px 10px' }}>
               {typeLabel}
             </span>
-            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.50)', background: 'rgba(15,21,35,0.04)', border: '1px solid rgba(15,21,35,0.10)', borderRadius: '4px', padding: '3px 10px' }}>
+            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.55)', border: '1px solid rgba(15,21,35,0.55)', borderRadius: '4px', padding: '3px 10px' }}>
               {modeLabel}
             </span>
-            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.45)', background: 'rgba(15,21,35,0.04)', border: '1px solid rgba(15,21,35,0.10)', borderRadius: '4px', padding: '3px 10px' }}>
+            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.55)', border: '1px solid rgba(15,21,35,0.55)', borderRadius: '4px', padding: '3px 10px' }}>
               {accessLabel}
             </span>
           </div>
 
-          <h4 style={{ ...serif, fontSize: '18px', fontWeight: 300, color: dark, marginBottom: '6px', lineHeight: 1.3 }}>
+          <h4 style={{ ...body, fontSize: '18px', fontWeight: 300, color: dark, marginBottom: '6px', lineHeight: 1.3 }}>
             {offering.title}
           </h4>
 
           {offering.description && (
-            <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.7, marginBottom: '8px' }}>
+            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.7, marginBottom: '8px' }}>
               {offering.description.slice(0, 160)}{offering.description.length > 160 ? '…' : ''}
             </p>
           )}
@@ -572,7 +572,7 @@ function OfferingCard({ offering, onEdit, onDelete, onToggleFlagship, saving }) 
           {offering.domain_ids?.length > 0 && (
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '4px' }}>
               {offering.domain_ids.map(d => (
-                <span key={d} style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.45)', background: 'rgba(15,21,35,0.04)', borderRadius: '4px', padding: '2px 8px' }}>
+                <span key={d} style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.55)', borderRadius: '4px', padding: '2px 8px' }}>
                   {DOMAIN_LABEL[d] || d}
                 </span>
               ))}
@@ -686,7 +686,7 @@ function OfferingsTab({ actorId, toast }) {
     load()
   }
 
-  if (loading) return <p style={{ ...serif, color: 'rgba(15,21,35,0.45)' }}>Loading offerings…</p>
+  if (loading) return <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading offerings…</p>
 
   return (
     <div style={{ maxWidth: '700px' }}>
@@ -696,7 +696,7 @@ function OfferingsTab({ actorId, toast }) {
           <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>
             Required before needs go live
           </p>
-          <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px' }}>
             Add at least one offering before your needs become visible to contributors. The platform is built on giving before asking — visitors need to understand what you offer before they can decide whether to give.
           </p>
           <Btn variant="solid" onClick={() => setAdding(true)}>Add your first offering →</Btn>
@@ -705,7 +705,7 @@ function OfferingsTab({ actorId, toast }) {
 
       {offerings.length > 0 && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)' }}>
             {offerings.length} offering{offerings.length !== 1 ? 's' : ''}
             {offerings.some(o => o.is_flagship) ? ' · 1 flagship' : ''}
           </p>
@@ -790,7 +790,7 @@ function DomainRow({ entry, onSetPrimary, onRemove, onUpdateNote, saving }) {
                 Primary
               </span>
             )}
-            <span style={{ ...serif, fontSize: '18px', fontWeight: 300, color: dark }}>
+            <span style={{ ...body, fontSize: '18px', fontWeight: 300, color: dark }}>
               {domainLabel}
             </span>
             {subdomainLabel && (
@@ -804,13 +804,13 @@ function DomainRow({ entry, onSetPrimary, onRemove, onUpdateNote, saving }) {
           </div>
 
           {horizonGoal && (
-            <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.6, marginBottom: entry.alignment_note ? '8px' : '4px', maxWidth: '480px' }}>
+            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: entry.alignment_note ? '8px' : '4px', maxWidth: '480px' }}>
               Horizon: {horizonGoal}
             </p>
           )}
 
           {entry.alignment_note && !noteOpen && (
-            <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, marginBottom: '4px', maxWidth: '480px' }}>
+            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, marginBottom: '4px', maxWidth: '480px' }}>
               {entry.alignment_note}
             </p>
           )}
@@ -877,7 +877,7 @@ function AddDomainForm({ existingDomainIds, onAdd, onCancel, saving }) {
       </p>
 
       {available.length === 0 ? (
-        <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
           Your work spans all seven domains. That is a statement in itself.
         </p>
       ) : (
@@ -907,7 +907,7 @@ function AddDomainForm({ existingDomainIds, onAdd, onCancel, saving }) {
               <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, marginBottom: '6px' }}>
                 {DOMAIN_LABEL[domainId]} · Horizon Goal
               </p>
-              <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, margin: 0 }}>
+              <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, margin: 0 }}>
                 {DOMAIN_HORIZON[domainId]}
               </p>
             </div>
@@ -993,7 +993,7 @@ function DomainsTab({ actorId, toast }) {
     load()
   }
 
-  if (loading) return <p style={{ ...serif, color: 'rgba(15,21,35,0.45)' }}>Loading domains…</p>
+  if (loading) return <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading domains…</p>
 
   const existingDomainIds = domains.map(d => d.domain_id)
 
@@ -1005,10 +1005,10 @@ function DomainsTab({ actorId, toast }) {
         <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>
           Where your work belongs on the map
         </p>
-        <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '8px' }}>
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '8px' }}>
           Most organisations touch more than one domain. List every domain your work genuinely addresses. Mark one as primary — the domain where your contribution is most direct. The others show the breadth of your reach.
         </p>
-        <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.65 }}>
+        <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65 }}>
           Adding an alignment note for each domain tells contributors and visitors exactly how your work relates to that domain's horizon goal — in your words.
         </p>
       </SectionCard>
@@ -1026,7 +1026,7 @@ function DomainsTab({ actorId, toast }) {
       {/* Domain rows */}
       {domains.length === 0 && !adding && (
         <SectionCard style={{ borderColor: 'rgba(200,146,42,0.35)', background: 'rgba(200,146,42,0.03)' }}>
-          <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '20px' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '20px' }}>
             No domains assigned yet. Place your organisation on the map by adding the domains your work addresses.
           </p>
           <Btn variant="solid" onClick={() => setAdding(true)}>Add first domain →</Btn>
@@ -1054,7 +1054,7 @@ function DomainsTab({ actorId, toast }) {
       {/* All 7 covered */}
       {existingDomainIds.length === 7 && (
         <div style={{ marginTop: '16px', padding: '14px 20px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px' }}>
-          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', margin: 0 }}>
+          <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', margin: 0 }}>
             Your work spans all seven domains.
           </p>
         </div>
@@ -1115,12 +1115,12 @@ function ContributionsTab({ actorId, actorName, toast }) {
   const unconfirmed  = contributions.filter(c => !c.confirmed_by_actor)
   const needsOutcome = confirmed.filter(c => !c.outcome_reported)
 
-  if (loading) return <p style={{ ...serif, color: 'rgba(15,21,35,0.45)' }}>Loading contributions…</p>
+  if (loading) return <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading contributions…</p>
 
   if (contributions.length === 0) {
     return (
       <SectionCard>
-        <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
+        <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
           No contributions recorded yet. When contributors express interest or record a contribution, they'll appear here.
         </p>
       </SectionCard>
@@ -1133,7 +1133,7 @@ function ContributionsTab({ actorId, actorName, toast }) {
       {needsOutcome.length > 0 && (
         <div style={{ background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.35)', borderRadius: '12px', padding: '20px 24px', marginBottom: '24px' }}>
           <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, marginBottom: '8px' }}>Action required</p>
-          <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
+          <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
             {needsOutcome.length} confirmed contribution{needsOutcome.length !== 1 ? 's' : ''} need{needsOutcome.length === 1 ? 's' : ''} an outcome report. Contributors can see what their help produced — closing this loop builds trust and keeps your needs visible.
           </p>
         </div>
@@ -1141,7 +1141,7 @@ function ContributionsTab({ actorId, actorName, toast }) {
 
       {unconfirmed.length > 0 && (
         <>
-          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.45)', marginBottom: '12px' }}>
+          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '12px' }}>
             Awaiting confirmation ({unconfirmed.length})
           </p>
           {unconfirmed.map(c => (
@@ -1153,20 +1153,20 @@ function ContributionsTab({ actorId, actorName, toast }) {
                       {CONTRIBUTION_TYPE_LABEL[c.contribution_type] || c.contribution_type}
                     </span>
                     {c.amount && (
-                      <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.50)' }}>
+                      <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
                         {c.contribution_type === 'capital' ? `${c.currency} ${c.amount}` : `${c.amount} hrs`}
                       </span>
                     )}
                     {c.visibility === 'muted' && (
-                      <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.35)' }}>private</span>
+                      <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)' }}>private</span>
                     )}
                   </div>
                   {c.description && (
-                    <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.65, marginBottom: '4px' }}>
+                    <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.65, marginBottom: '4px' }}>
                       {c.description}
                     </p>
                   )}
-                  <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.40)' }}>
+                  <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
                     {new Date(c.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </p>
                 </div>
@@ -1181,7 +1181,7 @@ function ContributionsTab({ actorId, actorName, toast }) {
 
       {confirmed.length > 0 && (
         <>
-          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.45)', marginTop: '28px', marginBottom: '12px' }}>
+          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginTop: '28px', marginBottom: '12px' }}>
             Confirmed ({confirmed.length})
           </p>
           {confirmed.map(c => (
@@ -1192,7 +1192,7 @@ function ContributionsTab({ actorId, actorName, toast }) {
                     {CONTRIBUTION_TYPE_LABEL[c.contribution_type] || c.contribution_type}
                   </span>
                   {c.amount && (
-                    <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.50)' }}>
+                    <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
                       {c.contribution_type === 'capital' ? `${c.currency} ${c.amount}` : `${c.amount} hrs`}
                     </span>
                   )}
@@ -1201,14 +1201,14 @@ function ContributionsTab({ actorId, actorName, toast }) {
                   )}
                 </div>
                 {c.description && (
-                  <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.65 }}>
+                  <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.65 }}>
                     {c.description}
                   </p>
                 )}
                 {c.outcome_report && (
                   <div style={{ marginTop: '10px', borderLeft: '2px solid rgba(42,107,58,0.30)', paddingLeft: '14px' }}>
                     <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: '#2A6B3A', marginBottom: '4px' }}>Outcome</p>
-                    <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.65 }}>{c.outcome_report}</p>
+                    <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.65 }}>{c.outcome_report}</p>
                   </div>
                 )}
               </div>
@@ -1265,10 +1265,10 @@ function NeedsTab({ actorId, navigate, toast }) {
     load()
   }
 
-  const statusColor = { open: '#2A6B3A', in_progress: '#2A4A8A', fulfilled: gold, closed: 'rgba(15,21,35,0.40)' }
+  const statusColor = { open: '#2A6B3A', in_progress: '#2A4A8A', fulfilled: gold, closed: 'rgba(15,21,35,0.55)' }
   const statusLabel = { open: 'Open', in_progress: 'In Progress', fulfilled: 'Fulfilled', closed: 'Closed' }
 
-  if (loading) return <p style={{ ...serif, color: 'rgba(15,21,35,0.45)' }}>Loading needs…</p>
+  if (loading) return <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading needs…</p>
 
   if (hasOfferings === false) {
     return (
@@ -1276,7 +1276,7 @@ function NeedsTab({ actorId, navigate, toast }) {
         <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>
           Add an offering first
         </p>
-        <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px' }}>
+        <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px' }}>
           Before you can post needs, you need at least one offering — something you give to the world. Contributors want to know what you're building before they decide to help build it with you.
         </p>
         <Btn onClick={() => navigate(`/nextus/actors/${actorId}/manage?tab=offerings`)}>
@@ -1289,7 +1289,7 @@ function NeedsTab({ actorId, navigate, toast }) {
   return (
     <div style={{ maxWidth: '700px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.60)' }}>
+        <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.60)' }}>
           {needs.length === 0 ? 'No needs posted yet.' : `${needs.filter(n => n.status === 'open').length} open · ${needs.length} total`}
         </p>
         <Btn small variant="solid" onClick={() => navigate(`/nextus/actors/${actorId}/needs/new`)}>
@@ -1299,7 +1299,7 @@ function NeedsTab({ actorId, navigate, toast }) {
 
       {needs.length === 0 && (
         <SectionCard>
-          <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
             Post your first need to let contributors know how they can help. Be specific — specific needs attract specific contributors.
           </p>
           <Btn onClick={() => navigate(`/nextus/actors/${actorId}/needs/new`)}>Post a need →</Btn>
@@ -1314,16 +1314,16 @@ function NeedsTab({ actorId, navigate, toast }) {
                 <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: statusColor[n.status] }}>
                   {statusLabel[n.status]}
                 </span>
-                <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)' }}>
+                <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
                   {n.need_type} · {n.size}
                 </span>
                 {n.time_estimate && (
-                  <span style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.35)' }}>{n.time_estimate}</span>
+                  <span style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>{n.time_estimate}</span>
                 )}
               </div>
-              <h4 style={{ ...serif, fontSize: '17px', fontWeight: 300, color: dark, marginBottom: '6px' }}>{n.title}</h4>
+              <h4 style={{ ...body, fontSize: '17px', fontWeight: 300, color: dark, marginBottom: '6px' }}>{n.title}</h4>
               {n.description && (
-                <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.65 }}>
+                <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.65 }}>
                   {n.description.slice(0, 160)}{n.description.length > 160 ? '…' : ''}
                 </p>
               )}
@@ -1373,7 +1373,7 @@ function ContributorMatchCard({ match, navigate }) {
       borderRadius: '12px', padding: '18px 20px', marginBottom: '10px',
     }}>
       {match.adjacent && (
-        <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.35)', display: 'block', marginBottom: '6px' }}>
+        <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', display: 'block', marginBottom: '6px' }}>
           Adjacent match
         </span>
       )}
@@ -1384,10 +1384,10 @@ function ContributorMatchCard({ match, navigate }) {
             <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '4px', padding: '2px 8px' }}>
               {typeLabel}
             </span>
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.45)', background: 'rgba(15,21,35,0.04)', borderRadius: '4px', padding: '2px 8px' }}>
+            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.55)', borderRadius: '4px', padding: '2px 8px' }}>
               {modeLabel}
             </span>
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)' }}>
+            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
               {returnLabel}
             </span>
             {match.confirmed_contribution_count > 0 && (
@@ -1398,7 +1398,7 @@ function ContributorMatchCard({ match, navigate }) {
           </div>
 
           {match.display_name && (
-            <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: dark, marginBottom: '2px' }}>
+            <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: dark, marginBottom: '2px' }}>
               {match.display_name}
               {match.archetype && (
                 <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(168,114,26,0.70)', marginLeft: '10px' }}>
@@ -1408,24 +1408,24 @@ function ContributorMatchCard({ match, navigate }) {
             </p>
           )}
 
-          <p style={{ ...serif, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.75)', marginBottom: match.description ? '4px' : 0 }}>
+          <p style={{ ...body, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.75)', marginBottom: match.description ? '4px' : 0 }}>
             {match.offer_title}
           </p>
 
           {match.description && (
-            <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>
+            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>
               {match.description.slice(0, 120)}{match.description.length > 120 ? '…' : ''}
             </p>
           )}
 
           {match.best_need && (
-            <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)', marginTop: '6px' }}>
+            <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', marginTop: '6px' }}>
               Matches your need: {match.best_need.title}
             </p>
           )}
 
           {match.availability && (
-            <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.40)', marginTop: '4px' }}>
+            <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
               {match.availability}
             </p>
           )}
@@ -1474,7 +1474,7 @@ function MatchesTab({ actorId, toast }) {
     load()
   }, [actorId])
 
-  if (loading) return <p style={{ ...serif, color: 'rgba(15,21,35,0.45)' }}>Finding matches…</p>
+  if (loading) return <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Finding matches…</p>
 
   const directMatches   = matches.filter(m => !m.adjacent)
   const adjacentMatches = matches.filter(m => m.adjacent)
@@ -1487,17 +1487,17 @@ function MatchesTab({ actorId, toast }) {
         <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
           What this shows
         </p>
-        <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, margin: 0 }}>
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, margin: 0 }}>
           Contributors whose active offers align with your open needs — matched by domain, offer type, and contribution mode. Direct matches first, then adjacent (contributors in your domain who are open to enquiry even without an exact match).
         </p>
       </div>
 
       {matches.length === 0 && (
         <SectionCard>
-          <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '16px' }}>
             No contributors match your current open needs yet. As more people join the platform and list their offers, matches will appear here automatically.
           </p>
-          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.7 }}>
+          <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
             Make sure your needs are specific — specific needs attract specific contributors.
           </p>
         </SectionCard>
@@ -1506,7 +1506,7 @@ function MatchesTab({ actorId, toast }) {
       {matches.length > 0 && (
         <>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)' }}>
+            <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)' }}>
               {directMatches.length} direct · {adjacentMatches.length} adjacent
             </p>
           </div>
@@ -1518,7 +1518,7 @@ function MatchesTab({ actorId, toast }) {
           {matches.length > 5 && (
             <button
               onClick={() => setExpanded(e => !e)}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', marginTop: '8px', padding: 0 }}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', marginTop: '8px', padding: 0 }}
             >
               {expanded ? 'Show fewer ↑' : `Show all ${matches.length} matches ↓`}
             </button>
@@ -1576,7 +1576,7 @@ export function NextUsActorManagePage() {
       <div style={{ background: parch, minHeight: '100vh' }}>
         <Nav activePath="nextus" />
         <div style={{ maxWidth: '820px', margin: '0 auto', padding: '120px 40px' }}>
-          <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.45)' }}>Loading…</p>
+          <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.55)' }}>Loading…</p>
         </div>
       </div>
     )
@@ -1610,7 +1610,7 @@ export function NextUsActorManagePage() {
 
         <button
           onClick={() => navigate(`/nextus/actors/${id}`)}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '32px', padding: 0 }}
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '32px', padding: 0 }}
         >
           ← {actor.name}
         </button>
@@ -1618,7 +1618,7 @@ export function NextUsActorManagePage() {
         <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: gold, display: 'block', marginBottom: '10px' }}>
           Managing
         </span>
-        <h1 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.1, marginBottom: '40px' }}>
+        <h1 style={{ ...body, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.1, marginBottom: '40px' }}>
           {actor.name}
         </h1>
 
@@ -1632,7 +1632,7 @@ export function NextUsActorManagePage() {
             <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: '#8A3030', marginBottom: '6px' }}>
               Needs hidden
             </p>
-            <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '12px' }}>
+            <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '12px' }}>
               Your needs are not visible to contributors because one or more confirmed contributions have not received an outcome report. File your outcome reports to restore visibility.
             </p>
             <button
@@ -1652,7 +1652,7 @@ export function NextUsActorManagePage() {
               style={{
                 ...sc, fontSize: '14px', letterSpacing: '0.14em',
                 padding: '12px 20px', background: 'none', border: 'none', cursor: 'pointer',
-                color: activeTab === tab.key ? gold : 'rgba(15,21,35,0.50)',
+                color: activeTab === tab.key ? gold : 'rgba(15,21,35,0.55)',
                 borderBottom: activeTab === tab.key ? `2px solid ${gold}` : '2px solid transparent',
                 marginBottom: '-1px', whiteSpace: 'nowrap', flexShrink: 0,
               }}

@@ -4,7 +4,7 @@ import { CivilisationalFramePanel } from '../components/CivilisationalFramePanel
 import { TestimonialsPanel } from '../components/TestimonialsPanel'
 import { SiteFooter } from '../components/SiteFooter'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold = { color: '#A8721A' }
@@ -64,10 +64,10 @@ export function AboutPage() {
       {/* ── SECTION ONE — NEXTUS ── */}
       <div className="about-section" style={page}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '14px' }}>NextUs · Horizon Suite</span>
-        <h1 style={{ ...serif, fontSize: 'clamp(40px,5.5vw,64px)', fontWeight: 300, ...gold, lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '16px' }}>
+        <h1 style={{ ...body, fontSize: 'clamp(40px,5.5vw,64px)', fontWeight: 300, ...gold, lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '16px' }}>
           A life worth living,<br />a future worth building.
         </h1>
-        <p style={{ ...serif, fontSize: 'clamp(18px,2.2vw,24px)', fontWeight: 300, ...meta, marginBottom: '0', maxWidth: '640px' }}>
+        <p style={{ ...body, fontSize: 'clamp(18px,2.2vw,24px)', fontWeight: 300, ...meta, marginBottom: '0', maxWidth: '640px' }}>
           A frame for the human project.
         </p>
         <div style={{ width: '56px', height: '1px', background: '#C8922A', margin: '20px 0 40px' }} />
@@ -83,7 +83,7 @@ export function AboutPage() {
 
         <Rule />
 
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Two scales. One architecture.</h2>
+        <h2 style={{ ...body, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Two scales. One architecture.</h2>
         <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px' }}>
           NextUs operates at the civilisational scale — a coordination layer for the people working across the domains of the future. Sense-making, orientation, and visibility for a fragmented world.
         </p>
@@ -99,7 +99,7 @@ export function AboutPage() {
 
         <Rule />
 
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>The tools.</h2>
+        <h2 style={{ ...body, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>The tools.</h2>
         <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px' }}>
           The Horizon Suite is the personal navigation layer. Each tool is built for a specific stage of the journey.
         </p>
@@ -164,13 +164,13 @@ export function AboutPage() {
         </div>
 
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '14px' }}>Nik Wood · Founder</span>
-        <h1 style={{ ...serif, fontSize: 'clamp(40px,5.5vw,64px)', fontWeight: 300, ...gold, lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '16px' }}>
+        <h1 style={{ ...body, fontSize: 'clamp(40px,5.5vw,64px)', fontWeight: 300, ...gold, lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '16px' }}>
           The person<br />behind the work.
         </h1>
         <div style={{ width: '56px', height: '1px', background: '#C8922A', margin: '20px 0 32px', marginLeft: 'auto' }} />
 
         {/* Trust paragraph */}
-        <p style={{ ...serif, fontSize: '18px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '32px', maxWidth: '600px', marginLeft: 'auto' }}>
+        <p style={{ ...body, fontSize: '18px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '32px', maxWidth: '600px', marginLeft: 'auto' }}>
           Nik has worked with people for over two decades. The consistent pattern across that time isn{'\u2019'}t a particular method {'\u2014'} it{'\u2019'}s the result: people{'\u2019'}s lives become measurably better in the areas they came for help with, and often noticeably better in areas they didn{'\u2019'}t expect. Not because of what Nik does to them, but because of what becomes possible when someone is seen clearly and worked with honestly.
         </p>
 
@@ -202,7 +202,7 @@ export function AboutPage() {
 
         <Rule />
 
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>The long arm.</h2>
+        <h2 style={{ ...body, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>The long arm.</h2>
         <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
           Nik's mother was a naturopathic doctor, a shaman, and an adventurer. She surrounded him with healers, teachers, and practitioners — people who understood that the work of becoming a full human being was serious, worth doing, and worth doing well.
         </p>
@@ -215,7 +215,7 @@ export function AboutPage() {
 
         <Rule />
 
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Cracked open.</h2>
+        <h2 style={{ ...body, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Cracked open.</h2>
         <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
           In 2019, Nik broke his skull. What followed — recovery, cancer, the loss of his mother, and the loss of the friend who had saved his life — was not a detour from the work. It was the work, lived at full intensity.
         </p>
@@ -228,7 +228,7 @@ export function AboutPage() {
 
         <Rule />
 
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>What drives this.</h2>
+        <h2 style={{ ...body, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>What drives this.</h2>
         <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
           Humanity as a whole is mostly operating the way a person operates when they have no clear direction and are carrying unresolved trauma — because that's mostly what humanity is made of.
         </p>
@@ -241,7 +241,7 @@ export function AboutPage() {
 
         <Rule />
 
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Values.</h2>
+        <h2 style={{ ...body, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Values.</h2>
         <div style={{ display: 'grid', gap: '4px', margin: '28px 0' }}>
           {[
             ['Nikhedonia', 'The particular joy that comes from watching others thrive.'],
@@ -257,10 +257,10 @@ export function AboutPage() {
 
         {/* Purpose statement */}
         <div style={{ margin: '64px 0 0', paddingTop: '52px', borderTop: '1px solid rgba(200,146,42,0.20)', textAlign: 'right' }}>
-          <p style={{ ...serif, fontSize: 'clamp(20px,2.6vw,28px)', fontWeight: 300, ...dark, lineHeight: 1.6, margin: '0 0 16px', maxWidth: '640px', marginLeft: 'auto' }}>
+          <p style={{ ...body, fontSize: 'clamp(20px,2.6vw,28px)', fontWeight: 300, ...dark, lineHeight: 1.6, margin: '0 0 16px', maxWidth: '640px', marginLeft: 'auto' }}>
             To live into a world where everyone is fully on their path and actively levelling up towards their full-yes life.
           </p>
-          <p style={{ ...serif, fontSize: 'clamp(18px,2.2vw,24px)', fontWeight: 300, color: '#A8721A', lineHeight: 1.6, margin: '0 0 48px', maxWidth: '560px', marginLeft: 'auto' }}>
+          <p style={{ ...body, fontSize: 'clamp(18px,2.2vw,24px)', fontWeight: 300, color: '#A8721A', lineHeight: 1.6, margin: '0 0 48px', maxWidth: '560px', marginLeft: 'auto' }}>
             To awaken and amplify the God-Spark of humanity.
           </p>
         </div>

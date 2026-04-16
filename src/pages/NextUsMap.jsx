@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Nav } from '../components/Nav'
 import { supabase } from '../hooks/useSupabase'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold  = '#A8721A'
 const dark  = '#0F1523'
@@ -76,7 +76,7 @@ function ActorPanel({ actor, onClose, navigate }) {
     }}>
       {/* Close */}
       <div style={{ padding: '20px 20px 0', display: 'flex', justifyContent: 'flex-end' }}>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px', color: 'rgba(15,21,35,0.40)', lineHeight: 1, padding: 0 }}>×</button>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px', color: 'rgba(15,21,35,0.55)', lineHeight: 1, padding: 0 }}>×</button>
       </div>
 
       <div style={{ padding: '12px 24px 32px', flex: 1 }}>
@@ -88,27 +88,27 @@ function ActorPanel({ actor, onClose, navigate }) {
             </span>
           )}
           {subdomainLabel && (
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', background: 'rgba(15,21,35,0.05)', borderRadius: '4px', padding: '3px 10px' }}>
+            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.55)', borderRadius: '4px', padding: '3px 10px' }}>
               {subdomainLabel}
             </span>
           )}
         </div>
 
         {/* Name */}
-        <h3 style={{ ...serif, fontSize: '20px', fontWeight: 300, color: dark, lineHeight: 1.2, marginBottom: '8px' }}>
+        <h3 style={{ ...body, fontSize: '20px', fontWeight: 300, color: dark, lineHeight: 1.2, marginBottom: '8px' }}>
           {actor.name}
         </h3>
 
         {/* Meta */}
         <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
-          {actor.type && <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)' }}>{actor.type}</span>}
-          {actor.scale && <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)' }}>· {actor.scale}</span>}
-          {actor.location_name && <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)' }}>· {actor.location_name}</span>}
+          {actor.type && <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>{actor.type}</span>}
+          {actor.scale && <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>· {actor.scale}</span>}
+          {actor.location_name && <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>· {actor.location_name}</span>}
         </div>
 
         {/* Description */}
         {actor.description && (
-          <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '16px' }}>
+          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '16px' }}>
             {actor.description.length > 240 ? actor.description.slice(0, 240) + '…' : actor.description}
           </p>
         )}
@@ -116,7 +116,7 @@ function ActorPanel({ actor, onClose, navigate }) {
         {/* Impact */}
         {actor.impact_summary && (
           <div style={{ borderLeft: '2px solid rgba(200,146,42,0.22)', paddingLeft: '14px', marginBottom: '16px' }}>
-            <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, margin: 0 }}>
+            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, margin: 0 }}>
               {actor.impact_summary.length > 160 ? actor.impact_summary.slice(0, 160) + '…' : actor.impact_summary}
             </p>
           </div>
@@ -133,7 +133,7 @@ function ActorPanel({ actor, onClose, navigate }) {
         {/* Open needs */}
         {actor.open_needs_count > 0 && (
           <div style={{ background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '8px', padding: '12px 14px', marginBottom: '16px' }}>
-            <span style={{ ...serif, fontSize: '14px', color: gold }}>
+            <span style={{ ...body, fontSize: '14px', color: gold }}>
               {actor.open_needs_count} open {actor.open_needs_count === 1 ? 'need' : 'needs'} — contributors welcome
             </span>
           </div>
@@ -169,8 +169,8 @@ function ActorListItem({ actor, onClick }) {
     >
       <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: domainColor, marginTop: '6px', flexShrink: 0 }} />
       <div>
-        <div style={{ ...serif, fontSize: '15px', fontWeight: 300, color: dark, marginBottom: '3px' }}>{actor.name}</div>
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)' }}>
+        <div style={{ ...body, fontSize: '15px', fontWeight: 300, color: dark, marginBottom: '3px' }}>{actor.name}</div>
+        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
           {DOMAIN_LABEL[actor.domain_id]}
           {actor.location_name && ` · ${actor.location_name}`}
           {actor.scale && ` · ${actor.scale}`}
@@ -335,10 +335,10 @@ export function NextUsMapPage() {
             <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: gold, display: 'block', marginBottom: '10px' }}>
               NextUs · The Map
             </span>
-            <h1 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.1, marginBottom: '8px' }}>
+            <h1 style={{ ...body, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.1, marginBottom: '8px' }}>
               Where the work is happening.
             </h1>
-            <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, maxWidth: '520px' }}>
+            <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, maxWidth: '520px' }}>
               Actors placed by domain, subdomain, and geography. The answer to a problem in one place may already exist somewhere else on this map.
             </p>
           </div>
@@ -355,7 +355,7 @@ export function NextUsMapPage() {
           <select
             value={filterDomain}
             onChange={e => setFilterDomain(e.target.value)}
-            style={{ ...serif, fontSize: '15px', color: dark, padding: '9px 14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', cursor: 'pointer' }}
+            style={{ ...body, fontSize: '15px', color: dark, padding: '9px 14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', cursor: 'pointer' }}
           >
             {DOMAINS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
           </select>
@@ -369,7 +369,7 @@ export function NextUsMapPage() {
                 style={{ display: 'flex', alignItems: 'center', gap: '5px', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0' }}
               >
                 <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: color, flexShrink: 0, opacity: filterDomain && filterDomain !== id ? 0.3 : 1 }} />
-                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: filterDomain && filterDomain !== id ? 'rgba(15,21,35,0.30)' : 'rgba(15,21,35,0.55)' }}>
+                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: filterDomain && filterDomain !== id ? 'rgba(15,21,35,0.55)' : 'rgba(15,21,35,0.55)' }}>
                   {DOMAIN_LABEL[id]}
                 </span>
               </button>
@@ -380,12 +380,12 @@ export function NextUsMapPage() {
         {/* Stats */}
         {!loading && (
           <div style={{ display: 'flex', gap: '16px', marginBottom: '20px' }}>
-            <span style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.45)' }}>
+            <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
               {filtered.length} actor{filtered.length !== 1 ? 's' : ''}
               {filterDomain && ` in ${DOMAIN_LABEL[filterDomain]}`}
             </span>
             {totalMapped > 0 && (
-              <span style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.35)' }}>
+              <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
                 · {totalMapped} mapped
               </span>
             )}
@@ -409,13 +409,13 @@ export function NextUsMapPage() {
               <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(200,146,42,0.12)', border: '1.5px solid rgba(200,146,42,0.30)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
                 <span style={{ fontSize: '20px' }}>🗺</span>
               </div>
-              <h3 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: dark, marginBottom: '10px', textAlign: 'center' }}>
+              <h3 style={{ ...body, fontSize: '22px', fontWeight: 300, color: dark, marginBottom: '10px', textAlign: 'center' }}>
                 Map requires Mapbox token
               </h3>
-              <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, textAlign: 'center', maxWidth: '360px', marginBottom: '20px' }}>
+              <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, textAlign: 'center', maxWidth: '360px', marginBottom: '20px' }}>
                 Add <code style={{ ...sc, fontSize: '13px', background: 'rgba(15,21,35,0.08)', padding: '2px 6px', borderRadius: '4px' }}>VITE_MAPBOX_TOKEN</code> to your environment variables to enable the map.
               </p>
-              <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.40)', textAlign: 'center' }}>
+              <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', textAlign: 'center' }}>
                 In the meantime, all actors are listed below.
               </p>
             </div>
@@ -424,14 +424,14 @@ export function NextUsMapPage() {
           {/* Loading overlay */}
           {!mapError && !mapReady && (
             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#EAE6DF' }}>
-              <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.45)' }}>Loading map…</p>
+              <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)' }}>Loading map…</p>
             </div>
           )}
 
           {/* No geo data notice */}
           {mapReady && mappedActors.length === 0 && !mapError && (
             <div style={{ position: 'absolute', bottom: '16px', left: '16px', background: 'rgba(250,250,247,0.92)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', padding: '10px 14px', maxWidth: '280px' }}>
-              <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.6, margin: 0 }}>
+              <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.6, margin: 0 }}>
                 Actor coordinates are being added. Use the list below to browse all {filtered.length} actors by location.
               </p>
             </div>
@@ -454,12 +454,12 @@ export function NextUsMapPage() {
           <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '28px' }} />
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '4px' }}>
-            <h2 style={{ ...serif, fontSize: '24px', fontWeight: 300, color: dark }}>All actors</h2>
-            <span style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.40)' }}>
+            <h2 style={{ ...body, fontSize: '24px', fontWeight: 300, color: dark }}>All actors</h2>
+            <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
               {unmappedActors.length} listed
             </span>
           </div>
-          <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.50)', marginBottom: '20px', lineHeight: 1.6 }}>
+          <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', marginBottom: '20px', lineHeight: 1.6 }}>
             Coordinates are being added to place actors on the map. For now they appear here.
           </p>
 
@@ -471,7 +471,7 @@ export function NextUsMapPage() {
               <div key={domain.value} style={{ marginBottom: '32px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: DOMAIN_COLOR[domain.value] }} />
-                  <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.50)' }}>
+                  <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)' }}>
                     {domain.label} · {domainActors.length}
                   </span>
                 </div>
@@ -494,7 +494,7 @@ export function NextUsMapPage() {
               <div style={{ marginBottom: '32px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'rgba(15,21,35,0.30)' }} />
-                  <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.50)' }}>
+                  <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)' }}>
                     Unplaced · {noDomain.length}
                   </span>
                 </div>
@@ -510,7 +510,7 @@ export function NextUsMapPage() {
       {/* Empty state */}
       {!loading && filtered.length === 0 && (
         <div style={{ maxWidth: '1040px', margin: '0 auto', padding: '0 40px 80px', textAlign: 'center' }}>
-          <p style={{ ...serif, fontSize: '20px', fontWeight: 300, color: 'rgba(15,21,35,0.50)', marginBottom: '16px' }}>
+          <p style={{ ...body, fontSize: '20px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', marginBottom: '16px' }}>
             No actors in {filterDomain ? DOMAIN_LABEL[filterDomain] : 'this domain'} yet.
           </p>
           <button onClick={() => setFilterDomain('')}

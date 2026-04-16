@@ -7,7 +7,7 @@ import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import DomainExplorer from '../components/domain-explorer/DomainExplorer'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const DOMAINS = [
@@ -24,7 +24,7 @@ function DomainModal({ domain, onClose }) {
   if (!domain) return null
   return (
     <div onClick={e => e.target === e.currentTarget && onClose()} style={{ position: 'fixed', inset: 0, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.25rem', zIndex: 100 }}>
-      <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '32px', maxWidth: '420px', width: '100%', position: 'relative', ...serif }}>
+      <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '32px', maxWidth: '420px', width: '100%', position: 'relative', ...body }}>
         <button onClick={onClose} style={{ position: 'absolute', top: '14px', right: '18px', fontSize: '18px', cursor: 'pointer', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', lineHeight: 1 }}>{'\u00D7'}</button>
         <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '8px' }}>NextUs Domain</div>
         <div style={{ fontSize: '24px', fontWeight: 300, color: '#0F1523', marginBottom: '12px', lineHeight: 1.1 }}>{domain.label}</div>
@@ -107,7 +107,7 @@ function StepRow({ step, side }) {
         ...sc,
         fontSize: '13px',
         letterSpacing: '0.16em',
-        color: isLeft ? '#A8721A' : 'rgba(15,21,35,0.35)',
+        color: isLeft ? '#A8721A' : 'rgba(15,21,35,0.55)',
         flexShrink: 0,
         minWidth: '28px',
         paddingTop: '3px',
@@ -116,7 +116,7 @@ function StepRow({ step, side }) {
       </span>
       <div>
         <p style={{
-          ...serif,
+          ...body,
           fontSize: '18px',
           fontWeight: 300,
           color: '#0F1523',
@@ -126,7 +126,7 @@ function StepRow({ step, side }) {
           {step.title}
         </p>
         <p style={{
-          ...serif,
+          ...body,
           fontSize: '15px',
           color: 'rgba(15,21,35,0.60)',
           lineHeight: 1.75,
@@ -150,10 +150,10 @@ function HowItWorksSection({ navigate }) {
       <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '14px' }}>
         How it works
       </span>
-      <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>
+      <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>
         The platform works both ways.
       </h2>
-      <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.8, marginBottom: '40px', maxWidth: '560px' }}>
+      <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.8, marginBottom: '40px', maxWidth: '560px' }}>
         Organisations place themselves on the map and say what they need. Contributors place what they have on the table and say where they want it to go. The platform connects them — in either direction.
       </p>
 
@@ -228,7 +228,7 @@ function HowItWorksSection({ navigate }) {
 
       {/* Integrity note */}
       <div style={{ marginTop: '48px', paddingTop: '28px', borderTop: '1px solid rgba(200,146,42,0.15)', maxWidth: '520px' }}>
-        <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', lineHeight: 1.75, margin: 0 }}>
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, margin: 0 }}>
           The platform tracks what actually happens with every contribution — not what was promised, what was done. Contribution loops that don't close stop being visible. Alignment scores are earned, not declared. The architecture is designed so that good-faith participation is effortless and extraction is structurally difficult.
         </p>
       </div>
@@ -254,10 +254,10 @@ export function NextUsPage() {
 
       <div className="nextus-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 0' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>NextUs</span>
-        <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          The future is not something<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>that happens to us.</em>
+        <h1 style={{ ...body, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
+          The future is not something<br /><em style={{, color: '#A8721A' }}>that happens to us.</em>
         </h1>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '520px' }}>Seven domains. A living map of who is doing the work {'\u2014'} and how to find your place in it.</p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '520px' }}>Seven domains. A living map of who is doing the work {'\u2014'} and how to find your place in it.</p>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '14px' }}>Explore the horizon goals</span>
       </div>
 
@@ -268,23 +268,23 @@ export function NextUsPage() {
 
       <div className="nextus-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '0 40px 120px' }}>
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '72px 0 40px' }} />
-        <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>The problem is not effort.</h2>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Someone is restoring soil carbon and does not know about the financing mechanism that could fund their work. Someone is building a governance framework that addresses exactly the problem another person is trying to solve. The person with capital has no map showing where the real gaps are.</p>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Progress is happening. But it is fragmented, invisible, and uncoordinated. The cost is duplicated effort, misallocated resources, and builders doing important work in isolation {'\u2014'} not knowing who else is carrying the same thing.</p>
+        <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>The problem is not effort.</h2>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Someone is restoring soil carbon and does not know about the financing mechanism that could fund their work. Someone is building a governance framework that addresses exactly the problem another person is trying to solve. The person with capital has no map showing where the real gaps are.</p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Progress is happening. But it is fragmented, invisible, and uncoordinated. The cost is duplicated effort, misallocated resources, and builders doing important work in isolation {'\u2014'} not knowing who else is carrying the same thing.</p>
         <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '20px 0 20px 28px', margin: '48px 0', maxWidth: '580px' }}>
-          <p style={{ ...serif, fontSize: '20px', fontStyle: 'italic', fontWeight: 300, color: '#0F1523', lineHeight: 1.65, margin: 0 }}>What we can see clearly, we can coordinate around. What we can coordinate around, we can change.</p>
+          <p style={{ ...body, fontSize: '20px', fontWeight: 300, color: '#0F1523', lineHeight: 1.65, margin: 0 }}>What we can see clearly, we can coordinate around. What we can coordinate around, we can change.</p>
         </div>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '56px', maxWidth: '600px' }}>NextUs is the perceptual layer. A living map of where humanity is trying to go {'\u2014'} across seven domains, at every scale {'\u2014'} so that the people already doing the work can find each other, aim at something worth building, and compound their effort rather than scatter it.</p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '56px', maxWidth: '600px' }}>NextUs is the perceptual layer. A living map of where humanity is trying to go {'\u2014'} across seven domains, at every scale {'\u2014'} so that the people already doing the work can find each other, aim at something worth building, and compound their effort rather than scatter it.</p>
 
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 48px' }} />
 
         {/* Fractal connection */}
-        <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '16px' }}>The same seven domains. Two scales.</h2>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '12px', maxWidth: '600px' }}>
+        <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '16px' }}>The same seven domains. Two scales.</h2>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '12px', maxWidth: '600px' }}>
           What you develop in yourself, you contribute to the world. The seven domains of your life map directly onto the seven domains of civilisation. Your personal work is not a detour from the larger work. It is the larger work, at a different scale.
         </p>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '48px', maxWidth: '560px' }}>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '48px', maxWidth: '560px' }}>
           We are connected. We are fractal. The state of the world is a reflection of how we are doing individually — and how we are doing individually is a reflection of how we are doing as a whole.
         </p>
 
@@ -307,22 +307,22 @@ export function NextUsPage() {
             ['Signal', 'Technology'],
           ].map(([personal, civil], i) => [
             <div key={personal} style={{ padding: '12px 0', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', fontWeight: 300, color: '#0F1523' }}>{personal}</span>
+              <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 300, color: '#0F1523' }}>{personal}</span>
               <DomainTooltip domainKey={LIFEOS_LABEL_MAP[personal]} system="lifeos" position="below" />
             </div>,
             <div key={personal + '-arrow'} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none' }}>
               <span style={{ color: 'rgba(200,146,42,0.45)', fontSize: '16px' }}>→</span>
             </div>,
             <div key={civil} style={{ padding: '12px 0 12px 16px', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', fontWeight: 300, color: '#A8721A' }}>{civil}</span>
+              <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 300, color: '#A8721A' }}>{civil}</span>
               <DomainTooltip domainKey={NEXTUS_LABEL_MAP[civil]} system="nextus" position="below" />
             </div>,
           ])}
         </div>
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 32px' }} />
-        <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '8px' }}>Seven domains.</h2>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '32px', maxWidth: '560px' }}>Click any domain to go deeper.</p>
+        <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '8px' }}>Seven domains.</h2>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '32px', maxWidth: '560px' }}>Click any domain to go deeper.</p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
           {DOMAINS.map((d, i) => (
@@ -334,7 +334,7 @@ export function NextUsPage() {
                 {d.label}
                 <DomainTooltip domainKey={d.key} system="nextus" position="below" />
               </div>
-              <div style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.6 }}>{d.tip}</div>
+              <div style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.6 }}>{d.tip}</div>
             </div>
           ))}
         </div>
@@ -345,8 +345,8 @@ export function NextUsPage() {
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 48px' }} />
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
           <div>
-            <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '10px' }}>Who is doing the work.</h2>
-            <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', maxWidth: '480px', lineHeight: 1.7 }}>Organisations, projects, and individuals placed on the map — by domain, by scale, by what they need.</p>
+            <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '10px' }}>Who is doing the work.</h2>
+            <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', maxWidth: '480px', lineHeight: 1.7 }}>Organisations, projects, and individuals placed on the map — by domain, by scale, by what they need.</p>
           </div>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button onClick={() => navigate('/nextus/actors')} style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '13px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', cursor: 'pointer', whiteSpace: 'nowrap' }}>Who's working on this →</button>
@@ -364,12 +364,12 @@ export function NextUsPage() {
         <div style={{ maxWidth: '820px', margin: '0 auto' }}>
           <div style={{ marginBottom: '24px' }}><img src="/logo_nav.png" alt="NextUs" style={{ height: '40px', width: 'auto', display: 'inline-block', opacity: 0.78 }} /></div>
           <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.4, margin: '0 auto 36px' }} />
-          <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,34px)', fontWeight: 300, color: 'rgba(255,255,255,0.92)', marginBottom: '12px' }}>Want to know what's next?</h2>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(255,255,255,0.55)', marginBottom: '40px', maxWidth: '320px', marginLeft: 'auto', marginRight: 'auto' }}>The platform is live and growing. New tools, new domains, new connections.</p>
+          <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,34px)', fontWeight: 300, color: 'rgba(255,255,255,0.92)', marginBottom: '12px' }}>Want to know what's next?</h2>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(255,255,255,0.55)', marginBottom: '40px', maxWidth: '320px', marginLeft: 'auto', marginRight: 'auto' }}>The platform is live and growing. New tools, new domains, new connections.</p>
           <div style={{ maxWidth: '380px', margin: '0 auto' }}>
             <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
             <form action="https://app.kit.com/forms/9215183/subscriptions" className="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
-              <input type="email" name="email_address" placeholder="your email" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
+              <input type="email" name="email_address" placeholder="your email" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
               <button type="submit" style={{ width: '100%', padding: '16px', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Join us {'\u2192'}</button>
             </form>
           </div>

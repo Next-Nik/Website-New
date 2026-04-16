@@ -77,7 +77,7 @@ const PLACEHOLDERS = {
 // ─── Shared styles ────────────────────────────────────────────────────────────
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = { color: '#A8721A' }
 const muted = { color: 'rgba(15,21,35,0.72)' }
 const meta  = { color: 'rgba(15,21,35,0.72)' }
@@ -413,7 +413,7 @@ function QuestionLabel({ stage, index, total, label }) {
       {label && (
         <>
           <span style={{ ...sc, fontSize: '17px', color: '#A8721A' }}>{'\u00b7'}</span>
-          <span style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>{label}</span>
+          <span style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>{label}</span>
         </>
       )}
     </div>
@@ -487,7 +487,7 @@ function StageTransition({ nextStage, onContinue, loading = false }) {
       <h3 style={{ ...sc, fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>
         {c.heading}
       </h3>
-      <p style={{ ...serif, fontSize: '1.1875rem', ...muted, lineHeight: 1.75, marginBottom: '24px' }}>
+      <p style={{ ...body, fontSize: '1.1875rem', ...muted, lineHeight: 1.75, marginBottom: '24px' }}>
         {c.body}
       </p>
       {loading ? (
@@ -500,7 +500,7 @@ function StageTransition({ nextStage, onContinue, loading = false }) {
             </span>
             Reading everything
           </div>
-          <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: 0, textAlign: 'center', lineHeight: 1.6 }}>
+          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: 0, textAlign: 'center', lineHeight: 1.6 }}>
             North Star is reading all three conversations together. Usually under 15 seconds.
           </p>
         </div>
@@ -540,7 +540,7 @@ function CentreModal({ wedgeStates, onClose, onGoToStage }) {
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '36px 32px', maxWidth: '380px', width: '100%' }}>
         <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>Purpose Piece</span>
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.1 }}>Three coordinates to find.</h2>
-        <p style={{ ...serif, fontSize: '1.1875rem', ...muted, lineHeight: 1.7, marginBottom: '24px' }}>
+        <p style={{ ...body, fontSize: '1.1875rem', ...muted, lineHeight: 1.7, marginBottom: '24px' }}>
           Complete all three to reveal your Purpose Piece.
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '24px' }}>
@@ -556,12 +556,12 @@ function CentreModal({ wedgeStates, onClose, onGoToStage }) {
                   {done && <span style={{ color: '#FFFFFF', fontSize: '15px', lineHeight: 1 }}>✓</span>}
                 </span>
                 <span style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: done ? '#A8721A' : 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>{s.label}</span>
-                {!done && <span style={{ ...serif, fontSize: '1.125rem', ...muted, marginLeft: 'auto' }}>Go →</span>}
+                {!done && <span style={{ ...body, fontSize: '1.125rem', ...muted, marginLeft: 'auto' }}>Go →</span>}
               </button>
             )
           })}
         </div>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', ...serif, fontSize: '1.1875rem', ...muted, cursor: 'pointer', padding: 0 }}>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', ...body, fontSize: '1.1875rem', ...muted, cursor: 'pointer', padding: 0 }}>
           Continue where I am
         </button>
       </div>
@@ -593,7 +593,7 @@ function WelcomeModal({ onBegin }) {
             ].map(item => (
               <div key={item.label}>
                 <div style={{ fontFamily: "\'Cormorant SC\', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>{item.label}</div>
-                <div style={{ fontFamily: "\'Cormorant Garamond\', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>{item.sub}</div>
+                <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>{item.sub}</div>
               </div>
             ))}
           </div>
@@ -605,7 +605,7 @@ function WelcomeModal({ onBegin }) {
           fontSize: '1.125rem', letterSpacing: '0.14em', cursor: 'pointer',
           transition: 'all 0.2s',
         }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.55)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
           onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
         >
           Let’s find it {'\u2192'}
@@ -621,7 +621,7 @@ function AuthModal() {
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
         <span style={{ display: 'block', ...sc, fontSize: '17px', letterSpacing: '0.22em', ...gold, textTransform: 'uppercase', marginBottom: '14px' }}>Purpose Piece</span>
         <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px', lineHeight: 1.1 }}>Sign in to begin.</h2>
-        <p style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.7, marginBottom: '28px' }}>
+        <p style={{ ...body, fontSize: '1.1875rem', ...meta, lineHeight: 1.7, marginBottom: '28px' }}>
           Something in you already knows what you're built for. Purpose Piece finds your contribution archetype, your domain, and your scale — the three coordinates that together make your Purpose Piece.
         </p>
         <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '15px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
@@ -642,7 +642,7 @@ function DeepGateModal({ onUnlock, onDismiss }) {
         <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '14px', lineHeight: 1.15 }}>
           The tension. The shadow.<br />The full picture.
         </h2>
-        <p style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.8, marginBottom: '28px' }}>
+        <p style={{ ...body, fontSize: '1.1875rem', ...meta, lineHeight: 1.8, marginBottom: '28px' }}>
           The First Look gave you the shape. The Deep Dive is a real conversation {'\u2014'} into what this costs you at the bone, where the instinct breaks, and what it{'\u2019'}s been asking of you.
         </p>
         <button onClick={onUnlock} style={{ ...btnStyle, display: 'block', width: '100%', textAlign: 'center', marginBottom: '12px' }}
@@ -650,7 +650,7 @@ function DeepGateModal({ onUnlock, onDismiss }) {
           onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
           Unlock the Deep Dive
         </button>
-        <button onClick={onDismiss} style={{ display: 'block', width: '100%', background: 'none', border: 'none', ...serif, fontSize: '1.1875rem', ...muted, cursor: 'pointer', padding: '8px' }}>
+        <button onClick={onDismiss} style={{ display: 'block', width: '100%', background: 'none', border: 'none', ...body, fontSize: '1.1875rem', ...muted, cursor: 'pointer', padding: '8px' }}>
           Not now
         </button>
       </div>
@@ -1376,7 +1376,7 @@ export function PurposePiecePage() {
           {/* Profile card */}
           {profileCard
             ? <div dangerouslySetInnerHTML={{ __html: profileCard }} />
-            : <div style={{ ...serif, fontSize: '1.25rem', ...muted }}>Building your Purpose Piece…</div>
+            : <div style={{ ...body, fontSize: '1.25rem', ...muted }}>Building your Purpose Piece…</div>
           }
 
           {/* Thinking indicator while mirror loads */}
@@ -1400,7 +1400,7 @@ export function PurposePiecePage() {
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '20px' }}>
                 The mirror
               </div>
-              <p style={{ ...serif, fontSize: '1.1875rem', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, whiteSpace: 'pre-line', margin: 0 }}>
+              <p style={{ ...body, fontSize: '1.1875rem', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, whiteSpace: 'pre-line', margin: 0 }}>
                 {mirrorText}
               </p>
             </div>
@@ -1425,12 +1425,12 @@ export function PurposePiecePage() {
               </button>
               <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '4px' }}>
                 <button onClick={goDeeper}
-                  style={{ background: 'none', border: 'none', ...serif, fontSize: '1rem', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.2)' }}>
+                  style={{ background: 'none', border: 'none', ...body, fontSize: '1rem', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.55)' }}>
                   Go deeper {'\u2192'}
                 </button>
                 {!showCorrection && (
                   <button onClick={openCorrection}
-                    style={{ background: 'none', border: 'none', ...serif, fontSize: '1rem', color: 'rgba(15,21,35,0.58)', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.55)' }}>
+                    style={{ background: 'none', border: 'none', ...body, fontSize: '1rem', color: 'rgba(15,21,35,0.58)', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.55)' }}>
                     The fit isn’t quite right →
                   </button>
                 )}
@@ -1501,7 +1501,7 @@ export function PurposePiecePage() {
           <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', marginBottom: '10px' }}>
             {stageCopy.headline}
           </div>
-          <p style={{ ...serif, fontSize: '1.1875rem', ...muted, lineHeight: 1.75, margin: 0 }}>
+          <p style={{ ...body, fontSize: '1.1875rem', ...muted, lineHeight: 1.75, margin: 0 }}>
             {stageCopy.body}
           </p>
         </div>
@@ -1562,7 +1562,7 @@ export function PurposePiecePage() {
                 background: 'rgba(200,146,42,0.05)',
                 animation: 'ppFadeUp 0.25s ease both',
               }}>
-                <p style={{ ...serif, fontSize: '1rem', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '0' }}>
+                <p style={{ ...body, fontSize: '1rem', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '0' }}>
                   {STAGE_INTROS[activeQuestionStage]?.desc}
                 </p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px' }}>
@@ -1604,14 +1604,14 @@ export function PurposePiecePage() {
               </div>
             )}
             {/* Question text */}
-            <div style={{ ...serif, fontSize: '1.1875rem', color: '#0F1523', lineHeight: 1.75, whiteSpace: 'pre-line', marginBottom: '24px' }}>
+            <div style={{ ...body, fontSize: '1.1875rem', color: '#0F1523', lineHeight: 1.75, whiteSpace: 'pre-line', marginBottom: '24px' }}>
               {currentQuestion}
             </div>
 
             {/* Pending message preview — shown during Back window */}
             {pendingMsg && (
               <div style={{
-                ...serif, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65,
+                ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65,
                 padding: '12px 16px',
                 background: 'rgba(200,146,42,0.05)',
                 borderRadius: '8px',
@@ -1639,7 +1639,7 @@ export function PurposePiecePage() {
                 >
                   ← Back
                 </button>
-                <span style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
+                <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
                   Sending in a moment…
                 </span>
               </div>
@@ -1766,7 +1766,7 @@ export function PurposePiecePage() {
             {showReveal ? 'Your Purpose Piece' : 'Find your fit.'}
           </h1>
           {!showReveal && !session && (
-            <p style={{ ...serif, fontSize: '1.1875rem', ...muted, lineHeight: 1.7, maxWidth: '440px' }}>
+            <p style={{ ...body, fontSize: '1.1875rem', ...muted, lineHeight: 1.7, maxWidth: '440px' }}>
               Something in you already knows what you’re built for. This finds it, and puts language to it.
             </p>
           )}
@@ -2008,7 +2008,7 @@ export function PurposePieceDeepPage() {
         {noFirstLook && (
           <div>
             <div className="bubble bubble-assistant">The Deep Dive begins after the First Look. Complete Purpose Piece first, then return here.</div>
-            <button onClick={() => navigate('/tools/purpose-piece')} style={{ marginTop: '16px', background: 'none', border: 'none', ...serif, fontSize: '1.1875rem', ...gold, cursor: 'pointer', padding: 0 }}>
+            <button onClick={() => navigate('/tools/purpose-piece')} style={{ marginTop: '16px', background: 'none', border: 'none', ...body, fontSize: '1.1875rem', ...gold, cursor: 'pointer', padding: 0 }}>
               {'\u2190'} Start the First Look
             </button>
           </div>
@@ -2019,7 +2019,7 @@ export function PurposePieceDeepPage() {
             if (m.type === 'label')        return <div key={m.id} style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', padding: '8px 0 4px' }}>{m.content}</div>
             if (m.type === 'user')         return <div key={m.id} className="bubble bubble-user">{m.content}</div>
             if (m.type === 'html')         return <div key={m.id} className="bubble bubble-assistant" dangerouslySetInnerHTML={{ __html: m.content }} />
-            if (m.type === 'deep-opening') return <div key={m.id} style={{ maxWidth:'92%', padding:'24px 28px', borderRadius:'10px', background:'#FFFFFF', border:'1px solid rgba(200,146,42,0.2)', borderLeft:'3px solid rgba(200,146,42,0.55)', ...serif, fontSize:'1.05rem', lineHeight:1.9, ...meta }}>{m.content}</div>
+            if (m.type === 'deep-opening') return <div key={m.id} style={{ maxWidth:'92%', padding:'24px 28px', borderRadius:'10px', background:'#FFFFFF', border:'1px solid rgba(200,146,42,0.2)', borderLeft:'3px solid rgba(200,146,42,0.55)', ...body, fontSize:'1.05rem', lineHeight:1.9, ...meta }}>{m.content}</div>
             return <div key={m.id} className="bubble bubble-assistant">{m.content}</div>
           })}
           {thinking && <ThinkingDots />}
@@ -2028,7 +2028,7 @@ export function PurposePieceDeepPage() {
 
         {complete && (
           <div style={{ textAlign: 'center', padding: '32px 0 80px' }}>
-            <button onClick={() => navigate('/tools/purpose-piece')} style={{ background: 'none', border: 'none', ...gold, cursor: 'pointer', ...serif, fontSize: '1.125rem' }}>
+            <button onClick={() => navigate('/tools/purpose-piece')} style={{ background: 'none', border: 'none', ...gold, cursor: 'pointer', ...body, fontSize: '1.125rem' }}>
               {'\u2190'} Return to Purpose Piece
             </button>
           </div>

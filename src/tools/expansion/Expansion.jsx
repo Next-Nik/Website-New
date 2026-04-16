@@ -8,7 +8,7 @@ import { TypingIndicator } from '../../components/TypingIndicator'
 import { AccessGate } from '../../components/AccessGate'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = { color: '#A8721A' }
 const muted = { color: 'rgba(15,21,35,0.72)' }
@@ -89,8 +89,8 @@ function SectionHeader({ eyebrow, title, subtitle }) {
   return (
     <div style={{ marginBottom: '32px' }}>
       {eyebrow && <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>{eyebrow}</span>}
-      <h2 style={{ ...serif, fontSize: 'clamp(24px,4vw,36px)', fontWeight: 300, ...dark, lineHeight: 1.1, margin: '0 0 8px' }}>{title}</h2>
-      {subtitle && <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.7, margin: 0 }}>{subtitle}</p>}
+      <h2 style={{ ...body, fontSize: 'clamp(24px,4vw,36px)', fontWeight: 300, ...dark, lineHeight: 1.1, margin: '0 0 8px' }}>{title}</h2>
+      {subtitle && <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.7, margin: 0 }}>{subtitle}</p>}
     </div>
   )
 }
@@ -143,7 +143,7 @@ function ChatInput({ chat, placeholder, disabled }) {
           flex: 1, padding: '12px 16px', borderRadius: '12px',
           border: '1.5px solid rgba(200,146,42,0.30)',
           background: '#FAFAF7', resize: 'none', outline: 'none',
-          ...serif, fontSize: '16px', fontWeight: 300, ...dark,
+          ...body, fontSize: '16px', fontWeight: 300, ...dark,
           lineHeight: 1.6, maxHeight: '160px', overflow: 'auto',
         }}
       />
@@ -182,15 +182,15 @@ function MapRedirect({ onSkip }) {
   return (
     <div style={{ maxWidth: '560px', margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
       <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>One step first</span>
-      <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,40px)', fontWeight: 300, ...dark, lineHeight: 1.1, marginBottom: '20px' }}>Horizon Practice works best with your Map.</h2>
-      <p style={{ ...serif, fontSize: '17px', fontWeight: 300, ...muted, lineHeight: 1.8, marginBottom: '16px' }}>
+      <h2 style={{ ...body, fontSize: 'clamp(28px,4vw,40px)', fontWeight: 300, ...dark, lineHeight: 1.1, marginBottom: '20px' }}>Horizon Practice works best with your Map.</h2>
+      <p style={{ ...body, fontSize: '17px', fontWeight: 300, ...muted, lineHeight: 1.8, marginBottom: '16px' }}>
         Horizon Practice is built on your horizon goals — where you're going, what the gap is, who you're becoming on the way there. The Map gives North Star everything it needs to work with you properly.
       </p>
-      <p style={{ ...serif, fontSize: '17px', fontWeight: 300, ...muted, lineHeight: 1.8, marginBottom: '40px' }}>
+      <p style={{ ...body, fontSize: '17px', fontWeight: 300, ...muted, lineHeight: 1.8, marginBottom: '40px' }}>
         Most people work through The Map over several days. It's the foundation this practice is built on — and the difference between a generic practice and one that's genuinely yours.
       </p>
       <Btn primary onClick={() => window.location.href = '/tools/map'}>Begin The Map →</Btn>
-      <p style={{ ...serif, fontSize: '15px', ...muted, marginTop: '28px', marginBottom: '8px', opacity: 0.7 }}>
+      <p style={{ ...body, fontSize: '15px', ...muted, marginTop: '28px', marginBottom: '8px', opacity: 0.7 }}>
         Already done your Map elsewhere, or want to explore first?
       </p>
       <button onClick={onSkip} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'underline', padding: 0 }}>
@@ -244,7 +244,7 @@ function DomainInputRow({ domain, value, onChange, serif, sc }) {
             pointerEvents: 'none',
           }}>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '5px', textTransform: 'uppercase' }}>{domain}</div>
-            <p style={{ ...serif, fontSize: '14px', fontWeight: 300, color: 'rgba(255,255,255,0.85)', lineHeight: 1.65, margin: 0 }}>
+            <p style={{ ...body, fontSize: '14px', fontWeight: 300, color: 'rgba(255,255,255,0.85)', lineHeight: 1.65, margin: 0 }}>
               {DOMAIN_TIPS[domain]}
             </p>
           </div>
@@ -256,7 +256,7 @@ function DomainInputRow({ domain, value, onChange, serif, sc }) {
         value={value}
         onChange={e => onChange(e.target.value)}
         placeholder={`Where do you want to be in ${domain.toLowerCase()}?`}
-        style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', border: '1px solid rgba(200,146,42,0.25)', background: '#FAFAF7', ...serif, fontSize: '15px', color: '#0F1523', outline: 'none', lineHeight: 1.5 }}
+        style={{ flex: 1, padding: '10px 14px', borderRadius: '10px', border: '1px solid rgba(200,146,42,0.25)', background: '#FAFAF7', ...body, fontSize: '15px', color: '#0F1523', outline: 'none', lineHeight: 1.5 }}
       />
     </div>
   )
@@ -268,7 +268,7 @@ function DomainInputRow({ domain, value, onChange, serif, sc }) {
 function HorizonSelfTooltip() {
   const [show, setShow] = useState(false)
   const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const body = { fontFamily: "'Lora', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
   return (
     <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
@@ -285,7 +285,7 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
       {show && (
         <span style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', top: 'calc(100% + 8px)', zIndex: 9999, background: '#0F1523', borderRadius: '10px', padding: '12px 16px', width: '260px', boxShadow: '0 8px 32px rgba(15,21,35,0.55)', pointerEvents: 'none', display: 'block' }}>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', display: 'block', marginBottom: '5px', textTransform: 'uppercase' }}>Horizon Self</span>
-          <span style={{ ...serif, fontSize: '13px', fontWeight: 300, color: 'rgba(255,255,255,0.85)', lineHeight: 1.65, display: 'block' }}>
+          <span style={{ ...body, fontSize: '13px', fontWeight: 300, color: 'rgba(255,255,255,0.85)', lineHeight: 1.65, display: 'block' }}>
             The version of you already living your Horizon Life — the you who got there. Not an aspiration. A real person you are becoming. The practice is about closing the gap between who you are now and who that person already is.
           </span>
         </span>
@@ -329,10 +329,10 @@ function SetupPhase({ mapData, onComplete, userId }) {
 
       <div style={{ marginBottom: '52px' }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Horizon Practice · Setup</span>
-        <h1 style={{ ...serif, fontSize: 'clamp(32px,5vw,52px)', fontWeight: 300, ...dark, lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '16px' }}>
+        <h1 style={{ ...body, fontSize: 'clamp(32px,5vw,52px)', fontWeight: 300, ...dark, lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '16px' }}>
           Let's build your<br /><em style={{, color: '#A8721A' }}>daily practice.</em>
         </h1>
-        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, ...muted, lineHeight: 1.75, maxWidth: '480px' }}>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300, ...muted, lineHeight: 1.75, maxWidth: '480px' }}>
           Three things to set up. Takes about ten minutes. Everything else builds through the practice itself.
         </p>
       </div>
@@ -344,18 +344,18 @@ function SetupPhase({ mapData, onComplete, userId }) {
             {horizonConfirmed ? '✓ Done' : 'Step 1'}
           </span>
           <div style={{ flex: 1 }}>
-            <div style={{ ...serif, fontSize: '19px', fontWeight: 400, ...dark, marginBottom: '8px' }}>Your horizon goals</div>
+            <div style={{ ...body, fontSize: '19px', fontWeight: 400, ...dark, marginBottom: '8px' }}>Your horizon goals</div>
 
             {mapData?.domains ? (
               <>
-                <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+                <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
                   These are pulled from your Map. Are they still pointing in the right direction?
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
                   {Object.values(mapData.domains).map(d => (
                     <div key={d.id} style={{ display: 'flex', gap: '12px', alignItems: 'baseline', opacity: d.horizon ? 1 : 0.4 }}>
                       <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', minWidth: '100px', flexShrink: 0 }}>{d.label}</span>
-                      <span style={{ ...serif, fontSize: '15px', ...muted, lineHeight: 1.5 }}>
+                      <span style={{ ...body, fontSize: '15px', ...muted, lineHeight: 1.5 }}>
                         {d.horizon || 'not yet set'}
                       </span>
                     </div>
@@ -370,7 +370,7 @@ function SetupPhase({ mapData, onComplete, userId }) {
               </>
             ) : (
               <>
-                <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.7, marginBottom: '20px' }}>
+                <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.7, marginBottom: '20px' }}>
                   For each area of life, write where you want to be. One sentence is enough — the honest destination, not a polished goal. If you do The Map later, these will still be here and you can refine them.
                 </p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
@@ -410,8 +410,8 @@ function SetupPhase({ mapData, onComplete, userId }) {
               {horizonSelf ? '✓ Done' : 'Step 2'}
             </span>
             <div style={{ flex: 1 }}>
-              <div style={{ ...serif, fontSize: '19px', fontWeight: 400, ...dark, marginBottom: '8px' }}>Your Horizon Self</div>
-              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+              <div style={{ ...body, fontSize: '19px', fontWeight: 400, ...dark, marginBottom: '8px' }}>Your Horizon Self</div>
+              <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
                 How does your Horizon Self think, feel, and act? Write a draft — one or two sentences. We'll sharpen it together.
               </p>
 
@@ -426,7 +426,7 @@ function SetupPhase({ mapData, onComplete, userId }) {
                       width: '100%', padding: '14px 16px', borderRadius: '12px',
                       border: '1.5px solid rgba(200,146,42,0.30)', background: '#FAFAF7',
                       resize: 'vertical', outline: 'none', boxSizing: 'border-box',
-                      ...serif, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.6,
+                      ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.6,
                       marginBottom: '16px',
                     }}
                   />
@@ -449,7 +449,7 @@ function SetupPhase({ mapData, onComplete, userId }) {
                       <ChatThread chat={setupChat} />
                       <ChatInput chat={setupChat} />
                       <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.15)' }}>
-                        <p style={{ ...serif, fontSize: '15px', ...muted, marginBottom: '12px' }}>Happy with this statement?</p>
+                        <p style={{ ...body, fontSize: '15px', ...muted, marginBottom: '12px' }}>Happy with this statement?</p>
                         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                           <Btn primary onClick={() => {
                             const lastAssistant = [...setupChat.messages].reverse().find(m => m.role === 'assistant')
@@ -468,7 +468,7 @@ function SetupPhase({ mapData, onComplete, userId }) {
                   )}
                 </>
               ) : (
-                <div style={{ ...serif, fontSize: '16px', color: '#A8721A', lineHeight: 1.7, padding: '14px 16px', background: 'rgba(200,146,42,0.05)', borderRadius: '8px' }}>
+                <div style={{ ...body, fontSize: '16px', color: '#A8721A', lineHeight: 1.7, padding: '14px 16px', background: 'rgba(200,146,42,0.05)', borderRadius: '8px' }}>
                   "{horizonSelf}"
                 </div>
               )}
@@ -485,8 +485,8 @@ function SetupPhase({ mapData, onComplete, userId }) {
               {firstSkill ? '✓ Done' : 'Step 3'}
             </span>
             <div style={{ flex: 1 }}>
-              <div style={{ ...serif, fontSize: '19px', fontWeight: 400, ...dark, marginBottom: '8px' }}>Your first skill or knowledge focus</div>
-              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+              <div style={{ ...body, fontSize: '19px', fontWeight: 400, ...dark, marginBottom: '8px' }}>Your first skill or knowledge focus</div>
+              <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
                 Given where you're going — what's the one thing that, if developed, takes you one real step forward from where you actually are right now?
               </p>
 
@@ -509,13 +509,13 @@ function SetupPhase({ mapData, onComplete, userId }) {
                       <ChatInput chat={skillChat} placeholder="Respond or tell me what feels right…" />
 
                       <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.15)' }}>
-                        <p style={{ ...serif, fontSize: '15px', ...muted, marginBottom: '12px' }}>Name it directly:</p>
+                        <p style={{ ...body, fontSize: '15px', ...muted, marginBottom: '12px' }}>Name it directly:</p>
                         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '12px' }}>
                           <input
                             value={firstSkill}
                             onChange={e => setFirstSkill(e.target.value)}
                             placeholder="e.g. Asset management basics"
-                            style={{ flex: 1, minWidth: '200px', padding: '12px 16px', borderRadius: '12px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FAFAF7', outline: 'none', ...serif, fontSize: '16px', ...dark }}
+                            style={{ flex: 1, minWidth: '200px', padding: '12px 16px', borderRadius: '12px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FAFAF7', outline: 'none', ...body, fontSize: '16px', ...dark }}
                           />
                           <select value={firstSkillType} onChange={e => setFirstSkillType(e.target.value)} style={{ padding: '12px 16px', borderRadius: '12px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FAFAF7', ...sc, fontSize: '14px', color: '#A8721A', letterSpacing: '0.1em' }}>
                             <option value="skill">Skill</option>
@@ -536,7 +536,7 @@ function SetupPhase({ mapData, onComplete, userId }) {
                   )}
                 </>
               ) : (
-                <div style={{ ...serif, fontSize: '16px', color: '#A8721A', lineHeight: 1.7, padding: '14px 16px', background: 'rgba(200,146,42,0.05)', borderRadius: '8px' }}>
+                <div style={{ ...body, fontSize: '16px', color: '#A8721A', lineHeight: 1.7, padding: '14px 16px', background: 'rgba(200,146,42,0.05)', borderRadius: '8px' }}>
                   {firstSkill} <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', opacity: 0.6 }}>({firstSkillType})</span>
                 </div>
               )}
@@ -549,8 +549,8 @@ function SetupPhase({ mapData, onComplete, userId }) {
       {step === 'done' && firstSkill && horizonSelf && (
         <div style={{ textAlign: 'center', padding: '32px 0' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', marginBottom: '12px' }}>Ready</div>
-          <h3 style={{ ...serif, fontSize: '28px', fontWeight: 300, ...dark, marginBottom: '16px' }}>Your practice is set up.</h3>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.75, marginBottom: '32px', maxWidth: '400px', margin: '0 auto 32px' }}>
+          <h3 style={{ ...body, fontSize: '28px', fontWeight: 300, ...dark, marginBottom: '16px' }}>Your practice is set up.</h3>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...muted, lineHeight: 1.75, marginBottom: '32px', maxWidth: '400px', margin: '0 auto 32px' }}>
             Imperceptible daily. Unstoppable over time.
           </p>
           <Btn primary onClick={() => onComplete({ horizonSelf, firstSkill: { title: firstSkill, type: firstSkillType }, customGoals: !mapData ? customGoals : null })}>
@@ -713,7 +713,7 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId, rece
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: '40px 24px 120px' }}>
       <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px' }}>Daily check-in · {today}</div>
-      <div style={{ ...serif, fontSize: '13px', color: '#A8721A', opacity: 0.7, marginBottom: '32px' }}>
+      <div style={{ ...body, fontSize: '13px', color: '#A8721A', opacity: 0.7, marginBottom: '32px' }}>
         "{setupData.horizonSelf}"
       </div>
 
@@ -733,9 +733,9 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId, rece
         <div style={{ animation: 'fadeIn 0.3s ease' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
             <span style={{ ...sc, fontSize: '28px', fontWeight: 600, color: '#A8721A', lineHeight: 1 }}>{currentStep.eyebrow}</span>
-            <span style={{ ...serif, fontSize: '20px', fontWeight: 300, ...dark }}>{currentStep.label}</span>
+            <span style={{ ...body, fontSize: '20px', fontWeight: 300, ...dark }}>{currentStep.label}</span>
           </div>
-          <p style={{ ...serif, fontSize: '18px', fontWeight: 300, ...dark, lineHeight: 1.75, marginBottom: '24px' }}>
+          <p style={{ ...body, fontSize: '18px', fontWeight: 300, ...dark, lineHeight: 1.75, marginBottom: '24px' }}>
             {currentStep.prompt}
           </p>
           <textarea
@@ -747,7 +747,7 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId, rece
               width: '100%', padding: '16px', borderRadius: '12px',
               border: '1.5px solid rgba(200,146,42,0.30)', background: '#FAFAF7',
               resize: 'vertical', outline: 'none', boxSizing: 'border-box',
-              ...serif, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.7,
+              ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.7,
               marginBottom: '16px',
             }}
           />
@@ -762,7 +762,7 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId, rece
         <div style={{ animation: 'fadeIn 0.3s ease' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '20px' }}>North Star reflection</div>
           {reflectionMessages.filter(m => m.role === 'assistant').map((m, i) => (
-            <div key={i} style={{ ...serif, fontSize: '17px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '20px', padding: '16px 20px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '12px' }}>
+            <div key={i} style={{ ...body, fontSize: '17px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '20px', padding: '16px 20px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '12px' }}>
               {m.content}
             </div>
           ))}
@@ -781,7 +781,7 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId, rece
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendReflectionReply() } }}
                 placeholder="Respond, or continue below…"
                 rows={2}
-                style={{ flex: 1, padding: '12px 14px', borderRadius: '10px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FAFAF7', resize: 'none', outline: 'none', ...serif, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.6 }}
+                style={{ flex: 1, padding: '12px 14px', borderRadius: '10px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FAFAF7', resize: 'none', outline: 'none', ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.6 }}
               />
               <Btn primary onClick={sendReflectionReply} disabled={!reflectionInput.trim()}>Send</Btn>
             </div>
@@ -799,10 +799,10 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId, rece
         <div style={{ animation: 'fadeIn 0.3s ease' }}>
           <div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', margin: '32px 0' }} />
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px' }}>Now skill</div>
-          <div style={{ ...serif, fontSize: '18px', fontWeight: 300, ...dark, marginBottom: '16px' }}>
+          <div style={{ ...body, fontSize: '18px', fontWeight: 300, ...dark, marginBottom: '16px' }}>
             {setupData.nowSkill?.title || <span style={{ opacity: 0.5 }}>No active skill set yet</span>}
           </div>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...muted, marginBottom: '16px', lineHeight: 1.7 }}>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...muted, marginBottom: '16px', lineHeight: 1.7 }}>
             Did you practise or learn anything in this area today? Note it here — even a small thing counts.
           </p>
           <textarea
@@ -814,7 +814,7 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId, rece
               width: '100%', padding: '14px 16px', borderRadius: '12px',
               border: '1.5px solid rgba(200,146,42,0.20)', background: '#FAFAF7',
               resize: 'vertical', outline: 'none', boxSizing: 'border-box',
-              ...serif, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.6,
+              ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.6,
               marginBottom: '24px',
             }}
           />
@@ -876,7 +876,7 @@ function SkillsList({ skills, onAdd, onUpdate, onTriage, mapData }) {
         transition: 'all 0.2s',
       }}>
         <div style={{ flex: 1 }}>
-          <div style={{ ...serif, fontSize: '16px', fontWeight: 300, ...dark }}>{skill.title}</div>
+          <div style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark }}>{skill.title}</div>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>{skill.type}</div>
         </div>
         <select
@@ -901,7 +901,7 @@ function SkillsList({ skills, onAdd, onUpdate, onTriage, mapData }) {
           {label} {items.length > 0 && <span style={{ opacity: 0.6 }}>({items.length})</span>}
         </div>
         {items.length === 0 ? (
-          <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)', padding: '12px 0' }}>Empty</div>
+          <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', padding: '12px 0' }}>Empty</div>
         ) : (
           items.map(s => <SkillItem key={s.id} skill={s} />)
         )}
@@ -925,7 +925,7 @@ function SkillsList({ skills, onAdd, onUpdate, onTriage, mapData }) {
       {triageOpen && (
         <GoldCard style={{ marginBottom: '24px' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '16px' }}>Triage — find your next step</div>
-          <p style={{ ...serif, fontSize: '15px', fontWeight: 300, ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+          <p style={{ ...body, fontSize: '15px', fontWeight: 300, ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
             Given where you're going and where you are right now — what's the one thing that, if developed, takes you one real step forward?
           </p>
           {triageChat.messages.length === 0 && (
@@ -952,7 +952,7 @@ function SkillsList({ skills, onAdd, onUpdate, onTriage, mapData }) {
               value={newTitle}
               onChange={e => setNewTitle(e.target.value)}
               placeholder="What do you need to learn or develop?"
-              style={{ flex: 1, minWidth: '200px', padding: '12px 16px', borderRadius: '12px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FAFAF7', outline: 'none', ...serif, fontSize: '16px', ...dark }}
+              style={{ flex: 1, minWidth: '200px', padding: '12px 16px', borderRadius: '12px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FAFAF7', outline: 'none', ...body, fontSize: '16px', ...dark }}
             />
             <select value={newType} onChange={e => setNewType(e.target.value)} style={{ padding: '12px 16px', borderRadius: '12px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FAFAF7', ...sc, fontSize: '14px', color: '#A8721A', letterSpacing: '0.1em' }}>
               <option value="skill">Skill</option>
@@ -1003,10 +1003,10 @@ function LoopJournal({ loops, setupData, onSave }) {
           {loops.map((loop, i) => (
             <Card key={i}>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>{loop.created_at?.slice(0,10)}</div>
-              <div style={{ ...serif, fontSize: '16px', fontWeight: 300, ...dark, marginBottom: '8px' }}><strong>Loop:</strong> {loop.loop_text}</div>
-              {loop.function_text && <div style={{ ...serif, fontSize: '15px', ...muted, marginBottom: '6px' }}><strong>Function:</strong> {loop.function_text}</div>}
-              {loop.interruption && <div style={{ ...serif, fontSize: '15px', ...muted, marginBottom: '6px' }}><strong>Interruption:</strong> {loop.interruption}</div>}
-              {loop.replacement && <div style={{ ...serif, fontSize: '15px', color: '#A8721A' }}><strong>Replacement:</strong> {loop.replacement}</div>}
+              <div style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, marginBottom: '8px' }}><strong>Loop:</strong> {loop.loop_text}</div>
+              {loop.function_text && <div style={{ ...body, fontSize: '15px', ...muted, marginBottom: '6px' }}><strong>Function:</strong> {loop.function_text}</div>}
+              {loop.interruption && <div style={{ ...body, fontSize: '15px', ...muted, marginBottom: '6px' }}><strong>Interruption:</strong> {loop.interruption}</div>}
+              {loop.replacement && <div style={{ ...body, fontSize: '15px', color: '#A8721A' }}><strong>Replacement:</strong> {loop.replacement}</div>}
             </Card>
           ))}
         </div>
@@ -1080,7 +1080,7 @@ function Dashboard({ setupData, checkins, skills, sprintData, mapData, onCheckin
           { label: 'Skills in progress', value: skills.filter(s => s.status === 'now').length },
         ].map(stat => (
           <div key={stat.label} style={{ flex: 1, minWidth: '120px', padding: '20px', background: '#FAFAF7', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '12px', textAlign: 'center' }}>
-            <div style={{ ...serif, fontSize: '32px', fontWeight: 300, color: '#A8721A', lineHeight: 1 }}>{stat.value}</div>
+            <div style={{ ...body, fontSize: '32px', fontWeight: 300, color: '#A8721A', lineHeight: 1 }}>{stat.value}</div>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>{stat.label}</div>
           </div>
         ))}
@@ -1089,7 +1089,7 @@ function Dashboard({ setupData, checkins, skills, sprintData, mapData, onCheckin
       {/* Horizon Self */}
       <Card style={{ marginBottom: '24px' }}>
         <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>Your Horizon Self</div>
-        <div style={{ ...serif, fontSize: '17px', color: '#A8721A', lineHeight: 1.7 }}>"{setupData.horizonSelf}"</div>
+        <div style={{ ...body, fontSize: '17px', color: '#A8721A', lineHeight: 1.7 }}>"{setupData.horizonSelf}"</div>
       </Card>
 
       {/* Map context — focus domains */}
@@ -1103,7 +1103,7 @@ function Dashboard({ setupData, checkins, skills, sprintData, mapData, onCheckin
             })()}
           </div>
           {mapData.lifeHorizon && (
-            <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginTop: '6px', lineHeight: 1.6 }}>
+            <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginTop: '6px', lineHeight: 1.6 }}>
               "{mapData.lifeHorizon}"
             </div>
           )}
@@ -1116,8 +1116,8 @@ function Dashboard({ setupData, checkins, skills, sprintData, mapData, onCheckin
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <span style={{ fontSize: '28px' }}>✓</span>
             <div>
-              <div style={{ ...serif, fontSize: '18px', fontWeight: 300, ...dark }}>Check-in complete for today.</div>
-              <div style={{ ...serif, fontSize: '15px', ...muted, marginTop: '4px' }}>Come back tomorrow. The practice compounds.</div>
+              <div style={{ ...body, fontSize: '18px', fontWeight: 300, ...dark }}>Check-in complete for today.</div>
+              <div style={{ ...body, fontSize: '15px', ...muted, marginTop: '4px' }}>Come back tomorrow. The practice compounds.</div>
             </div>
           </div>
         </GoldCard>
@@ -1126,10 +1126,10 @@ function Dashboard({ setupData, checkins, skills, sprintData, mapData, onCheckin
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '6px' }}>Today</div>
-              <div style={{ ...serif, fontSize: '20px', fontWeight: 300, ...dark }}>Your daily T.E.A. check-in is waiting.</div>
-              {nowSkill && <div style={{ ...serif, fontSize: '15px', ...muted, marginTop: '4px' }}>Current focus: {nowSkill.title}</div>}
+              <div style={{ ...body, fontSize: '20px', fontWeight: 300, ...dark }}>Your daily T.E.A. check-in is waiting.</div>
+              {nowSkill && <div style={{ ...body, fontSize: '15px', ...muted, marginTop: '4px' }}>Current focus: {nowSkill.title}</div>}
             </div>
-            <span style={{ ...serif, fontSize: '28px', color: '#A8721A', flexShrink: 0 }}>→</span>
+            <span style={{ ...body, fontSize: '28px', color: '#A8721A', flexShrink: 0 }}>→</span>
           </div>
         </GoldCard>
       )}
@@ -1138,7 +1138,7 @@ function Dashboard({ setupData, checkins, skills, sprintData, mapData, onCheckin
       {sprintData?.active && (
         <Card style={{ marginTop: '16px' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>Active Target Sprint</div>
-          <div style={{ ...serif, fontSize: '16px', fontWeight: 300, ...dark }}>Your sprint actions are the A in your T.E.A. practice.</div>
+          <div style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark }}>Your sprint actions are the A in your T.E.A. practice.</div>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', marginTop: '6px' }}>
             {(() => {
               const LABELS = { path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances', connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal' }
@@ -1158,8 +1158,8 @@ function DormantFeatureCard({ title, description, daysUntil, onActivate }) {
     <div style={{ padding: '20px 24px', borderRadius: '14px', border: '1px solid rgba(200,146,42,0.18)', background: 'rgba(200,146,42,0.05)', marginBottom: '12px', opacity: 0.8 }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px' }}>
         <div>
-          <div style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>{title}</div>
-          <div style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>{description}</div>
+          <div style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>{title}</div>
+          <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>{description}</div>
           {daysUntil > 0 && (
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginTop: '8px' }}>
               Activates in {daysUntil} days — or start now if you're ready
@@ -1430,7 +1430,7 @@ export function ExpansionPage() {
             <div style={{ maxWidth: '820px', margin: '0 auto', padding: 'clamp(88px,10vw,112px) clamp(20px,5vw,40px) 0' }}>
               <div className="tool-header" style={{ marginBottom: '40px' }}>
                 <span className="tool-eyebrow">Horizon Suite · Horizon Practice</span>
-                <p style={{ ...serif, fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '8px 0 12px', maxWidth: '520px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                <p style={{ ...body, fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '8px 0 12px', maxWidth: '520px', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                   A daily practical practice for becoming your{' '}
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                     Horizon Self
@@ -1438,7 +1438,7 @@ export function ExpansionPage() {
                   </span>.
                 </p>
                 <h1 className="tool-title">Who are you becoming?</h1>
-                <p style={{ ...serif, fontSize: '1.1875rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.65, maxWidth: '480px' }}>
+                <p style={{ ...body, fontSize: '1.1875rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.65, maxWidth: '480px' }}>
                   One day at a time. Imperceptible daily. Unstoppable over time.
                 </p>
               </div>

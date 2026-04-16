@@ -60,7 +60,7 @@
 
 /* Idle instruction — below the heptagon */
 .instruction {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: 20px;
   font-weight: 300;
   font-style: normal;
@@ -120,7 +120,7 @@
   cursor: pointer;
   width: 100%;
   text-align: left;
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: clamp(19px, 2.6vw, 26px);
   font-weight: 300;
   color: var(--text-body);
@@ -178,7 +178,7 @@
 }
 
 .overviewBody {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: clamp(18px, 2.4vw, 22px);
   font-weight: 300;
   color: var(--text-body);
@@ -188,7 +188,7 @@
 
 /* The civilisational vision statement — it should land with weight */
 .overviewGoal {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Lora', Georgia, serif;
   font-size: clamp(19px, 2.8vw, 25px);
   font-style: normal;
   font-weight: 400;

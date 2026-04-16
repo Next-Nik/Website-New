@@ -173,7 +173,7 @@ export function GlossaryPanel() {
                 style={{
                   width: '100%',
                   padding: '9px 14px',
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  fontFamily: "'Lora', Georgia, serif",
                   fontSize: '1.3125rem',
                   color: 'rgba(15,21,35,0.88)',
                   background: 'rgba(200,146,42,0.04)',
@@ -188,7 +188,7 @@ export function GlossaryPanel() {
             {/* Body */}
             <div style={{ padding: '12px 16px 32px', flex: 1 }}>
               {loading && (
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', padding: '24px 8px' }}>
+                <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', padding: '24px 8px' }}>
                   Loading glossary...
                 </p>
               )}
@@ -196,7 +196,7 @@ export function GlossaryPanel() {
               {!loading && glossary && isFiltering && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   {filteredTerms.length === 0 && (
-                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', padding: '12px 8px' }}>
+                    <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', padding: '12px 8px' }}>
                       No terms match "{query}"
                     </p>
                   )}
@@ -278,7 +278,7 @@ function TermCard({ term }) {
       <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', color: '#A8721A', marginBottom: '4px', lineHeight: 1.2 }}>
         {term.term}
       </div>
-      <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
+      <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.55 }}>
         {term.short}
       </div>
     </div>

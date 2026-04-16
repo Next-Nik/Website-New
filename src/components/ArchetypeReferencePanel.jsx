@@ -147,7 +147,7 @@ export function ArchetypeReferencePanel() {
                 <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '4px' }}>
                   The Nine Archetypes
                 </h2>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+                <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
                   Signal {'\u00B7'} Shadow {'\u00B7'} Nine patterns of contribution
                 </p>
               </div>
@@ -172,7 +172,7 @@ export function ArchetypeReferencePanel() {
 
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
+              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
                 Each archetype is a natural role {'\u2014'} a distinct pattern of how a person moves through groups and systems. The signal is the gift. The shadow is what it costs when the gift is overplayed or misapplied.
               </p>
             </div>
@@ -221,7 +221,7 @@ export function ArchetypeReferencePanel() {
                           <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '5px' }}>
                             Signal
                           </div>
-                          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.6 }}>
+                          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.6 }}>
                             {archetype.signal}
                           </p>
                         </div>
@@ -229,7 +229,7 @@ export function ArchetypeReferencePanel() {
                           <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase', marginBottom: '5px' }}>
                             Shadow
                           </div>
-                          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+                          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
                             {archetype.shadow}
                           </p>
                         </div>
@@ -242,7 +242,7 @@ export function ArchetypeReferencePanel() {
 
             {/* Footer */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(200,146,42,0.12)', marginTop: 'auto' }}>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
+              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 The nine archetypes are locked. Every person maps to a primary pattern. The Purpose Piece conversation identifies which one fits most naturally.
               </p>
             </div>

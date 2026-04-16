@@ -5,7 +5,7 @@ import { SiteFooter } from '../components/SiteFooter'
 import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold  = '#A8721A'
 const dark  = '#0F1523'
@@ -162,7 +162,7 @@ function ContributionModal({ need, actor, user, onClose, onSuccess, existingOffe
           style={{
             position: 'absolute', top: '16px', right: '20px',
             background: 'none', border: 'none', cursor: 'pointer',
-            fontSize: '20px', color: 'rgba(15,21,35,0.40)', lineHeight: 1,
+            fontSize: '20px', color: 'rgba(15,21,35,0.55)', lineHeight: 1,
           }}
         >
           ×
@@ -173,11 +173,11 @@ function ContributionModal({ need, actor, user, onClose, onSuccess, existingOffe
           <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, display: 'block', marginBottom: '6px' }}>
             {actor.name}
           </span>
-          <h3 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: dark, lineHeight: 1.2, marginBottom: '6px' }}>
+          <h3 style={{ ...body, fontSize: '22px', fontWeight: 300, color: dark, lineHeight: 1.2, marginBottom: '6px' }}>
             {need ? `I can help with: ${need.title}` : `I want to contribute to ${actor.name}`}
           </h3>
           {need?.description && (
-            <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>
+            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>
               {need.description.slice(0, 120)}{need.description.length > 120 ? '…' : ''}
             </p>
           )}
@@ -189,13 +189,13 @@ function ContributionModal({ need, actor, user, onClose, onSuccess, existingOffe
         {existingOffers.length > 0 && existingOffers[0].title && (
           <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', padding: '12px 16px', marginBottom: '20px' }}>
             <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Your offer</p>
-            <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.70)', margin: 0 }}>{existingOffers[0].title}</p>
+            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.70)', margin: 0 }}>{existingOffers[0].title}</p>
           </div>
         )}
 
         {/* Step 1: Type selection */}
         <div style={{ marginBottom: '20px' }}>
-          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.50)', marginBottom: '12px' }}>
+          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '12px' }}>
             How would you like to contribute?
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -218,7 +218,7 @@ function ContributionModal({ need, actor, user, onClose, onSuccess, existingOffe
                 <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: contribType === t.value ? gold : 'rgba(15,21,35,0.70)', marginBottom: '3px' }}>
                   {t.label}
                 </div>
-                <div style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.50)', lineHeight: 1.4 }}>
+                <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.4 }}>
                   {t.desc}
                 </div>
               </button>
@@ -235,7 +235,7 @@ function ContributionModal({ need, actor, user, onClose, onSuccess, existingOffe
             <input
               type="number" value={amount} onChange={e => setAmount(e.target.value)}
               placeholder="e.g. 500"
-              style={{ ...serif, fontSize: '15px', color: dark, padding: '10px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
+              style={{ ...body, fontSize: '15px', color: dark, padding: '10px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
             />
           </div>
         )}
@@ -249,7 +249,7 @@ function ContributionModal({ need, actor, user, onClose, onSuccess, existingOffe
             <input
               type="number" value={amount} onChange={e => setAmount(e.target.value)}
               placeholder="e.g. 10"
-              style={{ ...serif, fontSize: '15px', color: dark, padding: '10px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
+              style={{ ...body, fontSize: '15px', color: dark, padding: '10px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
             />
           </div>
         )}
@@ -264,18 +264,18 @@ function ContributionModal({ need, actor, user, onClose, onSuccess, existingOffe
             onChange={e => setMessage(e.target.value)}
             placeholder="Tell them a little about what you're offering, your background, or how you'd like to help. This goes to the organisation."
             rows={3}
-            style={{ ...serif, fontSize: '14px', color: dark, padding: '10px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }}
+            style={{ ...body, fontSize: '14px', color: dark, padding: '10px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }}
           />
         </div>
 
         {/* Transparency note */}
-        <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.45)', lineHeight: 1.6, marginBottom: '20px' }}>
+        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '20px' }}>
           Your contribution will be recorded on your profile and attributed to {actor.name}. You can set it to private at any time from your profile.
         </p>
 
         {/* Error */}
         {error && (
-          <p style={{ ...serif, fontSize: '14px', color: '#8A3030', marginBottom: '16px' }}>{error}</p>
+          <p style={{ ...body, fontSize: '14px', color: '#8A3030', marginBottom: '16px' }}>{error}</p>
         )}
 
         {/* Submit */}
@@ -342,7 +342,7 @@ function AuthPromptModal({ need, actor, onClose }) {
       }}>
         <button
           onClick={onClose}
-          style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px', color: 'rgba(15,21,35,0.40)', lineHeight: 1 }}
+          style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '20px', color: 'rgba(15,21,35,0.55)', lineHeight: 1 }}
         >×</button>
 
         {!sent ? (
@@ -350,10 +350,10 @@ function AuthPromptModal({ need, actor, onClose }) {
             <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, display: 'block', marginBottom: '12px' }}>
               Good instinct.
             </span>
-            <h3 style={{ ...serif, fontSize: '24px', fontWeight: 300, color: dark, lineHeight: 1.2, marginBottom: '12px' }}>
+            <h3 style={{ ...body, fontSize: '24px', fontWeight: 300, color: dark, lineHeight: 1.2, marginBottom: '12px' }}>
               Create an account to contribute.
             </h3>
-            <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, marginBottom: '24px' }}>
+            <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, marginBottom: '24px' }}>
               Your contributions are tracked, attributed, and visible on your profile. They build a record of what you've actually done in the world.
             </p>
 
@@ -364,11 +364,11 @@ function AuthPromptModal({ need, actor, onClose }) {
               Sign in or create account →
             </button>
 
-            <div style={{ textAlign: 'center', ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.40)', marginBottom: '20px' }}>
+            <div style={{ textAlign: 'center', ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '20px' }}>
               or
             </div>
 
-            <p style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.60)', marginBottom: '12px' }}>
+            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.60)', marginBottom: '12px' }}>
               Leave your email and we'll follow up when you're ready.
             </p>
             <form onSubmit={saveWaitlist} style={{ display: 'flex', gap: '8px' }}>
@@ -376,7 +376,7 @@ function AuthPromptModal({ need, actor, onClose }) {
                 type="email" required
                 value={email} onChange={e => setEmail(e.target.value)}
                 placeholder="your@email.com"
-                style={{ ...serif, fontSize: '15px', color: dark, padding: '10px 14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', flex: 1 }}
+                style={{ ...body, fontSize: '15px', color: dark, padding: '10px 14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none', flex: 1 }}
               />
               <button type="submit" disabled={saving} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '10px 18px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: gold, cursor: 'pointer', flexShrink: 0 }}>
                 {saving ? '…' : 'Save'}
@@ -388,8 +388,8 @@ function AuthPromptModal({ need, actor, onClose }) {
             <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(42,107,58,0.10)', border: '1.5px solid rgba(42,107,58,0.40)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
               <span style={{ color: '#2A6B3A', fontSize: '18px' }}>✓</span>
             </div>
-            <h3 style={{ ...serif, fontSize: '22px', fontWeight: 300, color: dark, marginBottom: '10px' }}>Noted.</h3>
-            <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.7 }}>
+            <h3 style={{ ...body, fontSize: '22px', fontWeight: 300, color: dark, marginBottom: '10px' }}>Noted.</h3>
+            <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.7 }}>
               We'll be in touch. When you're ready to formalise your contribution, create an account and it will be waiting.
             </p>
           </div>
@@ -412,8 +412,8 @@ function ContributionSuccess({ actor, onClose }) {
         <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(42,107,58,0.10)', border: '1.5px solid rgba(42,107,58,0.40)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
           <span style={{ color: '#2A6B3A', fontSize: '22px' }}>✓</span>
         </div>
-        <h3 style={{ ...serif, fontSize: '26px', fontWeight: 300, color: dark, marginBottom: '12px' }}>Contribution recorded.</h3>
-        <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '28px' }}>
+        <h3 style={{ ...body, fontSize: '26px', fontWeight: 300, color: dark, marginBottom: '12px' }}>Contribution recorded.</h3>
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, marginBottom: '28px' }}>
           Your contribution to {actor.name} is now on record. {actor.name} will be notified and can confirm when the work is done. It will appear on your profile.
         </p>
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -451,9 +451,9 @@ function NeedCard({ need, onHelp }) {
           {/* Tags */}
           <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
             <Pill>{NEED_TYPE_LABEL[need.need_type] || need.need_type}</Pill>
-            <Pill color="rgba(15,21,35,0.45)">{need.size === 'micro' ? 'Task' : 'Role'}</Pill>
+            <Pill color="rgba(15,21,35,0.55)">{need.size === 'micro' ? 'Task' : 'Role'}</Pill>
             {need.time_estimate && (
-              <Pill color="rgba(15,21,35,0.35)">{need.time_estimate}</Pill>
+              <Pill color="rgba(15,21,35,0.55)">{need.time_estimate}</Pill>
             )}
             {need.compensation_type && need.compensation_type !== 'none' && (
               <Pill color="#2A6B3A">{COMP_LABEL[need.compensation_type]}</Pill>
@@ -461,13 +461,13 @@ function NeedCard({ need, onHelp }) {
           </div>
 
           {/* Title */}
-          <h4 style={{ ...serif, fontSize: '18px', fontWeight: 300, color: dark, marginBottom: '8px', lineHeight: 1.3 }}>
+          <h4 style={{ ...body, fontSize: '18px', fontWeight: 300, color: dark, marginBottom: '8px', lineHeight: 1.3 }}>
             {need.title}
           </h4>
 
           {/* Description */}
           {need.description && (
-            <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.75, marginBottom: '10px' }}>
+            <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.75, marginBottom: '10px' }}>
               {need.description}
             </p>
           )}
@@ -478,7 +478,7 @@ function NeedCard({ need, onHelp }) {
               {need.skills_required.map(s => (
                 <span key={s} style={{
                   ...sc, fontSize: '11px', letterSpacing: '0.10em',
-                  color: 'rgba(15,21,35,0.50)',
+                  color: 'rgba(15,21,35,0.55)',
                   background: 'rgba(15,21,35,0.05)',
                   padding: '3px 10px', borderRadius: '4px',
                 }}>
@@ -570,7 +570,7 @@ function OfferingCard({ offering }) {
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
             <Pill>{typeLabel}</Pill>
-            <Pill color="rgba(15,21,35,0.40)">{modeLabel}</Pill>
+            <Pill color="rgba(15,21,35,0.55)">{modeLabel}</Pill>
             <span style={{
               ...sc, fontSize: '12px', letterSpacing: '0.12em',
               color: accessColor,
@@ -579,12 +579,12 @@ function OfferingCard({ offering }) {
             </span>
           </div>
 
-          <h4 style={{ ...serif, fontSize: '18px', fontWeight: 300, color: dark, marginBottom: '8px', lineHeight: 1.3 }}>
+          <h4 style={{ ...body, fontSize: '18px', fontWeight: 300, color: dark, marginBottom: '8px', lineHeight: 1.3 }}>
             {offering.title}
           </h4>
 
           {offering.description && (
-            <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.75, marginBottom: '10px' }}>
+            <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.75, marginBottom: '10px' }}>
               {offering.description}
             </p>
           )}
@@ -742,7 +742,7 @@ export function NextUsActorPage() {
       <div style={{ background: parch, minHeight: '100vh' }}>
         <Nav activePath="nextus" />
         <div style={{ maxWidth: '780px', margin: '0 auto', padding: '120px 40px' }}>
-          <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.45)' }}>Loading…</p>
+          <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.55)' }}>Loading…</p>
         </div>
       </div>
     )
@@ -753,7 +753,7 @@ export function NextUsActorPage() {
       <div style={{ background: parch, minHeight: '100vh' }}>
         <Nav activePath="nextus" />
         <div style={{ maxWidth: '780px', margin: '0 auto', padding: '120px 40px', textAlign: 'center' }}>
-          <p style={{ ...serif, fontSize: '20px', color: 'rgba(15,21,35,0.55)', marginBottom: '20px' }}>
+          <p style={{ ...body, fontSize: '20px', color: 'rgba(15,21,35,0.55)', marginBottom: '20px' }}>
             Actor not found.
           </p>
           <button onClick={() => navigate('/nextus/actors')}
@@ -810,7 +810,7 @@ export function NextUsActorPage() {
         {/* Back */}
         <button
           onClick={() => navigate('/nextus/actors')}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '36px', padding: 0 }}
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '36px', padding: 0 }}
         >
           ← All actors
         </button>
@@ -824,7 +824,7 @@ export function NextUsActorPage() {
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             gap: '16px', flexWrap: 'wrap',
           }}>
-            <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.70)', margin: 0 }}>
+            <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.70)', margin: 0 }}>
               Is this you or your organisation? This profile was created from public information.
             </p>
             {!claimSent ? (
@@ -835,7 +835,7 @@ export function NextUsActorPage() {
                 {claiming ? 'Sending…' : 'Claim this profile →'}
               </button>
             ) : (
-              <span style={{ ...serif, fontSize: '15px', color: '#2A6B3A' }}>Claim submitted — we'll be in touch.</span>
+              <span style={{ ...body, fontSize: '15px', color: '#2A6B3A' }}>Claim submitted — we'll be in touch.</span>
             )}
           </div>
         )}
@@ -854,7 +854,7 @@ export function NextUsActorPage() {
           return (
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '18px' }}>
               <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(15,21,35,0.25)' }} />
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.35)' }}>
+              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
                 Last active {days} days ago
               </span>
             </div>
@@ -863,16 +863,16 @@ export function NextUsActorPage() {
 
         {/* Meta pills */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '14px' }}>
-          {actor.type        && <Pill color="rgba(15,21,35,0.45)">{actor.type}</Pill>}
-          {scaleLabel        && <Pill color="rgba(15,21,35,0.35)">{scaleLabel}</Pill>}
+          {actor.type        && <Pill color="rgba(15,21,35,0.55)">{actor.type}</Pill>}
+          {scaleLabel        && <Pill color="rgba(15,21,35,0.55)">{scaleLabel}</Pill>}
           {actor.focus?.name && <Pill color={gold}>{actor.focus.name}</Pill>}
-          {actor.location_name && <Pill color="rgba(15,21,35,0.35)">{actor.location_name}</Pill>}
+          {actor.location_name && <Pill color="rgba(15,21,35,0.55)">{actor.location_name}</Pill>}
           {actor.winning     && <Pill color="#2A6B3A">Succeeding</Pill>}
         </div>
 
         {/* Name */}
         <h1 style={{
-          ...serif,
+          ...body,
           fontSize: 'clamp(28px,4.5vw,46px)',
           fontWeight: 300, color: dark,
           lineHeight: 1.08, letterSpacing: '-0.01em',
@@ -900,7 +900,7 @@ export function NextUsActorPage() {
             </>
           )}
           {actorDomains.length > 1 && (
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.35)', marginLeft: '4px' }}>
+            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginLeft: '4px' }}>
               Primary
             </span>
           )}
@@ -944,17 +944,17 @@ export function NextUsActorPage() {
             </button>
             <button
               onClick={() => navigate(`/nextus/actors/${id}/manage`)}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '10px 20px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.20)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '10px 20px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.55)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}
             >
               Manage profile
             </button>
-            <span style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.40)' }}>You own this profile</span>
+            <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>You own this profile</span>
           </div>
         )}
 
         {/* Description */}
         {actor.description && (
-          <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.82)', lineHeight: 1.85, marginBottom: '28px' }}>
+          <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.82)', lineHeight: 1.85, marginBottom: '28px' }}>
             {actor.description}
           </p>
         )}
@@ -963,12 +963,12 @@ export function NextUsActorPage() {
         {(actor.impact_summary || actor.reach) && (
           <div style={{ borderLeft: '2px solid rgba(200,146,42,0.22)', paddingLeft: '22px', marginBottom: '36px' }}>
             {actor.impact_summary && (
-              <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.75)', lineHeight: 1.8, marginBottom: actor.reach ? '8px' : 0 }}>
+              <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.75)', lineHeight: 1.8, marginBottom: actor.reach ? '8px' : 0 }}>
                 {actor.impact_summary}
               </p>
             )}
             {actor.reach && (
-              <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', margin: 0 }}>
+              <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', margin: 0 }}>
                 Reach: {actor.reach}
               </p>
             )}
@@ -998,11 +998,11 @@ export function NextUsActorPage() {
                       </span>
                     )}
                   </div>
-                  <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: horizon ? '10px' : 0 }}>
+                  <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: horizon ? '10px' : 0 }}>
                     {d.alignment_note}
                   </p>
                   {horizon && (
-                    <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.40)', lineHeight: 1.6, margin: 0 }}>
+                    <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, margin: 0 }}>
                       Horizon: {horizon}
                     </p>
                   )}
@@ -1018,7 +1018,7 @@ export function NextUsActorPage() {
             <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>
               {domainLabel} · Horizon Goal
             </div>
-            <p style={{ ...serif, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.75)', lineHeight: 1.75, margin: 0 }}>
+            <p style={{ ...body, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.75)', lineHeight: 1.75, margin: 0 }}>
               {horizonGoal}
             </p>
           </div>
@@ -1027,7 +1027,7 @@ export function NextUsActorPage() {
         {/* Alignment score — only show if computed by integrity cron (3+ closed loops) */}
         {actor.alignment_score != null && actor.alignment_score_computed && (
           <div style={{ marginBottom: '36px' }}>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.40)', marginBottom: '8px' }}>
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
               Alignment to Horizon Goal — {actor.alignment_score}/10
             </div>
             <div style={{ height: '3px', background: 'rgba(200,146,42,0.12)', borderRadius: '2px', maxWidth: '280px' }}>
@@ -1037,10 +1037,10 @@ export function NextUsActorPage() {
         )}
         {actor.alignment_score != null && !actor.alignment_score_computed && (
           <div style={{ marginBottom: '36px' }}>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.30)', marginBottom: '4px' }}>
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
               Alignment to Horizon Goal
             </div>
-            <div style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.35)' }}>
+            <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
               Not yet established — confirmed contribution loops required
             </div>
           </div>
@@ -1062,10 +1062,10 @@ export function NextUsActorPage() {
         {offerings.length > 0 && (
           <div style={{ marginBottom: '52px' }}>
             <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '36px' }} />
-            <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: dark, marginBottom: '10px' }}>
+            <h2 style={{ ...body, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: dark, marginBottom: '10px' }}>
               What they offer.
             </h2>
-            <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)', marginBottom: '28px', lineHeight: 1.65, maxWidth: '520px' }}>
+            <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', marginBottom: '28px', lineHeight: 1.65, maxWidth: '520px' }}>
               Tools, services, programmes, and resources available from {actor.name}.
             </p>
             {offerings.map(o => (
@@ -1079,10 +1079,10 @@ export function NextUsActorPage() {
           <div style={{ marginBottom: '48px' }}>
             <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '36px' }} />
             <div style={{ background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '12px', padding: '20px 24px' }}>
-              <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.40)', marginBottom: '8px' }}>
+              <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
                 Needs paused
               </p>
-              <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, margin: 0 }}>
+              <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, margin: 0 }}>
                 {actor.name} is completing outstanding contribution reports before posting new needs. Check back soon.
               </p>
             </div>
@@ -1090,10 +1090,10 @@ export function NextUsActorPage() {
         ) : needs.length > 0 && (
           <div style={{ marginBottom: '48px' }}>
             <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '36px' }} />
-            <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: dark, marginBottom: '10px' }}>
+            <h2 style={{ ...body, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: dark, marginBottom: '10px' }}>
               What they need.
             </h2>
-            <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)', marginBottom: '28px', lineHeight: 1.65, maxWidth: '520px' }}>
+            <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', marginBottom: '28px', lineHeight: 1.65, maxWidth: '520px' }}>
               {actor.name} is actively looking for contributors. If any of these match your skills or interests, let them know — your contribution will be tracked and attributed.
             </p>
             {needs.map(need => (
@@ -1105,10 +1105,10 @@ export function NextUsActorPage() {
         {/* ── GENERAL CONTRIBUTE CTA ── */}
         <div style={{ marginBottom: '48px' }}>
           <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '36px' }} />
-          <h2 style={{ ...serif, fontSize: 'clamp(20px,2.5vw,28px)', fontWeight: 300, color: dark, marginBottom: '10px' }}>
+          <h2 style={{ ...body, fontSize: 'clamp(20px,2.5vw,28px)', fontWeight: 300, color: dark, marginBottom: '10px' }}>
             Want to contribute?
           </h2>
-          <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '20px', maxWidth: '480px' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '20px', maxWidth: '480px' }}>
             {needs.length === 0
               ? `${actor.name} hasn't posted specific needs yet. You can still record a general contribution — it will appear on your profile and be visible to them.`
               : `You can also contribute in a way not listed above.`
@@ -1136,10 +1136,10 @@ export function NextUsActorPage() {
           <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: 'rgba(200,146,42,0.70)', marginBottom: '12px' }}>
             Stay informed
           </div>
-          <h3 style={{ ...serif, fontSize: '24px', fontWeight: 300, color: 'rgba(255,255,255,0.92)', marginBottom: '10px' }}>
+          <h3 style={{ ...body, fontSize: '24px', fontWeight: 300, color: 'rgba(255,255,255,0.92)', marginBottom: '10px' }}>
             Follow {actor.name}.
           </h3>
-          <p style={{ ...serif, fontSize: '15px', color: 'rgba(255,255,255,0.50)', marginBottom: '24px', lineHeight: 1.7, maxWidth: '380px' }}>
+          <p style={{ ...body, fontSize: '15px', color: 'rgba(255,255,255,0.50)', marginBottom: '24px', lineHeight: 1.7, maxWidth: '380px' }}>
             We'll let you know when new needs are posted or when something changes worth knowing about.
           </p>
           {!waitlistSent ? (
@@ -1149,14 +1149,14 @@ export function NextUsActorPage() {
                 value={waitlistEmail}
                 onChange={e => setWaitlistEmail(e.target.value)}
                 placeholder="your@email.com"
-                style={{ ...serif, fontSize: '15px', color: dark, padding: '13px 18px', borderRadius: '40px', border: 'none', background: 'rgba(255,255,255,0.92)', outline: 'none', flex: 1, minWidth: '200px' }}
+                style={{ ...body, fontSize: '15px', color: dark, padding: '13px 18px', borderRadius: '40px', border: 'none', background: 'rgba(255,255,255,0.92)', outline: 'none', flex: 1, minWidth: '200px' }}
               />
               <button type="submit" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '13px 26px', borderRadius: '40px', border: 'none', background: '#C8922A', color: '#FFFFFF', cursor: 'pointer', flexShrink: 0 }}>
                 Follow →
               </button>
             </form>
           ) : (
-            <p style={{ ...serif, fontSize: '16px', color: '#C8922A', margin: 0 }}>
+            <p style={{ ...body, fontSize: '16px', color: '#C8922A', margin: 0 }}>
               You're following {actor.name}.
             </p>
           )}
@@ -1164,7 +1164,7 @@ export function NextUsActorPage() {
 
         {/* Data transparency */}
         {actor.data_source && (
-          <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.30)', lineHeight: 1.6 }}>
+          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>
             Profile sourced from: {actor.data_source}.
             {!actor.claimed && ' This profile has not been claimed or verified by the entity it describes.'}
           </p>

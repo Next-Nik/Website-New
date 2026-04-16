@@ -288,8 +288,8 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
 
       {/* Label */}
       <div style={{
-        fontFamily: "'Cormorant Garamond',Georgia,serif",
-        fontSize: '1.3125rem', fontStyle: 'italic',
+        fontFamily: "'Lora', Georgia, serif",
+        fontSize: '1.3125rem',
         color: getFlameProps(value).color,
         transition: 'color 0.4s ease',
         textAlign: 'center', minHeight: '20px',
@@ -368,8 +368,8 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
       </span>
 
       <p style={{
-        fontFamily: "'Cormorant Garamond',Georgia,serif",
-        fontSize: '1.25rem', fontStyle: 'italic',
+        fontFamily: "'Lora', Georgia, serif",
+        fontSize: '1.25rem',
         color: 'rgba(15,21,35,0.6)', lineHeight: 1.7,
         textAlign: 'center', marginBottom: '24px',
       }}>
@@ -392,8 +392,8 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
         disabled={locked}
         style={{
           width: '100%', padding: '10px 14px',
-          fontFamily: "'Cormorant Garamond',Georgia,serif",
-          fontSize: '1.125rem', fontStyle: 'italic',
+          fontFamily: "'Lora', Georgia, serif",
+          fontSize: '1.125rem',
           color: 'rgba(15,21,35,0.75)',
           background: 'rgba(200,146,42,0.025)',
           border: '1px solid rgba(200,146,42,0.2)',
@@ -426,9 +426,9 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
         </button>
         {onSkip && !locked && (
           <button onClick={onSkip} style={{
-            fontFamily: "'Cormorant Garamond',Georgia,serif",
-            fontSize: '1.3125rem', fontStyle: 'italic',
-            color: 'rgba(15,21,35,0.35)',
+            fontFamily: "'Lora', Georgia, serif",
+            fontSize: '1.3125rem',
+            color: 'rgba(15,21,35,0.55)',
             background: 'none', border: 'none',
             cursor: 'pointer', padding: '10px',
           }}>
