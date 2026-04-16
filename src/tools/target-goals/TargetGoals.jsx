@@ -1242,7 +1242,7 @@ export function TargetGoalsPage() {
     try {
       const { data } = await supabase
         .from('target_goal_sessions')
-        .select('id, domains, domain_data, quarter_type, target_date, end_date_label, has_map_data, scores_at_start, status')
+        .select('*')
         .eq('user_id', user.id)
         .eq('status', 'active')
         .order('updated_at', { ascending: false })
@@ -1276,7 +1276,10 @@ export function TargetGoalsPage() {
           setTargetDate(saved.targetDate || null)
           setEndDateLabel(saved.endDateLabel || null)
           setDomainData(saved.domainData || {})
-          setActiveDomainId(saved.activeDomainId || saved.selectedDomains?.[0] || null)
+          const validId = saved.activeDomainId && DOMAIN_BY_ID[saved.activeDomainId]
+            ? saved.activeDomainId
+            : (saved.selectedDomains?.find(id => DOMAIN_BY_ID[id]) || null)
+          setActiveDomainId(validId)
           setShowWelcome(false)
         }
       }
@@ -1349,22 +1352,42 @@ export function TargetGoalsPage() {
   async function saveToSupabase() {
     if (!user?.id) return
     try {
-      const payload = {
-        user_id: user.id, domains: selectedDomains, quarter_type: quarterType,
-        target_date: targetDate, end_date_label: endDateLabel,
-        domain_data: domainData, scores_at_start: scores,
-        horizon_scores: horizonScores, has_map_data: hasMapData,
-        status: 'active', updated_at: new Date().toISOString(),
+      // Core payload — columns that must exist
+      const corePayload = {
+        user_id: user.id, domains: selectedDomains,
+        quarter_type: quarterType, target_date: targetDate,
+        domain_data: domainData, status: 'active',
+        updated_at: new Date().toISOString(),
+      }
+      // Extended columns — may not exist in all schema versions, added silently
+      const extPayload = {
+        ...corePayload,
+        end_date_label: endDateLabel,
+        scores_at_start: scores,
+        horizon_scores: horizonScores,
+        has_map_data: hasMapData,
       }
       if (sessionId) {
-        await supabase.from('target_goal_sessions').update({
-          ...payload, updated_at: new Date().toISOString()
-        }).eq('id', sessionId)
+        // Try extended first, fall back to core if 400
+        const { error } = await supabase.from('target_goal_sessions')
+          .update({ ...extPayload, updated_at: new Date().toISOString() }).eq('id', sessionId)
+        if (error) {
+          await supabase.from('target_goal_sessions')
+            .update({ ...corePayload, updated_at: new Date().toISOString() }).eq('id', sessionId)
+        }
       } else {
-        const { data } = await supabase.from('target_goal_sessions')
-          .insert({ ...payload, created_at: new Date().toISOString() })
+        const { data, error } = await supabase.from('target_goal_sessions')
+          .insert({ ...extPayload, created_at: new Date().toISOString() })
           .select('id').single()
-        if (data?.id) setSessionId(data.id)
+        if (error) {
+          // Fall back to core columns only
+          const { data: d2 } = await supabase.from('target_goal_sessions')
+            .insert({ ...corePayload, created_at: new Date().toISOString() })
+            .select('id').single()
+          if (d2?.id) setSessionId(d2.id)
+        } else {
+          if (data?.id) setSessionId(data.id)
+        }
       }
 
       // Write to North Star cross-tool memory
