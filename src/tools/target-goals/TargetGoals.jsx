@@ -1257,16 +1257,16 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
                       const dateStr = toICSDate(date)
                       const domain = DOMAIN_BY_ID[domainId]?.label || domainId
                       const title = encodeURIComponent(`${domain} — Month ${mi + 1} Milestone`)
-                      const taskList = mTasks.map(t => `• ${t.text}`).join('
-')
+                      const taskList = mTasks.map(t => t.text).join('\n')
+
                       const details = encodeURIComponent([
                         m.text,
-                        m.why || '',
-                        taskList ? `
-Tasks:
-${taskList}` : '',
-                      ].filter(Boolean).join('
-'))
+                        m.why ? ('\n' + m.why) : '',
+                        taskList ? ('\nTasks:\n' + taskList) : '',
+                      ].filter(Boolean).join('\n'))
+
+
+
                       const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dateStr}/${dateStr}&details=${details}`
                       setTimeout(() => window.open(url, '_blank'), mi * 300) // stagger to avoid popup blocker
                     })
