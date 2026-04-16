@@ -625,7 +625,7 @@ function AccomplishmentTally({ domains, domainData, onCheck }) {
 
 // ─── Sprint Summary Modal ─────────────────────────────────────────────────────
 
-function SprintSummaryModal({ domains, domainData, onClose }) {
+function SprintSummaryModal({ domains, domainData, onClose, onComplete }) {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
@@ -661,7 +661,7 @@ function SprintSummaryModal({ domains, domainData, onClose }) {
             Your results are saved to your profile. You can return to them any time.
           </p>
           <button
-            onClick={onClose}
+            onClick={onComplete}
             style={{
               display: 'block', width: '100%', padding: '16px 0',
               borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)',
@@ -950,7 +950,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
           <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
             Where do you wish you were in this area? Not a 90-day target — the honest version of your best life here.
           </p>
-          {hasMapData && mapDomain.horizonText && !dd.horizonText && (
+          {hasMapData && mapDomain.horizonText && mapDomain.horizonText !== 'See sub-domain horizons' && !dd.horizonText && (
             <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '14px' }}>
               <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>From your Map</div>
               <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.65, marginBottom: '10px' }}>{mapDomain.horizonText}</div>
@@ -1129,6 +1129,13 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
               </div>
             )
           })}
+          {dd.tasks?.length > 0 && (
+            <div style={{ marginTop: '8px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
+              <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.65, marginBottom: '12px' }}>
+                This domain is set up. Use the arrows or wheel to move to the next one.
+              </p>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -1482,6 +1489,29 @@ export function TargetGoalsPage() {
     setActiveDomainId(next)
   }
 
+  async function handleSprintComplete() {
+    // Mark session complete in Supabase
+    if (sessionId && user?.id) {
+      try {
+        await supabase.from('target_goal_sessions')
+          .update({ status: 'complete', updated_at: new Date().toISOString() })
+          .eq('id', sessionId)
+      } catch {}
+    }
+    // Clear local state so user can start a new sprint
+    try { sessionStorage.removeItem(SS_KEY) } catch {}
+    setSessionId(null)
+    setSelectedDomains([])
+    setDomainData({})
+    setQuarterType(null)
+    setTargetDate(null)
+    setEndDateLabel(null)
+    setActiveDomainId(null)
+    setPhase('select')
+    setShowSummary(false)
+    setShowWelcome(true)
+  }
+
   function handleCentreClick() {
     const allDone = sprintDomains.every(d => {
       const dd = domainData[d.id] || {}
@@ -1537,6 +1567,7 @@ export function TargetGoalsPage() {
           domains={sprintDomains}
           domainData={domainData}
           onClose={() => setShowSummary(false)}
+          onComplete={handleSprintComplete}
         />
       )}
       {showCentreModal && (

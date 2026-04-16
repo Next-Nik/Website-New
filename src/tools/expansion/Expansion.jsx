@@ -505,7 +505,7 @@ function SetupPhase({ mapData, onComplete, userId }) {
                       <ChatInput chat={skillChat} placeholder="Respond or tell me what feels right…" />
 
                       <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.15)' }}>
-                        <p style={{ ...serif, fontSize: '15px', ...muted, marginBottom: '12px' }}>Or name it directly:</p>
+                        <p style={{ ...serif, fontSize: '15px', ...muted, marginBottom: '12px' }}>Name it directly:</p>
                         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '12px' }}>
                           <input
                             value={firstSkill}
@@ -520,6 +520,12 @@ function SetupPhase({ mapData, onComplete, userId }) {
                         </div>
                         {firstSkill && (
                           <Btn primary onClick={() => setStep('done')}>Start with this →</Btn>
+                        )}
+                        {!firstSkill && skillChat.messages.length > 0 && (
+                          <Btn onClick={() => {
+                            const lastMsg = [...skillChat.messages].reverse().find(m => m.role === 'assistant')
+                            if (lastMsg) { setFirstSkill(lastMsg.content.slice(0, 80).replace(/[*"]/g, '').trim()); setStep('done') }
+                          }}>Use the suggestion above →</Btn>
                         )}
                       </div>
                     </>
@@ -587,7 +593,11 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId }) {
       label: 'Actions',
       eyebrow: 'A',
       prompt: sprintData?.active
-        ? `Your sprint domains are ${sprintData.domains?.join(', ')}. What would your Horizon Self do — and did you take action toward your sprint goals today?`
+        ? (() => {
+          const LABELS = { path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances', connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal' }
+          const domainLabels = (sprintData.domains || []).map(id => LABELS[id] || id).join(', ')
+          return `Your active sprint domains are ${domainLabels}. What would your Horizon Self do — and did you move toward your sprint goals in any of these areas today?`
+        })()
         : mapData?.focusDomains?.length
         ? `Your focus areas from The Map are ${mapData.focusDomains.map(id => ({path:'Path',spark:'Spark',body:'Body',finances:'Finances',connection:'Connection',inner_game:'Inner Game',signal:'Signal'})[id] || id).join(', ')}. What would your Horizon Self do? Where did you move in those areas today — and where did your old self show up?`
         : 'What would your Horizon Self do in the situations you faced today? Where did you act from your Horizon Self — and where did your old self show up?',
@@ -668,8 +678,8 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId }) {
       setReflectionMessages(m => [...m, { role: 'assistant', content: 'Something went wrong. Please try again.' }])
     } finally {
       setReflectionThinking(false)
-      setReflectionDone(true)
     }
+    setReflectionDone(true)
   }
 
   function completeCheckin() {
@@ -774,7 +784,7 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId }) {
           <div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', margin: '32px 0' }} />
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px' }}>Now skill</div>
           <div style={{ ...serif, fontSize: '18px', fontWeight: 300, ...dark, marginBottom: '16px' }}>
-            {setupData.nowSkill?.title || 'Your current focus'}
+            {setupData.nowSkill?.title || <span style={{ opacity: 0.5, fontStyle: 'italic' }}>No active skill set yet</span>}
           </div>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...muted, marginBottom: '16px', lineHeight: 1.7 }}>
             Did you practise or learn anything in this area today? Note it here — even a small thing counts.
