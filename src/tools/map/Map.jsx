@@ -1212,7 +1212,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
 
       {/* Hero */}
       <div style={{ padding: '28px 28px 22px', borderBottom: '1px solid rgba(200,146,42,0.1)', background: 'rgba(200,146,42,0.03)' }}>
-        <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '12px' }}>Your Life OS Map</div>
+        <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '12px' }}>Your Horizon Suite Map</div>
         {mapData?.stage && (
           <div style={{ display: 'inline-block', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '6px', padding: '4px 14px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px' }}>{mapData.stage}</div>
         )}
@@ -2218,7 +2218,11 @@ export function MapPage() {
       // Write to North Star cross-tool memory
       const notes = []
       if (map?.life_horizon_draft) notes.push({ tool: 'map', note: `Life horizon: ${map.life_horizon_draft}` })
-      if (map?.focus_domains?.length) notes.push({ tool: 'map', note: `Focus domains: ${map.focus_domains.join(', ')}` })
+      if (map?.focus_domains?.length) {
+        const DOMAIN_LABELS = { path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances', connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal' }
+        const domainNames = map.focus_domains.map(id => DOMAIN_LABELS[id] || id).join(', ')
+        notes.push({ tool: 'map', note: `Focus domains: ${domainNames}` })
+      }
       if (map?.stage) notes.push({ tool: 'map', note: `Developmental stage: ${map.stage}` })
       // Flag any domains below 5
       const dragDomains = Object.entries(allData)

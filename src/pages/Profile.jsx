@@ -2172,7 +2172,7 @@ export function ProfilePage() {
                 borderTop: '3px solid rgba(200,146,42,0.25)', borderRadius: '16px',
                 textAlign: 'center' }}>
                 <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
-                  color: 'rgba(200,146,42,0.5)', marginBottom: '20px' }}>YOUR MAP IS EMPTY</div>
+                  color: '#A8721A', marginBottom: '20px' }}>YOUR MAP IS EMPTY</div>
                 <p style={{ ...serif, fontSize: '19px', fontWeight: 300, fontStyle: 'italic',
                   color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, margin: '0 0 28px',
                   maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
@@ -2196,7 +2196,7 @@ export function ProfilePage() {
                 <div style={{ marginBottom: '36px', paddingBottom: '32px',
                   borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
                   <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.24em',
-                    color: 'rgba(200,146,42,0.6)', marginBottom: '12px' }}>LIFE HORIZON</div>
+                    color: '#A8721A', marginBottom: '12px' }}>LIFE HORIZON</div>
                   <p style={{ ...serif, fontSize: 'clamp(19px,2.8vw,24px)', fontWeight: 300,
                     fontStyle: 'italic', color: '#0F1523', lineHeight: 1.65, margin: 0 }}>
                     {lifeHorizon}
@@ -2586,7 +2586,7 @@ export function ProfilePage() {
             justifyContent: 'space-between', gap: '16px' }}>
             <div>
               <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.22em',
-                color: 'rgba(200,146,42,0.6)', marginBottom: '4px' }}>TARGET SPRINT</div>
+                color: '#A8721A', marginBottom: '4px' }}>TARGET SPRINT</div>
               <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
                 color: 'rgba(15,21,35,0.72)', margin: 0 }}>
                 No active sprint. Choose 3 domains and set your 90-day arc.
@@ -2883,7 +2883,7 @@ export function ProfilePage() {
           background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)',
           borderRadius: '12px' }}>
           <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.22em',
-            color: 'rgba(200,146,42,0.72)', marginBottom: '16px' }}>
+            color: '#A8721A', marginBottom: '16px' }}>
             THE HORIZON SUITE
           </div>
 

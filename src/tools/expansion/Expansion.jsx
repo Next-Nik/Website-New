@@ -385,10 +385,12 @@ function SetupPhase({ mapData, onComplete, userId }) {
                 </div>
                 {!horizonConfirmed && (
                   <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                    <Btn primary onClick={() => {
-                      setHorizonConfirmed(true)
-                      setStep('horizon_self')
-                    }}>These are my horizons →</Btn>
+                    <Btn primary
+                      disabled={!Object.values(customGoals).some(v => v.trim())}
+                      onClick={() => {
+                        setHorizonConfirmed(true)
+                        setStep('horizon_self')
+                      }}>These are my horizons →</Btn>
                     <Btn onClick={() => window.location.href = '/tools/map'}>Do The Map first →</Btn>
                   </div>
                 )}
@@ -1093,7 +1095,10 @@ function Dashboard({ setupData, checkins, skills, sprintData, mapData, onCheckin
         <Card style={{ marginBottom: '16px', background: 'rgba(200,146,42,0.02)' }}>
           <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginBottom: '6px' }}>Your Map · Focus areas</div>
           <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#A8721A' }}>
-            {mapData.focusDomains.map(id => id.charAt(0).toUpperCase() + id.slice(1).replace('_', ' ')).join(' · ')}
+            {(() => {
+              const LABELS = { path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances', connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal' }
+              return mapData.focusDomains.map(id => LABELS[id] || id).join(' · ')
+            })()}
           </div>
           {mapData.lifeHorizon && (
             <div style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginTop: '6px', lineHeight: 1.6 }}>
@@ -1205,32 +1210,46 @@ export function ExpansionPage() {
           .maybeSingle()
 
         if (mapRow) {
-          setMapData({
-            stage: mapRow.map_data?.stage,
-            stageDescription: mapRow.map_data?.stage_description,
-            overallReflection: mapRow.map_data?.overall_reflection,
-            focusDomains: mapRow.map_data?.focus_domains,
-            focusReasoning: mapRow.map_data?.focus_reasoning,
-            lifeHorizon: mapRow.horizon_goal_user || mapRow.map_data?.life_horizon_draft,
-            domains: mapRow.session?.domainData
-              ? (() => {
-                  const DOMAIN_LABELS_MAP = {
-                    path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances',
-                    connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal',
+          const md = mapRow.map_data || {}
+          const DOMAIN_LABELS_MAP = {
+            path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances',
+            connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal',
+          }
+          // Build domain map from session.domainData (always present) 
+          const domains = mapRow.session?.domainData
+            ? (() => {
+                const result = {}
+                Object.entries(mapRow.session.domainData).forEach(([id, d]) => {
+                  if (!DOMAIN_LABELS_MAP[id]) return
+                  result[id] = {
+                    id,
+                    label: DOMAIN_LABELS_MAP[id],
+                    currentScore: d.currentScore,
+                    horizon: (d.horizonText && d.horizonText !== 'See sub-domain horizons') ? d.horizonText : null,
                   }
-                  const result = {}
-                  Object.entries(mapRow.session.domainData).forEach(([id, d]) => {
-                    if (!DOMAIN_LABELS_MAP[id]) return
-                    result[id] = {
-                      id,
-                      label: DOMAIN_LABELS_MAP[id],
-                      currentScore: d.currentScore,
-                      horizon: (d.horizonText && d.horizonText !== 'See sub-domain horizons') ? d.horizonText : null,
-                    }
-                  })
-                  return result
-                })()
-              : null,
+                })
+                return result
+              })()
+            : null
+
+          // Derive focus domains: from map_data if synthesis ran, else lowest 3 scores
+          let focusDomains = md.focus_domains || null
+          if (!focusDomains && domains) {
+            focusDomains = Object.entries(domains)
+              .filter(([, d]) => d.currentScore !== undefined)
+              .sort(([, a], [, b]) => a.currentScore - b.currentScore)
+              .slice(0, 3)
+              .map(([id]) => id)
+          }
+
+          setMapData({
+            stage: md.stage || null,
+            stageDescription: md.stage_description || null,
+            overallReflection: md.overall_reflection || null,
+            focusDomains,
+            focusReasoning: md.focus_reasoning || null,
+            lifeHorizon: mapRow.horizon_goal_user || md.life_horizon_draft || null,
+            domains,
           })
         }
 

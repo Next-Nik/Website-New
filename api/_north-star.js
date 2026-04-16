@@ -41,7 +41,7 @@ function formatNorthStarContext(ctx) {
   if (!ctx) return ''
 
   const lines = []
-  lines.push('WHAT YOU KNOW ABOUT THIS PERSON (from their work across Life OS):')
+  lines.push('WHAT YOU KNOW ABOUT THIS PERSON (from their work across the Horizon Suite):')
   lines.push('This context comes from their own work in other tools. Use it naturally — you know their story. Do not narrate that you are reading notes. If asked directly how you know something, be honest that it comes from their previous work in the ecosystem.')
   lines.push('')
 
@@ -51,7 +51,7 @@ function formatNorthStarContext(ctx) {
     'purpose-piece': 'Purpose Piece',
     'target-goals': 'Target Sprint',
     'expansion': 'Horizon Practice',
-    'foundation': 'Foundation',
+    'foundation': 'Horizon State',
     'orienteering': 'Orienteering',
   }
 

@@ -1161,7 +1161,7 @@ export function PurposePiecePage() {
       if (user?.id && data.session?.tentative) {
         const t = data.session.tentative
         const ppNotes = [
-          t.archetype?.archetype ? `Organisational Archetype: ${t.archetype.archetype}` : null,
+          t.archetype?.archetype ? `Contribution Archetype: ${t.archetype.archetype}` : null,
           t.domain?.domain       ? `Global Domain: ${t.domain.domain}` : null,
           t.scale?.scale         ? `Scale of Focus: ${t.scale.scale}` : null,
         ].filter(Boolean)
@@ -1738,7 +1738,7 @@ export function PurposePiecePage() {
 
         {/* Header */}
         <div style={{ marginBottom: '28px' }}>
-          <span className="tool-eyebrow">NextUs Self {'\u00b7'} Purpose Piece</span>
+          <span className="tool-eyebrow">Horizon Suite {'\u00b7'} Purpose Piece</span>
           <h1 style={{ ...sc, fontSize: 'clamp(26px,6vw,34px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.05, margin: '8px 0 10px' }}>
             {showReveal ? 'Your Purpose Piece' : 'Find your fit.'}
           </h1>
@@ -1956,7 +1956,7 @@ export function PurposePieceDeepPage() {
       <div className="tool-wrap">
 
         <div style={{ marginBottom: '32px' }}>
-          <span className="tool-eyebrow">NextUs Self {'\u00b7'} Purpose Piece</span>
+          <span className="tool-eyebrow">Horizon Suite {'\u00b7'} Purpose Piece</span>
           <h1 style={{ ...sc, fontSize: 'clamp(26px,6vw,34px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.05, margin: '8px 0 0' }}>
             The Deep Dive
           </h1>

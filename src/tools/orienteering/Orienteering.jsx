@@ -116,7 +116,7 @@ export function OrienteeringPage() {
 
       <div className="tool-wrap">
         <div className="tool-header">
-          <span className="tool-eyebrow">NextUs Self</span>
+          <span className="tool-eyebrow">Horizon Suite</span>
           <h1 className="tool-title">Orienteering</h1>
           <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', ...meta, marginTop: '6px', lineHeight: 1.65, maxWidth: '420px' }}>
             A short conversation — three to five exchanges — that reads where you are and points you somewhere real. No jargon, no sign-up required.

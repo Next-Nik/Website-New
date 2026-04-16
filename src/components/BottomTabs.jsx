@@ -7,7 +7,7 @@ const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 function HomeIcon({ active }) {
-  const c = active ? '#A8721A' : 'rgba(15,21,35,0.4)'
+  const c = active ? '#A8721A' : 'rgba(15,21,35,0.55)'
   return (
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
       <path d="M3 9.5L11 3L19 9.5V19C19 19.55 18.55 20 18 20H14V14H8V20H4C3.45 20 3 19.55 3 19V9.5Z"
@@ -17,7 +17,7 @@ function HomeIcon({ active }) {
 }
 
 function GridIcon({ active }) {
-  const c = active ? '#A8721A' : 'rgba(15,21,35,0.4)'
+  const c = active ? '#A8721A' : 'rgba(15,21,35,0.55)'
   return (
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
       <rect x="3"  y="3"  width="7" height="7" rx="1.5" stroke={c} strokeWidth="1.5" fill="none"/>
@@ -29,7 +29,7 @@ function GridIcon({ active }) {
 }
 
 function MoreIcon({ active }) {
-  const c = active ? '#A8721A' : 'rgba(15,21,35,0.4)'
+  const c = active ? '#A8721A' : 'rgba(15,21,35,0.55)'
   return (
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
       <circle cx="5"  cy="11" r="1.5" fill={c}/>
@@ -77,7 +77,7 @@ function MoreMenu({ onClose }) {
 
         {/* Life OS */}
         <div style={{ padding: '12px 20px 6px' }}>
-          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: '#A8721A', textTransform: 'uppercase' }}>Horizon Suite</span>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', textTransform: 'uppercase' }}>Horizon Suite</span>
         </div>
         {lifeOSLinks.map(l => (
           <Link key={l.path} to={l.path} onClick={onClose} style={{
@@ -87,13 +87,13 @@ function MoreMenu({ onClose }) {
             background: 'rgba(200,146,42,0.02)',
           }}>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: '#0F1523' }}>{l.label}</span>
-            <span style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.40)' }}>{l.desc}</span>
+            <span style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{l.desc}</span>
           </Link>
         ))}
 
         {/* NextUs */}
         <div style={{ padding: '12px 20px 6px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
-          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: '#A8721A', textTransform: 'uppercase' }}>NextUs</span>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', textTransform: 'uppercase' }}>NextUs</span>
         </div>
         {nextusLinks.map(l => (
           <Link key={l.path} to={l.path} onClick={onClose} style={{
@@ -103,7 +103,7 @@ function MoreMenu({ onClose }) {
             background: 'rgba(200,146,42,0.02)',
           }}>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: '#0F1523' }}>{l.label}</span>
-            <span style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.40)' }}>{l.desc}</span>
+            <span style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{l.desc}</span>
           </Link>
         ))}
 
@@ -191,7 +191,7 @@ export function BottomTabs() {
               {tab.icon}
               <span style={{
                 ...sc, fontSize: '15px', letterSpacing: '0.10em',
-                color: tab.active ? '#A8721A' : 'rgba(15,21,35,0.4)',
+                color: tab.active ? '#A8721A' : 'rgba(15,21,35,0.55)',
                 lineHeight: 1,
               }}>{tab.label}</span>
             </div>

@@ -986,7 +986,7 @@ export function FoundationPage() {
                     onAfterComplete={async (afterData, beforeData, updatedSessions) => {
                       await writeSummary(user, updatedSessions, afterData, beforeData)
                       supabase.from('north_star_notes').upsert(
-                        { user_id: user.id, tool: 'foundation', note: 'Foundation Baseline practice active.' },
+                        { user_id: user.id, tool: 'foundation', note: 'Horizon State Baseline practice active.' },
                         { onConflict: 'user_id,tool,note' }
                       )
                     }}

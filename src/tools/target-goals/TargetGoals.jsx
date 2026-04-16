@@ -1423,15 +1423,16 @@ export function TargetGoalsPage() {
     if (!user?.id) return
     try {
       const now = new Date().toISOString()
-      // Core — guaranteed columns only
+      // Core — only columns confirmed present in schema (no domain_data)
+      // domain_data is in ext1; if it 400s we at least preserve the session record
       const core = {
         user_id: user.id, domains: selectedDomains,
         quarter_type: quarterType, target_date: targetDate,
-        domain_data: domainData, status: 'active',
-        updated_at: now,
+        status: 'active', updated_at: now,
       }
-      // Extended — progressively add optional columns
-      const ext1 = { ...core, end_date_label: endDateLabel, scores_at_start: scores, horizon_scores: horizonScores, has_map_data: hasMapData }
+      // ext1 adds the content columns — domain_data is the critical one
+      const ext1 = { ...core, domain_data: domainData, end_date_label: endDateLabel, scores_at_start: scores, horizon_scores: horizonScores, has_map_data: hasMapData }
+      // ext2 adds the session-continuity columns
       const ext2 = { ...ext1, session_phase: phase, active_domain_id: activeDomainId }
 
       async function tryInsert(payload) {

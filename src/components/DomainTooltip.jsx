@@ -86,15 +86,15 @@ export function DomainTooltip({ domainKey, label, system = 'lifeos', position = 
         }}
         aria-label={`About ${label || domainKey}`}
       >
-        <span style={{ ...sc, fontSize: '9px', color: '#A8721A', fontStyle: 'italic', lineHeight: 1 }}>i</span>
+        <span style={{ ...sc, fontSize: '11px', color: '#A8721A', fontStyle: 'italic', lineHeight: 1 }}>i</span>
       </button>
 
       {show && (
         <span style={tipStyle}>
-          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: '#A8721A', display: 'block', marginBottom: '5px', textTransform: 'uppercase' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', display: 'block', marginBottom: '5px', textTransform: 'uppercase' }}>
             {label || domainKey}
           </span>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.06em', color: 'rgba(200,146,42,0.7)', display: 'block', marginBottom: '6px', fontWeight: 300 }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', color: 'rgba(200,146,42,0.7)', display: 'block', marginBottom: '6px', fontWeight: 300 }}>
             {topLine}
           </span>
           <span style={{ ...serif, fontSize: '13px', fontWeight: 300, color: 'rgba(255,255,255,0.80)', lineHeight: 1.65, display: 'block' }}>
