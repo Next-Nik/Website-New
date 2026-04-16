@@ -904,6 +904,15 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
           <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
             Where are you right now in {d.label}, and why is this a pivotal area for you this quarter?
           </p>
+          {hasMapData && (mapDomain.realityFinal || mapDomain.realityDraft) && !dd.currentStateSummary && (
+            <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '14px' }}>
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>From your Map</div>
+              <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.65, marginBottom: '10px' }}>{mapDomain.realityFinal || mapDomain.realityDraft}</div>
+              <Btn onClick={() => update({ currentStateSummary: mapDomain.realityFinal || mapDomain.realityDraft, currentStateFromMap: true })} style={{ padding: '8px 18px', fontSize: '15px' }}>
+                Use this →
+              </Btn>
+            </div>
+          )}
           {dd.currentStateSummary ? (
             <div>
               <div style={{ padding: '14px 16px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '8px', ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
@@ -1312,7 +1321,7 @@ export function TargetGoalsPage() {
         setEndDateLabel(data.end_date_label || null)
         setHasMapData(data.has_map_data || false)
         if (data.scores_at_start) setScores(data.scores_at_start)
-        setActiveDomainId(data.domains[0] || null)
+        setActiveDomainId(data.active_domain_id || data.domains[0] || null)
         setPhase('sprint')
         setShowWelcome(false)
         return
@@ -1420,6 +1429,8 @@ export function TargetGoalsPage() {
         scores_at_start: scores,
         horizon_scores: horizonScores,
         has_map_data: hasMapData,
+        session_phase: phase,
+        active_domain_id: activeDomainId,
       }
       if (sessionId) {
         // Try extended first, fall back to core if 400
@@ -1456,13 +1467,13 @@ export function TargetGoalsPage() {
     } catch {}
   }
 
-  // Auto-save when domainData changes in sprint phase
+  // Auto-save when domainData or activeDomainId changes in sprint phase
   useEffect(() => {
-    if (phase === 'sprint' && user?.id && Object.keys(domainData).length > 0) {
+    if (phase === 'sprint' && user?.id) {
       const t = setTimeout(saveToSupabase, 1500)
       return () => clearTimeout(t)
     }
-  }, [domainData])
+  }, [domainData, activeDomainId])
 
   // Cycle domains with prev/next buttons
   function handleWheelNav(dir) {
@@ -1563,6 +1574,8 @@ export function TargetGoalsPage() {
             onContinue={() => {
               setActiveDomainId(selectedDomains[0])
               setPhase('sprint')
+              // Save immediately so other devices see the started session
+              setTimeout(saveToSupabase, 0)
             }}
           />
         )}
