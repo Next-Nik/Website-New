@@ -1268,7 +1268,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
 
 
                       const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dateStr}/${dateStr}&details=${details}`
-                      setTimeout(() => window.open(url, '_blank'), mi * 300) // stagger to avoid popup blocker
+                      window.open(url, '_blank')
                     })
                   }
 
