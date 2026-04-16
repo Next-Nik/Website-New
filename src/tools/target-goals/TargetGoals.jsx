@@ -784,24 +784,24 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
   const d  = DOMAIN_BY_ID[domainId]
   const dd = domainData[domainId] || {}
 
-  // Guard against null/missing domainId — prevents render crash during phase transition
-  if (!domainId || !d) return null
-
-  // Current active step — first incomplete
-  const activeStep = STEPS.find(s => {
+  // Compute active step — gracefully handles missing domain
+  const activeStep = d ? (STEPS.find(s => {
     if (s === 'current_state') return !dd.currentStateSummary
     if (s === 'horizon')       return !dd.horizonText
     if (s === 'target_goal')   return !dd.targetGoal
     if (s === 'milestones')    return !dd.milestones?.length
     if (s === 'tasks')         return !dd.tasks?.length
     return true
-  }) || 'tasks'
+  }) || 'tasks') : 'current_state'
 
   const [viewStep,   setViewStep]   = useState(activeStep)
   const [generating, setGenerating] = useState(false)
 
   // Sync viewStep when activeStep advances
   useEffect(() => { setViewStep(activeStep) }, [activeStep])
+
+  // Null render AFTER all hooks — Rules of Hooks compliant
+  if (!domainId || !d) return null
 
   function update(patch) {
     setDomainData(prev => ({ ...prev, [domainId]: { ...(prev[domainId] || {}), ...patch } }))
@@ -1512,7 +1512,12 @@ export function TargetGoalsPage() {
         )}
 
         {/* ── Sprint phase ──────────────────────────────────────────────── */}
-        {phase === 'sprint' && (
+        {phase === 'sprint' && !sprintDomains.length && (
+          <div style={{ textAlign: 'center', padding: '60px 0', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)' }}>
+            Loading your sprint…
+          </div>
+        )}
+        {phase === 'sprint' && sprintDomains.length > 0 && activeDomainId && DOMAIN_BY_ID[activeDomainId] && (
           <div className="tg-fade-up">
             {/* Header */}
             <div style={{ marginBottom: '20px' }}>
