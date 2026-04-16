@@ -4,12 +4,13 @@ import { ScalePanel } from '../components/ScalePanel'
 import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 function Quote({ text, cite }) {
   return (
     <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '14px 0 14px 28px', margin: '0 0 28px', maxWidth: '600px' }}>
-      <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '10px' }}>{text}</p>
+      <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '10px' }}>{text}</p>
       <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {cite}</span>
     </div>
   )
@@ -35,7 +36,7 @@ export function WorkWithNikPage() {
           <div style={{ flex: '1 1 320px' }}>
             <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Work with Nik</span>
             <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-              From processing<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>to building.</em>
+              From processing<br /><span style={{ color: '#A8721A' }}>to building.</span>
             </h1>
             <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '40px', maxWidth: '480px' }}>One-on-one work for people who are done with the loop they{'\u2019'}re in.</p>
             <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Book a discovery call {'\u2192'}</a>
@@ -48,7 +49,7 @@ export function WorkWithNikPage() {
               border: '1.5px solid rgba(200,146,42,0.70)',
               outline: '1px solid rgba(200,146,42,0.35)',
               outlineOffset: '5px',
-              background: 'rgba(200,146,42,0.04)',
+              background: 'rgba(200,146,42,0.05)',
             }}>
               <img
                 src="/nik.jpeg"
@@ -59,7 +60,7 @@ export function WorkWithNikPage() {
                   e.currentTarget.parentNode.style.display = 'flex'
                   e.currentTarget.parentNode.style.alignItems = 'center'
                   e.currentTarget.parentNode.style.justifyContent = 'center'
-                  e.currentTarget.parentNode.style.background = 'rgba(200,146,42,0.06)'
+                  e.currentTarget.parentNode.style.background = 'rgba(200,146,42,0.05)'
                 }}
               />
             </div>
@@ -70,9 +71,9 @@ export function WorkWithNikPage() {
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 40px' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>What this is.</h2>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>One-on-one work built around where you actually are and what you{'’'}re trying to build. Not a fixed programme. A real conversation and real support {'—'} determined by the work, not a curriculum.</p>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>The work draws on the full ecosystem {'—'} the Horizon Suite, Purpose Piece, Horizon Leap {'—'} but what it draws on in any engagement is determined by what{'’'}s actually needed.</p>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '40px', maxWidth: '600px' }}>One call per week, with focused work in between. We begin with The Map {'—'} an honest picture of where you are across all seven domains {'—'} then follow wherever the work needs to go from there.</p>
+        <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 400, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>One-on-one work built around where you actually are and what you{'’'}re trying to build. Not a fixed programme. A real conversation and real support {'—'} determined by the work, not a curriculum.</p>
+        <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 400, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>The work draws on the full ecosystem {'—'} the Horizon Suite, Purpose Piece, Horizon Leap {'—'} but what it draws on in any engagement is determined by what{'’'}s actually needed.</p>
+        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '40px', maxWidth: '600px' }}>One call per week, with focused work in between. We begin with The Map {'—'} an honest picture of where you are across all seven domains {'—'} then follow wherever the work needs to go from there.</p>
 
         <Card label="This is for you if" body="You're high-functioning and aware that functioning well isn't the same as living from what you're capable of · You've done work on yourself and something still isn't moving · You have a real horizon — something you're building — and a felt gap between where you are and what it requires · You're ready to be seen clearly and worked with honestly" />
         <Card label="This is not for you if" body="You're in active crisis or need stabilisation · You want a programme to follow · You're not ready to move" />
@@ -87,15 +88,15 @@ export function WorkWithNikPage() {
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '40px 0' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>How it works.</h2>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Start with a discovery call. No commitment, no obligation {'\u2014'} just an honest conversation about where you are and whether this is the right container for the work.</p>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '32px', maxWidth: '600px' }}>Engagements begin at $3,500/month with a three-month commitment. The Horizon Suite included for the duration. If that's in range, let's talk.</p>
+        <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 400, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Start with a discovery call. No commitment, no obligation {'\u2014'} just an honest conversation about where you are and whether this is the right container for the work.</p>
+        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '32px', maxWidth: '600px' }}>Engagements begin at $3,500/month with a three-month commitment. The Horizon Suite included for the duration. If that's in range, let's talk.</p>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '20px' }}>Book a time</span>
 
         {/* Calendly embed */}
         <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
         <div className="calendly-inline-widget" data-url="https://calendly.com/nikwood/talk-to-nik" style={{ minWidth: '280px', height: '700px', borderRadius: '14px', overflow: 'hidden', border: '1.5px solid rgba(200,146,42,0.78)' }} />
         <script src="https://assets.calendly.com/assets/external/widget.js" async />
-        <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginTop: '14px' }}>30 minutes · no cost · no obligation</p>
+        <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)', marginTop: '14px' }}>30 minutes · no cost · no obligation</p>
       </div>
       <ScalePanel side="right" />
       <ToolCompassPanel />
@@ -121,7 +122,7 @@ export function PodcastPage() {
       <div className="pod-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>The Podcast</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          NextUs.<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>The conversation.</em>
+          NextUs.<br /><span style={{ color: '#A8721A' }}>The conversation.</span>
         </h1>
         <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '500px' }}>220+ episodes since 2015. Long-form conversations at the intersection of personal development, human potential, and civilisational possibility.</p>
 
@@ -152,7 +153,7 @@ export function PodcastPage() {
           <div style={{ maxWidth: '380px', margin: '0 auto' }}>
             <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
             <form action="https://app.kit.com/forms/9215183/subscriptions" className="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
-              <input type="email" name="email_address" placeholder="your email" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
+              <input type="email" name="email_address" placeholder="your email" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
               <button type="submit" style={{ width: '100%', padding: '16px', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Join us {'\u2192'}</button>
             </form>
           </div>

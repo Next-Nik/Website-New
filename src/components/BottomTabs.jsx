@@ -5,6 +5,7 @@ import { ToolDrawer } from './ToolDrawer'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 function HomeIcon({ active }) {
   const c = active ? '#A8721A' : 'rgba(15,21,35,0.55)'
@@ -61,7 +62,7 @@ function MoreMenu({ onClose }) {
     <>
       <div onClick={onClose} style={{
         position: 'fixed', inset: 0, zIndex: 1098,
-        background: 'rgba(15,21,35,0.3)',
+        background: 'rgba(15,21,35,0.55)',
         backdropFilter: 'blur(2px)',
       }} />
       <div style={{
@@ -84,15 +85,15 @@ function MoreMenu({ onClose }) {
             display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px',
             padding: '12px 20px', textDecoration: 'none',
             borderBottom: '1px solid rgba(200,146,42,0.08)',
-            background: 'rgba(200,146,42,0.02)',
+            background: 'rgba(200,146,42,0.05)',
           }}>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: '#0F1523' }}>{l.label}</span>
-            <span style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{l.desc}</span>
+            <span style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{l.desc}</span>
           </Link>
         ))}
 
         {/* NextUs */}
-        <div style={{ padding: '12px 20px 6px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
+        <div style={{ padding: '12px 20px 6px', borderTop: '1px solid rgba(200,146,42,0.08)' }}>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', textTransform: 'uppercase' }}>NextUs</span>
         </div>
         {nextusLinks.map(l => (
@@ -100,10 +101,10 @@ function MoreMenu({ onClose }) {
             display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '8px',
             padding: '12px 20px', textDecoration: 'none',
             borderBottom: '1px solid rgba(200,146,42,0.08)',
-            background: 'rgba(200,146,42,0.02)',
+            background: 'rgba(200,146,42,0.05)',
           }}>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: '#0F1523' }}>{l.label}</span>
-            <span style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>{l.desc}</span>
+            <span style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{l.desc}</span>
           </Link>
         ))}
 
@@ -113,7 +114,7 @@ function MoreMenu({ onClose }) {
             <Link key={l.path} to={l.path} onClick={onClose} style={{
               display: 'block', padding: '14px 20px',
               ...sc, fontSize: '15px', letterSpacing: '0.10em',
-              color: 'rgba(15,21,35,0.65)', textDecoration: 'none',
+              color: 'rgba(15,21,35,0.72)', textDecoration: 'none',
               borderBottom: i < siteLinks.length - 1 ? '1px solid rgba(200,146,42,0.08)' : 'none',
             }}>{l.label}</Link>
           ))}

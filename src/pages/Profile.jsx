@@ -44,7 +44,7 @@ function Rule() {
 
 function EmptySlot({ cta, ctaUrl }) {
   return (
-    <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+    <div style={{ ...serif, fontSize: '15px',
       color: 'rgba(15,21,35,0.72)', marginBottom: '8px' }}>
       Not yet started.{' '}
       {cta && ctaUrl && (
@@ -85,7 +85,7 @@ function Slot({ title, eyebrow, linkLabel, linkUrl, children, defaultOpen = true
       <div onClick={() => setOpen(o => !o)}
         style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '18px 24px', cursor: 'pointer',
-          background: open ? 'rgba(200,146,42,0.03)' : 'transparent' }}>
+          background: open ? 'rgba(200,146,42,0.05)' : 'transparent' }}>
         <div>
           {eyebrow && <Eyebrow style={{ marginBottom: '2px' }}>{eyebrow}</Eyebrow>}
           <span style={{ ...sc, fontSize: '16px', letterSpacing: '0.08em',
@@ -125,7 +125,7 @@ function ScoreBar({ label, score, horizonScore }) {
         color: 'rgba(15,21,35,0.72)', width: '100px', flexShrink: 0 }}>{label}</div>
       <div style={{ flex: 1, position: 'relative', height: '20px', display: 'flex', alignItems: 'center' }}>
         <div style={{ position: 'absolute', left: 0, right: 0, height: '3px',
-          background: 'rgba(200,146,42,0.10)', borderRadius: '2px' }} />
+          background: 'rgba(200,146,42,0.08)', borderRadius: '2px' }} />
         <div style={{ position: 'absolute', left: 0, width: `${pct}%`, height: '3px',
           background: color, borderRadius: '2px', transition: 'width 0.6s ease' }} />
         <div style={{ position: 'absolute', left: `calc(${pct}% - 7px)`,
@@ -197,7 +197,7 @@ function HorizonWheel({ domains, currentScores, horizonScores, size = 340, onNod
       {domains.map((_, i) => {
         const [x, y] = ptFull(i)
         return <line key={i} x1={cx} y1={cy} x2={x} y2={y}
-          stroke="rgba(200,146,42,0.07)" strokeWidth="0.75" />
+          stroke="rgba(200,146,42,0.05)" strokeWidth="0.75" />
       })}
 
       {/* Horizon shape */}
@@ -211,7 +211,7 @@ function HorizonWheel({ domains, currentScores, horizonScores, size = 340, onNod
 
       {/* Current shape */}
       <polygon points={currentPts}
-        fill="rgba(200,146,42,0.10)"
+        fill="rgba(200,146,42,0.08)"
         stroke="rgba(200,146,42,0.65)"
         strokeWidth="1.5"
         strokeLinejoin="round" />
@@ -259,7 +259,7 @@ function HorizonWheel({ domains, currentScores, horizonScores, size = 340, onNod
             <text x={lx} y={ly} textAnchor={anchor} dominantBaseline="middle"
               fontFamily="'Cormorant SC', Georgia, serif"
               fontSize="11" fontWeight="600" letterSpacing="0.8"
-              fill={isActive ? '#A8721A' : 'rgba(15,21,35,0.88)'}>
+              fill={isActive ? '#A8721A' : 'rgba(15,21,35,0.72)'}>
               {d.label}
               {scoreText && (
                 <tspan
@@ -309,7 +309,7 @@ function MapSlot({ mapData, sprintData }) {
             {doneCount} of 7 domains scored
           </span>
           {activeDomainLabel && (
-            <span style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>
+            <span style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
               Currently: {activeDomainLabel}
             </span>
           )}
@@ -440,12 +440,12 @@ function MapSlot({ mapData, sprintData }) {
       {/* ── Stage + next step ─────────────────────────────────────────────── */}
       {stage && (
         <div style={{ marginBottom: '20px', padding: '14px 18px',
-          background: 'rgba(200,146,42,0.04)', borderRadius: '10px',
+          background: 'rgba(200,146,42,0.05)', borderRadius: '10px',
           border: '1px solid rgba(200,146,42,0.18)' }}>
           <Eyebrow>Developmental stage</Eyebrow>
           <div style={{ ...serif, fontSize: '17px', fontWeight: 300, color: '#0F1523' }}>{stage}</div>
           {nextStep && (
-            <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+            <div style={{ ...serif, fontSize: '15px',
               color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.6 }}>{nextStep}</div>
           )}
         </div>
@@ -454,11 +454,11 @@ function MapSlot({ mapData, sprintData }) {
       {/* ── Begin sprint nudge ────────────────────────────────────────────── */}
       {!sprintData && (
         <div style={{ padding: '14px 16px', marginBottom: '20px',
-          background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)',
+          background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)',
           borderRadius: '10px' }}>
           <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A',
             textTransform: 'uppercase', marginBottom: '6px' }}>Your map is ready</div>
-          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+          <p style={{ ...serif, fontSize: '15px',
             color: 'rgba(15,21,35,0.72)', margin: '0 0 10px' }}>
             You have your map. Now choose your focus.
           </p>
@@ -470,7 +470,7 @@ function MapSlot({ mapData, sprintData }) {
       )}
 
       {mapData.completed_at && (
-        <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
+        <p style={{ ...serif, fontSize: '17px',
           color: 'rgba(15,21,35,0.72)', marginTop: '16px' }}>
           Completed {new Date(mapData.completed_at).toLocaleDateString('en-GB',
             { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -629,7 +629,7 @@ function PurposePieceSlot({ purposeData, userId }) {
                 {archetype}
                 {secondary && (
                   <span style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)',
-                    fontStyle: 'italic', marginLeft: '6px' }}>+ {secondary}</span>
+                    marginLeft: '6px' }}>+ {secondary}</span>
                 )}
               </div>
             </div>
@@ -656,7 +656,7 @@ function PurposePieceSlot({ purposeData, userId }) {
         <>
           <Rule />
           <p style={{ ...serif, fontSize: '15px', fontWeight: 300,
-            color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, margin: '0 0 16px' }}>
+            color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, margin: '0 0 16px' }}>
             {archetypeFrame}
           </p>
         </>
@@ -668,7 +668,7 @@ function PurposePieceSlot({ purposeData, userId }) {
           <Rule />
           <Eyebrow>The responsibility</Eyebrow>
           <p style={{ ...serif, fontSize: '15px', fontWeight: 300,
-            color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, margin: 0 }}>{responsibility}</p>
+            color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, margin: 0 }}>{responsibility}</p>
         </>
       )}
 
@@ -682,7 +682,7 @@ function PurposePieceSlot({ purposeData, userId }) {
       )}
 
       {purposeData.completed_at && (
-        <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
+        <p style={{ ...serif, fontSize: '17px',
           color: 'rgba(15,21,35,0.72)', marginTop: '16px' }}>
           Completed {new Date(purposeData.completed_at).toLocaleDateString('en-GB',
             { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -696,7 +696,7 @@ function SprintProgressBar({ done, total, color = '#A8721A' }) {
   const pct = total > 0 ? Math.round((done / total) * 100) : 0
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <div style={{ flex: 1, height: '4px', background: 'rgba(200,146,42,0.12)',
+      <div style={{ flex: 1, height: '4px', background: 'rgba(200,146,42,0.08)',
         borderRadius: '2px', overflow: 'hidden' }}>
         <div style={{ width: `${pct}%`, height: '100%', background: color,
           borderRadius: '2px', transition: 'width 0.6s ease' }} />
@@ -721,7 +721,7 @@ function TargetSprintSlot({ sprintData }) {
     return (
       <div>
         <StatusBadge status="started" />
-        <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+        <p style={{ ...serif, fontSize: '15px',
           color: 'rgba(15,21,35,0.72)', margin: 0 }}>
           Your sprint is being set up.{' '}
           <a href="/tools/target-goals" style={{ color: '#A8721A', textDecoration: 'none' }}>
@@ -798,7 +798,7 @@ function TargetSprintSlot({ sprintData }) {
         <div>
           <Eyebrow style={{ marginBottom: '2px' }}>90-day sprint</Eyebrow>
           {(endLabel || targetDate) && (
-            <span style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
+            <span style={{ ...serif, fontSize: '17px',
               color: 'rgba(15,21,35,0.72)' }}>
               {endLabel || new Date(targetDate).toLocaleDateString('en-GB',
                 { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -818,7 +818,7 @@ function TargetSprintSlot({ sprintData }) {
 
       {/* ── Overall progress ──────────────────────────────────────────────── */}
       {(totalTasks > 0 || totalMilestones > 0) && (
-        <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.03)',
+        <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)',
           border: '1px solid rgba(200,146,42,0.15)', borderRadius: '10px', marginBottom: '16px' }}>
           {totalTasks > 0 && (
             <div style={{ marginBottom: totalMilestones > 0 ? '10px' : 0 }}>
@@ -852,7 +852,7 @@ function TargetSprintSlot({ sprintData }) {
       {/* ── Next move ─────────────────────────────────────────────────────── */}
       {nextMove && !isComplete && (
         <div style={{ padding: '14px 16px', marginBottom: '16px',
-          background: 'rgba(200,146,42,0.04)',
+          background: 'rgba(200,146,42,0.05)',
           border: '1.5px solid rgba(200,146,42,0.35)', borderRadius: '10px' }}>
           <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A',
             textTransform: 'uppercase', marginBottom: '6px' }}>
@@ -893,7 +893,7 @@ function TargetSprintSlot({ sprintData }) {
 
         return (
           <div key={domainId} style={{ marginBottom: '10px', padding: '16px 18px',
-            background: domainComplete ? 'rgba(45,106,79,0.04)' : 'rgba(200,146,42,0.03)',
+            background: domainComplete ? 'rgba(45,106,79,0.04)' : 'rgba(200,146,42,0.05)',
             border: `1px solid ${domainComplete ? 'rgba(45,106,79,0.25)' : 'rgba(200,146,42,0.18)'}`,
             borderRadius: '12px' }}>
 
@@ -930,7 +930,7 @@ function TargetSprintSlot({ sprintData }) {
 
             {/* Setup gaps */}
             {missing.length > 0 && !goal && (
-              <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
+              <p style={{ ...serif, fontSize: '17px',
                 color: 'rgba(15,21,35,0.72)', margin: '6px 0 0' }}>
                 Still needed: {missing.join(', ')}.{' '}
                 <a href="/tools/target-goals" style={{ color: '#A8721A', textDecoration: 'none' }}>
@@ -951,7 +951,7 @@ function TargetSprintSlot({ sprintData }) {
       })}
 
       {sprintData.created_at && (
-        <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
+        <p style={{ ...serif, fontSize: '17px',
           color: 'rgba(15,21,35,0.72)', marginTop: '8px' }}>
           Started {new Date(sprintData.created_at).toLocaleDateString('en-GB',
             { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -971,7 +971,7 @@ function FlameBar({ value, color = '#A8721A', size = 14 }) {
       {Array.from({ length: 10 }, (_, i) => (
         <div key={i} style={{
           width: size, height: size * 1.4, borderRadius: '2px',
-          background: i < filled ? color : 'rgba(200,146,42,0.12)',
+          background: i < filled ? color : 'rgba(200,146,42,0.08)',
           transition: 'background 0.3s',
         }} />
       ))}
@@ -1047,7 +1047,7 @@ function FoundationSlot({ foundationData }) {
                 </span>
               </div>
               {(last_before_note || last_after_note) && (
-                <div style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
+                <div style={{ ...serif, fontSize: '17px',
                   color: 'rgba(15,21,35,0.72)', lineHeight: 1.5, marginTop: '4px' }}>
                   {last_before_note && <span>'{last_before_note}'</span>}
                   {last_before_note && last_after_note && <span style={{ margin: '0 6px', color: 'rgba(15,21,35,0.72)' }}>→</span>}
@@ -1056,16 +1056,16 @@ function FoundationSlot({ foundationData }) {
               )}
             </div>
           ) : (
-            <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
+            <p style={{ ...serif, fontSize: '17px',
               color: 'rgba(15,21,35,0.72)', margin: 0 }}>Session complete.</p>
           )}
         </div>
       ) : (
         <div style={{ padding: '12px 16px', marginBottom: '16px',
-          background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)',
+          background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)',
           borderRadius: '10px', display: 'flex', alignItems: 'center',
           justifyContent: 'space-between', gap: '12px' }}>
-          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+          <p style={{ ...serif, fontSize: '15px',
             color: 'rgba(15,21,35,0.72)', margin: 0 }}>
             {sessions_total > 0 ? 'Ready when you are.' : 'Start your first session.'}
           </p>
@@ -1147,9 +1147,9 @@ function FoundationSlot({ foundationData }) {
       {/* ── Latest review ─────────────────────────────────────────────────── */}
       {latest_review && (
         <div style={{ marginBottom: '16px', padding: '12px 14px',
-          background: 'rgba(200,146,42,0.03)', borderLeft: '2px solid rgba(200,146,42,0.3)',
+          background: 'rgba(200,146,42,0.05)', borderLeft: '2px solid rgba(200,146,42,0.3)',
           borderRadius: '0 8px 8px 0' }}>
-          <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
+          <p style={{ ...serif, fontSize: '17px',
             color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
             {latest_review}
           </p>
@@ -1281,11 +1281,11 @@ function OfferChips({ options, selected, onChange, multi = false }) {
               minWidth: o.desc ? '140px' : 'auto',
             }}
           >
-            <div style={{ ...sc_, fontSize: '12px', letterSpacing: '0.12em', color: on ? gold_ : 'rgba(15,21,35,0.65)' }}>
+            <div style={{ ...sc_, fontSize: '13px', letterSpacing: '0.12em', color: on ? gold_ : 'rgba(15,21,35,0.55)' }}>
               {o.label}
             </div>
             {o.desc && (
-              <div style={{ ...serif_, fontSize: '12px', color: 'rgba(15,21,35,0.72)', marginTop: '2px', lineHeight: 1.4 }}>
+              <div style={{ ...serif_, fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginTop: '2px', lineHeight: 1.4 }}>
                 {o.desc}
               </div>
             )}
@@ -1306,10 +1306,10 @@ function ContributorOfferForm({ initial = EMPTY_OFFER, onSave, onCancel, saving 
   function set(field, val) { setForm(f => ({ ...f, [field]: val })) }
 
   return (
-    <div style={{ background: 'rgba(200,146,42,0.03)', border: '1.5px solid rgba(200,146,42,0.28)', borderRadius: '14px', padding: '22px 24px', marginBottom: '16px' }}>
+    <div style={{ background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.28)', borderRadius: '14px', padding: '22px 24px', marginBottom: '16px' }}>
 
       <div style={{ marginBottom: '16px' }}>
-        <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
+        <label style={{ ...sc_, fontSize: '13px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
           What you're offering <span style={{ color: '#8A3030' }}>*</span>
         </label>
         <input
@@ -1321,21 +1321,21 @@ function ContributorOfferForm({ initial = EMPTY_OFFER, onSave, onCancel, saving 
       </div>
 
       <div style={{ marginBottom: '16px' }}>
-        <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
+        <label style={{ ...sc_, fontSize: '13px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
           Type
         </label>
         <OfferChips options={OFFER_TYPES} selected={form.offer_type} onChange={v => set('offer_type', v)} />
       </div>
 
       <div style={{ marginBottom: '16px' }}>
-        <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
+        <label style={{ ...sc_, fontSize: '13px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
           Mode — how does this contribution move?
         </label>
         <OfferChips options={OFFER_MODES} selected={form.contribution_mode} onChange={v => set('contribution_mode', v)} />
       </div>
 
       <div style={{ marginBottom: '16px' }}>
-        <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
+        <label style={{ ...sc_, fontSize: '13px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
           More detail
         </label>
         <textarea
@@ -1348,7 +1348,7 @@ function ContributorOfferForm({ initial = EMPTY_OFFER, onSave, onCancel, saving 
       </div>
 
       <div style={{ marginBottom: '16px' }}>
-        <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '8px' }}>
+        <label style={{ ...sc_, fontSize: '13px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '8px' }}>
           Domains — where do you want this to go?
         </label>
         <p style={{ ...serif_, fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginBottom: '10px', lineHeight: 1.5 }}>
@@ -1364,13 +1364,13 @@ function ContributorOfferForm({ initial = EMPTY_OFFER, onSave, onCancel, saving 
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
         <div>
-          <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
+          <label style={{ ...sc_, fontSize: '13px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
             Who can approach you?
           </label>
           <OfferChips options={OFFER_TO} selected={form.willing_to_offer_to} onChange={v => set('willing_to_offer_to', v)} />
         </div>
         <div>
-          <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
+          <label style={{ ...sc_, fontSize: '13px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
             What are you looking for in return?
           </label>
           <OfferChips options={RETURN_TYPES} selected={form.return_type} onChange={v => set('return_type', v)} />
@@ -1392,7 +1392,7 @@ function ContributorOfferForm({ initial = EMPTY_OFFER, onSave, onCancel, saving 
       </div>
 
       <div style={{ marginBottom: '20px' }}>
-        <label style={{ ...sc_, fontSize: '12px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
+        <label style={{ ...sc_, fontSize: '13px', letterSpacing: '0.16em', color: gold_, display: 'block', marginBottom: '6px' }}>
           Availability
         </label>
         <input
@@ -1419,7 +1419,7 @@ function ContributorOfferForm({ initial = EMPTY_OFFER, onSave, onCancel, saving 
         </button>
         <button
           onClick={onCancel}
-          style={{ ...sc_, fontSize: '14px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.20)', background: 'transparent', color: 'rgba(15,21,35,0.72)', cursor: 'pointer' }}
+          style={{ ...sc_, fontSize: '14px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.55)', background: 'transparent', color: 'rgba(15,21,35,0.72)', cursor: 'pointer' }}
         >
           Cancel
         </button>
@@ -1474,7 +1474,7 @@ function ContributorOfferCard({ offer, onEdit, onToggleActive, onDelete }) {
           {offer.domain_ids?.length > 0 && (
             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '6px' }}>
               {offer.domain_ids.map(d => (
-                <span key={d} style={{ ...sc_, fontSize: '10px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.72)', background: 'rgba(15,21,35,0.04)', borderRadius: '4px', padding: '2px 7px' }}>
+                <span key={d} style={{ ...sc_, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.72)', background: 'rgba(15,21,35,0.04)', borderRadius: '4px', padding: '2px 7px' }}>
                   {NEXTUS_DOMAINS.find(nd => nd.value === d)?.label || d}
                 </span>
               ))}
@@ -1489,19 +1489,19 @@ function ContributorOfferCard({ offer, onEdit, onToggleActive, onDelete }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flexShrink: 0 }}>
           <button
             onClick={() => onEdit(offer)}
-            style={{ ...sc_, fontSize: '12px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.50)', background: 'rgba(200,146,42,0.04)', color: gold_, cursor: 'pointer' }}
+            style={{ ...sc_, fontSize: '13px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.50)', background: 'rgba(200,146,42,0.05)', color: gold_, cursor: 'pointer' }}
           >
             Edit
           </button>
           <button
             onClick={() => onToggleActive(offer)}
-            style={{ ...sc_, fontSize: '12px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.15)', background: 'transparent', color: 'rgba(15,21,35,0.72)', cursor: 'pointer' }}
+            style={{ ...sc_, fontSize: '13px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.15)', background: 'transparent', color: 'rgba(15,21,35,0.72)', cursor: 'pointer' }}
           >
             {offer.is_active ? 'Pause' : 'Resume'}
           </button>
           <button
             onClick={() => onDelete(offer.id)}
-            style={{ ...sc_, fontSize: '12px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', border: '1px solid rgba(138,48,48,0.30)', background: 'transparent', color: '#8A3030', cursor: 'pointer' }}
+            style={{ ...sc_, fontSize: '13px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', border: '1px solid rgba(138,48,48,0.30)', background: 'transparent', color: '#8A3030', cursor: 'pointer' }}
           >
             Remove
           </button>
@@ -1613,7 +1613,7 @@ function ContributorOfferSection({ userId, purposeData }) {
     <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.15)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
         <div>
-          <span style={{ ...sc_, fontSize: '12px', letterSpacing: '0.18em', color: gold_, display: 'block', marginBottom: '4px' }}>
+          <span style={{ ...sc_, fontSize: '13px', letterSpacing: '0.18em', color: gold_, display: 'block', marginBottom: '4px' }}>
             What you're putting on the table
           </span>
           <p style={{ ...serif_, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: 0, maxWidth: '380px' }}>
@@ -1633,7 +1633,7 @@ function ContributorOfferSection({ userId, purposeData }) {
 
       {/* Purpose Piece seed prompt */}
       {offers.length === 0 && !adding && ppDomain && (
-        <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px', padding: '14px 18px', marginBottom: '12px' }}>
+        <div style={{ background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px', padding: '14px 18px', marginBottom: '12px' }}>
           <p style={{ ...serif_, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, marginBottom: '10px' }}>
             Your Purpose Piece output has pre-filled your domain. Add your first offer and it will be discoverable by orgs working in that space.
           </p>
@@ -1648,7 +1648,7 @@ function ContributorOfferSection({ userId, purposeData }) {
 
       {/* Empty — no PP data */}
       {offers.length === 0 && !adding && !ppDomain && (
-        <p style={{ ...serif_, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginBottom: '8px' }}>
+        <p style={{ ...serif_, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginBottom: '8px' }}>
           No offers yet.{' '}
           <button onClick={() => setAdding(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc_, fontSize: '13px', letterSpacing: '0.12em', color: gold_, padding: 0 }}>
             Add one →
@@ -1765,14 +1765,14 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
       {(archetype || domain || scale) && (
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '24px' }}>
           {[archetype, domain, scale].filter(Boolean).map((v, i) => (
-            <span key={i} style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: '#A8721A', background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', padding: '5px 14px' }}>{v}</span>
+            <span key={i} style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: '#A8721A', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', padding: '5px 14px' }}>{v}</span>
           ))}
         </div>
       )}
 
       {!statement && !archetype && (
         <div style={{ marginBottom: '24px' }}>
-          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginBottom: '14px', lineHeight: 1.7 }}>
+          <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)', marginBottom: '14px', lineHeight: 1.7 }}>
             Complete Purpose Piece to discover where your contribution belongs in the larger work.
           </p>
           <a href="/tools/purpose-piece" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none' }}>
@@ -1786,7 +1786,7 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
 
       {/* Contributor profile link */}
       {userId && (
-        <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
+        <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.08)' }}>
           <a
             href={`/nextus/contributors/${userId}`}
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none' }}
@@ -1800,27 +1800,27 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
       )}
 
       {claimedActor && (
-        <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '10px', padding: '14px 18px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
+        <div style={{ background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '10px', padding: '14px 18px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
           <div>
             <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '4px' }}>Your actor profile</p>
             <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', margin: 0 }}>{claimedActor.name}</p>
           </div>
           <div style={{ display: 'flex', gap: '10px' }}>
-            <a href={'/nextus/actors/' + claimedActor.id} style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>View</a>
+            <a href={'/nextus/actors/' + claimedActor.id} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>View</a>
             <span style={{ color: 'rgba(200,146,42,0.35)' }}>·</span>
-            <a href={'/nextus/actors/' + claimedActor.id + '/manage'} style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>Manage</a>
+            <a href={'/nextus/actors/' + claimedActor.id + '/manage'} style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>Manage</a>
           </div>
         </div>
       )}
 
       {/* Contribution section */}
       {!loadingContribs && (
-        <div style={{ borderTop: '1px solid rgba(200,146,42,0.12)', paddingTop: '20px', marginTop: '8px' }}>
+        <div style={{ borderTop: '1px solid rgba(200,146,42,0.08)', paddingTop: '20px', marginTop: '8px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
             <Eyebrow style={{ marginBottom: 0 }}>Your contributions</Eyebrow>
             {hasContribs && (
               <button onClick={toggleVisibility} disabled={savingVis}
-                style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                 {savingVis ? '...' : visibility === 'public' ? 'Make private' : 'Make public'}
               </button>
             )}
@@ -1828,7 +1828,7 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
 
           {/* Pending contributions */}
           {pending.length > 0 && (
-            <div style={{ marginBottom: '16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '10px', padding: '14px 16px' }}>
+            <div style={{ marginBottom: '16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '10px', padding: '14px 16px' }}>
               <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.72)', marginBottom: '10px' }}>Pending confirmation</p>
               {pending.map(c => (
                 <div key={c.id} style={{ display: 'flex', gap: '10px', alignItems: 'center', padding: '7px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
@@ -1838,7 +1838,7 @@ function NextUsSlot({ purposeData, userId, claimedActor }) {
                   <a href={'/nextus/actors/' + c.nextus_actors?.id} style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.72)', flex: 1, textDecoration: 'none' }}>
                     {c.nextus_actors?.name || 'Unknown'}
                   </a>
-                  <span style={{ ...serif, fontSize: '12px', color: 'rgba(15,21,35,0.72)', fontStyle: 'italic' }}>awaiting confirmation</span>
+                  <span style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.72)' }}>awaiting confirmation</span>
                 </div>
               ))}
             </div>
@@ -2075,7 +2075,7 @@ export function ProfilePage() {
               : <>{name}.</>
             }
           </h1>
-          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+          <p style={{ ...serif, fontSize: '15px',
             color: 'rgba(15,21,35,0.72)' }}>{user.email}</p>
         </div>
 
@@ -2092,7 +2092,7 @@ export function ProfilePage() {
           let dataSource      = null
 
           function tierColor(v) {
-            if (v == null) return 'rgba(15,21,35,0.28)'
+            if (v == null) return 'rgba(15,21,35,0.55)'
             if (v >= 8)   return '#3B6B9E'
             if (v >= 6.5) return '#5A8AB8'
             if (v >= 5)   return '#8A8070'
@@ -2173,15 +2173,15 @@ export function ProfilePage() {
                 textAlign: 'center' }}>
                 <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
                   color: '#A8721A', marginBottom: '20px' }}>YOUR MAP IS EMPTY</div>
-                <p style={{ ...serif, fontSize: '19px', fontWeight: 300, fontStyle: 'italic',
-                  color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, margin: '0 0 28px',
+                <p style={{ ...serif, fontSize: '19px', fontWeight: 300,
+                  color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, margin: '0 0 28px',
                   maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
                   Complete The Map and your profile will come alive here.
                 </p>
                 <a href="/tools/map" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em',
                   color: '#A8721A', textDecoration: 'none',
                   padding: '12px 28px', border: '1px solid rgba(200,146,42,0.4)',
-                  borderRadius: '40px', background: 'rgba(200,146,42,0.04)' }}>
+                  borderRadius: '40px', background: 'rgba(200,146,42,0.05)' }}>
                   Start The Map →
                 </a>
               </div>
@@ -2194,11 +2194,11 @@ export function ProfilePage() {
               {/* Life horizon — large, italic, anchoring */}
               {lifeHorizon && (
                 <div style={{ marginBottom: '36px', paddingBottom: '32px',
-                  borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
-                  <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.24em',
+                  borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
+                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.24em',
                     color: '#A8721A', marginBottom: '12px' }}>LIFE HORIZON</div>
                   <p style={{ ...serif, fontSize: 'clamp(19px,2.8vw,24px)', fontWeight: 300,
-                    fontStyle: 'italic', color: '#0F1523', lineHeight: 1.65, margin: 0 }}>
+                    color: '#0F1523', lineHeight: 1.65, margin: 0 }}>
                     {lifeHorizon}
                   </p>
                 </div>
@@ -2222,13 +2222,13 @@ export function ProfilePage() {
                   marginBottom: activeNode ? '20px' : '40px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <div style={{ width: '20px', height: '2px', background: 'rgba(200,146,42,0.65)' }} />
-                    <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em',
+                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em',
                       color: 'rgba(15,21,35,0.72)' }}>Now</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
                     <div style={{ width: '20px', height: '0',
                       borderTop: '2px dashed rgba(90,138,184,0.5)' }} />
-                    <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em',
+                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em',
                       color: 'rgba(15,21,35,0.72)' }}>Horizon</span>
                   </div>
                 </div>
@@ -2273,7 +2273,7 @@ export function ProfilePage() {
                       <button onClick={() => setActiveNode(null)}
                         style={{ background: 'none', border: 'none', cursor: 'pointer',
                           padding: '2px 6px', lineHeight: 1, flexShrink: 0,
-                          ...sc, fontSize: '18px', color: 'rgba(15,21,35,0.35)',
+                          ...sc, fontSize: '18px', color: 'rgba(15,21,35,0.55)',
                           marginLeft: '12px', marginTop: '-2px' }}>
                         ×
                       </button>
@@ -2282,9 +2282,9 @@ export function ProfilePage() {
                     {avatar && (
                       <div style={{ marginBottom: '16px', paddingBottom: '16px',
                         borderBottom: '1px solid rgba(200,146,42,0.1)' }}>
-                        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em',
+                        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em',
                           color: '#A8721A', marginBottom: '8px' }}>AVATAR</div>
-                        <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+                        <p style={{ ...serif, fontSize: '15px',
                           color: '#0F1523', lineHeight: 1.7, margin: 0 }}>
                           {avatar}
                         </p>
@@ -2295,7 +2295,7 @@ export function ProfilePage() {
                       <div style={{ marginBottom: goal ? '16px' : 0,
                         paddingBottom: goal ? '16px' : 0,
                         borderBottom: goal ? '1px solid rgba(200,146,42,0.1)' : 'none' }}>
-                        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em',
+                        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em',
                           color: '#A8721A', marginBottom: '8px' }}>WHERE I AM NOW</div>
                         <p style={{ ...serif, fontSize: '15px', color: '#0F1523',
                           lineHeight: 1.75, margin: 0 }}>
@@ -2306,9 +2306,9 @@ export function ProfilePage() {
 
                     {goal && (
                       <div>
-                        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em',
+                        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em',
                           color: '#A8721A', marginBottom: '8px' }}>HORIZON GOAL</div>
-                        <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+                        <p style={{ ...serif, fontSize: '15px',
                           color: '#0F1523', lineHeight: 1.75, margin: 0 }}>
                           {goal}
                         </p>
@@ -2316,7 +2316,7 @@ export function ProfilePage() {
                     )}
 
                     {!reality && !goal && !avatar && (
-                      <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+                      <p style={{ ...serif, fontSize: '15px',
                         color: 'rgba(15,21,35,0.72)', margin: 0 }}>
                         Continue The Map to fill this domain in.
                       </p>
@@ -2339,7 +2339,7 @@ export function ProfilePage() {
                   return (
                     <div key={k} style={{ display: 'flex', alignItems: 'flex-start',
                       gap: '16px', padding: '14px 0',
-                      borderBottom: '1px solid rgba(200,146,42,0.07)' }}>
+                      borderBottom: '1px solid rgba(200,146,42,0.05)' }}>
 
                       {/* Domain name */}
                       <div style={{ ...sc, fontSize: '14px', letterSpacing: '0.08em',
@@ -2351,12 +2351,12 @@ export function ProfilePage() {
                       {/* Horizon goal */}
                       <div style={{ flex: 1, minWidth: 0 }}>
                         {goal ? (
-                          <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+                          <p style={{ ...serif, fontSize: '15px',
                             color: '#0F1523', lineHeight: 1.6, margin: 0 }}>
                             {goal}
                           </p>
                         ) : (
-                          <p style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
+                          <p style={{ ...serif, fontSize: '14px',
                             color: 'rgba(15,21,35,0.72)', margin: 0 }}>
                             Horizon not yet set
                           </p>
@@ -2375,7 +2375,7 @@ export function ProfilePage() {
                             </span>
                           )}
                         </div>
-                        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+                        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em',
                           color, opacity: 0.75, marginTop: '2px' }}>
                           {tierLabel(score)}
                         </div>
@@ -2391,7 +2391,7 @@ export function ProfilePage() {
                   style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em',
                     color: '#A8721A', textDecoration: 'none',
                     padding: '13px 28px', border: '1px solid rgba(200,146,42,0.35)',
-                    borderRadius: '40px', background: 'rgba(200,146,42,0.04)',
+                    borderRadius: '40px', background: 'rgba(200,146,42,0.05)',
                     display: 'inline-block', transition: 'all 0.2s' }}>
                   {nextAction.label} →
                 </a>
@@ -2411,7 +2411,7 @@ export function ProfilePage() {
             <div style={{ display: 'flex', alignItems: 'baseline',
               justifyContent: 'space-between', marginBottom: '20px' }}>
               <div>
-                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.22em',
+                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
                   color: '#A8721A', marginBottom: '6px' }}>ACTIVE SPRINT</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   {(() => {
@@ -2422,7 +2422,7 @@ export function ProfilePage() {
                     return (
                       <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em',
                         color: urgent ? '#8A3030' : '#A8721A',
-                        background: urgent ? 'rgba(138,48,48,0.06)' : 'rgba(200,146,42,0.06)',
+                        background: urgent ? 'rgba(138,48,48,0.06)' : 'rgba(200,146,42,0.05)',
                         border: `1px solid ${urgent ? 'rgba(138,48,48,0.2)' : 'rgba(200,146,42,0.2)'}`,
                         borderRadius: '40px', padding: '3px 10px' }}>
                         {days > 0 ? `${days} days left` : `${Math.abs(days)} days overdue`}
@@ -2487,12 +2487,12 @@ export function ProfilePage() {
                           color: 'rgba(15,21,35,0.72)' }}>
                           {doneTasks} of {totalTasks} tasks complete
                         </span>
-                        <span style={{ ...sc, fontSize: '12px', color: '#A8721A' }}>{pct}%</span>
+                        <span style={{ ...sc, fontSize: '13px', color: '#A8721A' }}>{pct}%</span>
                       </div>
-                      <div style={{ height: '4px', background: 'rgba(200,146,42,0.12)',
+                      <div style={{ height: '4px', background: 'rgba(200,146,42,0.08)',
                         borderRadius: '2px', overflow: 'hidden' }}>
                         <div style={{ height: '100%', width: `${pct}%`,
-                          background: '#A8721A', borderRadius: '2px',
+                          background: 'rgba(200,146,42,0.05)', borderRadius: '2px',
                           transition: 'width 0.4s ease' }} />
                       </div>
                     </div>
@@ -2514,7 +2514,7 @@ export function ProfilePage() {
                     return (
                       <div key={id} style={{ display: 'flex', alignItems: 'center',
                         gap: '14px', padding: '12px 0',
-                        borderBottom: '1px solid rgba(200,146,42,0.07)' }}>
+                        borderBottom: '1px solid rgba(200,146,42,0.05)' }}>
                         <div style={{ width: '96px', flexShrink: 0 }}>
                           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
                             color: complete ? '#2D6A4F' : '#0F1523' }}>
@@ -2538,7 +2538,7 @@ export function ProfilePage() {
                           {tasks.length > 0 && (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                               <div style={{ flex: 1, height: '3px',
-                                background: 'rgba(200,146,42,0.12)', borderRadius: '2px' }}>
+                                background: 'rgba(200,146,42,0.08)', borderRadius: '2px' }}>
                                 <div style={{ height: '100%',
                                   width: `${tasks.length > 0 ? (tDone/tasks.length)*100 : 0}%`,
                                   background: complete ? '#2D6A4F' : '#A8721A',
@@ -2564,9 +2564,9 @@ export function ProfilePage() {
                   {/* Next move */}
                   {nextMove && (
                     <div style={{ marginTop: '16px', padding: '14px 16px',
-                      background: 'rgba(200,146,42,0.04)',
+                      background: 'rgba(200,146,42,0.05)',
                       border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '10px' }}>
-                      <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em',
+                      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em',
                         color: '#A8721A', marginBottom: '6px' }}>
                         NEXT MOVE · {nextMove.domain.toUpperCase()}
                       </div>
@@ -2585,9 +2585,9 @@ export function ProfilePage() {
             borderRadius: '12px', display: 'flex', alignItems: 'center',
             justifyContent: 'space-between', gap: '16px' }}>
             <div>
-              <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.22em',
+              <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
                 color: '#A8721A', marginBottom: '4px' }}>TARGET SPRINT</div>
-              <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+              <p style={{ ...serif, fontSize: '15px',
                 color: 'rgba(15,21,35,0.72)', margin: 0 }}>
                 No active sprint. Choose 3 domains and set your 90-day arc.
               </p>
@@ -2595,7 +2595,7 @@ export function ProfilePage() {
             <a href="/tools/target-goals" style={{ ...sc, fontSize: '13px',
               letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none',
               padding: '10px 20px', border: '1px solid rgba(200,146,42,0.35)',
-              borderRadius: '40px', flexShrink: 0, background: 'rgba(200,146,42,0.04)' }}>
+              borderRadius: '40px', flexShrink: 0, background: 'rgba(200,146,42,0.05)' }}>
               Begin →
             </a>
           </div>
@@ -2611,7 +2611,7 @@ export function ProfilePage() {
           <div style={{ padding: '24px', background: '#FFFFFF',
             border: '1px solid rgba(200,146,42,0.2)',
             borderTop: '3px solid rgba(200,146,42,0.55)', borderRadius: '12px' }}>
-            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.22em',
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
               color: '#A8721A', marginBottom: '14px' }}>HORIZON PRACTICE</div>
 
             {foundationData ? (() => {
@@ -2646,7 +2646,7 @@ export function ProfilePage() {
                   {/* Today status */}
                   <div style={{ marginBottom: '16px', padding: '12px 14px',
                     background: practicedToday
-                      ? 'rgba(45,106,79,0.04)' : 'rgba(200,146,42,0.03)',
+                      ? 'rgba(45,106,79,0.04)' : 'rgba(200,146,42,0.05)',
                     border: `1px solid ${practicedToday
                       ? 'rgba(45,106,79,0.2)' : 'rgba(200,146,42,0.18)'}`,
                     borderRadius: '10px',
@@ -2654,7 +2654,7 @@ export function ProfilePage() {
                     justifyContent: 'space-between', gap: '10px' }}>
                     {practicedToday ? (
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em',
+                        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
                           color: '#2D6A4F' }}>TODAY ✓</span>
                         {lastDelta !== null && (
                           <span style={{ ...sc, fontSize: '13px',
@@ -2664,13 +2664,13 @@ export function ProfilePage() {
                         )}
                       </div>
                     ) : (
-                      <span style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
+                      <span style={{ ...serif, fontSize: '14px',
                         color: 'rgba(15,21,35,0.72)' }}>
                         {sessions_total > 0 ? 'Ready when you are.' : 'Start your first session.'}
                       </span>
                     )}
                     {!practicedToday && (
-                      <a href="/tools/foundation" style={{ ...sc, fontSize: '12px',
+                      <a href="/tools/foundation" style={{ ...sc, fontSize: '13px',
                         letterSpacing: '0.14em', color: '#A8721A',
                         textDecoration: 'none', flexShrink: 0 }}>
                         Practice →
@@ -2685,7 +2685,7 @@ export function ProfilePage() {
                       <div key={i} title={dot.date}
                         style={{ width: '28px', height: '28px', borderRadius: '50%',
                           background: dot.done
-                            ? 'rgba(45,106,79,0.15)' : 'rgba(200,146,42,0.06)',
+                            ? 'rgba(45,106,79,0.15)' : 'rgba(200,146,42,0.05)',
                           border: `1.5px solid ${dot.done
                             ? 'rgba(45,106,79,0.4)' : 'rgba(200,146,42,0.15)'}`,
                           display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -2703,7 +2703,7 @@ export function ProfilePage() {
                       <div style={{ textAlign: 'center' }}>
                         <div style={{ ...sc, fontSize: '22px', fontWeight: 600,
                           color: '#A8721A', lineHeight: 1 }}>{streak_days}</div>
-                        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
+                        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
                           color: 'rgba(15,21,35,0.72)', marginTop: '2px' }}>
                           DAY STREAK
                         </div>
@@ -2712,7 +2712,7 @@ export function ProfilePage() {
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ ...sc, fontSize: '22px', fontWeight: 600,
                         color: '#A8721A', lineHeight: 1 }}>{sessions_week}</div>
-                      <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
+                      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
                         color: 'rgba(15,21,35,0.72)', marginTop: '2px' }}>
                         THIS WEEK
                       </div>
@@ -2720,7 +2720,7 @@ export function ProfilePage() {
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ ...sc, fontSize: '22px', fontWeight: 600,
                         color: '#A8721A', lineHeight: 1 }}>{sessions_total}</div>
-                      <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
+                      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
                         color: 'rgba(15,21,35,0.72)', marginTop: '2px' }}>
                         TOTAL
                       </div>
@@ -2739,14 +2739,14 @@ export function ProfilePage() {
               )
             })() : (
               <div>
-                <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+                <p style={{ ...serif, fontSize: '15px',
                   color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: '0 0 16px' }}>
                   Daily nervous system practice. 20 minutes. The return.
                 </p>
                 <a href="/tools/foundation" style={{ ...sc, fontSize: '13px',
                   letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none',
                   padding: '10px 18px', border: '1px solid rgba(200,146,42,0.35)',
-                  borderRadius: '40px', background: 'rgba(200,146,42,0.04)',
+                  borderRadius: '40px', background: 'rgba(200,146,42,0.05)',
                   display: 'inline-block' }}>
                   Begin Horizon State →
                 </a>
@@ -2758,7 +2758,7 @@ export function ProfilePage() {
           <div style={{ padding: '24px', background: '#FFFFFF',
             border: '1px solid rgba(200,146,42,0.2)',
             borderTop: '3px solid rgba(200,146,42,0.35)', borderRadius: '12px' }}>
-            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.22em',
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
               color: '#A8721A', marginBottom: '14px' }}>REGULATION PATTERN</div>
 
             {foundationData ? (() => {
@@ -2814,19 +2814,19 @@ export function ProfilePage() {
                       { label: 'Avg lift', value: avg_delta != null ? `${deltaSign}${avg_delta}` : '—', unit: 'per session' },
                     ].map(({ label, value, unit }) => (
                       <div key={label} style={{ padding: '10px 12px',
-                        background: 'rgba(200,146,42,0.04)',
+                        background: 'rgba(200,146,42,0.05)',
                         border: '1px solid rgba(200,146,42,0.15)',
                         borderRadius: '8px', textAlign: 'center' }}>
                         <div style={{ ...sc, fontSize: '20px', fontWeight: 600,
                           color: '#A8721A', lineHeight: 1 }}>{value}</div>
-                        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em',
+                        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em',
                           color: 'rgba(15,21,35,0.72)', marginTop: '3px' }}>{label}</div>
                       </div>
                     ))}
                   </div>
 
                   {/* 4-week pattern */}
-                  <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em',
+                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em',
                     color: 'rgba(15,21,35,0.72)', marginBottom: '10px' }}>
                     WEEKLY PATTERN
                   </div>
@@ -2836,7 +2836,7 @@ export function ProfilePage() {
                     return (
                       <div key={i} style={{ display: 'flex', alignItems: 'center',
                         gap: '10px', marginBottom: '8px' }}>
-                        <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+                        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em',
                           color: 'rgba(15,21,35,0.72)', width: '68px', flexShrink: 0,
                           textAlign: 'right' }}>{w.label}</div>
                         <div style={{ flex: 1, height: '6px',
@@ -2845,12 +2845,12 @@ export function ProfilePage() {
                             background: i === 3 ? '#A8721A' : 'rgba(200,146,42,0.5)',
                             borderRadius: '3px' }} />
                         </div>
-                        <div style={{ ...sc, fontSize: '10px',
+                        <div style={{ ...sc, fontSize: '11px',
                           color: 'rgba(15,21,35,0.72)', width: '16px', flexShrink: 0 }}>
                           {w.sessions}
                         </div>
                         {w.avgDelta !== null && (
-                          <div style={{ ...sc, fontSize: '10px', flexShrink: 0,
+                          <div style={{ ...sc, fontSize: '11px', flexShrink: 0,
                             color: w.avgDelta >= 0 ? '#2D6A4F' : '#8A3030' }}>
                             {w.avgDelta >= 0 ? '+' : ''}{w.avgDelta}
                           </div>
@@ -2860,7 +2860,7 @@ export function ProfilePage() {
                   })}
 
                   {sessions_total === 0 && (
-                    <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+                    <p style={{ ...serif, fontSize: '13px',
                       color: 'rgba(15,21,35,0.72)', margin: '8px 0 0' }}>
                       No sessions yet — pattern builds as you practise.
                     </p>
@@ -2868,7 +2868,7 @@ export function ProfilePage() {
                 </div>
               )
             })() : (
-              <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic',
+              <p style={{ ...serif, fontSize: '15px',
                 color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>
                 Your regulation pattern across the week, month, and over time appears here once you begin Horizon State.
               </p>
@@ -2882,7 +2882,7 @@ export function ProfilePage() {
         <div style={{ marginBottom: '48px', padding: '24px 28px',
           background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)',
           borderRadius: '12px' }}>
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.22em',
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
             color: '#A8721A', marginBottom: '16px' }}>
             THE HORIZON SUITE
           </div>
@@ -2943,7 +2943,7 @@ export function ProfilePage() {
             <a key={name} href={url} style={{ textDecoration: 'none',
               display: 'flex', alignItems: 'center', gap: '14px',
               padding: '12px 0',
-              borderBottom: '1px solid rgba(200,146,42,0.07)' }}>
+              borderBottom: '1px solid rgba(200,146,42,0.05)' }}>
               {/* Status glyph */}
               <div style={{ width: '8px', height: '8px', borderRadius: '50%',
                 flexShrink: 0,
@@ -2955,7 +2955,7 @@ export function ProfilePage() {
               <div style={{ ...sc, fontSize: '14px', letterSpacing: '0.08em',
                 color: '#0F1523', width: '130px', flexShrink: 0 }}>{name}</div>
               {/* Detail */}
-              <div style={{ ...serif, fontSize: '13px', fontStyle: 'italic',
+              <div style={{ ...serif, fontSize: '13px',
                 color: 'rgba(15,21,35,0.72)', flex: 1, minWidth: 0,
                 overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                 {detail}

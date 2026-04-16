@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../hooks/useSupabase'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 // Where to send the user after sign-in.
@@ -92,7 +93,7 @@ export function LoginPage() {
         {!sent ? (
           <>
             <h1 style={{ ...serif, fontSize: '28px', fontWeight: 300, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Welcome.</h1>
-            <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginBottom: '32px', lineHeight: 1.5 }}>Sign in or create your account to continue.</p>
+            <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '32px', lineHeight: 1.5 }}>Sign in or create your account to continue.</p>
 
             {/* Google */}
             <button onClick={handleGoogle} style={{ width: '100%', padding: '13px 16px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...serif, fontSize: '15px', color: '#0F1523', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginBottom: '10px' }}>
@@ -116,22 +117,22 @@ export function LoginPage() {
             <button onClick={handleEmail} disabled={sending} style={{ width: '100%', padding: '16px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', color: '#A8721A', cursor: 'pointer', opacity: sending ? 0.5 : 1 }}>
               {sending ? 'On its way\u2026' : 'Continue with email \u2192'}
             </button>
-            {error && <p style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', marginTop: '8px', padding: '10px 14px', background: 'rgba(200,146,42,0.05)', borderRadius: '14px', border: '1.5px solid rgba(200,146,42,0.35)' }}>{error}</p>}
+            {error && <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)', marginTop: '8px', padding: '10px 14px', background: 'rgba(200,146,42,0.05)', borderRadius: '14px', border: '1.5px solid rgba(200,146,42,0.35)' }}>{error}</p>}
           </>
         ) : (
           <div style={{ textAlign: 'center' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(200,146,42,0.1)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '22px' }}>{'\u2736'}</div>
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '22px' }}>{'\u2736'}</div>
             <h2 style={{ ...serif, fontSize: '24px', fontWeight: 300, color: '#0F1523', marginBottom: '10px' }}>Check your email.</h2>
-            <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+            <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
               We sent a sign-in link to<br />
               <span style={{ fontStyle: 'normal', color: '#A8721A' }}>{email}</span>
             </p>
-            <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '12px', lineHeight: 1.6 }}>Open the link in your email to continue — you can close this tab in the meantime.</p>
+            <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginTop: '12px', lineHeight: 1.6 }}>Open the link in your email to continue — you can close this tab in the meantime.</p>
           </div>
         )}
       </div>
 
-      <p style={{ marginTop: '32px', ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.3)' }}>
+      <p style={{ marginTop: '32px', ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
         <a href="/" style={{ color: '#A8721A', textDecoration: 'none' }}>nextus.world</a>
       </p>
     </div>

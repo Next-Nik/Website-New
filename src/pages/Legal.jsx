@@ -2,6 +2,7 @@ import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 function LegalWrap({ title, eyebrow, subtitle, active, children }) {
@@ -11,7 +12,7 @@ function LegalWrap({ title, eyebrow, subtitle, active, children }) {
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>{eyebrow}</span>
         <h1 style={{ ...serif, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '24px' }} dangerouslySetInnerHTML={{ __html: title }} />
-        <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginBottom: '48px' }}>{subtitle}</p>
+        <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.55)', marginBottom: '48px' }}>{subtitle}</p>
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', marginBottom: '48px' }} />
         {children}
       </div>
@@ -32,7 +33,7 @@ function UL({ items }) {
 
 export function PrivacyPage() {
   return (
-    <LegalWrap eyebrow="Privacy" title="How we handle<br><em style='color:#A8721A;'>your information.</em>" subtitle="Last updated March 2026 · NextUs / Nik Wood" active="">
+    <LegalWrap eyebrow="Privacy" title="How we handle<br><em style='color:#A8721A;'>your information.</span>" subtitle="Last updated March 2026 · NextUs / Nik Wood" active="">
       <P>NextUs is built on the premise that honest self-knowledge is valuable {'\u2014'} and that what you discover about yourself belongs to you. This policy explains what we collect, why, and what we do and don{'\u2019'}t do with it.</P>
       <P>The short version: we collect what we need to make the tools work and remember your progress. We don{'\u2019'}t sell your data. We don{'\u2019'}t share it with advertisers. We don{'\u2019'}t use it to build profiles for anyone other than you.</P>
       <H2>What we collect</H2>
@@ -57,14 +58,14 @@ export function PrivacyPage() {
       <H2>Changes to this policy</H2>
       <P>If we make material changes to how we handle your data, we{'\u2019'}ll update this page and note the date.</P>
       <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '48px 0 24px' }} />
-      <P><em>Questions? <a href="mailto:hello@nextus.world" style={{ color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.3)' }}>hello@nextus.world</a></em></P>
+      <P>Questions? <a href="mailto:hello@nextus.world" style={{ color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.3)' }}>hello@nextus.world</a></P>
     </LegalWrap>
   )
 }
 
 export function TermsPage() {
   return (
-    <LegalWrap eyebrow="Terms of Service" title="Using NextUs<br><em style='color:#A8721A;'>in good faith.</em>" subtitle="Last updated March 2026 · NextUs / Nik Wood" active="">
+    <LegalWrap eyebrow="Terms of Service" title="Using NextUs<br><em style='color:#A8721A;'>in good faith.</span>" subtitle="Last updated March 2026 · NextUs / Nik Wood" active="">
       <P>These terms cover your use of nextus.world and the Horizon Suite tools {'\u2014'} Orienteering, The Map, Purpose Piece, Foundation, Target Sprint {'\u2014'} and the NextUs platform.</P>
       <P>The spirit of these terms: use the platform honestly, treat what you find here with respect, and don{'\u2019'}t do things that would harm other people or the platform itself.</P>
       <H2>Your account</H2>
@@ -86,7 +87,7 @@ export function TermsPage() {
       <H2>Governing law</H2>
       <P>These terms are governed by the laws of the province of British Columbia, Canada.</P>
       <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '48px 0 24px' }} />
-      <P><em>Questions? <a href="mailto:hello@nextus.world" style={{ color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.3)' }}>hello@nextus.world</a></em></P>
+      <P>Questions? <a href="mailto:hello@nextus.world" style={{ color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.3)' }}>hello@nextus.world</a></P>
     </LegalWrap>
   )
 }

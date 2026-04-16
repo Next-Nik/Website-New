@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { ToolDrawer } from './ToolDrawer'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const serif = { fontFamily: "'Lora', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 export function Nav({ activePath }) {
   const { user }     = useAuth()
@@ -97,14 +98,14 @@ export function Nav({ activePath }) {
             >
               {mobileOpen ? (
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <line x1="4" y1="4" x2="16" y2="16" stroke="rgba(15,21,35,0.78)" strokeWidth="1.5" strokeLinecap="round"/>
-                  <line x1="16" y1="4" x2="4" y2="16" stroke="rgba(15,21,35,0.78)" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="4" y1="4" x2="16" y2="16" stroke="rgba(15,21,35,0.72)" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="16" y1="4" x2="4" y2="16" stroke="rgba(15,21,35,0.72)" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
               ) : (
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <line x1="3" y1="6"  x2="17" y2="6"  stroke="rgba(15,21,35,0.78)" strokeWidth="1.5" strokeLinecap="round"/>
-                  <line x1="3" y1="10" x2="17" y2="10" stroke="rgba(15,21,35,0.78)" strokeWidth="1.5" strokeLinecap="round"/>
-                  <line x1="3" y1="14" x2="17" y2="14" stroke="rgba(15,21,35,0.78)" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="3" y1="6"  x2="17" y2="6"  stroke="rgba(15,21,35,0.72)" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="3" y1="10" x2="17" y2="10" stroke="rgba(15,21,35,0.72)" strokeWidth="1.5" strokeLinecap="round"/>
+                  <line x1="3" y1="14" x2="17" y2="14" stroke="rgba(15,21,35,0.72)" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
               )}
             </button>
@@ -119,8 +120,8 @@ export function Nav({ activePath }) {
           <div className="nav-mobile-section">
             <Link to="/life-os" onClick={closeMobile} className="nav-mobile-link nav-mobile-link--heading">
               <span>Horizon Suite</span>
-              <span style={{ ...serif, fontSize: '14px', fontStyle: 'italic',
-                color: 'rgba(15,21,35,0.38)', fontWeight: 400, letterSpacing: 0 }}>
+              <span style={{ ...serif, fontSize: '14px',
+                color: 'rgba(15,21,35,0.55)', fontWeight: 400, letterSpacing: 0 }}>
                 Tools for your life
               </span>
             </Link>
@@ -170,7 +171,7 @@ export function Nav({ activePath }) {
           font-family: 'Cormorant SC', Georgia, serif;
           font-size: 17px;
           letter-spacing: 0.12em;
-          color: rgba(15,21,35,0.78);
+          color: rgba(15,21,35,0.72);
           cursor: pointer;
           transition: border-color 0.18s, color 0.18s, background 0.18s;
           white-space: nowrap;
@@ -180,7 +181,7 @@ export function Nav({ activePath }) {
         .nav-tools-pill--open {
           border-color: rgba(200,146,42,0.78);
           color: #A8721A;
-          background: rgba(200,146,42,0.06);
+          background: rgba(200,146,42,0.05);
         }
 
         /* ── Sign in ── */
@@ -198,7 +199,7 @@ export function Nav({ activePath }) {
           transition: background 0.18s;
           white-space: nowrap;
         }
-        .nav-sign-in:hover { background: rgba(200,146,42,0.10); }
+        .nav-sign-in:hover { background: rgba(200,146,42,0.08); }
 
         /* ── Hamburger (mobile only) ── */
         .nav-hamburger {
@@ -234,7 +235,7 @@ export function Nav({ activePath }) {
         }
         .nav-mobile-divider {
           height: 1px;
-          background: rgba(200,146,42,0.12);
+          background: rgba(200,146,42,0.08);
           margin: 4px 0;
         }
         .nav-mobile-link {

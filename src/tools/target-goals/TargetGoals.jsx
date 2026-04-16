@@ -51,9 +51,10 @@ function getColor(n) {
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = { color: '#A8721A' }
-const muted = { color: 'rgba(15,21,35,0.78)' }
-const meta  = { color: 'rgba(15,21,35,0.78)' }
+const muted = { color: 'rgba(15,21,35,0.72)' }
+const meta  = { color: 'rgba(15,21,35,0.72)' }
 
 const btnStyle = {
   ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', color: '#A8721A',
@@ -95,7 +96,7 @@ function WelcomeModal({ onBegin }) {
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '460px', width: '100%', textAlign: 'center' }}>
         <span style={{ display: 'block', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '17px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>Target Sprint</span>
         <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>Three months. Three areas.</h2>
-        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
+        <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '32px' }}>
           Ninety days. Three domains. Moving from one level of your life to a meaningfully fuller one.<br />Powerful on its own, supercharged when you’ve done The Map.
         </p>
         <button onClick={onBegin} style={{
@@ -123,7 +124,7 @@ function AuthModal() {
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 32px', maxWidth: '400px', width: '100%', textAlign: 'center' }}>
         <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '12px' }}>Target Sprint</span>
         <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>Sign in to begin.</h2>
-        <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>Your sprint saves to your profile.</p>
+        <p style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.7, marginBottom: '24px' }}>Your sprint saves to your profile.</p>
         <a href={`/login?redirect=${r}`} style={{ display: 'block', padding: '14px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
           Sign in or create account →
         </a>
@@ -145,7 +146,7 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
   const n = domains.length || 3
 
   const WEDGE_COLORS = ['#C8922A', '#2D6A4F', '#2D4A6A']
-  const WEDGE_FILLS  = ['rgba(200,146,42,0.12)', 'rgba(45,106,79,0.12)', 'rgba(45,74,106,0.12)']
+  const WEDGE_FILLS  = ['rgba(200,146,42,0.08)', 'rgba(45,106,79,0.12)', 'rgba(45,74,106,0.12)']
 
   // Spin state — matches PurposeDisc pattern
   const [rot,     setRot]     = useState(0)
@@ -379,9 +380,10 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
 function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoToDomain }) {
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
   const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
   const gold  = { color: '#A8721A' }
-  const muted = { color: 'rgba(15,21,35,0.78)' }
-  const meta  = { color: 'rgba(15,21,35,0.78)' }
+  const muted = { color: 'rgba(15,21,35,0.72)' }
+  const meta  = { color: 'rgba(15,21,35,0.72)' }
 
   const STEP_LABELS = { current_state: 'Where you are', horizon: 'Horizon', target_goal: 'Target Goal', milestones: 'Milestones', tasks: 'Tasks' }
 
@@ -402,14 +404,14 @@ function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoT
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '36px 32px', maxWidth: '440px', width: '100%', maxHeight: '80vh', overflowY: 'auto' }}>
         <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.18em', ...gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>Target Sprint</span>
         <h2 style={{ ...sc, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.1 }}>What's still to do.</h2>
-        <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '24px' }}>
+        <p style={{ ...serif, fontSize: '1.1875rem', ...muted, lineHeight: 1.7, marginBottom: '24px' }}>
           Complete all three areas to unlock your full sprint.
         </p>
         {domains.map(d => {
           const steps = stepsComplete(d.id)
           const allDone = Object.values(steps).every(Boolean)
           return (
-            <div key={d.id} style={{ marginBottom: '16px', padding: '14px 16px', border: `1px solid ${allDone ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.18)'}`, borderRadius: '10px', background: allDone ? 'rgba(200,146,42,0.04)' : '#FFFFFF' }}>
+            <div key={d.id} style={{ marginBottom: '16px', padding: '14px 16px', border: `1px solid ${allDone ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.18)'}`, borderRadius: '10px', background: allDone ? 'rgba(200,146,42,0.05)' : '#FFFFFF' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: allDone ? 0 : '10px' }}>
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: allDone ? '#A8721A' : '#0F1523', textTransform: 'uppercase' }}>
                   {allDone ? '✓ ' : ''}{d.label}
@@ -439,7 +441,7 @@ function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoT
             </div>
           )
         })}
-        <button onClick={onClose} style={{ background: 'none', border: 'none', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.1875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0, marginTop: '8px' }}>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', fontFamily: "'Lora', Georgia, serif", fontSize: '1.1875rem', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0, marginTop: '8px' }}>
           Continue where I am
         </button>
       </div>
@@ -470,7 +472,7 @@ function SetupStatusBar({ domains, domainData }) {
         <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase' }}>Sprint Setup</span>
         <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.1em', ...muted }}>{complete} / {total}</span>
       </div>
-      <div style={{ height: '3px', background: 'rgba(200,146,42,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
+      <div style={{ height: '3px', background: 'rgba(200,146,42,0.08)', borderRadius: '2px', overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: '#C8922A', transition: 'width 0.6s ease', borderRadius: '2px' }} />
       </div>
     </div>
@@ -523,7 +525,7 @@ function StepStrip({ domainId, domainData, activeStep, onStepClick }) {
               {done ? '✓ ' : ''}{STEP_LABELS[step]}
             </button>
             {i < STEPS.length - 1 && (
-              <div style={{ flex: 1, height: '1px', background: done ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.1)', margin: '0 6px', minWidth: '8px', transition: 'background 0.4s' }} />
+              <div style={{ flex: 1, height: '1px', background: done ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.08)', margin: '0 6px', minWidth: '8px', transition: 'background 0.4s' }} />
             )}
           </div>
         )
@@ -592,7 +594,7 @@ function AccomplishmentTally({ domains, domainData, onCheck }) {
       </div>
 
       {/* Progress bar */}
-      <div style={{ height: '4px', background: 'rgba(200,146,42,0.12)', borderRadius: '2px', marginBottom: '20px', overflow: 'hidden' }}>
+      <div style={{ height: '4px', background: 'rgba(200,146,42,0.08)', borderRadius: '2px', marginBottom: '20px', overflow: 'hidden' }}>
         <div style={{ height: '100%', width: pct + '%', background: '#C8922A', borderRadius: '2px', transition: 'width 0.6s ease' }} />
       </div>
 
@@ -671,7 +673,7 @@ function AccomplishmentTally({ domains, domainData, onCheck }) {
 
 function SprintSummaryModal({ domains, domainData, onClose, onComplete }) {
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
+    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '520px', width: '100%', maxHeight: '80vh', overflowY: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
@@ -681,16 +683,16 @@ function SprintSummaryModal({ domains, domainData, onClose, onComplete }) {
         {domains.map(d => {
           const dd = domainData[d.id] || {}
           if (!dd.targetGoal) return (
-            <div key={d.id} style={{ padding: '14px 0', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
+            <div key={d.id} style={{ padding: '14px 0', borderTop: '1px solid rgba(200,146,42,0.08)' }}>
               <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '4px' }}>{d.label}</div>
-              <div style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted }}>Not yet set.</div>
+              <div style={{ ...serif, fontSize: '1.1875rem', ...muted }}>Not yet set.</div>
             </div>
           )
           return (
-            <div key={d.id} style={{ padding: '14px 0', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
+            <div key={d.id} style={{ padding: '14px 0', borderTop: '1px solid rgba(200,146,42,0.08)' }}>
               <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>{d.label}</div>
               {dd.horizonText && (
-                <div style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, lineHeight: 1.6, marginBottom: '6px' }}>
+                <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.125rem', ...muted, lineHeight: 1.6, marginBottom: '6px' }}>
                   Horizon: {dd.horizonText}
                 </div>
               )}
@@ -701,7 +703,7 @@ function SprintSummaryModal({ domains, domainData, onClose, onComplete }) {
 
         {/* Completion section */}
         <div style={{ marginTop: '28px', paddingTop: '24px', borderTop: '1.5px solid rgba(200,146,42,0.20)', textAlign: 'center' }}>
-          <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '20px' }}>
+          <p style={{ ...serif, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '20px' }}>
             Your results are saved to your profile. You can return to them any time.
           </p>
           <button
@@ -807,14 +809,15 @@ function ChatPanel({ mode, domainId, payload, onComplete, placeholder, userId })
 
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
   const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 
   return (
     <div>
       {/* Target goal mode: show upfront what North Star is collecting */}
       {isTargetGoal && msgs.length === 0 && !thinking && (
-        <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '10px', marginBottom: '16px' }}>
+        <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '10px', marginBottom: '16px' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '6px' }}>What we're working toward</div>
-          <p style={{ ...serif, fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.65, margin: 0 }}>
+          <p style={{ ...serif, fontSize: '1.125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
             North Star will ask you three things: what you want to achieve in 90 days, why this quarter, and how you'll know you've hit it. Once it has enough, a <strong style={{ fontFamily: "'Cormorant SC', Georgia, serif", color: '#A8721A' }}>Build my plan →</strong> button will appear.
           </p>
         </div>
@@ -829,7 +832,7 @@ function ChatPanel({ mode, domainId, payload, onComplete, placeholder, userId })
       {/* Build my plan button — appears when North Star signals it has enough */}
       {pendingData && (
         <div style={{ marginBottom: '16px', padding: '16px 18px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px' }}>
-          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.65, marginBottom: '14px' }}>
+          <p style={{ ...serif, fontSize: '1.1875rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, marginBottom: '14px' }}>
             North Star has what it needs. Your plan — goal, milestones, and tasks — is ready to build.
           </p>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -837,7 +840,7 @@ function ChatPanel({ mode, domainId, payload, onComplete, placeholder, userId })
               Build my plan →
             </Btn>
             <button onClick={() => setPendingData(null)}
-              style={{ background: 'none', border: 'none', ...serif, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0 }}>
+              style={{ background: 'none', border: 'none', ...serif, fontSize: '1.125rem', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0 }}>
               Keep talking
             </button>
           </div>
@@ -873,7 +876,7 @@ function EditableList({ items, onSave, renderItem, addLabel = '+ Add', itemKey =
   if (!editing) return (
     <div>
       {items.map((item, i) => renderItem(item, i))}
-      <button onClick={() => setEditing(true)} style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...gold, background: 'none', border: 'none', cursor: 'pointer', padding: '6px 0', marginTop: '6px' }}>
+      <button onClick={() => setEditing(true)} style={{ ...serif, fontSize: '1.125rem', ...gold, background: 'none', border: 'none', cursor: 'pointer', padding: '6px 0', marginTop: '6px' }}>
         Edit →
       </button>
     </div>
@@ -899,7 +902,7 @@ function EditableList({ items, onSave, renderItem, addLabel = '+ Add', itemKey =
         <Btn onClick={() => { onSave(draft); setEditing(false) }} style={{ padding: '8px 20px', fontSize: '15px' }}>
           Save
         </Btn>
-        <button onClick={() => setEditing(false)} style={{ background: 'none', border: 'none', ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, cursor: 'pointer', padding: '6px 0' }}>
+        <button onClick={() => setEditing(false)} style={{ background: 'none', border: 'none', ...serif, fontSize: '1.125rem', ...muted, cursor: 'pointer', padding: '6px 0' }}>
           Cancel
         </button>
       </div>
@@ -970,7 +973,7 @@ function SprintCoach({ sprintContext, userId }) {
 
   return (
     <div>
-      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '16px' }}>
+      <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '16px' }}>
         North Star knows your full plan. Check in on execution, surface what's stuck, think through what's next.
       </p>
       <div className="chat-thread" style={{ marginBottom: '14px' }}>
@@ -1065,7 +1068,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
       {/* Domain header */}
       <div style={{ marginBottom: '18px' }}>
         <Eyebrow>{d.label}</Eyebrow>
-        <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.65, margin: 0 }}>
+        <p style={{ ...serif, fontSize: '1.1875rem', ...muted, lineHeight: 1.65, margin: 0 }}>
           {d.description}
         </p>
       </div>
@@ -1082,7 +1085,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
               fontFamily: "'Cormorant SC', Georgia, serif",
               fontSize: '13px', letterSpacing: '0.14em',
               color: viewStep === 'coach' ? '#FFFFFF' : '#A8721A',
-              background: viewStep === 'coach' ? '#A8721A' : 'rgba(200,146,42,0.06)',
+              background: viewStep === 'coach' ? '#A8721A' : 'rgba(200,146,42,0.05)',
               border: '1px solid rgba(200,146,42,0.5)',
               borderRadius: '20px', padding: '5px 14px',
               cursor: 'pointer', transition: 'all 0.2s',
@@ -1098,11 +1101,11 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
       {viewStep === 'current_state' && (
         <div>
           <h3 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px' }}>Where you are</h3>
-          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+          <p style={{ ...serif, fontSize: '1.1875rem', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
             Where are you right now in {d.label}, and why is this a pivotal area for you this quarter?
           </p>
           {hasMapData && (mapDomain.realityFinal || mapDomain.realityDraft) && !dd.currentStateSummary && (
-            <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '14px' }}>
+            <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '14px' }}>
               <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>From your Map</div>
               <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.65, marginBottom: '10px' }}>{mapDomain.realityFinal || mapDomain.realityDraft}</div>
               <Btn onClick={() => update({ currentStateSummary: mapDomain.realityFinal || mapDomain.realityDraft, currentStateFromMap: true })} style={{ padding: '8px 18px', fontSize: '15px' }}>
@@ -1144,11 +1147,11 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
       {viewStep === 'horizon' && (
         <div>
           <h3 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px' }}>Horizon</h3>
-          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+          <p style={{ ...serif, fontSize: '1.1875rem', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
             Where do you wish you were in this area? Not a 90-day target — the honest version of your best life here.
           </p>
           {hasMapData && mapDomain.horizonText && mapDomain.horizonText !== 'See sub-domain horizons' && !dd.horizonText && (
-            <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '14px' }}>
+            <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '14px' }}>
               <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>From your Map</div>
               <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.65, marginBottom: '10px' }}>{mapDomain.horizonText}</div>
               <Btn onClick={() => update({ horizonText: mapDomain.horizonText, horizonFromMap: true })} style={{ padding: '8px 18px', fontSize: '15px' }}>
@@ -1190,12 +1193,12 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
       {viewStep === 'target_goal' && (
         <div>
           <h3 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px' }}>Target Goal</h3>
-          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '4px' }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.1875rem', ...muted, lineHeight: 1.7, marginBottom: '4px' }}>
             Where can you realistically get to in 90 days on the way to that horizon?
           </p>
           {dd.horizonText && (
             <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, textTransform: 'uppercase', marginBottom: '14px' }}>
-              Toward: <span style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', textTransform: 'none', letterSpacing: 0, color: 'rgba(15,21,35,0.78)' }}>{dd.horizonText}</span>
+              Toward: <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.125rem', textTransform: 'none', letterSpacing: 0, color: 'rgba(15,21,35,0.72)' }}>{dd.horizonText}</span>
             </div>
           )}
           {dd.targetGoal ? (
@@ -1246,7 +1249,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
       {viewStep === 'milestones' && (
         <div>
           <h3 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px' }}>Milestones</h3>
-          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+          <p style={{ ...serif, fontSize: '1.1875rem', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
             The three monthly waypoints on the way to your target.
           </p>
           {dd.milestones?.length > 0 ? (
@@ -1259,7 +1262,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
                     <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', ...gold, flexShrink: 0, paddingTop: '3px', width: '48px', textTransform: 'uppercase' }}>Month {i + 1}</span>
                     <div>
                       <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.6 }}>{item.text}</div>
-                      {item.why && <div style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, marginTop: '2px' }}>{item.why}</div>}
+                      {item.why && <div style={{ ...serif, fontSize: '1.125rem', ...muted, marginTop: '2px' }}>{item.why}</div>}
                     </div>
                   </div>
                 )}
@@ -1414,7 +1417,7 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
   return (
     <div>
       <h3 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', marginBottom: '6px' }}>Tasks</h3>
-      <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+      <p style={{ ...serif, fontSize: '1.1875rem', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
         The specific actions that move each milestone forward. Add any item to your calendar with one tap.
       </p>
 
@@ -1440,14 +1443,14 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
                 {editingDate === milestoneKey ? (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <input type="date" defaultValue={mDate}
-                      style={{ ...serif, fontSize: '1rem', color: 'rgba(15,21,35,0.78)', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '6px', padding: '2px 6px', background: '#FAFAF7' }}
+                      style={{ ...serif, fontSize: '1rem', color: 'rgba(15,21,35,0.72)', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '6px', padding: '2px 6px', background: '#FAFAF7' }}
                       onChange={e => saveMilestoneDate(mi, e.target.value)}
                     />
                     <button onClick={() => setEditingDate(null)} style={{ background: 'none', border: 'none', ...muted, cursor: 'pointer', fontSize: '1.1rem', padding: '0 2px' }}>×</button>
                   </div>
                 ) : (
                   <button onClick={() => setEditingDate(milestoneKey)}
-                    style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: '3px' }}>
+                    style={{ ...serif, fontSize: '1rem', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: '3px' }}>
                     {mDate ? formatDisplayDate(mDate) : 'Set date'}
                   </button>
                 )}
@@ -1456,7 +1459,7 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
                 <button
                   style={{ ...calBtnStyle, color: milestoneAdded ? '#2D6A4F' : '#A8721A', borderColor: milestoneAdded ? 'rgba(45,106,79,0.4)' : 'rgba(200,146,42,0.35)' }}
                   onClick={() => addToGCal(milestoneKey, domain + ' — Month ' + (mi + 1) + ' Milestone', mDate, milestoneDesc)}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.06)' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.05)' }}
                   onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
                 >
                   {milestoneAdded ? '✓ Added' : (<>{calIcon} + Calendar</>)}
@@ -1482,7 +1485,7 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
                     const tDate = getTaskDate(task, mi)
                     const isEditingTask = editingDate === taskKey
                     return (
-                      <div key={i} style={{ padding: '7px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(200,146,42,0.06)' }}>
+                      <div key={i} style={{ padding: '7px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(200,146,42,0.05)' }}>
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
                           <span style={{ color: '#A8721A', fontSize: '1.1875rem', lineHeight: 1.55, flexShrink: 0, marginTop: '1px' }}>·</span>
                           <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.55, flex: 1 }}>{task.text}</div>
@@ -1490,7 +1493,7 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
                             <button
                               style={{ ...calBtnStyle, color: taskAdded ? '#2D6A4F' : '#A8721A', borderColor: taskAdded ? 'rgba(45,106,79,0.4)' : 'rgba(200,146,42,0.35)' }}
                               onClick={() => addToGCal(taskKey, task.text, tDate, m.text + '\n\nTask: ' + task.text)}
-                              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.06)' }}
+                              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.05)' }}
                               onMouseLeave={e => { e.currentTarget.style.background = 'none' }}
                             >
                               {taskAdded ? '✓' : calIcon}
@@ -1509,7 +1512,7 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
                             </div>
                           ) : (
                             <button onClick={() => setEditingDate(taskKey)}
-                              style={{ ...serif, fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: '3px' }}>
+                              style={{ ...serif, fontSize: '0.9375rem', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationStyle: 'dotted', textUnderlineOffset: '3px' }}>
                               {tDate ? formatDisplayDate(tDate) : 'Set date'}
                             </button>
                           )}
@@ -1536,8 +1539,8 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
       })}
 
       {dd.tasks?.length > 0 && (
-        <div style={{ marginTop: '8px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
-          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.65 }}>
+        <div style={{ marginTop: '8px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.08)' }}>
+          <p style={{ ...serif, fontSize: '1.1875rem', ...muted, lineHeight: 1.65 }}>
             This domain is set up. Use the arrows or wheel to move to the next one.
           </p>
         </div>
@@ -1561,21 +1564,21 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
   return (
     <div>
       <Eyebrow>Target Sprint</Eyebrow>
-      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '8px 0 12px', maxWidth: '520px' }}>
+      <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '8px 0 12px', maxWidth: '520px' }}>
         Three key areas, 90 days, level up.
       </p>
       <h1 style={{ ...sc, fontSize: 'clamp(1.75rem,4vw,2.5rem)', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '10px' }}>
         Three areas. Three months.
       </h1>
       <Rule />
-      <p style={{ ...serif, fontSize: '1.25rem', fontStyle: 'italic', ...muted, lineHeight: 1.75, marginBottom: '20px' }}>
+      <p style={{ ...serif, fontSize: '1.25rem', ...muted, lineHeight: 1.75, marginBottom: '20px' }}>
         {hasMapData
           ? 'Your Map scores are loaded. The ☆ shows where the most leverage is right now. You have the final say.'
           : 'Choose the three areas where focused effort this quarter would matter most. Trust your instinct.'}
       </p>
 
       {recommendation?.soft_observation && (
-        <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...meta, marginBottom: '20px', lineHeight: 1.65 }}>
+        <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', ...serif, fontSize: '1.1875rem', ...meta, marginBottom: '20px', lineHeight: 1.65 }}>
           {recommendation.soft_observation}
         </div>
       )}
@@ -1591,18 +1594,18 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
           return (
             <div key={d.id}
               onClick={() => { if (dis) return; setSelectedDomains(p => p.includes(d.id) ? p.filter(x => x !== d.id) : [...p, d.id]) }}
-              style={{ padding: '14px', border: `1.5px solid ${sel ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.2)'}`, borderRadius: '10px', background: sel ? 'rgba(200,146,42,0.06)' : '#FFFFFF', cursor: dis ? 'not-allowed' : 'pointer', opacity: dis ? 0.45 : 1, transition: 'all 0.2s' }}
+              style={{ padding: '14px', border: `1.5px solid ${sel ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.2)'}`, borderRadius: '10px', background: sel ? 'rgba(200,146,42,0.05)' : '#FFFFFF', cursor: dis ? 'not-allowed' : 'pointer', opacity: dis ? 0.45 : 1, transition: 'all 0.2s' }}
               onMouseEnter={e => { if (!dis) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,21,35,0.06)' } }}
               onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
               <div style={{ ...sc, fontSize: '1.25rem', letterSpacing: '0.08em', color: sel ? '#A8721A' : '#0F1523', marginBottom: '4px' }}>
                 {d.label}{isRec ? ' ☆' : ''}
               </div>
-              <div style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', ...muted, lineHeight: 1.55, marginBottom: s !== undefined ? '10px' : 0 }}>
+              <div style={{ ...serif, fontSize: '1.125rem', ...muted, lineHeight: 1.55, marginBottom: s !== undefined ? '10px' : 0 }}>
                 {rat || d.description}
               </div>
               {s !== undefined && (
                 <>
-                  <div style={{ height: '2px', background: 'rgba(200,146,42,0.1)', borderRadius: '1px', overflow: 'hidden', marginBottom: '4px' }}>
+                  <div style={{ height: '2px', background: 'rgba(200,146,42,0.08)', borderRadius: '1px', overflow: 'hidden', marginBottom: '4px' }}>
                     <div style={{ height: '100%', width: `${s * 10}%`, background: col, borderRadius: '1px' }} />
                   </div>
                   <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: col }}>{s} · {getTierLabel(s)}</div>
@@ -1649,15 +1652,15 @@ function PhaseQuarter({ quarterType, setQuarterType, setTargetDate, setEndDateLa
           { type: 'calendar', title: 'Calendar quarter',  date: fmt(qEnd),    desc: `${qL} end — syncs with how the year flows.` },
         ].map(o => (
           <div key={o.type} onClick={() => select(o.type)}
-            style={{ padding: '18px 20px', border: `1.5px solid ${quarterType === o.type ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.2)'}`, borderRadius: '10px', background: quarterType === o.type ? 'rgba(200,146,42,0.06)' : '#FFFFFF', cursor: 'pointer', transition: 'all 0.2s' }}>
+            style={{ padding: '18px 20px', border: `1.5px solid ${quarterType === o.type ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.2)'}`, borderRadius: '10px', background: quarterType === o.type ? 'rgba(200,146,42,0.05)' : '#FFFFFF', cursor: 'pointer', transition: 'all 0.2s' }}>
             <div style={{ ...sc, fontSize: '1.25rem', letterSpacing: '0.08em', color: quarterType === o.type ? '#A8721A' : '#0F1523', marginBottom: '3px' }}>{o.title}</div>
             <div style={{ ...sc, fontSize: '1.125rem', ...gold, marginBottom: '3px' }}>{o.date}</div>
-            <div style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted }}>{o.desc}</div>
+            <div style={{ ...serif, fontSize: '1.1875rem', ...muted }}>{o.desc}</div>
           </div>
         ))}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-        <button onClick={onBack} style={{ background: 'none', border: 'none', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.1875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0 }}>
+        <button onClick={onBack} style={{ background: 'none', border: 'none', fontFamily: "'Lora', Georgia, serif", fontSize: '1.1875rem', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0 }}>
           ← Back
         </button>
         <Btn onClick={onContinue} disabled={!quarterType}>Lock this in →</Btn>
@@ -2014,7 +2017,7 @@ export function TargetGoalsPage() {
 
         {/* ── Sprint phase ──────────────────────────────────────────────── */}
         {phase === 'sprint' && !sprintDomains.length && (
-          <div style={{ textAlign: 'center', padding: '60px 0', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)' }}>
+          <div style={{ textAlign: 'center', padding: '60px 0', fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)' }}>
             Loading your sprint…
           </div>
         )}
@@ -2104,7 +2107,7 @@ export function TargetGoalsPage() {
 
             {/* Path B nudge */}
             {!hasMapData && (
-              <div style={{ padding: '18px 20px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '12px', marginTop: '32px' }}>
+              <div style={{ padding: '18px 20px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '12px', marginTop: '32px' }}>
                 <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.14em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>Want the full picture?</div>
                 <p style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.7, marginBottom: '12px' }}>
                   The Map gives you an honest read across all seven domains — and loads your scores directly into your next sprint.
