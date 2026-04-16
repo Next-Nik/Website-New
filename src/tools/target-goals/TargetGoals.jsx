@@ -1550,7 +1550,7 @@ export function TargetGoalsPage() {
 
               {/* Wheel — right-bleed, 3/4 above card */}
               <div style={{
-                position: 'absolute', right: '-60px', top: '100px',
+                position: 'absolute', right: '-60px', top: '-300px',
                 width: '520px', height: '520px', zIndex: 0, pointerEvents: 'none',
               }}>
                 <div style={{ pointerEvents: 'auto', width: '100%' }}>
