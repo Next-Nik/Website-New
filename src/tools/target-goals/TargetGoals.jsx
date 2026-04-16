@@ -137,7 +137,7 @@ function AuthModal() {
 // Clicking centre opens summary of all three target goals.
 // Clicking a wedge navigates to that domain.
 
-function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, onCentreClick, size = 440 }) {
+function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, onCentreClick, spinDirection = "next", size = 440 }) {
   const cx = size / 2, cy = size / 2
   const R  = size * 0.42
   const r  = size * 0.10
@@ -197,8 +197,15 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
     const sweep = 360 / n
     const wedgeMid = idx * sweep + sweep / 2
     const needed = -90 - wedgeMid
+    // Forward (next) = positive rotation, backward (prev) = negative rotation
     let delta = ((needed - (rotRef.current % 360)) % 360 + 360) % 360
-    if (delta < 10) delta += 360
+    if (spinDirection === 'prev') {
+      // Spin backwards: convert to negative equivalent
+      if (delta > 0) delta = delta - 360
+      if (delta > -10) delta -= 360
+    } else {
+      if (delta < 10) delta += 360
+    }
     targetRef.current = rotRef.current + delta
     phase.current = 'landing'
     setSettled(false)
@@ -1259,6 +1266,7 @@ export function TargetGoalsPage() {
   const [activeDomainId,   setActiveDomainId]   = useState(null)
   const [showSummary,      setShowSummary]      = useState(false)
   const [showCentreModal,  setShowCentreModal]  = useState(false)
+  const [spinDir,          setSpinDir]          = useState('next')
   const [showWelcome,      setShowWelcome]      = useState(() => {
     try {
       const raw = sessionStorage.getItem(SS_KEY)
@@ -1304,7 +1312,7 @@ export function TargetGoalsPage() {
         setEndDateLabel(data.end_date_label || null)
         setHasMapData(data.has_map_data || false)
         if (data.scores_at_start) setScores(data.scores_at_start)
-        setActiveDomainId(data.domains[0] || null)
+        setActiveDomainId(data.active_domain_id || data.domains[0] || null)
         setPhase('sprint')
         setShowWelcome(false)
         return
@@ -1412,6 +1420,8 @@ export function TargetGoalsPage() {
         scores_at_start: scores,
         horizon_scores: horizonScores,
         has_map_data: hasMapData,
+        session_phase: phase,
+        active_domain_id: activeDomainId,
       }
       if (sessionId) {
         // Try extended first, fall back to core if 400
@@ -1448,13 +1458,13 @@ export function TargetGoalsPage() {
     } catch {}
   }
 
-  // Auto-save when domainData changes in sprint phase
+  // Auto-save when domainData or activeDomainId changes in sprint phase
   useEffect(() => {
-    if (phase === 'sprint' && user?.id && Object.keys(domainData).length > 0) {
+    if (phase === 'sprint' && user?.id) {
       const t = setTimeout(saveToSupabase, 1500)
       return () => clearTimeout(t)
     }
-  }, [domainData])
+  }, [domainData, activeDomainId])
 
   // Cycle domains with prev/next buttons
   function handleWheelNav(dir) {
@@ -1463,6 +1473,7 @@ export function TargetGoalsPage() {
     const next = dir === 'next'
       ? sprintDomains[(idx + 1) % sprintDomains.length].id
       : sprintDomains[(idx - 1 + sprintDomains.length) % sprintDomains.length].id
+    setSpinDir(dir)
     setActiveDomainId(next)
   }
 
@@ -1554,6 +1565,8 @@ export function TargetGoalsPage() {
             onContinue={() => {
               setActiveDomainId(selectedDomains[0])
               setPhase('sprint')
+              // Save immediately so other devices see the started session
+              setTimeout(saveToSupabase, 0)
             }}
           />
         )}
@@ -1590,7 +1603,8 @@ export function TargetGoalsPage() {
                     domains={sprintDomains}
                     domainData={domainData}
                     activeDomainId={activeDomainId}
-                    onDomainClick={id => setActiveDomainId(id)}
+                    spinDirection={spinDir}
+                    onDomainClick={id => { setSpinDir('next'); setActiveDomainId(id) }}
                     onCentreClick={handleCentreClick}
                     size={440}
                   />
