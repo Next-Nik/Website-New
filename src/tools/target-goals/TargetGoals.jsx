@@ -1157,7 +1157,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
 // ─── Tasks Step ──────────────────────────────────────────────────────────────
 
 function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks, sc, serif, gold, muted, meta }) {
-  const [calAdded, setCalAdded] = React.useState({})
+  const [calAdded, setCalAdded] = useState({})
 
   const domain = DOMAIN_BY_ID[domainId]?.label || domainId
 
