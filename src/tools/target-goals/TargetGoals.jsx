@@ -189,11 +189,43 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
     return () => cancelAnimationFrame(animRef.current)
   }, [])
 
-  // Navigate to domain — spin to that wedge
+  // Spin to active domain whenever activeDomainId changes
+  useEffect(() => {
+    if (!settled) return
+    const idx = domains.findIndex(d => d.id === activeDomainId)
+    if (idx < 0) return
+    const sweep = 360 / n
+    const wedgeMid = idx * sweep + sweep / 2
+    const needed = -90 - wedgeMid
+    let delta = ((needed - (rotRef.current % 360)) % 360 + 360) % 360
+    if (delta < 10) delta += 360
+    targetRef.current = rotRef.current + delta
+    phase.current = 'landing'
+    setSettled(false)
+    cancelAnimationFrame(animRef.current)
+    lastRef.current = null
+    function animate(time) {
+      if (lastRef.current === null) lastRef.current = time
+      const dt = Math.min((time - lastRef.current) / 1000, 0.05)
+      lastRef.current = time
+      const diff = targetRef.current - rotRef.current
+      if (Math.abs(diff) < 0.3) {
+        rotRef.current = targetRef.current
+        setRot(rotRef.current)
+        phase.current = 'settled'
+        setSettled(true)
+      } else {
+        rotRef.current += diff * Math.min(1, dt * 5)
+        setRot(rotRef.current)
+        animRef.current = requestAnimationFrame(animate)
+      }
+    }
+    animRef.current = requestAnimationFrame(animate)
+  }, [activeDomainId])
+
+  // Navigate to domain — notify parent; spin handled by useEffect above
   function navigateTo(domainId) {
     if (!settled) return
-    const idx = domains.findIndex(d => d.id === domainId)
-    if (idx < 0) return
     onDomainClick(domainId)
   }
 
