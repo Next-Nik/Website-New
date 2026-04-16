@@ -103,7 +103,7 @@
 
 /* Horizon goal */
 .horizonGoal {
-  font-family: 'Lora', Georgia, serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(16px, 2.2vw, 19px);
   font-style: normal;
   font-weight: 300;
@@ -133,7 +133,7 @@
 
 /* Description */
 .description {
-  font-family: 'Lora', Georgia, serif;
+  font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: clamp(15px, 2vw, 17px);
   font-weight: 300;
   color: var(--text-body);

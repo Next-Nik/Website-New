@@ -41,7 +41,6 @@ export const NEXTUS_LABEL_MAP = {
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 export function DomainTooltip({ domainKey, label, system = 'lifeos', position = 'below' }) {
   const [show, setShow] = useState(false)
@@ -60,7 +59,7 @@ export function DomainTooltip({ domainKey, label, system = 'lifeos', position = 
     borderRadius: '10px',
     padding: '12px 16px',
     width: '260px',
-    boxShadow: '0 8px 32px rgba(15,21,35,0.55)',
+    boxShadow: '0 8px 32px rgba(15,21,35,0.30)',
     pointerEvents: 'none',
     left: '50%',
     transform: 'translateX(-50%)',
@@ -87,7 +86,7 @@ export function DomainTooltip({ domainKey, label, system = 'lifeos', position = 
         }}
         aria-label={`About ${label || domainKey}`}
       >
-        <span style={{ ...sc, fontSize: '13px', color: '#A8721A', lineHeight: 1 }}>i</span>
+        <span style={{ ...sc, fontSize: '11px', color: '#A8721A', fontStyle: 'italic', lineHeight: 1 }}>i</span>
       </button>
 
       {show && (

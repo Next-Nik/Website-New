@@ -4,7 +4,6 @@ import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { GlossaryPanel } from '../components/GlossaryPanel'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const TOOLS = [
@@ -55,14 +54,14 @@ function ToolRow({ tool }) {
     <div style={{
       display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
       gap: '24px', padding: '28px 0',
-      borderBottom: '1px solid rgba(200,146,42,0.08)',
+      borderBottom: '1px solid rgba(200,146,42,0.12)',
     }}>
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
           <span style={{ ...sc, fontSize: '19px', letterSpacing: '0.08em', color: '#A8721A' }}>{tool.name}</span>
-          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>{tool.time}</span>
+          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.35)', textTransform: 'uppercase' }}>{tool.time}</span>
         </div>
-        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0, maxWidth: '540px' }}>
+        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.85)', lineHeight: 1.65, margin: 0, maxWidth: '540px' }}>
           {tool.one_line}
         </p>
       </div>
@@ -79,7 +78,7 @@ function ToolRow({ tool }) {
           whiteSpace: 'nowrap',
           transition: 'all 0.18s',
         }}
-        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
+        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.12)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
         onMouseLeave={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.05)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
       >
         Begin \u2192
@@ -98,17 +97,17 @@ export function ToolsPage() {
         {/* Header */}
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>The Horizon Suite</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          Five tools.<br /><span style={{ color: '#A8721A' }}>One navigation system.</span>
+          Five tools.<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>One navigation system.</em>
         </h1>
-        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '48px', maxWidth: '560px' }}>
+        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.85)', lineHeight: 1.8, marginBottom: '48px', maxWidth: '560px' }}>
           Each tool is built for a specific stage of the journey. You don\u2019t need all of them \u2014 and you don\u2019t need to start at the beginning.
         </p>
 
         {/* Front door CTA */}
-        <div style={{ marginBottom: '40px', padding: '24px 28px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.25)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', flexWrap: 'wrap' }}>
+        <div style={{ marginBottom: '40px', padding: '24px 28px', background: 'rgba(200,146,42,0.04)', border: '1.5px solid rgba(200,146,42,0.25)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', flexWrap: 'wrap' }}>
           <div>
             <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.6, margin: '0 0 4px' }}>Not sure where to start?</p>
-            <p style={{ ...serif, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', margin: 0 }}>Answer a few questions and find out where you are. No sign-in needed.</p>
+            <p style={{ ...serif, fontSize: '15px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', margin: 0 }}>Answer a few questions and find out where you are. No sign-in needed.</p>
           </div>
           <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '13px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>
             Find my starting point →
@@ -122,7 +121,7 @@ export function ToolsPage() {
 
         {/* Horizon Suite link */}
         <div style={{ marginTop: '56px', paddingTop: '40px', borderTop: '1px solid rgba(200,146,42,0.15)', display: 'flex', alignItems: 'center', gap: '32px', flexWrap: 'wrap' }}>
-          <a href="/life-os" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
+          <a href="/life-os" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.6)', textDecoration: 'none' }}>
             \u2190 What is the Horizon Suite?
           </a>
           <a href="/work-with-nik" style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>

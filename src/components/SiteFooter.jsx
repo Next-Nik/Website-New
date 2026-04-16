@@ -14,7 +14,7 @@ export function SiteFooter() {
       `}</style>
       <div style={{ maxWidth: '820px', margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px', gap: '24px', flexWrap: 'wrap' }}>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.72)' }}>
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.88)' }}>
             A life worth living. A future worth building.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexShrink: 0 }}>

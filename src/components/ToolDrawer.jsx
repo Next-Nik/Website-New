@@ -5,7 +5,6 @@ import { supabase } from '../hooks/useSupabase'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 const TOOLS = [
   {
@@ -90,10 +89,10 @@ const DISCOVER = [
 function StatusPill({ status }) {
   if (!status) return null
   const cfg = {
-    started:  { label: 'Started',     color: '#A8721A', bg: 'rgba(200,146,42,0.08)' },
-    active:   { label: 'In progress', color: '#A8721A', bg: 'rgba(200,146,42,0.08)' },
+    started:  { label: 'Started',     color: '#A8721A', bg: 'rgba(200,146,42,0.10)' },
+    active:   { label: 'In progress', color: '#A8721A', bg: 'rgba(200,146,42,0.10)' },
     complete: { label: 'Complete',    color: '#2D6A4F', bg: 'rgba(45,106,79,0.10)'  },
-  }[status] || { label: status, color: '#A8721A', bg: 'rgba(200,146,42,0.08)' }
+  }[status] || { label: status, color: '#A8721A', bg: 'rgba(200,146,42,0.10)' }
   return (
     <span style={{
       ...sc, fontSize: '15px', letterSpacing: '0.14em', textTransform: 'uppercase',
@@ -202,7 +201,7 @@ export function ToolDrawer({ open, onClose }) {
         onClick={onClose}
         style={{
           position: 'fixed', inset: 0, zIndex: 1100,
-          background: 'rgba(15,21,35,0.55)',
+          background: 'rgba(15,21,35,0.45)',
           backdropFilter: 'blur(4px)',
           WebkitBackdropFilter: 'blur(4px)',
           animation: 'drawerFadeIn 0.2s ease both',
@@ -271,10 +270,10 @@ export function ToolDrawer({ open, onClose }) {
                       {status && <StatusPill status={status} />}
                     </div>
                     {tool.subtitle && (
-                      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
-                        color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>{tool.subtitle}</div>
+                      <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em',
+                        color: 'rgba(15,21,35,0.38)', marginBottom: '6px' }}>{tool.subtitle}</div>
                     )}
-                    <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '17px',
+                    <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic',
                       color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, margin: 0 }}>
                       {tool.desc}
                     </p>
@@ -291,7 +290,7 @@ export function ToolDrawer({ open, onClose }) {
           <div style={{ marginBottom: '32px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '16px' }}>
               <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase' }}>NextUs</span>
-              <span style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>A life worth living, a future worth building.</span>
+              <span style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.40)' }}>A life worth living, a future worth building.</span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '10px' }}>
               {NEXTUS_PLATFORM.map(item => (
@@ -307,9 +306,9 @@ export function ToolDrawer({ open, onClose }) {
                     <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.08em', color: '#0F1523', fontWeight: 600 }}>{item.label}</span>
                   </div>
                   {item.subtitle && (
-                    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>{item.subtitle}</div>
+                    <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.38)', marginBottom: '6px' }}>{item.subtitle}</div>
                   )}
-                  <p style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, margin: 0 }}>{item.desc}</p>
+                  <p style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, margin: 0 }}>{item.desc}</p>
                 </Link>
               ))}
             </div>
@@ -321,20 +320,20 @@ export function ToolDrawer({ open, onClose }) {
           {/* Discover row */}
           <div>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em',
-              color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
+              color: 'rgba(15,21,35,0.4)', textTransform: 'uppercase',
               display: 'block', marginBottom: '12px' }}>Discover</span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
               {DISCOVER.map(d => (
                 <Link key={d.path} to={d.path} onClick={onClose} style={{
                   ...sc, fontSize: '17px', letterSpacing: '0.1em',
-                  color: 'rgba(15,21,35,0.72)', textDecoration: 'none',
+                  color: 'rgba(15,21,35,0.65)', textDecoration: 'none',
                   padding: '8px 16px',
                   border: '1px solid rgba(200,146,42,0.18)',
-                  borderRadius: '40px', background: 'rgba(200,146,42,0.05)',
+                  borderRadius: '40px', background: 'rgba(200,146,42,0.03)',
                   transition: 'all 0.15s',
                 }}
                   onMouseEnter={e => { e.currentTarget.style.color = '#A8721A'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.45)' }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(15,21,35,0.72)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.18)' }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(15,21,35,0.65)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.18)' }}
                 >{d.label}</Link>
               ))}
             </div>

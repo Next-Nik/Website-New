@@ -7,20 +7,12 @@
   --gold-line:    rgba(200, 146, 42, 0.22);
   --gold-faint:   rgba(200, 146, 42, 0.07);
   --text:         #0F1523;
-  --text-meta:    rgba(15, 21, 35, 0.72);
-  --text-ghost:   rgba(15, 21, 35, 0.55);
+  --text-meta:    rgba(15, 21, 35, 0.88);
+  --text-muted:   rgba(15, 21, 35, 0.72);
   --border:       rgba(200, 146, 42, 0.22);
 
-  --bg-page:      #FFFFFF;
-  --bg-tool:      #FAFAF7;
-  --bg-warm:      #F5F2EC;
-  --bg-dark:      #0F1523;
-  --bg-card:      rgba(200, 146, 42, 0.05);
-  --bg-hover:     rgba(200, 146, 42, 0.08);
-
-  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Cormorant Garamond', Georgia, serif;
   --font-sc:      'Cormorant SC', Georgia, serif;
-  --font-body:    'Lora', Georgia, serif;
 
   --radius:       6px;
   --max-w:        680px;
@@ -209,7 +201,7 @@ button {
   font-family: var(--font-sc);
   font-size: 17px;
   letter-spacing: 0.10em;
-  color: var(--text-meta);
+  color: rgba(15, 21, 35, 0.78);
   text-decoration: none;
   font-weight: 400;
   transition: color 0.2s;
@@ -300,7 +292,7 @@ button {
 
 .bubble-assistant {
   align-self: flex-start;
-  color: var(--text);
+  color: var(--text-meta);
 }
 
 .bubble-user {
@@ -309,7 +301,7 @@ button {
   border: 1px solid var(--gold-line);
   border-radius: var(--radius);
   padding: 0.75rem 1rem;
-  color: var(--text);
+  color: var(--text-meta);
 }
 
 /* ─── Typing indicator ──────────────────────────────────────── */

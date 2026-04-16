@@ -5,7 +5,6 @@ import { TestimonialsPanel } from '../components/TestimonialsPanel'
 import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold = { color: '#A8721A' }
 const meta = { color: 'rgba(15,21,35,0.55)' }
@@ -140,7 +139,7 @@ export function AboutPage() {
             border: '1.5px solid rgba(200,146,42,0.70)',
             outline: '1.5px solid rgba(200,146,42,0.55)',
             outlineOffset: '5px',
-            background: 'rgba(200,146,42,0.05)',
+            background: 'rgba(200,146,42,0.04)',
             position: 'relative',
           }}>
             <img
@@ -157,7 +156,7 @@ export function AboutPage() {
                 e.currentTarget.parentNode.style.display = 'flex'
                 e.currentTarget.parentNode.style.alignItems = 'center'
                 e.currentTarget.parentNode.style.justifyContent = 'center'
-                e.currentTarget.parentNode.style.background = 'rgba(200,146,42,0.05)'
+                e.currentTarget.parentNode.style.background = 'rgba(200,146,42,0.06)'
               }}
             />
           </div>
@@ -175,7 +174,7 @@ export function AboutPage() {
         </p>
 
         {/* Is this for you */}
-        <div style={{ marginBottom: '48px', padding: '28px 32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '14px', textAlign: 'left' }}>
+        <div style={{ marginBottom: '48px', padding: '28px 32px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '14px', textAlign: 'left' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '12px' }}>Is this for you?</span>
           <p style={{ ...serif, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, margin: '0 0 8px', maxWidth: '520px' }}>
             High-functioning, self-aware, and aware that functioning well isn{'\u2019'}t the same as living from what you{'\u2019'}re actually capable of. You{'\u2019'}ve done some work on yourself. Something still isn{'\u2019'}t moving.
