@@ -695,14 +695,18 @@ function SprintSummaryModal({ domains, domainData, onClose, onComplete }) {
 // ─── Chat panel ───────────────────────────────────────────────────────────────
 
 function ChatPanel({ mode, domainId, payload, onComplete, placeholder, userId }) {
-  const [msgs,     setMsgs]     = useState([])
-  const [input,    setInput]    = useState('')
-  const [thinking, setThinking] = useState(false)
+  const [msgs,          setMsgs]          = useState([])
+  const [input,         setInput]         = useState('')
+  const [thinking,      setThinking]      = useState(false)
+  const [pendingData,   setPendingData]   = useState(null) // complete payload waiting for user to confirm
   const startedRef = useRef(false)
   const bottomRef  = useRef(null)
   const taRef      = useRef(null)
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }) }, [msgs, thinking])
+  // target_goal mode: show what North Star is collecting upfront
+  const isTargetGoal = mode === 'target_goal'
+
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }) }, [msgs, thinking, pendingData])
 
   useEffect(() => {
     if (startedRef.current) return
@@ -711,9 +715,11 @@ function ChatPanel({ mode, domainId, payload, onComplete, placeholder, userId })
   }, [])
 
   async function call(m) {
+    // Pass today's date so North Star knows the actual current date
+    const todayDate = new Date().toISOString().slice(0, 10)
     const res = await fetch('/tools/target-goals/api/chat', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({  mode, domain: domainId, messages: m, ...payload, userId: userId })
+      body: JSON.stringify({ mode, domain: domainId, messages: m, ...payload, userId, todayDate })
     })
     if (!res.ok) throw new Error(`API ${res.status}`)
     return res.json()
@@ -742,28 +748,68 @@ function ChatPanel({ mode, domainId, payload, onComplete, placeholder, userId })
       const d = await call(next)
       setThinking(false)
       if (d.message) setMsgs(p => [...p, { role: 'assistant', content: d.message }])
-      if (d.canLock || d.complete) onComplete(d)
+      if (d.canLock) {
+        // current_state and horizon: auto-complete, no button needed
+        onComplete(d)
+      } else if (d.complete) {
+        // target_goal: show the button, let user decide when to proceed
+        setPendingData(d)
+      }
     } catch {
       setThinking(false)
       setMsgs(p => [...p, { role: 'assistant', content: 'Something went wrong. Please try again.' }])
     }
   }
 
+  const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+
   return (
     <div>
+      {/* Target goal mode: show upfront what North Star is collecting */}
+      {isTargetGoal && msgs.length === 0 && !thinking && (
+        <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '10px', marginBottom: '16px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '6px' }}>What we're working toward</div>
+          <p style={{ ...serif, fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.65, margin: 0 }}>
+            North Star will ask you three things: what you want to achieve in 90 days, why this quarter, and how you'll know you've hit it. Once it has enough, a <strong style={{ fontFamily: "'Cormorant SC', Georgia, serif", color: '#A8721A' }}>Build my plan →</strong> button will appear.
+          </p>
+        </div>
+      )}
+
       <div className="chat-thread" style={{ marginBottom: '14px' }}>
         {msgs.map((m, i) => <div key={i} className={`bubble bubble-${m.role}`}>{m.content}</div>)}
         {thinking && <ThinkingDots />}
         <div ref={bottomRef} />
       </div>
-      <div className="input-area">
-        <textarea ref={taRef} value={input}
-          onChange={e => { setInput(e.target.value); if (taRef.current) { taRef.current.style.height = 'auto'; taRef.current.style.height = `${Math.min(taRef.current.scrollHeight, 120)}px` } }}
-          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-          placeholder={placeholder || 'Write your response…'} rows={2} disabled={thinking}
-        />
-        <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
-      </div>
+
+      {/* Build my plan button — appears when North Star signals it has enough */}
+      {pendingData && (
+        <div style={{ marginBottom: '16px', padding: '16px 18px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px' }}>
+          <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.65, marginBottom: '14px' }}>
+            North Star has what it needs. Your plan — goal, milestones, and tasks — is ready to build.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Btn onClick={() => onComplete(pendingData)}>
+              Build my plan →
+            </Btn>
+            <button onClick={() => setPendingData(null)}
+              style={{ background: 'none', border: 'none', ...serif, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0 }}>
+              Keep talking
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!pendingData && (
+        <div className="input-area">
+          <textarea ref={taRef} value={input}
+            onChange={e => { setInput(e.target.value); if (taRef.current) { taRef.current.style.height = 'auto'; taRef.current.style.height = `${Math.min(taRef.current.scrollHeight, 120)}px` } }}
+            onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
+            placeholder={placeholder || 'Write your response…'} rows={2} disabled={thinking}
+          />
+          <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
+        </div>
+      )}
     </div>
   )
 }
@@ -1025,6 +1071,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
                 horizonText: dd.horizonText,
                 targetDate,
                 completedDomains,
+                todayDate: new Date().toISOString().slice(0, 10),
               }}
               placeholder="What do you want to achieve this quarter?"
               userId={userId}

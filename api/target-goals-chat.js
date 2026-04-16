@@ -175,7 +175,7 @@ Always return valid JSON:
 // ── Mode: target_goal ─────────────────────────────────────────────────────────
 // 90-day waypoint on the way to the horizon.
 
-function buildTargetGoalSystem(domain, currentStateSummary, horizonText, targetDate, completedDomains) {
+function buildTargetGoalSystem(domain, currentStateSummary, horizonText, targetDate, completedDomains, todayDate) {
   const d = DOMAINS[domain] || { label: domain, frame: domain };
   const priorContext = completedDomains?.length > 0
     ? `\n\nCONTEXT FROM PREVIOUS DOMAINS:\n${completedDomains.map(cd =>
@@ -187,32 +187,42 @@ function buildTargetGoalSystem(domain, currentStateSummary, horizonText, targetD
 
 You are helping someone set a 90-day Target Goal for ${d.label} — ${d.frame}.
 
+TODAY'S DATE: ${todayDate}
 WHERE THEY ARE NOW: "${currentStateSummary}"
 THEIR HORIZON GOAL: "${horizonText}"
 SPRINT END DATE: ${targetDate}
 ${priorContext}
 
-YOUR JOB: Help them identify the most meaningful step they can take toward their Horizon Goal in 90 days. Not the whole journey — the next meaningful movement.
+YOUR JOB: Have a real conversation to arrive at a specific, honest, reachable 90-day goal. You are collecting three things — no more, no less:
 
-THE FOUR CHECKS (without lecturing):
-1. SPECIFICITY — Can they tell when they've hit it?
-2. REACHABILITY — Does this make sense from where they are?
-3. THE ABSOLUTE TRAP — Watch for binary/streak goals ("every day," "never miss"). Offer: "5 of 7 days" rather than "every day." Name it once, warmly.
+1. WHAT they want to achieve in 90 days (specific enough to know when they've hit it)
+2. WHY this particular step — why this quarter, why this domain, why now
+3. HOW they'll know they've hit it — the concrete signal of success
+
+Once you have clear answers to all three, you have enough. Signal it.
+
+THE FOUR CHECKS (apply these as you listen, not as a lecture):
+1. SPECIFICITY — Can they tell when they've hit it? Numbers, dates, states of being are good. Vague intentions are not.
+2. REACHABILITY — Does this make sense from where they actually are right now?
+3. THE ABSOLUTE TRAP — "Every day" and "never miss" goals break under real life. If you hear one, warmly offer "5 of 7 days" as an alternative. Name it once.
 4. THE LONGER VIEW — Does this build something or burn something?
 
-When the goal feels solid (usually 3-5 exchanges), return the final output JSON.
+WHEN YOU HAVE ENOUGH:
+Tell them directly: "I have what I need to build your plan. Hit 'Build my plan' when you're ready." Then set complete: true in your response. Do not wait for permission — when you have the three things above, say so and set the flag.
+
+IMPORTANT: Use TODAY'S DATE (${todayDate}) to anchor any date references in the conversation and in the plan you build. The sprint ends on ${targetDate}. All milestone dates must fall between today and the sprint end date.
 
 For conversation turns, return:
 { "message": "your response", "complete": false }
 
-For the final output when ready:
+When you have enough to build the full plan (after telling them so):
 {
   "complete": true,
   "targetGoal": "The goal — specific, honest, reachable, humanity built in",
   "milestones": [
-    { "text": "Month 1 milestone — what needs to be true", "why": "why this month matters" },
-    { "text": "Month 2 milestone", "why": "why this month matters" },
-    { "text": "Month 3 milestone", "why": "why this month matters" }
+    { "text": "Month 1 milestone — what needs to be true by [specific date]", "why": "why this month matters" },
+    { "text": "Month 2 milestone — what needs to be true by [specific date]", "why": "why this month matters" },
+    { "text": "Month 3 milestone — what needs to be true by [specific date]", "why": "why this month matters" }
   ],
   "tasks": [
     { "milestone": 0, "text": "specific task for milestone 1" },
@@ -295,7 +305,7 @@ module.exports = async (req, res) => {
     domain, messages,
     mapHorizonText, mapHorizonScore,
     currentStateSummary, horizonText, targetGoal,
-    targetDate, milestoneText, milestoneIndex,
+    targetDate, todayDate, milestoneText, milestoneIndex,
     completedDomains, userId,
   } = req.body || {};
 
@@ -345,8 +355,9 @@ module.exports = async (req, res) => {
 
     // ── Target goal conversation ──────────────────────────────────────────────
     if (mode === "target_goal") {
+      const today = todayDate || new Date().toISOString().slice(0, 10);
       const baseSystem = buildTargetGoalSystem(
-        domain, currentStateSummary, horizonText, targetDate, completedDomains || []
+        domain, currentStateSummary, horizonText, targetDate, completedDomains || [], today
       );
       const system = northStarCtx ? baseSystem + '\n\n' + formatNorthStarContext(northStarCtx) : baseSystem;
       const response = await anthropic.messages.create({
