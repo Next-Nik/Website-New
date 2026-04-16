@@ -904,6 +904,15 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
           <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
             Where are you right now in {d.label}, and why is this a pivotal area for you this quarter?
           </p>
+          {hasMapData && (mapDomain.realityFinal || mapDomain.realityDraft) && !dd.currentStateSummary && (
+            <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '14px' }}>
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textTransform: 'uppercase', marginBottom: '6px' }}>From your Map</div>
+              <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.65, marginBottom: '10px' }}>{mapDomain.realityFinal || mapDomain.realityDraft}</div>
+              <Btn onClick={() => update({ currentStateSummary: mapDomain.realityFinal || mapDomain.realityDraft, currentStateFromMap: true })} style={{ padding: '8px 18px', fontSize: '15px' }}>
+                Use this →
+              </Btn>
+            </div>
+          )}
           {dd.currentStateSummary ? (
             <div>
               <div style={{ padding: '14px 16px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '8px', ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.7, marginBottom: '14px' }}>
