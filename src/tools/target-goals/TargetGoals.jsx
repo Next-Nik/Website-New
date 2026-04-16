@@ -1156,7 +1156,8 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
                         update({ tasks: [...other, ...items.map(t => ({ ...t, milestone: mi }))] })
                       }}
                       renderItem={(task, i) => (
-                        <div key={i} style={{ padding: '6px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(200,146,42,0.06)' }}>
+                        <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', padding: '5px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(200,146,42,0.06)' }}>
+                          <span style={{ ...gold, fontSize: '1.1875rem', lineHeight: 1.55, flexShrink: 0, marginTop: '1px' }}>·</span>
                           <div style={{ ...serif, fontSize: '1.1875rem', ...meta, lineHeight: 1.55 }}>{task.text}</div>
                         </div>
                       )}
@@ -1176,13 +1177,135 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
               </div>
             )
           })}
-          {dd.tasks?.length > 0 && (
-            <div style={{ marginTop: '8px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
-              <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.65, marginBottom: '12px' }}>
-                This domain is set up. Use the arrows or wheel to move to the next one.
-              </p>
-            </div>
-          )}
+          {dd.tasks?.length > 0 && (() => {
+            // Build milestone dates from targetDate
+            function milestoneDate(index) {
+              if (!targetDate) return null
+              const end = new Date(targetDate)
+              const offset = (2 - index) * 30 // Month 3 = 0 days before end, Month 2 = 30, Month 1 = 60
+              const d = new Date(end)
+              d.setDate(d.getDate() - offset)
+              return d
+            }
+
+            function toICSDate(d) {
+              if (!d) return ''
+              return d.toISOString().replace(/[-:]/g, '').slice(0, 8)
+            }
+
+            function downloadICS() {
+              const domain = DOMAIN_BY_ID[domainId]?.label || domainId
+              const lines = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//NextUs//Target Sprint//EN',
+                'CALSCALE:GREGORIAN',
+                'METHOD:PUBLISH',
+              ]
+
+              ;(dd.milestones || []).forEach((m, mi) => {
+                const mTasks = (dd.tasks || []).filter(t => t.milestone === mi)
+                const date = milestoneDate(mi)
+                if (!date) return
+                const dateStr = toICSDate(date)
+                const uid = `target-sprint-${domainId}-month${mi + 1}-${Date.now()}@nextus.world`
+                const taskList = mTasks.map(t => `• ${t.text}`).join('\n')
+                const description = [
+                  `${domain} · Month ${mi + 1} Milestone`,
+                  '',
+                  m.text,
+                  m.why ? `\n${m.why}` : '',
+                  taskList ? `\nTasks:\n${taskList}` : '',
+                ].filter(Boolean).join('\n').replace(/
+/g, '\n')
+
+                lines.push(
+                  'BEGIN:VEVENT',
+                  `UID:${uid}`,
+                  `DTSTART;VALUE=DATE:${dateStr}`,
+                  `DTEND;VALUE=DATE:${dateStr}`,
+                  `SUMMARY:${domain} — Month ${mi + 1} Milestone`,
+                  `DESCRIPTION:${description}`,
+                  'END:VEVENT',
+                )
+              })
+
+              lines.push('END:VCALENDAR')
+              const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' })
+              const url = URL.createObjectURL(blob)
+              const a = document.createElement('a')
+              a.href = url
+              a.download = `target-sprint-${domainId}-milestones.ics`
+              document.body.appendChild(a)
+              a.click()
+              document.body.removeChild(a)
+              URL.revokeObjectURL(url)
+            }
+
+            return (
+              <div style={{ marginTop: '8px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.1)' }}>
+                <p style={{ ...serif, fontSize: '1.1875rem', fontStyle: 'italic', ...muted, lineHeight: 1.65, marginBottom: '14px' }}>
+                  This domain is set up. Use the arrows or wheel to move to the next one.
+                </p>
+                {targetDate && (() => {
+                  function openGoogleCalendar() {
+                    // Open one Google Calendar tab per milestone, pre-filled
+                    ;(dd.milestones || []).forEach((m, mi) => {
+                      const mTasks = (dd.tasks || []).filter(t => t.milestone === mi)
+                      const date = milestoneDate(mi)
+                      if (!date) return
+                      const dateStr = toICSDate(date)
+                      const domain = DOMAIN_BY_ID[domainId]?.label || domainId
+                      const title = encodeURIComponent(`${domain} — Month ${mi + 1} Milestone`)
+                      const taskList = mTasks.map(t => `• ${t.text}`).join('
+')
+                      const details = encodeURIComponent([
+                        m.text,
+                        m.why || '',
+                        taskList ? `
+Tasks:
+${taskList}` : '',
+                      ].filter(Boolean).join('
+'))
+                      const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dateStr}/${dateStr}&details=${details}`
+                      setTimeout(() => window.open(url, '_blank'), mi * 300) // stagger to avoid popup blocker
+                    })
+                  }
+
+                  const calIcon = (
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
+                      <rect x="1" y="2" width="12" height="11" rx="2" stroke="#A8721A" strokeWidth="1.2"/>
+                      <path d="M1 6h12" stroke="#A8721A" strokeWidth="1.2"/>
+                      <path d="M4 1v2M10 1v2" stroke="#A8721A" strokeWidth="1.2" strokeLinecap="round"/>
+                    </svg>
+                  )
+
+                  const btnBase = { display: 'inline-flex', alignItems: 'center', gap: '8px', ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', background: 'none', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '30px', padding: '8px 18px', cursor: 'pointer', transition: 'all 0.2s' }
+
+                  return (
+                    <div>
+                      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '10px' }}>Add milestones to calendar</div>
+                      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                        <button onClick={openGoogleCalendar} style={btnBase}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.06)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.4)' }}>
+                          {calIcon} Google Calendar
+                        </button>
+                        <button onClick={downloadICS} style={btnBase}
+                          onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.06)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.4)' }}>
+                          {calIcon} Apple Calendar
+                        </button>
+                      </div>
+                      <p style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginTop: '8px', lineHeight: 1.5 }}>
+                        Google opens each milestone in a new tab. Apple downloads a file — open it to add all three at once.
+                      </p>
+                    </div>
+                  )
+                })()}
+              </div>
+            )
+          })()}
         </div>
       )}
     </div>
