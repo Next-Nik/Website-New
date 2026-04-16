@@ -4,6 +4,7 @@ import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { useAuth } from '../hooks/useAuth'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 // ── Stripe Checkout links ──────────────────────────────────────────────────
@@ -46,8 +47,8 @@ function PriceTag({ amount, period, note }) {
   return (
     <div style={{ marginBottom: '6px' }}>
       <span style={{ ...serif, fontSize: '28px', fontWeight: 300, color: '#0F1523' }}>${amount}</span>
-      {period && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', marginLeft: '6px' }}>{period}</span>}
-      {note && <div style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginTop: '2px' }}>{note}</div>}
+      {period && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginLeft: '6px' }}>{period}</span>}
+      {note && <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>{note}</div>}
     </div>
   )
 }
@@ -73,7 +74,7 @@ function ToolCard({ name, desc, monthly, yearly, oneTime, monthlyLink, yearlyLin
         }}>Best value</div>
       )}
       <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.10em', color: '#A8721A', marginBottom: '8px' }}>{name}</div>
-      <p style={{ ...serif, fontSize: '15px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.65)', lineHeight: 1.6, marginBottom: '20px', flex: 1 }}>{desc}</p>
+      <p style={{ ...serif, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '20px', flex: 1 }}>{desc}</p>
 
       {oneTime && (
         <>
@@ -124,7 +125,7 @@ export function PricingPage() {
         {/* Header */}
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Pricing</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          Start where you are.<br /><em style={{ color: '#A8721A' }}>Go as far as you need.</em>
+          Start where you are.<br /><em style={{ color: '#A8721A' }}>Go as far as you need.</span>
         </h1>
         <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '64px', maxWidth: '520px' }}>
           Every tool is available individually. Or get everything in one place with The Horizon Suite — designed to pay for itself from the first month.
@@ -145,19 +146,19 @@ export function PricingPage() {
                 <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '16px', maxWidth: '440px' }}>
                   Horizon State · Purpose Piece · The Map · Target Sprint · Horizon Practice. All five tools. The full navigation system for your life. The bundle is designed so the maths is obvious — Horizon State and Horizon Practice subscriptions alone cost $44/month individually.
                 </p>
-                <div style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)' }}>
+                <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
                   Includes everything. Nothing else to buy.
                 </div>
               </div>
               <div style={{ flex: '0 1 220px' }}>
                 <div style={{ marginBottom: '8px' }}>
                   <span style={{ ...serif, fontSize: '32px', fontWeight: 300, color: '#0F1523' }}>$49</span>
-                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', marginLeft: '6px' }}>/ month</span>
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginLeft: '6px' }}>/ month</span>
                 </div>
                 <div style={{ marginBottom: '20px' }}>
                   <span style={{ ...serif, fontSize: '26px', fontWeight: 300, color: '#0F1523' }}>$399</span>
-                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', marginLeft: '6px' }}>/ year</span>
-                  <div style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginTop: '2px' }}>save $189 vs monthly</div>
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginLeft: '6px' }}>/ year</span>
+                  <div style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>save $189 vs monthly</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <a href={L.lifeos_monthly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
@@ -219,24 +220,24 @@ export function PricingPage() {
               <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '12px' }}>
                 A 12-week cohort for people ready to do real work in the company of others doing the same. Six to eight people. A defined arc — from honest mapping through to purpose, horizon, and a 90-day sprint forward. Facilitated by Nik. Small enough that everyone is genuinely seen.
               </p>
-              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
+              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
                 The Horizon Suite included for the duration. The Map and Purpose Piece completed before the cohort begins.
               </p>
             </div>
             <div style={{ flex: '0 1 220px' }}>
               <div style={{ marginBottom: '4px' }}>
                 <span style={{ ...serif, fontSize: '32px', fontWeight: 300, color: '#0F1523' }}>$600</span>
-                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', marginLeft: '6px' }}>/ month</span>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginLeft: '6px' }}>/ month</span>
               </div>
               <div style={{ marginBottom: '20px' }}>
                 <span style={{ ...serif, fontSize: '20px', fontWeight: 300, color: '#0F1523' }}>$1,500</span>
-                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', marginLeft: '6px' }}>paid in full</span>
-                <div style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginTop: '2px' }}>save $300</div>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginLeft: '6px' }}>paid in full</span>
+                <div style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>save $300</div>
               </div>
               <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                 Express interest →
               </a>
-              <p style={{ ...serif, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginTop: '10px', textAlign: 'center' }}>Next cohort forming now. Six spots.</p>
+              <p style={{ ...serif, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '10px', textAlign: 'center' }}>Next cohort forming now. Six spots.</p>
             </div>
           </div>
         </div>
@@ -249,16 +250,16 @@ export function PricingPage() {
               <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '12px' }}>
                 One-on-one work for people pressing against the ceiling of their own excellence. Not a programme — a space calibrated precisely enough that something new becomes possible.
               </p>
-              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
+              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
                 "I'm 63 years old and just met myself for the first time working with Nik." — J.B.
               </p>
             </div>
             <div style={{ flex: '0 1 220px' }}>
               <div style={{ marginBottom: '6px' }}>
                 <span style={{ ...serif, fontSize: '32px', fontWeight: 300, color: '#0F1523' }}>$3,500</span>
-                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', marginLeft: '6px' }}>/ month</span>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginLeft: '6px' }}>/ month</span>
               </div>
-              <div style={{ ...serif, fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.45)', marginBottom: '20px' }}>
+              <div style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '20px' }}>
                 Three-month minimum. The Horizon Suite included.
               </div>
               <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
@@ -293,7 +294,7 @@ export function PricingPage() {
               a: 'For the first 30 days after launch, founding member pricing offers 50% off everything. Use the code FOUNDING50 at checkout. For people who show up before the proof is overwhelming.',
             },
           ].map(({ q, a }) => (
-            <div key={q} style={{ borderBottom: '1px solid rgba(200,146,42,0.12)', padding: '20px 0' }}>
+            <div key={q} style={{ borderBottom: '1px solid rgba(200,146,42,0.08)', padding: '20px 0' }}>
               <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: '#0F1523', marginBottom: '8px' }}>{q}</div>
               <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>{a}</p>
             </div>

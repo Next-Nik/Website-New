@@ -8,8 +8,9 @@ import { supabase } from '../../hooks/useSupabase'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = { color: '#A8721A' }
-const meta  = { color: 'rgba(15,21,35,0.78)' }
+const meta  = { color: 'rgba(15,21,35,0.72)' }
 
 const OPENING_MESSAGE = `Hi — I'm North Star, your guide here. This usually takes three to five exchanges. At the end you'll get a reflection on where you are and two or three specific places to start.
 
@@ -118,7 +119,7 @@ export function OrienteeringPage() {
         <div className="tool-header">
           <span className="tool-eyebrow">Horizon Suite</span>
           <h1 className="tool-title">Orienteering</h1>
-          <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', ...meta, marginTop: '6px', lineHeight: 1.65, maxWidth: '420px' }}>
+          <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, ...meta, marginTop: '6px', lineHeight: 1.65, maxWidth: '420px' }}>
             A short conversation — three to five exchanges — that reads where you are and points you somewhere real. No jargon, no sign-up required.
           </p>
         </div>
@@ -144,7 +145,7 @@ export function OrienteeringPage() {
                     </div>
                   ))}
                   {d.closing && (
-                    <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic', ...meta, marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
+                    <div style={{ ...serif, fontSize: '15px', ...meta, marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
                       {d.closing}
                     </div>
                   )}
@@ -166,7 +167,7 @@ export function OrienteeringPage() {
           <div style={{
             marginTop: '1.5rem',
             padding: '16px 20px',
-            background: 'rgba(200,146,42,0.04)',
+            background: 'rgba(200,146,42,0.05)',
             border: '1px solid rgba(200,146,42,0.20)',
             borderRadius: '12px',
             textAlign: 'center',
