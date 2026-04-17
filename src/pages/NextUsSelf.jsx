@@ -66,6 +66,8 @@ export function NextUsSelfPage() {
           </p>
         </div>
 
+      </div>
+
       {/* Seven Domains — dark section */}
       <DarkSection>
         <DarkEyebrow>Seven domains</DarkEyebrow>

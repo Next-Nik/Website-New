@@ -86,13 +86,6 @@ export function AboutPage() {
 
       </div>
 
-      {/* Two scales — dark section */}
-      <DarkSection>
-        <DarkEyebrow>Two scales. One architecture.</DarkEyebrow>
-        <DarkHeading>The same navigation physics that move one life move a civilisation.</DarkHeading>
-        <DarkBody>NextUs operates at the civilisational scale — a map for the people already doing the work. The Horizon Suite operates at the personal scale — a navigation framework for individuals. These are not separate projects. A person who has learned to see their own life clearly is more capable of contributing to the larger work.</DarkBody>
-      </DarkSection>
-
       <div className="about-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px 0' }}>
 
         <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>The tools.</h2>
@@ -114,14 +107,12 @@ export function AboutPage() {
         </div>
       </div>
 
-      {/* ── SECTION DIVIDER ── */}
-      <div style={{ padding: '0 40px', maxWidth: '820px', margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <div style={{ flex: 1, height: '1px', background: 'rgba(200,146,42,0.20)' }} />
-          <div style={{ width: '6px', height: '6px', border: '1px solid #C8922A', transform: 'rotate(45deg)', flexShrink: 0 }} />
-          <div style={{ flex: 1, height: '1px', background: 'rgba(200,146,42,0.20)' }} />
-        </div>
-      </div>
+      {/* Two scales — dark section */}
+      <DarkSection>
+        <DarkEyebrow>Two scales. One architecture.</DarkEyebrow>
+        <DarkHeading>The same navigation physics that move one life move a civilisation.</DarkHeading>
+        <DarkBody>NextUs operates at the civilisational scale — a map for the people already doing the work. The Horizon Suite operates at the personal scale — a navigation framework for individuals. These are not separate projects. A person who has learned to see their own life clearly is more capable of contributing to the larger work.</DarkBody>
+      </DarkSection>
 
       {/* ── SECTION TWO — NIK (right-aligned) ── */}
       <div className="about-section" style={pageRight}>
