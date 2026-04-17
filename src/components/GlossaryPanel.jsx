@@ -8,7 +8,7 @@ const CATEGORIES = [
   },
   {
     label: 'Horizon Suite Tools',
-    keys: ['orienteering', 'foundation', 'purpose-piece', 'target-goals', 'horizon-leap'],
+    keys: ['orienteering', 'horizon-state', 'purpose-piece', 'target-sprint', 'horizon-leap'],
   },
   {
     label: 'Core Concepts',

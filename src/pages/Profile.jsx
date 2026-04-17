@@ -998,8 +998,8 @@ function Sparkline({ data }) {
   )
 }
 
-function FoundationSlot({ foundationData }) {
-  if (!foundationData) return <EmptySlot cta="Begin Foundation" ctaUrl="/tools/horizon-state" />
+function HorizonStateSlot({ foundationData }) {
+  if (!foundationData) return <EmptySlot cta="Begin Horizon State" ctaUrl="/tools/horizon-state" />
 
   const {
     streak_days, sessions_total, sessions_week,

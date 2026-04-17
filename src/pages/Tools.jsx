@@ -34,7 +34,7 @@ const TOOLS = [
     time: '10–20 min',
   },
   {
-    id: 'target-goals',
+    id: 'target-sprint',
     name: 'Target Sprint',
     one_line: 'Three key areas, 90 days, level up.',
     url: '/tools/target-sprint',
