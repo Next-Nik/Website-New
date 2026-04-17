@@ -44,6 +44,7 @@ import { WorkWithNikPage, PodcastPage } from './pages/WorkAndPodcast'
 import { LoginPage }              from './pages/Login'
 import { PrivacyPage, TermsPage } from './pages/Legal'
 import { ProfilePage }            from './pages/Profile'
+import { DashboardPage }          from './pages/Dashboard'
 import { ContentEditorPage }      from './pages/ContentEditor'
 import { AdminConsolePage }       from './pages/AdminConsole'
 import { GroupJoinPage }          from './pages/GroupJoin'
@@ -106,7 +107,8 @@ function AppInner() {
         <Route path="/login"           element={<LoginPage />} />
         <Route path="/privacy"         element={<PrivacyPage />} />
         <Route path="/terms"           element={<TermsPage />} />
-        <Route path="/profile"         element={<ProfilePage />} />
+        <Route path="/profile"         element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard"       element={<DashboardPage />} />
         <Route path="/tools"           element={<ToolsPage />} />
         <Route path="/content-editor"  element={<ContentEditorPage />} />
 
