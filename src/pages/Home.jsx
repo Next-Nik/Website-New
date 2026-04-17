@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { SiteFooter } from '../components/SiteFooter'
-import { DarkSection, NeedleDivider, DarkEyebrow, DarkHeading, DarkBody, DarkRule, DarkGhostButton, DarkSolidButton, DarkPullQuote, useParallax } from '../components/DarkSection'
+import { DarkSection, NeedleDivider, DarkEyebrow, DarkHeading, DarkBody, DarkRule, DarkGhostButton, DarkSolidButton, DarkPullQuote, useParallax, ParallaxLayer } from '../components/DarkSection'
 
 const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
@@ -287,7 +287,7 @@ export function HomePage() {
       </section>
 
       {/* ── Is this for you ───────────────────────────────────────────────── */}
-      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 0', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
+      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 0', borderTop: '1px solid rgba(200,146,42,0.20)', overflow: 'hidden' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Is this for you?</span>
         <h2 style={{ ...body, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '24px' }}>This place is for people who are done waiting to feel ready.</h2>
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '32px', maxWidth: '560px' }}>
