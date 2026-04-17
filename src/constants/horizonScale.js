@@ -79,7 +79,7 @@ export const LABEL_MAP = {
 // and in practitioner matching context.
 
 export const SIGNATURE_MAP = {
-  10:  'Complete coherence. Effortless mastery, luminous presence, contribution that uplifts others. The art and the artist are one. The horizon has moved — a new one is visible.',
+  10:  'Complete coherence. Effortless mastery, luminous presence, contribution that uplifts others. The art and the artist are one. This is best in the world. The horizon has moved — a new one is visible.',
   9.5: 'Integrated and at ease. Leads by example; influence radiates naturally.',
   9:   'Deeply skilled, balanced, reliable. Excellence feels natural and sustainable.',
   8.5: 'Competence meets wisdom; growth through curiosity and depth.',
@@ -132,4 +132,4 @@ export function getQualitativeBand(score) {
 // ── Horizon note ──────────────────────────────────────────────
 // Shown at Exemplar / Exemplar+ to hold the horizon truth.
 
-export const HORIZON_NOTE = 'You never reach the horizon — you reach the point where the next one becomes visible.'
+export const HORIZON_NOTE = '10 is best in the world. Choose it if you mean it — heavy sits the crown.'

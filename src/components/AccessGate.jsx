@@ -2,7 +2,7 @@ import { useAuth } from '../hooks/useAuth'
 import { useAccess, hasAccess } from '../hooks/useAccess'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 /**
  * AccessGate
@@ -66,17 +66,17 @@ function GateCard({ toolName, variant, discountPct = 0 }) {
     auth: {
       eyebrow: toolName,
       heading: 'Sign in to begin.',
-      body: 'Your results are saved to your profile.',
+      body: 'Your Map stays with you — and it gets more useful over time.',
       cta: 'Sign in or create account →',
       ctaHref: `/login?redirect=${encodeURIComponent(window.location.href)}`,
     },
     paywall: {
       eyebrow: toolName,
-      heading: 'Get access.',
+      heading: 'This is part of the Horizon Suite.',
       body: discountPct > 0
         ? `You have a ${discountPct}% discount available.`
         : 'This tool is part of the Horizon Suite.',
-      cta: 'See pricing →',
+      cta: 'See what\'s included →',
       ctaHref: '/pricing',
     },
     banned: {
@@ -119,13 +119,13 @@ function GateCard({ toolName, variant, discountPct = 0 }) {
           {m.eyebrow}
         </span>
         <h2 style={{
-          ...body, fontSize: '24px', fontWeight: 300,
+          ...serif, fontSize: '24px', fontWeight: 300,
           color: '#0F1523', marginBottom: '10px', lineHeight: 1.2,
         }}>
           {m.heading}
         </h2>
         <p style={{
-          ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
+          ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
           lineHeight: 1.6, marginBottom: m.cta ? '28px' : 0,
         }}>
           {m.body}
