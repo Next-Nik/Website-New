@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { SiteFooter } from '../components/SiteFooter'
-import { DarkSection, NeedleDivider, DarkEyebrow, DarkHeading, DarkBody, DarkRule, DarkGhostButton, DarkSolidButton, DarkPullQuote } from '../components/DarkSection'
+import { DarkSection, NeedleDivider, DarkEyebrow, DarkHeading, DarkBody, DarkRule, DarkGhostButton, DarkSolidButton, DarkPullQuote, useParallax } from '../components/DarkSection'
 
 const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
@@ -242,6 +242,7 @@ export function HomePage() {
     setTimeout(() => panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100)
   }
 
+  const heroParallax = useParallax(0.18)
   const stageKeys = Object.keys(STAGES)
 
   return (
@@ -258,7 +259,7 @@ export function HomePage() {
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
       <section className="home-hero" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '100px 40px 80px', position: 'relative' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 50% 40%, rgba(200,146,42,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '680px' }}>
+        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '680px', transform: `translateY(${heroParallax}px)`, willChange: 'transform' }}>
           <div style={{ marginBottom: '52px' }}>
             <img src="/logo_hero.png" alt="NextUs" style={{ height: '180px', width: 'auto', display: 'inline-block' }} />
           </div>

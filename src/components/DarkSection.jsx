@@ -3,12 +3,24 @@ import { useEffect, useRef, useState } from 'react'
 const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
 
-// ── Needle divider SVG ────────────────────────────────────────────────────────
-// direction: 'into-dark' (light above → dark below) | 'out-of-dark' (dark above → light below)
-// topColor / bottomColor: hex or rgba string for the two background surfaces
+// ── Parallax hook ─────────────────────────────────────────────────────────────
+// Returns a translateY value (px) based on scroll position.
+// speed: 0.0 = static, 0.15 = subtle, 0.3 = visible, 0.5 = dramatic
+export function useParallax(speed = 0.15) {
+  const [offset, setOffset] = useState(0)
+  useEffect(() => {
+    function onScroll() {
+      setOffset(window.scrollY * speed)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [speed])
+  return offset
+}
 
-export function NeedleDivider({ direction = 'into-dark', topColor = '#FAFAF7', bottomColor = '#0F1523' }) {
-  const isInto = direction === 'into-dark'
+// ── Needle divider — entry into dark (needle ascending from light into dark) ──
+// A pointed arch: light section above tapers to a needle point, dark fills below
+export function NeedleEntryDivider({ topColor = '#FAFAF7', bottomColor = '#0F1523' }) {
   return (
     <div style={{ display: 'block', lineHeight: 0, fontSize: 0, margin: 0, padding: 0 }}>
       <svg
@@ -18,54 +30,69 @@ export function NeedleDivider({ direction = 'into-dark', topColor = '#FAFAF7', b
         style={{ display: 'block' }}
         aria-hidden="true"
       >
-        {isInto ? (
-          <>
-            {/* top fill */}
-            <rect x="0" y="0" width="1440" height="36" fill={topColor} />
-            {/* triangle pointing up into top section */}
-            <path d={`M0,36 L720,4 L1440,36 L1440,72 L0,72 Z`} fill={bottomColor} />
-            {/* needle tip */}
-            <line x1="720" y1="72" x2="720" y2="20" stroke="#C8922A" strokeWidth="1.2" opacity="0.75" />
-            <polygon points="720,4 723.5,16 720,22 716.5,16" fill="#C8922A" opacity="0.8" />
-            {/* compass ring */}
-            <circle cx="720" cy="26" r="6" fill="none" stroke="#C8922A" strokeWidth="1" opacity="0.55" />
-            <circle cx="720" cy="26" r="2.2" fill="#C8922A" opacity="0.7" />
-            {/* flanking dots */}
-            <circle cx="702" cy="30" r="1.8" fill="#C8922A" opacity="0.3" />
-            <circle cx="738" cy="30" r="1.8" fill="#C8922A" opacity="0.3" />
-          </>
-        ) : (
-          <>
-            {/* top fill (dark) */}
-            <rect x="0" y="0" width="1440" height="68" fill={topColor} />
-            {/* triangle pointing down into bottom section */}
-            <path d={`M0,0 L1440,0 L1440,36 L720,68 L0,36 Z`} fill={topColor} />
-            <rect x="0" y="36" width="1440" height="36" fill={bottomColor} />
-            {/* compass ring at the point */}
-            <circle cx="720" cy="62" r="6" fill="none" stroke="#C8922A" strokeWidth="1" opacity="0.55" />
-            <circle cx="720" cy="62" r="2.2" fill="#C8922A" opacity="0.7" />
-            {/* needle tail descending */}
-            <line x1="720" y1="68" x2="720" y2="50" stroke="#C8922A" strokeWidth="1.2" opacity="0.75" />
-            {/* flanking dots */}
-            <circle cx="702" cy="58" r="1.8" fill="#C8922A" opacity="0.3" />
-            <circle cx="738" cy="58" r="1.8" fill="#C8922A" opacity="0.3" />
-          </>
-        )}
+        {/* top fill */}
+        <rect x="0" y="0" width="1440" height="36" fill={topColor} />
+        {/* arch pointing up into light — dark fills below */}
+        <path d="M0,36 L720,4 L1440,36 L1440,72 L0,72 Z" fill={bottomColor} />
+        {/* needle tip at apex */}
+        <line x1="720" y1="72" x2="720" y2="20" stroke="#C8922A" strokeWidth="1.2" opacity="0.75" />
+        <polygon points="720,4 723.5,16 720,22 716.5,16" fill="#C8922A" opacity="0.82" />
+        {/* compass ring */}
+        <circle cx="720" cy="26" r="6" fill="none" stroke="#C8922A" strokeWidth="1" opacity="0.55" />
+        <circle cx="720" cy="26" r="2.2" fill="#C8922A" opacity="0.72" />
+        {/* flanking dots */}
+        <circle cx="702" cy="30" r="1.8" fill="#C8922A" opacity="0.3" />
+        <circle cx="738" cy="30" r="1.8" fill="#C8922A" opacity="0.3" />
       </svg>
     </div>
   )
 }
 
-// ── Dark Section wrapper ───────────────────────────────────────────────────────
-// topColor: the background colour of the section above (for the divider)
-// bottomColor: the background colour of the section below (for the exit divider)
-// Set topColor/bottomColor to null to suppress that divider
+// ── Horizon arc divider — exit from dark ──────────────────────────────────────
+// A convex arc like the curvature of the Earth — dark above, light below
+// The arc rises gently from edges to centre, suggesting a horizon
+export function HorizonExitDivider({ topColor = '#0F1523', bottomColor = '#FAFAF7' }) {
+  return (
+    <div style={{ display: 'block', lineHeight: 0, fontSize: 0, margin: 0, padding: 0 }}>
+      <svg
+        width="100%"
+        viewBox="0 0 1440 80"
+        preserveAspectRatio="none"
+        style={{ display: 'block' }}
+        aria-hidden="true"
+      >
+        {/* dark fill above the arc */}
+        <rect x="0" y="0" width="1440" height="80" fill={topColor} />
+        {/* convex arc — the horizon curve */}
+        {/* Quadratic bezier: starts at bottom-left, rises to centre top, descends to bottom-right */}
+        <path d="M0,80 L0,56 Q720,0 1440,56 L1440,80 Z" fill={bottomColor} />
+        {/* compass ring sitting on the horizon */}
+        <circle cx="720" cy="22" r="6" fill="none" stroke="#C8922A" strokeWidth="1" opacity="0.55" />
+        <circle cx="720" cy="22" r="2.2" fill="#C8922A" opacity="0.72" />
+        {/* needle tail descending from ring into the dark */}
+        <line x1="720" y1="16" x2="720" y2="4" stroke="#C8922A" strokeWidth="1.2" opacity="0.65" />
+        {/* flanking dots */}
+        <circle cx="702" cy="26" r="1.8" fill="#C8922A" opacity="0.3" />
+        <circle cx="738" cy="26" r="1.8" fill="#C8922A" opacity="0.3" />
+      </svg>
+    </div>
+  )
+}
 
+// ── Legacy export for any code still using NeedleDivider ─────────────────────
+export function NeedleDivider({ direction = 'into-dark', topColor = '#FAFAF7', bottomColor = '#0F1523' }) {
+  if (direction === 'into-dark') {
+    return <NeedleEntryDivider topColor={topColor} bottomColor={bottomColor} />
+  }
+  return <HorizonExitDivider topColor={bottomColor === '#FAFAF7' ? '#0F1523' : topColor} bottomColor={bottomColor} />
+}
+
+// ── Dark Section wrapper ───────────────────────────────────────────────────────
 export function DarkSection({ children, topColor = '#FAFAF7', bottomColor = '#FAFAF7', style = {} }) {
   return (
     <>
       {topColor !== null && (
-        <NeedleDivider direction="into-dark" topColor={topColor} bottomColor="#0F1523" />
+        <NeedleEntryDivider topColor={topColor} bottomColor="#0F1523" />
       )}
       <section style={{
         background: '#0F1523',
@@ -77,7 +104,7 @@ export function DarkSection({ children, topColor = '#FAFAF7', bottomColor = '#FA
         </div>
       </section>
       {bottomColor !== null && (
-        <NeedleDivider direction="out-of-dark" topColor="#0F1523" bottomColor={bottomColor} />
+        <HorizonExitDivider topColor="#0F1523" bottomColor={bottomColor} />
       )}
     </>
   )
