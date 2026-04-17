@@ -110,7 +110,7 @@ function Card({ label, body }) {
   return (
     <div style={{ background: 'rgba(200,146,42,0.05)', borderRadius: '14px', padding: '26px 28px', marginBottom: '10px', border: '1.5px solid rgba(200,146,42,0.78)' }}>
       <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', display: 'block', marginBottom: '10px' }}>{label}</span>
-      <div style={{ ...body, fontSize: '16px', color: '#0F1523', lineHeight: 1.7 }}>{body}</div>
+      <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: '#0F1523', lineHeight: 1.7 }}>{body}</div>
     </div>
   )
 }
