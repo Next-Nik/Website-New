@@ -327,7 +327,7 @@ function SetupPhase({ mapData, onComplete, userId }) {
       <div style={{ marginBottom: '52px' }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Horizon Practice · Setup</span>
         <h1 style={{ ...body, fontSize: 'clamp(32px,5vw,52px)', fontWeight: 300, ...dark, lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '16px' }}>
-          Let's build your<br /><em style={{, color: '#A8721A' }}>daily practice.</em>
+          Let's build your<br /><em style={{ color: '#A8721A' }}>daily practice.</em>
         </h1>
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, ...muted, lineHeight: 1.75, maxWidth: '480px' }}>
           Three things to set up. Takes about ten minutes. Everything else builds through the practice itself.

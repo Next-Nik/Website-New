@@ -59,6 +59,8 @@ import { PurposePiecePage, PurposePieceDeepPage } from './tools/purpose-piece/Pu
 import { TargetGoalsPage }   from './tools/target-goals/TargetGoals'
 import { ExpansionPage }     from './tools/expansion/Expansion'
 
+const body = { fontFamily: "'Lora', Georgia, serif" }
+
 function ScrollToTop() {
   const { pathname } = useLocation()
   useEffect(() => { window.scrollTo(0, 0) }, [pathname])

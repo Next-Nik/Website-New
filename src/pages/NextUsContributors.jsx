@@ -298,7 +298,7 @@ export function NextUsContributorsPage() {
         </span>
         <h1 style={{ ...body, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: dark, lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '24px' }}>
           You have something<br />
-          <em style={{, color: gold }}>the world needs.</em>
+          <em style={{ color: gold }}>the world needs.</em>
         </h1>
         <p style={{ ...body, fontSize: '19px', fontWeight: 300, color: dark, lineHeight: 1.8, marginBottom: '16px', maxWidth: '560px' }}>
           Not just your profession. Your craft, your capacity, your relational depth, your creative work. The full range of what you bring.

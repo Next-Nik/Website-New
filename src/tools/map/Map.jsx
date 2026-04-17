@@ -42,6 +42,8 @@ const SPIN_MS   = 2000
 
 import { SCALE_POINTS, TIER_MAP, LABEL_MAP, SIGNATURE_MAP, getScoreColor, HORIZON_NOTE } from '../../constants/horizonScale'
 
+const body = { fontFamily: "'Lora', Georgia, serif" }
+
 // Domain step stages — drives node visual state
 // 0 = not started, 1 = avatar done, 2 = score done, 3 = complete
 function getDomainStage(data) {

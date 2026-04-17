@@ -124,7 +124,7 @@ export function PricingPage() {
         {/* Header */}
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Pricing</span>
         <h1 style={{ ...body, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          Start where you are.<br /><em style={{ color: '#A8721A' }}>Go as far as you need.</span>
+          Start where you are.<br /><em style={{ color: '#A8721A' }}>Go as far as you need.</em>
         </h1>
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '64px', maxWidth: '520px' }}>
           Every tool is available individually. Or get everything in one place with The Horizon Suite — designed to pay for itself from the first month.
