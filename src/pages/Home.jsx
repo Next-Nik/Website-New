@@ -4,11 +4,90 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { SiteFooter } from '../components/SiteFooter'
-import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkGhostButton, DarkPullQuote } from '../components/DarkSection'
+import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkGhostButton } from '../components/DarkSection'
 
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
+
+const TESTIMONIALS = [
+  { q: 'Working with Nik definitely changed my life. He has the ability to build up the right foundation and the right container to actually be vulnerable and go straight to where you need to.', cite: 'S.H.' },
+  { q: 'The work we\u2019ve done has peeled back the narrative that said \u2018I can\u2019t do that\u2019 and revealed another world of possibility. I feel like I\u2019ve been liberated.', cite: 'C.W.' },
+  { q: 'I think this is the best decision I\u2019ve ever made. You\u2019ve helped me unlock things I thought were dead and buried long ago.', cite: 'L.D.' },
+  { q: 'Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being \u2014 what I really wanted out of life \u2014 and how to live as the best version of myself.', cite: 'O.W.H.' },
+  { q: 'I\u2019m 63 years old and just met myself for the first time working with Nik.', cite: 'J.B.' },
+  { q: 'I came to Nik a few weeks in, apologising for not doing my homework \u2014 and found myself telling him I\u2019d met someone, gone on wonderful adventures, that my work was expanding. He said: \u2018Look at what you wrote in week one.\u2019 I was already living it.', cite: 'J.M.' },
+]
+
+function Stars() {
+  return (
+    <div style={{ display: 'flex', gap: '3px', marginBottom: '14px' }}>
+      {[0,1,2,3,4].map(i => (
+        <svg key={i} width="14" height="14" viewBox="0 0 14 14" fill="#C8922A" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 0.5l1.545 4.756H13.5l-4.045 2.938 1.545 4.756L7 10.012l-3.999 2.938 1.545-4.756L0.5 5.256h4.955L7 0.5z"/>
+        </svg>
+      ))}
+    </div>
+  )
+}
+
+function TestimonialCard({ q, cite }) {
+  return (
+    <div style={{
+      flexShrink: 0, width: '300px',
+      background: '#FFFFFF',
+      border: '1.5px solid rgba(200,146,42,0.20)',
+      borderRadius: '14px',
+      padding: '24px 28px',
+      marginRight: '20px',
+    }}>
+      <Stars />
+      <p style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.85)', lineHeight: 1.75, marginBottom: '16px' }}>{q}</p>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {cite}</span>
+    </div>
+  )
+}
+
+function TestimonialCarousel() {
+  const row1 = [...TESTIMONIALS, ...TESTIMONIALS]
+  const row2 = [...TESTIMONIALS, ...TESTIMONIALS]
+  const duration = TESTIMONIALS.length * 12
+  return (
+    <div style={{ overflow: 'hidden', margin: '0 -40px' }}>
+      <style>{`
+        @keyframes scrollLeft {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes scrollRight {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+        .home-carousel-left {
+          display: flex; width: max-content;
+          animation: scrollLeft ${duration}s linear infinite;
+        }
+        .home-carousel-right {
+          display: flex; width: max-content;
+          animation: scrollRight ${duration}s linear infinite;
+        }
+        .home-carousel-left:hover, .home-carousel-right:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+      <div style={{ marginBottom: '20px', padding: '8px 0' }}>
+        <div className="home-carousel-left">
+          {row1.map((t, i) => <TestimonialCard key={i} q={t.q} cite={t.cite} />)}
+        </div>
+      </div>
+      <div style={{ padding: '8px 0' }}>
+        <div className="home-carousel-right">
+          {row2.map((t, i) => <TestimonialCard key={i} q={t.q} cite={t.cite} />)}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 const STAGES = {
   baseline: {
@@ -322,54 +401,33 @@ export function HomePage() {
         <a href="/nextus-self" style={{ display: 'block', textAlign: 'center', ...body, fontSize: '16px', fontStyle: 'italic', color: '#A8721A', marginTop: '28px', textDecoration: 'none', opacity: 0.78 }}>or show me everything {'\u2192'}</a>
       </section>
 
-      {/* Stage selector */}
-      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '0 40px 96px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
-        <div style={{ paddingTop: '96px' }}>
-          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where you are in the arc</span>
-          <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>See where you are.</h2>
-          <p style={{ ...body, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Each stage has its own terrain. The right tools depend on being honest about which one you're standing in.</p>
-          <div>
-            {stageKeys.map(key => {
-              const s = STAGES[key]
-              const isActive = activeStage === key
-              return (
-                <div key={key} onClick={() => toggleStage(key)} style={{ padding: '10px 4px', cursor: 'pointer', borderBottom: `1px solid ${isActive ? '#A8721A' : 'transparent'}`, transition: 'all 0.18s', marginBottom: '4px' }}
-                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.borderBottomColor = 'rgba(200,146,42,0.40)' }}
-                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderBottomColor = 'transparent' }}
-                >
-                  <span style={{ ...serif, fontSize: '22px', fontWeight: 300, color: isActive ? '#A8721A' : '#0F1523', display: 'block', lineHeight: 1.2, marginBottom: '2px', transition: 'color 0.18s' }}>{s.name}</span>
-                  <span style={{ ...body, fontSize: '17px', fontStyle: 'italic', color: isActive ? 'rgba(200,146,42,0.78)' : 'rgba(15,21,35,0.72)', lineHeight: 1.4, display: 'block', transition: 'color 0.18s' }}>{s.question}</span>
-                </div>
-              )
-            })}
-          </div>
-          <div ref={panelRef}><StagePanel stage={activeStage} /></div>
+      {/* DARK 2 — Stage selector */}
+      <DarkSection>
+        <DarkEyebrow>Where you are in the arc</DarkEyebrow>
+        <DarkHeading style={{ marginBottom: '32px' }}>See where you are.</DarkHeading>
+        <div>
+          {stageKeys.map(key => {
+            const s = STAGES[key]
+            const isActive = activeStage === key
+            return (
+              <div key={key} onClick={() => toggleStage(key)} style={{ padding: '10px 4px', cursor: 'pointer', borderBottom: `1px solid ${isActive ? '#C8922A' : 'rgba(200,146,42,0.20)'}`, transition: 'all 0.18s', marginBottom: '4px' }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.borderBottomColor = 'rgba(200,146,42,0.40)' }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderBottomColor = 'rgba(200,146,42,0.20)' }}
+              >
+                <span style={{ ...serif, fontSize: '22px', fontWeight: 300, color: isActive ? '#C8922A' : 'rgba(255,255,255,0.92)', display: 'block', lineHeight: 1.2, marginBottom: '2px', transition: 'color 0.18s' }}>{s.name}</span>
+                <span style={{ ...body, fontSize: '17px', fontStyle: 'italic', color: isActive ? 'rgba(200,146,42,0.78)' : 'rgba(255,255,255,0.55)', lineHeight: 1.4, display: 'block', transition: 'color 0.18s' }}>{s.question}</span>
+              </div>
+            )
+          })}
         </div>
-      </section>
-
-      {/* DARK 2 — Pull quote */}
-      <DarkSection style={{ textAlign: 'center' }}>
-        <DarkPullQuote
-          quote="I'm 63 years old and just met myself for the first time working with Nik."
-          attribution="J.B. · coaching client"
-        />
+        <div ref={panelRef} style={{ marginTop: '8px' }}><StagePanel stage={activeStage} /></div>
       </DarkSection>
 
       {/* Testimonials */}
-      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '144px 40px 96px' }}>
+      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px', textAlign: 'center' }}>What people say</span>
-        <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '56px', textAlign: 'center' }}>Real words from real people.</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
-          {[
-            { q: 'Working with Nik definitely changed my life. He has the ability to build up the right foundation and the right container to actually be vulnerable and go straight to where you need to.', name: 'S.H.' },
-            { q: 'I came to Nik apologising for not doing my homework \u2014 and started telling him I\u2019d met someone and gone on wonderful adventures, my work was expanding. He said: look at what you wrote in week one. I was already living it.', name: 'J.M.' },
-          ].map(({ q, name }) => (
-            <div key={name} style={{ borderLeft: '2px solid rgba(200,146,42,0.30)', padding: '20px 0 20px 24px' }}>
-              <p style={{ ...body, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.85)', lineHeight: 1.75, marginBottom: '16px' }}>{q}</p>
-              <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {name}</span>
-            </div>
-          ))}
-        </div>
+        <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '48px', textAlign: 'center' }}>Real words from real people.</h2>
+        <TestimonialCarousel />
         <div style={{ textAlign: 'center', marginTop: '40px' }}>
           <a href="/work-with-nik" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', opacity: 0.78 }}>More on working with Nik {'\u2192'}</a>
         </div>
