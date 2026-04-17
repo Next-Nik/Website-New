@@ -15,11 +15,11 @@ function Quote({ text, cite }) {
   )
 }
 
-function Card({ label, body }) {
+function Card({ label, content }) {
   return (
     <div style={{ background: 'rgba(200,146,42,0.05)', borderRadius: '14px', padding: '26px 28px', marginBottom: '10px', border: '1.5px solid rgba(200,146,42,0.78)' }}>
       <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', display: 'block', marginBottom: '10px' }}>{label}</span>
-      <div style={{ ...body, fontSize: '16px', color: '#0F1523', lineHeight: 1.7 }}>{body}</div>
+      <div style={{ ...body, fontSize: '16px', color: '#0F1523', lineHeight: 1.7 }}>{content}</div>
     </div>
   )
 }
@@ -74,8 +74,8 @@ export function WorkWithNikPage() {
         <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 400, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>The work draws on the full ecosystem {'—'} the Horizon Suite, Purpose Piece, Horizon Leap {'—'} but what it draws on in any engagement is determined by what{'’'}s actually needed.</p>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '40px', maxWidth: '600px' }}>One call per week, with focused work in between. We begin with The Map {'—'} an honest picture of where you are across all seven domains {'—'} then follow wherever the work needs to go from there.</p>
 
-        <Card label="This is for you if" body="You're high-functioning and aware that functioning well isn't the same as living from what you're capable of · You've done work on yourself and something still isn't moving · You have a real horizon — something you're building — and a felt gap between where you are and what it requires · You're ready to be seen clearly and worked with honestly" />
-        <Card label="This is not for you if" body="You're in active crisis or need stabilisation · You want a programme to follow · You're not ready to move" />
+        <Card label="This is for you if" content="You're high-functioning and aware that functioning well isn't the same as living from what you're capable of · You've done work on yourself and something still isn't moving · You have a real horizon — something you're building — and a felt gap between where you are and what it requires · You're ready to be seen clearly and worked with honestly" />
+        <Card label="This is not for you if" content="You're in active crisis or need stabilisation · You want a programme to follow · You're not ready to move" />
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '40px 0' }} />
         <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '28px' }}>What people say.</h2>
