@@ -1,0 +1,51 @@
+{
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
+  "crons": [
+    {
+      "path": "/api/integrity-cron",
+      "schedule": "0 2 * * *"
+    }
+  ],
+  "functions": {
+    "api/integrity-cron.js":            { "maxDuration": 60 },
+    "api/nextus-match.js":              { "maxDuration": 15 },
+    "api/map-chat.js":                  { "maxDuration": 60 },
+    "api/map-avatar-chat.js":           { "maxDuration": 60 },
+    "api/map-scoring-chat.js":          { "maxDuration": 60 },
+    "api/map-synthesis-chat.js":        { "maxDuration": 60 },
+    "api/connection-synthesis-chat.js": { "maxDuration": 60 },
+    "api/orienteering-chat.js":         { "maxDuration": 60 },
+    "api/horizon-state-chat.js":        { "maxDuration": 60 },
+    "api/purpose-piece-chat.js":        { "maxDuration": 60 },
+    "api/purpose-piece-chat-deep.js":   { "maxDuration": 60 },
+    "api/target-sprint-chat.js":        { "maxDuration": 60 },
+    "api/target-sprint-coach-chat.js":  { "maxDuration": 60 },
+    "api/horizon-practice-setup-chat.js":  { "maxDuration": 60 },
+    "api/horizon-practice-daily-chat.js":  { "maxDuration": 60 },
+    "api/horizon-practice-loop-chat.js":   { "maxDuration": 60 },
+    "api/stripe-webhook.js":            { "maxDuration": 30 },
+    "api/create-checkout.js":           { "maxDuration": 15 }
+  },
+  "rewrites": [
+    { "source": "/tools/orienteering/api/chat",             "destination": "/api/orienteering-chat" },
+    { "source": "/tools/map/api/chat",                      "destination": "/api/map-chat" },
+    { "source": "/tools/map/api/avatar-chat",               "destination": "/api/map-avatar-chat" },
+    { "source": "/tools/map/api/connection-synthesis",      "destination": "/api/connection-synthesis-chat" },
+    { "source": "/api/map-scoring-chat",                    "destination": "/api/map-scoring-chat" },
+    { "source": "/api/map-synthesis-chat",                  "destination": "/api/map-synthesis-chat" },
+    { "source": "/tools/horizon-state/api/chat",            "destination": "/api/horizon-state-chat" },
+    { "source": "/tools/purpose-piece/api/chat",            "destination": "/api/purpose-piece-chat" },
+    { "source": "/tools/purpose-piece/api/chat-deep",       "destination": "/api/purpose-piece-chat-deep" },
+    { "source": "/tools/target-sprint/api/chat",            "destination": "/api/target-sprint-chat" },
+    { "source": "/tools/target-sprint/api/sprint-coach",    "destination": "/api/target-sprint-coach-chat" },
+    { "source": "/tools/horizon-practice/api/setup-chat",   "destination": "/api/horizon-practice-setup-chat" },
+    { "source": "/tools/horizon-practice/api/daily-chat",   "destination": "/api/horizon-practice-daily-chat" },
+    { "source": "/tools/horizon-practice/api/loop-chat",    "destination": "/api/horizon-practice-loop-chat" },
+    { "source": "/api/stripe-webhook",                      "destination": "/api/stripe-webhook" },
+    { "source": "/api/create-checkout",                     "destination": "/api/create-checkout" },
+    { "source": "/api/nextus-match",                        "destination": "/api/nextus-match" },
+    { "source": "/api/integrity-cron",                      "destination": "/api/integrity-cron" },
+    { "source": "/(.*)",                                    "destination": "/index.html" }
+  ]
+}

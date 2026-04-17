@@ -1,0 +1,716 @@
+// LIFE OS — CHAT ENGINE v3
+// Seven domains + Brain as synthesis question
+// Domains: Path, Spark, Body, Finances, Connection, Inner Game, Signal
+// Life's mission frame throughout. Behavioural evidence over self-report.
+// Corpus upgrades: Avatar theatre framing, character synthesis step, thinness named not routed,
+// Horizon Goal calibration probe, permission for partial models, job/path distinction,
+// Spark permission-first, Finances dual-track (objective + emotional), Brain as closing synthesis.
+
+const Anthropic = require("@anthropic-ai/sdk");
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const { getNorthStarContext, formatNorthStarContext } = require('./_north-star');
+
+// ─── North Star Identity ───────────────────────────────────────────────────
+const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the Horizon Suite ecosystem. You are consistent across every tool: The Map, Horizon State, Orienteering, Purpose Piece, Target Sprint, and Horizon Practice. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
+
+
+
+// ─── The seven domains ────────────────────────────────────────────────────────
+const DOMAINS = [
+  {
+    id: "path",
+    label: "Path",
+    stewardshipQuestion: "Am I walking my path — or just walking?",
+    fractal: "Vision",
+    avatarPrompt: `We're starting with Path — not your job, but your gift alive in the world. The question this domain holds is: am I on my path, and am I actually moving?
+
+To set your scale, I want you to build a character. Think of the people — living, historical, fictional, or composite — who represent what 10/10 looks like in this domain for someone like you. Not best in the world in general. Best in the world for the life you're here to live.
+
+A few things worth knowing as you build this:
+
+You can include someone you admire in one dimension even if you wouldn't want their whole life. Someone whose vision you want without their impact on people around them. Someone whose scale you want without their values. We're building a character, not endorsing a person — so bring the part that matters and leave the rest. Modifiers are welcome. That's not a caveat, it's useful data.
+
+Don't edit the list toward people only in your field. The outliers often crack the pattern open.
+
+One more thing worth naming: your job might be part of your Path — or it might simply be what puts food on the table while your Path gets lived somewhere else entirely. What you do for income doesn't have to be meaningful, it just has to be functional for you. Someone can be fully on their Path without their job being any part of it, as long as your job isn't taking away from your Path in a significant way. We're asking about Path, not employment.
+
+Now — who's in your character? Give me the names, the composites, the qualities. Anyone who belongs.`,
+
+    avatarSynthesisPrompt: `Good. Before we move to where you actually are, I want to make sure we've captured the character clearly enough.
+
+Looking at who you named — what do these people share? What's the essential quality or combination of qualities you're pointing at? Imagine this character walking into a room or onto a stage. What would an audience immediately see and understand about them? What's unmistakable?
+
+We're not looking for a list of their achievements. We're looking for the essence — specific enough that someone could play the role.`,
+
+    placementPrompt: `Now — with that character as your 10 — describe what Path actually looks like in your life right now.
+
+Not where you want it to be. Not where you're headed. Where it actually is.
+
+What are you doing, how does it feel, what's genuinely moving, and where are you stalled or in the wrong lane entirely? If you're running two tracks — the work that pays and the work that calls — include both. They're often different and both matter here.`,
+
+    horizonPrompt: `If a genie tapped you on the head right now and granted your wish in Path — what would it be?
+
+Not the character you built. Not the ceiling. Your actual wish for your actual life.
+
+Some people want the full expression of the character. Most want something more specific and closer — a particular project alive, a particular kind of day as the norm, a particular kind of contribution landing. There's no wrong answer. The genie is asking what would feel like winning for you specifically.`
+  },
+  {
+    id: "spark",
+    label: "Spark",
+    stewardshipQuestion: "When did I last feel genuinely alive — and what's been costing me that?",
+    fractal: "Human Being",
+    avatarPrompt: `Spark is the animating fire — the things that make you feel genuinely alive, not just occupied. Not fun or relaxation, though those can be expressions of it. Spark is regeneration: soul nourishment that sends you back into the world more alive than you arrived.
+
+To set your scale — who or what represents 10/10 in Spark for someone like you? Someone whose aliveness is unmistakable. Whose fire is clearly on. This might be a person, a way of being, a specific quality of presence.
+
+Same rules: composites welcome, partial models welcome, outliers welcome. Who belongs in this character?`,
+
+    avatarSynthesisPrompt: `What does this character radiate? If you distilled what you're pointing at down to the essential quality of their aliveness — what is it? What's on in them that you want on in you?`,
+
+    permissionPrompt: `Before I ask where you are — one question first.
+
+When you imagine genuinely making time for the things that make you feel alive — not productive, not useful, just alive — what comes up for you?
+
+Is there anything in the way of that, even before we get to what it would look like?`,
+
+    placementPrompt: `Where is your Spark right now — honestly?
+
+Not your energy levels or your schedule. The fire itself. Is it on, off, dimmed, flickering? Where do you feel genuinely alive in your week, and where has something gone quiet that used to be lit?
+
+Be specific about what's actually present and what's actually absent.`,
+
+    horizonPrompt: `If a genie granted your wish in Spark — what would it be? What would genuinely alive feel like in your actual daily life? What would be present that isn't now?`
+  },
+  {
+    id: "body",
+    label: "Body",
+    stewardshipQuestion: "Am I honouring this instrument — or running it into the ground?",
+    fractal: "Nature",
+    avatarPrompt: `Body is your physical instrument — the vessel through which everything else operates, and the one thing you cannot outsource, replace, or defer indefinitely. Body is not about aesthetics. It is about whether the instrument you're using to do your life's work is being honoured, maintained, and brought to its full capacity.
+
+To set your scale — who represents 10/10 in Body for someone like you specifically? Your age, your context, your history. Not a generic fitness ideal. The best physical expression of what's actually possible and meaningful for someone with your specific life.
+
+Composites welcome. Partial models welcome — someone whose energy you want without their obsession, someone whose relationship with food you want without the extremes.`,
+
+    avatarSynthesisPrompt: `What does this character's relationship with their body actually look like? What's the quality — not the metrics, but the lived experience? What would you immediately notice about how they inhabit their physical life?`,
+
+    placementPrompt: `Where is your Body right now — honestly?
+
+Describe the instrument: energy levels, sleep, how you move, how you eat, how you feel inside your physical life day to day. Include what you're minimising or glossing over. Injuries count. Fatigue counts. Post-burnout recovery counts. The gap between what you intend and what you actually do counts.`,
+
+    horizonPrompt: `If a genie granted your wish in Body — what would it be? Not the Avatar. What would genuinely thriving in your body feel like for your actual life? What would you be able to do, how would you feel, what would be different about how you inhabit your days?`
+  },
+  {
+    id: "finances",
+    label: "Finances",
+    stewardshipQuestion: "Do I have the agency to act on what matters?",
+    fractal: "Finance & Economy",
+    avatarPrompt: `Finances holds agency — the power to make things happen. A low score here doesn't primarily mean not enough money. It means lacking the power to act on what matters.
+
+To set your scale — who represents 10/10 in Finances for someone like you? Someone whose relationship with money and resources genuinely represents what's possible — not just the numbers, but the agency, the freedom, the relationship to abundance and scarcity.
+
+Partial models especially welcome here. Someone whose financial freedom you want without their relationship to accumulation. Someone whose generosity you want without their specific path to it.
+
+One thing worth naming: your job might be the engine that powers your finances, or your Path might be, or some combination. However income arrives is fine — we're asking about your relationship to resources and agency, not how you earn or whether your income is meaningful to you.`,
+
+    avatarSynthesisPrompt: `What's the essential quality you're pointing at in this character? Is it the freedom, the security, the generosity, the agency — or some specific combination? What would you immediately sense about how they relate to money and resources?`,
+
+    placementPrompt: `Where are you honestly right now in Finances?
+
+Two things matter here and they're often different: your objective position — the actual numbers, debt, runway, income — and your emotional relationship to money — how it feels, how much it runs you, whether you feel empowered or constrained.
+
+Tell me both. They're both real data.`,
+
+    horizonPrompt: `If a genie granted your wish in Finances — what would it be? What would financial thriving actually look like for your specific life — not the ceiling, your actual wish?`
+  },
+  {
+    id: "connection",
+    label: "Connection",
+    stewardshipQuestion: "Am I truly known by anyone — and am I truly knowing them?",
+    fractal: "Society",
+    avatarPrompt: `Connection holds the depth of human connection — the question isn't how many people you know, it's whether anyone truly knows you.
+
+To set your scale — who represents 10/10 here for someone like you? Someone whose depth of connection, quality of belonging, and health of bonds genuinely represents what's possible.
+
+Think across the different layers: intimate partnership, close friendships, family, community. Your character might be stronger in some layers than others — that's worth noting.`,
+
+    avatarSynthesisPrompt: `What's the essential quality in this character's relationships? Is it the depth, the safety, the being-known, the community — what's unmistakable about how they connect with people?`,
+
+    placementPrompt: `Where are your Connection right now — honestly?
+
+The quality of your closest connections, your sense of belonging, what's genuinely deep and what's lonely or frayed. Include what's circumstantial — if you've recently moved, if people are far away, if there's been rupture. Context matters here.`,
+
+    horizonPrompt: `If a genie granted your wish in Connection — what would it be? What would your ideal relational life actually look like — not the perfect version, your genuine wish?`
+  },
+  {
+    id: "inner_game",
+    label: "Inner Game",
+    stewardshipQuestion: "What story about myself is quietly running the room — and is that story still true?",
+    fractal: "Legacy",
+    avatarPrompt: `Inner Game is the source code — everything else runs on it. The beliefs, stories, values, and emotional patterns you carry about who you are and what you're capable of. Not beliefs in the abstract, but the specific narrative inheritance from your history, your family, your culture, your inner critic.
+
+To set your scale — who represents 10/10 in Inner Game for someone like you? Someone with a genuinely healthy, grounded, honest internal life. Not someone who has it all figured out — someone who has a real relationship with their own interior.`,
+
+    avatarSynthesisPrompt: `What's the quality you're pointing at in this character's inner life? What does their relationship with themselves actually look like — under pressure, in private, when things go wrong?`,
+
+    placementPrompt: `What's your Inner Game actually like right now?
+
+Not the fluent version you'd give in a coaching session. The real one. The specific recurring patterns, the operating beliefs that run in the background, the stories about yourself you haven't fully examined. Where do you feel genuinely solid inside, and where are you running on old programming?
+
+If this domain is hard to answer — that's worth naming too.`,
+
+    horizonPrompt: `If a genie granted your wish in Inner Game — what would it be? What would a genuinely healthy, grounded inner life feel like for you specifically?`
+  },
+  {
+    id: "signal",
+    label: "Signal",
+    stewardshipQuestion: "Is what I'm broadcasting aligned with who I actually am?",
+    fractal: "Society",
+    avatarPrompt: `Signal holds the broadcast — the signal you send to the world about who you are and what you stand for, whether you're conscious of it or not. A low score here isn't an aesthetic problem. It's a gap between inner truth and outer transmission.
+
+To set your scale — who represents 10/10 in Signal for someone like you? Someone whose external expression — how they present, how they carry themselves, what they put into the world — is genuinely aligned with who they are inside.`,
+
+    avatarSynthesisPrompt: `What's unmistakable about this character's broadcast? What do people immediately receive when they encounter them — online, in person, in their environment? What's the alignment you're pointing at?`,
+
+    placementPrompt: `Where are you right now in Signal — honestly?
+
+How you're actually showing up externally. Your appearance, your environment, your digital presence, the gap between how you want to be perceived and how you're actually coming across. Include what you've been meaning to change but haven't. The presence that's planned but not yet public.`,
+
+    horizonPrompt: `If a genie granted your wish in Signal — what would it be? What would genuine alignment between your inner truth and your outer broadcast look like for your actual life?`
+  }
+];
+
+// ─── Brain — closing synthesis question (not a peer domain) ──────────────────
+const BRAIN_PROMPT = `One final question — and this one is different from the others.
+
+Brain isn't a domain to assess like the rest. It's a synthesis question that takes its shape from everything you've just shared.
+
+Given your Horizon Life across all seven domains — the life you've described wanting in Path, Spark, Body, Finances, Connection, Inner Game, and Signal — what do you actually need to learn?
+
+Not what you think you should learn. Not what's interesting in the abstract. What knowledge, skill, or understanding would most directly close the gap between where you are and where you want to be?`;
+
+// ─── Session factory ──────────────────────────────────────────────────────────
+function createSession() {
+  return {
+    phase: "welcome",
+    domainIndex: 0,
+    domainStep: "avatar",        // avatar → avatar_synthesis → permission(spark only) → placement → horizon → horizon_calibration
+    probeCount: 0,
+    transcript: [],
+    domainData: {},
+    currentPlacement: null,
+    brainAnswer: null,
+    status: "active"
+  };
+}
+
+// ─── Thin answer detection ────────────────────────────────────────────────────
+function isThin(answer) {
+  const words = answer.trim().split(/\s+/).filter(Boolean);
+  if (words.length < 12) return true;
+  const deflectors = ["not sure", "idk", "i don't know", "nothing", "don't know", "not really"];
+  const lower = answer.toLowerCase();
+  return deflectors.filter(d => lower.includes(d)).length >= 2;
+}
+
+// ─── Thinness response — name it, don't route around it ──────────────────────
+function thinnessResponse(step, probeCount) {
+  if (probeCount === 0) {
+    if (step === "avatar") return `I notice this one didn't come as easily. Is it that the domain feels less alive right now, or is there something here you're not quite ready to look at?\n\nEither way — even a rough answer works. Who came to mind first, even if they feel like an odd choice?`;
+    if (step === "placement") return `I notice this one came out thin. Is this domain less active for you right now, or is there something that's harder to say honestly?\n\nBoth are useful. What's actually true here, even if it's uncomfortable?`;
+    if (step === "horizon") return `When the genie question lands thin, it usually means one of two things — either this domain isn't live enough yet to imagine changing, or there's something you want but haven't let yourself fully go for.\n\nWhich is closer? What would you say if you let yourself answer honestly?`;
+  }
+  return `Even a brief honest answer is more useful than a complete one that isn't quite true. What's actually present here right now?`;
+}
+
+// ─── Placement inference prompt ───────────────────────────────────────────────
+function placementInferencePrompt(session, domain) {
+  return `You are the Horizon Suite assessment engine. Infer honest placement for ${domain.label}.
+
+Life's mission question: "${domain.stewardshipQuestion}"
+Avatar character: ${session.domainData[domain.id]?.characterBrief || session.domainData[domain.id]?.avatarList || "not captured"}
+Current reality: ${session.currentPlacement}
+
+Infer an honest score from behavioural evidence only — not aspirations, not intentions, not self-assessment. Read what they emphasised, minimised, and omitted. The scale uses half-point increments.
+
+THE HORIZON SCALE — score against these precisely:
+10  World-Class       — Complete coherence. Effortless mastery, luminous presence, contribution that uplifts others. The art and the artist are one.
+9.5 Exemplar+        — Integrated and at ease. Leads by example; influence radiates naturally.
+9   Exemplar         — Deeply skilled, balanced, reliable. Excellence feels natural and sustainable.
+8.5 Fluent+          — Competence meets wisdom; growth through curiosity and depth.
+8   Fluent           — Solid foundations, steady excellence, self-aware and grounded.
+7.5 Capable+         — Consistent progress; confidence building through deliberate practice.
+7   Capable          — Dependable, engaged, purposeful.
+6.5 Functional+      — Mostly consistent; stabilising habits, pacing energy.
+6   Functional       — Competent, responsible; maintaining, sometimes fatigued.
+5.5 Plateau+         — Curiosity stirring; ready to move again.
+5   Plateau          — Holding steady but uninspired; minimal expansion.
+4.5 Friction+        — Restless recognition that change is due.
+4   Friction         — Desire present, momentum low; self-judgment softening into openness.
+3.5 Strain+          — Inconsistent, overwhelmed, starting to see the cycle.
+3   Strain           — Energy collapsed inward; fear or shame active. Needs rest, not force.
+2.5 Crisis+          — High stress, low support; survival instincts active.
+2   Crisis           — Basics unmet, clarity lost; exhaustion or anxiety chronic.
+1.5 Emergency+       — Alternating between intensity and shutdown.
+1   Emergency        — Spiritually or emotionally collapsed; light dimmed.
+0   Ground Zero      — End of a cycle. Stillness before rebirth.
+
+CRITICAL: Any score below 5 means this domain is actively creating harm to the person and the people around them. Name this honestly in the reflection without shame. Use the tier language naturally.
+
+Write a 2-3 sentence reflection grounded in what they actually described. Warm, direct, precise. Reference specific things they said. Include the tier name naturally.
+
+Respond ONLY with valid JSON, no markdown:
+{"score":<0-10 in 0.5 increments>,"tier":"<tier name>","reflection":"<2-3 sentences>","invite_correction":"<one sentence>"}`;
+}
+
+// ─── Avatar synthesis prompt ──────────────────────────────────────────────────
+function avatarSynthesisPrompt(session, domain) {
+  return `You are the Horizon Suite assessment engine. Synthesise a character brief for ${domain.label}.
+
+Avatar list: ${session.domainData[domain.id]?.avatarList || ""}
+Character description: ${session.domainData[domain.id]?.avatarCharacter || ""}
+
+Write a 2-3 sentence character brief capturing the essential quality they're pointing at. Specific enough to be recognisable. Written as a character description, not a list of achievements.
+
+Respond ONLY with valid JSON, no markdown:
+{"characterBrief":"<2-3 sentences>"}`;
+}
+
+// ─── Final synthesis prompt ───────────────────────────────────────────────────
+function finalSynthesisPrompt(session) {
+  const domainSummaries = Object.entries(session.domainData).map(([id, data]) => {
+    const d = DOMAINS.find(d => d.id === id);
+    if (!d) return "";
+    return `${d.label} — "${d.stewardshipQuestion}"
+  Score: ${data.score}/10
+  Character: ${data.characterBrief || data.avatarList || "not captured"}
+  Current reality: ${data.placement || "not captured"}
+  Horizon Goal: ${data.horizon || "not captured"}`;
+  }).filter(Boolean).join("\n\n");
+
+  return `You are the Horizon Suite assessment engine delivering the final map.
+
+Domain data:
+${domainSummaries}
+
+Brain synthesis: ${session.brainAnswer || "not provided"}
+
+Produce the final Horizon Suite map.
+
+STAGE — identify from score patterns:
+Stabilisation: Multiple domains 2-4, needs stabilisation before development work
+Orientation: Mixed 3-6, needs honest self-location and life coherence
+Alignment: Most domains 5-7, ready to look outward at contribution
+Development: Most domains 6-8, compounding what's working
+Transformation: Most domains 7+, hitting identity ceiling, ready for crossing
+
+FOCUS DOMAINS — three most catalytic right now. CRITICAL TRIAGE RULE: any domain scoring below 5 is an active harm zone and must be included as a focus domain — this takes priority over catalytic potential. Below-5 domains are addressed before optimisation work elsewhere.
+
+OVERALL REFLECTION — 3-4 paragraphs. This is the recognition moment. Write as someone who listened carefully to their whole life for the last hour. Not a report. Not a list. A genuine synthesis — their current reality, their Horizon Goals, what the patterns show, what's possible. Every sentence should only be possible because of what this specific person shared. The emotional endpoint is not "that's accurate" — it is "how did it know that."
+
+Respond ONLY with valid JSON, no markdown:
+{"stage":"<Stabilisation|Orientation|Alignment|Development|Transformation>","stage_description":"<2-3 sentences specific to them, not generic>","focus_domains":["<id>","<id>","<id>"],"focus_reasoning":"<why these three — below-5 domains named first if present, then catalytic logic>","overall_reflection":"<3-4 paragraphs>","brain_insight":"<what the Brain answer reveals>","next_step":"<one honest specific sentence>"}`;
+}
+
+
+// ─── Life Horizon synthesis prompt ───────────────────────────────────────────
+function lifeHorizonPrompt(session) {
+  const horizons = Object.entries(session.domainData).map(([id, data]) => {
+    const d = DOMAINS.find(d => d.id === id);
+    if (!d || !data.horizon) return null;
+    return `${d.label}: "${data.horizon}"`;
+  }).filter(Boolean).join("\n");
+
+  return `You have the seven domain Horizon Goals that someone expressed for their own life during a Horizon Suite assessment. Each is their honest answer to "if a genie granted your wish here, what would it be?"
+
+Their seven domain horizons:
+${horizons}
+
+Their overall stage: ${session.brainAnswer ? "has completed Brain synthesis" : "assessment complete"}
+
+Write a single unified Life Horizon Goal that holds all seven of these together — the whole life, not a summary of parts. This is not a list. It is one paragraph, one to three sentences, written in the first person as if this person is speaking it. It should feel like something they could read and say "yes — that's actually it."
+
+Rules:
+- Written in first person ("I am..." or "My life is..." or "I live...")
+- One paragraph, 1-3 sentences maximum
+- Holds the emotional truth across all seven, not just the loudest ones
+- Describes a state, not a plan — present tense, alive quality
+- Plain language — no management speak, no spiritual clichés
+- Should feel like it could only have been written for this specific person based on what they shared
+
+Return ONLY the text of the Horizon Goal. No preamble, no explanation, no JSON.`;
+}
+
+// ─── Main handler ─────────────────────────────────────────────────────────────
+module.exports = async (req, res) => {
+  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+
+  const { messages = [], session: clientSession, userId } = req.body;
+
+  // Load cross-tool North Star context
+  const northStarCtx = userId ? await getNorthStarContext(userId) : null
+  const session = clientSession || createSession();
+
+  try {
+
+    // ── Welcome ───────────────────────────────────────────────────────────────
+    if (session.phase === "welcome" || messages.length === 0) {
+      session.phase = "domain";
+      session.domainIndex = 0;
+      session.domainStep = "avatar";
+
+      return res.json({
+        session,
+        phase: "domain",
+        phaseLabel: "Path — 1 of 7",
+        message: `Welcome to The Map.\n\nThis is the beginning of seeing your life clearly — all of it, across seven domains. Not where you wish you were. Where you actually are. And where you genuinely want to go.\n\nIn each domain, three steps. First, you'll build a character — who represents 10/10 for someone like you specifically. Then you'll describe where you honestly are right now. Then the genie question: if your wish were granted here, what would it actually be?\n\nNo right answers. Only honest ones. About 20–30 minutes.\n\nLet's begin.\n\n${DOMAINS[0].avatarPrompt}`,
+        inputMode: "text"
+      });
+    }
+
+    const userMessage = messages[messages.length - 1]?.content || "";
+    session.transcript.push({ role: "user", content: userMessage });
+
+    const domain = session.domainIndex < DOMAINS.length ? DOMAINS[session.domainIndex] : null;
+    const domainId = domain?.id;
+
+    // ── Brain synthesis ───────────────────────────────────────────────────────
+    if (session.phase === "brain") {
+      session.brainAnswer = userMessage;
+      session.phase = "final_synthesis";
+
+      // Run map synthesis and life horizon synthesis in parallel
+      const nsBlockMap = northStarCtx ? '\n\n' + formatNorthStarContext(northStarCtx) : ''
+      const [synthResponse, horizonResponse] = await Promise.all([
+        anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 2500,
+          messages: [{ role: "user", content: NORTH_STAR_IDENTITY + '\n\n' + finalSynthesisPrompt(session) + nsBlockMap }]
+        }),
+        anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [{ role: "user", content: lifeHorizonPrompt(session) }]
+        })
+      ]);
+
+      let synthData;
+      try {
+        const raw = synthResponse.content[0].text.replace(/```json|```/g, "").trim();
+        synthData = JSON.parse(raw);
+      } catch {
+        synthData = {
+          stage: "Orientation",
+          stage_description: "You're in the process of seeing your whole life clearly.",
+          focus_domains: ["path", "spark", "inner_game"],
+          focus_reasoning: "These three domains show the most catalytic potential based on what you've shared.",
+          overall_reflection: "You've shared something real across all seven domains. The picture that emerges is of someone navigating meaningful gaps between current reality and a genuinely envisioned Horizon Life.",
+          brain_insight: "Your learning gaps are specific and actionable.",
+          next_step: "Start with your three focus domains and your Horizon Goal within each."
+        };
+      }
+
+      // Attach life horizon draft
+      const lifeHorizonDraft = horizonResponse.content[0].text.trim();
+      synthData.life_horizon_draft = lifeHorizonDraft;
+
+      session.phase = "complete";
+
+      return res.json({
+        session,
+        phase: "complete",
+        phaseLabel: "Your Map",
+        complete: true,
+        mapData: synthData,
+        inputMode: "none"
+      });
+    }
+
+    // ── Placement confirmation ────────────────────────────────────────────────
+    if (session.phase === "placement_confirm") {
+      if (!session.domainData[domainId]) session.domainData[domainId] = {};
+      // Accept half-point corrections (e.g. "4.5", "7", "6.5")
+      const correctionMatch = userMessage.match(/\b(10|[0-9](?:\.[05])?)\b/);
+      if (correctionMatch) session.domainData[domainId].score = parseFloat(correctionMatch[1]);
+
+      session.phase = "domain";
+      session.domainStep = "horizon";
+      session.probeCount = 0;
+
+      return res.json({
+        session,
+        phase: "domain",
+        phaseLabel: `${domain.label} — Horizon Goal`,
+        message: domain.horizonPrompt,
+        inputMode: "text"
+      });
+    }
+
+    // ── Main domain flow ──────────────────────────────────────────────────────
+    if (session.phase === "domain") {
+      if (!session.domainData[domainId]) session.domainData[domainId] = {};
+
+      // AVATAR — collect list
+      if (session.domainStep === "avatar") {
+        if (isThin(userMessage) && session.probeCount < 2) {
+          session.probeCount++;
+          return res.json({ session, phase: "domain", phaseLabel: `${domain.label} — Your 10`, message: thinnessResponse("avatar", session.probeCount - 1), inputMode: "text" });
+        }
+
+        session.domainData[domainId].avatarList = userMessage;
+        session.domainStep = "avatar_synthesis";
+        session.probeCount = 0;
+
+        return res.json({
+          session,
+          phase: "domain",
+          phaseLabel: `${domain.label} — The Character`,
+          message: domain.avatarSynthesisPrompt,
+          inputMode: "text"
+        });
+      }
+
+      // AVATAR SYNTHESIS — extract character essence, Claude synthesises brief
+      if (session.domainStep === "avatar_synthesis") {
+        if (isThin(userMessage) && session.probeCount < 1) {
+          session.probeCount++;
+          return res.json({ session, phase: "domain", phaseLabel: `${domain.label} — The Character`, message: `What would be unmistakable about this character if they walked into a room? What's the one quality that ties all of them together?`, inputMode: "text" });
+        }
+
+        session.domainData[domainId].avatarCharacter = userMessage;
+
+        const synthResponse = await anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [{ role: "user", content: avatarSynthesisPrompt(session, domain) }]
+        });
+
+        let synthData;
+        try {
+          const raw = synthResponse.content[0].text.replace(/```json|```/g, "").trim();
+          synthData = JSON.parse(raw);
+        } catch {
+          synthData = { characterBrief: "Someone who embodies this domain at its fullest expression for someone like you." };
+        }
+
+        session.domainData[domainId].characterBrief = synthData.characterBrief;
+        session.probeCount = 0;
+
+        // Spark gets permission question before placement
+        if (domain.id === "spark") {
+          session.domainStep = "permission";
+          return res.json({
+            session,
+            phase: "domain",
+            phaseLabel: `${domain.label} — Permission`,
+            message: `${synthData.characterBrief}\n\nThat's your 10 in Spark.\n\n${domain.permissionPrompt}`,
+            inputMode: "text"
+          });
+        }
+
+        session.domainStep = "placement";
+        return res.json({
+          session,
+          phase: "domain",
+          phaseLabel: `${domain.label} — Where You Are`,
+          message: `${synthData.characterBrief}\n\nThat's your 10 in ${domain.label}.\n\n${domain.placementPrompt}`,
+          inputMode: "text"
+        });
+      }
+
+      // PERMISSION (Spark only) — acknowledge and move to placement
+      if (session.domainStep === "permission") {
+        session.domainData[domainId].permissionAnswer = userMessage;
+        session.domainStep = "placement";
+        session.probeCount = 0;
+
+        return res.json({
+          session,
+          phase: "domain",
+          phaseLabel: `${domain.label} — Where You Are`,
+          message: domain.placementPrompt,
+          inputMode: "text"
+        });
+      }
+
+      // PLACEMENT — collect, then Claude infers score
+      if (session.domainStep === "placement") {
+        if (isThin(userMessage) && session.probeCount < 2) {
+          session.probeCount++;
+          return res.json({ session, phase: "domain", phaseLabel: `${domain.label} — Where You Are`, message: thinnessResponse("placement", session.probeCount - 1), inputMode: "text" });
+        }
+
+        session.currentPlacement = userMessage;
+        session.domainData[domainId].placement = userMessage;
+
+        const inferResponse = await anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [{ role: "user", content: placementInferencePrompt(session, domain) }]
+        });
+
+        let inferData;
+        try {
+          const raw = inferResponse.content[0].text.replace(/```json|```/g, "").trim();
+          inferData = JSON.parse(raw);
+        } catch {
+          inferData = { score: 5, tier: "Plateau", reflection: "Here's what I'm reading from what you've shared.", invite_correction: "Does this feel accurate?" };
+        }
+
+        session.domainData[domainId].score = inferData.score;
+        session.domainData[domainId].tier  = inferData.tier || "";
+        session.phase = "placement_confirm";
+        session.domainStep = "horizon";
+        session.probeCount = 0;
+
+        const tierLabel = inferData.tier ? ` — ${inferData.tier}` : "";
+        return res.json({
+          session,
+          phase: "placement_confirm",
+          phaseLabel: `${domain.label} — Placement`,
+          message: `${inferData.reflection}\n\nI'm reading you at ${inferData.score}/10 in ${domain.label}${tierLabel}.\n\n${inferData.invite_correction}`,
+          inputMode: "text"
+        });
+      }
+
+      // HORIZON GOAL — genie question + calibration probe
+      if (session.domainStep === "horizon") {
+        if (isThin(userMessage) && session.probeCount < 1) {
+          session.probeCount++;
+          return res.json({ session, phase: "domain", phaseLabel: `${domain.label} — Horizon Goal`, message: thinnessResponse("horizon", 0), inputMode: "text" });
+        }
+
+        // Horizon reception — North Star reads the goal and responds appropriately.
+        // First pass: receive the dream. Only probe if something specific warrants it.
+        if (!session.domainData[domainId].horizonCalibrated) {
+          session.domainData[domainId].horizonCalibrated = true;
+          session.domainData[domainId].horizonDraft = userMessage;
+
+          const nsBlockHorizon = northStarCtx ? '\n\n' + formatNorthStarContext(northStarCtx) : '';
+          const horizonReceptionPrompt = `${NORTH_STAR_IDENTITY}
+
+You are receiving someone's Horizon Goal for the ${domain.label} domain. This is a pivotal moment.
+
+Their goal: "${userMessage}"
+
+Their current placement score: ${session.domainData[domainId].score || 'not yet recorded'}/10
+Their avatar (their 10/10 character): ${session.domainData[domainId].characterBrief || 'not recorded'}
+
+YOUR JOB:
+Receive this goal. Read it on its own terms. This is someone daring to say what they actually want — treat that with the weight it deserves.
+
+BEFORE you respond, run this internal check (do NOT name or explain the check — just run it silently):
+1. Is this GRANDIOSE/PERFORMATIVE? Signs: the goal is about status or being seen rather than contribution; there's "look at me" energy that's disconnected from any actual through-line in what they've shared; it reads like a fantasy costume rather than a genuine scaled-up version of who they are.
+2. Is this PLAYING IT SAFE? Signs: the goal is noticeably smaller than what their avatar and placement suggest they actually want; they're hedging or underselling; there's a whiff of "I don't want to say the real thing."
+
+IF NEITHER FLAG IS TRIGGERED — the goal is genuine, whether small or large — your response is:
+- Receive it. Land it. Let them feel that you've actually taken it in.
+- One brief, warm observation that shows you've heard the specific thing they said (not a generic affirmation).
+- Move on. Do NOT interrogate it. Do NOT ask them to prove it. Do NOT tilt your head.
+- End by signalling you're moving to the next domain OR that this closes the domain, naturally.
+
+IF GRANDIOSE FLAG: gently, curiously — not skeptically — ask what a day looks like with that granted. "I want to make sure we have the real one" framing. Warm, not suspicious.
+
+IF PLAYING IT SAFE FLAG: give them permission to go bigger. Something like: "That's one answer. Is there a bigger one you're not saying?"
+
+VOICE: Warm, precise, direct. Short — 2 to 4 sentences. This is not the place for a long reflection. Receive and move.
+${nsBlockHorizon}`;
+
+          const horizonReceptionResponse = await anthropic.messages.create({
+            model: "claude-sonnet-4-20250514",
+            max_tokens: 1000,
+            messages: [{ role: "user", content: horizonReceptionPrompt }]
+          });
+
+          const receptionMessage = horizonReceptionResponse.content[0].text.trim();
+
+          // Check if North Star's response is probing (contains a question) — if so, hold at horizon step
+          const isProbing = receptionMessage.includes('?');
+
+          if (isProbing) {
+            // North Star found something worth pressing — hold for one more response
+            return res.json({
+              session,
+              phase: "domain",
+              phaseLabel: `${domain.label} — Horizon Goal`,
+              message: receptionMessage,
+              inputMode: "text"
+            });
+          }
+
+          // North Star received it cleanly — store the draft as final and move on
+          session.domainData[domainId].horizon = userMessage;
+          session.domainData[domainId].horizonReception = receptionMessage;
+
+          const nextIndex = session.domainIndex + 1;
+
+          if (nextIndex >= DOMAINS.length) {
+            session.phase = "brain";
+            return res.json({
+              session,
+              phase: "brain",
+              phaseLabel: "Brain — The Synthesis Question",
+              message: receptionMessage + "\n\n" + BRAIN_PROMPT,
+              inputMode: "text"
+            });
+          }
+
+          session.domainIndex = nextIndex;
+          session.domainStep = "avatar";
+          session.phase = "domain";
+          session.probeCount = 0;
+
+          const nextDomainAfterReception = DOMAINS[nextIndex];
+          return res.json({
+            session,
+            phase: "domain",
+            phaseLabel: `${nextDomainAfterReception.label} — ${nextIndex + 1} of 7`,
+            message: receptionMessage + "\n\n" + nextDomainAfterReception.avatarPrompt,
+            inputMode: "text"
+          });
+        }
+
+        // Store final Horizon Goal (reached only if first pass was a probe)
+        session.domainData[domainId].horizon = userMessage;
+
+        const nextIndex = session.domainIndex + 1;
+
+        // All seven done — Brain synthesis question
+        if (nextIndex >= DOMAINS.length) {
+          session.phase = "brain";
+          return res.json({
+            session,
+            phase: "brain",
+            phaseLabel: "Brain — The Synthesis Question",
+            message: BRAIN_PROMPT,
+            inputMode: "text"
+          });
+        }
+
+        // Next domain
+        session.domainIndex = nextIndex;
+        session.domainStep = "avatar";
+        session.phase = "domain";
+        session.probeCount = 0;
+
+        const nextDomain = DOMAINS[nextIndex];
+        const transitions = ["Good.", "Moving.", "Understood.", "With you.", "Noted.", "Continuing."];
+        const transition = transitions[nextIndex - 1] || "";
+
+        return res.json({
+          session,
+          phase: "domain",
+          phaseLabel: `${nextDomain.label} — ${nextIndex + 1} of 7`,
+          message: `${transition}\n\n${nextDomain.avatarPrompt}`,
+          inputMode: "text"
+        });
+      }
+    }
+
+    return res.json({ session, phase: session.phase, message: "Let's keep going.", inputMode: "text" });
+
+  } catch (err) {
+    console.error("Map engine error:", err);
+    return res.status(500).json({ error: "Something went wrong. Please try again." });
+  }
+};

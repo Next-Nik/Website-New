@@ -1,0 +1,444 @@
+/* ─── NextUs Design System ─────────────────────────────────── */
+
+:root {
+  --bg:           #FAFAF7;
+  --gold-dk:      #A8721A;
+  --gold:         #C8922A;
+  --gold-line:    rgba(200, 146, 42, 0.22);
+  --gold-faint:   rgba(200, 146, 42, 0.07);
+  --text:         #0F1523;
+  --text-meta:    rgba(15, 21, 35, 0.72);
+  --text-ghost:   rgba(15, 21, 35, 0.55);
+  --border:       rgba(200, 146, 42, 0.22);
+
+  --bg-page:      #FFFFFF;
+  --bg-tool:      #FAFAF7;
+  --bg-warm:      #F5F2EC;
+  --bg-dark:      #0F1523;
+  --bg-card:      rgba(200, 146, 42, 0.05);
+  --bg-hover:     rgba(200, 146, 42, 0.08);
+
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-sc:      'Cormorant SC', Georgia, serif;
+  --font-body:    'Lora', Georgia, serif;
+
+  --max-w:        680px;
+  --nav-h:        64px;
+}
+
+/* ─── Type scale ────────────────────────────────────────────── */
+:root {
+  --text-xs:    15px;       /* UI labels, metadata, badges */
+  --text-sm:    17px;       /* Eyebrows, captions, nav labels */
+  --text-base:  1.25rem;    /* 20px — standard body copy */
+  --text-md:    1.375rem;   /* 22px — tool body copy */
+  --text-lg:    1.625rem;   /* 26px — subheadings, lead copy */
+  --text-xl:    1.875rem;   /* 30px — section headings */
+  --text-2xl:   2.25rem;    /* 36px — tool titles */
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1.25rem;
+  line-height: 1.65;
+  min-height: 100dvh;
+}
+
+a {
+  color: var(--gold-dk);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+/* ─── Loading spinner ───────────────────────────────────────── */
+
+.loading {
+  width: 100dvw;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+}
+
+.loading::after {
+  content: '';
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--gold-line);
+  border-top-color: var(--gold-dk);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Auth overlay ──────────────────────────────────────────── */
+
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 21, 35, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 1.5rem;
+  backdrop-filter: blur(4px);
+}
+
+.auth-card {
+  background: var(--bg);
+  border: 1.5px solid rgba(200,146,42,0.78);
+  border-radius: 14px;
+  padding: 2.5rem 2rem;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+}
+
+.auth-eyebrow {
+  display: block;
+  font-family: var(--font-sc);
+  font-size: 1.0625rem;
+  letter-spacing: 0.12em;
+  color: var(--gold-dk);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.auth-card h2 {
+  font-family: var(--font-sc);
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.auth-card p {
+  font-size: 1.375rem;
+  color: var(--text-muted);
+  margin-bottom: 1.75rem;
+  line-height: 1.55;
+}
+
+.auth-card a {
+  display: inline-block;
+  font-family: var(--font-sc);
+  font-size: 1.1875rem;
+  letter-spacing: 0.06em;
+  color: var(--gold-dk);
+  border: 1px solid var(--gold-line);
+  border-radius: 10px;
+  padding: 0.65rem 1.5rem;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.auth-card a:hover {
+  background: var(--gold-faint);
+  border-color: var(--gold);
+  text-decoration: none;
+}
+
+/* ─── Nav ───────────────────────────────────────────────────── */
+
+.site-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-h);
+  background: rgba(250, 250, 247, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(200, 146, 42, 0.20);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  z-index: 1000;
+  max-width: 100%;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.nav-logo img {
+  height: 34px;
+  width: auto;
+  display: block;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links a {
+  font-family: var(--font-sc);
+  font-size: 17px;
+  letter-spacing: 0.10em;
+  color: var(--text-meta);
+  text-decoration: none;
+  font-weight: 400;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  color: #0F1523;
+  font-weight: 600;
+}
+
+.nav-profile-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(200, 146, 42, 0.10);
+  border: 1.5px solid rgba(200, 146, 42, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sc);
+  font-size: 17px;
+  font-weight: 600;
+  color: #A8721A;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.nav-profile-dot:hover {
+  background: rgba(200, 146, 42, 0.15);
+  border-color: #A8721A;
+  text-decoration: none;
+}
+
+/* ─── Page shell (below nav) ────────────────────────────────── */
+
+.page-shell {
+  padding-top: var(--nav-h);
+  min-height: 100dvh;
+}
+
+/* ─── Tool layout ───────────────────────────────────────────── */
+
+.tool-wrap {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.tool-header {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--gold-line);
+  padding-bottom: 1.25rem;
+}
+
+.tool-eyebrow {
+  font-family: var(--font-sc);
+  font-size: 1.0625rem;
+  letter-spacing: 0.12em;
+  color: var(--gold-dk);
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.tool-title {
+  font-family: var(--font-sc);
+  font-size: 2.125rem;
+  font-weight: 400;
+  color: var(--text);
+}
+
+/* ─── Chat bubbles ──────────────────────────────────────────── */
+
+.chat-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.bubble {
+  max-width: 88%;
+  line-height: 1.65;
+  font-size: 1.25rem;
+}
+
+.bubble-assistant {
+  align-self: flex-start;
+  color: var(--text);
+}
+
+.bubble-user {
+  align-self: flex-end;
+  background: var(--gold-faint);
+  border: 1px solid var(--gold-line);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+}
+
+/* ─── Typing indicator ──────────────────────────────────────── */
+
+.typing-indicator {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 0.25rem 0;
+}
+
+.typing-indicator span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold-dk);
+  opacity: 0.4;
+  animation: pulse-dot 1.2s ease-in-out infinite;
+}
+
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes pulse-dot {
+  0%, 80%, 100% { opacity: 0.4; transform: scale(1); }
+  40%           { opacity: 1;   transform: scale(1.2); }
+}
+
+/* ─── Input area ────────────────────────────────────────────── */
+
+.input-area {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  border-top: 1px solid var(--gold-line);
+  padding-top: 1.25rem;
+}
+
+.input-area textarea {
+  flex: 1;
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  color: var(--text-meta);
+  background: transparent;
+  border: 1px solid var(--gold-line);
+  border-radius: 10px;
+  padding: 0.65rem 0.875rem;
+  resize: none;
+  line-height: 1.55;
+  min-height: 44px;
+  max-height: 160px;
+  transition: border-color 0.2s;
+}
+
+.input-area textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.input-area textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.btn-send {
+  font-family: var(--font-sc);
+  font-size: 1.125rem;
+  letter-spacing: 0.06em;
+  color: var(--gold-dk);
+  background: transparent;
+  border: 1px solid var(--gold-line);
+  border-radius: 10px;
+  padding: 0.65rem 1.25rem;
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s;
+  height: 44px;
+}
+
+.btn-send:hover:not(:disabled) {
+  background: var(--gold-faint);
+  border-color: var(--gold);
+}
+
+.btn-send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ─── Mobile ────────────────────────────────────────────────── */
+
+/* Hide hamburger on desktop */
+.mobile-menu-btn {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .nav-links { display: none; }
+
+  .tool-wrap {
+    padding: 2rem 1rem 3rem;
+  }
+}
+
+/* ─── Bottom tabs (mobile only) ────────────────────────────────── */
+
+.bottom-tabs-spacer {
+  height: 60px;
+}
+
+@media (min-width: 641px) {
+  /* Hide bottom tabs on desktop */
+  [data-bottom-tabs] {
+    display: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Add bottom padding so content clears the tab bar */
+  .page-shell {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+  .tool-wrap {
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Mobile font boosts — ensure minimum readable sizes */
+  .bubble            { font-size: 1.25rem !important; line-height: 1.7 !important; }
+  .bubble-user       { font-size: 1.125rem !important; }
+  .tool-eyebrow      { font-size: 1.0625rem !important; }
+  .auth-eyebrow      { font-size: 1.0625rem !important; }
+  .btn-send          { font-size: 1.125rem !important; }
+  .input-area textarea { font-size: 1.125rem !important; }
+  .nav-links a       { font-size: 17px !important; }
+}
