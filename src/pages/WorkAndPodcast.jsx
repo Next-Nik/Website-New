@@ -4,13 +4,103 @@ import { ScalePanel } from '../components/ScalePanel'
 import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 function Quote({ text, cite }) {
   return (
     <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '14px 0 14px 28px', margin: '0 0 28px', maxWidth: '600px' }}>
-      <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '10px' }}>{text}</p>
+      <p style={{ ...body, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '10px' }}>{text}</p>
       <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {cite}</span>
+    </div>
+  )
+}
+
+const TESTIMONIALS = [
+  { q: 'Working with Nik definitely changed my life. He has the ability to build up the right foundation and the right container to actually be vulnerable and go straight to where you need to.', cite: 'S.H. · programme participant' },
+  { q: 'The work we\u2019ve done has peeled back the narrative that said \u2018I can\u2019t do that\u2019 and revealed another world of possibility. I feel like I\u2019ve been liberated.', cite: 'C.W. · coaching client' },
+  { q: 'I think this is the best decision I\u2019ve ever made \u2014 having you as my coach. You\u2019ve helped me unlock things I thought were dead and buried long ago.', cite: 'L.D. · coaching client' },
+  { q: 'Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being \u2014 what I really wanted out of life \u2014 and how to live as the best version of myself.', cite: 'O.W.H. · programme participant' },
+  { q: 'I\u2019m 63 years old and just met myself for the first time working with Nik.', cite: 'J.B. · coaching client' },
+  { q: 'I came to Nik a few weeks in, apologising for not doing my homework \u2014 and found myself telling him I\u2019d met someone, gone on wonderful adventures, that my work was expanding. He said: \u2018Look at what you wrote in week one.\u2019 I was already living it.', cite: 'J.M. · coaching client' },
+]
+
+function Stars() {
+  return (
+    <div style={{ display: 'flex', gap: '3px', marginBottom: '14px' }}>
+      {[0,1,2,3,4].map(i => (
+        <svg key={i} width="14" height="14" viewBox="0 0 14 14" fill="#C8922A" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 0.5l1.545 4.756H13.5l-4.045 2.938 1.545 4.756L7 10.012l-3.999 2.938 1.545-4.756L0.5 5.256h4.955L7 0.5z"/>
+        </svg>
+      ))}
+    </div>
+  )
+}
+
+function TestimonialCard({ q, cite }) {
+  return (
+    <div style={{
+      flexShrink: 0,
+      width: '300px',
+      background: '#FFFFFF',
+      border: '1.5px solid rgba(200,146,42,0.20)',
+      borderRadius: '14px',
+      padding: '24px 28px',
+      marginRight: '20px',
+    }}>
+      <Stars />
+      <p style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.85)', lineHeight: 1.75, marginBottom: '16px' }}>{q}</p>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {cite}</span>
+    </div>
+  )
+}
+
+function TestimonialCarousel() {
+  // Duplicate items for seamless loop
+  const row1 = [...TESTIMONIALS, ...TESTIMONIALS]
+  const row2 = [...TESTIMONIALS, ...TESTIMONIALS]
+  const duration = TESTIMONIALS.length * 12 // seconds per full loop
+
+  return (
+    <div style={{ overflow: 'hidden', margin: '0 -40px' }}>
+      <style>{`
+        @keyframes scrollLeft {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes scrollRight {
+          0% { transform: translateX(-50%); }
+          100% { transform: translateX(0); }
+        }
+        .carousel-track-left {
+          display: flex;
+          width: max-content;
+          animation: scrollLeft ${duration}s linear infinite;
+        }
+        .carousel-track-right {
+          display: flex;
+          width: max-content;
+          animation: scrollRight ${duration}s linear infinite;
+        }
+        .carousel-track-left:hover,
+        .carousel-track-right:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+
+      {/* Row 1 — scrolls left */}
+      <div style={{ marginBottom: '20px', padding: '8px 0' }}>
+        <div className="carousel-track-left">
+          {row1.map((t, i) => <TestimonialCard key={i} q={t.q} cite={t.cite} />)}
+        </div>
+      </div>
+
+      {/* Row 2 — scrolls right */}
+      <div style={{ padding: '8px 0' }}>
+        <div className="carousel-track-right">
+          {row2.map((t, i) => <TestimonialCard key={i} q={t.q} cite={t.cite} />)}
+        </div>
+      </div>
     </div>
   )
 }
@@ -78,12 +168,8 @@ export function WorkWithNikPage() {
         <Card label="This is not for you if" body="You're in active crisis or need stabilisation · You want a programme to follow · You're not ready to move" />
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '40px 0' }} />
-        <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '28px' }}>What people say.</h2>
-        <Quote text="Working with Nik definitely changed my life. He has the ability to build up the right foundation and the right container to actually be vulnerable and go straight to where you need to." cite="S.H. · programme participant" />
-        <Quote text="The work we've done has peeled back the narrative that said 'I can't do that' and revealed another world of possibility. I feel like I've been liberated." cite="C.W. · coaching client" />
-        <Quote text="I think this is the best decision I've ever made — having you as my coach. You've helped me unlock things I thought were dead and buried long ago." cite="L.D. · coaching client" />
-        <Quote text="Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being — what I really wanted out of life — and how to live as the best version of myself." cite="O.W.H. · programme participant" />
-        <Quote text="I'm 63 years old and just met myself for the first time working with Nik." cite="J.B. · coaching client" />
+        <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '40px' }}>What people say.</h2>
+        <TestimonialCarousel />
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '40px 0' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>How it works.</h2>
@@ -152,7 +238,7 @@ export function PodcastPage() {
           <div style={{ maxWidth: '380px', margin: '0 auto' }}>
             <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
             <form action="https://app.kit.com/forms/9215183/subscriptions" className="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
-              <input type="email" name="email_address" placeholder="your email" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
+              <input type="email" name="email_address" placeholder="your email" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
               <button type="submit" style={{ width: '100%', padding: '16px', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Join us {'\u2192'}</button>
             </form>
           </div>
