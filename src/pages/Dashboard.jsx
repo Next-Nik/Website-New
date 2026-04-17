@@ -14,8 +14,7 @@ const DOMAIN_LABEL_MAP = {
   connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal',
 }
 
-function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, userId, supabase }) {
-  const [expanded,  setExpanded]  = useState(null)   // domain key with expanded horizon goal
+function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, domainData, userId, supabase }) {
   const [editing,   setEditing]   = useState(null)   // domain key being edited
   const [draft,     setDraft]     = useState('')
   const [saving,    setSaving]    = useState(false)
@@ -84,12 +83,14 @@ Write me 3 short "I am..." statements (one line each) that distill this into a p
   return (
     <div>
       <Eyebrow>The Map — Horizon Statements</Eyebrow>
+      <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.5)', lineHeight: 1.6, marginBottom: '12px', marginTop: '-2px' }}>
+        An "I am..." statement is a one-line present-tense version of your horizon goal for each domain — who you are becoming, stated as if it's already true. Hover a score to see the full goal. Click <em>Help</em> to have North Star suggest options based on your horizon.
+      </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
         {DOMAIN_KEYS.map(key => {
           const ia          = getIa(key)
-          const horizonGoal = horizonProfile?.[key]?.horizonGoal
+          const horizonGoal = domainData?.[key]?.horizonText || horizonProfile?.[key]?.horizonGoal || null
           const score       = currentScores[key]
-          const isExpanded  = expanded === key
           const isEditing   = editing === key
           const isAssisting = assisting === key
 
@@ -102,13 +103,20 @@ Write me 3 short "I am..." statements (one line each) that distill this into a p
             }}>
               {/* Main row */}
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 12px' }}>
-                {/* Domain label + score */}
+                {/* Domain label + score — hover score to see horizon goal */}
                 <div style={{ minWidth: '72px', flexShrink: 0 }}>
                   <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>
                     {DOMAIN_LABEL_MAP[key]}
                   </div>
                   {score != null && (
-                    <div style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.45)', marginTop: '1px' }}>{score}</div>
+                    <div
+                      title={horizonGoal || undefined}
+                      style={{
+                        ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.45)', marginTop: '1px',
+                        cursor: horizonGoal ? 'help' : 'default',
+                        textDecoration: horizonGoal ? 'underline dotted rgba(200,146,42,0.4)' : 'none',
+                      }}
+                    >{score}</div>
                   )}
                 </div>
 
@@ -144,8 +152,7 @@ Write me 3 short "I am..." statements (one line each) that distill this into a p
                     </div>
                   ) : ia ? (
                     <p
-                      onClick={() => setExpanded(isExpanded ? null : key)}
-                      style={{ ...body, fontSize: '13px', color: '#0F1523', lineHeight: 1.6, margin: 0, cursor: horizonGoal ? 'pointer' : 'default' }}
+                      style={{ ...body, fontSize: '13px', color: '#0F1523', lineHeight: 1.6, margin: 0 }}
                     >{ia}</p>
                   ) : (
                     <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.35)', lineHeight: 1.5, margin: 0, fontStyle: 'italic' }}>
@@ -170,26 +177,11 @@ Write me 3 short "I am..." statements (one line each) that distill this into a p
                       style={{ ...sc, fontSize: '9px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.45)', background: 'none', border: '1px solid rgba(15,21,35,0.12)', borderRadius: '20px', padding: '3px 8px', cursor: 'pointer' }}
                     >{ia ? 'Edit' : 'Write'}</button>
                   )}
-                  {ia && horizonGoal && !isEditing && (
-                    <span
-                      onClick={() => setExpanded(isExpanded ? null : key)}
-                      style={{ color: '#A8721A', fontSize: '12px', cursor: 'pointer', transform: isExpanded ? 'rotate(90deg)' : 'none', display: 'inline-block', transition: 'transform 0.15s' }}
-                    >›</span>
-                  )}
+
                 </div>
               </div>
 
-              {/* Expanded horizon goal */}
-              {isExpanded && horizonGoal && (
-                <div style={{
-                  padding: '10px 12px 12px',
-                  borderTop: '1px solid rgba(200,146,42,0.1)',
-                  background: 'rgba(200,146,42,0.02)',
-                }}>
-                  <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.4)', marginBottom: '6px' }}>Horizon goal</div>
-                  <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>{horizonGoal}</p>
-                </div>
-              )}
+
             </div>
           )
         })}
@@ -1201,6 +1193,7 @@ export function DashboardPage() {
           hasScores={hasScores}
           currentScores={currentScores}
           horizonScores={horizonScores}
+          domainData={mapData?.session?.domainData || {}}
           userId={user?.id}
           supabase={supabase}
         />
