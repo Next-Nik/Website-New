@@ -94,6 +94,7 @@
       "destination": "/api/sprint-coach-chat"
     },
     {
+      "source": "/tools/target-goals/api/chat",
       "destination": "/api/target-goals-chat"
     },
     {
