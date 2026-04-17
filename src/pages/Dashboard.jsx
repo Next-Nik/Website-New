@@ -99,7 +99,7 @@ Write me 3 short "I am..." statements (one line each) that distill this into a p
               border: '1px solid rgba(200,146,42,0.18)',
               borderRadius: '8px',
               overflow: 'hidden',
-              background: isExpanded ? 'rgba(200,146,42,0.03)' : '#FFFFFF',
+              background: '#FFFFFF',
             }}>
               {/* Main row */}
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 12px' }}>
