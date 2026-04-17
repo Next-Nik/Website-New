@@ -1,25 +1,33 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
 
 // ── Multiplane scroll hook ────────────────────────────────────────────────────
-// Dark sections are the foreground layer.
-// Light sections are behind.
-// Dark sections move at a slightly faster rate than the page scroll,
-// reinforcing that they sit in front. The difference in speed creates depth.
-function useMultiplaneOffset(speed = 0.06) {
+// Tracks each section's position relative to the viewport centre so the
+// offset is always bounded — no accumulation across the page.
+function useViewportParallax(speed = 0.06) {
+  const ref = useRef(null)
   const [offset, setOffset] = useState(0)
   useEffect(() => {
-    function onScroll() { setOffset(window.scrollY * speed) }
+    function onScroll() {
+      if (!ref.current) return
+      const rect = ref.current.getBoundingClientRect()
+      const viewportCenter = window.innerHeight / 2
+      const sectionCenter = rect.top + rect.height / 2
+      const distFromCenter = sectionCenter - viewportCenter
+      setOffset(distFromCenter * speed)
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
     return () => window.removeEventListener('scroll', onScroll)
   }, [speed])
-  return offset
+  return { ref, offset }
 }
 
 export function useParallax(speed = 0.04) {
-  return useMultiplaneOffset(speed)
+  const { offset } = useViewportParallax(speed)
+  return offset
 }
 
 // ── THE LOCKED ARC ────────────────────────────────────────────────────────────
@@ -91,15 +99,13 @@ export function NeedleDivider({ direction = 'into-dark', topColor = '#FAFAF7', b
 // Shadow: cast by the dark section onto the light sections above and below.
 // The dark section is in front — its edges bleed shadow onto the background behind.
 export function DarkSection({ children, topColor = '#FAFAF7', bottomColor = '#FAFAF7', style = {} }) {
-  const offset = useMultiplaneOffset(0.04)
+  const { ref, offset } = useViewportParallax(0.06)
   return (
-    <div style={{
+    <div ref={ref} style={{
       position: 'relative',
       zIndex: 10,
-      transform: `translateY(${-offset}px)`,
+      transform: `translateY(${offset}px)`,
       willChange: 'transform',
-      // Shadow cast by the dark foreground layer onto the light background
-      // Spreads upward and downward, bleeding past the arc edges
       filter: 'drop-shadow(0px -12px 24px rgba(15,21,35,0.35)) drop-shadow(0px 12px 24px rgba(15,21,35,0.35))',
     }}>
       {topColor !== null && <ArcEntry topColor={topColor} bottomColor="#0F1523" />}
