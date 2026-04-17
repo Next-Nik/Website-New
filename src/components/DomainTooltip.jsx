@@ -41,7 +41,6 @@ export const NEXTUS_LABEL_MAP = {
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 export function DomainTooltip({ domainKey, label, system = 'lifeos', position = 'below' }) {
   const [show, setShow] = useState(false)

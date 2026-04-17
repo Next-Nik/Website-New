@@ -1250,7 +1250,6 @@ const ARCHETYPE_TO_MODE = {
 
 function OfferChips({ options, selected, onChange, multi = false }) {
   const sc_ = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const body = { fontFamily: "'Lora', Georgia, serif" }
   const gold_ = '#A8721A'
 
   function toggle(val) {
@@ -1298,7 +1297,6 @@ function OfferChips({ options, selected, onChange, multi = false }) {
 
 function ContributorOfferForm({ initial = EMPTY_OFFER, onSave, onCancel, saving }) {
   const sc_ = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const body = { fontFamily: "'Lora', Georgia, serif" }
   const gold_ = '#A8721A'
   const dark_ = '#0F1523'
 
@@ -1430,7 +1428,6 @@ function ContributorOfferForm({ initial = EMPTY_OFFER, onSave, onCancel, saving 
 
 function ContributorOfferCard({ offer, onEdit, onToggleActive, onDelete }) {
   const sc_ = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const body = { fontFamily: "'Lora', Georgia, serif" }
   const gold_ = '#A8721A'
   const dark_ = '#0F1523'
 
@@ -1513,7 +1510,6 @@ function ContributorOfferCard({ offer, onEdit, onToggleActive, onDelete }) {
 
 function ContributorOfferSection({ userId, purposeData }) {
   const sc_ = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const body = { fontFamily: "'Lora', Georgia, serif" }
   const gold_ = '#A8721A'
 
   const [offers, setOffers]   = useState([])

@@ -4,7 +4,6 @@ import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { useAuth } from '../hooks/useAuth'
 
 const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 // ── Stripe Checkout links ──────────────────────────────────────────────────

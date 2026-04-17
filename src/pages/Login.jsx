@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../hooks/useSupabase'
 
 const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 // Where to send the user after sign-in.

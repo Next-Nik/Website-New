@@ -7,7 +7,6 @@ import { SiteFooter } from '../components/SiteFooter'
 
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 const STAGES = {
   baseline: {

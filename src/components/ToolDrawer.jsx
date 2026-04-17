@@ -5,7 +5,6 @@ import { supabase } from '../hooks/useSupabase'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 const TOOLS = [
   {

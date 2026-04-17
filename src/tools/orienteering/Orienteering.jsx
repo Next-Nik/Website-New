@@ -8,7 +8,6 @@ import { supabase } from '../../hooks/useSupabase'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = { color: '#A8721A' }
 const meta  = { color: 'rgba(15,21,35,0.72)' }
 

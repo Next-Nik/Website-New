@@ -51,7 +51,6 @@ function getColor(n) {
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = { color: '#A8721A' }
 const muted = { color: 'rgba(15,21,35,0.72)' }
 const meta  = { color: 'rgba(15,21,35,0.72)' }
@@ -379,8 +378,6 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
 
 function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoToDomain }) {
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
   const gold  = { color: '#A8721A' }
   const muted = { color: 'rgba(15,21,35,0.72)' }
   const meta  = { color: 'rgba(15,21,35,0.72)' }
@@ -808,8 +805,6 @@ function ChatPanel({ mode, domainId, payload, onComplete, placeholder, userId })
   }
 
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 
   return (
     <div>

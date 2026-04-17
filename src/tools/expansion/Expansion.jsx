@@ -9,7 +9,6 @@ import { AccessGate } from '../../components/AccessGate'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = { color: '#A8721A' }
 const muted = { color: 'rgba(15,21,35,0.72)' }
 const dark  = { color: '#0F1523' }
@@ -268,8 +267,6 @@ function DomainInputRow({ domain, value, onChange, serif, sc }) {
 function HorizonSelfTooltip() {
   const [show, setShow] = useState(false)
   const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
   return (
     <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
       <button

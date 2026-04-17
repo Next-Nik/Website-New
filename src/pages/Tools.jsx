@@ -4,7 +4,6 @@ import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { GlossaryPanel } from '../components/GlossaryPanel'
 
 const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const TOOLS = [

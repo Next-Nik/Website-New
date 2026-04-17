@@ -4,7 +4,6 @@ import { ScalePanel } from '../components/ScalePanel'
 import { SiteFooter } from '../components/SiteFooter'
 
 const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 function Quote({ text, cite }) {

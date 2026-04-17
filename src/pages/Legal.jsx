@@ -2,7 +2,6 @@ import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 
 const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 function LegalWrap({ title, eyebrow, subtitle, active, children }) {

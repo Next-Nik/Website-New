@@ -1344,8 +1344,6 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
 
 function MapWelcomeModal({ onBegin }) {
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '460px', width: '100%', textAlign: 'center' }}>
@@ -1426,8 +1424,6 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, ac
   const [context,      setContext]      = useState(data?.context || '')
   const [showContext,  setShowContext]  = useState(false)
   const [saved,        setSaved]        = useState(false)
-  const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
   function save(overrides = {}) {
@@ -1512,8 +1508,6 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
 }
 
 function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, userId }) {
-  const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
   // ── FIX #1: Avatar step ───────────────────────────────────────────────────
@@ -1957,8 +1951,6 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
 // ─── MapNextSteps — end this + bridge to next tools ─────────────────────────
 function MapNextSteps({ compact = false }) {
   const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 
   if (compact) {
     return (

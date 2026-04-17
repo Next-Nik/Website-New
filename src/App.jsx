@@ -66,7 +66,6 @@ function ScrollToTop() {
 }
 
 function ComingSoon({ name }) {
-  const body = { fontFamily: "'Lora', Georgia, serif" }
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
   return (
     <div style={{ minHeight: '100vh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>

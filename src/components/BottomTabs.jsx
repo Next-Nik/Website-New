@@ -5,7 +5,6 @@ import { ToolDrawer } from './ToolDrawer'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 function HomeIcon({ active }) {
   const c = active ? '#A8721A' : 'rgba(15,21,35,0.55)'
