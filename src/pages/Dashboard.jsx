@@ -1060,7 +1060,14 @@ export function DashboardPage() {
         supabase.from('horizon_profile').select('domain, current_score, horizon_score, horizon_goal, ia_statement').eq('user_id', user.id),
       ])
       if (mapRes.data)        setMapData(mapRes.data)
-      if (ppRes.data)         setPurposeData(ppRes.data)
+      if (ppRes.data) {
+        // profile column may be null for older completions — fall back to session.p4Profile
+        const ppData = ppRes.data
+        if (!ppData.profile && ppData.session?.p4Profile) {
+          ppData.profile = ppData.session.p4Profile
+        }
+        setPurposeData(ppData)
+      }
       if (sprintRes.data)     setSprintData(sprintRes.data)
       if (foundationRes.data) setFoundationData(foundationRes.data)
       if (practiceRes.data)   setPracticeData(practiceRes.data)
