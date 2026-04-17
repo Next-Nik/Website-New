@@ -308,7 +308,7 @@ export function NextUsPage() {
           ].map(([personal, civil], i) => [
             <div key={personal} style={{ padding: '12px 0', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 300, color: '#0F1523' }}>{personal}</span>
-              <DomainTooltip domainKey={LIFEOS_LABEL_MAP[personal]} system="lifeos" position="below" />
+              <DomainTooltip domainKey={LIFEOS_LABEL_MAP[personal]} system="nextus-self" position="below" />
             </div>,
             <div key={personal + '-arrow'} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none' }}>
               <span style={{ color: 'rgba(200,146,42,0.45)', fontSize: '16px' }}>→</span>

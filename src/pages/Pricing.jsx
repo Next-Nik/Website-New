@@ -18,8 +18,8 @@ const LINKS = {
   target_sprint:       'https://buy.stripe.com/9B69ASaCe7wh91tdY2aMU08',
   expansion_monthly:   'https://buy.stripe.com/5kQaEW7q24k56TlaLQaMU05',
   expansion_yearly:    'https://buy.stripe.com/dRm28qfWyaItelN6vAaMU06',
-  lifeos_monthly:      'https://buy.stripe.com/dRmbJ0dOqdUFfpRaLQaMU03',
-  lifeos_yearly:       'https://buy.stripe.com/bJe5kC25I8AlcdF9HMaMU04',
+  nextus_self_monthly:      'https://buy.stripe.com/dRmbJ0dOqdUFfpRaLQaMU03',
+  nextus_self_yearly:       'https://buy.stripe.com/bJe5kC25I8AlcdF9HMaMU04',
 }
 
 // Build payment links with client_reference_id so the webhook grants access
@@ -37,8 +37,8 @@ function usePaymentLinks(userId) {
     target_sprint:      link(LINKS.target_sprint),
     expansion_monthly:  link(LINKS.expansion_monthly),
     expansion_yearly:   link(LINKS.expansion_yearly),
-    lifeos_monthly:     link(LINKS.lifeos_monthly),
-    lifeos_yearly:      link(LINKS.lifeos_yearly),
+    nextus_self_monthly:     link(LINKS.nextus_self_monthly),
+    nextus_self_yearly:      link(LINKS.nextus_self_yearly),
   }
 }
 
@@ -160,10 +160,10 @@ export function PricingPage() {
                   <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>save $189 vs monthly</div>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <a href={L.lifeos_monthly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+                  <a href={L.nextus_self_monthly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                     Monthly →
                   </a>
-                  <a href={L.lifeos_yearly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
+                  <a href={L.nextus_self_yearly} target="_blank" rel="noopener" style={{ display: 'block', padding: '13px 0', textAlign: 'center', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', ...sc, fontSize: '15px', letterSpacing: '0.14em', textDecoration: 'none' }}>
                     Yearly →
                   </a>
                 </div>

@@ -1,274 +1,57 @@
 {
   "version": "1.0",
-  "terms": {
-    "life-os": {
-      "term": "Life OS",
-      "short": "The personal navigation ecosystem. Five tools for seeing where you are across all of life and moving from that clarity.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "nextus": {
-      "term": "NextUs",
-      "short": "The civilisational coordination platform. A map of what humanity is working on across seven domains — and infrastructure for building toward a shared horizon.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "foundation": {
-      "term": "Foundation",
-      "short": "The nervous system entry point. A guided audio practice for regulation — the internal floor from which honest self-assessment becomes possible.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "orienteering": {
-      "term": "Orienteering",
-      "short": "The conversational front door to Life OS. A short exchange that figures out where you are and points you toward what might genuinely help.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "purpose-piece": {
-      "term": "Purpose Piece",
-      "short": "The contribution archetype tool. Surfaces the natural role you're built to play — the archetype, the domain, the scale at which your effort compounds most.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "pulse": {
-      "term": "Pulse",
-      "short": "The recurring rhythm tool. Daily check-in, weekly reflection, quarterly reset. Works at any stage — no prerequisites.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "horizon-leap": {
-      "term": "Horizon Leap",
-      "short": "The full transformation programme. Facilitated by Nik. For people who keep hitting the same ceiling — identity-level work, not more tools.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "horizon-goals": {
-      "term": "Horizon Goals",
-      "short": "A living picture of what 10/10 looks like in a given domain. A directional picture of flourishing that guides navigation.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "horizon-self": {
-      "term": "Horizon Self",
-      "short": "The version of you already living your Horizon Goals. A coherent identity to orient toward. Introduced inside Horizon Leap.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "tea": {
-      "term": "T.E.A.",
-      "short": "Thoughts · Energy · Actions. The three lenses of the Pulse daily check-in.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "fractal-principle": {
-      "term": "The Fractal Principle",
-      "short": "The same developmental physics that shape a single life also shape a civilisation. Life OS and NextUs use the same architecture at different scales — by design.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "overview-effect": {
-      "term": "The Overview Effect",
-      "short": "What astronauts report when they first see Earth from space — an irreversible recognition of the whole. The vantage point NextUs is built from.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "contribution-archetype": {
-      "term": "Contribution Archetype",
-      "short": "The natural role you're built to play in any group, team, or system. One of nine patterns — each a distinct way of moving through the world.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "steward": {
-      "term": "Steward",
-      "short": "Tends systems, ensures they remain whole. Maintains, repairs, sustains. Patient with operational work.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "maker": {
-      "term": "Maker",
-      "short": "Builds what doesn't exist. Concept to creation. Comfortable with iteration. Values function over perfection.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "architect": {
-      "term": "Architect",
-      "short": "Designs the structural conditions that determine what can be built at all. Doesn't build the thing — designs the container the thing lives inside.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "connector": {
-      "term": "Connector",
-      "short": "Weaves relationships, creates networks. Sees who needs who. Facilitates without dominating.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "guardian": {
-      "term": "Guardian",
-      "short": "Protects what matters, holds boundaries. Recognises threats early. Fierce protecting, gentle tending.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "explorer": {
-      "term": "Explorer",
-      "short": "Ventures into unknown territory, brings back what's needed. Comfortable with uncertainty.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "sage": {
-      "term": "Sage",
-      "short": "Holds wisdom, offers perspective that clarifies. Sees patterns across time. Values understanding over action.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "mirror": {
-      "term": "Mirror",
-      "short": "Contributes by reflecting what is true — about human experience, the interior life, the living world — in ways others can finally see and receive. Makes the invisible visible.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "exemplar": {
-      "term": "Exemplar",
-      "short": "Contributes by being the example. Raises the standard of what is possible by embodying it fully — in public, under pressure, at the edge of human capacity.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "domain-human-being": {
-      "term": "Human Being",
-      "short": "Personal development, consciousness, inner work, transformation. The foundation of all collective life.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "domain-society": {
-      "term": "Society",
-      "short": "Governance, culture, community, social structures. The architecture of how we live together.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "domain-nature": {
-      "term": "Nature",
-      "short": "Environment, ecology, planetary health, regeneration. The living systems that all life depends on.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "domain-technology": {
-      "term": "Technology",
-      "short": "Tools, infrastructure, innovation, digital and physical systems. The tools we build and the futures they make possible.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "domain-finance-economy": {
-      "term": "Finance & Economy",
-      "short": "Resources, exchange, wealth, value creation and distribution. The flows that determine what gets built and who benefits.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "domain-legacy": {
-      "term": "Legacy",
-      "short": "Long-term thinking, intergenerational work, preservation, deep time. What we inherit, what we steward, what we leave behind.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "domain-vision": {
-      "term": "Vision",
-      "short": "Future imagination, possibility, coordination, collective direction. The orienting capacity of civilisation itself.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "life-os-path": {
-      "term": "Path",
-      "short": "Your contribution, calling, and the work you’re here to do. Not your job title — the thread of purpose running beneath whatever you’re currently doing. Life’s mission: the gift you came to bring.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "life-os-spark": {
-      "term": "Spark",
-      "short": "The animating fire. The things that make you feel genuinely alive — not just occupied. Spark is regeneration: soul nourishment that sends you back into the world more alive than you arrived. When Spark is low, everything else runs on fumes.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "life-os-body": {
-      "term": "Body",
-      "short": "Your physical instrument. The vessel through which everything else operates — and the one thing you cannot outsource, replace, or defer indefinitely. Not about aesthetics. About whether the instrument is being honoured.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "life-os-finances": {
-      "term": "Finances",
-      "short": "The currency that gives you the capacity to act. Not just money — the resources, mobility, and agency to convert your visions into reality and your desires into choices.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "life-os-relationships": {
-      "term": "Connection",
-      "short": "How you inhabit connection across the full range of your relational life. Not just the presence of people — the quality of the connection. Are you genuinely known? Are you genuinely knowing?",
-      "appendix": "/appendix.html#glossary"
-    },
-    "life-os-inner-game": {
-      "term": "Inner Game",
-      "short": "Your relationship with yourself. The beliefs, stories, values, and emotional patterns you carry about who you are and what you’re capable of. The source code — everything else runs on it.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "life-os-outer-game": {
-      "term": "Signal",
-      "short": "Your external world: environment, appearance, presence, and public-facing persona. Where inner alignment meets the world’s perception of you — and the two need to match. Not as performance. As honest expression.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "scale-home": {
-      "term": "Home",
-      "short": "The immediate household scale. The people and environment you live with directly.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "scale-neighbourhood": {
-      "term": "Neighbourhood",
-      "short": "The local community scale. Close, immediate, relational. Face-to-face impact.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "scale-city": {
-      "term": "City",
-      "short": "The municipal scale. Urban systems, local governance, community infrastructure.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "scale-province-state": {
-      "term": "Province / State",
-      "short": "The regional scale. Multi-community coordination within a defined territory.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "scale-country": {
-      "term": "Country",
-      "short": "The national scale. Cross-regional systems, national policy, cultural identity.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "scale-continent": {
-      "term": "Continent",
-      "short": "The international scale. Cross-border coordination, regional civilisational patterns.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "scale-global": {
-      "term": "Global",
-      "short": "The planetary scale. Species-level challenges and opportunities. The longest timelines.",
-      "appendix": "/appendix.html#glossary"
-    },
-    "stage-safety": {
-      "term": "Safety",
-      "short": "Being mapped.",
-      "appendix": "/appendix.html#glossary",
-      "placeholder": true
-    },
-    "stage-autonomy": {
-      "term": "Autonomy",
-      "short": "Being mapped.",
-      "appendix": "/appendix.html#glossary",
-      "placeholder": true
-    },
-    "stage-orientation": {
-      "term": "Orientation",
-      "short": "Being mapped.",
-      "appendix": "/appendix.html#glossary",
-      "placeholder": true
-    },
-    "stage-integration": {
-      "term": "Integration",
-      "short": "Being mapped.",
-      "appendix": "/appendix.html#glossary",
-      "placeholder": true
-    },
-    "stage-agency": {
-      "term": "Agency",
-      "short": "Being mapped.",
-      "appendix": "/appendix.html#glossary",
-      "placeholder": true
-    },
-    "stage-embodiment": {
-      "term": "Embodiment",
-      "short": "Being mapped.",
-      "appendix": "/appendix.html#glossary",
-      "placeholder": true
-    },
-    "stage-contribution": {
-      "term": "Contribution",
-      "short": "Being mapped.",
-      "appendix": "/appendix.html#glossary",
-      "placeholder": true
-    },
-    "target-goals": {
-      "term": "Target Goals",
-      "short": "Being mapped.",
-      "appendix": "/appendix.html#glossary",
-      "placeholder": true
-    },
-    "milestones": {
-      "term": "Milestones",
-      "short": "Being mapped.",
-      "appendix": "/appendix.html#glossary",
-      "placeholder": true
-    }
-  }
+  "terms": [
+    "nextus-self",
+    "nextus",
+    "foundation",
+    "orienteering",
+    "purpose-piece",
+    "pulse",
+    "horizon-leap",
+    "horizon-goals",
+    "horizon-self",
+    "tea",
+    "fractal-principle",
+    "overview-effect",
+    "contribution-archetype",
+    "steward",
+    "maker",
+    "architect",
+    "connector",
+    "guardian",
+    "explorer",
+    "sage",
+    "mirror",
+    "exemplar",
+    "domain-human-being",
+    "domain-society",
+    "domain-nature",
+    "domain-technology",
+    "domain-finance-economy",
+    "domain-legacy",
+    "domain-vision",
+    "nextus-self-path",
+    "nextus-self-spark",
+    "nextus-self-body",
+    "nextus-self-finances",
+    "nextus-self-connection",
+    "nextus-self-inner-game",
+    "nextus-self-signal",
+    "scale-home",
+    "scale-neighbourhood",
+    "scale-city",
+    "scale-province-state",
+    "scale-country",
+    "scale-continent",
+    "scale-global",
+    "stage-safety",
+    "stage-autonomy",
+    "stage-orientation",
+    "stage-integration",
+    "stage-agency",
+    "stage-embodiment",
+    "stage-contribution",
+    "target-sprint",
+    "milestones"
+  ]
 }

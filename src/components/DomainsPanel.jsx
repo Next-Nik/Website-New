@@ -200,7 +200,7 @@ export function DomainsPanel() {
                         </span>
                         <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: '#A8721A', lineHeight: 1.2, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                           {domain.name}
-                          <DomainTooltip domainKey={LIFEOS_LABEL_MAP[domain.name]} system="lifeos" position="below" />
+                          <DomainTooltip domainKey={LIFEOS_LABEL_MAP[domain.name]} system="nextus-self" position="below" />
                         </span>
                       </div>
                       <span style={{ color: '#A8721A', fontSize: '1.3125rem', flexShrink: 0, transition: 'transform 0.2s', transform: isOpen ? 'rotate(90deg)' : '' }}>

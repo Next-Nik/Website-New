@@ -29,7 +29,7 @@ class ErrorBoundary extends Component {
 // Site pages
 import { HomePage }          from './pages/Home'
 import { AboutPage }         from './pages/About'
-import { LifeOSPage }        from './pages/LifeOS'
+import { NextUsSelfPage }     from './pages/NextUsSelf'
 import { NextUsPage }          from './pages/NextUs'
 import { NextUsActorsPage }    from './pages/NextUsActors'
 import { NextUsActorPage }     from './pages/NextUsActor'
@@ -89,7 +89,7 @@ function AppInner() {
         <Route path="/"                element={<HomePage />} />
         <Route path="/index"           element={<Navigate to="/" replace />} />
         <Route path="/about"           element={<AboutPage />} />
-        <Route path="/life-os"         element={<LifeOSPage />} />
+        <Route path="/nextus-self"         element={<NextUsSelfPage />} />
         <Route path="/nextus"                        element={<NextUsPage />} />
         <Route path="/nextus/actors"                 element={<NextUsActorsPage />} />
         <Route path="/nextus/actors/:id"             element={<NextUsActorPage />} />

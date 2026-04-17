@@ -13,7 +13,7 @@ export function SiteNav() {
 
   const links = [
     { to: '/',              label: 'Home' },
-    { to: '/life-os',       label: 'Horizon Suite' },
+    { to: '/nextus-self',       label: 'Horizon Suite' },
     { to: '/nextus',        label: 'NextUs' },
     { to: '/work-with-nik', label: 'Work with Nik' },
     { to: '/about',         label: 'About' },

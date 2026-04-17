@@ -903,7 +903,7 @@ function TargetSprintSlot({ sprintData }) {
               <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.10em',
                 color: domainComplete ? '#2D6A4F' : '#A8721A', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                 {domainComplete ? '✓ ' : ''}{label}
-                <DomainTooltip domainKey={DOMAIN_KEYS[DOMAIN_LABELS.indexOf(label)]} system="lifeos" position="above" />
+                <DomainTooltip domainKey={DOMAIN_KEYS[DOMAIN_LABELS.indexOf(label)]} system="nextus-self" position="above" />
               </span>
               {tasks.length > 0 && (
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em',
@@ -1928,7 +1928,7 @@ export function ProfilePage() {
   const [horizonProfile, setHorizonProfile] = useState(null)
   const [localMapData,   setLocalMapData]   = useState(() => {
     try {
-      const raw = localStorage.getItem('lifeos_themap_v4')
+      const raw = localStorage.getItem('nextus_themap_v4')
       if (raw) {
         const parsed = JSON.parse(raw)
         if (parsed.domainData && Object.keys(parsed.domainData).length > 0) {

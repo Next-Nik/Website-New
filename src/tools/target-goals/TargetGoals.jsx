@@ -412,7 +412,7 @@ function SprintCentreModal({ domains, domainData, activeDomainId, onClose, onGoT
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: allDone ? 0 : '10px' }}>
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: allDone ? '#A8721A' : '#0F1523', textTransform: 'uppercase' }}>
                   {allDone ? '✓ ' : ''}{d.label}
-                  <DomainTooltip domainKey={d.id} system="lifeos" position="below" />
+                  <DomainTooltip domainKey={d.id} system="nextus-self" position="below" />
                 </span>
                 {!allDone && (
                   <button onClick={() => { onGoToDomain(d.id); onClose() }}
@@ -1948,7 +1948,7 @@ export function TargetGoalsPage() {
         @keyframes tgFadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
         .tg-fade-up { animation: tgFadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both; }
       `}</style>
-      <Nav activePath="life-os" />
+      <Nav activePath="nextus-self" />
       {!user && <AuthModal />}
       {user && showWelcome && <WelcomeModal onBegin={() => {
         if (user?.id) {

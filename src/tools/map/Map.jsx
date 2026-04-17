@@ -74,7 +74,7 @@ function getNodeStroke(stage, isActive) {
   }
 }
 
-const LS_KEY = 'lifeos_themap_v4'
+const LS_KEY = 'nextus_themap_v4'
 
 // ─── Hourglass Picker ─────────────────────────────────────────────────────────
 
@@ -443,7 +443,7 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
                     </span>
                     <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.08em', color: isActive ? '#A8721A' : 'rgba(15,21,35,0.72)', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
                       {domain.label}
-                      <DomainTooltip domainKey={domain.id} system="lifeos" position="below" />
+                      <DomainTooltip domainKey={domain.id} system="nextus-self" position="below" />
                     </span>
                     {score !== undefined && (
                       <span style={{ marginLeft: 'auto', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', fontWeight: 600, color: getScoreColor(score) }}>
@@ -845,7 +845,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate, userId }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
           <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             {domain.label}
-            <DomainTooltip domainKey={domain.id} system="lifeos" position="below" />
+            <DomainTooltip domainKey={domain.id} system="nextus-self" position="below" />
           </span>
           {stage === 3 && (
             <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A' }}>● Complete</span>
@@ -1174,11 +1174,11 @@ function DomainStep({ domain, existingData, onComplete, onUpdate, userId }) {
 
 function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
   const [horizonText,   setHorizonText]   = useState(() => {
-    try { return localStorage.getItem('lifeos_map_horizon_locked') || '' } catch { return '' }
+    try { return localStorage.getItem('nextus_map_horizon_locked') || '' } catch { return '' }
   })
   const [draftVisible,  setDraftVisible]  = useState(false)
   const [horizonLocked, setHorizonLocked] = useState(() => {
-    try { return !!localStorage.getItem('lifeos_map_horizon_locked') } catch { return false }
+    try { return !!localStorage.getItem('nextus_map_horizon_locked') } catch { return false }
   })
   const userEditingRef = useRef(false)  // true when user has clicked Edit — blocks effect re-lock
   const { user } = useAuth()
@@ -1201,7 +1201,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
   async function lockHorizon() {
     if (!horizonText.trim()) return
     userEditingRef.current = false
-    try { localStorage.setItem('lifeos_map_horizon_locked', horizonText) } catch {}
+    try { localStorage.setItem('nextus_map_horizon_locked', horizonText) } catch {}
     if (user?.id) {
       try {
         const { data: rows } = await supabase.from('map_results').select('id').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1)
@@ -1240,7 +1240,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
           return (
             <div key={d.id} style={{ padding: '8px 0', borderBottom: '1px solid rgba(200,146,42,0.05)', background: isFocus ? 'rgba(200,146,42,0.05)' : 'transparent', paddingLeft: isFocus ? '8px' : 0, borderLeft: isFocus ? '2px solid rgba(200,146,42,0.4)' : 'none', marginLeft: isFocus ? '-8px' : 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.9375rem', letterSpacing: '0.06em', color: isFocus ? '#A8721A' : '#0F1523', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>{isFocus ? '▸ ' : ''}{d.label}<DomainTooltip domainKey={d.id} system="lifeos" position="above" /></span>
+                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '0.9375rem', letterSpacing: '0.06em', color: isFocus ? '#A8721A' : '#0F1523', minWidth: '90px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>{isFocus ? '▸ ' : ''}{d.label}<DomainTooltip domainKey={d.id} system="nextus-self" position="above" /></span>
                 <div style={{ flex: 1, height: '3px', background: 'rgba(200,146,42,0.08)', borderRadius: '2px', position: 'relative' }}>
                   <div style={{ position: 'absolute', left: 0, width: `${(s / 10) * 100}%`, height: '100%', background: col, borderRadius: '2px', transition: 'width 0.8s ease' }} />
                   {h && <div style={{ position: 'absolute', left: `${(h / 10) * 100}%`, top: '-4px', width: '2px', height: '11px', background: 'rgba(200,146,42,0.55)', borderRadius: '1px', transform: 'translateX(-1px)' }} />}
@@ -2031,7 +2031,7 @@ export function MapPage() {
   const [sessionId,    setSessionId]    = useState(null)
   const [showWelcome,  setShowWelcome]  = useState(() => {
     try {
-      const saved = localStorage.getItem('lifeos_themap_v4')
+      const saved = localStorage.getItem('nextus_themap_v4')
       if (saved) {
         const parsed = JSON.parse(saved)
         if (parsed.domainData && Object.keys(parsed.domainData).length > 0) return false
@@ -2138,7 +2138,7 @@ export function MapPage() {
 
   if (!user) return (
     <>
-      <Nav activePath="life-os" />
+      <Nav activePath="nextus-self" />
       <AuthModal />
     </>
   )
@@ -2242,7 +2242,7 @@ export function MapPage() {
 
   return (
     <div className="page-shell">
-      <Nav activePath="life-os" />
+      <Nav activePath="nextus-self" />
       {user && showWelcome === true && <MapWelcomeModal onBegin={() => setShowWelcome(false)} />}
 
       {/* Left — domain thread panel */}
@@ -2341,7 +2341,7 @@ export function MapPage() {
                   {activeDomain && (
                     <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', alignSelf: 'center', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                       {activeDomain.label}
-                      <DomainTooltip domainKey={activeDomain.id} system="lifeos" position="below" />
+                      <DomainTooltip domainKey={activeDomain.id} system="nextus-self" position="below" />
                     </span>
                   )}
                   <button

@@ -112,7 +112,7 @@ export function OrienteeringPage() {
 
   return (
     <div className="page-shell">
-      <Nav activePath="life-os" />
+      <Nav activePath="nextus-self" />
 
       <div className="tool-wrap">
         <div className="tool-header">

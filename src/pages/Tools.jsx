@@ -90,7 +90,7 @@ function ToolRow({ tool }) {
 export function ToolsPage() {
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
-      <Nav activePath="life-os" />
+      <Nav activePath="nextus-self" />
 
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: 'clamp(88px,10vw,112px) clamp(20px,5vw,40px) 120px' }}>
 
@@ -121,7 +121,7 @@ export function ToolsPage() {
 
         {/* Horizon Suite link */}
         <div style={{ marginTop: '56px', paddingTop: '40px', borderTop: '1px solid rgba(200,146,42,0.15)', display: 'flex', alignItems: 'center', gap: '32px', flexWrap: 'wrap' }}>
-          <a href="/life-os" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
+          <a href="/nextus-self" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
             \u2190 What is the Horizon Suite?
           </a>
           <a href="/work-with-nik" style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>

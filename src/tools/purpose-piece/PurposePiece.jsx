@@ -1717,7 +1717,7 @@ export function PurposePiecePage() {
   return (
     <AccessGate productKey="purpose_piece" toolName="Purpose Piece">
     <div className="page-shell">
-      <Nav activePath="life-os" />
+      <Nav activePath="nextus-self" />
       {!user && <AuthModal />}
       {user && showWelcome === true && <WelcomeModal onBegin={async () => {
         if (user?.id) {
@@ -1975,7 +1975,7 @@ export function PurposePieceDeepPage() {
 
   return (
     <div className="page-shell">
-      <Nav activePath="life-os" />
+      <Nav activePath="nextus-self" />
       <div className="tool-wrap">
 
         <div style={{ marginBottom: '32px' }}>

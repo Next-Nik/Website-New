@@ -919,7 +919,7 @@ export function FoundationPage() {
     <AccessGate productKey="foundation" toolName="Horizon State">
     <div className="page-shell">
       <style>{MOBILE_STYLES}</style>
-      <Nav activePath="life-os" />
+      <Nav activePath="nextus-self" />
       <div className="tool-wrap">
         <div className="tool-header">
           <span className="tool-eyebrow">Horizon Suite {'\u00B7'} Horizon State</span>

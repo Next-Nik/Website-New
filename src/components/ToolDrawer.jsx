@@ -175,7 +175,7 @@ export function ToolDrawer({ open, onClose }) {
   // Logged-out → Life OS page anchor for that tool
   // Logged-in  → directly into the tool
   function toolHref(tool) {
-    return user ? tool.path : `/life-os#${tool.key}`
+    return user ? tool.path : `/nextus-self#${tool.key}`
   }
 
   // Close on Escape
@@ -221,7 +221,7 @@ export function ToolDrawer({ open, onClose }) {
       }}>
         <div style={{ maxWidth: '960px', margin: '0 auto', padding: '32px 40px 40px' }}>
 
-          {/* Life OS tools grid */}
+          {/* NextUs Self tools grid */}
           <div style={{ marginBottom: '32px' }}>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em',
               color: '#A8721A', textTransform: 'uppercase', display: 'block',

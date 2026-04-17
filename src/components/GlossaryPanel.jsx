@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 const CATEGORIES = [
   {
     label: 'The Platforms',
-    keys: ['life-os', 'nextus'],
+    keys: ['nextus-self', 'nextus'],
   },
   {
     label: 'Horizon Suite Tools',
@@ -20,7 +20,7 @@ const CATEGORIES = [
   },
   {
     label: 'Horizon Suite Domains',
-    keys: ['life-os-path', 'life-os-spark', 'life-os-body', 'life-os-finances', 'life-os-relationships', 'life-os-inner-game', 'life-os-outer-game'],
+    keys: ['nextus-self-path', 'nextus-self-spark', 'nextus-self-body', 'nextus-self-finances', 'nextus-self-connection', 'nextus-self-inner-game', 'nextus-self-signal'],
   },
   {
     label: 'NextUs Domains',

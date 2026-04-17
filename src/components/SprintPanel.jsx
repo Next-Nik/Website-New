@@ -291,7 +291,7 @@ export function SprintPanel({ context = 'default' }) {
                     return (
                       <div key={i} style={{ padding: '14px 16px', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '10px', marginBottom: '10px', background: '#FFFFFF' }}>
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: col, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>{dl?.label}{dl && <DomainTooltip domainKey={dl.id} system="lifeos" position="above" />}</span>
+                          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: col, display: 'inline-flex', alignItems: 'center', gap: '5px' }}>{dl?.label}{dl && <DomainTooltip domainKey={dl.id} system="nextus-self" position="above" />}</span>
                           {s !== undefined && sp !== undefined && (
                             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>
                               {s} {'\u2192'} {sp} {'\u00B7'} {TIER[sp] || ''}
@@ -328,7 +328,7 @@ export function SprintPanel({ context = 'default' }) {
                           const dl = DOMAINS.find(d => d.id === g.domain)
                           return g[key] ? (
                             <div key={i} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-                              <span style={{ ...sc, fontSize: '15px', color: '#A8721A', flexShrink: 0, paddingTop: '2px', width: '80px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>{dl?.label}{dl && <DomainTooltip domainKey={dl.id} system="lifeos" position="above" />}</span>
+                              <span style={{ ...sc, fontSize: '15px', color: '#A8721A', flexShrink: 0, paddingTop: '2px', width: '80px', display: 'inline-flex', alignItems: 'center', gap: '5px' }}>{dl?.label}{dl && <DomainTooltip domainKey={dl.id} system="nextus-self" position="above" />}</span>
                               <span style={{ ...body, fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55 }}>{g[key]}</span>
                             </div>
                           ) : null

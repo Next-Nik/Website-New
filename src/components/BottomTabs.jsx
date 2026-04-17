@@ -41,7 +41,7 @@ function MoreIcon({ active }) {
 
 function MoreMenu({ onClose }) {
   const lifeOSLinks = [
-    { label: 'Horizon Suite',   path: '/life-os',   desc: 'Overview of all tools' },
+    { label: 'Horizon Suite',   path: '/nextus-self',   desc: 'Overview of all tools' },
   ]
 
   const nextusLinks = [
@@ -75,7 +75,7 @@ function MoreMenu({ onClose }) {
         maxHeight: '70vh', overflowY: 'auto',
       }}>
 
-        {/* Life OS */}
+        {/* NextUs Self */}
         <div style={{ padding: '12px 20px 6px' }}>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', textTransform: 'uppercase' }}>Horizon Suite</span>
         </div>
@@ -136,7 +136,7 @@ export function BottomTabs() {
 
   const isHome  = pathname === '/'
   const isTools = pathname.startsWith('/tools')
-  const isMore  = ['/nextus', '/work-with-nik', '/podcast', '/about', '/life-os', '/pricing']
+  const isMore  = ['/nextus', '/work-with-nik', '/podcast', '/about', '/nextus-self', '/pricing']
     .some(p => pathname.startsWith(p))
 
   const tabs = [

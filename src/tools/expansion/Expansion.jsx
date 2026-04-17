@@ -1404,13 +1404,13 @@ export function ExpansionPage() {
 
   // Loading
   if (authLoading || accessLoading || mapLoading) {
-    return <div style={{ background: '#FAFAF7', minHeight: '100vh' }}><Nav activePath="life-os" /><div className="loading" /></div>
+    return <div style={{ background: '#FAFAF7', minHeight: '100vh' }}><Nav activePath="nextus-self" /><div className="loading" /></div>
   }
 
   return (
     <AccessGate productKey="expansion" toolName="Horizon Practice">
       <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
-        <Nav activePath="life-os" />
+        <Nav activePath="nextus-self" />
 
         {/* Map redirect */}
         {!mapData && !skipMap && <MapRedirect onSkip={() => setSkipMap(true)} />}

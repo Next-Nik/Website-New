@@ -16,7 +16,7 @@ export function Nav({ activePath }) {
     : null
 
   const links = [
-    { to: '/life-os',       label: 'Horizon Suite',       key: 'life-os'       },
+    { to: '/nextus-self',       label: 'Horizon Suite',       key: 'nextus-self'       },
     { to: '/nextus',        label: 'NextUs',        key: 'nextus'        },
     { to: '/work-with-nik', label: 'Work with Nik', key: 'work-with-nik' },
     { to: '/about',         label: 'About',         key: 'about'         },
@@ -115,9 +115,9 @@ export function Nav({ activePath }) {
       {/* Mobile dropdown */}
       {mobileOpen && (
         <div className="nav-mobile-menu">
-          {/* Life OS section */}
+          {/* NextUs Self section */}
           <div className="nav-mobile-section">
-            <Link to="/life-os" onClick={closeMobile} className="nav-mobile-link nav-mobile-link--heading">
+            <Link to="/nextus-self" onClick={closeMobile} className="nav-mobile-link nav-mobile-link--heading">
               <span>Horizon Suite</span>
               <span style={{ ...body, fontSize: '14px',
                 color: 'rgba(15,21,35,0.55)', fontWeight: 400, letterSpacing: 0 }}>
@@ -141,7 +141,7 @@ export function Nav({ activePath }) {
           <div className="nav-mobile-divider" />
 
           {/* Remaining links */}
-          {links.filter(l => l.key !== 'life-os').map(l => (
+          {links.filter(l => l.key !== 'nextus-self').map(l => (
             <Link key={l.key} to={l.to} onClick={closeMobile} className="nav-mobile-link">
               {l.label}
             </Link>
