@@ -4,8 +4,9 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { SiteFooter } from '../components/SiteFooter'
+import { DarkSection, NeedleDivider, DarkEyebrow, DarkHeading, DarkBody, DarkRule, DarkGhostButton, DarkSolidButton, DarkPullQuote } from '../components/DarkSection'
 
-const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
 
 const STAGES = {
@@ -134,7 +135,7 @@ function OrienteeringEmbed() {
   const textareaRef = useRef(null)
 
   useEffect(() => {
-    setMessages([{ role: 'assistant', content: 'Tell me a little about where you are right now — what\u2019s on your mind, what you\u2019re looking for, or just how things feel. I\u2019ll point you in the right direction.' }])
+    setMessages([{ role: 'assistant', content: 'Tell me a little about where you are right now \u2014 what\u2019s on your mind, what you\u2019re looking for, or just how things feel. I\u2019ll point you in the right direction.' }])
   }, [])
 
   useEffect(() => {
@@ -160,7 +161,6 @@ function OrienteeringEmbed() {
       if (parsed?.type === 'results') {
         setMessages(prev => [...prev, { role: 'result', data: parsed }])
         setDone(true)
-        // Write to North Star cross-tool memory if signed in
         if (user?.id && parsed.stage) {
           try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'orienteering') } catch {}
           const oriNotes = [
@@ -250,12 +250,12 @@ export function HomePage() {
 
       <style>{`
         @media (max-width: 640px) {
-          .home-hero { padding-left: 24px !important; padding-right: 24px !important; }
+          .home-hero    { padding-left: 24px !important; padding-right: 24px !important; }
           .home-section { padding-left: 24px !important; padding-right: 24px !important; }
-          .home-dark { padding-left: 24px !important; padding-right: 24px !important; }
         }
       `}</style>
-      {/* Hero */}
+
+      {/* ── Hero ──────────────────────────────────────────────────────────── */}
       <section className="home-hero" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '100px 40px 80px', position: 'relative' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 50% 40%, rgba(200,146,42,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '680px' }}>
@@ -276,8 +276,8 @@ export function HomePage() {
             </p>
           )}
           <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginTop: user ? '52px' : '0' }}>
-            <a href="/life-os" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Horizon Suite →</a>
-            <a href="/nextus" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>NextUs World →</a>
+            <a href="/nextus-self" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Horizon Suite {'\u2192'}</a>
+            <a href="/nextus" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>NextUs World {'\u2192'}</a>
           </div>
         </div>
         <div style={{ position: 'absolute', bottom: '36px', left: '50%', transform: 'translateX(-50%)', textAlign: 'center' }}>
@@ -285,41 +285,43 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Is this for you */}
+      {/* ── Is this for you ───────────────────────────────────────────────── */}
       <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 0', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Is this for you?</span>
         <h2 style={{ ...body, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '24px' }}>This place is for people who are done waiting to feel ready.</h2>
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '32px', maxWidth: '560px' }}>
-          You’re not in crisis. You’re not broken. But something is off — a gap between who you are and what you sense you’re capable of. You’ve probably done some work on yourself already. And something still isn’t moving.
+          You're not in crisis. You're not broken. But something is off — a gap between who you are and what you sense you're capable of. You've probably done some work on yourself already. And something still isn't moving.
         </p>
-        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '0', maxWidth: '560px' }}>
-          That’s the exact territory this ecosystem is built for.
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '64px', maxWidth: '560px' }}>
+          That's the exact territory this ecosystem is built for.
         </p>
       </section>
 
-      {/* Fractal connection */}
-      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '0 40px 64px' }}>
-        <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '18px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, textAlign: 'center', maxWidth: '560px', margin: '0 auto' }}>
-          What you build in yourself, you contribute to the world.
-        </p>
-        <div style={{ textAlign: 'center', marginTop: '16px' }}>
-          <a href="/nextus" style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', opacity: 0.78 }}>
-            See how your life connects to the larger work →
-          </a>
+      {/* ── Dark section 1 — the fractal ─────────────────────────────────── */}
+      <DarkSection topColor="#FAFAF7" bottomColor="#FAFAF7" style={{ textAlign: 'center' }}>
+        <DarkRule />
+        <DarkEyebrow>The premise</DarkEyebrow>
+        <DarkHeading>What you build in yourself,<br />you contribute to the world.</DarkHeading>
+        <DarkBody style={{ maxWidth: '520px', margin: '0 auto 32px' }}>
+          The seven domains of a full life map directly onto the seven domains of humanity's collective challenge. This is not metaphor. It is the same structure at different scales.
+        </DarkBody>
+        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <DarkSolidButton href="/nextus-self">Build your life {'\u2192'}</DarkSolidButton>
+          <DarkGhostButton href="/nextus">See the larger map {'\u2192'}</DarkGhostButton>
         </div>
-      </section>
+      </DarkSection>
 
-      {/* Orienteering embed */}
-      <section id="start" className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
+      {/* ── Orienteering embed ────────────────────────────────────────────── */}
+      <section id="start" className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px' }}>
         <div style={{ width: '1px', height: '52px', background: 'rgba(200,146,42,0.20)', margin: '0 auto 64px' }} />
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where you are</span>
         <h2 style={{ ...body, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>Find your starting point.</h2>
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Tell me a little about where you are right now. I'll point you in the right direction — no jargon, no sign-up required.</p>
         <OrienteeringEmbed />
-        <a href="/life-os" style={{ display: 'block', textAlign: 'center', ...body, fontSize: '16px', color: '#A8721A', marginTop: '28px', textDecoration: 'none'}}>or show me everything {'\u2192'}</a>
+        <a href="/nextus-self" style={{ display: 'block', textAlign: 'center', ...body, fontSize: '16px', color: '#A8721A', marginTop: '28px', textDecoration: 'none' }}>or show me everything {'\u2192'}</a>
       </section>
 
-      {/* Stage selector */}
+      {/* ── Stage selector ────────────────────────────────────────────────── */}
       <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where you are in the arc</span>
         <h2 style={{ ...body, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>Find your stage.</h2>
@@ -334,7 +336,7 @@ export function HomePage() {
                 onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderBottomColor = 'transparent' }}
               >
                 <span style={{ ...body, fontSize: '22px', fontWeight: 300, color: isActive ? '#A8721A' : '#0F1523', display: 'block', lineHeight: 1.2, marginBottom: '2px', transition: 'color 0.18s' }}>{s.name}</span>
-                <span style={{ ...body, fontSize: '17px', color: isActive ? '#A8721A' : 'rgba(15,21,35,0.72)', lineHeight: 1.4, display: 'block', transition: 'color 0.18s' }}>{s.question}</span>
+                <span style={{ ...body, fontSize: '17px', color: isActive ? '#A8721A' : 'rgba(15,21,35,0.55)', lineHeight: 1.4, display: 'block', transition: 'color 0.18s' }}>{s.question}</span>
               </div>
             )
           })}
@@ -342,14 +344,21 @@ export function HomePage() {
         <div ref={panelRef}><StagePanel stage={activeStage} /></div>
       </section>
 
-      {/* Testimonials inline — three quotes surfaced from the panel */}
+      {/* ── Dark section 2 — pull quote ───────────────────────────────────── */}
+      <DarkSection topColor="#FAFAF7" bottomColor="#FAFAF7">
+        <DarkPullQuote
+          quote="I'm 63 years old and just met myself for the first time working with Nik."
+          attribution="J.B."
+        />
+      </DarkSection>
+
+      {/* ── Testimonials ─────────────────────────────────────────────────── */}
       <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px', textAlign: 'center' }}>What people say</span>
         <h2 style={{ ...body, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '56px', textAlign: 'center' }}>Real words from real people.</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
           {[
             { q: 'Working with Nik definitely changed my life. He has the ability to build up the right foundation and the right container to actually be vulnerable and go straight to where you need to.', name: 'S.H.' },
-            { q: 'I\u2019m 63 years old and just met myself for the first time working with Nik.', name: 'J.B.' },
             { q: 'I came to Nik apologising for not doing my homework \u2014 and started telling him I\u2019d met someone and gone on wonderful adventures, my work was expanding. He said: look at what you wrote in week one. I was already living it.', name: 'J.M.' },
           ].map(({ q, name }) => (
             <div key={name} style={{ borderLeft: '2px solid rgba(200,146,42,0.50)', padding: '20px 0 20px 24px' }}>
@@ -363,24 +372,22 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Dark section */}
-      <section className="home-dark" style={{ background: '#0F1523', borderTop: '1.5px solid rgba(200,146,42,0.78)', padding: '96px 40px', textAlign: 'center' }}>
-        <div style={{ maxWidth: '820px', margin: '0 auto' }}>
-          <div style={{ marginBottom: '24px' }}>
-            <img src="/logo_nav.png" alt="NextUs" style={{ height: '40px', width: 'auto', display: 'inline-block', opacity: 0.78 }} />
-          </div>
-          <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.4, margin: '0 auto 36px' }} />
-          <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,34px)', fontWeight: 300, color: 'rgba(255,255,255,0.92)', marginBottom: '12px' }}>Be in the loop.</h2>
-          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(255,255,255,0.55)', marginBottom: '40px', maxWidth: '320px', marginLeft: 'auto', marginRight: 'auto' }}>Stay up to date on what{'\u2019'}s next for NextUs.</p>
-          <div style={{ maxWidth: '380px', margin: '0 auto' }}>
-            <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
-            <form action="https://app.kit.com/forms/9215183/subscriptions" className="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
-              <input type="email" name="email_address" placeholder="your@email.com" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
-              <button type="submit" style={{ width: '100%', padding: '16px', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Stay connected {'\u2192'}</button>
-            </form>
-          </div>
+      {/* ── Dark section 3 — email signup ─────────────────────────────────── */}
+      <DarkSection topColor="#FAFAF7" bottomColor={null} style={{ textAlign: 'center' }}>
+        <div style={{ marginBottom: '24px' }}>
+          <img src="/logo_nav.png" alt="NextUs" style={{ height: '40px', width: 'auto', display: 'inline-block', opacity: 0.78 }} />
         </div>
-      </section>
+        <DarkRule />
+        <DarkHeading style={{ fontSize: 'clamp(22px,2.8vw,32px)' }}>Be in the loop.</DarkHeading>
+        <DarkBody style={{ maxWidth: '320px', margin: '0 auto 40px' }}>Stay up to date on what{'\u2019'}s next for NextUs.</DarkBody>
+        <div style={{ maxWidth: '380px', margin: '0 auto' }}>
+          <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
+          <form action="https://app.kit.com/forms/9215183/subscriptions" className="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
+            <input type="email" name="email_address" placeholder="your@email.com" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
+            <button type="submit" style={{ width: '100%', padding: '16px', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Stay connected {'\u2192'}</button>
+          </form>
+        </div>
+      </DarkSection>
 
       <ToolCompassPanel />
       <SiteFooter />
