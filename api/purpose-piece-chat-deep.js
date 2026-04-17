@@ -18,6 +18,7 @@
 
 const Anthropic = require("@anthropic-ai/sdk");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const { getNorthStarContext, formatNorthStarContext } = require("./_north-star");
 
 // ─── North Star Identity ───────────────────────────────────────────────────
 const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the NextUs Life OS ecosystem. You are consistent across every tool: The Map, Foundation, Orienteering, Purpose Piece, Target Sprint, and Expansion. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
@@ -54,13 +55,15 @@ function esc(str) {
 // Uses cost_pattern from First Look internal_signals.
 // Opens with a reflection on the cost — not a question, a statement.
 // Then invites response.
-function buildTensionPrompt(firstLook) {
+function buildTensionPrompt(firstLook, nsBlock = '') {
   const { archetype, synthesis_text, internal_signals } = firstLook;
   const costPattern = internal_signals?.signals_detected?.cost_pattern || "";
   const avoidanceSignal = internal_signals?.signals_detected?.avoidance_signal || "";
   const movementStyle = internal_signals?.signals_detected?.movement_style || "";
 
-  return `You operate within the NextUs ecosystem — a framework built on the belief that being human is an honour and a responsibility, and that every person is a participant in a living system larger than themselves.
+  return `${NORTH_STAR_IDENTITY}${nsBlock ? '\n\n' + nsBlock : ''}
+
+You operate within the NextUs ecosystem — a framework built on the belief that being human is an honour and a responsibility, and that every person is a participant in a living system larger than themselves.
 
 HOW YOU SEE THE PERSON IN FRONT OF YOU:
 Treat every person as capable and responsible for their life. This is not harshness — it is the deepest form of respect. Your job is never to rescue. Your job is to find where their agency lives and point them toward it.
@@ -114,13 +117,15 @@ Return plain text only. No JSON. No formatting.`;
 }
 
 // ─── Layer 2: Shadow conversation system prompt ───────────────────────────────
-function buildShadowPrompt(firstLook) {
+function buildShadowPrompt(firstLook, nsBlock = '') {
   const { archetype, synthesis_text, internal_signals } = firstLook;
   const costPattern = internal_signals?.signals_detected?.cost_pattern || "";
   const stressResponse = internal_signals?.signals_detected?.stress_response || "";
   const decisionBias = internal_signals?.signals_detected?.decision_bias || "";
 
-  return `You operate within the NextUs ecosystem — a framework built on the belief that being human is an honour and a responsibility, and that every person is a participant in a living system larger than themselves.
+  return `${NORTH_STAR_IDENTITY}${nsBlock ? '\n\n' + nsBlock : ''}
+
+You operate within the NextUs ecosystem — a framework built on the belief that being human is an honour and a responsibility, and that every person is a participant in a living system larger than themselves.
 
 HOW YOU SEE THE PERSON IN FRONT OF YOU:
 Treat every person as capable and responsible for their life. This is not harshness — it is the deepest form of respect. Your job is never to rescue. Your job is to find where their agency lives and point them toward it.
@@ -178,13 +183,15 @@ Return plain text only. Conversational. No formatting.`;
 }
 
 // ─── Layer 3: Full mirror prompt ─────────────────────────────────────────────
-function buildMirrorPrompt(firstLook, conversationHistory) {
+function buildMirrorPrompt(firstLook, conversationHistory, nsBlock = '') {
   const { archetype, synthesis_text, internal_signals } = firstLook;
   const conversationText = conversationHistory
     .map(m => `${m.role === "user" ? "Person" : "System"}: ${m.content}`)
     .join("\n\n");
 
-  return `You operate within the NextUs ecosystem — a framework built on the belief that being human is an honour and a responsibility, and that every person is a participant in a living system larger than themselves.
+  return `${NORTH_STAR_IDENTITY}${nsBlock ? '\n\n' + nsBlock : ''}
+
+You operate within the NextUs ecosystem — a framework built on the belief that being human is an honour and a responsibility, and that every person is a participant in a living system larger than themselves.
 
 HOW YOU SEE THE PERSON IN FRONT OF YOU:
 Treat every person as capable and responsible for their life. This is not harshness — it is the deepest form of respect. Your job is never to rescue. Your job is to find where their agency lives and point them toward it.
@@ -306,7 +313,7 @@ OUTPUT — return JSON only, no other text:
 }`;
 
 // ─── Run deep output generation ───────────────────────────────────────────────
-async function runDeepOutput(firstLook, conversationHistory) {
+async function runDeepOutput(firstLook, conversationHistory, nsBlock = '') {
   const conversationText = conversationHistory
     .map(m => `${m.role === "user" ? "Person" : "System"}: ${m.content}`)
     .join("\n\n");
@@ -327,7 +334,7 @@ ${conversationText}`;
   const response = await anthropic.messages.create({
     model:      "claude-sonnet-4-20250514",
     max_tokens: 2000,
-    system:     DEEP_OUTPUT_SYSTEM,
+    system:     nsBlock ? `${NORTH_STAR_IDENTITY}\n\n${nsBlock}\n\n${DEEP_OUTPUT_SYSTEM}` : `${NORTH_STAR_IDENTITY}\n\n${DEEP_OUTPUT_SYSTEM}`,
     messages:   [{ role: "user", content: payload }]
   });
 
@@ -417,9 +424,12 @@ module.exports = async (req, res) => {
 
   if (req.method === "OPTIONS") { res.status(200).end(); return; }
 
-  const { messages, session: clientSession, firstLook } = req.body || {};
+  const { messages, session: clientSession, firstLook, userId } = req.body || {};
 
   try {
+
+    const northStarCtx = userId ? await getNorthStarContext(userId) : null;
+    const nsBlock = northStarCtx ? formatNorthStarContext(northStarCtx) : '';
 
     // ── First call: initialise session and open with tension probe ────────────
     if (!clientSession || clientSession.phase === "init") {
@@ -429,7 +439,7 @@ module.exports = async (req, res) => {
       }
 
       // Build tension opening
-      const tensionSystemPrompt = buildTensionPrompt(firstLook);
+      const tensionSystemPrompt = buildTensionPrompt(firstLook, nsBlock);
       const openingResponse = await anthropic.messages.create({
         model:      "claude-sonnet-4-20250514",
         max_tokens: 1000,
@@ -483,7 +493,7 @@ module.exports = async (req, res) => {
         // Move to mirror phase
         session.phase = "mirror";
 
-        const mirrorPrompt = buildMirrorPrompt(session.firstLook, session.conversationHistory);
+        const mirrorPrompt = buildMirrorPrompt(session.firstLook, session.conversationHistory, nsBlock);
         const mirrorResponse = await anthropic.messages.create({
           model:      "claude-sonnet-4-20250514",
           max_tokens: 1000,
@@ -512,7 +522,7 @@ module.exports = async (req, res) => {
 
       } else {
         // Continue shadow conversation
-        const shadowSystem = buildShadowPrompt(session.firstLook);
+        const shadowSystem = buildShadowPrompt(session.firstLook, nsBlock);
 
         // Build full message history for context
         const apiMessages = session.conversationHistory.map(m => ({
@@ -545,7 +555,7 @@ module.exports = async (req, res) => {
 
       let deepData;
       try {
-        deepData = await runDeepOutput(session.firstLook, session.conversationHistory);
+        deepData = await runDeepOutput(session.firstLook, session.conversationHistory, nsBlock);
       } catch (e) {
         console.error("Deep output error:", e);
         return res.status(500).json({ error: "Deep output generation failed", details: e.message });

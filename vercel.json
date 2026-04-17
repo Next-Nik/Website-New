@@ -90,7 +90,10 @@
       "destination": "/api/purpose-piece-chat-deep"
     },
     {
-      "source": "/tools/target-goals/api/chat",
+      "source": "/tools/target-goals/api/sprint-coach",
+      "destination": "/api/sprint-coach-chat"
+    },
+    {
       "destination": "/api/target-goals-chat"
     },
     {

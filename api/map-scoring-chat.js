@@ -5,11 +5,10 @@
 
 const Anthropic = require('@anthropic-ai/sdk')
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+const { getNorthStarContext, formatNorthStarContext } = require('./_north-star')
 
 // ─── North Star Identity ───────────────────────────────────────────────────
-// North Star is the AI companion present throughout the Horizon Suite ecosystem.
-// Consistent name, voice, and identity across all tools.
-// Cross-tool context is available via the north_star_notes table in Supabase.
+// Cross-tool context is read from north_star_notes via _north-star.js.
 const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the Horizon Suite ecosystem. You are consistent across every tool: The Map, Horizon State, Orienteering, Purpose Piece, Target Sprint, and Horizon Practice. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
 
 
@@ -47,9 +46,9 @@ const DOMAIN_CONTEXT = {
   signal:    { label: 'Signal',    frame: 'how you show up in the world, alignment between inside and outside' },
 }
 
-const SCORE_SYSTEM = (domain, avatarFinal) => {
+const SCORE_SYSTEM = (domain, avatarFinal, nsBlock = '') => {
   const ctx = DOMAIN_CONTEXT[domain] || { label: domain, frame: domain }
-  return `${NORTH_STAR_IDENTITY}
+  return `${NORTH_STAR_IDENTITY}${nsBlock ? '\n\n' + nsBlock : ''}
 
 You are a guide helping someone establish where they honestly are in the domain of ${ctx.label} — ${ctx.frame}.
 
@@ -90,10 +89,10 @@ RESPONSE FORMAT — always valid JSON:
 Voice: warm, direct, Nik Wood register. Declarative. No hedging. Short paragraphs. Never therapeutic deficit framing.`
 }
 
-const HORIZON_SYSTEM = (domain, avatarFinal, currentScore) => {
+const HORIZON_SYSTEM = (domain, avatarFinal, currentScore, nsBlock = '') => {
   const ctx = DOMAIN_CONTEXT[domain] || { label: domain, frame: domain }
   const tierLabel = TIER_STAGES[currentScore] || ''
-  return `${NORTH_STAR_IDENTITY}
+  return `${NORTH_STAR_IDENTITY}${nsBlock ? '\n\n' + nsBlock : ''}
 
 You are receiving someone's Horizon Goal for the domain of ${ctx.label} — ${ctx.frame}. This is a pivotal moment.
 
@@ -155,13 +154,17 @@ module.exports = async function handler(req, res) {
     realityDraft  = '',
     horizonScore,
     horizonText   = '',
+    userId,
   } = req.body
 
   if (!domain || !mode) return res.status(400).json({ error: 'domain and mode required' })
 
+  const northStarCtx = userId ? await getNorthStarContext(userId) : null
+  const nsBlock = northStarCtx ? formatNorthStarContext(northStarCtx) : ''
+
   const systemPrompt = mode === 'score'
-    ? SCORE_SYSTEM(domain, avatarFinal)
-    : HORIZON_SYSTEM(domain, avatarFinal, currentScore)
+    ? SCORE_SYSTEM(domain, avatarFinal, nsBlock)
+    : HORIZON_SYSTEM(domain, avatarFinal, currentScore, nsBlock)
 
   try {
     const response = await anthropic.messages.create({

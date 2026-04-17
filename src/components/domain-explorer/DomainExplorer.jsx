@@ -7,6 +7,7 @@ import Heptagon from './Heptagon'
 import DomainPanel from './DomainPanel'
 import { fetchDomains, STATIC_DOMAINS, TOP_LEVEL_GOAL } from './data'
 import styles from './DomainExplorer.module.css'
+import { ContributeModal } from './ContributeModal'
 
 // ── TIMING CONTROLS ───────────────────────────────────────────────────────────
 const HEP_FADE_IN_DURATION = 2500

@@ -609,7 +609,7 @@ function LockBtn({ onClick, label }) {
 
 // ─── Domain Step — full 3-step conversation flow ──────────────────────────────
 
-function DomainStep({ domain, existingData, onComplete, onUpdate }) {
+function DomainStep({ domain, existingData, onComplete, onUpdate, userId }) {
   // Step within this domain: 'avatar' | 'score' | 'horizon' | 'done'
   const initStep = () => {
     if (!existingData) return 'avatar'
@@ -679,7 +679,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
       const res = await fetch('/api/map-avatar-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ domain: domain.id, messages: next, avatarDraft }),
+        body: JSON.stringify({ domain: domain.id, messages: next, avatarDraft, userId }),
       })
       const data = await res.json()
       const aiMsg = { role: 'assistant', content: data.message, canLock: data.canLock, cleanedDraft: data.cleanedDraft || null }
@@ -743,6 +743,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           messages: next,
           currentScore: score ?? currentScore,
           realityDraft,
+          userId,
         }),
       })
       const data = await res.json()
@@ -794,6 +795,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           messages: next,
           horizonScore: score ?? horizonScore,
           horizonText,
+          userId,
         }),
       })
       const data = await res.json()
@@ -1570,7 +1572,7 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
       const res = await fetch('/api/map-avatar-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ domain: domain.id, messages: next, avatarDraft }),
+        body: JSON.stringify({ domain: domain.id, messages: next, avatarDraft, userId }),
       })
       const d = await res.json()
       const aiMsg = { role: 'assistant', content: d.message, canLock: d.canLock, cleanedDraft: d.cleanedDraft || null }
@@ -1833,7 +1835,7 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
                       try {
                         const res = await fetch('/api/map-scoring-chat', {
                           method: 'POST', headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ mode: 'horizon', domain: 'connection', avatarFinal, currentScore: existingData?.currentScore, messages: [{ role: 'user', content: msg }], horizonScore, horizonText })
+                          body: JSON.stringify({ mode: 'horizon', domain: 'connection', avatarFinal, currentScore: existingData?.currentScore, messages: [{ role: 'user', content: msg }], horizonScore, horizonText, userId })
                         })
                         const data = await res.json()
                         setHorizonMsgs([{ role: 'user', content: msg }, { role: 'assistant', content: data.message, canLock: data.canLock }])
@@ -1860,7 +1862,7 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
                       try {
                         const res = await fetch('/api/map-scoring-chat', {
                           method: 'POST', headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ mode: 'horizon', domain: 'connection', avatarFinal, currentScore: existingData?.currentScore, messages: next, horizonScore, horizonText })
+                          body: JSON.stringify({ mode: 'horizon', domain: 'connection', avatarFinal, currentScore: existingData?.currentScore, messages: next, horizonScore, horizonText, userId })
                         })
                         const data = await res.json()
                         setHorizonMsgs(p => [...p, { role: 'assistant', content: data.message, canLock: data.canLock }])
@@ -2377,6 +2379,7 @@ export function MapPage() {
                       existingData={domainData[activeDomain.id]}
                       onUpdate={handleDomainUpdate}
                       onComplete={handleDomainComplete}
+                      userId={user?.id}
                     />
                     )
                   ) : (
@@ -2487,6 +2490,7 @@ export function MapPage() {
                         existingData={domainData[activeDomain.id]}
                         onUpdate={handleDomainUpdate}
                         onComplete={handleDomainComplete}
+                        userId={user?.id}
                       />
                       )
                     ) : null}

@@ -5,11 +5,12 @@
 
 const Anthropic = require('@anthropic-ai/sdk')
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+const { getNorthStarContext, formatNorthStarContext } = require('./_north-star')
 
 // ─── North Star Identity ───────────────────────────────────────────────────
 // North Star is the AI companion present throughout the Horizon Suite ecosystem.
 // Consistent name, voice, and identity across all tools.
-// Cross-tool context is available via the north_star_notes table in Supabase.
+// Cross-tool context is read from north_star_notes via _north-star.js.
 const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the Horizon Suite ecosystem. You are consistent across every tool: The Map, Horizon State, Orienteering, Purpose Piece, Target Sprint, and Horizon Practice. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
 
 
@@ -23,10 +24,10 @@ const DOMAIN_CONTEXT = {
   signal:    { label: 'Signal',    frame: 'how you show up in the world, presence, alignment between inside and outside' },
 }
 
-const SYSTEM_PROMPT = (domain) => {
+const SYSTEM_PROMPT = (domain, nsBlock = '') => {
   const ctx = DOMAIN_CONTEXT[domain] || { label: domain, frame: domain }
 
-  return `${NORTH_STAR_IDENTITY}
+  return `${NORTH_STAR_IDENTITY}${nsBlock ? '\n\n' + nsBlock : ''}
 
 You are guiding someone through building their "Best in the World" Avatar for the domain of ${ctx.label} — ${ctx.frame}.
 
@@ -145,15 +146,18 @@ Voice: warm, direct, intellectually serious, declarative. Short paragraphs. No h
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { domain, messages = [], avatarDraft = '' } = req.body
+  const { domain, messages = [], avatarDraft = '', userId } = req.body
 
   if (!domain) return res.status(400).json({ error: 'domain required' })
 
   try {
+    const northStarCtx = userId ? await getNorthStarContext(userId) : null
+    const nsBlock = northStarCtx ? formatNorthStarContext(northStarCtx) : ''
+
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1200,
-      system: SYSTEM_PROMPT(domain),
+      system: SYSTEM_PROMPT(domain, nsBlock),
       messages: messages.map(m => ({
         role: m.role === 'user' ? 'user' : 'assistant',
         content: m.content,

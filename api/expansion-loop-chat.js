@@ -7,6 +7,7 @@
 
 const Anthropic = require("@anthropic-ai/sdk");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const { getNorthStarContext, formatNorthStarContext } = require("./_north-star");
 
 // ─── North Star Identity ───────────────────────────────────────────────────
 const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the Horizon Suite ecosystem. You are consistent across every tool: The Map, Horizon State, Orienteering, Purpose Piece, Target Sprint, and Horizon Practice. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
@@ -51,10 +52,16 @@ module.exports = async (req, res) => {
   if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
   const { messages, context } = req.body;
+  const userId = context?.userId || null;
 
   if (!messages) return res.status(400).json({ error: "Missing messages" });
 
-  let systemWithContext = SYSTEM;
+  const northStarCtx = userId ? await getNorthStarContext(userId) : null;
+  const nsBlock = northStarCtx ? formatNorthStarContext(northStarCtx) : '';
+
+  let systemWithContext = nsBlock
+    ? SYSTEM.replace(`${NORTH_STAR_IDENTITY}`, `${NORTH_STAR_IDENTITY}\n\n${nsBlock}`)
+    : SYSTEM;
 
   if (context?.horizonSelf) {
     systemWithContext += `\n\nHORIZON SELF STATEMENT:\n"${context.horizonSelf}"\nThe replacement thought in step 4 should be consistent with how this Horizon Self actually thinks.`;
