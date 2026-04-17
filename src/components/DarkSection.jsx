@@ -37,10 +37,11 @@ export function ArcEntry({ topColor = '#FAFAF7', bottomColor = '#0F1523' }) {
     <div style={{ display: 'block', lineHeight: 0, fontSize: 0, margin: 0, padding: 0 }}>
       <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none"
         style={{ display: 'block' }} aria-hidden="true">
+        <rect x="0" y="0" width={W} height={FLAT} fill={topColor} />
         <path d={`M0,${FLAT} Q${W/2},${peak} ${W},${FLAT} L${W},${H} L0,${H} Z`} fill={bottomColor} />
         {/* Gold stroke — the border of the dark section */}
         <path d={`M0,${FLAT} Q${W/2},${peak} ${W},${FLAT}`}
-          fill="none" stroke="#C8922A" strokeWidth="3" opacity="0.85" />
+          fill="none" stroke="#C8922A" strokeWidth="1.5" opacity="0.85" />
         {/* Compass mark at apex */}
         <circle cx={W/2} cy={peak+7} r="4.5" fill="none" stroke="#C8922A" strokeWidth="0.9" opacity="0.7" />
         <circle cx={W/2} cy={peak+7} r="1.8" fill="#C8922A" opacity="0.85" />
@@ -62,9 +63,10 @@ export function ArcExit({ topColor = '#0F1523', bottomColor = '#FAFAF7' }) {
       <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none"
         style={{ display: 'block' }} aria-hidden="true">
         <path d={`M0,0 L${W},0 L${W},${start} Q${W/2},${nadir} 0,${start} Z`} fill={topColor} />
+        <rect x="0" y={start} width={W} height={H-start} fill={bottomColor} />
         {/* Gold stroke — the border of the dark section */}
         <path d={`M0,${start} Q${W/2},${nadir} ${W},${start}`}
-          fill="none" stroke="#C8922A" strokeWidth="3" opacity="0.85" />
+          fill="none" stroke="#C8922A" strokeWidth="1.5" opacity="0.85" />
         {/* Compass mark at nadir */}
         <circle cx={W/2} cy={nadir-6} r="4.5" fill="none" stroke="#C8922A" strokeWidth="0.9" opacity="0.7" />
         <circle cx={W/2} cy={nadir-6} r="1.8" fill="#C8922A" opacity="0.85" />
