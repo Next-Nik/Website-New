@@ -8,6 +8,7 @@ import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkG
 
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 const STAGES = {
   baseline: {
@@ -84,8 +85,8 @@ function StageRec({ rec, soft }) {
     >
       <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '40px', padding: '3px 10px', flexShrink: 0, marginTop: '2px', whiteSpace: 'nowrap' }}>{rec.badge}</span>
       <div style={{ flex: 1 }}>
-        <div style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#A8721A', marginBottom: '3px' }}>{rec.title}</div>
-        <div style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.78)', lineHeight: 1.4 }}>{rec.sub}</div>
+        <div style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#A8721A', marginBottom: '3px' }}>{rec.title}</div>
+        <div style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.78)', lineHeight: 1.4 }}>{rec.sub}</div>
       </div>
       <span style={{ color: '#A8721A', fontSize: '15px', marginTop: '2px', flexShrink: 0 }}>{'\u2192'}</span>
     </a>
@@ -105,8 +106,8 @@ function StagePanel({ stage }) {
       <div style={{ padding: '28px 28px 24px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '6px' }}>{s.name}</span>
         <div style={{ ...serif, fontSize: '26px', fontWeight: 300, color: '#0F1523', marginBottom: '4px', lineHeight: 1.1 }}>{s.name}</div>
-        <div style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', marginBottom: '14px', lineHeight: 1.6 }}>{s.question}</div>
-        <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '520px' }}>{s.desc}</p>
+        <div style={{ ...body, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', marginBottom: '14px', lineHeight: 1.6 }}>{s.question}</div>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '520px' }}>{s.desc}</p>
         <div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', marginBottom: '24px' }} />
         <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.78)', display: 'block', marginBottom: '12px' }}>Where to start</span>
         <StageRec rec={s.primary} soft={false} />
@@ -186,23 +187,23 @@ function OrienteeringEmbed() {
     <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', overflow: 'hidden', maxWidth: '600px', margin: '0 auto' }}>
       <div ref={messagesRef} style={{ minHeight: '180px', maxHeight: '420px', overflowY: 'auto', padding: '28px 28px 8px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {messages.map((m, i) => {
-          if (m.role === 'assistant') return <div key={i} style={{ ...serif, fontSize: '16px', lineHeight: 1.8, color: '#0F1523', alignSelf: 'flex-start', maxWidth: '88%' }}>{m.content}</div>
-          if (m.role === 'user') return <div key={i} style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px', padding: '10px 14px', alignSelf: 'flex-end', maxWidth: '80%' }}>{m.content}</div>
+          if (m.role === 'assistant') return <div key={i} style={{ ...body, fontSize: '16px', lineHeight: 1.8, color: '#0F1523', alignSelf: 'flex-start', maxWidth: '88%' }}>{m.content}</div>
+          if (m.role === 'user') return <div key={i} style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px', padding: '10px 14px', alignSelf: 'flex-end', maxWidth: '80%' }}>{m.content}</div>
           if (m.role === 'result') {
             const d = m.data
             return (
               <div key={i} style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', padding: '22px', alignSelf: 'flex-start', maxWidth: '92%' }}>
                 {d.stage && <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px' }}>{d.stage}</div>}
-                <div style={{ ...serif, fontSize: '16px', lineHeight: 1.8, color: '#0F1523', marginBottom: '16px' }}>{d.reflection}</div>
+                <div style={{ ...body, fontSize: '16px', lineHeight: 1.8, color: '#0F1523', marginBottom: '16px' }}>{d.reflection}</div>
                 {(d.recommendations || []).map((r, ri) => (
                   <div key={ri} style={{ borderTop: '1px solid rgba(200,146,42,0.20)', paddingTop: '14px', marginTop: '14px' }}>
                     <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', marginBottom: '4px' }}>{r.category}</div>
-                    <div style={{ ...serif, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>{r.title}</div>
-                    <div style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.65, marginBottom: '8px' }}>{r.description}</div>
+                    <div style={{ ...body, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>{r.title}</div>
+                    <div style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.65, marginBottom: '8px' }}>{r.description}</div>
                     {r.link && r.link !== 'null' && <a href={r.link} style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>{r.link_text || 'Learn more \u2192'}</a>}
                   </div>
                 ))}
-                {d.closing && <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>{d.closing}</div>}
+                {d.closing && <div style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>{d.closing}</div>}
               </div>
             )
           }
@@ -224,7 +225,7 @@ function OrienteeringEmbed() {
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
             placeholder="Write your response here..."
             rows={1}
-            style={{ flex: 1, resize: 'none', border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '10px', padding: '11px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', color: '#0F1523', background: '#FAFAF7', outline: 'none', lineHeight: 1.5, maxHeight: '120px', overflowY: 'auto' }}
+            style={{ flex: 1, resize: 'none', border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '10px', padding: '11px 14px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: '#0F1523', background: '#FAFAF7', outline: 'none', lineHeight: 1.5, maxHeight: '120px', overflowY: 'auto' }}
           />
           <button onClick={send} disabled={!input.trim() || waiting} style={{ flexShrink: 0, padding: '11px 22px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', fontWeight: 600, letterSpacing: '0.14em', color: '#A8721A', cursor: 'pointer', whiteSpace: 'nowrap', opacity: (!input.trim() || waiting) ? 0.4 : 1 }}>Send</button>
         </div>
@@ -255,6 +256,8 @@ export function HomePage() {
           .home-section { padding-left: 24px !important; padding-right: 24px !important; }
           .home-dark { padding-left: 24px !important; padding-right: 24px !important; }
         }
+        .home-section { position: relative; z-index: 1; }
+        .home-hero { position: relative; z-index: 1; }
       `}</style>
       {/* Hero */}
       <section className="home-hero" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '100px 40px 80px', position: 'relative' }}>
@@ -268,11 +271,11 @@ export function HomePage() {
             A life worth living.<br />
             <em style={{ fontStyle: 'italic', color: '#A8721A' }}>A future worth building.</em>
           </h1>
-          <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '16px', maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto' }}>
+          <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '16px', maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto' }}>
             Step towards the horizon.
           </p>
           {!user && (
-            <p style={{ ...serif, fontSize: '15px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '52px', maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
+            <p style={{ ...body, fontSize: '15px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '52px', maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
               <a href="/login" style={{ color: 'rgba(15,21,35,0.55)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign in</a> to save your work and track your progress.
             </p>
           )}
@@ -290,10 +293,10 @@ export function HomePage() {
       <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 0', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Is this for you?</span>
         <h2 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '24px' }}>This is for people who already know something isn't moving.</h2>
-        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '32px', maxWidth: '560px' }}>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '32px', maxWidth: '560px' }}>
           You’re not in crisis. You’re not broken. But something is off — a gap between who you are and what you sense you’re capable of. You’ve probably done some work on yourself already. And something still isn’t moving.
         </p>
-        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '0', maxWidth: '560px' }}>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '0', maxWidth: '560px' }}>
           That’s the exact territory this ecosystem is built for.
         </p>
       </section>
@@ -314,9 +317,9 @@ export function HomePage() {
         <div style={{ width: '1px', height: '52px', background: 'rgba(200,146,42,0.20)', margin: '0 auto 64px' }} />
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where you are</span>
         <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>Find your starting point.</h2>
-        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Tell me a little about where you are right now. Three to five exchanges — I'll point you somewhere real.</p>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Tell me a little about where you are right now. Three to five exchanges — I'll point you somewhere real.</p>
         <OrienteeringEmbed />
-        <a href="/nextus-self" style={{ display: 'block', textAlign: 'center', ...serif, fontSize: '16px', fontStyle: 'italic', color: '#A8721A', marginTop: '28px', textDecoration: 'none', opacity: 0.78 }}>or show me everything {'\u2192'}</a>
+        <a href="/nextus-self" style={{ display: 'block', textAlign: 'center', ...body, fontSize: '16px', fontStyle: 'italic', color: '#A8721A', marginTop: '28px', textDecoration: 'none', opacity: 0.78 }}>or show me everything {'\u2192'}</a>
       </section>
 
       {/* Stage selector */}
@@ -324,7 +327,7 @@ export function HomePage() {
         <div style={{ paddingTop: '96px' }}>
           <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where you are in the arc</span>
           <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>See where you are.</h2>
-          <p style={{ ...serif, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Each stage has its own terrain. The right tools depend on being honest about which one you're standing in.</p>
+          <p style={{ ...body, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Each stage has its own terrain. The right tools depend on being honest about which one you're standing in.</p>
           <div>
             {stageKeys.map(key => {
               const s = STAGES[key]
@@ -335,7 +338,7 @@ export function HomePage() {
                   onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderBottomColor = 'transparent' }}
                 >
                   <span style={{ ...serif, fontSize: '22px', fontWeight: 300, color: isActive ? '#A8721A' : '#0F1523', display: 'block', lineHeight: 1.2, marginBottom: '2px', transition: 'color 0.18s' }}>{s.name}</span>
-                  <span style={{ ...serif, fontSize: '17px', fontStyle: 'italic', color: isActive ? 'rgba(200,146,42,0.78)' : 'rgba(15,21,35,0.72)', lineHeight: 1.4, display: 'block', transition: 'color 0.18s' }}>{s.question}</span>
+                  <span style={{ ...body, fontSize: '17px', fontStyle: 'italic', color: isActive ? 'rgba(200,146,42,0.78)' : 'rgba(15,21,35,0.72)', lineHeight: 1.4, display: 'block', transition: 'color 0.18s' }}>{s.question}</span>
                 </div>
               )
             })}
@@ -362,7 +365,7 @@ export function HomePage() {
             { q: 'I came to Nik apologising for not doing my homework \u2014 and started telling him I\u2019d met someone and gone on wonderful adventures, my work was expanding. He said: look at what you wrote in week one. I was already living it.', name: 'J.M.' },
           ].map(({ q, name }) => (
             <div key={name} style={{ borderLeft: '2px solid rgba(200,146,42,0.30)', padding: '20px 0 20px 24px' }}>
-              <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.85)', lineHeight: 1.75, marginBottom: '16px' }}>{q}</p>
+              <p style={{ ...body, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.85)', lineHeight: 1.75, marginBottom: '16px' }}>{q}</p>
               <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {name}</span>
             </div>
           ))}
@@ -383,7 +386,7 @@ export function HomePage() {
         <div style={{ maxWidth: '380px', margin: '0 auto' }}>
           <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
           <form action="https://app.kit.com/forms/9215183/subscriptions" className="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
-            <input type="email" name="email_address" placeholder="your@email.com" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
+            <input type="email" name="email_address" placeholder="your@email.com" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
             <button type="submit" style={{ width: '100%', padding: '16px', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Stay connected {'\u2192'}</button>
           </form>
         </div>

@@ -8,7 +8,7 @@ const body = { fontFamily: "'Lora', Georgia, serif" }
 // Light sections are behind.
 // Dark sections move at a slightly faster rate than the page scroll,
 // reinforcing that they sit in front. The difference in speed creates depth.
-function useMultiplaneOffset(speed = 0.04) {
+function useMultiplaneOffset(speed = 0.06) {
   const [offset, setOffset] = useState(0)
   useEffect(() => {
     function onScroll() { setOffset(window.scrollY * speed) }
@@ -96,7 +96,7 @@ export function DarkSection({ children, topColor = '#FAFAF7', bottomColor = '#FA
     <div style={{
       position: 'relative',
       zIndex: 10,
-      transform: `translateY(${offset}px)`,
+      transform: `translateY(${-offset}px)`,
       willChange: 'transform',
       // Shadow cast by the dark foreground layer onto the light background
       // Spreads upward and downward, bleeding past the arc edges
