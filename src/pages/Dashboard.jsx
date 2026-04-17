@@ -84,7 +84,7 @@ Write me 3 short "I am..." statements (one line each) that distill this into a p
     <div>
       <Eyebrow>The Map — Horizon Statements</Eyebrow>
       <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.5)', lineHeight: 1.6, marginBottom: '12px', marginTop: '-2px' }}>
-        An "I am..." statement is a one-line present-tense version of your horizon goal for each domain — who you are becoming, stated as if it's already true. Hover a score to see the full goal. Click <em>Help</em> to have North Star suggest options based on your horizon.
+        An "I am..." statement is a one-line present-tense version of your horizon goal for each domain — who you are becoming, stated as if it's already true. Hover a score to see the full goal. Click <em>North Star</em> to have North Star suggest options based on your horizon.
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
         {DOMAIN_KEYS.map(key => {
@@ -168,7 +168,7 @@ Write me 3 short "I am..." statements (one line each) that distill this into a p
                       onClick={() => isAssisting ? null : handleAssist(key)}
                       title="North Star help"
                       style={{ ...sc, fontSize: '9px', letterSpacing: '0.1em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '20px', padding: '3px 8px', cursor: 'pointer' }}
-                    >{isAssisting ? '…' : 'Help'}</button>
+                    >{isAssisting ? '…' : 'North Star'}</button>
                   )}
                   {!isEditing && (
                     <button
