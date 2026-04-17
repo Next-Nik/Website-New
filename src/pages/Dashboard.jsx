@@ -14,17 +14,190 @@ const DOMAIN_LABEL_MAP = {
   connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal',
 }
 
-function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, domainData, userId, supabase }) {
-  const [editing,   setEditing]   = useState(null)   // domain key being edited
-  const [draft,     setDraft]     = useState('')
-  const [saving,    setSaving]    = useState(false)
-  const [assisting, setAssisting] = useState(null)   // domain key being assisted by North Star
-  const [localIa,   setLocalIa]   = useState({})     // optimistic local updates
+// ── North Star Draft Modal ─────────────────────────────────────
+function NorthStarModal({ domainKey, horizonGoal, purposeData, userId, onSelect, onClose }) {
+  const [drafts,   setDrafts]   = useState(null)
+  const [loading,  setLoading]  = useState(true)
+  const [steer,    setSteer]    = useState('')
+  const [steering, setSteering] = useState(false)
+  const [error,    setError]    = useState(null)
 
   const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
   const body = { fontFamily: "'Lora', Georgia, serif" }
 
-  // Merge local optimistic updates over DB values
+  const archetype = purposeData?.profile?.archetype || purposeData?.session?.tentative?.archetype?.archetype || null
+  const domain    = purposeData?.profile?.domain    || purposeData?.session?.tentative?.domain?.domain       || null
+
+  async function fetchDrafts(steerNote = '') {
+    setLoading(true)
+    setError(null)
+    try {
+      const contextLines = []
+      if (archetype) contextLines.push(`Contribution archetype: ${archetype}`)
+      if (domain)    contextLines.push(`Civilisational domain: ${domain}`)
+      const contextBlock = contextLines.length ? `\n\nContext about this person:\n${contextLines.join('\n')}` : ''
+      const steerBlock   = steerNote ? `\n\nNote from the person: ${steerNote}` : ''
+
+      const res = await fetch('/tools/map/api/avatar-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{
+            role: 'user',
+            content: `You are North Star. A person is writing an "I am..." statement for their ${DOMAIN_LABEL_MAP[domainKey]} domain.
+
+Their horizon goal is: "${horizonGoal}"${contextBlock}${steerBlock}
+
+Write exactly 3 distinct draft "I am..." statements. Each should:
+- Start with "I am"
+- Be one sentence, under 15 words
+- Capture a different angle of the same truth
+- Feel like something this specific person would say, not a generic affirmation
+
+Return ONLY a JSON array of 3 strings, no other text:
+["statement one", "statement two", "statement three"]`,
+          }],
+          userId,
+        }),
+      })
+      const data = await res.json()
+      const text = (data.content?.[0]?.text || data.message || '').trim()
+      const match = text.match(/\[.*\]/s)
+      if (match) {
+        const parsed = JSON.parse(match[0])
+        setDrafts(parsed)
+      } else {
+        throw new Error('Could not parse drafts')
+      }
+    } catch {
+      setError('North Star couldn't generate drafts. Try again.')
+    }
+    setLoading(false)
+    setSteering(false)
+  }
+
+  useEffect(() => { fetchDrafts() }, [])
+
+  function handleTryAgain() {
+    if (!steer.trim()) return
+    setSteering(true)
+    setDrafts(null)
+    fetchDrafts(steer.trim())
+    setSteer('')
+  }
+
+  return (
+    <div
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 3000,
+        background: 'rgba(15,21,35,0.6)', backdropFilter: 'blur(4px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '20px',
+      }}
+    >
+      <div style={{
+        background: '#FAFAF7', borderRadius: '14px',
+        border: '1px solid rgba(200,146,42,0.25)',
+        width: 'min(480px, 100%)', maxHeight: '80vh',
+        overflowY: 'auto', padding: '24px',
+        boxShadow: '0 20px 60px rgba(15,21,35,0.25)',
+      }}>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <div>
+            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em', color: '#A8721A', marginBottom: '4px' }}>
+              NORTH STAR · {DOMAIN_LABEL_MAP[domainKey].toUpperCase()}
+            </div>
+            <div style={{ ...sc, fontSize: '16px', color: '#0F1523', fontWeight: 500 }}>
+              Three draft statements
+            </div>
+          </div>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(15,21,35,0.45)', fontSize: '18px', lineHeight: 1, padding: '2px 4px' }}>×</button>
+        </div>
+
+        {/* Horizon goal reference */}
+        <div style={{ padding: '10px 14px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '8px', marginBottom: '16px' }}>
+          <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.4)', marginBottom: '4px' }}>Your horizon goal</div>
+          <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: 0 }}>{horizonGoal}</p>
+        </div>
+
+        {/* Drafts */}
+        {loading ? (
+          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: '#A8721A', textAlign: 'center', padding: '24px 0' }}>
+            North Star is writing…
+          </div>
+        ) : error ? (
+          <div>
+            <p style={{ ...body, fontSize: '13px', color: '#8A3030', marginBottom: '12px' }}>{error}</p>
+            <button onClick={() => fetchDrafts()} style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.3)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}>
+              Try again
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+            {(drafts || []).map((draft, i) => (
+              <button
+                key={i}
+                onClick={() => onSelect(draft)}
+                style={{
+                  textAlign: 'left', padding: '12px 14px',
+                  background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.25)',
+                  borderRadius: '10px', cursor: 'pointer',
+                  transition: 'all 0.15s', width: '100%',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.7)'; e.currentTarget.style.background = 'rgba(200,146,42,0.04)' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.25)'; e.currentTarget.style.background = '#FFFFFF' }}
+              >
+                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.12em', color: '#A8721A', marginBottom: '4px' }}>DRAFT {i + 1}</div>
+                <div style={{ ...body, fontSize: '14px', color: '#0F1523', lineHeight: 1.6 }}>{draft}</div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Try again with steer */}
+        {!loading && !error && (
+          <div style={{ borderTop: '1px solid rgba(200,146,42,0.12)', paddingTop: '16px' }}>
+            <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.4)', marginBottom: '6px' }}>
+              None of these? Steer North Star:
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <input
+                value={steer}
+                onChange={e => setSteer(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleTryAgain()}
+                placeholder="e.g. more grounded, less abstract…"
+                style={{
+                  flex: 1, ...body, fontSize: '13px', color: '#0F1523',
+                  border: '1px solid rgba(200,146,42,0.3)', borderRadius: '20px',
+                  padding: '6px 14px', outline: 'none', background: '#FFFFFF',
+                }}
+              />
+              <button
+                onClick={handleTryAgain}
+                disabled={steering || !steer.trim()}
+                style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', color: '#FFFFFF', background: steering ? 'rgba(200,146,42,0.4)' : '#A8721A', border: 'none', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer', flexShrink: 0 }}
+              >{steering ? '…' : 'Go'}</button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, domainData, userId, purposeData, supabase }) {
+  const [editing,      setEditing]      = useState(null)
+  const [draft,        setDraft]        = useState('')
+  const [saving,       setSaving]       = useState(false)
+  const [nsModal,      setNsModal]      = useState(null)  // domain key with modal open
+  const [goalModal,    setGoalModal]    = useState(null)  // domain key with goal modal open
+  const [localIa,      setLocalIa]      = useState({})
+
+  const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const body = { fontFamily: "'Lora', Georgia, serif" }
+
   function getIa(key) {
     return localIa[key] !== undefined
       ? localIa[key]
@@ -45,30 +218,10 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
     setDraft('')
   }
 
-  async function handleAssist(domainKey) {
-    const horizonGoal = horizonProfile?.[domainKey]?.horizonGoal
-    if (!horizonGoal) return
-    setAssisting(domainKey)
-    try {
-      const res = await fetch('/api/map-avatar-chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [{
-            role: 'user',
-            content: `My horizon goal for ${DOMAIN_LABEL_MAP[domainKey]} is: "${horizonGoal}"
-
-Write me 3 short "I am..." statements (one line each) that distill this into a present-tense identity statement. Start each with "I am". Each should be distinct — different angle, same truth. Keep each under 15 words.`,
-          }],
-          userId,
-        }),
-      })
-      const data = await res.json()
-      const text = data.content?.[0]?.text || data.message || ''
-      setDraft(text)
-      setEditing(domainKey)
-    } catch {}
-    setAssisting(null)
+  function handleDraftSelect(draft) {
+    setEditing(nsModal)
+    setDraft(draft)
+    setNsModal(null)
   }
 
   if (!hasScores) {
@@ -84,7 +237,7 @@ Write me 3 short "I am..." statements (one line each) that distill this into a p
     <div>
       <Eyebrow>The Map — Horizon Statements</Eyebrow>
       <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.5)', lineHeight: 1.6, marginBottom: '12px', marginTop: '-2px' }}>
-        An "I am..." statement is a one-line present-tense version of your horizon goal for each domain — who you are becoming, stated as if it's already true. Hover a score to see the full goal. Click <em>North Star</em> to have North Star suggest options based on your horizon.
+        An "I am..." statement is a one-line present-tense version of your horizon goal for each domain — who you are becoming, stated as if it's already true. Click a score to see the full goal. Click <em>North Star</em> to get three draft options based on your horizon.
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
         {DOMAIN_KEYS.map(key => {
@@ -92,7 +245,6 @@ Write me 3 short "I am..." statements (one line each) that distill this into a p
           const horizonGoal = domainData?.[key]?.horizonText || horizonProfile?.[key]?.horizonGoal || null
           const score       = currentScores[key]
           const isEditing   = editing === key
-          const isAssisting = assisting === key
 
           return (
             <div key={key} style={{
@@ -101,20 +253,23 @@ Write me 3 short "I am..." statements (one line each) that distill this into a p
               overflow: 'hidden',
               background: '#FFFFFF',
             }}>
-              {/* Main row */}
               <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 12px' }}>
-                {/* Domain label + score — hover score to see horizon goal */}
+
+                {/* Domain label + score — click to see horizon goal */}
                 <div style={{ minWidth: '72px', flexShrink: 0 }}>
                   <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>
                     {DOMAIN_LABEL_MAP[key]}
                   </div>
                   {score != null && (
                     <div
-                      title={horizonGoal || undefined}
+                      onClick={horizonGoal ? () => setGoalModal(key) : undefined}
                       style={{
-                        ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.45)', marginTop: '1px',
-                        cursor: horizonGoal ? 'help' : 'default',
-                        textDecoration: horizonGoal ? 'underline dotted rgba(200,146,42,0.4)' : 'none',
+                        ...sc, fontSize: '13px', color: horizonGoal ? '#A8721A' : 'rgba(15,21,35,0.45)',
+                        marginTop: '1px',
+                        cursor: horizonGoal ? 'pointer' : 'default',
+                        textDecoration: horizonGoal ? 'underline' : 'none',
+                        textUnderlineOffset: '2px',
+                        textDecorationColor: 'rgba(200,146,42,0.4)',
                       }}
                     >{score}</div>
                   )}
@@ -127,7 +282,7 @@ Write me 3 short "I am..." statements (one line each) that distill this into a p
                       <textarea
                         value={draft}
                         onChange={e => setDraft(e.target.value)}
-                        placeholder={`I am...`}
+                        placeholder="I am..."
                         rows={3}
                         style={{
                           width: '100%', ...body, fontSize: '13px', color: '#0F1523',
@@ -151,9 +306,7 @@ Write me 3 short "I am..." statements (one line each) that distill this into a p
                       </div>
                     </div>
                   ) : ia ? (
-                    <p
-                      style={{ ...body, fontSize: '13px', color: '#0F1523', lineHeight: 1.6, margin: 0 }}
-                    >{ia}</p>
+                    <p style={{ ...body, fontSize: '13px', color: '#0F1523', lineHeight: 1.6, margin: 0 }}>{ia}</p>
                   ) : (
                     <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.35)', lineHeight: 1.5, margin: 0, fontStyle: 'italic' }}>
                       No statement yet
@@ -165,23 +318,18 @@ Write me 3 short "I am..." statements (one line each) that distill this into a p
                 <div style={{ display: 'flex', gap: '6px', flexShrink: 0, alignItems: 'center' }}>
                   {horizonGoal && !isEditing && (
                     <button
-                      onClick={() => isAssisting ? null : handleAssist(key)}
-                      title="North Star help"
+                      onClick={() => setNsModal(key)}
                       style={{ ...sc, fontSize: '9px', letterSpacing: '0.1em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '20px', padding: '3px 8px', cursor: 'pointer' }}
-                    >{isAssisting ? '…' : 'North Star'}</button>
+                    >North Star</button>
                   )}
                   {!isEditing && (
                     <button
                       onClick={() => { setEditing(key); setDraft(ia || '') }}
-                      title="Edit"
                       style={{ ...sc, fontSize: '9px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.45)', background: 'none', border: '1px solid rgba(15,21,35,0.12)', borderRadius: '20px', padding: '3px 8px', cursor: 'pointer' }}
                     >{ia ? 'Edit' : 'Write'}</button>
                   )}
-
                 </div>
               </div>
-
-
             </div>
           )
         })}
@@ -190,6 +338,52 @@ Write me 3 short "I am..." statements (one line each) that distill this into a p
       <div style={{ marginTop: '4px' }}>
         <NextUpBanner label="Rescore your map" sub="10–20 min · see what's shifted" href="/tools/map" />
       </div>
+
+      {/* North Star modal */}
+      {nsModal && (
+        <NorthStarModal
+          domainKey={nsModal}
+          horizonGoal={domainData?.[nsModal]?.horizonText || horizonProfile?.[nsModal]?.horizonGoal}
+          purposeData={purposeData}
+          userId={userId}
+          onSelect={handleDraftSelect}
+          onClose={() => setNsModal(null)}
+        />
+      )}
+
+      {/* Horizon goal modal */}
+      {goalModal && (
+        <div
+          onClick={() => setGoalModal(null)}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 3000,
+            background: 'rgba(15,21,35,0.55)', backdropFilter: 'blur(4px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '20px',
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: '#FAFAF7', borderRadius: '14px',
+              border: '1px solid rgba(200,146,42,0.25)',
+              width: 'min(440px, 100%)', padding: '24px',
+              boxShadow: '0 20px 60px rgba(15,21,35,0.25)',
+            }}
+          >
+            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em', color: '#A8721A', marginBottom: '8px' }}>
+              {DOMAIN_LABEL_MAP[goalModal].toUpperCase()} · HORIZON GOAL
+            </div>
+            <p style={{ ...body, fontSize: '15px', color: '#0F1523', lineHeight: 1.75, margin: '0 0 20px' }}>
+              {domainData?.[goalModal]?.horizonText || horizonProfile?.[goalModal]?.horizonGoal}
+            </p>
+            <button
+              onClick={() => setGoalModal(null)}
+              style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', background: 'none', border: '1px solid rgba(15,21,35,0.15)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}
+            >Close</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -613,7 +807,7 @@ function PracticeCard({ practiceData }) {
 
 // ── HorizonWheel (mini) ───────────────────────────────────────
 
-function HorizonWheelMini({ currentScores, horizonScores, size = 180 }) {
+function HorizonWheelMini({ currentScores, horizonScores, size = 180, onDomainClick }) {
   const cx = size / 2, cy = size / 2
   const maxR = (size / 2) * 0.62
   const n = DOMAIN_KEYS.length
@@ -640,7 +834,14 @@ function HorizonWheelMini({ currentScores, horizonScores, size = 180 }) {
         const s = currentScores[k]
         if (s == null) return null
         const [x, y] = pt(i, s)
-        return <circle key={k} cx={x} cy={y} r={2.5} fill={getTierColor(s)} stroke="rgba(250,250,247,0.8)" strokeWidth="1" />
+        return (
+          <circle
+            key={k} cx={x} cy={y} r={onDomainClick ? 5 : 2.5}
+            fill={getTierColor(s)} stroke="rgba(250,250,247,0.8)" strokeWidth="1"
+            style={{ cursor: onDomainClick ? 'pointer' : 'default' }}
+            onClick={onDomainClick ? () => onDomainClick(k) : undefined}
+          />
+        )
       })}
       {DOMAIN_KEYS.map((k, i) => {
         const a = (Math.PI * 2 * i) / n - Math.PI / 2
@@ -1195,6 +1396,7 @@ export function DashboardPage() {
           horizonScores={horizonScores}
           domainData={mapData?.session?.domainData || {}}
           userId={user?.id}
+          purposeData={purposeData}
           supabase={supabase}
         />
       )
