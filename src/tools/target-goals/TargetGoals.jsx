@@ -1317,7 +1317,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
           update={update}
           generateTasks={generateTasks}
           sc={sc}
-          serif={serif}
+          body={body}
           gold={gold}
           muted={muted}
           meta={meta}
@@ -1329,7 +1329,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
 
 // ─── Tasks Step ──────────────────────────────────────────────────────────────
 
-function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks, sc, serif, gold, muted, meta }) {
+function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks, sc, body, gold, muted, meta }) {
   const [calAdded,      setCalAdded]      = useState({})
   const [editingDate,   setEditingDate]   = useState(null) // 'milestone-0' | 'task-0-2' etc
 

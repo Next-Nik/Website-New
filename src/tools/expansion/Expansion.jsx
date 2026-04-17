@@ -214,7 +214,7 @@ const DOMAIN_TIPS = {
 
 // ─── Domain input row with tooltip ────────────────────────────────────────────
 
-function DomainInputRow({ domain, value, onChange, serif, sc }) {
+function DomainInputRow({ domain, value, onChange, body, sc }) {
   const [showTip, setShowTip] = useState(false)
 
   return (
@@ -377,7 +377,7 @@ function SetupPhase({ mapData, onComplete, userId }) {
                       domain={domain}
                       value={customGoals[domain]}
                       onChange={val => setCustomGoals(prev => ({ ...prev, [domain]: val }))}
-                      serif={serif}
+                      body={body}
                       sc={sc}
                     />
                   ))}
