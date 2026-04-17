@@ -105,7 +105,7 @@ export function ToolsPage() {
           Each tool is built for a specific stage of the journey. You don\u2019t need all of them \u2014 and you don\u2019t need to start at the beginning.
         </p>
 
-              </div>
+      </div>
 
       {/* Orienteering nudge — dark section */}
       <DarkSection>

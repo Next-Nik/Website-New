@@ -173,8 +173,6 @@ export function PricingPage() {
           </div>
         </div>
 
-              </div>
-
       {/* Individual tools — dark pivot */}
       <DarkSection>
         <DarkEyebrow>Individual tools</DarkEyebrow>
@@ -249,8 +247,6 @@ export function PricingPage() {
             </div>
           </div>
         </div>
-
-              </div>
 
       {/* Work with Nik — dark pivot */}
       <DarkSection>

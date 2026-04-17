@@ -280,7 +280,7 @@ export function NextUsPage() {
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 48px' }} />
 
-              </div>
+      </div>
 
       {/* Fractal connection — dark section */}
       <DarkSection>
@@ -343,8 +343,6 @@ export function NextUsPage() {
           ))}
         </div>
       </div>
-
-            </div>
 
       {/* Actors entry point — dark section */}
       <DarkSection>
