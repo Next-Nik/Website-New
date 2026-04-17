@@ -99,7 +99,7 @@ export function NeedleDivider({ direction = 'into-dark', topColor = '#FAFAF7', b
 // Shadow: cast by the dark section onto the light sections above and below.
 // The dark section is in front — its edges bleed shadow onto the background behind.
 export function DarkSection({ children, topColor = '#FAFAF7', bottomColor = '#FAFAF7', style = {} }) {
-  const { ref, offset } = useViewportParallax(0.06)
+  const { ref, offset } = useViewportParallax(0.14)
   return (
     <div ref={ref} style={{
       position: 'relative',
