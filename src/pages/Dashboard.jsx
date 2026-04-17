@@ -4,6 +4,204 @@ import { Nav } from '../components/Nav'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
 
+
+// ── MapIAmView ────────────────────────────────────────────────
+// Shows "I am..." statements per domain, North Star assisted.
+// Stored in horizon_profile.ia_statement per domain row.
+
+const DOMAIN_LABEL_MAP = {
+  path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances',
+  connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal',
+}
+
+function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, userId, supabase }) {
+  const [expanded,  setExpanded]  = useState(null)   // domain key with expanded horizon goal
+  const [editing,   setEditing]   = useState(null)   // domain key being edited
+  const [draft,     setDraft]     = useState('')
+  const [saving,    setSaving]    = useState(false)
+  const [assisting, setAssisting] = useState(null)   // domain key being assisted by North Star
+  const [localIa,   setLocalIa]   = useState({})     // optimistic local updates
+
+  const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const body = { fontFamily: "'Lora', Georgia, serif" }
+
+  // Merge local optimistic updates over DB values
+  function getIa(key) {
+    return localIa[key] !== undefined
+      ? localIa[key]
+      : horizonProfile?.[key]?.iaStatement || null
+  }
+
+  async function saveIa(domainKey, value) {
+    setSaving(true)
+    try {
+      await supabase.from('horizon_profile')
+        .update({ ia_statement: value })
+        .eq('user_id', userId)
+        .eq('domain', domainKey)
+      setLocalIa(prev => ({ ...prev, [domainKey]: value }))
+    } catch {}
+    setSaving(false)
+    setEditing(null)
+    setDraft('')
+  }
+
+  async function handleAssist(domainKey) {
+    const horizonGoal = horizonProfile?.[domainKey]?.horizonGoal
+    if (!horizonGoal) return
+    setAssisting(domainKey)
+    try {
+      const res = await fetch('/api/map-avatar-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [{
+            role: 'user',
+            content: `My horizon goal for ${DOMAIN_LABEL_MAP[domainKey]} is: "${horizonGoal}"
+
+Write me 3 short "I am..." statements (one line each) that distill this into a present-tense identity statement. Start each with "I am". Each should be distinct — different angle, same truth. Keep each under 15 words.`,
+          }],
+          userId,
+        }),
+      })
+      const data = await res.json()
+      const text = data.content?.[0]?.text || data.message || ''
+      setDraft(text)
+      setEditing(domainKey)
+    } catch {}
+    setAssisting(null)
+  }
+
+  if (!hasScores) {
+    return (
+      <div>
+        <Eyebrow>The Map</Eyebrow>
+        <NextUpBanner label="Begin The Map" sub="7 domains · 10–20 min" href="/tools/map" />
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <Eyebrow>The Map — Horizon Statements</Eyebrow>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
+        {DOMAIN_KEYS.map(key => {
+          const ia          = getIa(key)
+          const horizonGoal = horizonProfile?.[key]?.horizonGoal
+          const score       = currentScores[key]
+          const isExpanded  = expanded === key
+          const isEditing   = editing === key
+          const isAssisting = assisting === key
+
+          return (
+            <div key={key} style={{
+              border: '1px solid rgba(200,146,42,0.18)',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              background: isExpanded ? 'rgba(200,146,42,0.03)' : '#FFFFFF',
+            }}>
+              {/* Main row */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 12px' }}>
+                {/* Domain label + score */}
+                <div style={{ minWidth: '72px', flexShrink: 0 }}>
+                  <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>
+                    {DOMAIN_LABEL_MAP[key]}
+                  </div>
+                  {score != null && (
+                    <div style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.45)', marginTop: '1px' }}>{score}</div>
+                  )}
+                </div>
+
+                {/* Statement or prompt */}
+                <div style={{ flex: 1 }}>
+                  {isEditing ? (
+                    <div>
+                      <textarea
+                        value={draft}
+                        onChange={e => setDraft(e.target.value)}
+                        placeholder={`I am...`}
+                        rows={3}
+                        style={{
+                          width: '100%', ...body, fontSize: '13px', color: '#0F1523',
+                          border: '1px solid rgba(200,146,42,0.4)', borderRadius: '6px',
+                          padding: '8px', resize: 'vertical', outline: 'none',
+                          background: 'rgba(200,146,42,0.02)', lineHeight: 1.6,
+                          boxSizing: 'border-box',
+                        }}
+                        autoFocus
+                      />
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '6px', alignItems: 'center' }}>
+                        <button
+                          onClick={() => draft.trim() && saveIa(key, draft.trim())}
+                          disabled={saving || !draft.trim()}
+                          style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em', color: '#FFFFFF', background: '#A8721A', border: 'none', borderRadius: '20px', padding: '4px 12px', cursor: 'pointer' }}
+                        >{saving ? 'Saving…' : 'Save'}</button>
+                        <button
+                          onClick={() => { setEditing(null); setDraft('') }}
+                          style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer' }}
+                        >Cancel</button>
+                      </div>
+                    </div>
+                  ) : ia ? (
+                    <p
+                      onClick={() => setExpanded(isExpanded ? null : key)}
+                      style={{ ...body, fontSize: '13px', color: '#0F1523', lineHeight: 1.6, margin: 0, cursor: horizonGoal ? 'pointer' : 'default' }}
+                    >{ia}</p>
+                  ) : (
+                    <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.35)', lineHeight: 1.5, margin: 0, fontStyle: 'italic' }}>
+                      No statement yet
+                    </p>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div style={{ display: 'flex', gap: '6px', flexShrink: 0, alignItems: 'center' }}>
+                  {horizonGoal && !isEditing && (
+                    <button
+                      onClick={() => isAssisting ? null : handleAssist(key)}
+                      title="North Star help"
+                      style={{ ...sc, fontSize: '9px', letterSpacing: '0.1em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '20px', padding: '3px 8px', cursor: 'pointer' }}
+                    >{isAssisting ? '…' : 'Help'}</button>
+                  )}
+                  {!isEditing && (
+                    <button
+                      onClick={() => { setEditing(key); setDraft(ia || '') }}
+                      title="Edit"
+                      style={{ ...sc, fontSize: '9px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.45)', background: 'none', border: '1px solid rgba(15,21,35,0.12)', borderRadius: '20px', padding: '3px 8px', cursor: 'pointer' }}
+                    >{ia ? 'Edit' : 'Write'}</button>
+                  )}
+                  {ia && horizonGoal && !isEditing && (
+                    <span
+                      onClick={() => setExpanded(isExpanded ? null : key)}
+                      style={{ color: '#A8721A', fontSize: '12px', cursor: 'pointer', transform: isExpanded ? 'rotate(90deg)' : 'none', display: 'inline-block', transition: 'transform 0.15s' }}
+                    >›</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Expanded horizon goal */}
+              {isExpanded && horizonGoal && (
+                <div style={{
+                  padding: '10px 12px 12px',
+                  borderTop: '1px solid rgba(200,146,42,0.1)',
+                  background: 'rgba(200,146,42,0.02)',
+                }}>
+                  <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.4)', marginBottom: '6px' }}>Horizon goal</div>
+                  <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>{horizonGoal}</p>
+                </div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      <div style={{ marginTop: '4px' }}>
+        <NextUpBanner label="Rescore your map" sub="10–20 min · see what's shifted" href="/tools/map" />
+      </div>
+    </div>
+  )
+}
+
 // ─────────────────────────────────────────────────────────────
 // MISSION CONTROL — Dashboard replacing /profile
 // Four zones: You · Your Work · Practitioners · Planet
@@ -859,7 +1057,7 @@ export function DashboardPage() {
         supabase.from('horizon_state_summary').select('*').eq('user_id', user.id).maybeSingle(),
         supabase.from('horizon_practice_sessions').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
         supabase.from('nextus_actors').select('id, name, domain_id').eq('profile_owner', user.id).maybeSingle(),
-        supabase.from('horizon_profile').select('domain, current_score, horizon_score, horizon_goal').eq('user_id', user.id),
+        supabase.from('horizon_profile').select('domain, current_score, horizon_score, horizon_goal, ia_statement').eq('user_id', user.id),
       ])
       if (mapRes.data)        setMapData(mapRes.data)
       if (ppRes.data)         setPurposeData(ppRes.data)
@@ -870,7 +1068,12 @@ export function DashboardPage() {
       if (horizonRes.data?.length) {
         const profile = {}
         for (const row of horizonRes.data) {
-          profile[row.domain] = { currentScore: row.current_score, horizonScore: row.horizon_score }
+          profile[row.domain] = {
+            currentScore: row.current_score,
+            horizonScore: row.horizon_score,
+            horizonGoal: row.horizon_goal,
+            iaStatement: row.ia_statement,
+          }
         }
         setHorizonProfile(profile)
       }
@@ -986,22 +1189,14 @@ export function DashboardPage() {
 
       if (activeView === 'hs')       return <HorizonStatePanel foundationData={foundationData} />
       if (activeView === 'map')      return (
-        <div>
-          <Eyebrow>The Map</Eyebrow>
-          {hasScores ? (
-            <div>
-              <HorizonWheelMini currentScores={currentScores} horizonScores={horizonScores} size={200} />
-              <div style={{ marginTop: '10px' }}>
-                <PulseStrip scores={currentScores} />
-              </div>
-              <div style={{ marginTop: '10px' }}>
-                <NextUpBanner label="Rescore your map" sub="10–20 min · see what's shifted" href="/tools/map" />
-              </div>
-            </div>
-          ) : (
-            <NextUpBanner label="Begin The Map" sub="7 domains · 10–20 min" href="/tools/map" />
-          )}
-        </div>
+        <MapIAmView
+          horizonProfile={horizonProfile}
+          hasScores={hasScores}
+          currentScores={currentScores}
+          horizonScores={horizonScores}
+          userId={user?.id}
+          supabase={supabase}
+        />
       )
       if (activeView === 'sprint')   return (
         <div>
@@ -1018,11 +1213,17 @@ export function DashboardPage() {
       if (activeView === 'purpose')  return (
         <div>
           <Eyebrow>Purpose Piece</Eyebrow>
-          {purposeData?.status === 'complete' ? (
+          {(purposeData?.status === 'complete' || (purposeData && (archetype || domain))) ? (
             <div>
-              {purposeData.profile?.civilisational_statement && (
+              {purposeData.profile?.civilisational_statement ? (
                 <p style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: '#0F1523', lineHeight: 1.75, marginBottom: '14px' }}>{purposeData.profile.civilisational_statement}</p>
-              )}
+              ) : (purposeData?.session?.tentative?.archetype?.archetype) ? (
+                <p style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, marginBottom: '14px' }}>
+                  {purposeData.session.tentative.archetype.archetype}
+                  {purposeData.session.tentative.domain?.domain ? ` · ${purposeData.session.tentative.domain.domain}` : ''}
+                  {purposeData.session.tentative.scale?.scale ? ` · ${purposeData.session.tentative.scale.scale}` : ''}
+                </p>
+              ) : null}
               <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '14px' }}>
                 {[archetype, domain, scale].filter(Boolean).map((v, i) => <Badge key={i} variant="gold">{v}</Badge>)}
               </div>
@@ -1149,7 +1350,10 @@ export function DashboardPage() {
           <div style={s.rail}>
             {/* Zone items */}
             <div style={{ padding: '10px 0 4px', flex: 1 }}>
-              <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.35)', textTransform: 'uppercase', padding: '0 14px 5px' }}>
+              <div
+                style={{ ...sc, fontSize: '9px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.35)', textTransform: 'uppercase', padding: '0 14px 5px', cursor: isFounder && activeZone === 'you' ? 'default' : 'default' }}
+                onClick={isFounder && activeZone === 'you' ? (() => navigate('/admin')) : undefined}
+              >
                 {activeZone === 'you' ? name : ZONE_LABELS[activeZone]}
               </div>
               {RAIL_ITEMS[activeZone].map(item => {
