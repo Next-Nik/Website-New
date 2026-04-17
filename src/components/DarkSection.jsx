@@ -1,10 +1,28 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
 
-// ── Parallax hook ─────────────────────────────────────────────────────────────
-export function useParallax(speed = 0.15) {
+// ── Multiplane scroll hook ────────────────────────────────────────────────────
+// Light sections scroll at full speed (no transform — they're just the page).
+// Dark sections scroll at a slightly slower speed, making them feel further back.
+// lag: how much slower the dark layer moves. 0.06 = 6% slower than foreground.
+function useMultiplaneOffset(lag = 0.06) {
+  const [offset, setOffset] = useState(0)
+  useEffect(() => {
+    function onScroll() {
+      // Negative: dark sections drift upward less than the natural scroll,
+      // so they appear to be on a layer behind the light sections.
+      setOffset(-(window.scrollY * lag))
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [lag])
+  return offset
+}
+
+// Also export as useParallax for any existing callers
+export function useParallax(speed = 0.06) {
   const [offset, setOffset] = useState(0)
   useEffect(() => {
     function onScroll() { setOffset(window.scrollY * speed) }
@@ -14,120 +32,95 @@ export function useParallax(speed = 0.15) {
   return offset
 }
 
-// ── Section parallax wrapper ───────────────────────────────────────────────────
-// Wraps any section content with a gentle scroll-driven translateY
-export function ParallaxLayer({ speed = 0.06, children, style = {} }) {
-  const offset = useParallax(speed)
-  return (
-    <div style={{
-      transform: `translateY(${offset}px)`,
-      willChange: 'transform',
-      ...style,
-    }}>
-      {children}
-    </div>
-  )
-}
+// ── THE LOCKED ARC ────────────────────────────────────────────────────────────
+// One gentle convex curve. Same geometry entry and exit, mirrored.
+// RISE controls subtlety — lower is gentler.
+// Gold line traces the arc exactly. No rules anywhere else.
 
-// ── THE LOCKED ARC ─────────────────────────────────────────────────────────────
-// One shape. Used for both entry and exit.
-// A gentle convex curve — the curvature of the Earth seen from the horizon.
-// Control point Y=18 gives a subtle arc, not a lens.
-// Entry: light above, arc descends into dark
-// Exit:  dark above, arc descends into light (same curve, flipped vertically)
+const W    = 1440
+const H    = 56
+const FLAT = 32
+const RISE = 10
 
-const ARC_H    = 64           // viewBox height
-const ARC_PEAK = 18           // how high the arc rises at centre (lower = subtler)
-const ARC_BASE = 44           // where the flat parts sit
-
-// Entry divider: light → dark
-// Arc points upward into the light section, dark fills below
-export function ArcEntryDivider({ topColor = '#FAFAF7', bottomColor = '#0F1523' }) {
+export function ArcEntry({ topColor = '#FAFAF7', bottomColor = '#0F1523' }) {
+  const peak = FLAT - RISE
   return (
     <div style={{ display: 'block', lineHeight: 0, fontSize: 0, margin: 0, padding: 0 }}>
-      <svg width="100%" viewBox={`0 0 1440 ${ARC_H}`} preserveAspectRatio="none"
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none"
         style={{ display: 'block' }} aria-hidden="true">
-        {/* top flat fill */}
-        <rect x="0" y="0" width="1440" height={ARC_BASE} fill={topColor} />
-        {/* dark section fills from the arc down */}
-        <path d={`M0,${ARC_BASE} Q720,${ARC_PEAK} 1440,${ARC_BASE} L1440,${ARC_H} L0,${ARC_H} Z`}
-          fill={bottomColor} />
-        {/* gold border on the arc line */}
-        <path d={`M0,${ARC_BASE} Q720,${ARC_PEAK} 1440,${ARC_BASE}`}
-          fill="none" stroke="#C8922A" strokeWidth="1" opacity="0.5" />
-        {/* compass mark at apex */}
-        <circle cx="720" cy={ARC_PEAK + 8} r="5.5" fill="none" stroke="#C8922A" strokeWidth="0.9" opacity="0.6" />
-        <circle cx="720" cy={ARC_PEAK + 8} r="2" fill="#C8922A" opacity="0.75" />
-        <line x1="720" y1={ARC_PEAK - 2} x2="720" y2={ARC_PEAK + 2}
-          stroke="#C8922A" strokeWidth="1.2" opacity="0.8" />
-        <polygon points={`720,${ARC_PEAK} 723,${ARC_PEAK + 9} 720,${ARC_PEAK + 13} 717,${ARC_PEAK + 9}`}
-          fill="#C8922A" opacity="0.75" />
-        <circle cx="704" cy={ARC_PEAK + 12} r="1.6" fill="#C8922A" opacity="0.35" />
-        <circle cx="736" cy={ARC_PEAK + 12} r="1.6" fill="#C8922A" opacity="0.35" />
+        <rect x="0" y="0" width={W} height={FLAT} fill={topColor} />
+        <path d={`M0,${FLAT} Q${W/2},${peak} ${W},${FLAT} L${W},${H} L0,${H} Z`} fill={bottomColor} />
+        <path d={`M0,${FLAT} Q${W/2},${peak} ${W},${FLAT}`}
+          fill="none" stroke="#C8922A" strokeWidth="0.75" opacity="0.6" />
+        <circle cx={W/2} cy={peak+7} r="4.5" fill="none" stroke="#C8922A" strokeWidth="0.9" opacity="0.65" />
+        <circle cx={W/2} cy={peak+7} r="1.8" fill="#C8922A" opacity="0.8" />
+        <line x1={W/2} y1={peak} x2={W/2} y2={peak+2} stroke="#C8922A" strokeWidth="1" opacity="0.8" />
+        <polygon points={`${W/2},${peak} ${W/2+3},${peak+8} ${W/2},${peak+12} ${W/2-3},${peak+8}`}
+          fill="#C8922A" opacity="0.7" />
+        <circle cx={W/2-16} cy={peak+10} r="1.4" fill="#C8922A" opacity="0.35" />
+        <circle cx={W/2+16} cy={peak+10} r="1.4" fill="#C8922A" opacity="0.35" />
       </svg>
     </div>
   )
 }
 
-// Exit divider: dark → light
-// Same arc shape, flipped — arc points downward into the light section
-export function ArcExitDivider({ topColor = '#0F1523', bottomColor = '#FAFAF7' }) {
-  const midY = ARC_H - ARC_BASE          // 20 — where flat parts sit from top
-  const peakY = ARC_H - ARC_PEAK        // 46 — where arc descends to
+export function ArcExit({ topColor = '#0F1523', bottomColor = '#FAFAF7' }) {
+  const nadir = FLAT + RISE
+  const start = H - FLAT
   return (
     <div style={{ display: 'block', lineHeight: 0, fontSize: 0, margin: 0, padding: 0 }}>
-      <svg width="100%" viewBox={`0 0 1440 ${ARC_H}`} preserveAspectRatio="none"
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none"
         style={{ display: 'block' }} aria-hidden="true">
-        {/* dark fills from top down to the arc */}
-        <path d={`M0,0 L1440,0 L1440,${midY} Q720,${peakY} 0,${midY} Z`}
-          fill={topColor} />
-        {/* light fills below */}
-        <rect x="0" y={midY} width="1440" height={ARC_H - midY} fill={bottomColor} />
-        {/* gold border on the arc line */}
-        <path d={`M0,${midY} Q720,${peakY} 1440,${midY}`}
-          fill="none" stroke="#C8922A" strokeWidth="1" opacity="0.5" />
-        {/* compass mark at nadir */}
-        <circle cx="720" cy={peakY - 8} r="5.5" fill="none" stroke="#C8922A" strokeWidth="0.9" opacity="0.6" />
-        <circle cx="720" cy={peakY - 8} r="2" fill="#C8922A" opacity="0.75" />
-        <circle cx="704" cy={peakY - 12} r="1.6" fill="#C8922A" opacity="0.35" />
-        <circle cx="736" cy={peakY - 12} r="1.6" fill="#C8922A" opacity="0.35" />
+        <path d={`M0,0 L${W},0 L${W},${start} Q${W/2},${nadir} 0,${start} Z`} fill={topColor} />
+        <rect x="0" y={start} width={W} height={H-start} fill={bottomColor} />
+        <path d={`M0,${start} Q${W/2},${nadir} ${W},${start}`}
+          fill="none" stroke="#C8922A" strokeWidth="0.75" opacity="0.6" />
+        <circle cx={W/2} cy={nadir-6} r="4.5" fill="none" stroke="#C8922A" strokeWidth="0.9" opacity="0.65" />
+        <circle cx={W/2} cy={nadir-6} r="1.8" fill="#C8922A" opacity="0.8" />
+        <circle cx={W/2-16} cy={nadir-10} r="1.4" fill="#C8922A" opacity="0.35" />
+        <circle cx={W/2+16} cy={nadir-10} r="1.4" fill="#C8922A" opacity="0.35" />
       </svg>
     </div>
   )
 }
 
-// ── Legacy exports ────────────────────────────────────────────────────────────
-export const NeedleEntryDivider = ArcEntryDivider
-export const HorizonExitDivider = ArcExitDivider
+// Legacy aliases
+export const NeedleEntryDivider = ArcEntry
+export const HorizonExitDivider = ArcExit
 export function NeedleDivider({ direction = 'into-dark', topColor = '#FAFAF7', bottomColor = '#0F1523' }) {
-  if (direction === 'into-dark') return <ArcEntryDivider topColor={topColor} bottomColor={bottomColor} />
-  return <ArcExitDivider topColor="#0F1523" bottomColor={bottomColor} />
+  if (direction === 'into-dark') return <ArcEntry topColor={topColor} bottomColor={bottomColor} />
+  return <ArcExit topColor="#0F1523" bottomColor={bottomColor} />
 }
 
 // ── Dark Section wrapper ───────────────────────────────────────────────────────
+// The entire dark section — arcs + content — sits on a slower-moving layer.
+// Light sections scroll at full speed (the foreground).
+// Dark sections lag slightly behind, creating the multiplane depth effect.
+// Nothing inside the dark section moves independently.
 export function DarkSection({ children, topColor = '#FAFAF7', bottomColor = '#FAFAF7', style = {} }) {
-  const parallax = useParallax(0.05)
+  const layerOffset = useMultiplaneOffset(0.06)
   return (
-    <>
-      {topColor !== null && <ArcEntryDivider topColor={topColor} bottomColor="#0F1523" />}
+    <div style={{
+      transform: `translateY(${layerOffset}px)`,
+      willChange: 'transform',
+      // Negative margin compensates for the offset so no gap appears
+      // between this layer and the light sections above/below
+      marginTop: '-2px',
+      marginBottom: '-2px',
+    }}>
+      {topColor !== null && <ArcEntry topColor={topColor} bottomColor="#0F1523" />}
       <section style={{
         background: '#0F1523',
-        borderLeft: '1px solid rgba(200,146,42,0.35)',
-        borderRight: '1px solid rgba(200,146,42,0.35)',
         padding: '96px 40px',
+        position: 'relative',
         ...style,
       }}>
-        <div style={{
-          maxWidth: '820px',
-          margin: '0 auto',
-          transform: `translateY(${parallax}px)`,
-          willChange: 'transform',
-        }}>
+        <div style={{ maxWidth: '820px', margin: '0 auto' }}>
           {children}
         </div>
       </section>
-      {bottomColor !== null && <ArcExitDivider topColor="#0F1523" bottomColor={bottomColor} />}
-    </>
+      {bottomColor !== null && <ArcExit topColor="#0F1523" bottomColor={bottomColor} />}
+    </div>
   )
 }
 
@@ -158,13 +151,6 @@ export function DarkBody({ children, style = {} }) {
       ...body, fontSize: '17px', fontWeight: 300,
       color: '#FFFFFF', lineHeight: 1.8, marginBottom: '28px', ...style,
     }}>{children}</p>
-  )
-}
-
-// ── Dark rule ─────────────────────────────────────────────────────────────────
-export function DarkRule() {
-  return (
-    <div style={{ width: '48px', height: '1px', background: 'rgba(200,146,42,0.5)', margin: '0 auto 32px' }} />
   )
 }
 
@@ -200,12 +186,13 @@ export function DarkPullQuote({ quote, attribution }) {
   return (
     <div style={{ textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
       <div style={{
-        ...body, fontSize: '52px', fontWeight: 300,
-        color: 'rgba(200,146,42,0.4)', lineHeight: 1, marginBottom: '16px',
+        fontFamily: "'Cormorant Garamond', Georgia, serif",
+        fontSize: '80px', fontWeight: 300,
+        color: 'rgba(200,146,42,0.45)', lineHeight: 0.8, marginBottom: '28px',
       }}>"</div>
       <p style={{
-        ...body, fontSize: 'clamp(17px,2.2vw,22px)', fontWeight: 300,
-        color: '#FFFFFF', lineHeight: 1.75, marginBottom: '24px',
+        ...body, fontSize: 'clamp(18px,2.4vw,24px)', fontWeight: 300,
+        color: '#FFFFFF', lineHeight: 1.75, marginBottom: '28px',
       }}>{quote}</p>
       {attribution && (
         <span style={{
@@ -216,3 +203,6 @@ export function DarkPullQuote({ quote, attribution }) {
     </div>
   )
 }
+
+// DarkRule renders nothing — gold line lives on the arc only
+export function DarkRule() { return null }

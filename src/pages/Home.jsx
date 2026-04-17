@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { SiteFooter } from '../components/SiteFooter'
-import { DarkSection, NeedleDivider, DarkEyebrow, DarkHeading, DarkBody, DarkRule, DarkGhostButton, DarkSolidButton, DarkPullQuote, useParallax, ParallaxLayer } from '../components/DarkSection'
+import { DarkSection, NeedleDivider, DarkEyebrow, DarkHeading, DarkBody, DarkGhostButton, DarkSolidButton, DarkPullQuote, useParallax } from '../components/DarkSection'
 
 const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
@@ -258,8 +258,8 @@ export function HomePage() {
 
       {/* ── Hero ──────────────────────────────────────────────────────────── */}
       <section className="home-hero" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '100px 40px 80px', position: 'relative' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 50% 40%, rgba(200,146,42,0.05) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '680px', transform: `translateY(${heroParallax}px)`, willChange: 'transform' }}>
+        <div style={{ position: 'absolute', inset: '-40px 0', background: 'radial-gradient(ellipse 70% 60% at 50% 40%, rgba(200,146,42,0.05) 0%, transparent 70%)', pointerEvents: 'none', transform: `translateY(${heroParallax * 0.4}px)`, willChange: 'transform' }} />
+        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '680px' }}>
           <div style={{ marginBottom: '52px' }}>
             <img src="/logo_hero.png" alt="NextUs" style={{ height: '180px', width: 'auto', display: 'inline-block' }} />
           </div>
@@ -300,7 +300,7 @@ export function HomePage() {
 
       {/* ── Dark section 1 — the fractal ─────────────────────────────────── */}
       <DarkSection topColor="#FAFAF7" bottomColor="#FAFAF7" style={{ textAlign: 'center' }}>
-        <DarkRule />
+        
         <DarkEyebrow>The premise</DarkEyebrow>
         <DarkHeading>What you build in yourself,<br />you contribute to the world.</DarkHeading>
         <DarkBody style={{ maxWidth: '520px', margin: '0 auto 32px' }}>
@@ -374,11 +374,11 @@ export function HomePage() {
       </section>
 
       {/* ── Dark section 3 — email signup ─────────────────────────────────── */}
-      <DarkSection topColor="#FAFAF7" bottomColor={null} style={{ textAlign: 'center' }}>
+      <DarkSection topColor="#FAFAF7" bottomColor="#FAFAF7" style={{ textAlign: 'center' }}>
         <div style={{ marginBottom: '24px' }}>
           <img src="/logo_nav.png" alt="NextUs" style={{ height: '40px', width: 'auto', display: 'inline-block', opacity: 0.78 }} />
         </div>
-        <DarkRule />
+        
         <DarkHeading style={{ fontSize: 'clamp(22px,2.8vw,32px)' }}>Be in the loop.</DarkHeading>
         <DarkBody style={{ maxWidth: '320px', margin: '0 auto 40px' }}>Stay up to date on what{'\u2019'}s next for NextUs.</DarkBody>
         <div style={{ maxWidth: '380px', margin: '0 auto' }}>
