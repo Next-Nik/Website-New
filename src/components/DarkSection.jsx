@@ -4,25 +4,11 @@ const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
 
 // ── Multiplane scroll hook ────────────────────────────────────────────────────
-// Light sections scroll at full speed (no transform — they're just the page).
-// Dark sections scroll at a slightly slower speed, making them feel further back.
-// lag: how much slower the dark layer moves. 0.06 = 6% slower than foreground.
-function useMultiplaneOffset(lag = 0.06) {
-  const [offset, setOffset] = useState(0)
-  useEffect(() => {
-    function onScroll() {
-      // Negative: dark sections drift upward less than the natural scroll,
-      // so they appear to be on a layer behind the light sections.
-      setOffset(-(window.scrollY * lag))
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [lag])
-  return offset
-}
-
-// Also export as useParallax for any existing callers
-export function useParallax(speed = 0.06) {
+// Dark sections are the foreground layer.
+// Light sections are behind.
+// Dark sections move at a slightly faster rate than the page scroll,
+// reinforcing that they sit in front. The difference in speed creates depth.
+function useMultiplaneOffset(speed = 0.04) {
   const [offset, setOffset] = useState(0)
   useEffect(() => {
     function onScroll() { setOffset(window.scrollY * speed) }
@@ -32,10 +18,13 @@ export function useParallax(speed = 0.06) {
   return offset
 }
 
+export function useParallax(speed = 0.04) {
+  return useMultiplaneOffset(speed)
+}
+
 // ── THE LOCKED ARC ────────────────────────────────────────────────────────────
-// One gentle convex curve. Same geometry entry and exit, mirrored.
-// RISE controls subtlety — lower is gentler.
-// Gold line traces the arc exactly. No rules anywhere else.
+// Gold stroke follows the arc curve exactly — this IS the border.
+// No other gold lines anywhere.
 
 const W    = 1440
 const H    = 56
@@ -50,15 +39,17 @@ export function ArcEntry({ topColor = '#FAFAF7', bottomColor = '#0F1523' }) {
         style={{ display: 'block' }} aria-hidden="true">
         <rect x="0" y="0" width={W} height={FLAT} fill={topColor} />
         <path d={`M0,${FLAT} Q${W/2},${peak} ${W},${FLAT} L${W},${H} L0,${H} Z`} fill={bottomColor} />
+        {/* Gold stroke — the border of the dark section */}
         <path d={`M0,${FLAT} Q${W/2},${peak} ${W},${FLAT}`}
-          fill="none" stroke="#C8922A" strokeWidth="0.75" opacity="0.6" />
-        <circle cx={W/2} cy={peak+7} r="4.5" fill="none" stroke="#C8922A" strokeWidth="0.9" opacity="0.65" />
-        <circle cx={W/2} cy={peak+7} r="1.8" fill="#C8922A" opacity="0.8" />
-        <line x1={W/2} y1={peak} x2={W/2} y2={peak+2} stroke="#C8922A" strokeWidth="1" opacity="0.8" />
+          fill="none" stroke="#C8922A" strokeWidth="1.5" opacity="0.85" />
+        {/* Compass mark at apex */}
+        <circle cx={W/2} cy={peak+7} r="4.5" fill="none" stroke="#C8922A" strokeWidth="0.9" opacity="0.7" />
+        <circle cx={W/2} cy={peak+7} r="1.8" fill="#C8922A" opacity="0.85" />
+        <line x1={W/2} y1={peak} x2={W/2} y2={peak+2} stroke="#C8922A" strokeWidth="1" opacity="0.85" />
         <polygon points={`${W/2},${peak} ${W/2+3},${peak+8} ${W/2},${peak+12} ${W/2-3},${peak+8}`}
-          fill="#C8922A" opacity="0.7" />
-        <circle cx={W/2-16} cy={peak+10} r="1.4" fill="#C8922A" opacity="0.35" />
-        <circle cx={W/2+16} cy={peak+10} r="1.4" fill="#C8922A" opacity="0.35" />
+          fill="#C8922A" opacity="0.75" />
+        <circle cx={W/2-16} cy={peak+10} r="1.4" fill="#C8922A" opacity="0.4" />
+        <circle cx={W/2+16} cy={peak+10} r="1.4" fill="#C8922A" opacity="0.4" />
       </svg>
     </div>
   )
@@ -73,12 +64,14 @@ export function ArcExit({ topColor = '#0F1523', bottomColor = '#FAFAF7' }) {
         style={{ display: 'block' }} aria-hidden="true">
         <path d={`M0,0 L${W},0 L${W},${start} Q${W/2},${nadir} 0,${start} Z`} fill={topColor} />
         <rect x="0" y={start} width={W} height={H-start} fill={bottomColor} />
+        {/* Gold stroke — the border of the dark section */}
         <path d={`M0,${start} Q${W/2},${nadir} ${W},${start}`}
-          fill="none" stroke="#C8922A" strokeWidth="0.75" opacity="0.6" />
-        <circle cx={W/2} cy={nadir-6} r="4.5" fill="none" stroke="#C8922A" strokeWidth="0.9" opacity="0.65" />
-        <circle cx={W/2} cy={nadir-6} r="1.8" fill="#C8922A" opacity="0.8" />
-        <circle cx={W/2-16} cy={nadir-10} r="1.4" fill="#C8922A" opacity="0.35" />
-        <circle cx={W/2+16} cy={nadir-10} r="1.4" fill="#C8922A" opacity="0.35" />
+          fill="none" stroke="#C8922A" strokeWidth="1.5" opacity="0.85" />
+        {/* Compass mark at nadir */}
+        <circle cx={W/2} cy={nadir-6} r="4.5" fill="none" stroke="#C8922A" strokeWidth="0.9" opacity="0.7" />
+        <circle cx={W/2} cy={nadir-6} r="1.8" fill="#C8922A" opacity="0.85" />
+        <circle cx={W/2-16} cy={nadir-10} r="1.4" fill="#C8922A" opacity="0.4" />
+        <circle cx={W/2+16} cy={nadir-10} r="1.4" fill="#C8922A" opacity="0.4" />
       </svg>
     </div>
   )
@@ -93,20 +86,23 @@ export function NeedleDivider({ direction = 'into-dark', topColor = '#FAFAF7', b
 }
 
 // ── Dark Section wrapper ───────────────────────────────────────────────────────
-// The entire dark section — arcs + content — sits on a slower-moving layer.
-// Light sections scroll at full speed (the foreground).
-// Dark sections lag slightly behind, creating the multiplane depth effect.
-// Nothing inside the dark section moves independently.
+// Dark sections are the FOREGROUND layer — they sit in front of the light sections.
+// They move at a slightly faster rate than the page, reinforcing their position
+// in front. The shadow they cast onto the light sections behind them confirms depth.
+//
+// Shadow: cast by the dark section onto the light sections above and below.
+// The dark section is in front — its edges bleed shadow onto the background behind.
 export function DarkSection({ children, topColor = '#FAFAF7', bottomColor = '#FAFAF7', style = {} }) {
-  const layerOffset = useMultiplaneOffset(0.06)
+  const offset = useMultiplaneOffset(0.04)
   return (
     <div style={{
-      transform: `translateY(${layerOffset}px)`,
+      position: 'relative',
+      zIndex: 10,
+      transform: `translateY(${offset}px)`,
       willChange: 'transform',
-      // Negative margin compensates for the offset so no gap appears
-      // between this layer and the light sections above/below
-      marginTop: '-2px',
-      marginBottom: '-2px',
+      // Shadow cast by the dark foreground layer onto the light background
+      // Spreads upward and downward, bleeding past the arc edges
+      filter: 'drop-shadow(0px -12px 24px rgba(15,21,35,0.35)) drop-shadow(0px 12px 24px rgba(15,21,35,0.35))',
     }}>
       {topColor !== null && <ArcEntry topColor={topColor} bottomColor="#0F1523" />}
       <section style={{
@@ -204,5 +200,5 @@ export function DarkPullQuote({ quote, attribution }) {
   )
 }
 
-// DarkRule renders nothing — gold line lives on the arc only
+// DarkRule renders nothing — gold lives on the arc only
 export function DarkRule() { return null }

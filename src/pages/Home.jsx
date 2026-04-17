@@ -246,7 +246,7 @@ export function HomePage() {
   const stageKeys = Object.keys(STAGES)
 
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100vh', position: 'relative', zIndex: 1 }}>
       <Nav activePath="home" />
 
       <style>{`
@@ -287,7 +287,7 @@ export function HomePage() {
       </section>
 
       {/* ── Is this for you ───────────────────────────────────────────────── */}
-      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 0', borderTop: '1px solid rgba(200,146,42,0.20)', overflow: 'hidden' }}>
+      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 0' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Is this for you?</span>
         <h2 style={{ ...body, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '24px' }}>This place is for people who are done waiting to feel ready.</h2>
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '32px', maxWidth: '560px' }}>
@@ -323,7 +323,7 @@ export function HomePage() {
       </section>
 
       {/* ── Stage selector ────────────────────────────────────────────────── */}
-      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
+      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where you are in the arc</span>
         <h2 style={{ ...body, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>Find your stage.</h2>
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Each stage of the arc has its own terrain and its own entry point. Find where you actually are.</p>
@@ -354,7 +354,7 @@ export function HomePage() {
       </DarkSection>
 
       {/* ── Testimonials ─────────────────────────────────────────────────── */}
-      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
+      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px', textAlign: 'center' }}>What people say</span>
         <h2 style={{ ...body, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '56px', textAlign: 'center' }}>Real words from real people.</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
