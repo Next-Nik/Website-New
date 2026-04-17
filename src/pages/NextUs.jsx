@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { DarkSection, DarkEyebrow, DarkHeading, DarkBody } from '../components/DarkSection'
+import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkGhostButton } from '../components/DarkSection'
 import { useNavigate } from 'react-router-dom'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { CivilisationalFramePanel } from '../components/CivilisationalFramePanel'
