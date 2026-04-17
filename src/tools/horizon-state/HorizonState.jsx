@@ -527,7 +527,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
             >
               Listen again {'\u2192'}
             </button>
-            <a href="/profile#foundation" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>
+            <a href="/dashboard#horizon-state" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>
               View your journal {'\u2192'}
             </a>
           </div>

@@ -13,7 +13,6 @@ export const ROUTES = {
   login:          '/login',
   profile:        '/profile',
   dashboard:      '/dashboard',
-  dashboard:      '/dashboard',
   pricing:        '/pricing',
   tools:          '/tools',
   nextUsSelf:     '/nextus-self',

@@ -471,7 +471,7 @@ export function NextUsContributorPage() {
             <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.65)', margin: 0 }}>
               This is your contributor profile. Manage your offers from your main profile page.
             </p>
-            <a href="/profile" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, textDecoration: 'none' }}>
+            <a href="/dashboard" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, textDecoration: 'none' }}>
               Go to profile →
             </a>
           </div>

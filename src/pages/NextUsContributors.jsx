@@ -491,7 +491,7 @@ export function NextUsContributorsPage() {
             title: 'Put your offer on the table',
             body: 'Name what you\'re offering. Choose your type, your mode, your domain, your terms. One offer is enough to start. Add more when you\'re ready. You can pause or remove any offer at any time.',
             cta: 'Go to your profile',
-            url: '/profile',
+            url: '/dashboard',
             primary: false,
           },
           {

@@ -349,7 +349,7 @@ export function SprintPanel({ context = 'default' }) {
                     <a href="/tools/target-sprint" style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#A8721A', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '9px 18px', textDecoration: 'none', background: 'rgba(200,146,42,0.05)' }}>
                       View full sprint {'\u2192'}
                     </a>
-                    <a href="/profile" style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '40px', padding: '9px 18px', textDecoration: 'none' }}>
+                    <a href="/dashboard" style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '40px', padding: '9px 18px', textDecoration: 'none' }}>
                       Profile
                     </a>
                   </div>

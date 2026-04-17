@@ -82,7 +82,7 @@ export function Nav({ activePath }) {
           {/* Right — profile dot / sign in + hamburger */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             {user ? (
-              <Link to="/profile" className="nav-profile-dot" title="Your profile" onClick={closeMobile}>
+              <Link to="/dashboard" className="nav-profile-dot" title="Your profile" onClick={closeMobile}>
                 {initial}
               </Link>
             ) : (

@@ -418,7 +418,7 @@ function ContributionSuccess({ actor, onClose }) {
         </p>
         <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button
-            onClick={() => navigate('/profile')}
+            onClick={() => navigate('/dashboard')}
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 28px', borderRadius: '40px', border: 'none', background: '#C8922A', color: '#FFFFFF', cursor: 'pointer' }}
           >
             View my profile →

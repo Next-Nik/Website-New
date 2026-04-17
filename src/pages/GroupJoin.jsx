@@ -187,7 +187,7 @@ export function GroupJoinPage() {
                 lineHeight: 1.65, marginBottom: '24px' }}>
                 Your access is active. Head to your profile to see what's available.
               </p>
-              <Cta onClick={() => navigate('/profile')}>Go to profile →</Cta>
+              <Cta onClick={() => navigate('/dashboard')}>Go to profile →</Cta>
             </Card>
           )}
 
@@ -219,7 +219,7 @@ export function GroupJoinPage() {
                 lineHeight: 1.65, marginBottom: '24px' }}>
                 Your access is active.
               </p>
-              <Cta onClick={() => navigate('/profile')}>Go to profile →</Cta>
+              <Cta onClick={() => navigate('/dashboard')}>Go to profile →</Cta>
             </Card>
           )}
 
