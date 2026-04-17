@@ -277,7 +277,7 @@ export function HomePage() {
             </p>
           )}
           <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginTop: user ? '52px' : '0' }}>
-            <a href="/tools" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Horizon Suite {'\u2192'}</a>
+            <a href="/nextus-self" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Horizon Suite {'\u2192'}</a>
             <a href="/nextus" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>NextUs World {'\u2192'}</a>
           </div>
         </div>
@@ -307,7 +307,7 @@ export function HomePage() {
           The seven domains of a full life map directly onto the seven domains of humanity's collective challenge. This is not metaphor. It is the same structure at different scales.
         </DarkBody>
         <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <DarkSolidButton href="/tools">Build your life {'\u2192'}</DarkSolidButton>
+          <DarkSolidButton href="/nextus-self">Build your life {'\u2192'}</DarkSolidButton>
           <DarkGhostButton href="/nextus">See the larger map {'\u2192'}</DarkGhostButton>
         </div>
       </DarkSection>
@@ -319,7 +319,7 @@ export function HomePage() {
         <h2 style={{ ...body, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>Find your starting point.</h2>
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Tell me a little about where you are right now. I'll point you in the right direction — no jargon, no sign-up required.</p>
         <OrienteeringEmbed />
-        <a href="/tools" style={{ display: 'block', textAlign: 'center', ...body, fontSize: '16px', color: '#A8721A', marginTop: '28px', textDecoration: 'none' }}>or show me everything {'\u2192'}</a>
+        <a href="/nextus-self" style={{ display: 'block', textAlign: 'center', ...body, fontSize: '16px', color: '#A8721A', marginTop: '28px', textDecoration: 'none' }}>or show me everything {'\u2192'}</a>
       </section>
 
       {/* ── Stage selector ────────────────────────────────────────────────── */}
