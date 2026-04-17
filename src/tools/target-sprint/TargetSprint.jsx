@@ -1708,7 +1708,7 @@ export function TargetSprintPage() {
   async function loadSprintData() {
     try {
       const { data } = await supabase
-        .from('target_goal_sessions')
+        .from('target_sprint_sessions')
         .select('*')
         .eq('user_id', user.id)
         .eq('status', 'active')
@@ -1833,12 +1833,12 @@ export function TargetSprintPage() {
       const ext2 = { ...ext1, session_phase: phase, active_domain_id: activeDomainId }
 
       async function tryInsert(payload) {
-        const { data, error } = await supabase.from('target_goal_sessions')
+        const { data, error } = await supabase.from('target_sprint_sessions')
           .insert({ ...payload, created_at: now }).select('id').single()
         return { data, error }
       }
       async function tryUpdate(payload) {
-        const { error } = await supabase.from('target_goal_sessions')
+        const { error } = await supabase.from('target_sprint_sessions')
           .update(payload).eq('id', sessionId)
         return { error }
       }
@@ -1860,9 +1860,9 @@ export function TargetSprintPage() {
       if (selectedDomains?.length) {
         const DOMAIN_LABELS = { path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances', connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal' }
         const domainNames = selectedDomains.map(id => DOMAIN_LABELS[id] || id).join(', ')
-        await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'target-goals')
+        await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'target-sprint')
         await supabase.from('north_star_notes').insert([
-          { user_id: user.id, tool: 'target-goals', note: `Active 90-day sprint domains: ${domainNames}` }
+          { user_id: user.id, tool: 'target-sprint', note: `Active 90-day sprint domains: ${domainNames}` }
         ])
       }
     } catch {}
@@ -1891,7 +1891,7 @@ export function TargetSprintPage() {
     // Mark session complete in Supabase
     if (sessionId && user?.id) {
       try {
-        await supabase.from('target_goal_sessions')
+        await supabase.from('target_sprint_sessions')
           .update({ status: 'complete', updated_at: new Date().toISOString() })
           .eq('id', sessionId)
       } catch {}
@@ -1947,7 +1947,7 @@ export function TargetSprintPage() {
       {!user && <AuthModal />}
       {user && showWelcome && <WelcomeModal onBegin={() => {
         if (user?.id) {
-          supabase.from('target_goal_sessions').insert({
+          supabase.from('target_sprint_sessions').insert({
             user_id: user.id,
             status: 'started',
             domains: [],

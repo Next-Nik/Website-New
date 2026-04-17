@@ -1257,7 +1257,7 @@ export function HorizonPracticePage() {
 
         // Expansion setup
         const { data: setup } = await supabase
-          .from('expansion_setup')
+          .from('horizon_practice_setup')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
@@ -1268,7 +1268,7 @@ export function HorizonPracticePage() {
 
         // Check-ins
         const { data: checkinRows } = await supabase
-          .from('expansion_checkins')
+          .from('horizon_practice_checkins')
           .select('*')
           .eq('user_id', user.id)
           .order('check_date', { ascending: false })
@@ -1277,7 +1277,7 @@ export function HorizonPracticePage() {
 
         // Skills
         const { data: skillRows } = await supabase
-          .from('expansion_skills')
+          .from('horizon_practice_skills')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: true })
@@ -1286,7 +1286,7 @@ export function HorizonPracticePage() {
 
         // Loops
         const { data: loopRows } = await supabase
-          .from('expansion_loops')
+          .from('horizon_practice_loops')
           .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
@@ -1295,7 +1295,7 @@ export function HorizonPracticePage() {
 
         // Sprint data
         const { data: sprintRow } = await supabase
-          .from('target_goal_sessions')
+          .from('target_sprint_sessions')
           .select('*')
           .eq('user_id', user.id)
           .eq('status', 'active')
@@ -1318,7 +1318,7 @@ export function HorizonPracticePage() {
 
   async function handleSetupComplete({ horizonSelf, firstSkill, customGoals }) {
     try {
-      const { data } = await supabase.from('expansion_setup').upsert({
+      const { data } = await supabase.from('horizon_practice_setup').upsert({
         user_id: user.id,
         horizon_self: horizonSelf,
         custom_goals: customGoals || null,
@@ -1326,7 +1326,7 @@ export function HorizonPracticePage() {
       }, { onConflict: 'user_id' }).select().maybeSingle()
 
       if (firstSkill) {
-        await supabase.from('expansion_skills').insert({
+        await supabase.from('horizon_practice_skills').insert({
           user_id: user.id,
           title: firstSkill.title,
           type: firstSkill.type,
@@ -1338,13 +1338,13 @@ export function HorizonPracticePage() {
       // Write to North Star cross-tool memory
       if (horizonSelf) {
         await supabase.from('north_star_notes').upsert(
-          { user_id: user.id, tool: 'expansion', note: `Horizon Self: ${horizonSelf}` },
+          { user_id: user.id, tool: 'horizon-practice', note: `Horizon Self: ${horizonSelf}` },
           { onConflict: 'user_id,tool,note' }
         )
       }
       if (firstSkill) {
         await supabase.from('north_star_notes').upsert(
-          { user_id: user.id, tool: 'expansion', note: `Active skill: ${firstSkill.title} (${firstSkill.type})` },
+          { user_id: user.id, tool: 'horizon-practice', note: `Active skill: ${firstSkill.title} (${firstSkill.type})` },
           { onConflict: 'user_id,tool,note' }
         )
       }
@@ -1359,7 +1359,7 @@ export function HorizonPracticePage() {
 
   async function handleCheckinComplete(data) {
     try {
-      await supabase.from('expansion_checkins').insert({
+      await supabase.from('horizon_practice_checkins').insert({
         user_id: user.id,
         ...data,
         created_at: new Date().toISOString(),
@@ -1373,7 +1373,7 @@ export function HorizonPracticePage() {
 
   async function handleAddSkill(skill) {
     try {
-      const { data } = await supabase.from('expansion_skills').insert({
+      const { data } = await supabase.from('horizon_practice_skills').insert({
         user_id: user.id,
         ...skill,
         created_at: new Date().toISOString(),
@@ -1386,7 +1386,7 @@ export function HorizonPracticePage() {
 
   async function handleUpdateSkill(id, updates) {
     try {
-      await supabase.from('expansion_skills').update(updates).eq('id', id)
+      await supabase.from('horizon_practice_skills').update(updates).eq('id', id)
       setSkills(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s))
     } catch (err) {
       console.error('Update skill error:', err)
@@ -1395,7 +1395,7 @@ export function HorizonPracticePage() {
 
   async function handleSaveLoop(loop) {
     try {
-      const { data } = await supabase.from('expansion_loops').insert({
+      const { data } = await supabase.from('horizon_practice_loops').insert({
         user_id: user.id,
         ...loop,
       }).select().maybeSingle()

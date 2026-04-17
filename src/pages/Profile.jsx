@@ -1994,7 +1994,7 @@ export function ProfilePage() {
           .limit(1)
           .maybeSingle(),
         supabase
-          .from('target_goal_sessions')
+          .from('target_sprint_sessions')
           .select('domains, domain_data, target_date, end_date_label, quarter_type, created_at, status')
           .eq('user_id', user.id)
           .in('status', ['started', 'active', 'complete'])
@@ -2002,7 +2002,7 @@ export function ProfilePage() {
           .limit(1)
           .maybeSingle(),
         supabase
-          .from('foundation_summary')
+          .from('horizon_state_summary')
           .select('*')
           .eq('user_id', user.id)
           .maybeSingle(),

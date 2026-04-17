@@ -101,7 +101,7 @@ async function writeSummary(user, allSessions, afterResult, beforeResult) {
 
     // Latest review — fetch most recent
     const { data: reviewData } = await supabase
-      .from('foundation_reviews')
+      .from('horizon_state_reviews')
       .select('review_text, period_label, period_type')
       .eq('user_id', user.id)
       .order('updated_at', { ascending: false })
@@ -111,7 +111,7 @@ async function writeSummary(user, allSessions, afterResult, beforeResult) {
       ? reviewData.review_text.split('\n\n')[0].slice(0, 300)
       : null
 
-    await supabase.from('foundation_summary').upsert({
+    await supabase.from('horizon_state_summary').upsert({
       user_id:          user.id,
       streak_days:      streak,
       sessions_total:   pairs.length,
@@ -328,7 +328,7 @@ function FoundationReview({ user, sessions }) {
       let previousReviews = []
       if (user?.id && supabase) {
         const { data } = await supabase
-          .from('foundation_reviews')
+          .from('horizon_state_reviews')
           .select('period_type, period_label, review_text, created_at')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
@@ -353,7 +353,7 @@ function FoundationReview({ user, sessions }) {
       const text = data.review || ''
       setReviewText(text)
       if (user?.id && supabase && text) {
-        await supabase.from('foundation_reviews').upsert({
+        await supabase.from('horizon_state_reviews').upsert({
           user_id: user.id, period_type: type, period_id: periodId, period_label: label,
           session_count: relevant.length, review_text: text,
           created_at: now.toISOString(), updated_at: now.toISOString(),
@@ -987,7 +987,7 @@ export function HorizonStatePage() {
                     onAfterComplete={async (afterData, beforeData, updatedSessions) => {
                       await writeSummary(user, updatedSessions, afterData, beforeData)
                       supabase.from('north_star_notes').upsert(
-                        { user_id: user.id, tool: 'foundation', note: 'Horizon State Baseline practice active.' },
+                        { user_id: user.id, tool: 'horizon-state', note: 'Horizon State Baseline practice active.' },
                         { onConflict: 'user_id,tool,note' }
                       )
                     }}

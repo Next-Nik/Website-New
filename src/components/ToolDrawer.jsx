@@ -81,13 +81,13 @@ function useToolStatuses(user) {
             .eq('user_id', user.id)
             .order('updated_at', { ascending: false })
             .limit(1).maybeSingle(),
-          supabase.from('target_goal_sessions')
+          supabase.from('target_sprint_sessions')
             .select('status')
             .eq('user_id', user.id)
             .in('status', ['started', 'active', 'complete'])
             .order('updated_at', { ascending: false })
             .limit(1).maybeSingle(),
-          supabase.from('foundation_summary')
+          supabase.from('horizon_state_summary')
             .select('sessions_total, last_session_at')
             .eq('user_id', user.id)
             .maybeSingle(),

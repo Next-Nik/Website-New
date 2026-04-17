@@ -855,8 +855,8 @@ export function DashboardPage() {
       const [mapRes, ppRes, sprintRes, foundationRes, practiceRes, actorRes, horizonRes] = await Promise.all([
         supabase.from('map_results').select('session, completed_at, map_data, horizon_goal_user, horizon_goal_system, complete').eq('user_id', user.id).order('updated_at', { ascending: false }).limit(1).maybeSingle(),
         supabase.from('purpose_piece_results').select('profile, session, completed_at, status').eq('user_id', user.id).order('updated_at', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('target_goal_sessions').select('domains, domain_data, target_date, end_date_label, quarter_type, created_at, status').eq('user_id', user.id).in('status', ['started', 'active', 'complete']).order('updated_at', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('foundation_summary').select('*').eq('user_id', user.id).maybeSingle(),
+        supabase.from('target_sprint_sessions').select('domains, domain_data, target_date, end_date_label, quarter_type, created_at, status').eq('user_id', user.id).in('status', ['started', 'active', 'complete']).order('updated_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('horizon_state_summary').select('*').eq('user_id', user.id).maybeSingle(),
         supabase.from('horizon_practice_sessions').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).maybeSingle(),
         supabase.from('nextus_actors').select('id, name, domain_id').eq('profile_owner', user.id).maybeSingle(),
         supabase.from('horizon_profile').select('domain, current_score, horizon_score, horizon_goal').eq('user_id', user.id),
@@ -912,6 +912,7 @@ export function DashboardPage() {
   const hasScores    = Object.keys(currentScores).length > 0
   const name         = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'You'
   const initials     = name.charAt(0).toUpperCase()
+  const isFounder    = user?.user_metadata?.role === 'founder'
   const archetype    = purposeData?.session?.tentative?.archetype?.archetype
   const domain       = purposeData?.session?.tentative?.domain?.domain
   const scale        = purposeData?.session?.tentative?.scale?.scale
@@ -1117,7 +1118,16 @@ export function DashboardPage() {
 
             {/* Avatar */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.45)' }}>{name}</span>
+              <span
+                style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.72)', userSelect: 'none', cursor: 'default' }}
+                onClick={isFounder ? (() => {
+                  const now = Date.now()
+                  if (!window._adminClicks) window._adminClicks = []
+                  window._adminClicks.push(now)
+                  window._adminClicks = window._adminClicks.filter(t => now - t < 800)
+                  if (window._adminClicks.length >= 3) { window._adminClicks = []; navigate('/admin') }
+                }) : undefined}
+              >{name}</span>
               <button
                 onClick={() => setShowProfile(o => !o)}
                 style={{
@@ -1140,7 +1150,7 @@ export function DashboardPage() {
             {/* Zone items */}
             <div style={{ padding: '10px 0 4px', flex: 1 }}>
               <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.35)', textTransform: 'uppercase', padding: '0 14px 5px' }}>
-                {ZONE_LABELS[activeZone]}
+                {activeZone === 'you' ? name : ZONE_LABELS[activeZone]}
               </div>
               {RAIL_ITEMS[activeZone].map(item => {
                 const isActive = !showProfile && activeView === item.id

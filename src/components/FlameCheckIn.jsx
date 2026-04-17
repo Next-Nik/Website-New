@@ -330,11 +330,11 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
         const monthId   = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`
         const quarterId = `${now.getFullYear()}-Q${Math.floor(now.getMonth()/3)+1}`
         const yearId    = String(now.getFullYear())
-        const periodId  = `${today}-foundation-${audioPhase}-${stage}`
+        const periodId  = `${today}-horizon-state-${audioPhase}-${stage}`
 
         await supabase.from('pulse_entries').upsert({
           user_id:      user.id,
-          type:         'foundation_checkin',
+          type:         'horizon_state_checkin',
           period_id:    periodId,
           source:       'foundation',
           audio_phase:  audioPhase,

@@ -615,7 +615,7 @@ function AskTab() {
         supabase.from('users').select('*', { count: 'exact', head: true }),
         supabase.from('map_results').select('*', { count: 'exact', head: true }).eq('complete', true),
         supabase.from('purpose_piece_results').select('*', { count: 'exact', head: true }),
-        supabase.from('target_goal_sessions').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+        supabase.from('target_sprint_sessions').select('*', { count: 'exact', head: true }).eq('status', 'active'),
         supabase.from('users').select('email, created_at, status')
           .order('created_at', { ascending: false }).limit(20),
       ])

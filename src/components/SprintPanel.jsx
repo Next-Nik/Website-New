@@ -105,7 +105,7 @@ export function SprintPanel({ context = 'default' }) {
     setLoading(true)
     try {
       const { data } = await supabase
-        .from('target_goal_sessions')
+        .from('target_sprint_sessions')
         .select('*')
         .eq('user_id', user.id)
         .eq('status', 'active')
