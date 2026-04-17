@@ -320,7 +320,7 @@ export function HomePage() {
       </section>
 
       {/* Stage selector */}
-      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
+      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px 48px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where you are in the arc</span>
         <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>See where you are.</h2>
         <p style={{ ...serif, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Each stage has its own terrain. The right tools depend on being honest about which one you're standing in.</p>
@@ -343,7 +343,7 @@ export function HomePage() {
       </section>
 
       {/* Testimonials inline — three quotes surfaced from the panel */}
-      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
+      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '144px 40px 96px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px', textAlign: 'center' }}>What people say</span>
         <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '56px', textAlign: 'center' }}>Real words from real people.</h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '24px' }}>
@@ -364,7 +364,7 @@ export function HomePage() {
       </section>
 
       {/* Dark section */}
-      <section className="home-dark" style={{ background: '#0F1523', borderTop: '1.5px solid rgba(200,146,42,0.78)', padding: '96px 40px', textAlign: 'center' }}>
+      <section className="home-dark" style={{ background: '#0F1523', padding: '96px 40px', textAlign: 'center' }}>
         <div style={{ maxWidth: '820px', margin: '0 auto' }}>
           <div style={{ marginBottom: '24px' }}>
             <img src="/logo_nav.png" alt="NextUs" style={{ height: '40px', width: 'auto', display: 'inline-block', opacity: 0.78 }} />
