@@ -70,7 +70,7 @@ Return ONLY a JSON array of 3 strings, no other text:
         throw new Error('Could not parse drafts')
       }
     } catch {
-      setError('North Star couldn't generate drafts. Try again.')
+      setError("North Star couldn't generate drafts. Try again.")
     }
     setLoading(false)
     setSteering(false)
