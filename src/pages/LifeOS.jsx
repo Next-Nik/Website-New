@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Nav } from '../components/Nav'
+import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkGhostButton } from '../components/DarkSection'
 import { SiteFooter } from '../components/SiteFooter'
 import { GlossaryPanel } from '../components/GlossaryPanel'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
@@ -66,32 +67,26 @@ export function LifeOSPage() {
           </p>
         </div>
 
-        {/* Seven Domains */}
-        <div style={{ marginBottom: '72px' }}>
-          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Seven domains</span>
-          <h2 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.15, marginBottom: '16px' }}>
-            The full terrain of a human life.
-          </h2>
-          <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '36px', maxWidth: '540px' }}>
-            Seven areas. Not performance buckets to optimise \u2014 dimensions of a whole life. When one fails structurally, it pulls on everything else. The Horizon Suite makes the whole picture visible at once.
-          </p>
+      </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-            {DOMAINS.map((d, i) => (
-              <div key={d.name} style={{ display: 'flex', gap: '20px', alignItems: 'baseline', padding: '14px 0', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none' }}>
-                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.30)', minWidth: '20px' }}>{String(i + 1).padStart(2, '0')}</span>
-                <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.08em', color: '#A8721A', minWidth: '110px', flexShrink: 0 }}>{d.name}</span>
-                <span style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', }}>{d.aliases}</span>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ marginTop: '32px' }}>
-            <a href="/tools/map" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '2px' }}>
-              Map all seven domains \u2192
-            </a>
-          </div>
+      {/* Seven Domains — dark section */}
+      <DarkSection>
+        <DarkEyebrow>Seven domains</DarkEyebrow>
+        <DarkHeading>The full terrain of a human life.</DarkHeading>
+        <DarkBody>Seven areas. Not performance buckets to optimise — dimensions of a whole life. When one fails structurally, it pulls on everything else. The Horizon Suite makes the whole picture visible at once.</DarkBody>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0', marginBottom: '32px' }}>
+          {DOMAINS.map((d, i) => (
+            <div key={d.name} style={{ display: 'flex', gap: '20px', alignItems: 'baseline', padding: '14px 0', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.20)' : 'none' }}>
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.40)', minWidth: '20px' }}>{String(i + 1).padStart(2, '0')}</span>
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '17px', letterSpacing: '0.08em', color: '#C8922A', minWidth: '110px', flexShrink: 0 }}>{d.name}</span>
+              <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 300, color: 'rgba(255,255,255,0.72)' }}>{d.aliases}</span>
+            </div>
+          ))}
         </div>
+        <DarkGhostButton href="/tools/map">Map all seven domains →</DarkGhostButton>
+      </DarkSection>
+
+      <div style={{ maxWidth: '820px', margin: '0 auto', padding: '0 clamp(20px,5vw,40px)' }}>
 
         {/* The fractal */}
         <div style={{ marginBottom: '72px', padding: '32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
@@ -165,25 +160,18 @@ export function LifeOSPage() {
           </div>
         </div>
 
-        {/* Tools CTA */}
-        <div style={{ marginBottom: '72px', padding: '32px', background: '#0F1523', borderRadius: '14px' }}>
-          <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>Ready to use the tools?</span>
-          <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#FAFAF7', lineHeight: 1.2, marginBottom: '16px' }}>
-            The full suite — five tools, one arc. Start where you are.
-          </h3>
-          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(250,250,247,0.65)', lineHeight: 1.75, marginBottom: '28px', maxWidth: '480px' }}>
-            Each tool is built for a specific stage of the journey. You don\u2019t need all of them. Start where you are.
-          </p>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <a href="/tools" style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
-              See all tools \u2192
-            </a>
-            <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.45)', background: 'transparent', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
-              Find my starting point \u2192
-            </a>
-          </div>
-        </div>
       </div>
+
+      {/* Tools CTA — dark section */}
+      <DarkSection>
+        <DarkEyebrow>Ready to use the tools?</DarkEyebrow>
+        <DarkHeading>The full suite — five tools, one arc. Start where you are.</DarkHeading>
+        <DarkBody>Each tool is built for a specific stage of the journey. You don’t need all of them. Start where you are.</DarkBody>
+        <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+          <DarkSolidButton href="/tools">See all tools →</DarkSolidButton>
+          <DarkGhostButton href="/tools/orienteering">Find my starting point →</DarkGhostButton>
+        </div>
+      </DarkSection>
 
       {/* Passing it on section */}
       <section style={{ background: '#F5F2EC', borderTop: '1px solid rgba(200,146,42,0.20)', padding: 'clamp(48px,8vw,80px) clamp(20px,5vw,40px)' }}>

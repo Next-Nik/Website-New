@@ -1,4 +1,5 @@
 import { Nav } from '../components/Nav'
+import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkGhostButton } from '../components/DarkSection'
 import { SiteFooter } from '../components/SiteFooter'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { useAuth } from '../hooks/useAuth'
@@ -172,8 +173,16 @@ export function PricingPage() {
           </div>
         </div>
 
-        {/* Individual tools */}
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '20px' }}>Individual tools</span>
+              </div>
+
+      {/* Individual tools — dark pivot */}
+      <DarkSection>
+        <DarkEyebrow>Individual tools</DarkEyebrow>
+        <DarkHeading>Pick the tool that fits where you are.</DarkHeading>
+        <DarkBody>Every tool is available on its own. Start with one. Add others when the moment is right.</DarkBody>
+      </DarkSection>
+
+      <div className="pricing-main" style={{ maxWidth: '860px', margin: '0 auto', padding: '80px 40px 0' }}>
         <div className="pricing-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px', marginBottom: '64px' }}>
           <ToolCard
             name="Horizon State"
@@ -241,8 +250,20 @@ export function PricingPage() {
           </div>
         </div>
 
-        {/* Work with Nik */}
-        <div style={{ borderTop: '1px solid rgba(200,146,42,0.20)', paddingTop: '48px', marginBottom: '64px' }}>
+              </div>
+
+      {/* Work with Nik — dark pivot */}
+      <DarkSection>
+        <DarkEyebrow>1:1 Work with Nik</DarkEyebrow>
+        <DarkHeading>One-on-one work for people pressing against the ceiling of their own excellence.</DarkHeading>
+        <DarkBody>Not a programme — a space calibrated precisely enough that something new becomes possible.</DarkBody>
+        <DarkSolidButton href="https://calendly.com/nikwood/talk-to-nik">Book a discovery call →</DarkSolidButton>
+      </DarkSection>
+
+      <div className="pricing-main" style={{ maxWidth: '860px', margin: '0 auto', padding: '80px 40px 0' }}>
+
+        {/* Work with Nik detail */}
+        <div style={{ marginBottom: '64px' }}>
           <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '20px' }}>1:1 Work with Nik</span>
           <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
             <div style={{ flex: '1 1 320px' }}>

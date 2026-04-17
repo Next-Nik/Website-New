@@ -66,32 +66,26 @@ export function NextUsSelfPage() {
           </p>
         </div>
 
-        {/* Seven Domains */}
-        <div style={{ marginBottom: '72px' }}>
-          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Seven domains</span>
-          <h2 style={{ ...body, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.15, marginBottom: '16px' }}>
-            The full terrain of a human life.
-          </h2>
-          <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '36px', maxWidth: '540px' }}>
-            Seven areas. Not performance buckets to optimise \u2014 dimensions of a whole life. When one fails structurally, it pulls on everything else. The Horizon Suite makes the whole picture visible at once.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-            {DOMAINS.map((d, i) => (
-              <div key={d.name} style={{ display: 'flex', gap: '20px', alignItems: 'baseline', padding: '14px 0', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none' }}>
-                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', minWidth: '20px' }}>{String(i + 1).padStart(2, '0')}</span>
-                <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.08em', color: '#A8721A', minWidth: '110px', flexShrink: 0 }}>{d.name}</span>
-                <span style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.55)' }}>{d.aliases}</span>
               </div>
-            ))}
-          </div>
 
-          <div style={{ marginTop: '32px' }}>
-            <a href="/tools/map" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '2px' }}>
-              Map all seven domains \u2192
-            </a>
-          </div>
+      {/* Seven Domains — dark section */}
+      <DarkSection>
+        <DarkEyebrow>Seven domains</DarkEyebrow>
+        <DarkHeading>The full terrain of a human life.</DarkHeading>
+        <DarkBody>Seven areas. Not performance buckets to optimise — dimensions of a whole life. When one fails structurally, it pulls on everything else. The Horizon Suite makes the whole picture visible at once.</DarkBody>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0', marginBottom: '32px' }}>
+          {DOMAINS.map((d, i) => (
+            <div key={d.name} style={{ display: 'flex', gap: '20px', alignItems: 'baseline', padding: '14px 0', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.20)' : 'none' }}>
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.40)', minWidth: '20px' }}>{String(i + 1).padStart(2, '0')}</span>
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '17px', letterSpacing: '0.08em', color: '#C8922A', minWidth: '110px', flexShrink: 0 }}>{d.name}</span>
+              <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 300, color: 'rgba(255,255,255,0.72)' }}>{d.aliases}</span>
+            </div>
+          ))}
         </div>
+        <DarkGhostButton href="/tools/map">Map all seven domains →</DarkGhostButton>
+      </DarkSection>
+
+      <div style={{ maxWidth: '820px', margin: '0 auto', padding: '0 clamp(20px,5vw,40px)' }}>
 
         {/* The fractal */}
         <div style={{ marginBottom: '72px', padding: '32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>

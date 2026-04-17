@@ -1,4 +1,5 @@
 import { Nav } from '../components/Nav'
+import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton } from '../components/DarkSection'
 import { SiteFooter } from '../components/SiteFooter'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { GlossaryPanel } from '../components/GlossaryPanel'
@@ -104,16 +105,16 @@ export function ToolsPage() {
           Each tool is built for a specific stage of the journey. You don\u2019t need all of them \u2014 and you don\u2019t need to start at the beginning.
         </p>
 
-        {/* Front door CTA */}
-        <div style={{ marginBottom: '40px', padding: '24px 28px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.25)', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', flexWrap: 'wrap' }}>
-          <div>
-            <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.6, margin: '0 0 4px' }}>Not sure where to start?</p>
-            <p style={{ ...serif, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', margin: 0 }}>A short conversation — and I'll point you somewhere real.</p>
-          </div>
-          <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '13px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none', flexShrink: 0, whiteSpace: 'nowrap' }}>
-            Find my starting point →
-          </a>
-        </div>
+              </div>
+
+      {/* Orienteering nudge — dark section */}
+      <DarkSection>
+        <DarkEyebrow>Not sure where to start?</DarkEyebrow>
+        <DarkHeading>A short conversation — and I’ll point you somewhere real.</DarkHeading>
+        <DarkSolidButton href="/tools/orienteering">Find my starting point →</DarkSolidButton>
+      </DarkSection>
+
+      <div style={{ maxWidth: '820px', margin: '0 auto', padding: '80px clamp(20px,5vw,40px) 120px' }}>
 
         {/* Tool list */}
         <div>

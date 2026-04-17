@@ -280,14 +280,17 @@ export function NextUsPage() {
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 48px' }} />
 
-        {/* Fractal connection */}
-        <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '16px' }}>The same seven domains. Two scales.</h2>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '12px', maxWidth: '600px' }}>
-          What you develop in yourself, you contribute to the world. The seven domains of your life map directly onto the seven domains of civilisation. Your personal work is not a detour from the larger work. It is the larger work, at a different scale.
-        </p>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '48px', maxWidth: '560px' }}>
-          We are connected. We are fractal. The state of the world is a reflection of how we are doing individually — and how we are doing individually is a reflection of how we are doing as a whole.
-        </p>
+              </div>
+
+      {/* Fractal connection — dark section */}
+      <DarkSection>
+        <DarkEyebrow>The fractal</DarkEyebrow>
+        <DarkHeading>The same seven domains. Two scales.</DarkHeading>
+        <DarkBody>What you develop in yourself, you contribute to the world. The seven domains of your life map directly onto the seven domains of civilisation. Your personal work is not a detour from the larger work. It is the larger work, at a different scale.</DarkBody>
+        <DarkGhostButton href="/nextus-self">Explore the Horizon Suite →</DarkGhostButton>
+      </DarkSection>
+
+      <div className="nextus-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '0 40px 120px' }}>
 
         {/* Domain map */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 40px 1fr', marginBottom: '64px', maxWidth: '640px' }}>
@@ -341,21 +344,18 @@ export function NextUsPage() {
         </div>
       </div>
 
-      {/* Actors entry point */}
-      <div className="nextus-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '0 40px 0' }}>
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 48px' }} />
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
-          <div>
-            <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '10px' }}>Who is doing the work.</h2>
-            <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', maxWidth: '480px', lineHeight: 1.7 }}>Organisations, projects, and individuals placed on the map — by domain, by scale, by what they need.</p>
-          </div>
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button onClick={() => navigate('/nextus/actors')} style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '13px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', cursor: 'pointer', whiteSpace: 'nowrap' }}>Who's working on this →</button>
-            <button onClick={() => navigate('/nextus/map')} style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '13px 28px', borderRadius: '40px', border: '1px solid rgba(200,146,42,0.35)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', whiteSpace: 'nowrap' }}>See the map</button>
-            <button onClick={() => navigate('/nextus/contributors')} style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', padding: '13px 28px', borderRadius: '40px', border: '1px solid rgba(200,146,42,0.35)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', whiteSpace: 'nowrap' }}>I have something to offer</button>
-          </div>
+            </div>
+
+      {/* Actors entry point — dark section */}
+      <DarkSection>
+        <DarkEyebrow>Who is doing the work</DarkEyebrow>
+        <DarkHeading>Organisations, projects, and individuals placed on the map.</DarkHeading>
+        <DarkBody>By domain, by scale, by what they need. The platform surfaces the people already building — so effort compounds instead of scatters.</DarkBody>
+        <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+          <DarkSolidButton href="/nextus/actors">Who’s working on this →</DarkSolidButton>
+          <DarkGhostButton href="/nextus/contributors">I have something to offer →</DarkGhostButton>
         </div>
-      </div>
+      </DarkSection>
 
       {/* ── How it works ── */}
       <HowItWorksSection navigate={navigate} />

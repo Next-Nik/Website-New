@@ -84,21 +84,16 @@ export function AboutPage() {
 
         <Rule />
 
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Two scales. One architecture.</h2>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px' }}>
-          NextUs operates at the civilisational scale — a map for the people already doing the work. Visibility, orientation, and direction for a world that is moving but doesn{'\\u2019'}t yet know where.
-        </p>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px' }}>
-          The Horizon Suite operates at the personal scale — a navigation framework for individuals. Seven domains. Honest mapping. Tools that build the capacity to move from clarity rather than compensation.
-        </p>
+      </div>
 
-        <div style={{ borderLeft: '3px solid #C8922A', padding: '18px 0 18px 28px', margin: '40px 0' }}>
-          <p style={{ ...body, fontSize: '16px', ...dark, lineHeight: 1.7, margin: 0 }}>
-            These are not separate projects. The same navigation physics that move one life move a civilisation. A person who has learned to see their own life clearly is more capable of contributing to the larger work. It is the architecture of life.
-          </p>
-        </div>
+      {/* Two scales — dark section */}
+      <DarkSection>
+        <DarkEyebrow>Two scales. One architecture.</DarkEyebrow>
+        <DarkHeading>The same navigation physics that move one life move a civilisation.</DarkHeading>
+        <DarkBody>NextUs operates at the civilisational scale — a map for the people already doing the work. The Horizon Suite operates at the personal scale — a navigation framework for individuals. These are not separate projects. A person who has learned to see their own life clearly is more capable of contributing to the larger work.</DarkBody>
+      </DarkSection>
 
-        <Rule />
+      <div className="about-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px 0' }}>
 
         <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>The tools.</h2>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px' }}>
