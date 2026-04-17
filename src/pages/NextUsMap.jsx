@@ -399,13 +399,13 @@ export function NextUsMapPage() {
         {/* Map container */}
         <div
           className="map-container"
-          style={{ flex: 1, position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1.5px solid rgba(200,146,42,0.22)', minHeight: '500px', background: '#EAE6DF' }}
+          style={{ flex: 1, position: 'relative', borderRadius: '14px', overflow: 'hidden', border: '1.5px solid rgba(200,146,42,0.22)', minHeight: '500px', background: '#F5F2EC' }}
         >
           <div ref={mapContainer} style={{ width: '100%', height: '100%', minHeight: '500px' }} />
 
           {/* Map error — no token */}
           {mapError && (
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#EAE6DF', padding: '40px' }}>
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#F5F2EC', padding: '40px' }}>
               <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(200,146,42,0.12)', border: '1.5px solid rgba(200,146,42,0.30)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}>
                 <span style={{ fontSize: '20px' }}>🗺</span>
               </div>
@@ -423,7 +423,7 @@ export function NextUsMapPage() {
 
           {/* Loading overlay */}
           {!mapError && !mapReady && (
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#EAE6DF' }}>
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#F5F2EC' }}>
               <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)' }}>Loading map…</p>
             </div>
           )}

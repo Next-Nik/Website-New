@@ -22,7 +22,6 @@
   --font-sc:      'Cormorant SC', Georgia, serif;
   --font-body:    'Lora', Georgia, serif;
 
-  --radius:       6px;
   --max-w:        680px;
   --nav-h:        64px;
 }
@@ -51,7 +50,7 @@ html {
 
 body {
   background: var(--bg);
-  color: var(--text-meta);
+  color: var(--text);
   font-family: var(--font-body);
   font-size: 1.25rem;
   line-height: 1.65;
@@ -153,7 +152,7 @@ button {
   letter-spacing: 0.06em;
   color: var(--gold-dk);
   border: 1px solid var(--gold-line);
-  border-radius: var(--radius);
+  border-radius: 10px;
   padding: 0.65rem 1.5rem;
   transition: border-color 0.2s, background 0.2s;
 }
@@ -307,7 +306,7 @@ button {
   align-self: flex-end;
   background: var(--gold-faint);
   border: 1px solid var(--gold-line);
-  border-radius: var(--radius);
+  border-radius: 10px;
   padding: 0.75rem 1rem;
   color: var(--text);
 }
@@ -355,7 +354,7 @@ button {
   color: var(--text-meta);
   background: transparent;
   border: 1px solid var(--gold-line);
-  border-radius: var(--radius);
+  border-radius: 10px;
   padding: 0.65rem 0.875rem;
   resize: none;
   line-height: 1.55;
@@ -380,7 +379,7 @@ button {
   color: var(--gold-dk);
   background: transparent;
   border: 1px solid var(--gold-line);
-  border-radius: var(--radius);
+  border-radius: 10px;
   padding: 0.65rem 1.25rem;
   white-space: nowrap;
   transition: background 0.2s, border-color 0.2s;

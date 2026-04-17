@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkGhostButton } from '../components/DarkSection'
 import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import { GlossaryPanel } from '../components/GlossaryPanel'
@@ -55,7 +56,7 @@ export function NextUsSelfPage() {
         </div>
 
         {/* Is this for you */}
-        <div style={{ marginBottom: '72px', padding: '28px 32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '14px' }}>
+        <div style={{ marginBottom: '72px', padding: '28px 32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>Is this for you?</span>
           <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, margin: '0 0 8px', maxWidth: '520px' }}>
             You\u2019re not in crisis and you\u2019re not broken \u2014 but something is off. A gap between who you are and what you sense you could be. You\u2019ve probably done some work already. Something still isn\u2019t moving.
@@ -93,7 +94,7 @@ export function NextUsSelfPage() {
         </div>
 
         {/* The fractal */}
-        <div style={{ marginBottom: '72px', padding: '32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '14px' }}>
+        <div style={{ marginBottom: '72px', padding: '32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '10px' }}>The fractal</span>
           <h3 style={{ ...body, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.2, marginBottom: '16px' }}>
             The same seven domains.<br />Two scales.
@@ -164,25 +165,18 @@ export function NextUsSelfPage() {
           </div>
         </div>
 
-        {/* Tools CTA */}
-        <div style={{ marginBottom: '72px', padding: '32px', background: '#0F1523', borderRadius: '14px' }}>
-          <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>Ready to use the tools?</span>
-          <h3 style={{ ...body, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#FAFAF7', lineHeight: 1.2, marginBottom: '16px' }}>
-            Six tools. One navigation system.
-          </h3>
-          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(250,250,247,0.65)', lineHeight: 1.75, marginBottom: '28px', maxWidth: '480px' }}>
-            Each tool is built for a specific stage of the journey. You don\u2019t need all of them. Start where you are.
-          </p>
-          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-            <a href="/tools" style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
-              See all tools \u2192
-            </a>
-            <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.45)', background: 'transparent', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
-              Find my starting point \u2192
-            </a>
-          </div>
-        </div>
       </div>
+
+      {/* Tools CTA — dark section */}
+      <DarkSection>
+        <DarkEyebrow>Ready to use the tools?</DarkEyebrow>
+        <DarkHeading>Six tools. One navigation system.</DarkHeading>
+        <DarkBody>Each tool is built for a specific stage of the journey. You don’t need all of them. Start where you are.</DarkBody>
+        <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+          <DarkSolidButton href="/tools">See all tools →</DarkSolidButton>
+          <DarkGhostButton href="/tools/orienteering">Find my starting point →</DarkGhostButton>
+        </div>
+      </DarkSection>
 
       {/* Passing it on section */}
       <section style={{ background: '#F5F2EC', borderTop: '1px solid rgba(200,146,42,0.20)', padding: 'clamp(48px,8vw,80px) clamp(20px,5vw,40px)' }}>

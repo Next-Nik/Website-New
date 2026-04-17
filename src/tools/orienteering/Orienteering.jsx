@@ -8,6 +8,7 @@ import { supabase } from '../../hooks/useSupabase'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = { color: '#A8721A' }
 const meta  = { color: 'rgba(15,21,35,0.78)' }
 
@@ -116,7 +117,7 @@ export function OrienteeringPage() {
         <div className="tool-header">
           <span className="tool-eyebrow">Horizon Suite</span>
           <h1 className="tool-title">Orienteering</h1>
-          <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', ...meta, marginTop: '6px', lineHeight: 1.65, maxWidth: '420px' }}>
+          <p style={{ ...body, fontSize: '1.25rem', fontWeight: 300, ...meta, marginTop: '6px', lineHeight: 1.65, maxWidth: '420px' }}>
             A short conversation — three to five exchanges — that reads where you are and points you somewhere real. No jargon, no sign-up required.
           </p>
         </div>
@@ -128,12 +129,12 @@ export function OrienteeringPage() {
               return (
                 <div key={i} style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', padding: '22px', alignSelf: 'flex-start', maxWidth: '92%', marginBottom: '8px' }}>
                   {d.stage && <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, marginBottom: '8px' }}>{d.stage}</div>}
-                  <div style={{ ...serif, fontSize: '16px', lineHeight: 1.8, color: '#0F1523', marginBottom: '16px' }}>{d.reflection}</div>
+                  <div style={{ ...body, fontSize: '16px', lineHeight: 1.8, color: '#0F1523', marginBottom: '16px' }}>{d.reflection}</div>
                   {(d.recommendations || []).map((r, ri) => (
                     <div key={ri} style={{ borderTop: '1px solid rgba(200,146,42,0.20)', paddingTop: '14px', marginTop: '14px' }}>
                       <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...meta, marginBottom: '4px' }}>{r.category}</div>
-                      <div style={{ ...serif, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>{r.title}</div>
-                      <div style={{ ...serif, fontSize: '17px', ...meta, lineHeight: 1.65, marginBottom: '8px' }}>{r.description}</div>
+                      <div style={{ ...body, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>{r.title}</div>
+                      <div style={{ ...body, fontSize: '17px', ...meta, lineHeight: 1.65, marginBottom: '8px' }}>{r.description}</div>
                       {r.link && r.link !== 'null' && (
                         <a href={r.link} style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold, textDecoration: 'none' }}>
                           {r.link_text || 'Learn more \u2192'}
@@ -142,7 +143,7 @@ export function OrienteeringPage() {
                     </div>
                   ))}
                   {d.closing && (
-                    <div style={{ ...serif, fontSize: '15px', fontStyle: 'italic', ...meta, marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
+                    <div style={{ ...body, fontSize: '15px', ...meta, marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
                       {d.closing}
                     </div>
                   )}
@@ -164,12 +165,12 @@ export function OrienteeringPage() {
           <div style={{
             marginTop: '1.5rem',
             padding: '16px 20px',
-            background: 'rgba(200,146,42,0.04)',
+            background: 'rgba(200,146,42,0.05)',
             border: '1px solid rgba(200,146,42,0.20)',
             borderRadius: '12px',
             textAlign: 'center',
           }}>
-            <p style={{ ...serif, fontSize: '1.125rem', fontWeight: 300, ...meta, margin: '0 0 8px', lineHeight: 1.6 }}>
+            <p style={{ ...body, fontSize: '1.125rem', fontWeight: 300, ...meta, margin: '0 0 8px', lineHeight: 1.6 }}>
               Sign in and North Star carries what it's learned about you into every other tool.
             </p>
             <a href={`/login?redirect=${encodeURIComponent(window.location.href)}`}

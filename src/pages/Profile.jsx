@@ -39,7 +39,7 @@ function Eyebrow({ children, style = {} }) {
 }
 
 function Rule() {
-  return <div style={{ height: '1px', background: 'rgba(200,146,42,0.15)', margin: '20px 0' }} />
+  return <div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', margin: '20px 0' }} />
 }
 
 function EmptySlot({ cta, ctaUrl }) {
@@ -107,7 +107,7 @@ function Slot({ title, eyebrow, linkLabel, linkUrl, children, defaultOpen = true
         </div>
       </div>
       {open && (
-        <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', padding: '24px' }}>
+        <div style={{ borderTop: '1px solid rgba(200,146,42,0.20)', padding: '24px' }}>
           {children}
         </div>
       )}
@@ -819,7 +819,7 @@ function TargetSprintSlot({ sprintData }) {
       {/* ── Overall progress ──────────────────────────────────────────────── */}
       {(totalTasks > 0 || totalMilestones > 0) && (
         <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)',
-          border: '1px solid rgba(200,146,42,0.15)', borderRadius: '10px', marginBottom: '16px' }}>
+          border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px', marginBottom: '16px' }}>
           {totalTasks > 0 && (
             <div style={{ marginBottom: totalMilestones > 0 ? '10px' : 0 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
@@ -1162,7 +1162,7 @@ function FoundationSlot({ foundationData }) {
           <span key={p.key} style={{
             ...sc, fontSize: '15px', letterSpacing: '0.1em',
             padding: '3px 10px', borderRadius: '40px',
-            background: p.active ? 'rgba(200,146,42,0.08)' : 'rgba(15,21,35,0.03)',
+            background: p.active ? 'rgba(200,146,42,0.08)' : 'transparent',
             border: `1px solid ${p.active ? 'rgba(200,146,42,0.35)' : 'rgba(15,21,35,0.1)'}`,
             color: p.active ? '#A8721A' : 'rgba(15,21,35,0.72)',
           }}>
@@ -1606,7 +1606,7 @@ function ContributorOfferSection({ userId, purposeData }) {
   if (loading) return null
 
   return (
-    <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.15)' }}>
+    <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
         <div>
           <span style={{ ...sc_, fontSize: '13px', letterSpacing: '0.18em', color: gold_, display: 'block', marginBottom: '4px' }}>
@@ -2164,7 +2164,7 @@ export function ProfilePage() {
           if (!hasScores) {
             return (
               <div style={{ marginBottom: '56px', padding: '48px 32px',
-                background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)',
+                background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.20)',
                 borderTop: '3px solid rgba(200,146,42,0.25)', borderRadius: '16px',
                 textAlign: 'center' }}>
                 <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
@@ -2577,7 +2577,7 @@ export function ProfilePage() {
         ) : (
           /* No active sprint */
           <div style={{ marginBottom: '48px', padding: '20px 24px',
-            background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)',
+            background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.20)',
             borderRadius: '12px', display: 'flex', alignItems: 'center',
             justifyContent: 'space-between', gap: '16px' }}>
             <div>
@@ -2683,7 +2683,7 @@ export function ProfilePage() {
                           background: dot.done
                             ? 'rgba(45,106,79,0.15)' : 'rgba(200,146,42,0.05)',
                           border: `1.5px solid ${dot.done
-                            ? 'rgba(45,106,79,0.4)' : 'rgba(200,146,42,0.15)'}`,
+                            ? 'rgba(45,106,79,0.4)' : 'rgba(200,146,42,0.20)'}`,
                           display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {dot.done && (
                           <div style={{ width: '8px', height: '8px', borderRadius: '50%',
@@ -2811,7 +2811,7 @@ export function ProfilePage() {
                     ].map(({ label, value, unit }) => (
                       <div key={label} style={{ padding: '10px 12px',
                         background: 'rgba(200,146,42,0.05)',
-                        border: '1px solid rgba(200,146,42,0.15)',
+                        border: '1px solid rgba(200,146,42,0.20)',
                         borderRadius: '8px', textAlign: 'center' }}>
                         <div style={{ ...sc, fontSize: '20px', fontWeight: 600,
                           color: '#A8721A', lineHeight: 1 }}>{value}</div>
@@ -2876,7 +2876,7 @@ export function ProfilePage() {
             TOOL RAIL — all tools, one line each
         ══════════════════════════════════════════════════════════════════ */}
         <div style={{ marginBottom: '48px', padding: '24px 28px',
-          background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.15)',
+          background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.20)',
           borderRadius: '12px' }}>
           <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
             color: '#A8721A', marginBottom: '16px' }}>
@@ -2965,7 +2965,7 @@ export function ProfilePage() {
 
         {/* Sign out */}
         <div style={{ textAlign: 'center', paddingTop: '48px',
-          borderTop: '1px solid rgba(200,146,42,0.15)', marginTop: '24px' }}>
+          borderTop: '1px solid rgba(200,146,42,0.20)', marginTop: '24px' }}>
           <button onClick={signOut}
             style={{ background: 'none', border: 'none', cursor: 'pointer',
               ...sc, fontSize: '17px', fontWeight: 600, letterSpacing: '0.18em',

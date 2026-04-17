@@ -432,7 +432,7 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
                     borderLeft: isActive ? '2px solid rgba(200,146,42,0.78)' : '2px solid transparent',
                     transition: 'all 0.15s',
                   }}
-                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(200,146,42,0.04)' }}
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(200,146,42,0.05)' }}
                   onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
@@ -515,7 +515,7 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
 
       {/* Backdrop */}
       {open && (
-        <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 198, background: 'rgba(15,21,35,0.18)' }} />
+        <div onClick={() => setOpen(false)} style={{ position: 'fixed', inset: 0, zIndex: 198, background: 'rgba(15,21,35,0.55)' }} />
       )}
     </>
   )
@@ -555,7 +555,7 @@ function ChatBubble({ msg }) {
         maxWidth: '88%',
         padding: '12px 16px',
         borderRadius: isUser ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-        background: isUser ? 'rgba(200,146,42,0.07)' : '#FFFFFF',
+        background: isUser ? 'rgba(200,146,42,0.08)' : '#FFFFFF',
         border: isUser ? '1px solid rgba(200,146,42,0.22)' : '1px solid rgba(200,146,42,0.15)',
         fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300,
         color: isUser ? 'rgba(15,21,35,0.72)' : 'rgba(15,21,35,0.78)',
@@ -590,7 +590,7 @@ function ChatInput({ value, onChange, onSend, placeholder, disabled }) {
         placeholder={placeholder}
         rows={2}
         disabled={disabled}
-        style={{ flex: 1, padding: '10px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', outline: 'none', resize: 'none', lineHeight: 1.55 }}
+        style={{ flex: 1, padding: '10px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', outline: 'none', resize: 'none', lineHeight: 1.55 }}
       />
       <button onClick={() => onSend(value)} disabled={!value.trim() || disabled} style={{ ...btnStyle, padding: '10px 16px', alignSelf: 'flex-end', opacity: !value.trim() || disabled ? 0.4 : 1, fontSize: '1.125rem', letterSpacing: '0.08em', whiteSpace: 'nowrap' }}>Send</button>
     </div>
@@ -851,7 +851,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           {domain.question}
         </p>
         {flagReview && step !== 'done' && (
-          <div style={{ marginTop: '8px', padding: '8px 12px', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: '#A8721A' }}>
+          <div style={{ marginTop: '8px', padding: '8px 12px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: '#A8721A' }}>
             Your avatar changed — worth reviewing your score and horizon goal when you're ready.
           </div>
         )}
@@ -897,7 +897,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
               {avatarMessages.length === 0 && (
                 <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '10px', overflow: 'hidden', marginBottom: '16px', boxShadow: '0 1px 8px rgba(15,21,35,0.04)' }}>
                   {/* Doc header bar */}
-                  <div style={{ background: 'rgba(200,146,42,0.04)', borderBottom: '1px solid rgba(200,146,42,0.12)', padding: '10px 18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ background: 'rgba(200,146,42,0.05)', borderBottom: '1px solid rgba(200,146,42,0.12)', padding: '10px 18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A' }}>AVATAR DRAFT</span>
                     <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', fontStyle: 'italic' }}>{'\u00b7'} {domain.label}</span>
                   </div>
@@ -973,7 +973,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                   {avatarMessages.map((m, i) => (
                     <div key={i}>
                       {m.role === 'assistant' && m.cleanedDraft && (
-                        <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderLeft: '3px solid rgba(200,146,42,0.35)', borderRadius: '8px', marginBottom: '10px' }}>
+                        <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.15)', borderLeft: '3px solid rgba(200,146,42,0.35)', borderRadius: '8px', marginBottom: '10px' }}>
                           <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px' }}>YOUR AVATAR DRAFT · CLEANED</div>
                           <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, margin: 0, whiteSpace: 'pre-wrap' }}>{m.cleanedDraft}</p>
                         </div>
@@ -1007,7 +1007,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           ) : (
             // Avatar locked — show summary
             <div>
-              <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '12px' }}>
+              <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '12px' }}>
                 <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '8px' }}>YOUR AVATAR</div>
                 <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7 }}>{avatarFinal}</p>
               </div>
@@ -1035,7 +1035,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
             onChange={e => setRealityDraft(e.target.value)}
             placeholder="Describe where you are right now."
             rows={4}
-            style={{ width: '100%', marginTop: '16px', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65 }}
+            style={{ width: '100%', marginTop: '16px', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65 }}
           />
 
           {/* Score conversation */}
@@ -1044,7 +1044,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
               {scoreMsgs.map((m, i) => (
                 <div key={i}>
                   {m.role === 'assistant' && m.cleanedReality && (
-                    <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderLeft: '3px solid rgba(200,146,42,0.35)', borderRadius: '8px', marginBottom: '10px' }}>
+                    <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.15)', borderLeft: '3px solid rgba(200,146,42,0.35)', borderRadius: '8px', marginBottom: '10px' }}>
                       <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px' }}>YOUR REALITY · CLEANED</div>
                       <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, margin: 0 }}>{m.cleanedReality}</p>
                     </div>
@@ -1142,10 +1142,10 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           ) : (
             // Horizon locked — show summary
             <div>
-              <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '10px' }}>
+              <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '10px' }}>
                 <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>YOUR HORIZON</div>
                 <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '8px' }}>{horizonText}</p>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.35)', background: 'rgba(200,146,42,0.06)' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.35)', background: 'rgba(200,146,42,0.05)' }}>
                   <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.3125rem', color: '#A8721A' }}>Horizon: {horizonScore}</span>
                   <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.08em', color: '#A8721A' }}>{TIER_MAP[horizonScore]}</span>
                 </div>
@@ -1208,7 +1208,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
     <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 20px rgba(200,146,42,0.08)', animation: 'fadeUp 0.5s ease-out' }}>
 
       {/* Hero */}
-      <div style={{ padding: '28px 28px 22px', borderBottom: '1px solid rgba(200,146,42,0.1)', background: 'rgba(200,146,42,0.03)' }}>
+      <div style={{ padding: '28px 28px 22px', borderBottom: '1px solid rgba(200,146,42,0.1)', background: 'rgba(200,146,42,0.05)' }}>
         <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '12px' }}>Your Horizon Suite Map</div>
         {mapData?.stage && (
           <div style={{ display: 'inline-block', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '6px', padding: '4px 14px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px' }}>{mapData.stage}</div>
@@ -1257,7 +1257,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
         })
         if (dragDomains.length === 0) return null
         return (
-          <div style={{ padding: '16px 28px', borderBottom: '1px solid rgba(200,146,42,0.07)', background: 'rgba(200,146,42,0.04)' }}>
+          <div style={{ padding: '16px 28px', borderBottom: '1px solid rgba(200,146,42,0.07)', background: 'rgba(200,146,42,0.05)' }}>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
               <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', background: 'rgba(200,146,42,0.12)', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '40px', padding: '3px 10px', flexShrink: 0, marginTop: '2px', whiteSpace: 'nowrap' }}>System drag</span>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, margin: 0 }}>
@@ -1305,7 +1305,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
                 {draftVisible ? 'Hide draft ↑' : 'See what The Map drafted →'}
               </button>
               {draftVisible && (
-                <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '10px', marginBottom: '12px' }}>
+                <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '10px', marginBottom: '12px' }}>
                   <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '10px' }}>{mapData.life_horizon_draft}</p>
                   <button onClick={() => { setHorizonText(mapData.life_horizon_draft); setDraftVisible(false) }} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
                     Use this as my starting point →
@@ -1342,12 +1342,13 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
 function MapWelcomeModal({ onBegin }) {
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
   const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const body  = { fontFamily: "'Lora', Georgia, serif" }
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '460px', width: '100%', textAlign: 'center' }}>
         <span style={{ display: 'block', ...sc, fontSize: '17px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>The Map</span>
         <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>An honest read.</h2>
-        <p style={{ ...serif, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
+        <p style={{ ...body, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
           Seven domains of your life. Where you are, where you want to be, and what the gap is telling you. Takes about ten minutes. The only instruction: answer from where you actually are.
         </p>
         <button onClick={onBegin} style={{
@@ -1423,6 +1424,7 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, ac
   const [showContext,  setShowContext]  = useState(false)
   const [saved,        setSaved]        = useState(false)
   const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const body  = { fontFamily: "'Lora', Georgia, serif" }
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
   function save(overrides = {}) {
@@ -1465,7 +1467,7 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, ac
                 onChange={e => { setContext(e.target.value); save({ context: e.target.value }) }}
                 placeholder="Any context that matters here — relationship structure, family dynamics, anything that helps North Star give relevant rather than generic advice..."
                 rows={3}
-                style={{ width: '100%', marginTop: '8px', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.22)', background: '#FAFAF7', ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.78)', resize: 'vertical', outline: 'none', lineHeight: 1.6, boxSizing: 'border-box' }}
+                style={{ width: '100%', marginTop: '8px', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.22)', background: '#FAFAF7', ...body, fontSize: '15px', color: 'rgba(15,21,35,0.78)', resize: 'vertical', outline: 'none', lineHeight: 1.6, boxSizing: 'border-box' }}
               />
             )}
           </div>
@@ -1490,7 +1492,7 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, ac
                 onChange={e => setHorizonText(e.target.value)}
                 placeholder="What does this relationship look like in your full yes life?"
                 rows={2}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.22)', background: '#FAFAF7', ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.78)', resize: 'vertical', outline: 'none', lineHeight: 1.6, marginBottom: '8px', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.22)', background: '#FAFAF7', ...body, fontSize: '15px', color: 'rgba(15,21,35,0.78)', resize: 'vertical', outline: 'none', lineHeight: 1.6, marginBottom: '8px', boxSizing: 'border-box' }}
               />
               {horizonText.trim() && step !== 'done' && (
                 <button onClick={() => { setStep('done'); save({ horizonText, currentScore }) }}
@@ -1508,6 +1510,7 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, ac
 
 function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, userId }) {
   const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const body  = { fontFamily: "'Lora', Georgia, serif" }
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
   // ── FIX #1: Avatar step ───────────────────────────────────────────────────
@@ -1662,7 +1665,7 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
 
           {avatarMsgs.length === 0 && (
             <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '10px', overflow: 'hidden', marginBottom: '16px' }}>
-              <div style={{ background: 'rgba(200,146,42,0.04)', borderBottom: '1px solid rgba(200,146,42,0.12)', padding: '10px 18px' }}>
+              <div style={{ background: 'rgba(200,146,42,0.05)', borderBottom: '1px solid rgba(200,146,42,0.12)', padding: '10px 18px' }}>
                 <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A' }}>AVATAR DRAFT · CONNECTION</span>
               </div>
               <div style={{ padding: '16px 18px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
@@ -1709,7 +1712,7 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
               {avatarMsgs.map((m, i) => (
                 <div key={i}>
                   {m.role === 'assistant' && m.cleanedDraft && (
-                    <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderLeft: '3px solid rgba(200,146,42,0.35)', borderRadius: '8px', marginBottom: '10px' }}>
+                    <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.15)', borderLeft: '3px solid rgba(200,146,42,0.35)', borderRadius: '8px', marginBottom: '10px' }}>
                       <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px' }}>YOUR AVATAR DRAFT · CLEANED</div>
                       <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, margin: 0, whiteSpace: 'pre-wrap' }}>{m.cleanedDraft}</p>
                     </div>
@@ -1737,7 +1740,7 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
       /* ── STEPS 2-3: Sub-domains ───────────────────────────────────────── */
       <div>
         {avatarFinal && (
-          <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '8px', marginBottom: '20px' }}>
+          <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.15)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '8px', marginBottom: '20px' }}>
             <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px' }}>YOUR CONNECTION AVATAR</div>
             <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, margin: '0 0 8px', whiteSpace: 'pre-wrap' }}>{avatarFinal}</p>
             <button onClick={() => setAvatarLocked(false)} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Edit →</button>
@@ -1780,7 +1783,7 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
 
         {allActiveComplete && !synthesisDone && (
           <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.15)' }}>
-            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.65)', marginBottom: '14px', lineHeight: 1.65 }}>
+            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginBottom: '14px', lineHeight: 1.65 }}>
               All active areas complete. North Star can now reflect the whole picture back to you.
             </p>
             <button onClick={synthesise} disabled={synthesising}
@@ -1792,7 +1795,7 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
 
         {synthesisDone && synthesis && (
           <>
-            <div style={{ marginTop: '20px', padding: '20px 22px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.20)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '10px' }}>
+            <div style={{ marginTop: '20px', padding: '20px 22px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '10px' }}>
               <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '10px' }}>North Star · Connection</div>
               {synthesis.split('\n\n').map((p, i) => (
                 <p key={i} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.8, margin: i > 0 ? '12px 0 0' : 0 }}>{p}</p>
@@ -1810,7 +1813,7 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
                   onChange={e => setHorizonText(e.target.value)}
                   placeholder="What does this relationship landscape look like in your full yes life?"
                   rows={3}
-                  style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.02)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '12px', boxSizing: 'border-box' }}
+                  style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '12px', boxSizing: 'border-box' }}
                 />
                 <HourglassPicker onScore={n => { setHorizonScore(n); onUpdate({ ...existingData, subDomains, horizonScore: n }) }} horizonMode currentScore={horizonScore} />
 
@@ -1924,12 +1927,12 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
               </div>
             ) : (
               <div style={{ marginTop: '20px' }}>
-                <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '10px' }}>
+                <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '10px' }}>
                   <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>YOUR HORIZON · CONNECTION</div>
                   <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '10px' }}>
                     Across your relational landscape — sub-domain goals set above.
                   </p>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.35)', background: 'rgba(200,146,42,0.06)' }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.35)', background: 'rgba(200,146,42,0.05)' }}>
                     <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.3125rem', color: '#A8721A' }}>Horizon: {horizonScore}</span>
                     <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.08em', color: '#A8721A' }}>{TIER_MAP[horizonScore]}</span>
                   </div>
@@ -1952,6 +1955,7 @@ function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, user
 function MapNextSteps({ compact = false }) {
   const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
   const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+  const body  = { fontFamily: "'Lora', Georgia, serif" }
 
   if (compact) {
     return (
@@ -1959,7 +1963,7 @@ function MapNextSteps({ compact = false }) {
         <a href="/tools/target-goals" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 18px', display: 'inline-block' }}>
           Start a Target Sprint →
         </a>
-        <a href="/tools/expansion" style={{ ...serif, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', display: 'inline-block' }}>
+        <a href="/tools/expansion" style={{ ...body, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', display: 'inline-block' }}>
           Or begin your daily practice →
         </a>
       </div>
@@ -1967,11 +1971,11 @@ function MapNextSteps({ compact = false }) {
   }
 
   return (
-    <div style={{ marginTop: '32px', padding: '32px 28px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)', borderLeft: '3px solid rgba(200,146,42,0.45)', borderRadius: '12px' }}>
+    <div style={{ marginTop: '32px', padding: '32px 28px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderLeft: '3px solid rgba(200,146,42,0.45)', borderRadius: '12px' }}>
       <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
         What comes next
       </div>
-      <p style={{ ...serif, fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '28px' }}>
+      <p style={{ ...body, fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '28px' }}>
         The Map shows you the picture. The next tools help you move.
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1981,7 +1985,7 @@ function MapNextSteps({ compact = false }) {
           onMouseLeave={e => e.currentTarget.style.transform = ''}>
           <div>
             <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#A8721A', marginBottom: '4px' }}>Target Sprint</div>
-            <div style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.65)' }}>Three areas. Ninety days. A clear level-up.</div>
+            <div style={{ ...body, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>Three areas. Ninety days. A clear level-up.</div>
           </div>
           <span style={{ ...sc, fontSize: '1.25rem', color: '#A8721A', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>
@@ -1991,7 +1995,7 @@ function MapNextSteps({ compact = false }) {
           onMouseLeave={e => e.currentTarget.style.transform = ''}>
           <div>
             <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Horizon Practice</div>
-            <div style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.65)' }}>Build the daily practice that closes the gap.</div>
+            <div style={{ ...body, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>Build the daily practice that closes the gap.</div>
           </div>
           <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.4)', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>
@@ -2001,7 +2005,7 @@ function MapNextSteps({ compact = false }) {
           onMouseLeave={e => e.currentTarget.style.transform = ''}>
           <div>
             <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Purpose Piece</div>
-            <div style={{ ...serif, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.65)' }}>Find your archetype, domain, and scale of contribution.</div>
+            <div style={{ ...body, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>Find your archetype, domain, and scale of contribution.</div>
           </div>
           <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.4)', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>

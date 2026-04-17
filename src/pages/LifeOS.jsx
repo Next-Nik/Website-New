@@ -5,6 +5,7 @@ import { GlossaryPanel } from '../components/GlossaryPanel'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const DOMAINS = [
@@ -35,12 +36,12 @@ export function LifeOSPage() {
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: 'clamp(88px,10vw,112px) clamp(20px,5vw,40px) 80px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>The Horizon Suite</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '24px' }}>
-          The personal<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>navigation layer.</em>
+          The personal<br /><span style={{ color: '#A8721A' }}>navigation layer.</span>
         </h1>
-        <p style={{ ...serif, fontSize: '19px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '16px', maxWidth: '580px' }}>
+        <p style={{ ...body, fontSize: '19px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '16px', maxWidth: '580px' }}>
           The Horizon Suite is a set of tools for seeing your life clearly and navigating it deliberately. Not a productivity system. Not a self-help programme. A navigation layer \u2014 showing you where you are, where you\u2019re going, and what the gaps are between them.
         </p>
-        <p style={{ ...serif, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '520px' }}>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '520px' }}>
           Built on seven domains that cover the full terrain of a human life \u2014 from your daily aliveness to your deepest sense of purpose.
         </p>
 
@@ -55,12 +56,12 @@ export function LifeOSPage() {
         </div>
 
         {/* Is this for you */}
-        <div style={{ marginBottom: '72px', padding: '28px 32px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '14px' }}>
+        <div style={{ marginBottom: '72px', padding: '28px 32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>Is this for you?</span>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, margin: '0 0 8px', maxWidth: '520px' }}>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, margin: '0 0 8px', maxWidth: '520px' }}>
             You\u2019re not in crisis and you\u2019re not broken \u2014 but something is off. A gap between who you are and what you sense you could be. You\u2019ve probably done some work already. Something still isn\u2019t moving.
           </p>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, margin: 0, maxWidth: '520px' }}>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, margin: 0, maxWidth: '520px' }}>
             This is exactly the terrain these tools are built for.
           </p>
         </div>
@@ -71,7 +72,7 @@ export function LifeOSPage() {
           <h2 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.15, marginBottom: '16px' }}>
             The full terrain of a human life.
           </h2>
-          <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '36px', maxWidth: '540px' }}>
+          <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '36px', maxWidth: '540px' }}>
             Seven areas. Not performance buckets to optimise \u2014 dimensions of a whole life. When one fails structurally, it pulls on everything else. The Horizon Suite makes the whole picture visible at once.
           </p>
 
@@ -80,7 +81,7 @@ export function LifeOSPage() {
               <div key={d.name} style={{ display: 'flex', gap: '20px', alignItems: 'baseline', padding: '14px 0', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none' }}>
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.30)', minWidth: '20px' }}>{String(i + 1).padStart(2, '0')}</span>
                 <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.08em', color: '#A8721A', minWidth: '110px', flexShrink: 0 }}>{d.name}</span>
-                <span style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', fontStyle: 'italic' }}>{d.aliases}</span>
+                <span style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', }}>{d.aliases}</span>
               </div>
             ))}
           </div>
@@ -93,15 +94,15 @@ export function LifeOSPage() {
         </div>
 
         {/* The fractal */}
-        <div style={{ marginBottom: '72px', padding: '32px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '14px' }}>
+        <div style={{ marginBottom: '72px', padding: '32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '10px' }}>The fractal</span>
           <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.2, marginBottom: '16px' }}>
             The same seven domains.<br />Two scales.
           </h3>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.85)', lineHeight: 1.75, marginBottom: '12px', maxWidth: '520px' }}>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '12px', maxWidth: '520px' }}>
             The seven Horizon Suite domains map directly onto the seven domains of NextUs \u2014 the civilisational architecture. What you build in yourself is the same structure as what humanity is building collectively.
           </p>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, maxWidth: '480px' }}>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, maxWidth: '480px' }}>
             Personal navigation and civilisational navigation are the same physics, operating at different scales.
           </p>
           <div style={{ marginTop: '20px' }}>
@@ -119,7 +120,7 @@ export function LifeOSPage() {
             <div id="foundation" style={{ padding: '28px 32px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Daily regulation practice</span>
               <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>Horizon State</h3>
-              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
+              <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
                 Regulated baseline. The floor beneath everything. A 20-minute guided audio practice that restores the nervous system before anything else is attempted. You cannot build on a depleted ground.
               </p>
               <a href="/login?redirect=/tools/foundation" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '2px' }}>Get access →</a>
@@ -128,7 +129,7 @@ export function LifeOSPage() {
             <div id="map" style={{ padding: '28px 32px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>See where you are. Set where you're going.</span>
               <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>The Map</h3>
-              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
+              <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
                 Seven domains. One honest picture of where you are and where you want to be. The most powerful tool in the suite — because you cannot navigate without knowing your position.
               </p>
               <a href="/login?redirect=/tools/map" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '2px' }}>Get access →</a>
@@ -137,7 +138,7 @@ export function LifeOSPage() {
             <div id="purpose-piece" style={{ padding: '28px 32px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Your role, your domain, your scale</span>
               <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>Purpose Piece</h3>
-              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
+              <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
                 Something in you already knows what you're built for. Purpose Piece finds your contribution archetype, your domain, and your scale — and puts language to it.
               </p>
               <a href="/login?redirect=/tools/purpose-piece" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '2px' }}>Get access →</a>
@@ -146,7 +147,7 @@ export function LifeOSPage() {
             <div id="target-goals" style={{ padding: '28px 32px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>90-day focused goal plan</span>
               <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>Target Sprint</h3>
-              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
+              <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
                 Three domains. Ninety days. A route reverse-engineered from where you want to be. Not a to-do list — a focused arc with a clear win condition.
               </p>
               <a href="/login?redirect=/tools/target-goals" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '2px' }}>Get access →</a>
@@ -155,7 +156,7 @@ export function LifeOSPage() {
             <div id="expansion" style={{ padding: '28px 32px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Daily becoming practice</span>
               <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>Horizon Practice</h3>
-              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
+              <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '520px' }}>
                 Daily practice. The return. T.E.A. — Thoughts, Emotions, Actions — skill development and thought loop work toward your horizon.
               </p>
               <a href="/login?redirect=/tools/expansion" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '2px' }}>Get access →</a>
@@ -170,7 +171,7 @@ export function LifeOSPage() {
           <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,32px)', fontWeight: 300, color: '#FAFAF7', lineHeight: 1.2, marginBottom: '16px' }}>
             The full suite — five tools, one arc. Start where you are.
           </h3>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: 'rgba(250,250,247,0.65)', lineHeight: 1.75, marginBottom: '28px', maxWidth: '480px' }}>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(250,250,247,0.65)', lineHeight: 1.75, marginBottom: '28px', maxWidth: '480px' }}>
             Each tool is built for a specific stage of the journey. You don\u2019t need all of them. Start where you are.
           </p>
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -189,8 +190,8 @@ export function LifeOSPage() {
         <div style={{ maxWidth: '820px', margin: '0 auto' }}>
           <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>For someone you care about</span>
           <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.12, marginBottom: '16px' }}>Passing this on.</h2>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7, marginBottom: '12px', maxWidth: '540px' }}>The fact that you{'\\u2019'}re here for someone else says something. That instinct {'\\u2014'} to want more for the people you love {'\\u2014'} is worth following with care.</p>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '560px' }}>Not everything lands when it\u2019s pushed. The right thing, offered at the right moment, in the right way \u2014 that\u2019s different.</p>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '12px', maxWidth: '540px' }}>The fact that you{'\\u2019'}re here for someone else says something. That instinct {'\\u2014'} to want more for the people you love {'\\u2014'} is worth following with care.</p>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '560px' }}>Not everything lands when it\u2019s pushed. The right thing, offered at the right moment, in the right way \u2014 that\u2019s different.</p>
           <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.4, marginBottom: '40px' }} />
           <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where do they seem to be?</span>
 
@@ -207,8 +208,8 @@ export function LifeOSPage() {
             >
               <div style={{ fontSize: '20px', flexShrink: 0, marginTop: '2px', color: '#A8721A' }}>{q.icon}</div>
               <div>
-                <div style={{ ...serif, fontSize: '17px', fontWeight: 400, color: '#A8721A', marginBottom: '4px' }}>{q.title}</div>
-                <div style={{ ...serif, fontSize: '17px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.5 }}>{q.sub}</div>
+                <div style={{ ...body, fontSize: '17px', fontWeight: 400, color: '#A8721A', marginBottom: '4px' }}>{q.title}</div>
+                <div style={{ ...body, fontSize: '17px', color: '#0F1523', lineHeight: 1.5 }}>{q.sub}</div>
               </div>
             </div>
           ))}
@@ -217,7 +218,7 @@ export function LifeOSPage() {
             <div style={{ marginTop: '40px', padding: '28px 32px', background: 'rgba(200,146,42,0.05)', borderRadius: '14px', border: '1.5px solid rgba(200,146,42,0.78)' }}>
               <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>The right door for them</span>
               <h4 style={{ ...serif, fontSize: '20px', fontWeight: 400, color: '#A8721A', marginBottom: '10px' }}>{SHARE_RECS[shareRec].tool}</h4>
-              <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '520px' }}>{SHARE_RECS[shareRec].desc}</p>
+              <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '520px' }}>{SHARE_RECS[shareRec].desc}</p>
               <a href={SHARE_RECS[shareRec].url} style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '17px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
                 Open {SHARE_RECS[shareRec].tool} \u2192
               </a>
@@ -226,12 +227,12 @@ export function LifeOSPage() {
 
           <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '48px 0' }} />
           <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, color: '#0F1523', marginBottom: '16px' }}>How to offer it well.</h3>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '20px', maxWidth: '580px' }}>Make it an offer, not a prescription. The difference is immediate {'\\u2014'} and they{'\\u2019'}ll know which one they received.</p>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '20px', maxWidth: '580px' }}>Make it an offer, not a prescription. The difference is immediate {'\\u2014'} and they{'\\u2019'}ll know which one they received.</p>
           <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '20px 0 20px 28px', marginBottom: '20px', maxWidth: '580px' }}>
-            <p style={{ ...serif, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '12px' }}>{'\u201c'}I found something that helped me see where I actually was. No pressure \u2014 but if you\u2019re curious, here it is.{'\u201d'}</p>
+            <p style={{ ...body, fontSize: '16px', color: '#0F1523', lineHeight: 1.75, marginBottom: '12px' }}>{'\u201c'}I found something that helped me see where I actually was. No pressure \u2014 but if you\u2019re curious, here it is.{'\u201d'}</p>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', color: '#A8721A' }}>An offer</span>
           </div>
-          <p style={{ ...serif, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '580px' }}>Notice \u2014 as you think about them across these domains \u2014 what you\u2019re actually seeing. The same lens that helps you find the right thing for them has a way of clarifying things for you too.</p>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '580px' }}>Notice \u2014 as you think about them across these domains \u2014 what you\u2019re actually seeing. The same lens that helps you find the right thing for them has a way of clarifying things for you too.</p>
           <a href="/tools" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>
             See all tools \u2192
           </a>

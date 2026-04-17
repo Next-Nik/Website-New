@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { DarkSection, DarkEyebrow, DarkHeading, DarkBody } from '../components/DarkSection'
 import { useNavigate } from 'react-router-dom'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { CivilisationalFramePanel } from '../components/CivilisationalFramePanel'
@@ -101,7 +102,7 @@ function StepRow({ step, side }) {
       gap: '20px',
       alignItems: 'flex-start',
       padding: '20px 0',
-      borderBottom: '1px solid rgba(200,146,42,0.10)',
+      borderBottom: '1px solid rgba(200,146,42,0.08)',
     }}>
       <span style={{
         ...sc,
@@ -128,7 +129,7 @@ function StepRow({ step, side }) {
         <p style={{
           ...body,
           fontSize: '15px',
-          color: 'rgba(15,21,35,0.60)',
+          color: 'rgba(15,21,35,0.55)',
           lineHeight: 1.75,
           margin: 0,
         }}>
@@ -173,7 +174,7 @@ function HowItWorksSection({ navigate }) {
               padding: '11px 22px',
               border: 'none',
               cursor: 'pointer',
-              background: side === key ? 'rgba(200,146,42,0.10)' : '#FFFFFF',
+              background: side === key ? 'rgba(200,146,42,0.08)' : '#FFFFFF',
               color: side === key ? '#A8721A' : 'rgba(15,21,35,0.55)',
               borderRight: i < arr.length - 1 ? '1px solid rgba(200,146,42,0.25)' : 'none',
               transition: 'all 0.15s',
@@ -311,7 +312,7 @@ export function NextUsPage() {
               <DomainTooltip domainKey={LIFEOS_LABEL_MAP[personal]} system="nextus-self" position="below" />
             </div>,
             <div key={personal + '-arrow'} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none' }}>
-              <span style={{ color: 'rgba(200,146,42,0.45)', fontSize: '16px' }}>→</span>
+              <span style={{ color: 'rgba(200,146,42,0.78)', fontSize: '16px' }}>→</span>
             </div>,
             <div key={civil} style={{ padding: '12px 0 12px 16px', borderBottom: i < 6 ? '1px solid rgba(200,146,42,0.08)' : 'none', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', fontWeight: 300, color: '#A8721A' }}>{civil}</span>
@@ -327,7 +328,7 @@ export function NextUsPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
           {DOMAINS.map((d, i) => (
             <div key={d.key} onClick={() => setModal(d)} style={{ display: 'flex', gap: '28px', padding: '18px 0', borderBottom: i < DOMAINS.length - 1 ? '1px solid rgba(200,146,42,0.08)' : 'none', alignItems: 'baseline', cursor: 'pointer' }}
-              onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,146,42,0.02)'}
+              onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,146,42,0.05)'}
               onMouseLeave={e => e.currentTarget.style.background = ''}
             >
               <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', minWidth: '170px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -359,22 +360,22 @@ export function NextUsPage() {
       {/* ── How it works ── */}
       <HowItWorksSection navigate={navigate} />
 
-      {/* Dark section */}
-      <section className="nextus-dark" style={{ background: '#0F1523', borderTop: '1.5px solid rgba(200,146,42,0.78)', padding: '96px 40px', textAlign: 'center' }}>
-        <div style={{ maxWidth: '820px', margin: '0 auto' }}>
-          <div style={{ marginBottom: '24px' }}><img src="/logo_nav.png" alt="NextUs" style={{ height: '40px', width: 'auto', display: 'inline-block', opacity: 0.78 }} /></div>
-          <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.4, margin: '0 auto 36px' }} />
-          <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,34px)', fontWeight: 300, color: 'rgba(255,255,255,0.92)', marginBottom: '12px' }}>Want to know what's next?</h2>
-          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(255,255,255,0.55)', marginBottom: '40px', maxWidth: '320px', marginLeft: 'auto', marginRight: 'auto' }}>The platform is live and growing. New tools, new domains, new connections.</p>
-          <div style={{ maxWidth: '380px', margin: '0 auto' }}>
-            <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
-            <form action="https://app.kit.com/forms/9215183/subscriptions" className="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
-              <input type="email" name="email_address" placeholder="your email" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
-              <button type="submit" style={{ width: '100%', padding: '16px', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Join us {'\u2192'}</button>
-            </form>
-          </div>
+      {/* Stay close — dark section */}
+      <DarkSection style={{ textAlign: 'center' }}>
+        <div style={{ marginBottom: '24px' }}>
+          <img src="/logo_nav.png" alt="NextUs" style={{ height: '40px', width: 'auto', display: 'inline-block', opacity: 0.78 }} />
         </div>
-      </section>
+        <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.4, margin: '0 auto 36px' }} />
+        <DarkHeading>Want to know what’s next?</DarkHeading>
+        <DarkBody style={{ maxWidth: '320px', margin: '0 auto 40px' }}>The platform is live and growing. New tools, new domains, new connections.</DarkBody>
+        <div style={{ maxWidth: '380px', margin: '0 auto' }}>
+          <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
+          <form action="https://app.kit.com/forms/9215183/subscriptions" className="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
+            <input type="email" name="email_address" placeholder="your email" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
+            <button type="submit" style={{ width: '100%', padding: '16px', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Join us →</button>
+          </form>
+        </div>
+      </DarkSection>
 
       <CivilisationalFramePanel />
       <ToolCompassPanel />

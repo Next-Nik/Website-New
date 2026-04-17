@@ -196,7 +196,7 @@ function StagePanel({ stage }) {
           <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.78)', display: 'block', marginBottom: '10px' }}>Also worth exploring</span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              {s.external.map(t => <span key={t} style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.78)', background: 'rgba(15,21,35,0.04)', border: '1px solid rgba(15,21,35,0.10)', borderRadius: '40px', padding: '6px 14px' }}>{t}</span>)}
+              {s.external.map(t => <span key={t} style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '40px', padding: '6px 14px' }}>{t}</span>)}
             </div>
           </div>
         )}
