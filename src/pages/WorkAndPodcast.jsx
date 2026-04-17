@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Nav } from '../components/Nav'
 import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkGhostButton } from '../components/DarkSection'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
@@ -115,6 +116,33 @@ function Card({ label, body }) {
   )
 }
 
+function CalendlyEmbed() {
+  useEffect(() => {
+    // Load Calendly CSS
+    if (!document.querySelector('link[href*="calendly.com"]')) {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = 'https://assets.calendly.com/assets/external/widget.css'
+      document.head.appendChild(link)
+    }
+    // Load Calendly JS
+    if (!document.querySelector('script[src*="calendly.com"]')) {
+      const script = document.createElement('script')
+      script.src = 'https://assets.calendly.com/assets/external/widget.js'
+      script.async = true
+      document.body.appendChild(script)
+    }
+  }, [])
+
+  return (
+    <div
+      className="calendly-inline-widget"
+      data-url="https://calendly.com/nikwood/talk-to-nik"
+      style={{ minWidth: '280px', height: '700px', borderRadius: '14px', overflow: 'hidden', border: '1.5px solid rgba(200,146,42,0.78)' }}
+    ></div>
+  )
+}
+
 export function WorkWithNikPage() {
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
@@ -186,9 +214,7 @@ export function WorkWithNikPage() {
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '20px' }}>Book a time</span>
 
         {/* Calendly embed */}
-        <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
-        <div className="calendly-inline-widget" data-url="https://calendly.com/nikwood/talk-to-nik" style={{ minWidth: '280px', height: '700px', borderRadius: '14px', overflow: 'hidden', border: '1.5px solid rgba(200,146,42,0.78)' }} />
-        <script src="https://assets.calendly.com/assets/external/widget.js" async />
+        <CalendlyEmbed />
         <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', marginTop: '14px' }}>30 minutes · no cost · no obligation</p>
       </div>
       <ScalePanel side="right" />
