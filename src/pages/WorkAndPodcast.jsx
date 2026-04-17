@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { Nav } from '../components/Nav'
 import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkGhostButton } from '../components/DarkSection'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
@@ -117,29 +116,15 @@ function Card({ label, body }) {
 }
 
 function CalendlyEmbed() {
-  useEffect(() => {
-    // Load Calendly CSS
-    if (!document.querySelector('link[href*="calendly.com"]')) {
-      const link = document.createElement('link')
-      link.rel = 'stylesheet'
-      link.href = 'https://assets.calendly.com/assets/external/widget.css'
-      document.head.appendChild(link)
-    }
-    // Load Calendly JS
-    if (!document.querySelector('script[src*="calendly.com"]')) {
-      const script = document.createElement('script')
-      script.src = 'https://assets.calendly.com/assets/external/widget.js'
-      script.async = true
-      document.body.appendChild(script)
-    }
-  }, [])
-
   return (
-    <div
-      className="calendly-inline-widget"
-      data-url="https://calendly.com/nikwood/talk-to-nik"
-      style={{ minWidth: '280px', height: '700px', borderRadius: '14px', overflow: 'hidden', border: '1.5px solid rgba(200,146,42,0.78)' }}
-    ></div>
+    <iframe
+      src="https://calendly.com/nikwood/talk-to-nik?embed_type=Inline&hide_landing_page_details=1&hide_gdpr_banner=1"
+      width="100%"
+      height="700"
+      frameBorder="0"
+      title="Book a call with Nik"
+      style={{ borderRadius: '14px', border: '1.5px solid rgba(200,146,42,0.78)', display: 'block' }}
+    />
   )
 }
 
