@@ -1446,6 +1446,13 @@ export function PurposePiecePage() {
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)' }}>
                 Find your terrain {'\u2192'}
               </button>
+              <button
+                onClick={() => navigate('/dashboard')}
+                style={{ ...btnStyle, background: 'transparent', color: '#A8721A', border: '1.5px solid rgba(200,146,42,0.35)' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#A8721A' }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.35)' }}>
+                Mission Control {'\u2192'}
+              </button>
               <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '4px' }}>
                 <button onClick={goDeeper}
                   style={{ background: 'none', border: 'none', ...body, fontSize: '1rem', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.55)' }}>

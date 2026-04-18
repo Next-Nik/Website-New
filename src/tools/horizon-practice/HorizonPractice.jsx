@@ -713,9 +713,29 @@ function DailyCheckin({ setupData, sprintData, mapData, onComplete, userId, rece
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: '40px 24px 120px' }}>
       <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px' }}>Daily check-in · {today}</div>
-      <div style={{ ...body, fontSize: '13px', color: '#A8721A', opacity: 1, marginBottom: '32px' }}>
+      <div style={{ ...body, fontSize: '13px', color: '#A8721A', opacity: 1, marginBottom: '16px' }}>
         "{setupData.horizonSelf}"
       </div>
+
+      {/* I am statements for active focus domains */}
+      {(() => {
+        const activeDomains = sprintData?.domains || mapData?.focusDomains || []
+        const LABELS = { path:'Path', spark:'Spark', body:'Body', finances:'Finances', connection:'Connection', inner_game:'Inner Game', signal:'Signal' }
+        const statementsToShow = activeDomains
+          .filter(id => mapData?.domains?.[id]?.iaStatement)
+          .map(id => ({ id, label: LABELS[id] || id, statement: mapData.domains[id].iaStatement }))
+        if (statementsToShow.length === 0) return null
+        return (
+          <div style={{ marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {statementsToShow.map(d => (
+              <div key={d.id} style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                <span style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.35)', textTransform: 'uppercase', flexShrink: 0, width: '72px' }}>{d.label}</span>
+                <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', fontStyle: 'italic' }}>{d.statement}</span>
+              </div>
+            ))}
+          </div>
+        )
+      })()}
 
       {/* T.E.A. progress */}
       <div style={{ display: 'flex', gap: '8px', marginBottom: '32px' }}>
@@ -1107,18 +1127,39 @@ function Dashboard({ setupData, checkins, skills, sprintData, mapData, onCheckin
               "{mapData.lifeHorizon}"
             </div>
           )}
+          {/* I am statements for focus domains */}
+          {mapData.focusDomains.some(id => mapData.domains?.[id]?.iaStatement) && (
+            <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(200,146,42,0.12)', display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              {(() => {
+                const LABELS = { path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances', connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal' }
+                return mapData.focusDomains
+                  .filter(id => mapData.domains?.[id]?.iaStatement)
+                  .map(id => (
+                    <div key={id} style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+                      <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '9px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.35)', textTransform: 'uppercase', flexShrink: 0, width: '72px' }}>{LABELS[id] || id}</span>
+                      <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.65)', fontStyle: 'italic' }}>{mapData.domains[id].iaStatement}</span>
+                    </div>
+                  ))
+              })()}
+            </div>
+          )}
         </Card>
       )}
 
       {/* Today's check-in CTA */}
       {checkedInToday ? (
         <GoldCard>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ fontSize: '28px' }}>✓</span>
-            <div>
-              <div style={{ ...body, fontSize: '18px', fontWeight: 300, ...dark }}>Check-in complete for today.</div>
-              <div style={{ ...body, fontSize: '15px', ...muted, marginTop: '4px' }}>Come back tomorrow. The practice compounds.</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <span style={{ fontSize: '28px' }}>✓</span>
+              <div>
+                <div style={{ ...body, fontSize: '18px', fontWeight: 300, ...dark }}>Check-in complete for today.</div>
+                <div style={{ ...body, fontSize: '15px', ...muted, marginTop: '4px' }}>Come back tomorrow. The practice compounds.</div>
+              </div>
             </div>
+            <a href="/dashboard" style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none', flexShrink: 0 }}>
+              Mission Control →
+            </a>
           </div>
         </GoldCard>
       ) : (
@@ -1244,6 +1285,22 @@ export function HorizonPracticePage() {
               .map(([id]) => id)
           }
 
+          // Fetch I am statements from horizon_profile
+          const { data: iaRows } = await supabase
+            .from('horizon_profile')
+            .select('domain, ia_statement')
+            .eq('user_id', user.id)
+
+          const iaMap = {}
+          if (iaRows) iaRows.forEach(r => { if (r.ia_statement) iaMap[r.domain] = r.ia_statement })
+
+          // Add ia_statement to each domain
+          if (domains) {
+            Object.keys(domains).forEach(id => {
+              if (iaMap[id]) domains[id].iaStatement = iaMap[id]
+            })
+          }
+
           setMapData({
             stage: md.stage || null,
             stageDescription: md.stage_description || null,
@@ -1251,6 +1308,7 @@ export function HorizonPracticePage() {
             focusDomains,
             focusReasoning: md.focus_reasoning || null,
             lifeHorizon: mapRow.horizon_goal_user || md.life_horizon_draft || null,
+            lifeIaStatement: mapRow.life_ia_statement || null,
             domains,
           })
         }

@@ -386,7 +386,7 @@ function FoundationReview({ user, sessions }) {
       {reviewText && (
         <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', padding: '16px 0 16px 20px' }}>
           <p style={{ ...body, fontSize: '1.25rem', lineHeight: 1.85, ...meta, margin: 0 }}>{reviewText}</p>
-          {saved && <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', display: 'block', marginTop: '12px' }}>Saved to your profile</span>}
+          {saved && <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', display: 'block', marginTop: '12px' }}>Saved</span>}
         </div>
       )}
     </div>
@@ -395,7 +395,7 @@ function FoundationReview({ user, sessions }) {
 
 // ─── Baseline Card ────────────────────────────────────────────────────────────
 
-function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAfterComplete }) {
+function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAfterComplete, lifeIaStatement }) {
   const today = getLocalDateStr()
 
   const todayBefore = sessions.find(s => s.checkin_stage === 'before' && s.completed_at?.startsWith(today))
@@ -520,6 +520,13 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
           <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '20px' }}>
             {sessionCount} session{sessionCount !== 1 ? 's' : ''} this week
           </p>
+          {lifeIaStatement && (
+            <div style={{ margin: '0 auto 24px', maxWidth: '400px', padding: '14px 20px', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', background: 'rgba(200,146,42,0.04)' }}>
+              <p style={{ ...body, fontSize: '1.0625rem', fontStyle: 'italic', color: '#A8721A', lineHeight: 1.7, margin: 0 }}>
+                {lifeIaStatement}
+              </p>
+            </div>
+          )}
           <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', alignItems: 'center', flexWrap: 'wrap' }}>
             <button
               onClick={() => { setBeforeDone(false); setAfterDone(false); setAfterUnlocked(false); setBeforeValue(5); setAfterValue(5); setBeforeNote(''); setAfterNote(''); setShowBeginPopup(true) }}
@@ -527,8 +534,8 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
             >
               Listen again {'\u2192'}
             </button>
-            <a href="/dashboard#horizon-state" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>
-              View your journal {'\u2192'}
+            <a href="/dashboard" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>
+              Mission Control {'\u2192'}
             </a>
           </div>
         </div>
@@ -890,6 +897,7 @@ export function HorizonStatePage() {
   const [audioError,   setAudioError]   = useState(null)
   const [sessions,     setSessions]     = useState([])
   const [activePhase,  setActivePhase]  = useState('foundation')
+  const [lifeIaStatement, setLifeIaStatement] = useState(null)
 
   useEffect(() => {
     if (!user) return
@@ -903,7 +911,7 @@ export function HorizonStatePage() {
     } finally {
       setAudioLoading(false)
     }
-    // Load session history — includes both before/after check-ins and full sessions
+    // Load session history
     supabase
       .from('pulse_entries')
       .select('*')
@@ -912,6 +920,15 @@ export function HorizonStatePage() {
       .order('completed_at', { ascending: false })
       .limit(200)
       .then(({ data }) => { if (data) setSessions(data) })
+    // Load Life Horizon I am statement
+    supabase
+      .from('map_results')
+      .select('life_ia_statement')
+      .eq('user_id', user.id)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => { if (data?.life_ia_statement) setLifeIaStatement(data.life_ia_statement) })
   }, [user])
 
   if (authLoading || accessLoading) return <div className="loading" />
@@ -984,6 +1001,7 @@ export function HorizonStatePage() {
                     audioLoading={audioLoading}
                     audioError={audioError}
                     sessions={sessions}
+                    lifeIaStatement={lifeIaStatement}
                     onAfterComplete={async (afterData, beforeData, updatedSessions) => {
                       await writeSummary(user, updatedSessions, afterData, beforeData)
                       supabase.from('north_star_notes').upsert(

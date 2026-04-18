@@ -1541,7 +1541,7 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
 
 // ─── Phase: Select ────────────────────────────────────────────────────────────
 
-function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSelectedDomains, recommendation, onContinue }) {
+function PhaseSelect({ hasMapData, scores, horizonScores, iaStatements = {}, selectedDomains, setSelectedDomains, recommendation, onContinue }) {
   // Score-based fallback: mark 3 lowest-scoring domains when recommendation hasn't resolved
   const scoreFallbackRec = hasMapData && !recommendation?.recommended && Object.keys(scores).length > 0
     ? DOMAINS
@@ -1604,6 +1604,11 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
                     <span style={{ color: horizonScores[d.id] != null ? '#C8922A' : 'rgba(200,146,42,0.3)' }}>{horizonScores[d.id] != null ? horizonScores[d.id] : '?'}</span>
                     <span style={{ color: col, marginLeft: '2px' }}>· {getTierLabel(s)}</span>
                   </div>
+                  {iaStatements[d.id] && (
+                    <div style={{ ...body, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, marginTop: '6px' }}>
+                      {iaStatements[d.id]}
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -1675,6 +1680,7 @@ export function TargetSprintPage() {
   const [mapData,          setMapData]          = useState(null)
   const [scores,           setScores]           = useState({})
   const [horizonScores,    setHorizonScores]    = useState({})
+  const [iaStatements,     setIaStatements]     = useState({})
   const [selectedDomains,  setSelectedDomains]  = useState([])
   const [quarterType,      setQuarterType]      = useState(null)
   const [targetDate,       setTargetDate]       = useState(null)
@@ -1685,6 +1691,7 @@ export function TargetSprintPage() {
   const [showSummary,      setShowSummary]      = useState(false)
   const [showCentreModal,  setShowCentreModal]  = useState(false)
   const [spinDir,          setSpinDir]          = useState('next')
+  const [showSprintDone,   setShowSprintDone]   = useState(false)
   const [showWelcome,      setShowWelcome]      = useState(() => {
     try {
       const raw = sessionStorage.getItem(SS_KEY)
@@ -1770,9 +1777,6 @@ export function TargetSprintPage() {
 
   async function loadMapData() {
     try {
-      // Load the most recent map — complete or in-progress.
-      // Stars show whenever the user has scored at least 4 domains,
-      // regardless of whether they ran the final synthesis.
       const { data } = await supabase
         .from('map_results').select('session, completed_at, complete')
         .eq('user_id', user.id)
@@ -1786,7 +1790,6 @@ export function TargetSprintPage() {
           else if (d?.score !== undefined)   s[id] = d.score
           if (d?.horizonScore !== undefined) h[id] = d.horizonScore
         })
-        // Use map data if at least 4 domains are scored
         const scoredCount = Object.keys(s).length
         if (scoredCount >= 4) {
           setMapData(data.session)
@@ -1794,6 +1797,19 @@ export function TargetSprintPage() {
           setScores(s)
           setHorizonScores(h)
           getRecommendation(s, true)
+        }
+      }
+
+      // Fetch I am statements
+      if (user?.id) {
+        const { data: iaRows } = await supabase
+          .from('horizon_profile')
+          .select('domain, ia_statement')
+          .eq('user_id', user.id)
+        if (iaRows) {
+          const map = {}
+          iaRows.forEach(r => { if (r.ia_statement) map[r.domain] = r.ia_statement })
+          setIaStatements(map)
         }
       }
     } catch {}
@@ -1893,7 +1909,6 @@ export function TargetSprintPage() {
   }
 
   async function handleSprintComplete() {
-    // Mark session complete in Supabase
     if (sessionId && user?.id) {
       try {
         await supabase.from('target_sprint_sessions')
@@ -1901,7 +1916,11 @@ export function TargetSprintPage() {
           .eq('id', sessionId)
       } catch {}
     }
-    // Clear local state so user can start a new sprint
+    setShowSummary(false)
+    setShowSprintDone(true)
+  }
+
+  function handleStartNewSprint() {
     try { sessionStorage.removeItem(SS_KEY) } catch {}
     setSessionId(null)
     setSelectedDomains([])
@@ -1911,7 +1930,7 @@ export function TargetSprintPage() {
     setEndDateLabel(null)
     setActiveDomainId(null)
     setPhase('select')
-    setShowSummary(false)
+    setShowSprintDone(false)
     setShowWelcome(true)
   }
 
@@ -1950,6 +1969,46 @@ export function TargetSprintPage() {
       `}</style>
       <Nav activePath="nextus-self" />
       {!user && <AuthModal />}
+
+      {/* Sprint complete screen */}
+      {showSprintDone && (
+        <div style={{ maxWidth: '600px', margin: '0 auto', padding: 'clamp(80px,10vw,120px) clamp(20px,5vw,40px) 120px', textAlign: 'center' }}>
+          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Target Sprint · Complete</span>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(32px,5vw,52px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.1, marginBottom: '20px' }}>
+            Sprint done.
+          </h1>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.8, marginBottom: '40px', maxWidth: '420px', margin: '0 auto 40px' }}>
+            Ninety days. What moved? What stayed? What would you do differently? Take a moment before starting the next one.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', maxWidth: '420px', margin: '0 auto' }}>
+            <a href="/dashboard" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.55)', borderRadius: '10px', textDecoration: 'none' }}>
+              <div>
+                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.1em', color: '#A8721A', marginBottom: '4px' }}>Mission Control</div>
+                <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>See what shifted across your seven domains.</div>
+              </div>
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: '#A8721A', flexShrink: 0, marginLeft: '16px' }}>→</span>
+            </a>
+            <a href="/tools/map" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', textDecoration: 'none' }}>
+              <div>
+                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Rescore The Map</div>
+                <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>See what actually moved in ninety days.</div>
+              </div>
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.4)', flexShrink: 0, marginLeft: '16px' }}>→</span>
+            </a>
+            <button
+              onClick={handleStartNewSprint}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', cursor: 'pointer', width: '100%', textAlign: 'left' }}
+            >
+              <div>
+                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Start a new sprint</div>
+                <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>Choose your next three domains.</div>
+              </div>
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.4)', flexShrink: 0, marginLeft: '16px' }}>→</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {user && showWelcome && <WelcomeModal onBegin={() => {
         if (user?.id) {
           supabase.from('target_sprint_sessions').insert({
@@ -1989,6 +2048,7 @@ export function TargetSprintPage() {
         {phase === 'select' && (
           <PhaseSelect
             hasMapData={hasMapData} scores={scores} horizonScores={horizonScores}
+            iaStatements={iaStatements}
             selectedDomains={selectedDomains} setSelectedDomains={setSelectedDomains}
             recommendation={recommendation}
             onContinue={() => setPhase('quarter')}

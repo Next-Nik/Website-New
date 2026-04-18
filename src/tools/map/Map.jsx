@@ -2009,6 +2009,16 @@ function MapNextSteps({ compact = false }) {
           </div>
           <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.4)', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>
+        <a href="/dashboard"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.55)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}
+          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+          onMouseLeave={e => e.currentTarget.style.transform = ''}>
+          <div>
+            <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.1em', color: '#A8721A', marginBottom: '4px' }}>Mission Control</div>
+            <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>See your map, write your I am statements, act on the gap.</div>
+          </div>
+          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: '#A8721A', flexShrink: 0, marginLeft: '16px' }}>→</span>
+        </a>
       </div>
     </div>
   )
