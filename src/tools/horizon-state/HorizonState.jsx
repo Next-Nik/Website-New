@@ -789,7 +789,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
               <textarea
                 value={afterNote}
                 onChange={e => setAfterNote(e.target.value)}
-                placeholder={'What I’m stepping away with…'}
+                placeholder={"What I'm stepping away with…"}
                 rows={3}
                 style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, transition: 'border-color 0.2s', boxSizing: 'border-box' }}
                 onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
@@ -875,7 +875,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
             <FlameSlider value={afterValue} onChange={setAfterValue} ghostValue={beforeDone ? beforeValue : null} />
           </div>
           <textarea value={afterNote} onChange={e => setAfterNote(e.target.value)}
-            placeholder={'What I'm stepping away with…'} rows={2}
+            placeholder={"What I'm stepping away with…"} rows={2}
             style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
             onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
             onBlur={e => { e.target.style.borderColor = 'rgba(200,146,42,0.18)' }}

@@ -41,7 +41,7 @@ export function PrivacyPage() {
       <P>We also store anything you write in the manual fields {'—'} your own words, your horizon statements, your notes. These are yours. They{'''}re stored so you can return to them.</P>
       <P>When you sign in via Google, Google provides us with your email address and basic profile information. We don{'''}t receive anything beyond what you explicitly authorise.</P>
       <H2>What we don{'''}t collect</H2>
-      <UL items={['Payment information — we don’t handle payments directly.', 'Location data beyond what you choose to share in your profile.', 'Browsing behaviour across other sites.', 'Anything you don’t explicitly give us.']} />
+      <UL items={["Payment information — we don't handle payments directly.", "Location data beyond what you choose to share in your profile.", "Browsing behaviour across other sites.", "Anything you don't explicitly give us."]} />
       <H2>Improving the tools</H2>
       <P>We may use anonymised, aggregated patterns from tool usage to improve how the tools work. We will never use your individual data to train external AI models, and we will never share your data with third parties for this purpose.</P>
       <H2>How we use it</H2>
@@ -74,7 +74,7 @@ export function TermsPage() {
       <H2>What the platform is for</H2>
       <P>NextUs and the Horizon Suite are tools for honest self-knowledge and civilisational orientation. They{'''}re not therapy, not medical advice, not financial advice, and not a substitute for professional support when professional support is what{'''}s needed.</P>
       <H2>What you agree not to do</H2>
-      <UL items={['Use the platform to harm, harass, or deceive other people.', 'Attempt to access data that isn’t yours.', 'Use automated tools to scrape or overload the platform.', 'Misrepresent yourself or your credentials in ways that affect other users.', 'Reproduce or distribute platform content without permission.']} />
+      <UL items={["Use the platform to harm, harass, or deceive other people.", "Attempt to access data that isn't yours.", "Use automated tools to scrape or overload the platform.", "Misrepresent yourself or your credentials in ways that affect other users.", "Reproduce or distribute platform content without permission."]} />
       <H2>Intellectual property</H2>
       <P>The platform, the tools, the domain architecture, the archetype frameworks, the Horizon Goals structure, and all copy on nextus.world are the work of Nik Wood and NextUs. They{'''}re protected by copyright.</P>
       <H2>The platform is a living thing</H2>

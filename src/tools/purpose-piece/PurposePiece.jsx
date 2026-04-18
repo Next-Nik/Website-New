@@ -72,7 +72,7 @@ const PLACEHOLDERS = {
   archetype:    'Tell me what happened…',
   domain:       'Tell me what you see…',
   scale:        'Describe the scene…',
-  confirmation: 'Tell me what lands and what doesn't…',
+  confirmation: `Tell me what lands and what doesn't…`,
 }
 
 // ─── Shared styles ────────────────────────────────────────────────────────────
@@ -456,7 +456,7 @@ function StageTransition({ nextStage, onContinue, loading = false }) {
     domain: {
       eyebrow: 'Archetype ✓',
       heading: 'How you move: found.',
-      body:    'Now a different gear entirely. The last set was watching your instinct in action. This one is about what you can’t look away from — the thing that pulls your attention even when you have no reason to care.',
+      body:    'Now a different gear entirely. The last set was watching your instinct in action. This one is about what you can't look away from — the thing that pulls your attention even when you have no reason to care.',
       cta:     'Find your domain →',
     },
     scale: {
@@ -580,17 +580,17 @@ function WelcomeModal({ onBegin }) {
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '480px', width: '100%' }}>
         <span style={{ display: 'block', fontFamily: "\'Cormorant SC\', Georgia, serif", fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '20px' }}>Purpose Piece</span>
         <h2 style={{ fontFamily: "\'Cormorant Garamond\', Georgia, serif", fontSize: 'clamp(1.5rem, 4vw, 1.875rem)', fontWeight: 300, color: '#0F1523', marginBottom: '20px', lineHeight: 1.3 }}>
-          Somewhere underneath everything you’ve built, survived, and adapted to — there’s a shape that was always yours.
+          Somewhere underneath everything you've built, survived, and adapted to — there's a shape that was always yours.
         </h2>
         <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '28px' }}>
-          Purpose Piece finds three things: the instinct that keeps showing up in how you actually move through the world. The territory your care keeps returning to. The scale of what you feel genuinely responsible for. Ten questions across three conversations. At the end, you’ll have language for something you’ve always been doing.
+          Purpose Piece finds three things: the instinct that keeps showing up in how you actually move through the world. The territory your care keeps returning to. The scale of what you feel genuinely responsible for. Ten questions across three conversations. At the end, you'll have language for something you've always been doing.
         </p>
         <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', paddingTop: '20px', marginBottom: '24px' }}>
           <div style={{ display: 'flex', gap: '24px' }}>
             {[
               { label: 'Archetype', sub: 'how you move' },
               { label: 'Domain',    sub: 'where you care' },
-              { label: 'Scale',     sub: 'what you’re on the hook for' },
+              { label: 'Scale',     sub: `what you're on the hook for` },
             ].map(item => (
               <div key={item.label}>
                 <div style={{ fontFamily: "\'Cormorant SC\', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>{item.label}</div>
@@ -609,7 +609,7 @@ function WelcomeModal({ onBegin }) {
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.55)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
           onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
         >
-          Let’s find it {'→'}
+          Let's find it {'→'}
         </button>
       </div>
     </div>
@@ -1522,7 +1522,7 @@ export function PurposePiecePage() {
                 {!showCorrection && (
                   <button onClick={openCorrection}
                     style={{ background: 'none', border: 'none', ...body, fontSize: '1rem', color: 'rgba(15,21,35,0.58)', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.55)' }}>
-                    The fit isn’t quite right →
+                    The fit isn't quite right →
                   </button>
                 )}
               </div>
@@ -1548,7 +1548,7 @@ export function PurposePiecePage() {
                 <textarea ref={textareaRef} value={input}
                   onChange={e => { setInput(e.target.value); resizeTextarea() }}
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-                  placeholder={'Tell me what doesn't fit…'}
+                  placeholder={"Tell me what doesn't fit…"}
                   rows={1} disabled={thinking}
                 />
                 <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
@@ -1571,7 +1571,7 @@ export function PurposePiecePage() {
       const stageCompletionCopy = {
         archetype: {
           headline: 'Archetype: in.',
-          body: 'The instinct underneath the action has been found. Pick up another section on the disc when you’re ready.'
+          body: `The instinct underneath the action has been found. Pick up another section on the disc when you're ready.`
         },
         domain: {
           headline: 'Domain: in.',
@@ -1858,7 +1858,7 @@ export function PurposePiecePage() {
           </h1>
           {!showReveal && !session && (
             <p style={{ ...body, fontSize: '1.1875rem', ...muted, lineHeight: 1.7, maxWidth: '440px' }}>
-              Something in you already knows what you’re built for. This finds it, and puts language to it.
+              Something in you already knows what you're built for. This finds it, and puts language to it.
             </p>
           )}
         </div>

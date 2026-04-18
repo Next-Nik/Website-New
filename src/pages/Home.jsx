@@ -12,10 +12,10 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 const TESTIMONIALS = [
   { q: 'Working with Nik definitely changed my life. He has the ability to build up the right foundation and the right container to actually be vulnerable and go straight to where you need to.', cite: 'S.H.' },
-  { q: 'The work we've done has peeled back the narrative that said 'I can't do that' and revealed another world of possibility. I feel like I've been liberated.', cite: 'C.W.' },
-  { q: 'I think this is the best decision I've ever made. You've helped me unlock things I thought were dead and buried long ago.', cite: 'L.D.' },
+  { q: `The work we've done has peeled back the narrative that said 'I can't do that' and revealed another world of possibility. I feel like I've been liberated.`, cite: 'C.W.' },
+  { q: `I think this is the best decision I've ever made. You've helped me unlock things I thought were dead and buried long ago.`, cite: 'L.D.' },
   { q: 'Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being — what I really wanted out of life — and how to live as the best version of myself.', cite: 'O.W.H.' },
-  { q: 'I'm 63 years old and just met myself for the first time working with Nik.', cite: 'J.B.' },
+  { q: `I'm 63 years old and just met myself for the first time working with Nik.`, cite: 'J.B.' },
   { q: 'I came to Nik a few weeks in, apologising for not doing my homework — and found myself telling him I'd met someone, gone on wonderful adventures, that my work was expanding. He said: 'Look at what you wrote in week one.' I was already living it.', cite: 'J.M.' },
 ]
 
@@ -215,7 +215,7 @@ function OrienteeringEmbed() {
   const textareaRef = useRef(null)
 
   useEffect(() => {
-    setMessages([{ role: 'assistant', content: 'Tell me a little about where you are right now — what's on your mind, what you're looking for, or just how things feel. I'll point you in the right direction.' }])
+    setMessages([{ role: 'assistant', content: `Tell me a little about where you are right now — what's on your mind, what you're looking for, or just how things feel. I'll point you in the right direction.` }])
   }, [])
 
   useEffect(() => {
@@ -373,10 +373,10 @@ export function HomePage() {
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Is this for you?</span>
         <h2 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '24px' }}>This is for people who already know something isn't moving.</h2>
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '32px', maxWidth: '560px' }}>
-          You’re not in crisis. You’re not broken. But something is off — a gap between who you are and what you sense you’re capable of. You’ve probably done some work on yourself already. And something still isn’t moving.
+          You're not in crisis. You're not broken. But something is off — a gap between who you are and what you sense you're capable of. You've probably done some work on yourself already. And something still isn't moving.
         </p>
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '0', maxWidth: '560px' }}>
-          That’s the exact territory this ecosystem is built for.
+          That's the exact territory this ecosystem is built for.
         </p>
       </section>
 

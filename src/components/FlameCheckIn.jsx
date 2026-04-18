@@ -387,7 +387,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
       <textarea
         value={note}
         onChange={e => setNote(e.target.value)}
-        placeholder={isBefore ? 'what walked in with you today…' : 'what you're leaving with…'}
+        placeholder={isBefore ? 'what walked in with you today…' : `what you're leaving with…`}
         rows={2}
         disabled={locked}
         style={{

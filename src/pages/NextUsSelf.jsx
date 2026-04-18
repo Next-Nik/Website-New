@@ -19,10 +19,10 @@ const DOMAINS = [
 ]
 
 const SHARE_RECS = {
-  foundation: { tool: 'Horizon State', url: '/tools/horizon-state', desc: 'When someone is depleted, the first move is never to add more — it's to restore the ground. Horizon State is a 20-minute guided practice for nervous system regulation — the floor beneath everything.' },
-  map:        { tool: 'The Map',    url: '/tools/map',        desc: 'When someone doesn't know where they are, a map is everything. The Map gives an honest picture of their whole life across seven domains — in ten minutes.' },
-  purpose:    { tool: 'Purpose Piece', url: '/tools/purpose-piece', desc: 'When someone is capable but not yet fully alive in what they do, the question isn't what — it's where. Purpose Piece surfaces the role they're built to play.' },
-  leap:       { tool: 'Horizon Leap', url: 'https://calendly.com/nikwood/talk-to-nik', desc: 'When the pattern keeps returning despite the work, the work needed is different. Horizon Leap is identity-level work facilitated by Nik. Start with a conversation.' },
+  foundation: { tool: 'Horizon State', url: '/tools/horizon-state', desc: `When someone is depleted, the first move is never to add more — it's to restore the ground. Horizon State is a 20-minute guided practice for nervous system regulation — the floor beneath everything.` },
+  map:        { tool: 'The Map',    url: '/tools/map',        desc: `When someone doesn't know where they are, a map is everything. The Map gives an honest picture of their whole life across seven domains — in ten minutes.` },
+  purpose:    { tool: 'Purpose Piece', url: '/tools/purpose-piece', desc: `When someone is capable but not yet fully alive in what they do, the question isn't what — it's where. Purpose Piece surfaces the role they're built to play.` },
+  leap:       { tool: 'Horizon Leap', url: 'https://calendly.com/nikwood/talk-to-nik', desc: `When the pattern keeps returning despite the work, the work needed is different. Horizon Leap is identity-level work facilitated by Nik. Start with a conversation.` },
 }
 
 export function NextUsSelfPage() {
@@ -165,7 +165,7 @@ export function NextUsSelfPage() {
       <DarkSection>
         <DarkEyebrow>Ready to use the tools?</DarkEyebrow>
         <DarkHeading>Six tools. One navigation system.</DarkHeading>
-        <DarkBody>Each tool is built for a specific stage of the journey. You don’t need all of them. Start where you are.</DarkBody>
+        <DarkBody>Each tool is built for a specific stage of the journey. You don't need all of them. Start where you are.</DarkBody>
         <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
           <DarkSolidButton href="/tools">See all tools →</DarkSolidButton>
           <DarkGhostButton href="/tools/orienteering">Find my starting point →</DarkGhostButton>
@@ -185,8 +185,8 @@ export function NextUsSelfPage() {
           {[
             { key: 'foundation', icon: '\u25ce', title: 'Running on empty',           sub: 'Stressed, depleted, or going through something hard' },
             { key: 'map',        icon: '\u25c8', title: 'Stuck or searching',          sub: 'Not sure what they want — or where their life is actually at' },
-            { key: 'purpose',    icon: '\u25c9', title: 'Capable but not fully alive', sub: 'Functioning well, but something important isn't being expressed' },
-            { key: 'leap',       icon: '\u25d0', title: 'Hitting the same ceiling',    sub: 'They've done the work. The pattern keeps returning' },
+            { key: 'purpose',    icon: '\u25c9', title: 'Capable but not fully alive', sub: `Functioning well, but something important isn't being expressed` },
+            { key: 'leap',       icon: '\u25d0', title: 'Hitting the same ceiling',    sub: `They've done the work. The pattern keeps returning` },
           ].map(q => (
             <div key={q.key} onClick={() => setShareRec(q.key)}
               style={{ display: 'flex', gap: '16px', padding: '20px 22px', borderRadius: '14px', marginBottom: '10px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', cursor: 'pointer', transition: 'all 0.2s' }}

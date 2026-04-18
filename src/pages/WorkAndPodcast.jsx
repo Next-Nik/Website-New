@@ -19,10 +19,10 @@ function Quote({ text, cite }) {
 
 const TESTIMONIALS = [
   { q: 'Working with Nik definitely changed my life. He has the ability to build up the right foundation and the right container to actually be vulnerable and go straight to where you need to.', cite: 'S.H.' },
-  { q: 'The work we've done has peeled back the narrative that said 'I can't do that' and revealed another world of possibility. I feel like I've been liberated.', cite: 'C.W.' },
-  { q: 'I think this is the best decision I've ever made — having you as my coach. You've helped me unlock things I thought were dead and buried long ago.', cite: 'L.D.' },
+  { q: `The work we've done has peeled back the narrative that said 'I can't do that' and revealed another world of possibility. I feel like I've been liberated.`, cite: 'C.W.' },
+  { q: `I think this is the best decision I've ever made — having you as my coach. You've helped me unlock things I thought were dead and buried long ago.`, cite: 'L.D.' },
   { q: 'Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being — what I really wanted out of life — and how to live as the best version of myself.', cite: 'O.W.H.' },
-  { q: 'I'm 63 years old and just met myself for the first time working with Nik.', cite: 'J.B.' },
+  { q: `I'm 63 years old and just met myself for the first time working with Nik.`, cite: 'J.B.' },
   { q: 'I came to Nik a few weeks in, apologising for not doing my homework — and found myself telling him I'd met someone, gone on wonderful adventures, that my work was expanding. He said: 'Look at what you wrote in week one.' I was already living it.', cite: 'J.M.' },
 ]
 
@@ -174,8 +174,8 @@ export function WorkWithNikPage() {
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 40px' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>What this is.</h2>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>One-on-one work built around where you actually are and what you{'’'}re trying to build. Not a fixed programme. A real conversation and real support {'—'} determined by the work, not a curriculum.</p>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>The work draws on the full ecosystem {'—'} the Horizon Suite, Purpose Piece, Horizon Leap {'—'} but what it draws on in any engagement is determined by what{'’'}s actually needed.</p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>One-on-one work built around where you actually are and what you{'''}re trying to build. Not a fixed programme. A real conversation and real support {'—'} determined by the work, not a curriculum.</p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>The work draws on the full ecosystem {'—'} the Horizon Suite, Purpose Piece, Horizon Leap {'—'} but what it draws on in any engagement is determined by what{'''}s actually needed.</p>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '40px', maxWidth: '600px' }}>One call per week, with focused work in between. We begin with The Map {'—'} an honest picture of where you are across all seven domains {'—'} then follow wherever the work needs to go from there.</p>
 
         <Card label="This is for you if" body="You're high-functioning and you know functioning well isn't the same as living from what you're built for · You've done the work — something still isn't closing · You have a real horizon and a felt gap between where you are and what it requires · You're ready to be seen clearly" />
