@@ -1598,7 +1598,12 @@ function PhaseSelect({ hasMapData, scores, horizonScores, selectedDomains, setSe
                   <div style={{ height: '2px', background: 'rgba(200,146,42,0.1)', borderRadius: '1px', overflow: 'hidden', marginBottom: '4px' }}>
                     <div style={{ height: '100%', width: `${s * 10}%`, background: col, borderRadius: '1px' }} />
                   </div>
-                  <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: col }}>{s} · {getTierLabel(s)}</div>
+                  <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <span style={{ color: col }}>{s}</span>
+                    <span style={{ color: 'rgba(15,21,35,0.3)' }}>→</span>
+                    <span style={{ color: horizonScores[d.id] != null ? '#C8922A' : 'rgba(200,146,42,0.3)' }}>{horizonScores[d.id] != null ? horizonScores[d.id] : '?'}</span>
+                    <span style={{ color: col, marginLeft: '2px' }}>· {getTierLabel(s)}</span>
+                  </div>
                 </>
               )}
             </div>

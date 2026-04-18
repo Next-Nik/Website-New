@@ -251,19 +251,60 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
     <div>
       <Eyebrow>The Map</Eyebrow>
 
-      {/* Life Horizon — overall statement */}
-      {lifeHorizon && (
-        <div style={{
-          padding: '12px 16px', marginBottom: '14px',
-          border: '1px solid rgba(200,146,42,0.35)',
-          borderLeft: '3px solid #C8922A',
-          borderRadius: '4px 8px 8px 4px',
-          background: 'rgba(200,146,42,0.04)',
-        }}>
-          <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '6px' }}>Life Horizon</div>
-          <p style={{ ...body, fontSize: '14px', fontStyle: 'italic', color: '#0F1523', lineHeight: 1.7, margin: 0 }}>"{lifeHorizon}"</p>
-        </div>
-      )}
+      {/* Life Horizon — overall statement, same row structure as domains */}
+      {(() => {
+        const currentVals = DOMAIN_KEYS.map(k => currentScores[k]).filter(v => v != null)
+        const horizonVals = DOMAIN_KEYS.map(k => horizonScores[k]).filter(v => v != null)
+        const avgCurrent  = currentVals.length  ? Math.round((currentVals.reduce((a,b) => a+b,0)  / currentVals.length)  * 10) / 10 : null
+        const avgHorizon  = horizonVals.length  ? Math.round((horizonVals.reduce((a,b) => a+b,0)  / horizonVals.length)  * 10) / 10 : null
+        const color       = getTierColor(avgCurrent)
+
+        return (
+          <div style={{
+            border: '1px solid rgba(200,146,42,0.25)',
+            borderRadius: '8px', background: '#FFFFFF',
+            marginBottom: '8px', overflow: 'hidden',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 14px' }}>
+
+              {/* Aggregate score pair */}
+              <div style={{ width: '64px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '3px' }}>
+                {avgCurrent != null && (
+                  <span style={{ ...sc, fontSize: '13px', color }}>{avgCurrent}</span>
+                )}
+                <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.3)' }}>→</span>
+                <span style={{ ...sc, fontSize: '13px', color: avgHorizon != null ? '#C8922A' : 'rgba(200,146,42,0.3)' }}>
+                  {avgHorizon != null ? avgHorizon : '?'}
+                </span>
+              </div>
+
+              {/* Label */}
+              <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.4)', textTransform: 'uppercase', width: '68px', flexShrink: 0 }}>
+                Life Horizon
+              </div>
+
+              {/* Statement */}
+              <div style={{ flex: 1 }}>
+                {lifeHorizon ? (
+                  <p style={{ ...body, fontSize: '13px', fontStyle: 'italic', color: '#0F1523', lineHeight: 1.55, margin: 0 }}>"{lifeHorizon}"</p>
+                ) : (
+                  <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.28)', fontStyle: 'italic', margin: 0 }}>No statement yet</p>
+                )}
+              </div>
+
+              {/* Edit — links to The Map tool to set life horizon */}
+              <a href="/tools/map" style={{
+                ...sc, fontSize: '9px', letterSpacing: '0.12em',
+                color: 'rgba(15,21,35,0.35)', background: 'none',
+                border: '1px solid rgba(15,21,35,0.1)', borderRadius: '20px',
+                padding: '3px 9px', textDecoration: 'none', flexShrink: 0,
+              }}>
+                Edit
+              </a>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Domain rows — I Am statements only on surface */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '14px' }}>
@@ -286,22 +327,29 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
               {!isEditing && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 14px' }}>
 
-                  {/* Score — clickable if horizon goal exists */}
+                  {/* Score pair — clickable if horizon goal exists */}
                   <div
                     onClick={horizonGoal ? () => setGoalModal(key) : undefined}
                     title={horizonGoal ? 'See horizon goal' : undefined}
                     style={{
-                      width: '28px', flexShrink: 0, textAlign: 'center',
+                      width: '64px', flexShrink: 0,
+                      display: 'flex', alignItems: 'center', gap: '3px',
                       cursor: horizonGoal ? 'pointer' : 'default',
                     }}
                   >
                     {score != null && (
-                      <span style={{
-                        ...sc, fontSize: '14px', color: horizonGoal ? color : 'rgba(15,21,35,0.3)',
-                        textDecoration: horizonGoal ? 'underline' : 'none',
-                        textUnderlineOffset: '2px',
-                        textDecorationColor: 'rgba(200,146,42,0.35)',
-                      }}>{score}</span>
+                      <>
+                        <span style={{
+                          ...sc, fontSize: '13px', color,
+                          textDecoration: horizonGoal ? 'underline' : 'none',
+                          textUnderlineOffset: '2px',
+                          textDecorationColor: 'rgba(200,146,42,0.35)',
+                        }}>{score}</span>
+                        <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.3)' }}>→</span>
+                        <span style={{ ...sc, fontSize: '13px', color: horizonScores[key] != null ? '#C8922A' : 'rgba(200,146,42,0.3)' }}>
+                          {horizonScores[key] != null ? horizonScores[key] : '?'}
+                        </span>
+                      </>
                     )}
                   </div>
 
@@ -437,56 +485,86 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
         />
       )}
 
-      {/* Horizon goal modal — triggered by clicking score */}
-      {goalModal && (
-        <div
-          onClick={() => setGoalModal(null)}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 3000,
-            background: 'rgba(15,21,35,0.55)', backdropFilter: 'blur(4px)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: '20px',
-          }}
-        >
+      {/* Horizon goal modal — triggered by clicking score pair */}
+      {goalModal && (() => {
+        const current     = currentScores[goalModal]
+        const horizon     = horizonScores[goalModal]
+        const color       = getTierColor(current)
+        const reality     = domainData?.[goalModal]?.realityFinal || domainData?.[goalModal]?.realityDraft || null
+        const avatar      = domainData?.[goalModal]?.avatarFinal || null
+        const horizonText = domainData?.[goalModal]?.horizonText || horizonProfile?.[goalModal]?.horizonGoal
+        return (
           <div
-            onClick={e => e.stopPropagation()}
+            onClick={() => setGoalModal(null)}
             style={{
-              background: '#FAFAF7', borderRadius: '14px',
-              border: '1px solid rgba(200,146,42,0.25)',
-              width: 'min(440px, 100%)', padding: '24px',
-              boxShadow: '0 20px 60px rgba(15,21,35,0.25)',
+              position: 'fixed', inset: 0, zIndex: 3000,
+              background: 'rgba(15,21,35,0.55)', backdropFilter: 'blur(4px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: '20px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <div>
-                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '4px' }}>
-                  {DOMAIN_LABEL_MAP[goalModal].toUpperCase()} · HORIZON GOAL
-                </div>
-                {currentScores[goalModal] != null && (
-                  <div style={{ ...sc, fontSize: '13px', color: getTierColor(currentScores[goalModal]) }}>
-                    {currentScores[goalModal]} · {getTierLabel(currentScores[goalModal])}
+            <div
+              onClick={e => e.stopPropagation()}
+              style={{
+                background: '#FAFAF7', borderRadius: '14px',
+                border: '1px solid rgba(200,146,42,0.25)',
+                width: 'min(480px, 100%)', maxHeight: '80vh',
+                overflowY: 'auto', padding: '24px',
+                boxShadow: '0 20px 60px rgba(15,21,35,0.25)',
+              }}
+            >
+              {/* Header */}
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
+                <div>
+                  <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '6px' }}>
+                    {DOMAIN_LABEL_MAP[goalModal].toUpperCase()}
                   </div>
-                )}
+                  {/* Score pair */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ ...sc, fontSize: '20px', color }}>{current}</span>
+                    <span style={{ ...sc, fontSize: '14px', color: 'rgba(15,21,35,0.3)' }}>→</span>
+                    <span style={{ ...sc, fontSize: '20px', color: horizon != null ? '#C8922A' : 'rgba(200,146,42,0.3)' }}>
+                      {horizon != null ? horizon : '?'}
+                    </span>
+                    <span style={{ ...sc, fontSize: '11px', color, marginLeft: '4px' }}>{getTierLabel(current)}</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setGoalModal(null)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(15,21,35,0.45)', fontSize: '18px', lineHeight: 1, padding: '2px 4px' }}
+                >×</button>
               </div>
-              <button
-                onClick={() => setGoalModal(null)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(15,21,35,0.45)', fontSize: '18px', lineHeight: 1, padding: '2px 4px' }}
-              >×</button>
+
+              {/* Where I am now — avatar + reality */}
+              {(avatar || reality) && (
+                <div style={{ marginBottom: '16px', padding: '12px 14px', background: 'rgba(200,146,42,0.03)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '8px' }}>
+                  <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.4)', textTransform: 'uppercase', marginBottom: '8px' }}>Where I am now</div>
+                  {avatar && <p style={{ ...body, fontSize: '13px', fontStyle: 'italic', color: '#0F1523', lineHeight: 1.65, margin: '0 0 8px' }}>"{avatar}"</p>}
+                  {reality && <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>{reality}</p>}
+                </div>
+              )}
+
+              {/* Horizon goal */}
+              <div style={{ marginBottom: '20px' }}>
+                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.4)', textTransform: 'uppercase', marginBottom: '8px' }}>Horizon goal</div>
+                <p style={{ ...body, fontSize: '15px', color: '#0F1523', lineHeight: 1.75, margin: 0 }}>{horizonText}</p>
+              </div>
+
+              {/* Actions */}
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => { setGoalModal(null); openEdit(goalModal) }}
+                  style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.3)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}
+                >Write my statement →</button>
+                <button
+                  onClick={() => setGoalModal(null)}
+                  style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', background: 'none', border: '1px solid rgba(15,21,35,0.12)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}
+                >Close</button>
+              </div>
             </div>
-            <p style={{ ...body, fontSize: '15px', color: '#0F1523', lineHeight: 1.75, margin: '0 0 20px' }}>
-              {domainData?.[goalModal]?.horizonText || horizonProfile?.[goalModal]?.horizonGoal}
-            </p>
-            <button
-              onClick={() => { setGoalModal(null); openEdit(goalModal) }}
-              style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.3)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer', marginRight: '8px' }}
-            >Write I am statement →</button>
-            <button
-              onClick={() => setGoalModal(null)}
-              style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', background: 'none', border: '1px solid rgba(15,21,35,0.12)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}
-            >Close</button>
           </div>
-        </div>
-      )}
+        )
+      })()}
     </div>
   )
 }
