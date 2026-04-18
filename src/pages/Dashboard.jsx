@@ -191,9 +191,13 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
   const [editing,      setEditing]      = useState(null)
   const [draft,        setDraft]        = useState('')
   const [saving,       setSaving]       = useState(false)
-  const [nsModal,      setNsModal]      = useState(null)  // domain key with modal open
-  const [goalModal,    setGoalModal]    = useState(null)  // domain key with goal modal open
+  const [nsModal,      setNsModal]      = useState(null)
+  const [goalModal,    setGoalModal]    = useState(null)
   const [localIa,      setLocalIa]      = useState({})
+  // Track if the user has ever opened the edit panel — show explainer only on first time
+  const [hasEditedOnce, setHasEditedOnce] = useState(() => {
+    try { return !!localStorage.getItem('mc_ia_explained') } catch { return false }
+  })
 
   const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
   const body = { fontFamily: "'Lora', Georgia, serif" }
@@ -202,6 +206,16 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
     return localIa[key] !== undefined
       ? localIa[key]
       : horizonProfile?.[key]?.iaStatement || null
+  }
+
+  function openEdit(key) {
+    const ia = getIa(key)
+    setEditing(key)
+    setDraft(ia || '')
+    if (!hasEditedOnce) {
+      setHasEditedOnce(true)
+      try { localStorage.setItem('mc_ia_explained', '1') } catch {}
+    }
   }
 
   async function saveIa(domainKey, value) {
@@ -218,9 +232,9 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
     setDraft('')
   }
 
-  function handleDraftSelect(draft) {
+  function handleDraftSelect(d) {
     setEditing(nsModal)
-    setDraft(draft)
+    setDraft(d)
     setNsModal(null)
   }
 
@@ -235,10 +249,12 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
 
   return (
     <div>
-      <Eyebrow>The Map — Horizon Statements</Eyebrow>
+      <Eyebrow>The Map</Eyebrow>
+
+      {/* Life Horizon — overall statement */}
       {lifeHorizon && (
         <div style={{
-          padding: '12px 16px', marginBottom: '12px',
+          padding: '12px 16px', marginBottom: '14px',
           border: '1px solid rgba(200,146,42,0.35)',
           borderLeft: '3px solid #C8922A',
           borderRadius: '4px 8px 8px 4px',
@@ -248,107 +264,141 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
           <p style={{ ...body, fontSize: '14px', fontStyle: 'italic', color: '#0F1523', lineHeight: 1.7, margin: 0 }}>"{lifeHorizon}"</p>
         </div>
       )}
-      <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.5)', lineHeight: 1.6, marginBottom: '12px', marginTop: '-2px' }}>
-        An "I am..." statement is a present-tense version of your horizon goal — who you are becoming, stated as if it's already true. Click a score to see the full goal. Click <em>Draft</em> and North Star will generate three options from your horizon.
-      </p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '12px' }}>
+
+      {/* Domain rows — I Am statements only on surface */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginBottom: '14px' }}>
         {DOMAIN_KEYS.map(key => {
           const ia          = getIa(key)
           const horizonGoal = domainData?.[key]?.horizonText || horizonProfile?.[key]?.horizonGoal || null
           const score       = currentScores[key]
           const isEditing   = editing === key
+          const color       = getTierColor(score)
 
           return (
             <div key={key} style={{
-              border: '1px solid rgba(200,146,42,0.18)',
+              border: '1px solid rgba(200,146,42,0.15)',
               borderRadius: '8px',
-              overflow: 'hidden',
               background: '#FFFFFF',
+              overflow: 'hidden',
             }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', padding: '10px 12px' }}>
 
-                {/* Domain label + score — click to see horizon goal */}
-                <div style={{ minWidth: '72px', flexShrink: 0 }}>
-                  <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase' }}>
-                    {DOMAIN_LABEL_MAP[key]}
-                  </div>
-                  {score != null && (
-                    <div
-                      onClick={horizonGoal ? () => setGoalModal(key) : undefined}
-                      style={{
-                        ...sc, fontSize: '13px', color: horizonGoal ? '#A8721A' : 'rgba(15,21,35,0.45)',
-                        marginTop: '1px',
-                        cursor: horizonGoal ? 'pointer' : 'default',
+              {/* Surface row */}
+              {!isEditing && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 14px' }}>
+
+                  {/* Score — clickable if horizon goal exists */}
+                  <div
+                    onClick={horizonGoal ? () => setGoalModal(key) : undefined}
+                    title={horizonGoal ? 'See horizon goal' : undefined}
+                    style={{
+                      width: '28px', flexShrink: 0, textAlign: 'center',
+                      cursor: horizonGoal ? 'pointer' : 'default',
+                    }}
+                  >
+                    {score != null && (
+                      <span style={{
+                        ...sc, fontSize: '14px', color: horizonGoal ? color : 'rgba(15,21,35,0.3)',
                         textDecoration: horizonGoal ? 'underline' : 'none',
                         textUnderlineOffset: '2px',
-                        textDecorationColor: 'rgba(200,146,42,0.4)',
-                      }}
-                    >{score}</div>
-                  )}
-                </div>
+                        textDecorationColor: 'rgba(200,146,42,0.35)',
+                      }}>{score}</span>
+                    )}
+                  </div>
 
-                {/* Statement or prompt */}
-                <div style={{ flex: 1 }}>
-                  {isEditing ? (
-                    <div>
-                      <textarea
-                        value={draft}
-                        onChange={e => setDraft(e.target.value)}
-                        placeholder="I am..."
-                        rows={3}
-                        style={{
-                          width: '100%', ...body, fontSize: '13px', color: '#0F1523',
-                          border: '1px solid rgba(200,146,42,0.4)', borderRadius: '6px',
-                          padding: '8px', resize: 'vertical', outline: 'none',
-                          background: 'rgba(200,146,42,0.02)', lineHeight: 1.6,
-                          boxSizing: 'border-box',
-                        }}
-                        autoFocus
-                      />
-                      <div style={{ display: 'flex', gap: '8px', marginTop: '6px', alignItems: 'center' }}>
-                        <button
-                          onClick={() => draft.trim() && saveIa(key, draft.trim())}
-                          disabled={saving || !draft.trim()}
-                          style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em', color: '#FFFFFF', background: '#A8721A', border: 'none', borderRadius: '20px', padding: '4px 12px', cursor: 'pointer' }}
-                        >{saving ? 'Saving…' : 'Save'}</button>
-                        <button
-                          onClick={() => { setEditing(null); setDraft('') }}
-                          style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer' }}
-                        >Cancel</button>
-                      </div>
-                    </div>
-                  ) : ia ? (
-                    <p style={{ ...body, fontSize: '13px', color: '#0F1523', lineHeight: 1.6, margin: 0 }}>{ia}</p>
-                  ) : (
-                    <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.35)', lineHeight: 1.5, margin: 0, fontStyle: 'italic' }}>
-                      No statement yet
+                  {/* Domain label */}
+                  <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.4)', textTransform: 'uppercase', width: '68px', flexShrink: 0 }}>
+                    {DOMAIN_LABEL_MAP[key]}
+                  </div>
+
+                  {/* I Am statement */}
+                  <div style={{ flex: 1 }}>
+                    {ia ? (
+                      <p style={{ ...body, fontSize: '13px', color: '#0F1523', lineHeight: 1.55, margin: 0 }}>{ia}</p>
+                    ) : (
+                      <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.28)', fontStyle: 'italic', margin: 0 }}>No statement yet</p>
+                    )}
+                  </div>
+
+                  {/* Edit button — bottom right */}
+                  <button
+                    onClick={() => openEdit(key)}
+                    style={{
+                      ...sc, fontSize: '9px', letterSpacing: '0.12em',
+                      color: 'rgba(15,21,35,0.35)', background: 'none',
+                      border: '1px solid rgba(15,21,35,0.1)', borderRadius: '20px',
+                      padding: '3px 9px', cursor: 'pointer', flexShrink: 0,
+                      transition: 'all 0.12s',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.color = '#A8721A'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.4)' }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(15,21,35,0.35)'; e.currentTarget.style.borderColor = 'rgba(15,21,35,0.1)' }}
+                  >
+                    Edit
+                  </button>
+                </div>
+              )}
+
+              {/* Edit panel — opens inline */}
+              {isEditing && (
+                <div style={{ padding: '12px 14px', background: 'rgba(200,146,42,0.02)', borderTop: editing !== key ? 'none' : undefined }}>
+
+                  {/* Domain label in edit mode */}
+                  <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px' }}>
+                    {DOMAIN_LABEL_MAP[key]}
+                  </div>
+
+                  {/* Explainer — first time only */}
+                  {!hasEditedOnce && (
+                    <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '10px', paddingBottom: '10px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>
+                      An "I am..." statement is a one-line, present-tense version of where you're going in this domain. Not a goal — a declaration. "I am an athlete, dancer, ninja." Write it as if it's already true. Keep refining it until you feel a spark when you read it back — that's how you know it's yours.
                     </p>
                   )}
-                </div>
 
-                {/* Actions */}
-                <div style={{ display: 'flex', gap: '6px', flexShrink: 0, alignItems: 'center' }}>
-                  {horizonGoal && !isEditing && (
-                    <button
-                      onClick={() => setNsModal(key)}
-                      style={{ ...sc, fontSize: '9px', letterSpacing: '0.1em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '20px', padding: '3px 8px', cursor: 'pointer' }}
-                    >Draft</button>
-                  )}
-                  {!isEditing && (
-                    <button
-                      onClick={() => { setEditing(key); setDraft(ia || '') }}
-                      style={{ ...sc, fontSize: '9px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.45)', background: 'none', border: '1px solid rgba(15,21,35,0.12)', borderRadius: '20px', padding: '3px 8px', cursor: 'pointer' }}
-                    >{ia ? 'Edit' : 'Write'}</button>
-                  )}
+                  {/* Textarea */}
+                  <textarea
+                    value={draft}
+                    onChange={e => setDraft(e.target.value)}
+                    placeholder="I am..."
+                    rows={2}
+                    style={{
+                      width: '100%', ...body, fontSize: '13px', color: '#0F1523',
+                      border: '1px solid rgba(200,146,42,0.35)', borderRadius: '6px',
+                      padding: '8px 10px', resize: 'vertical', outline: 'none',
+                      background: '#FFFFFF', lineHeight: 1.6, boxSizing: 'border-box',
+                      marginBottom: '8px',
+                    }}
+                    autoFocus
+                  />
+
+                  {/* Actions row */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <button
+                        onClick={() => draft.trim() && saveIa(key, draft.trim())}
+                        disabled={saving || !draft.trim()}
+                        style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em', color: '#FFFFFF', background: draft.trim() ? '#A8721A' : 'rgba(200,146,42,0.3)', border: 'none', borderRadius: '20px', padding: '5px 14px', cursor: draft.trim() ? 'pointer' : 'not-allowed' }}
+                      >{saving ? 'Saving…' : 'Save'}</button>
+                      <button
+                        onClick={() => { setEditing(null); setDraft('') }}
+                        style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: '5px 0' }}
+                      >Cancel</button>
+                    </div>
+                    {/* Draft with North Star — only if horizon goal exists */}
+                    {horizonGoal && (
+                      <button
+                        onClick={() => { setNsModal(key); setEditing(null) }}
+                        style={{ ...sc, fontSize: '9px', letterSpacing: '0.1em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '20px', padding: '4px 10px', cursor: 'pointer' }}
+                      >Draft with North Star</button>
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )
         })}
       </div>
 
-      {/* Tool links — act on what the map reveals */}
-      <div style={{ marginTop: '4px', marginBottom: '4px' }}>
+      {/* Tool links */}
+      <div style={{ marginBottom: '10px' }}>
         <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.35)', textTransform: 'uppercase', marginBottom: '8px' }}>
           Act on your map
         </div>
@@ -362,7 +412,6 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               padding: '8px 12px', border: '1px solid rgba(200,146,42,0.18)',
               borderRadius: '7px', background: 'rgba(200,146,42,0.02)', textDecoration: 'none',
-              transition: 'border-color 0.12s',
             }}>
               <div>
                 <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.08em', color: '#0F1523', fontWeight: 500 }}>{t.label}</div>
@@ -374,9 +423,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
         </div>
       </div>
 
-      <div style={{ marginTop: '4px' }}>
-        <NextUpBanner label="Rescore your map" sub="10–20 min · see what's shifted" href="/tools/map" />
-      </div>
+      <NextUpBanner label="Rescore your map" sub="10–20 min · see what's shifted" href="/tools/map" />
 
       {/* North Star modal */}
       {nsModal && (
@@ -390,7 +437,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
         />
       )}
 
-      {/* Horizon goal modal */}
+      {/* Horizon goal modal — triggered by clicking score */}
       {goalModal && (
         <div
           onClick={() => setGoalModal(null)}
@@ -410,15 +457,32 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
               boxShadow: '0 20px 60px rgba(15,21,35,0.25)',
             }}
           >
-            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em', color: '#A8721A', marginBottom: '8px' }}>
-              {DOMAIN_LABEL_MAP[goalModal].toUpperCase()} · HORIZON GOAL
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <div>
+                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '4px' }}>
+                  {DOMAIN_LABEL_MAP[goalModal].toUpperCase()} · HORIZON GOAL
+                </div>
+                {currentScores[goalModal] != null && (
+                  <div style={{ ...sc, fontSize: '13px', color: getTierColor(currentScores[goalModal]) }}>
+                    {currentScores[goalModal]} · {getTierLabel(currentScores[goalModal])}
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => setGoalModal(null)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(15,21,35,0.45)', fontSize: '18px', lineHeight: 1, padding: '2px 4px' }}
+              >×</button>
             </div>
             <p style={{ ...body, fontSize: '15px', color: '#0F1523', lineHeight: 1.75, margin: '0 0 20px' }}>
               {domainData?.[goalModal]?.horizonText || horizonProfile?.[goalModal]?.horizonGoal}
             </p>
             <button
+              onClick={() => { setGoalModal(null); openEdit(goalModal) }}
+              style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.3)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer', marginRight: '8px' }}
+            >Write I am statement →</button>
+            <button
               onClick={() => setGoalModal(null)}
-              style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', background: 'none', border: '1px solid rgba(15,21,35,0.15)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}
+              style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', background: 'none', border: '1px solid rgba(15,21,35,0.12)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}
             >Close</button>
           </div>
         </div>
