@@ -1169,6 +1169,30 @@ export function PurposePiecePage() {
           }
         } catch {} })()
       }
+      // ── Write Purpose Piece coordinates to contributor_profiles ──
+      // This is what makes the user visible on NextUs Planet
+      if (user?.id && data.session?.tentative) {
+        ;(async () => { try {
+          const t = data.session.tentative
+          const archetype  = t.archetype?.archetype  || null
+          const domainId   = t.domain?.domain_id     || null
+          const scale      = t.scale?.scale          || null
+          const statement  = data.profile?.civilisational_statement || null
+          const payload = {
+            id:                       user.id,
+            archetype,
+            domain_id:                domainId,
+            scale,
+            civilisational_statement: statement,
+            last_active_at:           new Date().toISOString(),
+            updated_at:               new Date().toISOString(),
+          }
+          // Remove null fields so we don't clobber existing data
+          Object.keys(payload).forEach(k => payload[k] === null && delete payload[k])
+          await supabase.from('contributor_profiles').upsert(payload, { onConflict: 'id' })
+        } catch (e) { console.error('contributor_profiles upsert failed:', e) } })()
+      }
+      }
       if (user?.id && data.session?.tentative) {
         const t = data.session.tentative
         const ppNotes = [
