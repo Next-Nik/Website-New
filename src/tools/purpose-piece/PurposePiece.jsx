@@ -8,6 +8,7 @@ import { AccessGate } from '../../components/AccessGate'
 import { supabase } from '../../hooks/useSupabase'
 import { ArchetypeReferencePanel } from '../../components/ArchetypeReferencePanel'
 import { CivilisationalFramePanel } from '../../components/CivilisationalFramePanel'
+import { DebriefPanel } from '../../components/DebriefPanel'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -684,6 +685,9 @@ export function PurposePiecePage() {
   const [profileCard,   setProfileCard]   = useState(null)    // Phase 4 HTML — shown first
   const [mirrorText,    setMirrorText]    = useState(null)    // Phase 3 mirror — shown after pause
   const [showMirror,    setShowMirror]    = useState(false)   // true after 6s auto-advance
+  const [showPPDebrief, setShowPPDebrief] = useState(false)   // true after mirror renders
+  const [ppDebriefDone, setPPDebriefDone] = useState(false)   // true once debrief complete
+  const [ppToolContext, setPPToolContext] = useState(null)     // archetype/domain/scale for debrief
   const [showCorrection, setShowCorrection] = useState(false) // optional post-mirror correction
   const [readyToLock,   setReadyToLock]   = useState(false)
   const [showDeepGate,  setShowDeepGate]  = useState(false)
@@ -1153,10 +1157,21 @@ export function PurposePiecePage() {
     if (data.stage === 'complete' && data.isHtml && data.message) {
       setProfileCard(data.message)
       setShowReveal(true)
-      // Mirror arrives in same response
+      // Mirror arrives in same response — store but don't show yet
       if (data.mirrorText) {
         setMirrorText(data.mirrorText)
-        setShowMirror(true)
+        // showMirror stays false — user consents via button
+        setShowPPDebrief(true)
+      }
+      // Capture coordinates for debrief context
+      if (data.session?.tentative) {
+        const t = data.session.tentative
+        setPPToolContext({
+          archetype:        t.archetype?.archetype  || null,
+          domain:           t.domain?.domain        || null,
+          scale:            t.scale?.scale          || null,
+          purposeStatement: data.profile?.civilisational_statement || null,
+        })
       }
       // Save profile and north star notes
       if (user?.id && data.profile) {
@@ -1256,10 +1271,10 @@ export function PurposePiecePage() {
     }
 
     if (data.complete) {
-      // Mirror arrives — show it below the profile card
+      // Mirror arrives — store but don't show yet, user consents via button
       if (data.isMirror && data.message) {
         setMirrorText(data.message)
-        setShowMirror(true)
+        // setShowMirror stays false until user clicks
       }
     }
   }
@@ -1403,13 +1418,45 @@ export function PurposePiecePage() {
           }
 
           {/* Thinking indicator while mirror loads */}
-          {profileCard && !showMirror && thinking && (
+          {profileCard && !mirrorText && thinking && (
             <div style={{ padding: '32px 0 8px' }}>
               <ThinkingDots />
             </div>
           )}
 
-          {/* Mirror — appears after 6s auto-advance */}
+          {/* North Star offers the mirror — user chooses to receive it */}
+          {mirrorText && !showMirror && (
+            <div style={{
+              marginTop: '36px',
+              padding: '28px 32px',
+              background: 'rgba(200,146,42,0.04)',
+              border: '1px solid rgba(200,146,42,0.2)',
+              borderRadius: '12px',
+              animation: 'ppFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both',
+            }}>
+              <p style={{ ...body, fontSize: '1.1875rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px' }}>
+                North Star has something to reflect back to you.
+              </p>
+              <button
+                onClick={() => setShowMirror(true)}
+                style={{
+                  fontFamily: "'Cormorant SC', Georgia, serif",
+                  fontSize: '1.125rem', letterSpacing: '0.14em',
+                  color: '#A8721A',
+                  background: 'rgba(200,146,42,0.05)',
+                  border: '1.5px solid rgba(200,146,42,0.78)',
+                  borderRadius: '40px', padding: '12px 28px',
+                  cursor: 'pointer', transition: 'all 0.2s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
+                onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
+              >
+                I'm ready →
+              </button>
+            </div>
+          )}
+
+          {/* Mirror — shown when user consents */}
           {showMirror && mirrorText && (
             <div style={{
               marginTop: '40px',
@@ -1429,8 +1476,22 @@ export function PurposePiecePage() {
             </div>
           )}
 
+          {/* Debrief — appears after user has seen the mirror, before CTAs */}
+          {showMirror && showPPDebrief && !ppDebriefDone && (
+            <div style={{ marginTop: '40px', animation: 'ppFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) both' }}>
+              <DebriefPanel
+                tool="purpose-piece"
+                toolContext={ppToolContext || {}}
+                userId={user?.id}
+                mode="full"
+                onComplete={() => { setShowPPDebrief(false); setPPDebriefDone(true) }}
+                onSkip={() => { setShowPPDebrief(false); setPPDebriefDone(true) }}
+              />
+            </div>
+          )}
+
           {/* Post-mirror actions — NextUs placement CTAs */}
-          {showMirror && (
+          {showMirror && ppDebriefDone && (
             <div style={{ marginTop: '32px', display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'stretch', paddingBottom: '40px' }}>
               <button
                 onClick={() => { if (window.App) window.App.goToNextUs() }}

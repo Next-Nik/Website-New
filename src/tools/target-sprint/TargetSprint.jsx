@@ -6,6 +6,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
 import { AccessGate } from '../../components/AccessGate'
 import { supabase } from '../../hooks/useSupabase'
+import { DebriefPanel } from '../../components/DebriefPanel'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -1692,6 +1693,7 @@ export function TargetSprintPage() {
   const [showCentreModal,  setShowCentreModal]  = useState(false)
   const [spinDir,          setSpinDir]          = useState('next')
   const [showSprintDone,   setShowSprintDone]   = useState(false)
+  const [showDebrief,      setShowDebrief]      = useState(false)
   const [showWelcome,      setShowWelcome]      = useState(() => {
     try {
       const raw = sessionStorage.getItem(SS_KEY)
@@ -1917,7 +1919,7 @@ export function TargetSprintPage() {
       } catch {}
     }
     setShowSummary(false)
-    setShowSprintDone(true)
+    setShowDebrief(true)
   }
 
   function handleStartNewSprint() {
@@ -1931,6 +1933,7 @@ export function TargetSprintPage() {
     setActiveDomainId(null)
     setPhase('select')
     setShowSprintDone(false)
+    setShowDebrief(false)
     setShowWelcome(true)
   }
 
@@ -1969,6 +1972,36 @@ export function TargetSprintPage() {
       `}</style>
       <Nav activePath="nextus-self" />
       {!user && <AuthModal />}
+
+      {/* Debrief screen — fires after sprint is marked complete, before done screen */}
+      {showDebrief && (
+        <div style={{ maxWidth: '600px', margin: '0 auto', padding: 'clamp(80px,10vw,120px) clamp(20px,5vw,40px) 120px' }}>
+          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', display: 'block', marginBottom: '16px', textAlign: 'center' }}>Target Sprint · Complete</span>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.1, marginBottom: '28px', textAlign: 'center' }}>
+            Ninety days. Now the debrief.
+          </h1>
+          <DebriefPanel
+            tool="target-sprint"
+            toolContext={{
+              endDateLabel,
+              domains: sprintDomains.map(d => ({
+                id:               d.id,
+                label:            d.label,
+                targetGoal:       domainData[d.id]?.targetGoal || '',
+                horizonText:      domainData[d.id]?.horizonText || '',
+                milestones:       domainData[d.id]?.milestones || [],
+                tasks:            domainData[d.id]?.tasks || [],
+                milestoneChecked: domainData[d.id]?.milestoneChecked || {},
+                taskChecked:      domainData[d.id]?.taskChecked || {},
+                goalChecked:      domainData[d.id]?.goalChecked || false,
+              })),
+            }}
+            userId={user?.id}
+            mode="full"
+            onComplete={() => { setShowDebrief(false); setShowSprintDone(true) }}
+          />
+        </div>
+      )}
 
       {/* Sprint complete screen */}
       {showSprintDone && (

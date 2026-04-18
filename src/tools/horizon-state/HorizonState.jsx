@@ -7,6 +7,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { FlamePicker, FlameGlyph, FlameSlider } from '../../components/FlameCheckIn'
 import { ProtocolPanel } from '../../components/ProtocolPanel'
 import { AccessGate } from '../../components/AccessGate'
+import { DebriefPanel } from '../../components/DebriefPanel'
 
 const AUDIO_FILE = 'foundation-baseline.mp3'
 const BUCKET     = 'nextus-audio'
@@ -312,10 +313,13 @@ function FlameDelta({ before, after }) {
 // ─── Foundation Review ────────────────────────────────────────────────────────
 
 function FoundationReview({ user, sessions }) {
-  const [loading,    setLoading]    = useState(false)
-  const [reviewText, setReviewText] = useState('')
-  const [error,      setError]      = useState('')
-  const [saved,      setSaved]      = useState(null)
+  const [loading,       setLoading]       = useState(false)
+  const [reviewText,    setReviewText]    = useState('')
+  const [error,         setError]         = useState('')
+  const [saved,         setSaved]         = useState(null)
+  const [showDebrief,   setShowDebrief]   = useState(false)
+  const [debriefDone,   setDebriefDone]   = useState(false)
+  const [debriefCtx,    setDebriefCtx]    = useState(null)
 
   const now              = new Date()
   const weekId           = getWeekId(now)
@@ -352,6 +356,25 @@ function FoundationReview({ user, sessions }) {
       const data = await res.json()
       const text = data.review || ''
       setReviewText(text)
+      // Capture context for debrief — offered after review renders
+      if (text) {
+        const afters = sessions.filter(s => s.checkin_stage === 'after')
+        const periodSessions = relevant.filter(s => s.checkin_stage === 'after')
+        const avgDelta = periodSessions.length > 0
+          ? parseFloat((periodSessions.reduce((sum, s) => {
+              const before = sessions.find(b => b.checkin_stage === 'before' && b.completed_at?.slice(0, 10) === s.completed_at?.slice(0, 10))
+              return sum + (before ? s.value - before.value : 0)
+            }, 0) / periodSessions.length).toFixed(2))
+          : null
+        setDebriefCtx({
+          periodType:   type,
+          periodLabel:  label,
+          reviewText:   text,
+          sessionCount: periodSessions.length,
+          avgDelta,
+        })
+        setShowDebrief(true)
+      }
       if (user?.id && supabase && text) {
         await supabase.from('horizon_state_reviews').upsert({
           user_id: user.id, period_type: type, period_id: periodId, period_label: label,
@@ -387,6 +410,21 @@ function FoundationReview({ user, sessions }) {
         <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', padding: '16px 0 16px 20px' }}>
           <p style={{ ...body, fontSize: '1.25rem', lineHeight: 1.85, ...meta, margin: 0 }}>{reviewText}</p>
           {saved && <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', display: 'block', marginTop: '12px' }}>Saved</span>}
+        </div>
+      )}
+
+      {/* Debrief — offered after review renders, optional */}
+      {showDebrief && !debriefDone && debriefCtx && (
+        <div style={{ marginTop: '28px' }}>
+          <DebriefPanel
+            tool="horizon-state"
+            toolContext={debriefCtx}
+            userId={user?.id}
+            mode="light"
+            onComplete={() => { setShowDebrief(false); setDebriefDone(true) }}
+            onSkip={() => { setShowDebrief(false); setDebriefDone(true) }}
+            title={`Reflect on your ${debriefCtx.periodType}`}
+          />
         </div>
       )}
     </div>

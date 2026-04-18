@@ -6,6 +6,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { ChatBubble } from '../../components/ChatBubble'
 import { TypingIndicator } from '../../components/TypingIndicator'
 import { AccessGate } from '../../components/AccessGate'
+import { DebriefPanel } from '../../components/DebriefPanel'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -1221,7 +1222,8 @@ export function HorizonPracticePage() {
   const { user, loading: authLoading } = useAuth()
   const { tier, loading: accessLoading } = useAccess('expansion')
 
-  const [view, setView] = useState('dashboard') // dashboard | checkin | skills | loops | patterns
+  const [view, setView] = useState('dashboard') // dashboard | checkin | debrief | skills | loops | patterns
+  const [pendingCheckinData, setPendingCheckinData] = useState(null)
   const [skipMap, setSkipMap] = useState(false)
   const [setupData, setSetupData] = useState(null)
   const [mapData, setMapData] = useState(null)
@@ -1423,10 +1425,17 @@ export function HorizonPracticePage() {
         created_at: new Date().toISOString(),
       })
       setCheckins(prev => [data, ...prev])
-      setView('dashboard')
+      // Route through debrief before returning to dashboard
+      setPendingCheckinData(data)
+      setView('debrief')
     } catch (err) {
       console.error('Checkin save error:', err)
     }
+  }
+
+  function handleCheckinDebriefDone() {
+    setPendingCheckinData(null)
+    setView('dashboard')
   }
 
   async function handleAddSkill(skill) {
@@ -1566,6 +1575,26 @@ export function HorizonPracticePage() {
                   userId={user?.id}
                   recentCheckins={checkins}
                 />
+              )}
+
+              {view === 'debrief' && (
+                <div style={{ maxWidth: '600px', margin: '0 auto', padding: '40px 24px 120px' }}>
+                  <DebriefPanel
+                    tool="horizon-practice"
+                    toolContext={{
+                      date:        pendingCheckinData?.check_date,
+                      horizonSelf: setupData?.horizon_self,
+                      thoughts:    pendingCheckinData?.thoughts,
+                      emotions:    pendingCheckinData?.emotions,
+                      actions:     pendingCheckinData?.actions,
+                    }}
+                    userId={user?.id}
+                    mode="light"
+                    onComplete={handleCheckinDebriefDone}
+                    onSkip={handleCheckinDebriefDone}
+                    title="Reflect on today"
+                  />
+                </div>
               )}
 
               {view === 'skills' && (

@@ -7,6 +7,7 @@ import { useAccess } from '../../hooks/useAccess'
 import { AccessGate } from '../../components/AccessGate'
 import { supabase } from '../../hooks/useSupabase'
 import { ScalePanel } from '../../components/ScalePanel'
+import { DebriefPanel } from '../../components/DebriefPanel'
 
 // ─── Mobile hook ─────────────────────────────────────────────────────────────
 
@@ -2035,8 +2036,9 @@ export function MapPage() {
   const [spinCount,    setSpinCount]    = useState(0)
   const [currentScores,setCurrentScores]= useState({})
   const [horizonScores,setHorizonScores]= useState({})
-  const [phase,        setPhase]        = useState('mapping') // 'welcome' | 'mapping' | 'results'
+  const [phase,        setPhase]        = useState('mapping') // 'welcome' | 'mapping' | 'synthesis' | 'debrief' | 'results'
   const [synthesis,    setSynthesis]    = useState(null)
+  const [showMapDebrief, setShowMapDebrief] = useState(false)
   const [mapData,      setMapData]      = useState(null)
   const [thinking,     setThinking]     = useState(false)
   const [sessionId,    setSessionId]    = useState(null)
@@ -2200,7 +2202,7 @@ export function MapPage() {
       if (data.mapData) {
         setMapData(data.mapData)
         setSynthesis(data.synthesis || data.mapData.overall_reflection || '')
-        setPhase('results')
+        setPhase('debrief')
         saveResults(domainData, data.mapData)
       } else {
         setSynthesis('error')
@@ -2547,6 +2549,26 @@ export function MapPage() {
                 </>
               ) : synthesis}
             </div>
+          </div>
+        )}
+
+        {/* Debrief — fires after synthesis completes, before results */}
+        {phase === 'debrief' && (
+          <div style={{ animation: 'fadeUp 0.4s ease-out', maxWidth: '600px' }}>
+            <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: 'clamp(1.25rem,3vw,1.75rem)', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '20px' }}>
+              Your map is built. Now reflect on the process.
+            </h2>
+            <DebriefPanel
+              tool="map"
+              toolContext={{
+                overallScore: mapData?.overall_score,
+                domains:      domainData,
+                synthesis,
+              }}
+              userId={user?.id}
+              mode="full"
+              onComplete={() => setPhase('results')}
+            />
           </div>
         )}
 
