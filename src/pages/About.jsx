@@ -158,25 +158,25 @@ export function AboutPage() {
 
         {/* Trust paragraph */}
         <p style={{ ...serif, fontSize: '18px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '32px', maxWidth: '600px', marginLeft: 'auto' }}>
-          Nik has worked with people for over two decades. The consistent pattern across that time isn{'\u2019'}t a particular method {'\u2014'} it{'\u2019'}s the result: people{'\u2019'}s lives become measurably better in the areas they came for help with, and often noticeably better in areas they didn{'\u2019'}t expect. Not because of what Nik does to them, but because of what becomes possible when someone is seen clearly and worked with honestly.
+          Nik has worked with people for over two decades. The consistent pattern across that time isn{'''}t a particular method {'—'} it{'''}s the result: people{'''}s lives become measurably better in the areas they came for help with, and often noticeably better in areas they didn{'''}t expect. Not because of what Nik does to them, but because of what becomes possible when someone is seen clearly and worked with honestly.
         </p>
 
         {/* Is this for you */}
         <div style={{ marginBottom: '48px', padding: '28px 32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '14px', textAlign: 'left' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '12px' }}>Is this for you?</span>
           <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, margin: '0 0 8px', maxWidth: '520px' }}>
-            High-functioning, self-aware, and aware that functioning well isn{'\u2019'}t the same as living from what you{'\u2019'}re actually capable of. You{'\u2019'}ve done some work on yourself. Something still isn{'\u2019'}t moving.
+            High-functioning, self-aware, and aware that functioning well isn{'''}t the same as living from what you{'''}re actually capable of. You{'''}ve done some work on yourself. Something still isn{'''}t moving.
           </p>
           <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, margin: '0 0 20px', maxWidth: '520px' }}>
-            That{'\u2019'}s the exact person this work is built for.
+            That{'''}s the exact person this work is built for.
           </p>
           <a href="/work-with-nik" style={{ display: 'inline-block', padding: '12px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
-            Work with Nik {'\u2192'}
+            Work with Nik {'→'}
           </a>
         </div>
 
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
-          Since 2001, Nik has been working at the intersection of personal development and civilisational navigation {'\u2014'} first through the Life Athletics Podcast, now through the NextUs ecosystem.
+          Since 2001, Nik has been working at the intersection of personal development and civilisational navigation {'—'} first through the Life Athletics Podcast, now through the NextUs ecosystem.
         </p>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
           The work began with a simple observation: most people are not lost. They are unoriented. There is a difference — and the difference changes everything about what kind of attention actually moves a life forward.

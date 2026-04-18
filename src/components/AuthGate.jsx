@@ -12,7 +12,7 @@ export function AuthGate({ toolName, children }) {
         <h2>Sign in to begin.</h2>
         <p>Your results are saved to your profile.</p>
         <a href={`/login?redirect=${encodeURIComponent(window.location.href)}`}>
-          Sign in or create account {'\u2192'}
+          Sign in or create account {'→'}
         </a>
       </div>
     </div>

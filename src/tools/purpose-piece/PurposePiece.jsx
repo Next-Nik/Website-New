@@ -69,10 +69,10 @@ const STAGE_INTROS = {
 }
 
 const PLACEHOLDERS = {
-  archetype:    'Tell me what happened\u2026',
-  domain:       'Tell me what you see\u2026',
-  scale:        'Describe the scene\u2026',
-  confirmation: 'Tell me what lands and what doesn\u2019t\u2026',
+  archetype:    'Tell me what happened…',
+  domain:       'Tell me what you see…',
+  scale:        'Describe the scene…',
+  confirmation: 'Tell me what lands and what doesn't…',
 }
 
 // ─── Shared styles ────────────────────────────────────────────────────────────
@@ -321,7 +321,7 @@ function PurposeDisc({ wedgeStates, activeStage, onWedgeClick, onDiscClick, allD
                 fontSize={size * 0.094} fontFamily="'Cormorant SC', Georgia, serif"
                 fill="#FFFFFF"
                 style={{ pointerEvents: 'none', userSelect: 'none' }}>
-                {'\u2713'}
+                {'✓'}
               </text>
             ) : (
               <>
@@ -407,13 +407,13 @@ function QuestionLabel({ stage, index, total, label }) {
       <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase' }}>
         {stage.charAt(0).toUpperCase() + stage.slice(1)}
       </span>
-      <span style={{ ...sc, fontSize: '17px', color: '#A8721A' }}>{'\u00b7'}</span>
+      <span style={{ ...sc, fontSize: '17px', color: '#A8721A' }}>{'·'}</span>
       <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.1em', color: '#A8721A' }}>
         {index + 1} of {total}
       </span>
       {label && (
         <>
-          <span style={{ ...sc, fontSize: '17px', color: '#A8721A' }}>{'\u00b7'}</span>
+          <span style={{ ...sc, fontSize: '17px', color: '#A8721A' }}>{'·'}</span>
           <span style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>{label}</span>
         </>
       )}
@@ -432,7 +432,7 @@ function ReferenceTrigger({ stage, onOpenArchetypes, onOpenDomains }) {
       textDecorationColor: 'rgba(200,146,42,0.4)', marginBottom: '18px',
       display: 'block', transition: 'color 0.2s',
     }}>
-      Nine Archetypes {'\u2192'}
+      Nine Archetypes {'→'}
     </button>
   )
   if (stage === 'domain') return (
@@ -443,7 +443,7 @@ function ReferenceTrigger({ stage, onOpenArchetypes, onOpenDomains }) {
       textDecorationColor: 'rgba(200,146,42,0.4)', marginBottom: '18px',
       display: 'block', transition: 'color 0.2s',
     }}>
-      Seven Domains {'\u2192'}
+      Seven Domains {'→'}
     </button>
   )
   return null
@@ -609,7 +609,7 @@ function WelcomeModal({ onBegin }) {
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.55)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
           onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
         >
-          Let’s find it {'\u2192'}
+          Let’s find it {'→'}
         </button>
       </div>
     </div>
@@ -626,7 +626,7 @@ function AuthModal() {
           Something in you already knows what you're built for. Purpose Piece finds your contribution archetype, your domain, and your scale — the three coordinates that together make your Purpose Piece.
         </p>
         <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', padding: '15px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: '#A8721A', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', textDecoration: 'none' }}>
-          Sign in or create account {'\u2192'}
+          Sign in or create account {'→'}
         </a>
       </div>
     </div>
@@ -644,7 +644,7 @@ function DeepGateModal({ onUnlock, onDismiss }) {
           The tension. The shadow.<br />The full picture.
         </h2>
         <p style={{ ...body, fontSize: '1.1875rem', ...meta, lineHeight: 1.8, marginBottom: '28px' }}>
-          The First Look gave you the shape. The Deep Dive is a real conversation {'\u2014'} into what this costs you at the bone, where the instinct breaks, and what it{'\u2019'}s been asking of you.
+          The First Look gave you the shape. The Deep Dive is a real conversation {'—'} into what this costs you at the bone, where the instinct breaks, and what it{'''}s been asking of you.
         </p>
         <button onClick={onUnlock} style={{ ...btnStyle, display: 'block', width: '100%', textAlign: 'center', marginBottom: '12px' }}
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
@@ -1498,26 +1498,26 @@ export function PurposePiecePage() {
                 style={{ ...btnStyle }}
                 onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
                 onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
-                See who could use you {'\u2192'}
+                See who could use you {'→'}
               </button>
               <button
                 onClick={() => { if (window.App) window.App.goToTerrain() }}
                 style={{ ...btnStyle, background: 'transparent', color: '#A8721A', border: '1.5px solid rgba(200,146,42,0.55)' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#A8721A' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)' }}>
-                Find your terrain {'\u2192'}
+                Find your terrain {'→'}
               </button>
               <button
                 onClick={() => navigate('/dashboard')}
                 style={{ ...btnStyle, background: 'transparent', color: '#A8721A', border: '1.5px solid rgba(200,146,42,0.35)' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor = '#A8721A' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.35)' }}>
-                Mission Control {'\u2192'}
+                Mission Control {'→'}
               </button>
               <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '4px' }}>
                 <button onClick={goDeeper}
                   style={{ background: 'none', border: 'none', ...body, fontSize: '1rem', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.55)' }}>
-                  Go deeper {'\u2192'}
+                  Go deeper {'→'}
                 </button>
                 {!showCorrection && (
                   <button onClick={openCorrection}
@@ -1548,7 +1548,7 @@ export function PurposePiecePage() {
                 <textarea ref={textareaRef} value={input}
                   onChange={e => { setInput(e.target.value); resizeTextarea() }}
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-                  placeholder={'Tell me what doesn\u2019t fit\u2026'}
+                  placeholder={'Tell me what doesn't fit…'}
                   rows={1} disabled={thinking}
                 />
                 <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
@@ -1778,7 +1778,7 @@ export function PurposePiecePage() {
                 <textarea ref={textareaRef} value={input}
                   onChange={e => { setInput(e.target.value); resizeTextarea() }}
                   onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-                  placeholder={PLACEHOLDERS[stage] || 'Type your answer\u2026'}
+                  placeholder={PLACEHOLDERS[stage] || 'Type your answer…'}
                   rows={1} disabled={thinking}
                 />
                 <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
@@ -1793,7 +1793,7 @@ export function PurposePiecePage() {
             <button onClick={handleLock} style={{ ...btnStyle, background: 'rgba(200,146,42,0.08)' }}
               onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}
               onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
-              Yes, lock it in {'\u2192'}
+              Yes, lock it in {'→'}
             </button>
           </div>
         )}
@@ -1852,7 +1852,7 @@ export function PurposePiecePage() {
 
         {/* Header */}
         <div style={{ marginBottom: '28px' }}>
-          <span className="tool-eyebrow">Horizon Suite {'\u00b7'} Purpose Piece</span>
+          <span className="tool-eyebrow">Horizon Suite {'·'} Purpose Piece</span>
           <h1 style={{ ...sc, fontSize: 'clamp(26px,6vw,34px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.05, margin: '8px 0 10px' }}>
             {showReveal ? 'Your Purpose Piece' : 'Find your fit.'}
           </h1>
@@ -2070,7 +2070,7 @@ export function PurposePieceDeepPage() {
       <div className="tool-wrap">
 
         <div style={{ marginBottom: '32px' }}>
-          <span className="tool-eyebrow">Horizon Suite {'\u00b7'} Purpose Piece</span>
+          <span className="tool-eyebrow">Horizon Suite {'·'} Purpose Piece</span>
           <h1 style={{ ...sc, fontSize: 'clamp(26px,6vw,34px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.05, margin: '8px 0 0' }}>
             The Deep Dive
           </h1>
@@ -2130,7 +2130,7 @@ export function PurposePieceDeepPage() {
             <textarea ref={textareaRef} value={input}
               onChange={e => { setInput(e.target.value); if (textareaRef.current) { textareaRef.current.style.height = 'auto'; textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px` } }}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-              placeholder="Respond here\u2026" rows={1} disabled={thinking}
+              placeholder="Respond here…" rows={1} disabled={thinking}
             />
             <button className="btn-send" onClick={send} disabled={!input.trim() || thinking}>Send</button>
           </div>

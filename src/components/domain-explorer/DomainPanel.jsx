@@ -502,7 +502,7 @@ export default function DomainPanel({
                     className={styles.seeAllBtn}
                     onClick={() => setFieldExpanded(!fieldExpanded)}
                   >
-                    {fieldExpanded ? "Show less" : `See all ${cs.totalActors} \u2192`}
+                    {fieldExpanded ? "Show less" : `See all ${cs.totalActors} →`}
                   </button>
                 )}
               </div>

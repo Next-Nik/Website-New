@@ -141,7 +141,7 @@ export function GlossaryPanel() {
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '14px' }}>
                 <div>
                   <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
-                    NextUs {'\u00B7'} Horizon Suite
+                    NextUs {'·'} Horizon Suite
                   </span>
                   <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1 }}>
                     Glossary

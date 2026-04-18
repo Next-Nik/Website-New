@@ -364,7 +364,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
         color: '#A8721A', textTransform: 'uppercase',
         marginBottom: '6px',
       }}>
-        {isBefore ? `Before \u00B7 ${phaseLabel}` : `After \u00B7 ${phaseLabel}`}
+        {isBefore ? `Before · ${phaseLabel}` : `After · ${phaseLabel}`}
       </span>
 
       <p style={{
@@ -373,7 +373,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
         color: 'rgba(15,21,35,0.6)', lineHeight: 1.7,
         textAlign: 'center', marginBottom: '24px',
       }}>
-        {isBefore ? 'Where is the flame right now?' : 'And now\u2014?'}
+        {isBefore ? 'Where is the flame right now?' : 'And now—?'}
       </p>
 
       <div style={{ marginBottom: '24px', pointerEvents: locked ? 'none' : 'auto' }}>
@@ -387,7 +387,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
       <textarea
         value={note}
         onChange={e => setNote(e.target.value)}
-        placeholder={isBefore ? 'what walked in with you today\u2026' : 'what you\u2019re leaving with\u2026'}
+        placeholder={isBefore ? 'what walked in with you today…' : 'what you're leaving with…'}
         rows={2}
         disabled={locked}
         style={{
@@ -422,7 +422,7 @@ export function FlamePicker({ audioPhase = 'baseline', stage = 'before', ghostVa
             opacity: locked ? 0.5 : saving ? 0.6 : 1,
           }}
         >
-          {saving ? 'Saving\u2026' : isBefore ? 'Begin \u2192' : 'Save \u2713'}
+          {saving ? 'Saving…' : isBefore ? 'Begin →' : 'Save ✓'}
         </button>
         {onSkip && !locked && (
           <button onClick={onSkip} style={{

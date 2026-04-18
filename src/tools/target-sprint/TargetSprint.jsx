@@ -14,11 +14,11 @@ const SS_KEY = 'tg_session_v2'
 
 const DOMAINS = [
   { id: 'path',          label: 'Path',          description: "Your contribution, calling, and the work you're here to do. Not your job title — the thread of purpose running beneath whatever you're currently doing. Life's mission.",              question: "Am I walking my path — or just walking?" },
-  { id: 'spark',         label: 'Spark',         description: 'The animating fire. The things that make you feel genuinely alive — not just occupied. When Spark is low, everything else runs on fumes.', question: "When did I last feel genuinely alive \u2014 and what's been costing me that?" },
-  { id: 'body',          label: 'Body',          description: 'Your physical instrument. The vessel through which everything else operates — and the one thing you cannot outsource, replace, or defer indefinitely.',   question: 'Am I honouring this instrument \u2014 or running it into the ground?' },
+  { id: 'spark',         label: 'Spark',         description: 'The animating fire. The things that make you feel genuinely alive — not just occupied. When Spark is low, everything else runs on fumes.', question: "When did I last feel genuinely alive — and what's been costing me that?" },
+  { id: 'body',          label: 'Body',          description: 'Your physical instrument. The vessel through which everything else operates — and the one thing you cannot outsource, replace, or defer indefinitely.',   question: 'Am I honouring this instrument — or running it into the ground?' },
   { id: 'finances',      label: 'Finances',      description: 'The currency that gives you the capacity to act. Resources, mobility, and agency to convert your visions into reality and your desires into choices.', question: 'Do I have the agency to act on what matters?' },
-  { id: 'connection', label: 'Connection', description: 'How you inhabit connection across the full range of your relational life. Not just the presence of people — the quality of the connection. Are you genuinely known?',       question: 'Am I truly known by anyone \u2014 and am I truly knowing them?' },
-  { id: 'inner_game',    label: 'Inner Game',    description: "Your relationship with yourself. The beliefs, stories, values, and emotional patterns you carry about who you are and what you're capable of. The source code — everything else runs on it.", question: 'What story about myself is quietly running the room \u2014 and is that story still true?' },
+  { id: 'connection', label: 'Connection', description: 'How you inhabit connection across the full range of your relational life. Not just the presence of people — the quality of the connection. Are you genuinely known?',       question: 'Am I truly known by anyone — and am I truly knowing them?' },
+  { id: 'inner_game',    label: 'Inner Game',    description: "Your relationship with yourself. The beliefs, stories, values, and emotional patterns you carry about who you are and what you're capable of. The source code — everything else runs on it.", question: 'What story about myself is quietly running the room — and is that story still true?' },
   { id: 'signal',    label: 'Signal',    description: "Your external world: environment, appearance, presence, and public-facing persona. Where inner alignment meets the world's perception of you — and the two need to match.", question: "Is what I'm broadcasting aligned with who I actually am?" },
 ]
 
@@ -110,7 +110,7 @@ function WelcomeModal({ onBegin }) {
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
           onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
         >
-          Begin {'\u2192'}
+          Begin {'→'}
         </button>
       </div>
       <ToolCompassPanel />

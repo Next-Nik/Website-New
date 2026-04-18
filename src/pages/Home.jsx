@@ -12,11 +12,11 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 const TESTIMONIALS = [
   { q: 'Working with Nik definitely changed my life. He has the ability to build up the right foundation and the right container to actually be vulnerable and go straight to where you need to.', cite: 'S.H.' },
-  { q: 'The work we\u2019ve done has peeled back the narrative that said \u2018I can\u2019t do that\u2019 and revealed another world of possibility. I feel like I\u2019ve been liberated.', cite: 'C.W.' },
-  { q: 'I think this is the best decision I\u2019ve ever made. You\u2019ve helped me unlock things I thought were dead and buried long ago.', cite: 'L.D.' },
-  { q: 'Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being \u2014 what I really wanted out of life \u2014 and how to live as the best version of myself.', cite: 'O.W.H.' },
-  { q: 'I\u2019m 63 years old and just met myself for the first time working with Nik.', cite: 'J.B.' },
-  { q: 'I came to Nik a few weeks in, apologising for not doing my homework \u2014 and found myself telling him I\u2019d met someone, gone on wonderful adventures, that my work was expanding. He said: \u2018Look at what you wrote in week one.\u2019 I was already living it.', cite: 'J.M.' },
+  { q: 'The work we've done has peeled back the narrative that said 'I can't do that' and revealed another world of possibility. I feel like I've been liberated.', cite: 'C.W.' },
+  { q: 'I think this is the best decision I've ever made. You've helped me unlock things I thought were dead and buried long ago.', cite: 'L.D.' },
+  { q: 'Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being — what I really wanted out of life — and how to live as the best version of myself.', cite: 'O.W.H.' },
+  { q: 'I'm 63 years old and just met myself for the first time working with Nik.', cite: 'J.B.' },
+  { q: 'I came to Nik a few weeks in, apologising for not doing my homework — and found myself telling him I'd met someone, gone on wonderful adventures, that my work was expanding. He said: 'Look at what you wrote in week one.' I was already living it.', cite: 'J.M.' },
 ]
 
 function Stars() {
@@ -43,7 +43,7 @@ function TestimonialCard({ q, cite }) {
     }}>
       <Stars />
       <p style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.85)', lineHeight: 1.75, marginBottom: '16px' }}>{q}</p>
-      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {cite}</span>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A' }}>{'—'} {cite}</span>
     </div>
   )
 }
@@ -167,7 +167,7 @@ function StageRec({ rec, soft }) {
         <div style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#A8721A', marginBottom: '3px' }}>{rec.title}</div>
         <div style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.78)', lineHeight: 1.4 }}>{rec.sub}</div>
       </div>
-      <span style={{ color: '#A8721A', fontSize: '15px', marginTop: '2px', flexShrink: 0 }}>{'\u2192'}</span>
+      <span style={{ color: '#A8721A', fontSize: '15px', marginTop: '2px', flexShrink: 0 }}>{'→'}</span>
     </a>
   )
 }
@@ -215,7 +215,7 @@ function OrienteeringEmbed() {
   const textareaRef = useRef(null)
 
   useEffect(() => {
-    setMessages([{ role: 'assistant', content: 'Tell me a little about where you are right now — what\u2019s on your mind, what you\u2019re looking for, or just how things feel. I\u2019ll point you in the right direction.' }])
+    setMessages([{ role: 'assistant', content: 'Tell me a little about where you are right now — what's on your mind, what you're looking for, or just how things feel. I'll point you in the right direction.' }])
   }, [])
 
   useEffect(() => {
@@ -279,7 +279,7 @@ function OrienteeringEmbed() {
                     <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', marginBottom: '4px' }}>{r.category}</div>
                     <div style={{ ...body, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>{r.title}</div>
                     <div style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.65, marginBottom: '8px' }}>{r.description}</div>
-                    {r.link && r.link !== 'null' && <a href={r.link} style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>{r.link_text || 'Learn more \u2192'}</a>}
+                    {r.link && r.link !== 'null' && <a href={r.link} style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>{r.link_text || 'Learn more →'}</a>}
                   </div>
                 ))}
                 {d.closing && <div style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>{d.closing}</div>}
@@ -398,7 +398,7 @@ export function HomePage() {
         <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>Find your starting point.</h2>
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Tell me a little about where you are right now. Three to five exchanges — I'll point you somewhere real.</p>
         <OrienteeringEmbed />
-        <a href="/nextus-self" style={{ display: 'block', textAlign: 'center', ...body, fontSize: '16px', fontStyle: 'italic', color: '#A8721A', marginTop: '28px', textDecoration: 'none', opacity: 0.78 }}>or show me everything {'\u2192'}</a>
+        <a href="/nextus-self" style={{ display: 'block', textAlign: 'center', ...body, fontSize: '16px', fontStyle: 'italic', color: '#A8721A', marginTop: '28px', textDecoration: 'none', opacity: 0.78 }}>or show me everything {'→'}</a>
       </section>
 
       {/* DARK 2 — Stage selector */}
@@ -429,7 +429,7 @@ export function HomePage() {
         <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '48px', textAlign: 'center' }}>Real words from real people.</h2>
         <TestimonialCarousel />
         <div style={{ textAlign: 'center', marginTop: '40px' }}>
-          <a href="/work-with-nik" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', opacity: 0.78 }}>More on working with Nik {'\u2192'}</a>
+          <a href="/work-with-nik" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', opacity: 0.78 }}>More on working with Nik {'→'}</a>
         </div>
       </section>
 
@@ -445,7 +445,7 @@ export function HomePage() {
           <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
           <form action="https://app.kit.com/forms/9215183/subscriptions" className="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
             <input type="email" name="email_address" placeholder="your@email.com" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
-            <button type="submit" style={{ width: '100%', padding: '16px', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Stay connected {'\u2192'}</button>
+            <button type="submit" style={{ width: '100%', padding: '16px', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Stay connected {'→'}</button>
           </form>
         </div>
       </DarkSection>

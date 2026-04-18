@@ -258,7 +258,7 @@ export function NextUsPage() {
         <h1 style={{ ...body, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           The future is not something<br /><em style={{ color: '#A8721A' }}>that happens to us.</em>
         </h1>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '520px' }}>Seven domains. A living map of who is doing the work {'\u2014'} and how to find your place in it.</p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '520px' }}>Seven domains. A living map of who is doing the work {'—'} and how to find your place in it.</p>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '14px' }}>Explore the horizon goals</span>
       </div>
 
@@ -271,11 +271,11 @@ export function NextUsPage() {
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '72px 0 40px' }} />
         <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>The problem is not effort.</h2>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Someone is restoring soil carbon and does not know about the financing mechanism that could fund their work. Someone is building a governance framework that addresses exactly the problem another person is trying to solve. The person with capital has no map showing where the real gaps are.</p>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Progress is happening. But it is fragmented, invisible, and uncoordinated. The cost is duplicated effort, misallocated resources, and builders doing important work in isolation {'\u2014'} not knowing who else is carrying the same thing.</p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Progress is happening. But it is fragmented, invisible, and uncoordinated. The cost is duplicated effort, misallocated resources, and builders doing important work in isolation {'—'} not knowing who else is carrying the same thing.</p>
         <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '20px 0 20px 28px', margin: '48px 0', maxWidth: '580px' }}>
           <p style={{ ...body, fontSize: '20px', fontWeight: 300, color: '#0F1523', lineHeight: 1.65, margin: 0 }}>What we can see clearly, we can coordinate around. What we can coordinate around, we can change.</p>
         </div>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '56px', maxWidth: '600px' }}>NextUs is the perceptual layer. A living map of where humanity is trying to go {'\u2014'} across seven domains, at every scale {'\u2014'} so that the people already doing the work can find each other, aim at something worth building, and compound their effort rather than scatter it.</p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '56px', maxWidth: '600px' }}>NextUs is the perceptual layer. A living map of where humanity is trying to go {'—'} across seven domains, at every scale {'—'} so that the people already doing the work can find each other, aim at something worth building, and compound their effort rather than scatter it.</p>
 
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 48px' }} />

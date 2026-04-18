@@ -83,7 +83,7 @@ function ToolRow({ tool }) {
         onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
         onMouseLeave={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.05)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
       >
-        Begin \u2192
+        Begin →
       </a>
     </div>
   )
@@ -102,7 +102,7 @@ export function ToolsPage() {
           Five tools.<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>One navigation system.</em>
         </h1>
         <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '48px', maxWidth: '560px' }}>
-          Each tool is built for a specific stage of the journey. You don\u2019t need all of them \u2014 and you don\u2019t need to start at the beginning.
+          Each tool is built for a specific stage of the journey. You don't need all of them — and you don't need to start at the beginning.
         </p>
 
       </div>
@@ -127,7 +127,7 @@ export function ToolsPage() {
             \u2190 What is the Horizon Suite?
           </a>
           <a href="/work-with-nik" style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
-            Work with Nik \u2192
+            Work with Nik →
           </a>
         </div>
       </div>

@@ -7,23 +7,23 @@ const PHASES = [
     tagline: 'Where are you right now?',
     description: 'The practice opens with a check-in — not to fix anything, but to register the current state honestly. Baseline is about contact: meeting yourself where you actually are before anything else happens. The flame slider captures this moment.',
     why: "You can't navigate from a false position. Most practices skip this step and build on an assumed state that doesn't match reality. Baseline closes that gap.",
-    duration: '2 \u2013 3 min',
+    duration: '2 – 3 min',
   },
   {
     number: '02',
     name: 'Calibration',
     tagline: 'Agency, temporal clarity, and directional awareness.',
-    description: 'The audio guides you from the raw signal of Baseline into a wider orientation. You locate yourself in the present moment \u2014 body, breath, environment. Nothing is forced. The nervous system registers that it is safe to be here, now.',
+    description: 'The audio guides you from the raw signal of Baseline into a wider orientation. You locate yourself in the present moment — body, breath, environment. Nothing is forced. The nervous system registers that it is safe to be here, now.',
     why: 'Regulation precedes clear thinking. When the system is dysregulated, perception narrows and honest self-assessment becomes unreliable. Calibration creates the conditions for everything else.',
-    duration: '5 \u2013 8 min',
+    duration: '5 – 8 min',
   },
   {
     number: '03',
     name: 'Embodying',
     tagline: 'Land it. Carry it forward.',
-    description: 'The final phase integrates what has moved during the practice. This is not a wind-down \u2014 it is a deliberate transition back to life, bringing the regulated state with you rather than leaving it behind in the session.',
+    description: 'The final phase integrates what has moved during the practice. This is not a wind-down — it is a deliberate transition back to life, bringing the regulated state with you rather than leaving it behind in the session.',
     why: "Practices that don't close properly tend not to transfer. Embodying is the mechanism by which the Horizon State session becomes a living resource rather than a moment that disappears on re-entry to the day.",
-    duration: '3 \u2013 5 min',
+    duration: '3 – 5 min',
   },
 ]
 
@@ -122,7 +122,7 @@ export function ProtocolPanel() {
                   The Protocol
                 </h2>
                 <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
-                  Three phases {'\u00B7'} Why the order matters
+                  Three phases {'·'} Why the order matters
                 </p>
               </div>
               <button

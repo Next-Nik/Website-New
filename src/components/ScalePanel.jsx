@@ -130,7 +130,7 @@ export function ScalePanel({ side = 'left' }) {
                   The Horizon Scale
                 </h2>
                 <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
-                  Fulfilment calibration {'\u00B7'} 0{'\u2013'}10
+                  Fulfilment calibration {'·'} 0{'–'}10
                 </p>
               </div>
               <button
@@ -155,7 +155,7 @@ export function ScalePanel({ side = 'left' }) {
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
               <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, marginBottom: '8px' }}>
-                Each domain of your life is scored against this scale. The scale has two zones separated by The Line at 5. Development sits above {'\u2014'} growing, building, expressing. Healing sits below {'\u2014'} restoration, repair, return.
+                Each domain of your life is scored against this scale. The scale has two zones separated by The Line at 5. Development sits above {'—'} growing, building, expressing. Healing sits below {'—'} restoration, repair, return.
               </p>
               <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
                 The Line is yours. You build the character who represents 10. You name where you actually are.
@@ -168,7 +168,7 @@ export function ScalePanel({ side = 'left' }) {
                 Development
               </div>
               <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>
-                above The Line {'\u2014'} growing, building, expressing
+                above The Line {'—'} growing, building, expressing
               </div>
             </div>
 
@@ -187,7 +187,7 @@ export function ScalePanel({ side = 'left' }) {
                           Healing
                         </div>
                         <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>
-                          below The Line {'\u2014'} restoration, repair, return
+                          below The Line {'—'} restoration, repair, return
                         </div>
                       </div>
                     )}
@@ -257,7 +257,7 @@ export function ScalePanel({ side = 'left' }) {
             {/* Footer note */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(200,146,42,0.12)', marginTop: 'auto' }}>
               <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
-                Any score below 5 means this domain is actively creating friction {'\u2014'} consuming more than it generates. Stabilise before optimising.
+                Any score below 5 means this domain is actively creating friction {'—'} consuming more than it generates. Stabilise before optimising.
               </p>
             </div>
           </div>

@@ -49,7 +49,7 @@ function EmptySlot({ cta, ctaUrl }) {
       Not yet started.{' '}
       {cta && ctaUrl && (
         <a href={ctaUrl} style={{ color: '#A8721A', textDecoration: 'none' }}>
-          {cta} {'\u2192'}
+          {cta} {'→'}
         </a>
       )}
     </div>
@@ -97,7 +97,7 @@ function Slot({ title, eyebrow, linkLabel, linkUrl, children, defaultOpen = true
             <a href={linkUrl} onClick={e => e.stopPropagation()}
               style={{ ...sc, fontSize: '17px', letterSpacing: '0.12em',
                 color: '#A8721A', textDecoration: 'none' }}>
-              {linkLabel} {'\u2192'}
+              {linkLabel} {'→'}
             </a>
           )}
           <span style={{ color: '#A8721A', fontSize: '18px', lineHeight: 1,

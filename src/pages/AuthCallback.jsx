@@ -60,7 +60,7 @@ async function writeConsent(userId) {
 }
 
 export function AuthCallbackPage() {
-  const [status, setStatus] = useState('Signing you in\u2026')
+  const [status, setStatus] = useState('Signing you in…')
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -84,7 +84,7 @@ export function AuthCallbackPage() {
 
     const timer = setTimeout(() => {
       subscription.unsubscribe()
-      setStatus('Taking longer than expected\u2026')
+      setStatus('Taking longer than expected…')
       supabase.auth.getSession().then(({ data: { session } }) => {
         window.location.replace(session?.user ? getDestination() : '/login')
       })

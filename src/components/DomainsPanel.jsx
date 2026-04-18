@@ -11,38 +11,38 @@ import { DomainTooltip, LIFEOS_LABEL_MAP } from './DomainTooltip'
 const DOMAINS = [
   {
     name: 'Path',
-    question: 'Am I walking my path \u2014 or just walking?',
-    description: "Your contribution, calling, and the work you're here to do. Not your job title \u2014 the thread of purpose running beneath whatever you're currently doing. Life's mission: the gift you came to bring, the role that belongs to you specifically.",
+    question: 'Am I walking my path — or just walking?',
+    description: "Your contribution, calling, and the work you're here to do. Not your job title — the thread of purpose running beneath whatever you're currently doing. Life's mission: the gift you came to bring, the role that belongs to you specifically.",
   },
   {
     name: 'Spark',
-    question: "When did I last feel genuinely alive \u2014 and what's been costing me that?",
-    description: 'The animating fire. The things that make you feel genuinely alive \u2014 not just occupied. Spark is regeneration: soul nourishment that sends you back into the world more alive than you arrived. When Spark is low, everything else runs on fumes.',
+    question: "When did I last feel genuinely alive — and what's been costing me that?",
+    description: 'The animating fire. The things that make you feel genuinely alive — not just occupied. Spark is regeneration: soul nourishment that sends you back into the world more alive than you arrived. When Spark is low, everything else runs on fumes.',
   },
   {
     name: 'Body',
-    question: 'Am I honouring this instrument \u2014 or running it into the ground?',
-    description: 'Your physical instrument. The vessel through which everything else operates \u2014 and the one thing you cannot outsource, replace, or defer indefinitely. Not about aesthetics. About whether the instrument is being honoured.',
+    question: 'Am I honouring this instrument — or running it into the ground?',
+    description: 'Your physical instrument. The vessel through which everything else operates — and the one thing you cannot outsource, replace, or defer indefinitely. Not about aesthetics. About whether the instrument is being honoured.',
   },
   {
     name: 'Finances',
     question: 'Do I have the agency to act on what matters?',
-    description: "The currency that gives you the capacity to act. Not just money \u2014 the resources, mobility, and agency to convert your visions into reality and your desires into choices. When it flows, things move. When it's blocked, everything stalls.",
+    description: "The currency that gives you the capacity to act. Not just money — the resources, mobility, and agency to convert your visions into reality and your desires into choices. When it flows, things move. When it's blocked, everything stalls.",
   },
   {
     name: 'Connection',
-    question: 'Am I truly known by anyone \u2014 and am I truly knowing them?',
-    description: 'How you inhabit connection across the full range of your relational life. Not just the presence of people \u2014 the quality of the connection. Intimate partnership, friendship, family, collaborators, community. Are you genuinely known?',
+    question: 'Am I truly known by anyone — and am I truly knowing them?',
+    description: 'How you inhabit connection across the full range of your relational life. Not just the presence of people — the quality of the connection. Intimate partnership, friendship, family, collaborators, community. Are you genuinely known?',
   },
   {
     name: 'Inner Game',
-    question: 'What story about myself is quietly running the room \u2014 and is that story still true?',
-    description: "Your relationship with yourself. The beliefs, stories, values, and emotional patterns you carry about who you are and what you're capable of. The source code \u2014 everything else runs on it. Inner Game shapes the floor and ceiling of every other domain.",
+    question: 'What story about myself is quietly running the room — and is that story still true?',
+    description: "Your relationship with yourself. The beliefs, stories, values, and emotional patterns you carry about who you are and what you're capable of. The source code — everything else runs on it. Inner Game shapes the floor and ceiling of every other domain.",
   },
   {
     name: 'Signal',
     question: "Is what I'm broadcasting aligned with who I actually am?",
-    description: "Your external world: environment, appearance, presence, and public-facing persona. Where inner alignment meets the world's perception of you \u2014 and the two need to match. Not as performance. As honest expression.",
+    description: "Your external world: environment, appearance, presence, and public-facing persona. Where inner alignment meets the world's perception of you — and the two need to match. Not as performance. As honest expression.",
   },
 ]
 
@@ -166,7 +166,7 @@ export function DomainsPanel() {
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
               <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
-                The Horizon Suite maps seven domains of a full life. Each domain holds a life's mission question {'\u2014'} the honest question to sit with, not once, but again and again.
+                The Horizon Suite maps seven domains of a full life. Each domain holds a life's mission question {'—'} the honest question to sit with, not once, but again and again.
               </p>
             </div>
 

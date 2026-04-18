@@ -1118,7 +1118,7 @@ function PlatformTab() {
       </div>
       {stats.pendingClaims > 0 && (
         <Card style={{ borderColor: 'rgba(200,146,42,0.60)', background: 'rgba(200,146,42,0.04)' }}>
-          <span style={{ ...body, fontSize: '16px', color: '#0F1523' }}>{stats.pendingClaims} claim{stats.pendingClaims !== 1 ? 's' : ''} awaiting review \u2014 go to Actors tab</span>
+          <span style={{ ...body, fontSize: '16px', color: '#0F1523' }}>{stats.pendingClaims} claim{stats.pendingClaims !== 1 ? 's' : ''} awaiting review — go to Actors tab</span>
         </Card>
       )}
       {(stats.zeroActorDomains || []).length > 0 && (
@@ -1320,8 +1320,8 @@ function ActorsTab({ toast }) {
                   </div>
                   <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
                     {a.domain_id && <span>{domainLabel(a.domain_id)}</span>}
-                    {a.location_name && <span> \u00b7 {a.location_name}</span>}
-                    {(a.lat && a.lng) && <span style={{ color: '#2A6B3A' }}> \u00b7 \ud83d\udccd mapped</span>}
+                    {a.location_name && <span> · {a.location_name}</span>}
+                    {(a.lat && a.lng) && <span style={{ color: '#2A6B3A' }}> · \ud83d\udccd mapped</span>}
                   </div>
                   {a.description && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>{a.description.slice(0, 160)}{a.description.length > 160 ? '...' : ''}</p>}
                 </div>
@@ -1407,7 +1407,7 @@ function ActorsTab({ toast }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
                   <div style={{ ...body, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>{c.nextus_actors?.name || c.actor_id}</div>
-                  <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>Claimant: {c.claimant_id} \u00b7 Method: {c.verification_method || 'not specified'}</div>
+                  <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>Claimant: {c.claimant_id} · Method: {c.verification_method || 'not specified'}</div>
                   <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>Submitted: {new Date(c.submitted_at).toLocaleDateString()}</div>
                   {c.notes && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '6px' }}>{c.notes}</p>}
                 </div>
@@ -1538,7 +1538,7 @@ function NeedsTab({ toast }) {
                 <span style={{ ...body, fontSize: '16px', color: '#0F1523' }}>{n.title}</span>
                 <Badge label={n.need_type} /><Badge label={n.size} color="rgba(15,21,35,0.55)" /><Badge label={n.status} color={statusColor[n.status]} />
               </div>
-              <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>{n.nextus_actors?.name || 'Unknown'}{n.time_estimate && ' \u00b7 ' + n.time_estimate}</div>
+              <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>{n.nextus_actors?.name || 'Unknown'}{n.time_estimate && ' · ' + n.time_estimate}</div>
               {n.description && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>{n.description.slice(0, 200)}{n.description.length > 200 ? '...' : ''}</p>}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
@@ -1599,7 +1599,7 @@ function ContributionsTab({ toast }) {
                 {c.confirmed_by_actor ? <Badge label="confirmed" color="#2A6B3A" /> : <Badge label="unconfirmed" color="rgba(15,21,35,0.55)" />}
                 {c.confirmed_by_actor && !c.outcome_reported && <Badge label="outcome missing" color="#8A3030" />}
               </div>
-              <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>To: {c.nextus_actors?.name || c.actor_id}{c.contribution_date && ' \u00b7 ' + c.contribution_date}</div>
+              <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>To: {c.nextus_actors?.name || c.actor_id}{c.contribution_date && ' · ' + c.contribution_date}</div>
               {c.description && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '4px', lineHeight: 1.6 }}>{c.description.slice(0, 160)}{c.description.length > 160 ? '...' : ''}</p>}
               {c.outcome_report && <p style={{ ...body, fontSize: '14px', color: '#2A6B3A', marginTop: '4px' }}>Outcome: {c.outcome_report.slice(0, 160)}</p>}
             </div>
@@ -1667,8 +1667,8 @@ function WaitlistTab({ toast }) {
               <div style={{ ...body, fontSize: '16px', color: '#0F1523' }}>{e.email}</div>
               <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>
                 {e.nextus_domains?.name || e.nextus_actors?.name || 'General interest'}
-                {e.contribution_types?.length > 0 && ' \u00b7 wants: ' + e.contribution_types.join(', ')}
-                {e.source && ' \u00b7 via ' + e.source}
+                {e.contribution_types?.length > 0 && ' · wants: ' + e.contribution_types.join(', ')}
+                {e.source && ' · via ' + e.source}
               </div>
               {e.note && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '4px' }}>{e.note}</p>}
             </div>

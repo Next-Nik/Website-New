@@ -900,7 +900,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                   {/* Doc header bar */}
                   <div style={{ background: 'rgba(200,146,42,0.05)', borderBottom: '1px solid rgba(200,146,42,0.12)', padding: '10px 18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A' }}>AVATAR DRAFT</span>
-                    <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', fontStyle: 'italic' }}>{'\u00b7'} {domain.label}</span>
+                    <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', fontStyle: 'italic' }}>{'·'} {domain.label}</span>
                   </div>
 
                   {/* Section 1 */}
@@ -1241,7 +1241,7 @@ function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
                 </div>
                 <div style={{ textAlign: 'right', minWidth: '60px' }}>
                   <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', fontWeight: 600, color: col }}>{s}</span>
-                  {h && <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(200,146,42,0.85)', marginLeft: '4px' }}>{'\u2192'}{h}</span>}
+                  {h && <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(200,146,42,0.85)', marginLeft: '4px' }}>{'→'}{h}</span>}
                 </div>
               </div>
               {isFocus && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>{d.question}</div>}
@@ -1361,7 +1361,7 @@ function MapWelcomeModal({ onBegin }) {
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
           onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
         >
-          Begin {'\u2192'}
+          Begin {'→'}
         </button>
       </div>
     </div>

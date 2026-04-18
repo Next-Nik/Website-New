@@ -185,7 +185,7 @@ export function LoginPage() {
             </div>
 
             <button onClick={handleEmail} disabled={sending} style={{ width: '100%', padding: '16px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', color: '#A8721A', cursor: 'pointer', opacity: sending ? 0.5 : 1 }}>
-              {sending ? 'On its way\u2026' : 'Continue with email \u2192'}
+              {sending ? 'On its way…' : 'Continue with email →'}
             </button>
             {error && <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', marginTop: '8px', padding: '10px 14px', background: 'rgba(200,146,42,0.05)', borderRadius: '14px', border: '1.5px solid rgba(200,146,42,0.35)' }}>{error}</p>}
           </>

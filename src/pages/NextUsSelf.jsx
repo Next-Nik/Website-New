@@ -9,19 +9,19 @@ const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const DOMAINS = [
-  { name: 'Path',       aliases: "Life\u2019s Mission \u00b7 Purpose \u00b7 Dharma" },
-  { name: 'Spark',      aliases: "Vitality \u00b7 Energy \u00b7 Joy \u00b7 Passion" },
-  { name: 'Body',       aliases: "Health \u00b7 Fitness \u00b7 The Physical" },
-  { name: 'Finances',   aliases: "Agency \u00b7 Money \u00b7 Currency" },
+  { name: 'Path',       aliases: "Life's Mission · Purpose · Dharma" },
+  { name: 'Spark',      aliases: "Vitality · Energy · Joy · Passion" },
+  { name: 'Body',       aliases: "Health · Fitness · The Physical" },
+  { name: 'Finances',   aliases: "Agency · Money · Currency" },
   { name: 'Connection', aliases: "Your relationships with others" },
   { name: 'Inner Game', aliases: "Your relationship to yourself" },
   { name: 'Signal',     aliases: "Your relationship to the world" },
 ]
 
 const SHARE_RECS = {
-  foundation: { tool: 'Horizon State', url: '/tools/horizon-state', desc: 'When someone is depleted, the first move is never to add more \u2014 it\u2019s to restore the ground. Horizon State is a 20-minute guided practice for nervous system regulation — the floor beneath everything.' },
-  map:        { tool: 'The Map',    url: '/tools/map',        desc: 'When someone doesn\u2019t know where they are, a map is everything. The Map gives an honest picture of their whole life across seven domains \u2014 in ten minutes.' },
-  purpose:    { tool: 'Purpose Piece', url: '/tools/purpose-piece', desc: 'When someone is capable but not yet fully alive in what they do, the question isn\u2019t what \u2014 it\u2019s where. Purpose Piece surfaces the role they\u2019re built to play.' },
+  foundation: { tool: 'Horizon State', url: '/tools/horizon-state', desc: 'When someone is depleted, the first move is never to add more — it's to restore the ground. Horizon State is a 20-minute guided practice for nervous system regulation — the floor beneath everything.' },
+  map:        { tool: 'The Map',    url: '/tools/map',        desc: 'When someone doesn't know where they are, a map is everything. The Map gives an honest picture of their whole life across seven domains — in ten minutes.' },
+  purpose:    { tool: 'Purpose Piece', url: '/tools/purpose-piece', desc: 'When someone is capable but not yet fully alive in what they do, the question isn't what — it's where. Purpose Piece surfaces the role they're built to play.' },
   leap:       { tool: 'Horizon Leap', url: 'https://calendly.com/nikwood/talk-to-nik', desc: 'When the pattern keeps returning despite the work, the work needed is different. Horizon Leap is identity-level work facilitated by Nik. Start with a conversation.' },
 }
 
@@ -39,19 +39,19 @@ export function NextUsSelfPage() {
           The personal<br /><span style={{ color: '#A8721A' }}>navigation layer.</span>
         </h1>
         <p style={{ ...body, fontSize: '19px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '16px', maxWidth: '580px' }}>
-          The Horizon Suite is a set of tools for seeing your life clearly and navigating it deliberately. Not a productivity system. Not a self-help programme. A navigation layer \u2014 showing you where you are, where you\u2019re going, and what the gaps are between them.
+          The Horizon Suite is a set of tools for seeing your life clearly and navigating it deliberately. Not a productivity system. Not a self-help programme. A navigation layer — showing you where you are, where you're going, and what the gaps are between them.
         </p>
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '520px' }}>
-          Built on seven domains that cover the full terrain of a human life \u2014 from your daily aliveness to your deepest sense of purpose.
+          Built on seven domains that cover the full terrain of a human life — from your daily aliveness to your deepest sense of purpose.
         </p>
 
         {/* Primary CTA */}
         <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '72px' }}>
           <a href="/tools" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>
-            See all tools \u2192
+            See all tools →
           </a>
           <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>
-            Find my starting point \u2192
+            Find my starting point →
           </a>
         </div>
 
@@ -59,7 +59,7 @@ export function NextUsSelfPage() {
         <div style={{ marginBottom: '72px', padding: '28px 32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '14px' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>Is this for you?</span>
           <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, margin: '0 0 8px', maxWidth: '520px' }}>
-            You\u2019re not in crisis and you\u2019re not broken \u2014 but something is off. A gap between who you are and what you sense you could be. You\u2019ve probably done some work already. Something still isn\u2019t moving.
+            You're not in crisis and you're not broken — but something is off. A gap between who you are and what you sense you could be. You've probably done some work already. Something still isn't moving.
           </p>
           <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, margin: 0, maxWidth: '520px' }}>
             This is exactly the terrain these tools are built for.
@@ -94,14 +94,14 @@ export function NextUsSelfPage() {
             The same seven domains.<br />Two scales.
           </h3>
           <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '12px', maxWidth: '520px' }}>
-            The seven Horizon Suite domains map directly onto the seven domains of NextUs \u2014 the civilisational architecture. What you build in yourself is the same structure as what humanity is building collectively.
+            The seven Horizon Suite domains map directly onto the seven domains of NextUs — the civilisational architecture. What you build in yourself is the same structure as what humanity is building collectively.
           </p>
           <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, maxWidth: '480px' }}>
             Personal navigation and civilisational navigation are the same physics, operating at different scales.
           </p>
           <div style={{ marginTop: '20px' }}>
             <a href="/nextus" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '2px' }}>
-              Explore NextUs \u2192
+              Explore NextUs →
             </a>
           </div>
         </div>
@@ -177,16 +177,16 @@ export function NextUsSelfPage() {
         <div style={{ maxWidth: '820px', margin: '0 auto' }}>
           <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>For someone you care about</span>
           <h2 style={{ ...body, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.12, marginBottom: '16px' }}>Passing this on.</h2>
-          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '12px', maxWidth: '540px' }}>The fact that you\u2019re here for someone else says something. That instinct \u2014 to want a better life for the people you love \u2014 is worth honouring carefully.</p>
-          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '560px' }}>Not everything lands when it\u2019s pushed. The right thing, offered at the right moment, in the right way \u2014 that\u2019s different.</p>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '12px', maxWidth: '540px' }}>The fact that you're here for someone else says something. That instinct — to want a better life for the people you love — is worth honouring carefully.</p>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '560px' }}>Not everything lands when it's pushed. The right thing, offered at the right moment, in the right way — that's different.</p>
           <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.4, marginBottom: '40px' }} />
           <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where do they seem to be?</span>
 
           {[
             { key: 'foundation', icon: '\u25ce', title: 'Running on empty',           sub: 'Stressed, depleted, or going through something hard' },
-            { key: 'map',        icon: '\u25c8', title: 'Stuck or searching',          sub: 'Not sure what they want \u2014 or where their life is actually at' },
-            { key: 'purpose',    icon: '\u25c9', title: 'Capable but not fully alive', sub: 'Functioning well, but something important isn\u2019t being expressed' },
-            { key: 'leap',       icon: '\u25d0', title: 'Hitting the same ceiling',    sub: 'They\u2019ve done the work. The pattern keeps returning' },
+            { key: 'map',        icon: '\u25c8', title: 'Stuck or searching',          sub: 'Not sure what they want — or where their life is actually at' },
+            { key: 'purpose',    icon: '\u25c9', title: 'Capable but not fully alive', sub: 'Functioning well, but something important isn't being expressed' },
+            { key: 'leap',       icon: '\u25d0', title: 'Hitting the same ceiling',    sub: 'They've done the work. The pattern keeps returning' },
           ].map(q => (
             <div key={q.key} onClick={() => setShareRec(q.key)}
               style={{ display: 'flex', gap: '16px', padding: '20px 22px', borderRadius: '14px', marginBottom: '10px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', cursor: 'pointer', transition: 'all 0.2s' }}
@@ -207,7 +207,7 @@ export function NextUsSelfPage() {
               <h4 style={{ ...body, fontSize: '20px', fontWeight: 400, color: '#A8721A', marginBottom: '10px' }}>{SHARE_RECS[shareRec].tool}</h4>
               <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '520px' }}>{SHARE_RECS[shareRec].desc}</p>
               <a href={SHARE_RECS[shareRec].url} style={{ display: 'inline-block', padding: '14px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '17px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
-                Open {SHARE_RECS[shareRec].tool} \u2192
+                Open {SHARE_RECS[shareRec].tool} →
               </a>
             </div>
           )}
@@ -216,12 +216,12 @@ export function NextUsSelfPage() {
           <h3 style={{ ...body, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, color: '#0F1523', marginBottom: '16px' }}>How to offer it well.</h3>
           <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '20px', maxWidth: '580px' }}>The most important thing: make it an offer, not a prescription. The difference is felt immediately.</p>
           <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '20px 0 20px 28px', marginBottom: '20px', maxWidth: '580px' }}>
-            <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '12px' }}>{'\u201c'}I found something that helped me see where I actually was. No pressure \u2014 but if you\u2019re curious, here it is.{'\u201d'}</p>
+            <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '12px' }}>{'"}I found something that helped me see where I actually was. No pressure — but if you're curious, here it is.{"'}</p>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.2em', color: '#A8721A' }}>An offer</span>
           </div>
-          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '580px' }}>Notice \u2014 as you think about them across these domains \u2014 what you\u2019re actually seeing. The same lens that helps you find the right thing for them has a way of clarifying things for you too.</p>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '48px', maxWidth: '580px' }}>Notice — as you think about them across these domains — what you're actually seeing. The same lens that helps you find the right thing for them has a way of clarifying things for you too.</p>
           <a href="/tools" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>
-            See all tools \u2192
+            See all tools →
           </a>
         </div>
       </section>

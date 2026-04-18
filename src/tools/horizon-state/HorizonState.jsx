@@ -140,7 +140,7 @@ function periodLabel(type, id) {
     const mon = new Date(+y, +m-1, +d)
     const sun = new Date(mon); sun.setDate(mon.getDate() + 6)
     const fmt = dt => `${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dt.getMonth()]} ${dt.getDate()}`
-    return `${fmt(mon)} \u2013 ${fmt(sun)}`
+    return `${fmt(mon)} – ${fmt(sun)}`
   }
   if (type === 'monthly') {
     const [y, m] = id.split('-')
@@ -225,7 +225,7 @@ function AudioPlayer({ url, onEnded, onNearEnd, locked }) {
         </p>
       )}
       <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>
-        Horizon State {'\u00B7'} Foundation {'\u00B7'} 20 min
+        Horizon State {'·'} Foundation {'·'} 20 min
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <button
@@ -271,10 +271,10 @@ function AuthModal({ onDismiss }) {
         <span style={{ display: 'block', ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Foundation</span>
         <h2 style={{ ...sc, fontSize: '1.625rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.2, marginBottom: '10px' }}>Sign in to listen.</h2>
         <p style={{ ...body, fontSize: '1.25rem', fontWeight: 300, ...meta, lineHeight: 1.7, marginBottom: '24px' }}>
-          Horizon State is part of the Horizon Suite {'\u2014'} a free account keeps your progress and gives you access to the full protocol.
+          Horizon State is part of the Horizon Suite {'—'} a free account keeps your progress and gives you access to the full protocol.
         </p>
         <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', width: '100%', padding: '14px', textAlign: 'center', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...sc, fontSize: '1.125rem', letterSpacing: '0.16em', ...gold, textDecoration: 'none', marginBottom: '12px' }}>
-          Sign in or create account {'\u2192'}
+          Sign in or create account {'→'}
         </a>
         <button onClick={onDismiss} style={{ display: 'block', width: '100%', textAlign: 'center', background: 'none', border: 'none', ...body, fontSize: '1.125rem', ...muted, cursor: 'pointer', padding: '4px' }}>
           Not now
@@ -289,7 +289,7 @@ function AuthModal({ onDismiss }) {
 function FlameDelta({ before, after }) {
   const delta  = after - before
   const color  = delta > 0 ? '#5A8AB8' : delta < 0 ? '#8A7030' : 'rgba(15,21,35,0.72)'
-  const symbol = delta > 0 ? '\u2191' : delta < 0 ? '\u2193' : '\u2014'
+  const symbol = delta > 0 ? '\u2191' : delta < 0 ? '\u2193' : '—'
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px', padding: '20px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.15)', borderRadius: '12px', marginTop: '20px' }}>
       <div style={{ textAlign: 'center' }}>
@@ -401,10 +401,10 @@ function FoundationReview({ user, sessions }) {
       </p>
       {!reviewText && !loading && (
         <button onClick={() => requestReview('weekly')} style={{ ...sc, fontSize: '1.3125rem', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '12px 28px', cursor: 'pointer' }}>
-          Request weekly reflection {'\u2192'}
+          Request weekly reflection {'→'}
         </button>
       )}
-      {loading && <p style={{ ...body, fontSize: '1.125rem', ...muted }}>Reading your practice{'\u2026'}</p>}
+      {loading && <p style={{ ...body, fontSize: '1.125rem', ...muted }}>Reading your practice{'…'}</p>}
       {error && <p style={{ ...body, fontSize: '1.3125rem', color: 'rgba(138,48,48,0.7)' }}>{error}</p>}
       {reviewText && (
         <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', padding: '16px 0 16px 20px' }}>
@@ -570,10 +570,10 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
               onClick={() => { setBeforeDone(false); setAfterDone(false); setAfterUnlocked(false); setBeforeValue(5); setAfterValue(5); setBeforeNote(''); setAfterNote(''); setShowBeginPopup(true) }}
               style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold, background: 'none', border: 'none', cursor: 'pointer' }}
             >
-              Listen again {'\u2192'}
+              Listen again {'→'}
             </button>
             <a href="/dashboard" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>
-              Mission Control {'\u2192'}
+              Mission Control {'→'}
             </a>
           </div>
         </div>
@@ -654,10 +654,10 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
           }}
         >
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
-            Horizon State {'\u00B7'} Foundation
+            Horizon State {'·'} Foundation
           </span>
           <p style={{ ...body, fontSize: '1.375rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '320px' }}>
-            Regulated internal stability {'\u2014'} the floor you stand on. Check in before and after to see what the audio actually does to your system.
+            Regulated internal stability {'—'} the floor you stand on. Check in before and after to see what the audio actually does to your system.
           </p>
           <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A' }}>
             Tap anywhere to begin
@@ -834,25 +834,25 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
         {/* Before */}
         <div className="hs-col-before-desktop" style={{ flexDirection: 'column', alignItems: 'center', opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
           <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>Before</span>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '12px' }}>Before {'\u00B7'} Foundation</span>
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '12px' }}>Before {'·'} Foundation</span>
           <p style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginBottom: '20px', lineHeight: 1.55 }}>Where is the flame right now?</p>
           <div style={{ pointerEvents: beforeDone ? 'none' : 'auto', marginBottom: '14px' }}>
             <FlameSlider value={beforeValue} onChange={setBeforeValue} ghostValue={null} />
           </div>
           <textarea value={beforeNote} onChange={e => setBeforeNote(e.target.value)}
-            placeholder={'what walked in with you today\u2026'} rows={2} disabled={beforeDone}
+            placeholder={'what walked in with you today…'} rows={2} disabled={beforeDone}
             style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
             onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
             onBlur={e => { e.target.style.borderColor = 'rgba(200,146,42,0.18)' }}
           />
           {!beforeDone && (
-            <button onClick={handleBegin} disabled={saving} style={{ width: '100%', padding: '12px', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', color: '#A8721A', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>Begin {'\u2192'}</button>
+            <button onClick={handleBegin} disabled={saving} style={{ width: '100%', padding: '12px', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', color: '#A8721A', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>Begin {'→'}</button>
           )}
         </div>
 
         {/* Audio */}
         <div className="hs-col-audio-desktop" style={{ flexDirection: 'column', justifyContent: 'flex-start' }}>
-          {audioLoading && <p style={{ ...body, fontSize: '1.125rem', ...muted }}>Loading audio{'\u2026'}</p>}
+          {audioLoading && <p style={{ ...body, fontSize: '1.125rem', ...muted }}>Loading audio{'…'}</p>}
           {audioError  && <p style={{ ...body, fontSize: '1.125rem', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
           {!audioLoading && !audioError && audioUrl && (
             <AudioPlayer url={audioUrl} locked={!beforeDone} onNearEnd={() => setAfterUnlocked(true)} onEnded={() => setAfterUnlocked(true)} />
@@ -860,7 +860,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
           {!user && !audioLoading && !audioError && (
             <div style={{ padding: '20px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', opacity: 0.6 }}>
               <p style={{ ...body, fontSize: '1.3125rem', ...muted, marginBottom: '14px', lineHeight: 1.6 }}>Check-in to unlock the audio.</p>
-              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>Horizon State {'\u00B7'} Foundation {'\u00B7'} 20 min</div>
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>Horizon State {'·'} Foundation {'·'} 20 min</div>
               <button onClick={() => setShowModal(true)} style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', ...gold, fontSize: '18px' }}>{'\u25B6'}</button>
             </div>
           )}
@@ -869,19 +869,19 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
         {/* After */}
         <div className="hs-col-after-desktop" style={{ flexDirection: 'column', alignItems: 'center', opacity: afterUnlocked ? 1 : 0.22, transition: 'opacity 0.8s ease', pointerEvents: afterUnlocked ? 'auto' : 'none' }}>
           <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>After</span>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '12px' }}>After {'\u00B7'} Foundation</span>
-          <p style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginBottom: '20px', lineHeight: 1.55 }}>And now{'\u2014'}?</p>
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '12px' }}>After {'·'} Foundation</span>
+          <p style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginBottom: '20px', lineHeight: 1.55 }}>And now{'—'}?</p>
           <div style={{ marginBottom: '14px' }}>
             <FlameSlider value={afterValue} onChange={setAfterValue} ghostValue={beforeDone ? beforeValue : null} />
           </div>
           <textarea value={afterNote} onChange={e => setAfterNote(e.target.value)}
-            placeholder={'What I\u2019m stepping away with\u2026'} rows={2}
+            placeholder={'What I'm stepping away with…'} rows={2}
             style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
             onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
             onBlur={e => { e.target.style.borderColor = 'rgba(200,146,42,0.18)' }}
           />
           {afterUnlocked && (
-            <button onClick={handleSave} disabled={saving} style={{ width: '100%', padding: '12px', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', color: '#A8721A', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>{saving ? 'Saving\u2026' : 'Save \u2713'}</button>
+            <button onClick={handleSave} disabled={saving} style={{ width: '100%', padding: '12px', ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', color: '#A8721A', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', cursor: saving ? 'default' : 'pointer', transition: 'all 0.2s', opacity: saving ? 0.6 : 1 }}>{saving ? 'Saving…' : 'Save ✓'}</button>
           )}
         </div>
 
@@ -919,8 +919,8 @@ function PhasePlaceholder({ title }) {
 function QuoteBlock({ text, cite }) {
   return (
     <div style={{ borderLeft: '2px solid rgba(200,146,42,0.2)', padding: '16px 0 16px 24px', margin: '40px 0' }}>
-      <p style={{ ...body, fontSize: '1.3125rem', fontStyle: 'italic', fontWeight: 300, ...meta, lineHeight: 1.75, marginBottom: '12px' }}>{'\u201C'}{text}{'\u201D'}</p>
-      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold }}>{'\u2014'} {cite}</span>
+      <p style={{ ...body, fontSize: '1.3125rem', fontStyle: 'italic', fontWeight: 300, ...meta, lineHeight: 1.75, marginBottom: '12px' }}>{'"'}{text}{'"'}</p>
+      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold }}>{'—'} {cite}</span>
     </div>
   )
 }
@@ -978,7 +978,7 @@ export function HorizonStatePage() {
       <Nav activePath="nextus-self" />
       <div className="tool-wrap">
         <div className="tool-header">
-          <span className="tool-eyebrow">Horizon Suite {'\u00B7'} Horizon State</span>
+          <span className="tool-eyebrow">Horizon Suite {'·'} Horizon State</span>
           <p style={{ ...body, fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '8px 0 12px', maxWidth: '520px' }}>
             The regulated ground everything else runs on.
           </p>

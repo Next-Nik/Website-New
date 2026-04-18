@@ -35,7 +35,7 @@ export function SiteFooter() {
         <div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', marginBottom: '28px' }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
           <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
-            {'\u00A9'} 2026 NextUs {'\u00B7'} Nik Wood
+            {'\u00A9'} 2026 NextUs {'·'} Nik Wood
           </span>
           <div style={{ display: 'flex', gap: '20px' }}>
             <a href="/privacy" style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>Privacy</a>

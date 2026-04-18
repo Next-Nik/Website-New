@@ -672,7 +672,7 @@ function AskTab() {
         />
         <Btn onClick={ask} disabled={!query.trim() || loading} variant="solid"
           style={{ flexShrink: 0, marginTop: '2px' }}>
-          {loading ? 'Thinking\u2026' : 'Ask'}
+          {loading ? 'Thinking…' : 'Ask'}
         </Btn>
       </div>
 

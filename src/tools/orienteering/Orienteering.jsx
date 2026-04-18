@@ -137,7 +137,7 @@ export function OrienteeringPage() {
                       <div style={{ ...body, fontSize: '17px', ...meta, lineHeight: 1.65, marginBottom: '8px' }}>{r.description}</div>
                       {r.link && r.link !== 'null' && (
                         <a href={r.link} style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold, textDecoration: 'none' }}>
-                          {r.link_text || 'Learn more \u2192'}
+                          {r.link_text || 'Learn more →'}
                         </a>
                       )}
                     </div>

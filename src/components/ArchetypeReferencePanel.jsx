@@ -148,7 +148,7 @@ export function ArchetypeReferencePanel() {
                   The Nine Archetypes
                 </h2>
                 <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
-                  Signal {'\u00B7'} Shadow {'\u00B7'} Nine patterns of contribution
+                  Signal {'·'} Shadow {'·'} Nine patterns of contribution
                 </p>
               </div>
               <button
@@ -173,7 +173,7 @@ export function ArchetypeReferencePanel() {
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
               <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
-                Each archetype is a natural role {'\u2014'} a distinct pattern of how a person moves through groups and systems. The signal is the gift. The shadow is what it costs when the gift is overplayed or misapplied.
+                Each archetype is a natural role {'—'} a distinct pattern of how a person moves through groups and systems. The signal is the gift. The shadow is what it costs when the gift is overplayed or misapplied.
               </p>
             </div>
 

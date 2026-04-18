@@ -103,7 +103,7 @@ export function CivilisationalFramePanel() {
                   The Seven Domains
                 </h2>
                 <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
-                  The frame for civilisational work {'\u00B7'} Each with a Horizon Goal
+                  The frame for civilisational work {'·'} Each with a Horizon Goal
                 </p>
               </div>
               <button
@@ -128,7 +128,7 @@ export function CivilisationalFramePanel() {
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
               <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
-                NextUs organises collective life into seven domains. Each domain has a Horizon Goal {'\u2014'} a shared directional picture of what flourishing looks like at civilisational scale.
+                NextUs organises collective life into seven domains. Each domain has a Horizon Goal {'—'} a shared directional picture of what flourishing looks like at civilisational scale.
               </p>
             </div>
 
@@ -200,7 +200,7 @@ export function CivilisationalFramePanel() {
             {/* Footer */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(200,146,42,0.12)', marginTop: 'auto' }}>
               <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
-                Seven domains. Every scale. One map of what humanity is working on {'\u2014'} and what still needs attention.
+                Seven domains. Every scale. One map of what humanity is working on {'—'} and what still needs attention.
               </p>
             </div>
           </div>

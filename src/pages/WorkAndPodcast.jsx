@@ -12,18 +12,18 @@ function Quote({ text, cite }) {
   return (
     <div style={{ borderLeft: '2px solid rgba(200,146,42,0.20)', padding: '14px 0 14px 28px', margin: '0 0 28px', maxWidth: '600px' }}>
       <p style={{ ...body, fontSize: '16px', fontStyle: 'italic', color: '#0F1523', lineHeight: 1.75, marginBottom: '10px' }}>{text}</p>
-      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {cite}</span>
+      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A' }}>{'—'} {cite}</span>
     </div>
   )
 }
 
 const TESTIMONIALS = [
   { q: 'Working with Nik definitely changed my life. He has the ability to build up the right foundation and the right container to actually be vulnerable and go straight to where you need to.', cite: 'S.H.' },
-  { q: 'The work we\u2019ve done has peeled back the narrative that said \u2018I can\u2019t do that\u2019 and revealed another world of possibility. I feel like I\u2019ve been liberated.', cite: 'C.W.' },
-  { q: 'I think this is the best decision I\u2019ve ever made \u2014 having you as my coach. You\u2019ve helped me unlock things I thought were dead and buried long ago.', cite: 'L.D.' },
-  { q: 'Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being \u2014 what I really wanted out of life \u2014 and how to live as the best version of myself.', cite: 'O.W.H.' },
-  { q: 'I\u2019m 63 years old and just met myself for the first time working with Nik.', cite: 'J.B.' },
-  { q: 'I came to Nik a few weeks in, apologising for not doing my homework \u2014 and found myself telling him I\u2019d met someone, gone on wonderful adventures, that my work was expanding. He said: \u2018Look at what you wrote in week one.\u2019 I was already living it.', cite: 'J.M.' },
+  { q: 'The work we've done has peeled back the narrative that said 'I can't do that' and revealed another world of possibility. I feel like I've been liberated.', cite: 'C.W.' },
+  { q: 'I think this is the best decision I've ever made — having you as my coach. You've helped me unlock things I thought were dead and buried long ago.', cite: 'L.D.' },
+  { q: 'Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being — what I really wanted out of life — and how to live as the best version of myself.', cite: 'O.W.H.' },
+  { q: 'I'm 63 years old and just met myself for the first time working with Nik.', cite: 'J.B.' },
+  { q: 'I came to Nik a few weeks in, apologising for not doing my homework — and found myself telling him I'd met someone, gone on wonderful adventures, that my work was expanding. He said: 'Look at what you wrote in week one.' I was already living it.', cite: 'J.M.' },
 ]
 
 function Stars() {
@@ -51,7 +51,7 @@ function TestimonialCard({ q, cite }) {
     }}>
       <Stars />
       <p style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '16px' }}>{q}</p>
-      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A' }}>{'\u2014'} {cite}</span>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A' }}>{'—'} {cite}</span>
     </div>
   )
 }
@@ -141,8 +141,8 @@ export function WorkWithNikPage() {
             <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
               From circling<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>to building.</em>
             </h1>
-            <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '40px', maxWidth: '480px' }}>One-on-one work for people who are ready to move {'\u2014'} not just understand.</p>
-            <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Book a discovery call {'\u2192'}</a>
+            <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '40px', maxWidth: '480px' }}>One-on-one work for people who are ready to move {'—'} not just understand.</p>
+            <a href="https://calendly.com/nikwood/talk-to-nik" target="_blank" rel="noopener" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Book a discovery call {'→'}</a>
           </div>
           {/* Photo — drop /nik.png into your /public folder. Graceful fallback until then. */}
           <div style={{ flex: '0 0 auto', width: 'clamp(160px, 28vw, 260px)' }}>
@@ -194,7 +194,7 @@ export function WorkWithNikPage() {
 
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '40px 0' }} />
         <h2 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>How it works.</h2>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Start with a discovery call. No commitment, no obligation {'\u2014'} just an honest conversation about where you are and whether this is the right container for the work.</p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '20px', maxWidth: '600px' }}>Start with a discovery call. No commitment, no obligation {'—'} just an honest conversation about where you are and whether this is the right container for the work.</p>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '32px', maxWidth: '600px' }}>Engagements begin at $3,500/month with a three-month commitment. The Horizon Suite included for the duration. If that's in range, let's talk.</p>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '20px' }}>Book a time</span>
 
@@ -242,7 +242,7 @@ export function PodcastPage() {
             onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}
           >
             <div style={{ ...body, fontSize: '16px', color: '#A8721A' }}>{p.label}</div>
-            <span style={{ color: '#A8721A', fontSize: '16px' }}>{'\u2192'}</span>
+            <span style={{ color: '#A8721A', fontSize: '16px' }}>{'→'}</span>
           </a>
         ))}
       </div>
