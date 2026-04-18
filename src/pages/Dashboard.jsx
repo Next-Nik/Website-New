@@ -187,14 +187,14 @@ Return ONLY a JSON array of 3 strings, no other text:
   )
 }
 
-function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, domainData, userId, purposeData, supabase, lifeHorizon }) {
-  const [editing,      setEditing]      = useState(null)
+function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, domainData, userId, purposeData, supabase, lifeHorizon, lifeIaStatement, mapResultId }) {
+  const [editing,      setEditing]      = useState(null)  // domain key or 'life'
   const [draft,        setDraft]        = useState('')
   const [saving,       setSaving]       = useState(false)
   const [nsModal,      setNsModal]      = useState(null)
   const [goalModal,    setGoalModal]    = useState(null)
   const [localIa,      setLocalIa]      = useState({})
-  // Track if the user has ever opened the edit panel — show explainer only on first time
+  const [localLifeIa,  setLocalLifeIa]  = useState(lifeIaStatement || '')
   const [hasEditedOnce, setHasEditedOnce] = useState(() => {
     try { return !!localStorage.getItem('mc_ia_explained') } catch { return false }
   })
@@ -232,6 +232,21 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
     setDraft('')
   }
 
+  async function saveLifeIa(value) {
+    setSaving(true)
+    try {
+      if (mapResultId) {
+        await supabase.from('map_results')
+          .update({ life_ia_statement: value, updated_at: new Date().toISOString() })
+          .eq('id', mapResultId)
+      }
+      setLocalLifeIa(value)
+    } catch {}
+    setSaving(false)
+    setEditing(null)
+    setDraft('')
+  }
+
   function handleDraftSelect(d) {
     setEditing(nsModal)
     setDraft(d)
@@ -251,57 +266,78 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
     <div>
       <Eyebrow>The Map</Eyebrow>
 
-      {/* Life Horizon — overall statement, same row structure as domains */}
+      {/* Life Horizon — same row structure and behaviour as domain rows */}
       {(() => {
         const currentVals = DOMAIN_KEYS.map(k => currentScores[k]).filter(v => v != null)
         const horizonVals = DOMAIN_KEYS.map(k => horizonScores[k]).filter(v => v != null)
         const avgCurrent  = currentVals.length  ? Math.round((currentVals.reduce((a,b) => a+b,0)  / currentVals.length)  * 10) / 10 : null
         const avgHorizon  = horizonVals.length  ? Math.round((horizonVals.reduce((a,b) => a+b,0)  / horizonVals.length)  * 10) / 10 : null
         const color       = getTierColor(avgCurrent)
+        const isEditingLife = editing === 'life'
+        const displayIa   = localLifeIa || null
 
         return (
-          <div style={{
-            border: '1px solid rgba(200,146,42,0.25)',
-            borderRadius: '8px', background: '#FFFFFF',
-            marginBottom: '8px', overflow: 'hidden',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 14px' }}>
+          <div style={{ border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', background: '#FFFFFF', marginBottom: '8px', overflow: 'hidden' }}>
 
-              {/* Aggregate score pair */}
-              <div style={{ width: '64px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '3px' }}>
-                {avgCurrent != null && (
-                  <span style={{ ...sc, fontSize: '13px', color }}>{avgCurrent}</span>
+            {!isEditingLife && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 14px' }}>
+                <div
+                  onClick={lifeHorizon ? () => setGoalModal('life') : undefined}
+                  title={lifeHorizon ? 'See life horizon' : undefined}
+                  style={{ width: '64px', flexShrink: 0, display: 'flex', alignItems: 'center', gap: '3px', cursor: lifeHorizon ? 'pointer' : 'default' }}
+                >
+                  {avgCurrent != null && (
+                    <>
+                      <span style={{ ...sc, fontSize: '13px', color, textDecoration: lifeHorizon ? 'underline' : 'none', textUnderlineOffset: '2px', textDecorationColor: 'rgba(200,146,42,0.35)' }}>{avgCurrent}</span>
+                      <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.3)' }}>→</span>
+                      <span style={{ ...sc, fontSize: '13px', color: avgHorizon != null ? '#C8922A' : 'rgba(200,146,42,0.3)' }}>{avgHorizon != null ? avgHorizon : '?'}</span>
+                    </>
+                  )}
+                </div>
+                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.4)', textTransform: 'uppercase', width: '68px', flexShrink: 0 }}>Life Horizon</div>
+                <div style={{ flex: 1 }}>
+                  {displayIa ? (
+                    <p style={{ ...body, fontSize: '13px', color: '#0F1523', lineHeight: 1.55, margin: 0 }}>{displayIa}</p>
+                  ) : (
+                    <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.28)', fontStyle: 'italic', margin: 0 }}>No statement yet</p>
+                  )}
+                </div>
+                <button
+                  onClick={() => { setEditing('life'); setDraft(displayIa || ''); if (!hasEditedOnce) { setHasEditedOnce(true); try { localStorage.setItem('mc_ia_explained', '1') } catch {} } }}
+                  style={{ ...sc, fontSize: '9px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.35)', background: 'none', border: '1px solid rgba(15,21,35,0.1)', borderRadius: '20px', padding: '3px 9px', cursor: 'pointer', flexShrink: 0 }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#A8721A'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.4)' }}
+                  onMouseLeave={e => { e.currentTarget.style.color = 'rgba(15,21,35,0.35)'; e.currentTarget.style.borderColor = 'rgba(15,21,35,0.1)' }}
+                >Edit</button>
+              </div>
+            )}
+
+            {isEditingLife && (
+              <div style={{ padding: '12px 14px', background: 'rgba(200,146,42,0.02)' }}>
+                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px' }}>Life Horizon</div>
+                {!hasEditedOnce && (
+                  <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '10px', paddingBottom: '10px', borderBottom: '1px solid rgba(200,146,42,0.1)' }}>
+                    An "I am..." statement is a one-line, present-tense version of where you're going in this domain. Not a goal — a declaration. "I am an athlete, dancer, ninja." Write it as if it's already true. Keep refining it until you feel a spark when you read it back — that's how you know it's yours.
+                  </p>
                 )}
-                <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.3)' }}>→</span>
-                <span style={{ ...sc, fontSize: '13px', color: avgHorizon != null ? '#C8922A' : 'rgba(200,146,42,0.3)' }}>
-                  {avgHorizon != null ? avgHorizon : '?'}
-                </span>
+                <textarea
+                  value={draft}
+                  onChange={e => setDraft(e.target.value)}
+                  placeholder="I am..."
+                  rows={2}
+                  style={{ width: '100%', ...body, fontSize: '13px', color: '#0F1523', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '6px', padding: '8px 10px', resize: 'vertical', outline: 'none', background: '#FFFFFF', lineHeight: 1.6, boxSizing: 'border-box', marginBottom: '8px' }}
+                  autoFocus
+                />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={() => draft.trim() && saveLifeIa(draft.trim())} disabled={saving || !draft.trim()} style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em', color: '#FFFFFF', background: draft.trim() ? '#A8721A' : 'rgba(200,146,42,0.3)', border: 'none', borderRadius: '20px', padding: '5px 14px', cursor: draft.trim() ? 'pointer' : 'not-allowed' }}>{saving ? 'Saving…' : 'Save'}</button>
+                    <button onClick={() => { setEditing(null); setDraft('') }} style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: '5px 0' }}>Cancel</button>
+                  </div>
+                  {lifeHorizon && (
+                    <button onClick={() => { setNsModal('life'); setEditing(null) }} style={{ ...sc, fontSize: '9px', letterSpacing: '0.1em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '20px', padding: '4px 10px', cursor: 'pointer' }}>Draft with North Star</button>
+                  )}
+                </div>
               </div>
-
-              {/* Label */}
-              <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.4)', textTransform: 'uppercase', width: '68px', flexShrink: 0 }}>
-                Life Horizon
-              </div>
-
-              {/* Statement */}
-              <div style={{ flex: 1 }}>
-                {lifeHorizon ? (
-                  <p style={{ ...body, fontSize: '13px', fontStyle: 'italic', color: '#0F1523', lineHeight: 1.55, margin: 0 }}>"{lifeHorizon}"</p>
-                ) : (
-                  <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.28)', fontStyle: 'italic', margin: 0 }}>No statement yet</p>
-                )}
-              </div>
-
-              {/* Edit — links to The Map tool to set life horizon */}
-              <a href="/tools/map" style={{
-                ...sc, fontSize: '9px', letterSpacing: '0.12em',
-                color: 'rgba(15,21,35,0.35)', background: 'none',
-                border: '1px solid rgba(15,21,35,0.1)', borderRadius: '20px',
-                padding: '3px 9px', textDecoration: 'none', flexShrink: 0,
-              }}>
-                Edit
-              </a>
-            </div>
+            )}
           </div>
         )
       })()}
@@ -477,7 +513,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
       {nsModal && (
         <NorthStarModal
           domainKey={nsModal}
-          horizonGoal={domainData?.[nsModal]?.horizonText || horizonProfile?.[nsModal]?.horizonGoal}
+          horizonGoal={nsModal === 'life' ? lifeHorizon : (domainData?.[nsModal]?.horizonText || horizonProfile?.[nsModal]?.horizonGoal)}
           purposeData={purposeData}
           userId={userId}
           onSelect={handleDraftSelect}
@@ -487,12 +523,16 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
 
       {/* Horizon goal modal — triggered by clicking score pair */}
       {goalModal && (() => {
-        const current     = currentScores[goalModal]
-        const horizon     = horizonScores[goalModal]
+        const isLife      = goalModal === 'life'
+        const currentVals = isLife ? DOMAIN_KEYS.map(k => currentScores[k]).filter(v => v != null) : null
+        const horizonVals = isLife ? DOMAIN_KEYS.map(k => horizonScores[k]).filter(v => v != null) : null
+        const current     = isLife ? (currentVals.length ? Math.round((currentVals.reduce((a,b)=>a+b,0)/currentVals.length)*10)/10 : null) : currentScores[goalModal]
+        const horizon     = isLife ? (horizonVals.length ? Math.round((horizonVals.reduce((a,b)=>a+b,0)/horizonVals.length)*10)/10 : null) : horizonScores[goalModal]
         const color       = getTierColor(current)
-        const reality     = domainData?.[goalModal]?.realityFinal || domainData?.[goalModal]?.realityDraft || null
-        const avatar      = domainData?.[goalModal]?.avatarFinal || null
-        const horizonText = domainData?.[goalModal]?.horizonText || horizonProfile?.[goalModal]?.horizonGoal
+        const reality     = isLife ? null : (domainData?.[goalModal]?.realityFinal || domainData?.[goalModal]?.realityDraft || null)
+        const avatar      = isLife ? null : (domainData?.[goalModal]?.avatarFinal || null)
+        const horizonText = isLife ? lifeHorizon : (domainData?.[goalModal]?.horizonText || horizonProfile?.[goalModal]?.horizonGoal)
+        const modalLabel  = isLife ? 'LIFE HORIZON' : DOMAIN_LABEL_MAP[goalModal]?.toUpperCase()
         return (
           <div
             onClick={() => setGoalModal(null)}
@@ -517,7 +557,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px' }}>
                 <div>
                   <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '6px' }}>
-                    {DOMAIN_LABEL_MAP[goalModal].toUpperCase()}
+                    {modalLabel}
                   </div>
                   {/* Score pair */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -553,7 +593,7 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
               {/* Actions */}
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 <button
-                  onClick={() => { setGoalModal(null); openEdit(goalModal) }}
+                  onClick={() => { setGoalModal(null); if (goalModal === 'life') { setEditing('life'); setDraft(localLifeIa || '') } else { openEdit(goalModal) } }}
                   style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', color: '#A8721A', background: 'rgba(200,146,42,0.06)', border: '1px solid rgba(200,146,42,0.3)', borderRadius: '20px', padding: '6px 14px', cursor: 'pointer' }}
                 >Write my statement →</button>
                 <button
@@ -1427,7 +1467,7 @@ export function DashboardPage() {
     setDataLoading(true)
     try {
       const [mapRes, ppRes, sprintRes, foundationRes, practiceRes, actorRes, horizonRes] = await Promise.all([
-        supabase.from('map_results').select('session, completed_at, map_data, horizon_goal_user, horizon_goal_system, complete').eq('user_id', user.id).order('updated_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('map_results').select('id, session, completed_at, map_data, horizon_goal_user, horizon_goal_system, complete, life_ia_statement').eq('user_id', user.id).order('updated_at', { ascending: false }).limit(1).maybeSingle(),
         supabase.from('purpose_piece_results').select('profile, session, completed_at, status').eq('user_id', user.id).order('updated_at', { ascending: false }).limit(1).maybeSingle(),
         supabase.from('target_sprint_sessions').select('domains, domain_data, target_date, end_date_label, quarter_type, created_at, status').eq('user_id', user.id).in('status', ['started', 'active', 'complete']).order('updated_at', { ascending: false }).limit(1).maybeSingle(),
         supabase.from('horizon_state_summary').select('*').eq('user_id', user.id).maybeSingle(),
@@ -1723,6 +1763,8 @@ export function DashboardPage() {
           purposeData={purposeData}
           supabase={supabase}
           lifeHorizon={mapData?.horizon_goal_user || mapData?.map_data?.life_horizon_draft || null}
+          lifeIaStatement={mapData?.life_ia_statement || null}
+          mapResultId={mapData?.id || null}
         />
       )
       if (activeView === 'sprint')   return (
