@@ -1936,7 +1936,6 @@ export function DashboardPage() {
                       display: 'flex', alignItems: 'center', gap: '8px',
                       padding: '6px 14px', width: '100%', textAlign: 'left',
                       background: isActive ? 'rgba(200,146,42,0.06)' : 'transparent',
-                      borderLeft: `2px solid ${isActive ? '#A8721A' : 'transparent'}`,
                       border: 'none', borderLeft: `2px solid ${isActive ? '#A8721A' : 'transparent'}`,
                       cursor: 'pointer',
                       ...sc, fontSize: '12px', letterSpacing: '0.06em',
@@ -1959,7 +1958,6 @@ export function DashboardPage() {
                 borderTop: '1px solid rgba(200,146,42,0.1)', padding: '12px 14px',
                 background: showProfile ? 'rgba(200,146,42,0.06)' : 'transparent',
                 cursor: 'pointer', textAlign: 'left', border: 'none',
-                borderTop: '1px solid rgba(200,146,42,0.1)',
                 width: '100%', transition: 'background 0.1s',
               }}
             >

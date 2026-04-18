@@ -456,7 +456,7 @@ function StageTransition({ nextStage, onContinue, loading = false }) {
     domain: {
       eyebrow: 'Archetype ✓',
       heading: 'How you move: found.',
-      body:    'Now a different gear entirely. The last set was watching your instinct in action. This one is about what you can't look away from — the thing that pulls your attention even when you have no reason to care.',
+      body:    `Now a different gear entirely. The last set was watching your instinct in action. This one is about what you can't look away from — the thing that pulls your attention even when you have no reason to care.`,
       cta:     'Find your domain →',
     },
     scale: {
