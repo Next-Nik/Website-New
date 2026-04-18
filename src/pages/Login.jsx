@@ -26,11 +26,47 @@ function getIntendedDestination() {
   return '/'
 }
 
+function Checkbox({ checked, onChange, children }) {
+  return (
+    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer', marginBottom: '14px' }}>
+      <div
+        onClick={onChange}
+        style={{
+          flexShrink: 0,
+          marginTop: '2px',
+          width: '18px',
+          height: '18px',
+          borderRadius: '4px',
+          border: `1.5px solid ${checked ? '#C8922A' : 'rgba(200,146,42,0.45)'}`,
+          background: checked ? 'rgba(200,146,42,0.10)' : '#FFFFFF',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.15s ease',
+          cursor: 'pointer',
+        }}
+      >
+        {checked && (
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4L3.5 6.5L9 1" stroke="#C8922A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </div>
+      <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55 }}>
+        {children}
+      </span>
+    </label>
+  )
+}
+
 export function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [sending, setSending] = useState(false)
-  const [sent, setSent] = useState(false)
-  const [error, setError] = useState('')
+  const [email, setEmail]           = useState('')
+  const [sending, setSending]       = useState(false)
+  const [sent, setSent]             = useState(false)
+  const [error, setError]           = useState('')
+  const [termsAccepted, setTerms]   = useState(false)
+  const [mailingOptIn, setMailing]  = useState(false)
+  const [termsError, setTermsError] = useState(false)
 
   // If already signed in, skip straight to destination
   useEffect(() => {
@@ -45,10 +81,25 @@ export function LoginPage() {
     })
   }, [])
 
+  function storeConsent() {
+    // Store consent flags in sessionStorage so AuthCallback can write them to Supabase
+    try {
+      sessionStorage.setItem('consent_terms', 'true')
+      sessionStorage.setItem('consent_terms_at', new Date().toISOString())
+      sessionStorage.setItem('consent_mailing', mailingOptIn ? 'true' : 'false')
+    } catch {}
+  }
+
+  function checkTerms() {
+    if (!termsAccepted) { setTermsError(true); return false }
+    setTermsError(false)
+    return true
+  }
+
   async function handleGoogle() {
+    if (!checkTerms()) return
+    storeConsent()
     const dest = getIntendedDestination()
-    // Encode destination in the redirectTo URL — localStorage doesn't survive
-    // cross-origin OAuth redirects reliably across all browsers
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -59,11 +110,12 @@ export function LoginPage() {
   }
 
   async function handleEmail() {
+    if (!checkTerms()) return
     if (!email || !email.includes('@')) { setError('Please enter a valid email address.'); return }
     setSending(true); setError('')
+    storeConsent()
 
     const dest = getIntendedDestination()
-    // Also keep localStorage as fallback for magic link
     try { localStorage.setItem('auth_redirect', dest) } catch {}
 
     const { error } = await supabase.auth.signInWithOtp({
@@ -111,8 +163,27 @@ export function LoginPage() {
               type="email" value={email} onChange={e => setEmail(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && handleEmail()}
               placeholder="your@email.com" autoComplete="email"
-              style={{ width: '100%', padding: '13px 16px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...body, fontSize: '16px', color: '#0F1523', outline: 'none', marginBottom: '12px' }}
+              style={{ width: '100%', padding: '13px 16px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...body, fontSize: '16px', color: '#0F1523', outline: 'none', marginBottom: '12px', boxSizing: 'border-box' }}
             />
+
+            {/* Consent checkboxes */}
+            <div style={{ margin: '4px 0 16px' }}>
+              <Checkbox checked={termsAccepted} onChange={() => { setTerms(v => !v); setTermsError(false) }}>
+                I agree to the{' '}
+                <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: '#A8721A', textDecoration: 'underline' }}>Terms of Service</a>
+                {' '}and{' '}
+                <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#A8721A', textDecoration: 'underline' }}>Privacy Policy</a>
+              </Checkbox>
+              {termsError && (
+                <p style={{ ...body, fontSize: '13px', color: '#C8922A', margin: '-8px 0 10px 28px' }}>
+                  Please accept the terms to continue.
+                </p>
+              )}
+              <Checkbox checked={mailingOptIn} onChange={() => setMailing(v => !v)}>
+                Keep me in the loop — occasional updates from NextUs
+              </Checkbox>
+            </div>
+
             <button onClick={handleEmail} disabled={sending} style={{ width: '100%', padding: '16px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', color: '#A8721A', cursor: 'pointer', opacity: sending ? 0.5 : 1 }}>
               {sending ? 'On its way\u2026' : 'Continue with email \u2192'}
             </button>

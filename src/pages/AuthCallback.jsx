@@ -1,8 +1,8 @@
 // src/pages/AuthCallback.jsx
 // Supabase processes the ?code= or #access_token from the URL automatically
 // when detectSessionInUrl: true (set in useSupabase.js).
-// This page just waits for the SIGNED_IN event and redirects to the
-// stored destination.
+// This page waits for the SIGNED_IN event, writes consent flags if present,
+// then redirects to the stored destination.
 
 import { useEffect, useState } from 'react'
 import { supabase } from '../hooks/useSupabase'
@@ -11,23 +11,17 @@ const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 function getDestination() {
-  // URL param takes priority — it survives OAuth redirects and magic links
-  // reliably across all browsers; localStorage does not.
   const params = new URLSearchParams(window.location.search)
   let dest = params.get('redirect') || null
 
-  // Fall back to localStorage (set by email magic link flow)
   if (!dest) {
     try { dest = localStorage.getItem('auth_redirect') } catch {}
   }
   try { localStorage.removeItem('auth_redirect') } catch {}
 
   if (!dest) return '/'
-
-  // Relative path — safe
   if (dest.startsWith('/')) return dest
 
-  // Full URL — only allow same origin, extract path only
   try {
     const url = new URL(dest)
     const allowed = ['nextus.world', 'www.nextus.world']
@@ -38,23 +32,48 @@ function getDestination() {
   return '/'
 }
 
+async function writeConsent(userId) {
+  try {
+    const termsAt  = sessionStorage.getItem('consent_terms_at')
+    const mailing  = sessionStorage.getItem('consent_mailing')
+
+    // Only write if consent flags are present — skips returning users
+    // who sign in without going through the login form this session
+    if (!termsAt) return
+
+    await supabase.from('user_consent').upsert(
+      {
+        user_id:          userId,
+        terms_accepted_at: termsAt,
+        mailing_opt_in:   mailing === 'true',
+        updated_at:       new Date().toISOString(),
+      },
+      { onConflict: 'user_id' }
+    )
+
+    sessionStorage.removeItem('consent_terms')
+    sessionStorage.removeItem('consent_terms_at')
+    sessionStorage.removeItem('consent_mailing')
+  } catch {
+    // Non-fatal — don't block redirect on a consent write failure
+  }
+}
+
 export function AuthCallbackPage() {
-  const [status, setStatus] = useState('Signing you in…')
+  const [status, setStatus] = useState('Signing you in\u2026')
 
   useEffect(() => {
-    // Check if session is already established (Supabase may have processed
-    // the URL code before this component mounted)
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
+        await writeConsent(session.user.id)
         window.location.replace(getDestination())
       }
     })
 
-    // Listen for the SIGNED_IN event — fires when Supabase finishes
-    // processing the ?code= or hash tokens from the URL
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user) {
         subscription.unsubscribe()
+        await writeConsent(session.user.id)
         window.location.replace(getDestination())
       }
       if (event === 'SIGNED_OUT') {
@@ -63,10 +82,9 @@ export function AuthCallbackPage() {
       }
     })
 
-    // Timeout fallback — if nothing fires in 8 seconds, something is wrong
     const timer = setTimeout(() => {
       subscription.unsubscribe()
-      setStatus('Taking longer than expected…')
+      setStatus('Taking longer than expected\u2026')
       supabase.auth.getSession().then(({ data: { session } }) => {
         window.location.replace(session?.user ? getDestination() : '/login')
       })
