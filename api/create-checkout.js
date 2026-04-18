@@ -9,14 +9,15 @@
 // promoCode is optional. When supplied:
 //   - The promotion code is looked up in Stripe and pre-applied to the session.
 //   - If the promo code is in TRIAL_PROMO_CODES, a 14-day trial is added.
-//   - The user sees the discount (and trial) already applied at checkout.
+//   - Trial codes require no payment method — opt-in conversion after 14 days.
+//   - If the user doesn't subscribe after the trial, access lapses automatically.
 
 const Stripe = require('stripe')
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
-// Promo codes that include a 14-day trial.
+// Promo codes that include a 14-day trial with no card required.
 // Keep in sync with PROMO_GROUP_MAP in stripe-webhook.js.
-const TRIAL_PROMO_CODES = new Set(['BETATESTER', 'BETACORE'])
+const TRIAL_PROMO_CODES = new Set(['BETA50', 'BETACORE75'])
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -32,6 +33,8 @@ module.exports = async (req, res) => {
     const price = await stripe.prices.retrieve(priceId)
     const mode  = price.type === 'recurring' ? 'subscription' : 'payment'
 
+    const isTrial = mode === 'subscription' && promoCode && TRIAL_PROMO_CODES.has(promoCode.toUpperCase())
+
     const sessionParams = {
       mode,
       line_items:          [{ price: priceId, quantity: 1 }],
@@ -40,26 +43,33 @@ module.exports = async (req, res) => {
       cancel_url:          cancelUrl,
     }
 
+    // No card required for trial users — opt-in conversion after 14 days
+    if (isTrial) {
+      sessionParams.payment_method_collection = 'if_required'
+    }
+
     // Pre-apply promo code if supplied
     if (promoCode) {
-      // Look up the promotion code object to get its ID
       const promoCodes = await stripe.promotionCodes.list({ code: promoCode, limit: 1, active: true })
       if (promoCodes.data.length > 0) {
         sessionParams.discounts = [{ promotion_code: promoCodes.data[0].id }]
-        // Disable the coupon field so users can't override with a different code
         sessionParams.allow_promotion_codes = false
       } else {
         console.warn('Promo code not found or inactive:', promoCode)
-        // Fall through — session created without discount
         sessionParams.allow_promotion_codes = true
       }
     } else {
       sessionParams.allow_promotion_codes = true
     }
 
-    // Add trial only for promo codes that include one
-    if (mode === 'subscription' && promoCode && TRIAL_PROMO_CODES.has(promoCode.toUpperCase())) {
-      sessionParams.subscription_data = { trial_period_days: 14 }
+    // Add 14-day trial for trial promo codes
+    if (isTrial) {
+      sessionParams.subscription_data = {
+        trial_period_days:    14,
+        trial_settings: {
+          end_behavior: { missing_payment_method: 'cancel' },
+        },
+      }
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams)
