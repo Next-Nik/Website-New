@@ -310,7 +310,7 @@ export function SprintPanel({ context = 'default' }) {
                         </p>
                         {g.identity_statement && (
                           <p style={{ ...body, fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55 }}>
-                            {'"'}{g.identity_statement}{'"'}
+                            "{g.identity_statement}"
                           </p>
                         )}
                       </div>

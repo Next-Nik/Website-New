@@ -919,7 +919,7 @@ function PhasePlaceholder({ title }) {
 function QuoteBlock({ text, cite }) {
   return (
     <div style={{ borderLeft: '2px solid rgba(200,146,42,0.2)', padding: '16px 0 16px 24px', margin: '40px 0' }}>
-      <p style={{ ...body, fontSize: '1.3125rem', fontStyle: 'italic', fontWeight: 300, ...meta, lineHeight: 1.75, marginBottom: '12px' }}>{'"'}{text}{'"'}</p>
+      <p style={{ ...body, fontSize: '1.3125rem', fontStyle: 'italic', fontWeight: 300, ...meta, lineHeight: 1.75, marginBottom: '12px' }}>"{text}"</p>
       <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold }}>{'—'} {cite}</span>
     </div>
   )
