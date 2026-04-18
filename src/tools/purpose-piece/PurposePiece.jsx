@@ -644,7 +644,7 @@ function DeepGateModal({ onUnlock, onDismiss }) {
           The tension. The shadow.<br />The full picture.
         </h2>
         <p style={{ ...body, fontSize: '1.1875rem', ...meta, lineHeight: 1.8, marginBottom: '28px' }}>
-          The First Look gave you the shape. The Deep Dive is a real conversation {'—'} into what this costs you at the bone, where the instinct breaks, and what it{'''}s been asking of you.
+          The First Look gave you the shape. The Deep Dive is a real conversation {'—'} into what this costs you at the bone, where the instinct breaks, and what it's been asking of you.
         </p>
         <button onClick={onUnlock} style={{ ...btnStyle, display: 'block', width: '100%', textAlign: 'center', marginBottom: '12px' }}
           onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)' }}

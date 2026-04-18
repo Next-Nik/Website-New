@@ -158,17 +158,17 @@ export function AboutPage() {
 
         {/* Trust paragraph */}
         <p style={{ ...serif, fontSize: '18px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '32px', maxWidth: '600px', marginLeft: 'auto' }}>
-          Nik has worked with people for over two decades. The consistent pattern across that time isn{'''}t a particular method {'—'} it{'''}s the result: people{'''}s lives become measurably better in the areas they came for help with, and often noticeably better in areas they didn{'''}t expect. Not because of what Nik does to them, but because of what becomes possible when someone is seen clearly and worked with honestly.
+          Nik has worked with people for over two decades. The consistent pattern across that time isn't a particular method {'—'} it's the result: people's lives become measurably better in the areas they came for help with, and often noticeably better in areas they didn't expect. Not because of what Nik does to them, but because of what becomes possible when someone is seen clearly and worked with honestly.
         </p>
 
         {/* Is this for you */}
         <div style={{ marginBottom: '48px', padding: '28px 32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '14px', textAlign: 'left' }}>
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '12px' }}>Is this for you?</span>
           <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, margin: '0 0 8px', maxWidth: '520px' }}>
-            High-functioning, self-aware, and aware that functioning well isn{'''}t the same as living from what you{'''}re actually capable of. You{'''}ve done some work on yourself. Something still isn{'''}t moving.
+            High-functioning, self-aware, and aware that functioning well isn't the same as living from what you're actually capable of. You've done some work on yourself. Something still isn't moving.
           </p>
           <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, margin: '0 0 20px', maxWidth: '520px' }}>
-            That{'''}s the exact person this work is built for.
+            That's the exact person this work is built for.
           </p>
           <a href="/work-with-nik" style={{ display: 'inline-block', padding: '12px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
             Work with Nik {'→'}
