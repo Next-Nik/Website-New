@@ -1192,7 +1192,6 @@ export function PurposePiecePage() {
           await supabase.from('contributor_profiles').upsert(payload, { onConflict: 'id' })
         } catch (e) { console.error('contributor_profiles upsert failed:', e) } })()
       }
-      }
       if (user?.id && data.session?.tentative) {
         const t = data.session.tentative
         const ppNotes = [
