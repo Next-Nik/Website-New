@@ -16,7 +16,7 @@ const TESTIMONIALS = [
   { q: `I think this is the best decision I've ever made. You've helped me unlock things I thought were dead and buried long ago.`, cite: 'L.D.' },
   { q: 'Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being — what I really wanted out of life — and how to live as the best version of myself.', cite: 'O.W.H.' },
   { q: `I'm 63 years old and just met myself for the first time working with Nik.`, cite: 'J.B.' },
-  { q: 'I came to Nik a few weeks in, apologising for not doing my homework — and found myself telling him I'd met someone, gone on wonderful adventures, that my work was expanding. He said: 'Look at what you wrote in week one.' I was already living it.', cite: 'J.M.' },
+  { q: `I came to Nik a few weeks in, apologising for not doing my homework — and found myself telling him I'd met someone, gone on wonderful adventures, that my work was expanding. He said: 'Look at what you wrote in week one.' I was already living it.`, cite: 'J.M.' },
 ]
 
 function Stars() {
