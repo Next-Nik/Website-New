@@ -292,7 +292,7 @@ export default function Heptagon({
       {/* Heptagon web */}
       <polygon points={polygonPoints} fill="rgba(200,146,42,0.03)" stroke="rgba(200,146,42,0.15)" strokeWidth="0.75" />
 
-      {/* Spokes — centre to node centre, nodes rendered above hide the ends */}
+      {/* Spokes — centre to node centre. Rendered before nodes so orbs paint over the ends cleanly */}
       {Array.from({ length: count }, (_, i) => {
         const p = getNodePos(i, displayRot, count)
         return (
@@ -300,8 +300,8 @@ export default function Heptagon({
             key={`spoke-${i}`}
             x1={CX} y1={CY}
             x2={p.x} y2={p.y}
-            stroke="rgba(200,146,42,0.10)"
-            strokeWidth="0.5"
+            stroke="rgba(200,146,42,0.35)"
+            strokeWidth="1"
           />
         )
       })}
@@ -374,7 +374,7 @@ export default function Heptagon({
               fontFamily="'Lora', Georgia, serif"
               fontWeight="400"
               stroke="#0F1523"
-              strokeWidth="3"
+              strokeWidth="1"
               strokeLinejoin="round"
               paintOrder="stroke fill"
               style={{ pointerEvents: 'none', userSelect: 'none' }}
@@ -419,7 +419,7 @@ export default function Heptagon({
             fontFamily="'Lora', Georgia, serif"
             fontWeight="300"
             stroke="#0F1523"
-            strokeWidth="3"
+            strokeWidth="1"
             strokeLinejoin="round"
             paintOrder="stroke fill"
             style={{ pointerEvents: 'none', userSelect: 'none' }}
