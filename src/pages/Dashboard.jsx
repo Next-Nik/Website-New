@@ -2118,13 +2118,20 @@ export function DashboardPage() {
                   {[archetype, domain, scale].filter(Boolean).join(' · ')}
                 </div>
               )}
-              <div style={{ paddingLeft: '36px', marginTop: '6px' }}>
+              <div style={{ paddingLeft: '36px', marginTop: '6px', display: 'flex', gap: '12px' }}>
                 <span
                   onClick={e => { e.stopPropagation(); setActiveView('support'); setShowProfile(false) }}
                   style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.38)', cursor: 'pointer', borderBottom: '1px solid rgba(15,21,35,0.15)', paddingBottom: '1px' }}
                 >
                   Support
                 </span>
+                <a
+                  href="/faq"
+                  onClick={e => e.stopPropagation()}
+                  style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.38)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.15)', paddingBottom: '1px' }}
+                >
+                  FAQ
+                </a>
               </div>
             </button>
           </div>
