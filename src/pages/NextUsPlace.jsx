@@ -353,6 +353,7 @@ export function NextUsPlacePage() {
       description:     form.description.trim() || null,
       impact_summary:  form.impact_summary.trim() || null,
       nominator_email: form.contact_email.trim() || null,
+      nominator_name:  null,
       data_source:     `Placed by ${user.email}`,
       seeded_by:       'community',
       vetting_status:  'nominated',
