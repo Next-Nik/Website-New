@@ -136,6 +136,8 @@ const FAQS = [
       },
     ],
   },
+  {
+    section: 'Beta programme',
     items: [
       {
         q: 'I\'m a beta tester. What does that mean?',
