@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import styles from './Heptagon.module.css'
 
-const CX = 260
-const CY = 260
+const CX = 280
+const CY = 280
 const RADIUS = 170
 const INTRO_SPIN_DEG_PER_SEC = 35
 const INTRO_SPIN_DURATION_MS = 4000
@@ -55,14 +55,14 @@ function getNodeLabel(name) {
 function getNodeSizing(lines) {
   const maxLen = Math.max(...lines.map(l => l.length))
   const n = lines.length
-  // Lora at 15px: ~8.2px per char, so half-width = maxLen * 4.1
-  // Add 16px padding each side → minimum radius = maxLen * 4.1 + 16
-  // Height: n lines * 15px * 1.35 lineHeight / 2 + 10px padding
-  const halfW = maxLen * 4.1 + 16
-  const halfH = (n * 15 * 1.35) / 2 + 10
+  // Lora at 17px: ~9.3px per char, so half-width = maxLen * 4.65
+  // Add 16px padding each side → minimum radius = maxLen * 4.65 + 16
+  // Height: n lines * 17px * 1.35 lineHeight / 2 + 10px padding
+  const halfW = maxLen * 4.65 + 16
+  const halfH = (n * 17 * 1.35) / 2 + 10
   const raw   = Math.ceil(Math.max(halfW, halfH))
   const radius = Math.min(NODE_RADIUS_MAX, Math.max(NODE_RADIUS_MIN, raw))
-  return { fontSize: 15, radius, lineHeight: 1.35 }
+  return { fontSize: 17, radius, lineHeight: 1.35 }
 }
 
 function easeInOut(t) { return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2 }
@@ -244,7 +244,7 @@ export default function Heptagon({
   return (
     <svg
       className={styles.svg}
-      viewBox="0 0 480 480"
+      viewBox="0 0 560 560"
       xmlns="http://www.w3.org/2000/svg"
       aria-label="NextUs Seven Domains"
       style={{
@@ -349,19 +349,26 @@ export default function Heptagon({
               style={{ pointerEvents: 'none' }}
             />
 
-            {/* Orb base — convex gradient */}
+            {/* Orb base — convex gradient, no stroke (stroke handled outside) */}
             <circle
               cx={p.x} cy={p.y} r={r}
               className={styles.nodeCircle}
               fill={isSpinning ? 'url(#orbIdle)' : isActive ? 'url(#orbActive)' : 'url(#orbIdle)'}
-              stroke={isActive ? 'rgba(200,146,42,1)' : 'rgba(200,146,42,0.85)'}
-              strokeWidth={isActive ? 1.5 : 1}
             />
 
             {/* Specular highlight overlay */}
             <circle
               cx={p.x} cy={p.y} r={r}
               fill="url(#orbSpec)"
+              style={{ pointerEvents: 'none' }}
+            />
+
+            {/* Outside stroke — sits fully outside the orb edge */}
+            <circle
+              cx={p.x} cy={p.y} r={r + 1}
+              fill="none"
+              stroke={isActive ? 'rgba(200,146,42,1)' : 'rgba(200,146,42,0.85)'}
+              strokeWidth="2"
               style={{ pointerEvents: 'none' }}
             />
 
@@ -419,7 +426,7 @@ export default function Heptagon({
             fontFamily="'Lora', Georgia, serif"
             fontWeight="300"
             stroke="#0F1523"
-            strokeWidth="2"
+            strokeWidth="1"
             strokeLinejoin="round"
             paintOrder="stroke fill"
             style={{ pointerEvents: 'none', userSelect: 'none' }}
