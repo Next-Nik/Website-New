@@ -1,20 +1,5 @@
 // api/org-extract.js
 // ── NextUs Multi-Record Placement Extraction ──────────────────────────────
-//
-// POST /api/org-extract
-//
-// Accepts { input } — URL, raw HTML, or plain text description.
-//
-// Returns { results: [...], mode } where results is an array of 1–3
-// placement proposals. Each proposal is a complete actor record.
-//
-// The engine detects up to three distinct entities from a single source:
-//   1. Planet track entry (civilisational platform/org/project)
-//   2. Self track entry (personal development platform/programme)
-//   3. Practitioner entry (named individual founder/coach/facilitator)
-//
-// Each is scored independently against its own track criteria.
-// ──────────────────────────────────────────────────────────────────────────
 
 const Anthropic = require('@anthropic-ai/sdk')
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -32,19 +17,58 @@ NextUs has two tracks:
 - NextUs Planet: civilisational coordination. Seven domains — Human Being, Society, Nature, Technology, Finance & Economy, Legacy, Vision. Organisations, projects, and movements working toward Horizon Goals at civilisational scale.
 - NextUs Self: personal development. Practitioners, coaches, facilitators, therapists, retreat operators, and programmes helping individuals across seven personal domains — Path, Spark, Body, Finances, Connection, Inner Game, Signal.
 
-Your job is to read source material about an organisation, platform, or individual and identify ALL distinct actor entries that should appear on the NextUs map — up to three separate records:
+──────────────────────────────────────────────────────────────────────────────
+YOUR PRIMARY TASK: IDENTIFY ALL DISTINCT ACTOR RECORDS
+──────────────────────────────────────────────────────────────────────────────
 
-1. PLANET entry — if the organisation/project operates at civilisational scale toward a Horizon Goal
-2. SELF entry — if there is a personal development platform, programme, or tool suite serving individual growth
-3. PRACTITIONER entry — if there is a named founder, coach, facilitator, or practitioner whose individual work is distinct from the platform
+Read the source material and identify EVERY distinct entity that belongs on the NextUs map. You must actively look for ALL THREE of the following, and generate a separate record for each one that exists:
 
-Each is a separate actor with its own independent alignment assessment. Do not average scores across entries. Do not conflate the platform with the practitioner. Assess each on what IT does in ITS frame.
+RECORD TYPE 1 — PLANET ENTRY
+Does this organisation/platform/project operate at civilisational scale toward a Horizon Goal?
+Look for: coordination infrastructure, systemic change work, civilisational vision, domain-level impact.
+If yes → generate a Planet record with track: "planet".
 
-Only generate entries that genuinely exist in the source material. If there is no named practitioner, do not generate a practitioner entry. If the work is purely individual coaching with no platform layer, only generate a practitioner entry.
+RECORD TYPE 2 — SELF ENTRY  
+Does this organisation/platform have a personal development layer — tools, programmes, or a methodology serving individual growth?
+Look for: coaching tools, self-development programmes, personal navigation systems, individual transformation frameworks, tool suites.
+This is SEPARATE from the Planet record even if it's the same organisation. A platform with both a civilisational layer AND a personal development layer generates TWO records.
+If yes → generate a Self record with track: "self".
+
+RECORD TYPE 3 — PRACTITIONER ENTRY
+Is there a named individual — founder, coach, facilitator, therapist, or practitioner — whose personal coaching or facilitation work is distinct from any platform they've built?
+Look for: named individuals, coaching practices, one-on-one work, facilitation, years of practice, personal client work.
+A founder who also coaches generates a SEPARATE Practitioner record from their platform records.
+If yes → generate a Practitioner record with type: "practitioner", track: "self".
+
+CRITICAL RULES:
+- Generate ALL records that exist. Do not collapse multiple entities into one.
+- A platform with a civilisational layer AND a personal development layer AND a named founder generates THREE records.
+- Each record is assessed independently. Do not average scores. Do not share descriptions across records.
+- Only omit a record type if there is genuinely no evidence for it in the source material.
+
+──────────────────────────────────────────────────────────────────────────────
+CONCRETE EXAMPLE — how to handle a dual-track platform with a named founder
+──────────────────────────────────────────────────────────────────────────────
+
+Source: nextus.world — a platform with:
+- NextUs: civilisational coordination infrastructure across seven domains (Planet track)
+- The Horizon Suite / NextUs Self: personal development tool suite (Self track)
+- Nik Wood: founder, 25+ years coaching, individual one-on-one practice (Practitioner)
+
+Correct output: THREE records
+[
+  { "label": "Planet", "name": "NextUs", "track": "planet", "domain_id": "vision", "type": "organisation", ... },
+  { "label": "Self", "name": "NextUs Self", "track": "self", "domain_id": "path", "type": "programme", ... },
+  { "label": "Practitioner", "name": "Nik Wood", "track": "self", "domain_id": "inner-game", "type": "practitioner", ... }
+]
+
+Wrong output: ONE record labelled "NextUs" with dual_placement: true. This collapses three distinct entities into one and loses information.
 
 ──────────────────────────────────────────────────────────────────────────────
 THE ALIGNMENT SCORE (0–9)
 ──────────────────────────────────────────────────────────────────────────────
+
+Score each record against its OWN track criteria.
 
 Score anchors:
 0 — Actively, knowingly causing harm at scale.
@@ -96,7 +120,7 @@ Return an array of 1–3 objects. Each object:
 
 {
   "label": "Planet | Self | Practitioner",
-  "name": "string — actor name for this specific entry",
+  "name": "string — specific name for this entry (e.g. 'NextUs', 'NextUs Self', 'Nik Wood')",
   "type": "organisation | project | practitioner | programme | resource",
   "track": "planet | self",
   "domain_id": "string (primary domain for this entry's track)",
@@ -105,23 +129,16 @@ Return an array of 1–3 objects. Each object:
   "scale_notes": "string or null",
   "location_name": "string or null",
   "website": "string or null",
-  "description": "string — 2–3 sentences specific to THIS entry's role",
+  "description": "string — 2–3 sentences written specifically for THIS entry's role, not a generic platform description",
   "impact_summary": "string or null",
-  "hal_signals": ["array of HAL condition names relevant to THIS entry"],
-  "sfp_patterns": ["array of SFP patterns relevant to THIS entry"],
+  "hal_signals": ["HAL conditions demonstrated by THIS entry specifically"],
+  "sfp_patterns": ["SFP patterns active for THIS entry specifically"],
   "alignment_score": integer 0–9,
   "placement_tier": "pattern_instance | contested | qualified | exemplar",
-  "score_reasoning": "string — 2–3 sentences explaining THIS entry's score specifically",
+  "score_reasoning": "string — 2–3 sentences on THIS entry's score specifically",
   "confidence": integer 0–100,
   "confidence_note": "string"
-}
-
-Example output for a platform with a named founder:
-[
-  { "label": "Planet", "name": "Acme Foundation", "track": "planet", "domain_id": "society", ... },
-  { "label": "Self", "name": "Acme Self", "track": "self", "domain_id": "path", ... },
-  { "label": "Practitioner", "name": "Jane Smith", "type": "practitioner", "track": "self", "domain_id": "inner-game", ... }
-]`
+}`
 
 function stripHtml(html) {
   return html
@@ -171,9 +188,9 @@ module.exports = async function handler(req, res) {
   if (mode === 'html') {
     content = `[HTML source provided]\n\n${stripHtml(input)}`
   } else if (mode === 'url') {
-    content = `[URL provided: ${input.trim()}]\n\nRead this URL and identify all distinct NextUs actor entries — Planet platform, Self platform, and named practitioner if present.`
+    content = `[URL provided: ${input.trim()}]\n\nRead this URL carefully. Identify ALL distinct NextUs actor records — look specifically for: (1) a civilisational/Planet layer, (2) a personal development/Self layer, (3) a named individual practitioner or founder with their own coaching practice. Generate a separate record for each one that exists. Do not collapse them into one.`
   } else {
-    content = `[Description provided]\n\n${input.trim()}`
+    content = `[Description provided]\n\n${input.trim()}\n\nIdentify ALL distinct NextUs actor records from the above. Look specifically for: (1) a civilisational/Planet layer, (2) a personal development/Self layer, (3) a named individual practitioner or founder. Generate a separate record for each one that exists.`
   }
 
   const tools = mode === 'url' ? [{ type: 'web_search_20250305', name: 'web_search' }] : undefined
@@ -202,7 +219,6 @@ module.exports = async function handler(req, res) {
       })
     }
 
-    // Ensure array, cap at 3, enforce tiers
     if (!Array.isArray(parsed)) parsed = [parsed]
     const results = parsed.slice(0, 3).map(enforceTier)
 
