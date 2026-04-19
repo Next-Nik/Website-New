@@ -431,15 +431,28 @@ export function NextUsActorsPage() {
 
         {/* Header */}
         <div style={{ marginBottom: '48px' }}>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: gold, display: 'block', marginBottom: '12px' }}>
-            NextUs · In the Field
-          </span>
-          <h1 style={{ ...body, fontSize: 'clamp(32px,4vw,52px)', fontWeight: 300, color: dark, lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '16px' }}>
-            Who is doing the work.
-          </h1>
-          <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', maxWidth: '560px', lineHeight: 1.7 }}>
-            Organisations and projects working across the seven domains. What they're building, what they need, and where you fit.
-          </p>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '24px', flexWrap: 'wrap' }}>
+            <div>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: gold, display: 'block', marginBottom: '12px' }}>
+                NextUs · In the Field
+              </span>
+              <h1 style={{ ...body, fontSize: 'clamp(32px,4vw,52px)', fontWeight: 300, color: dark, lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '16px' }}>
+                Who is doing the work.
+              </h1>
+              <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', maxWidth: '560px', lineHeight: 1.7 }}>
+                Organisations and projects working across the seven domains. What they're building, what they need, and where you fit.
+              </p>
+            </div>
+            <button onClick={() => navigate('/nextus/place')} style={{
+              ...sc, fontSize: '13px', letterSpacing: '0.14em',
+              padding: '11px 24px', borderRadius: '40px', border: 'none',
+              background: '#C8922A', color: '#FFFFFF',
+              cursor: 'pointer', flexShrink: 0, marginTop: '32px',
+              transition: 'opacity 0.2s',
+            }}>
+              Place an actor →
+            </button>
+          </div>
         </div>
 
         {/* Filters */}
