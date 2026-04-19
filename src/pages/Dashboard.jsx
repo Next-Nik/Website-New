@@ -1475,7 +1475,7 @@ function SupportView({ user }) {
         <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', fontSize: '18px' }}>✦</div>
         <div style={{ ...sc, fontSize: '18px', color: '#0F1523', marginBottom: '8px' }}>Sent.</div>
         <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.6)', lineHeight: 1.7, marginBottom: '20px' }}>
-          Your message is with the team. You'll hear back at {email}.
+          Your message is with the team. You'll hear back from support@nextus.world.
         </p>
         <button
           onClick={() => { setSent(false); setMessage(''); setSubject(SUBJECTS[0]) }}
