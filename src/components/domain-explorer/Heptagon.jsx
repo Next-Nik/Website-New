@@ -411,10 +411,10 @@ export default function Heptagon({
           <animate attributeName="r" values="82;90;82" dur="3s" repeatCount="indefinite" />
           <animate attributeName="stroke-opacity" values="0.18;0.04;0.18" dur="3s" repeatCount="indefinite" />
         </circle>
-        {/* Ambient glow */}
-        <circle cx={CX} cy={CY} r={100} fill="url(#orbGlowIdle)" style={{ pointerEvents: 'none' }} />
-        {/* Orb base */}
-        <circle cx={CX} cy={CY} r={76} fill="url(#orbIdle)" stroke="rgba(200,146,42,0.9)" strokeWidth="1.5" className={styles.centreCircle} />
+        {/* Ambient glow — active level always on centre */}
+        <circle cx={CX} cy={CY} r={100} fill="url(#orbGlowActive)" style={{ pointerEvents: 'none' }} />
+        {/* Orb base — always active gradient, centre is the anchor */}
+        <circle cx={CX} cy={CY} r={76} fill="url(#orbActive)" stroke="rgba(200,146,42,0.9)" strokeWidth="1.5" className={styles.centreCircle} />
         {/* Specular */}
         <circle cx={CX} cy={CY} r={76} fill="url(#orbSpec)" style={{ pointerEvents: 'none' }} />
         {centreLabel && (
@@ -422,11 +422,11 @@ export default function Heptagon({
             x={CX} y={CY}
             textAnchor="middle" dominantBaseline="middle"
             fill="#FFFFFF"
-            fontSize="15"
+            fontSize="22"
             fontFamily="'Lora', Georgia, serif"
-            fontWeight="300"
+            fontWeight="400"
             stroke="#0F1523"
-            strokeWidth="1"
+            strokeWidth="2"
             strokeLinejoin="round"
             paintOrder="stroke fill"
             style={{ pointerEvents: 'none', userSelect: 'none' }}

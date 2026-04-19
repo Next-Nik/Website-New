@@ -31,10 +31,9 @@
 }
 
 .centreCircle {
-  transition: stroke 0.25s ease, fill 0.25s ease;
+  transition: stroke 0.25s ease;
 }
 
 .centreGroup:hover .centreCircle {
-  stroke: rgba(200,146,42,0.5);
-  fill: rgba(200,146,42,0.06);
+  stroke: rgba(200,146,42,1);
 }
