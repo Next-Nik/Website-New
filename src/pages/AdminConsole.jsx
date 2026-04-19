@@ -1682,8 +1682,9 @@ function WaitlistTab({ toast }) {
 
 
 // ── EXTRACT TAB ───────────────────────────────────────────────
-// Founder-only: run org-extract on any URL/description, review the
-// AI assessment, edit fields, and save directly as a curated actor.
+// Founder-only: paste a URL or description, get up to three proposed
+// actor records (Planet, Self, Practitioner), tick/untick each,
+// edit inline, and place all selected directly onto the map.
 
 const PLANET_DOMAINS_EX = [
   { value: 'human-being',     label: 'Human Being' },
@@ -1705,7 +1706,7 @@ const SELF_DOMAINS_EX = [
 ]
 const SCALES_EX = ['local','municipal','regional','national','international','global']
 const TYPES_EX  = ['organisation','project','practitioner','programme','resource']
-const TIER_THRESHOLDS = s => s <= 4 ? 'pattern_instance' : s <= 6 ? 'contested' : s <= 8 ? 'qualified' : 'exemplar'
+const TIER_FROM_SCORE = s => s <= 4 ? 'pattern_instance' : s <= 6 ? 'contested' : s <= 8 ? 'qualified' : 'exemplar'
 
 const TIER_CFG = {
   pattern_instance: { label: 'Pattern instance', color: '#8A3030', bg: 'rgba(138,48,48,0.08)', border: 'rgba(138,48,48,0.25)' },
@@ -1714,12 +1715,28 @@ const TIER_CFG = {
   exemplar:         { label: 'Exemplar',            color: '#6A4A10', bg: 'rgba(106,74,16,0.10)', border: 'rgba(106,74,16,0.35)' },
 }
 
+const LABEL_COLORS = {
+  Planet:       { color: '#2A4A8A', bg: 'rgba(42,74,138,0.08)',  border: 'rgba(42,74,138,0.25)' },
+  Self:         { color: '#2A6B3A', bg: 'rgba(42,107,58,0.08)', border: 'rgba(42,107,58,0.25)' },
+  Practitioner: { color: '#A8721A', bg: 'rgba(168,114,26,0.08)', border: 'rgba(168,114,26,0.25)' },
+}
+
 function ExTierBadge({ tier }) {
   const c = TIER_CFG[tier]; if (!c) return null
   return (
     <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px', letterSpacing:'0.12em',
       padding:'3px 10px', borderRadius:'40px', border:`1px solid ${c.border}`, color:c.color, background:c.bg }}>
       {c.label}
+    </span>
+  )
+}
+
+function ExLabelBadge({ label }) {
+  const c = LABEL_COLORS[label] || LABEL_COLORS.Planet
+  return (
+    <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px', letterSpacing:'0.14em',
+      padding:'4px 12px', borderRadius:'40px', border:`1px solid ${c.border}`, color:c.color, background:c.bg }}>
+      {label}
     </span>
   )
 }
@@ -1739,36 +1756,217 @@ function ExPill({ label, variant = 'green' }) {
   )
 }
 
-function ExtractTab({ toast }) {
-  const [input,       setInput]       = useState('')
-  const [extracting,  setExtracting]  = useState(false)
-  const [extractErr,  setExtractErr]  = useState(null)
-  const [assessment,  setAssessment]  = useState(null)
-  const [saving,      setSaving]      = useState(false)
-  const [saved,       setSaved]       = useState(null)   // { id, name }
-
-  // Editable fields — populated from assessment, overridable
-  const [form, setForm] = useState({
-    name:'', type:'organisation', track:'planet', domain_id:'', scale:'',
-    scale_notes:'', location_name:'', website:'', description:'', impact_summary:'',
-    alignment_score:'', placement_tier:'qualified',
-  })
-
-  function setF(k, v) { setForm(f => ({ ...f, [k]: v })) }
+// Single proposal card — assessment display + editable fields + checkbox
+function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
+  const [expanded, setExpanded] = useState(false)
+  const score = parseFloat(proposal.alignment_score)
 
   function domainOptions() {
     const blank = [{ value:'', label:'— Select domain —' }]
-    if (form.track === 'self')   return [...blank, ...SELF_DOMAINS_EX]
-    if (form.track === 'planet') return [...blank, ...PLANET_DOMAINS_EX]
+    if (proposal.track === 'self')   return [...blank, ...SELF_DOMAINS_EX]
+    if (proposal.track === 'planet') return [...blank, ...PLANET_DOMAINS_EX]
     return [...blank,
       { value:'', label:'── Planet ──', disabled:true }, ...PLANET_DOMAINS_EX,
       { value:'', label:'── Self ──',   disabled:true }, ...SELF_DOMAINS_EX,
     ]
   }
 
+  function set(k, v) { onChange(index, k, v) }
+
+  function handleScoreChange(v) {
+    set('alignment_score', v)
+    const n = parseFloat(v)
+    if (!isNaN(n)) set('placement_tier', TIER_FROM_SCORE(n))
+  }
+
+  return (
+    <div style={{
+      background: checked ? '#FFFFFF' : 'rgba(15,21,35,0.03)',
+      border: checked
+        ? '1.5px solid rgba(200,146,42,0.40)'
+        : '1.5px solid rgba(15,21,35,0.12)',
+      borderRadius: '14px', marginBottom: '16px',
+      opacity: checked ? 1 : 0.6,
+      transition: 'all 0.15s',
+    }}>
+
+      {/* Card header — always visible */}
+      <div style={{ padding: '18px 20px', display:'flex', alignItems:'flex-start', gap:'14px' }}>
+
+        {/* Checkbox */}
+        <input type="checkbox" checked={checked} onChange={() => onToggle(index)}
+          style={{ width:'18px', height:'18px', accentColor:'#C8922A', marginTop:'3px', flexShrink:0, cursor:'pointer' }} />
+
+        {/* Label + name + score */}
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'8px', flexWrap:'wrap' }}>
+            <ExLabelBadge label={proposal.label} />
+            <ExTierBadge tier={proposal.placement_tier} />
+            <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
+              letterSpacing:'0.10em', color:'rgba(15,21,35,0.50)' }}>
+              {proposal.confidence}% confidence
+            </span>
+          </div>
+          <div style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'19px', fontWeight:300,
+            color:'#0F1523', marginBottom:'6px' }}>
+            {proposal.name}
+          </div>
+          <div style={{ display:'flex', alignItems:'baseline', gap:'6px', marginBottom:'8px' }}>
+            <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'40px',
+              fontWeight:700, color:'#0F1523', lineHeight:1 }}>
+              {proposal.alignment_score}
+            </span>
+            <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'14px',
+              color:'rgba(15,21,35,0.35)' }}>/10</span>
+          </div>
+
+          {/* Score reasoning */}
+          {proposal.score_reasoning && (
+            <div style={{ borderLeft:'2px solid rgba(200,146,42,0.28)', paddingLeft:'12px', marginBottom:'10px' }}>
+              <p style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'14px',
+                color:'rgba(15,21,35,0.65)', lineHeight:1.7, margin:0 }}>
+                {proposal.score_reasoning}
+              </p>
+            </div>
+          )}
+
+          {/* HAL + SFP pills */}
+          {proposal.hal_signals?.length > 0 && (
+            <div style={{ marginBottom:'8px' }}>
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'11px',
+                letterSpacing:'0.14em', color:'#2A6B3A', marginBottom:'5px' }}>
+                HAL conditions
+              </p>
+              <div>{proposal.hal_signals.map(s => <ExPill key={s} label={s} variant="green" />)}</div>
+            </div>
+          )}
+          {proposal.sfp_patterns?.length > 0 && (
+            <div style={{ marginBottom:'8px' }}>
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'11px',
+                letterSpacing:'0.14em', color:'#8A6020', marginBottom:'5px' }}>
+                SFP patterns
+              </p>
+              <div>{proposal.sfp_patterns.map(s => <ExPill key={s} label={s} variant="amber" />)}</div>
+            </div>
+          )}
+        </div>
+
+        {/* Expand/collapse edit */}
+        <button onClick={() => setExpanded(e => !e)}
+          style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
+            letterSpacing:'0.12em', color:'rgba(15,21,35,0.55)',
+            background:'none', border:'none', cursor:'pointer', flexShrink:0, paddingTop:'4px' }}>
+          {expanded ? 'Done ↑' : 'Edit ↓'}
+        </button>
+      </div>
+
+      {/* Editable fields — collapsed by default */}
+      {expanded && (
+        <div style={{ borderTop:'1px solid rgba(200,146,42,0.15)', padding:'18px 20px 20px',
+          display:'grid', gap:'14px' }}>
+
+          <div>
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px',
+              letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Name</label>
+            <Input value={proposal.name} onChange={v => set('name', v)} placeholder="Name" />
+          </div>
+
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'10px' }}>
+            <div>
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px',
+                letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Type</label>
+              <Select value={proposal.type} onChange={v => set('type', v)}
+                options={TYPES_EX.map(t => ({ value:t, label:t }))} />
+            </div>
+            <div>
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px',
+                letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Track</label>
+              <Select value={proposal.track} onChange={v => { set('track', v); set('domain_id','') }}
+                options={[{ value:'planet', label:'Planet' }, { value:'self', label:'Self' }]} />
+            </div>
+            <div>
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px',
+                letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Scale</label>
+              <Select value={proposal.scale || ''} onChange={v => set('scale', v)}
+                options={[{ value:'', label:'— Select —' }, ...SCALES_EX.map(s => ({ value:s, label:s }))]} />
+            </div>
+          </div>
+
+          <div>
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px',
+              letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Domain *</label>
+            <Select value={proposal.domain_id || ''} onChange={v => set('domain_id', v)}
+              options={domainOptions()} />
+          </div>
+
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
+            <div>
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px',
+                letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Location</label>
+              <Input value={proposal.location_name || ''} onChange={v => set('location_name', v)}
+                placeholder="e.g. Mexico City, Mexico" />
+            </div>
+            <div>
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px',
+                letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Website</label>
+              <Input value={proposal.website || ''} onChange={v => set('website', v)}
+                placeholder="https://..." />
+            </div>
+          </div>
+
+          <div>
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px',
+              letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Description</label>
+            <textarea value={proposal.description || ''} onChange={e => set('description', e.target.value)}
+              rows={3} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'15px', color:'#0F1523',
+                padding:'9px 14px', borderRadius:'8px', border:'1.5px solid rgba(200,146,42,0.35)',
+                background:'#FFFFFF', outline:'none', width:'100%', resize:'vertical',
+                lineHeight:1.6, boxSizing:'border-box' }} />
+          </div>
+
+          <div>
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px',
+              letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Impact summary</label>
+            <textarea value={proposal.impact_summary || ''} onChange={e => set('impact_summary', e.target.value)}
+              rows={2} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'15px', color:'#0F1523',
+                padding:'9px 14px', borderRadius:'8px', border:'1.5px solid rgba(200,146,42,0.35)',
+                background:'#FFFFFF', outline:'none', width:'100%', resize:'vertical',
+                lineHeight:1.6, boxSizing:'border-box' }} />
+          </div>
+
+          <div style={{ display:'grid', gridTemplateColumns:'120px 1fr', gap:'12px', alignItems:'end' }}>
+            <div>
+              <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px',
+                letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Score (0–9)</label>
+              <Input value={proposal.alignment_score ?? ''} onChange={handleScoreChange}
+                type="number" placeholder="0–9" />
+            </div>
+            <div style={{ paddingBottom:'2px' }}>
+              {!isNaN(score) && <ExTierBadge tier={TIER_FROM_SCORE(score)} />}
+              <span style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'13px',
+                color:'rgba(15,21,35,0.45)', marginLeft:'10px' }}>
+                Adjust if your read differs from the AI draft.
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function ExtractTab({ toast }) {
+  const [input,      setInput]      = useState('')
+  const [extracting, setExtracting] = useState(false)
+  const [extractErr, setExtractErr] = useState(null)
+  const [proposals,  setProposals]  = useState([])   // array of proposal objects
+  const [checked,    setChecked]    = useState([])   // boolean[] parallel to proposals
+  const [saving,     setSaving]     = useState(false)
+  const [saved,      setSaved]      = useState([])   // array of { id, name, label }
+
   async function extract() {
     if (!input.trim()) return
-    setExtracting(true); setExtractErr(null); setAssessment(null); setSaved(null)
+    setExtracting(true); setExtractErr(null); setProposals([]); setChecked([]); setSaved([])
     try {
       const res  = await fetch('/api/org-extract', {
         method:'POST', headers:{ 'Content-Type':'application/json' },
@@ -1776,22 +1974,9 @@ function ExtractTab({ toast }) {
       })
       const data = await res.json()
       if (data.error) { setExtractErr(data.message || 'Extraction failed.'); return }
-      const r = data.result
-      setAssessment(r)
-      setForm({
-        name:          r.name          || '',
-        type:          r.type          || 'organisation',
-        track:         r.track         || 'planet',
-        domain_id:     r.domain_id     || '',
-        scale:         r.scale         || '',
-        scale_notes:   r.scale_notes   || '',
-        location_name: r.location_name || '',
-        website:       r.website       || '',
-        description:   r.description   || '',
-        impact_summary:r.impact_summary|| '',
-        alignment_score: r.alignment_score ?? '',
-        placement_tier:  r.placement_tier  || 'qualified',
-      })
+      const results = data.results || []
+      setProposals(results)
+      setChecked(results.map(() => true))  // all ticked by default
     } catch {
       setExtractErr('Could not reach extraction service.')
     } finally {
@@ -1799,109 +1984,122 @@ function ExtractTab({ toast }) {
     }
   }
 
-  // Sync tier when score is edited
-  function handleScoreChange(v) {
-    setF('alignment_score', v)
-    const n = parseFloat(v)
-    if (!isNaN(n)) setF('placement_tier', TIER_THRESHOLDS(n))
+  function toggleChecked(i) {
+    setChecked(c => c.map((v, idx) => idx === i ? !v : v))
   }
 
-  async function save() {
-    if (!form.name.trim())  { toast('Name is required'); return }
-    if (!form.domain_id)    { toast('Domain is required'); return }
-    setSaving(true)
-    const payload = {
-      name:            form.name.trim(),
-      type:            form.type,
-      track:           form.track || null,
-      domain_id:       form.domain_id,
-      scale:           form.scale || null,
-      scale_notes:     form.scale_notes.trim() || null,
-      location_name:   form.location_name.trim() || null,
-      website:         form.website.trim() || null,
-      description:     form.description.trim() || null,
-      impact_summary:  form.impact_summary.trim() || null,
-      alignment_score: form.alignment_score !== '' ? parseFloat(form.alignment_score) : null,
-      alignment_score_computed: true,
-      alignment_score_updated_at: new Date().toISOString(),
-      placement_tier:  form.placement_tier || null,
-      seeded_by:       'nextus',
-      vetting_status:  'approved',
-      data_source:     'Admin extract',
-      alignment_reasoning: assessment ? {
-        hal_signals:     assessment.hal_signals,
-        sfp_patterns:    assessment.sfp_patterns,
-        score_reasoning: assessment.score_reasoning,
-        confidence:      assessment.confidence,
-        confidence_note: assessment.confidence_note,
-        dual_placement:  assessment.dual_placement,
-        dual_note:       assessment.dual_note,
-        extracted_at:    new Date().toISOString(),
-        input_mode:      'admin_extract',
-      } : null,
+  function handleChange(i, key, value) {
+    setProposals(ps => ps.map((p, idx) => idx === i ? { ...p, [key]: value } : p))
+  }
+
+  async function saveSelected() {
+    const selected = proposals.filter((_, i) => checked[i])
+    if (selected.length === 0) { toast('Nothing selected'); return }
+    for (const p of selected) {
+      if (!p.name?.trim())  { toast(`Name required on ${p.label} entry`); return }
+      if (!p.domain_id)     { toast(`Domain required on ${p.label} entry`); return }
     }
-    const { data: inserted, error } = await supabase
-      .from('nextus_actors').insert(payload).select('id').single()
+
+    setSaving(true)
+    const savedNow = []
+    for (const p of selected) {
+      const payload = {
+        name:            p.name.trim(),
+        type:            p.type || 'organisation',
+        track:           p.track || null,
+        domain_id:       p.domain_id,
+        scale:           p.scale || null,
+        scale_notes:     p.scale_notes?.trim() || null,
+        location_name:   p.location_name?.trim() || null,
+        website:         p.website?.trim() || null,
+        description:     p.description?.trim() || null,
+        impact_summary:  p.impact_summary?.trim() || null,
+        alignment_score: p.alignment_score !== '' && p.alignment_score != null
+          ? parseFloat(p.alignment_score) : null,
+        alignment_score_computed:   true,
+        alignment_score_updated_at: new Date().toISOString(),
+        placement_tier:  p.placement_tier || null,
+        seeded_by:       'nextus',
+        vetting_status:  'approved',
+        data_source:     `Admin extract — ${p.label}`,
+        alignment_reasoning: {
+          hal_signals:     p.hal_signals,
+          sfp_patterns:    p.sfp_patterns,
+          score_reasoning: p.score_reasoning,
+          confidence:      p.confidence,
+          confidence_note: p.confidence_note,
+          extracted_at:    new Date().toISOString(),
+          input_mode:      'admin_extract',
+          label:           p.label,
+        },
+      }
+      const { data: inserted, error } = await supabase
+        .from('nextus_actors').insert(payload).select('id').single()
+      if (error) {
+        toast(`Error saving ${p.label}: ${error.message}`)
+        setSaving(false)
+        return
+      }
+      savedNow.push({ id: inserted.id, name: p.name, label: p.label })
+    }
     setSaving(false)
-    if (error) { toast('Error: ' + error.message); return }
-    setSaved({ id: inserted.id, name: form.name.trim() })
-    toast(`${form.name.trim()} added to the map`)
+    setSaved(savedNow)
+    toast(`${savedNow.length} record${savedNow.length !== 1 ? 's' : ''} placed on the map`)
   }
 
   function reset() {
-    setInput(''); setAssessment(null); setSaved(null); setExtractErr(null)
-    setForm({ name:'', type:'organisation', track:'planet', domain_id:'', scale:'',
-      scale_notes:'', location_name:'', website:'', description:'', impact_summary:'',
-      alignment_score:'', placement_tier:'qualified' })
+    setInput(''); setProposals([]); setChecked([]); setSaved([]); setExtractErr(null)
   }
 
-  const score = parseFloat(form.alignment_score)
+  const selectedCount = checked.filter(Boolean).length
 
   return (
-    <div style={{ maxWidth: '680px' }}>
+    <div style={{ maxWidth: '720px' }}>
 
       <h2 style={{ ...body, fontSize:'22px', fontWeight:300, color:'#0F1523', marginBottom:'8px' }}>
         AI Extract
       </h2>
       <p style={{ ...body, fontSize:'14px', color:'rgba(15,21,35,0.55)', lineHeight:1.65, marginBottom:'28px' }}>
-        Paste a URL, description, or raw HTML. The engine reads it, assesses alignment, and builds a profile.
-        Review and edit everything — then save directly to the map as a curated actor.
+        Paste a URL, description, or raw HTML. The engine identifies up to three distinct actor records —
+        Planet, Self, and Practitioner — each assessed independently. Tick the ones you want, edit any
+        field, then place all selected directly onto the map.
       </p>
 
       {/* Success state */}
-      {saved && (
+      {saved.length > 0 && (
         <div style={{ background:'rgba(42,107,58,0.06)', border:'1px solid rgba(42,107,58,0.30)',
           borderRadius:'14px', padding:'24px', marginBottom:'28px' }}>
-          <div style={{ ...sc, fontSize:'13px', letterSpacing:'0.14em', color:'#2A6B3A', marginBottom:'8px' }}>
+          <div style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em', color:'#2A6B3A', marginBottom:'12px' }}>
             Placed on the map
           </div>
-          <div style={{ ...body, fontSize:'18px', color:'#0F1523', marginBottom:'16px' }}>{saved.name}</div>
-          <div style={{ display:'flex', gap:'10px' }}>
-            <a href={`/nextus/actors/${saved.id}`} target="_blank" rel="noopener noreferrer"
-              style={{ ...sc, fontSize:'13px', letterSpacing:'0.12em', color:gold }}>
-              View profile →
-            </a>
-            <button onClick={reset}
-              style={{ ...sc, fontSize:'13px', letterSpacing:'0.12em', color:'rgba(15,21,35,0.55)',
-                background:'none', border:'none', cursor:'pointer' }}>
-              Extract another
-            </button>
-          </div>
+          {saved.map(s => (
+            <div key={s.id} style={{ display:'flex', alignItems:'center', gap:'12px', marginBottom:'10px' }}>
+              <ExLabelBadge label={s.label} />
+              <span style={{ ...body, fontSize:'17px', color:'#0F1523' }}>{s.name}</span>
+              <a href={`/nextus/actors/${s.id}`} target="_blank" rel="noopener noreferrer"
+                style={{ ...sc, fontSize:'12px', letterSpacing:'0.12em', color:gold }}>
+                View →
+              </a>
+            </div>
+          ))}
+          <button onClick={reset}
+            style={{ ...sc, fontSize:'13px', letterSpacing:'0.12em', color:'rgba(15,21,35,0.55)',
+              background:'none', border:'none', cursor:'pointer', marginTop:'12px', padding:0 }}>
+            Extract another
+          </button>
         </div>
       )}
 
-      {/* Input area */}
-      {!saved && (
+      {/* Input */}
+      {!saved.length && (
         <>
-          <div style={{ marginBottom:'16px' }}>
-            <textarea
-              value={input} onChange={e => setInput(e.target.value)} rows={5}
+          <div style={{ marginBottom:'14px' }}>
+            <textarea value={input} onChange={e => setInput(e.target.value)} rows={5}
               placeholder="Paste a URL, a description, or raw HTML source..."
               style={{ ...body, fontSize:'15px', color:'#0F1523', padding:'12px 16px',
                 borderRadius:'8px', border:'1.5px solid rgba(200,146,42,0.30)',
                 background:'#FFFFFF', outline:'none', width:'100%', resize:'vertical',
-                lineHeight:1.65, boxSizing:'border-box' }}
-            />
+                lineHeight:1.65, boxSizing:'border-box' }} />
           </div>
 
           {extractErr && (
@@ -1911,229 +2109,66 @@ function ExtractTab({ toast }) {
             </div>
           )}
 
-          <div style={{ marginBottom: assessment ? '32px' : '0' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:'16px', marginBottom:'32px' }}>
             <button onClick={extract} disabled={extracting || !input.trim()}
               style={{ ...sc, fontSize:'14px', letterSpacing:'0.16em',
                 padding:'12px 30px', borderRadius:'40px', border:'none',
                 background: extracting || !input.trim() ? 'rgba(200,146,42,0.30)' : '#C8922A',
                 color:'#FFFFFF', cursor: extracting || !input.trim() ? 'not-allowed' : 'pointer' }}>
-              {extracting ? 'Reading...' : 'Extract profile →'}
+              {extracting ? 'Reading...' : 'Extract →'}
             </button>
-            {assessment && (
+            {proposals.length > 0 && (
               <button onClick={reset}
                 style={{ ...sc, fontSize:'13px', letterSpacing:'0.12em', color:'rgba(15,21,35,0.55)',
-                  background:'none', border:'none', cursor:'pointer', marginLeft:'16px' }}>
+                  background:'none', border:'none', cursor:'pointer' }}>
                 Clear
               </button>
             )}
           </div>
 
-          {/* Assessment card */}
-          {assessment && (
-            <div style={{ background:'#FFFFFF', border:'1.5px solid rgba(200,146,42,0.25)',
-              borderRadius:'14px', padding:'24px', marginBottom:'28px' }}>
-
-              {/* Score + tier */}
-              <div style={{ display:'flex', alignItems:'center', gap:'20px', marginBottom:'20px', flexWrap:'wrap' }}>
-                <div style={{ textAlign:'center' }}>
-                  <div style={{ ...sc, fontSize:'52px', fontWeight:700, color:'#0F1523', lineHeight:1 }}>
-                    {assessment.alignment_score}
-                  </div>
-                  <div style={{ ...sc, fontSize:'11px', letterSpacing:'0.14em', color:'rgba(15,21,35,0.40)' }}>/10</div>
-                </div>
-                <div>
-                  <ExTierBadge tier={assessment.placement_tier} />
-                  <div style={{ ...body, fontSize:'13px', color:'rgba(15,21,35,0.50)', marginTop:'6px' }}>
-                    {assessment.confidence}% confidence
-                  </div>
-                </div>
-                {assessment.dual_placement && (
-                  <Badge label="Dual placement" color="#2A4A8A" />
-                )}
+          {/* Proposal cards */}
+          {proposals.length > 0 && (
+            <>
+              <div style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em',
+                color:'rgba(15,21,35,0.55)', marginBottom:'16px' }}>
+                {proposals.length} record{proposals.length !== 1 ? 's' : ''} identified
+                — tick the ones you want to place
               </div>
 
-              {/* Score reasoning */}
-              {assessment.score_reasoning && (
-                <div style={{ borderLeft:'2px solid rgba(200,146,42,0.30)', paddingLeft:'14px', marginBottom:'16px' }}>
-                  <p style={{ ...sc, fontSize:'11px', letterSpacing:'0.14em', color:gold, marginBottom:'6px' }}>
-                    Reasoning
-                  </p>
-                  <p style={{ ...body, fontSize:'14px', color:'rgba(15,21,35,0.72)', lineHeight:1.7, margin:0 }}>
-                    {assessment.score_reasoning}
-                  </p>
-                </div>
-              )}
+              {proposals.map((p, i) => (
+                <ProposalCard
+                  key={i}
+                  proposal={p}
+                  index={i}
+                  checked={checked[i]}
+                  onToggle={toggleChecked}
+                  onChange={handleChange}
+                />
+              ))}
 
-              {/* HAL signals */}
-              {assessment.hal_signals?.length > 0 && (
-                <div style={{ marginBottom:'12px' }}>
-                  <p style={{ ...sc, fontSize:'11px', letterSpacing:'0.14em', color:'#2A6B3A', marginBottom:'6px' }}>
-                    HAL conditions demonstrated
-                  </p>
-                  <div>{assessment.hal_signals.map(s => <ExPill key={s} label={s} variant="green" />)}</div>
-                </div>
-              )}
-
-              {/* SFP patterns */}
-              {assessment.sfp_patterns?.length > 0 && (
-                <div style={{ marginBottom:'12px' }}>
-                  <p style={{ ...sc, fontSize:'11px', letterSpacing:'0.14em', color:'#8A6020', marginBottom:'6px' }}>
-                    Structural Failure Patterns active
-                  </p>
-                  <div>{assessment.sfp_patterns.map(s => <ExPill key={s} label={s} variant="amber" />)}</div>
-                </div>
-              )}
-
-              {/* Dual placement note */}
-              {assessment.dual_placement && assessment.dual_note && (
-                <div style={{ background:'rgba(42,74,138,0.05)', border:'1px solid rgba(42,74,138,0.20)',
-                  borderRadius:'8px', padding:'10px 14px', marginBottom:'12px' }}>
-                  <p style={{ ...sc, fontSize:'11px', letterSpacing:'0.14em', color:'#2A4A8A', marginBottom:'4px' }}>
-                    Dual placement
-                  </p>
-                  <p style={{ ...body, fontSize:'14px', color:'rgba(15,21,35,0.72)', lineHeight:1.65, margin:0 }}>
-                    {assessment.dual_note}
-                  </p>
-                </div>
-              )}
-
-              {assessment.confidence_note && (
-                <p style={{ ...body, fontSize:'13px', color:'rgba(15,21,35,0.50)', lineHeight:1.55, margin:0 }}>
-                  {assessment.confidence_note}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Editable profile form */}
-          {assessment && (
-            <div>
-              <p style={{ ...sc, fontSize:'12px', letterSpacing:'0.18em', color:'rgba(15,21,35,0.55)',
-                marginBottom:'20px' }}>
-                Review and edit before saving
-              </p>
-
-              <div style={{ display:'grid', gap:'16px' }}>
-
-                <div>
-                  <label style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em', color:gold,
-                    display:'block', marginBottom:'5px' }}>Name *</label>
-                  <Input value={form.name} onChange={v => setF('name', v)} placeholder="Name" />
-                </div>
-
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:'12px' }}>
-                  <div>
-                    <label style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em', color:gold,
-                      display:'block', marginBottom:'5px' }}>Type</label>
-                    <Select value={form.type} onChange={v => setF('type', v)}
-                      options={TYPES_EX.map(t => ({ value:t, label:t }))} />
-                  </div>
-                  <div>
-                    <label style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em', color:gold,
-                      display:'block', marginBottom:'5px' }}>Track</label>
-                    <Select value={form.track} onChange={v => { setF('track', v); setF('domain_id','') }}
-                      options={[
-                        { value:'planet', label:'Planet' },
-                        { value:'self',   label:'Self' },
-                        { value:'both',   label:'Both' },
-                      ]} />
-                  </div>
-                  <div>
-                    <label style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em', color:gold,
-                      display:'block', marginBottom:'5px' }}>Scale</label>
-                    <Select value={form.scale} onChange={v => setF('scale', v)}
-                      options={[{ value:'', label:'— Select —' }, ...SCALES_EX.map(s => ({ value:s, label:s }))]} />
-                  </div>
-                </div>
-
-                <div>
-                  <label style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em', color:gold,
-                    display:'block', marginBottom:'5px' }}>Domain *</label>
-                  <Select value={form.domain_id} onChange={v => setF('domain_id', v)}
-                    options={domainOptions()} />
-                </div>
-
-                <div>
-                  <label style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em', color:gold,
-                    display:'block', marginBottom:'5px' }}>Scale notes</label>
-                  <Input value={form.scale_notes} onChange={v => setF('scale_notes', v)}
-                    placeholder="Reach or delivery distinctions" />
-                </div>
-
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
-                  <div>
-                    <label style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em', color:gold,
-                      display:'block', marginBottom:'5px' }}>Location</label>
-                    <Input value={form.location_name} onChange={v => setF('location_name', v)}
-                      placeholder="e.g. Nairobi, Kenya" />
-                  </div>
-                  <div>
-                    <label style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em', color:gold,
-                      display:'block', marginBottom:'5px' }}>Website</label>
-                    <Input value={form.website} onChange={v => setF('website', v)}
-                      placeholder="https://..." />
-                  </div>
-                </div>
-
-                <div>
-                  <label style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em', color:gold,
-                    display:'block', marginBottom:'5px' }}>Description</label>
-                  <textarea value={form.description} onChange={e => setF('description', e.target.value)}
-                    rows={3} style={{ ...body, fontSize:'15px', color:'#0F1523', padding:'9px 14px',
-                      borderRadius:'8px', border:'1.5px solid rgba(200,146,42,0.35)',
-                      background:'#FFFFFF', outline:'none', width:'100%', resize:'vertical',
-                      lineHeight:1.6, boxSizing:'border-box' }} />
-                </div>
-
-                <div>
-                  <label style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em', color:gold,
-                    display:'block', marginBottom:'5px' }}>Impact summary</label>
-                  <textarea value={form.impact_summary} onChange={e => setF('impact_summary', e.target.value)}
-                    rows={2} style={{ ...body, fontSize:'15px', color:'#0F1523', padding:'9px 14px',
-                      borderRadius:'8px', border:'1.5px solid rgba(200,146,42,0.35)',
-                      background:'#FFFFFF', outline:'none', width:'100%', resize:'vertical',
-                      lineHeight:1.6, boxSizing:'border-box' }} />
-                </div>
-
-                {/* Score override */}
-                <div style={{ display:'grid', gridTemplateColumns:'120px 1fr', gap:'16px', alignItems:'end' }}>
-                  <div>
-                    <label style={{ ...sc, fontSize:'12px', letterSpacing:'0.16em', color:gold,
-                      display:'block', marginBottom:'5px' }}>Alignment score</label>
-                    <Input value={form.alignment_score} onChange={handleScoreChange}
-                      type="number" placeholder="0–9" />
-                  </div>
-                  <div style={{ paddingBottom:'2px' }}>
-                    {!isNaN(score) && <ExTierBadge tier={TIER_THRESHOLDS(score)} />}
-                    <span style={{ ...body, fontSize:'13px', color:'rgba(15,21,35,0.50)', marginLeft:'10px' }}>
-                      Adjust if your read differs from the AI draft.
-                    </span>
-                  </div>
-                </div>
-
-                {/* Save */}
-                <div style={{ paddingTop:'8px', borderTop:'1px solid rgba(200,146,42,0.15)', marginTop:'4px' }}>
-                  <button onClick={save} disabled={saving}
-                    style={{ ...sc, fontSize:'14px', letterSpacing:'0.16em',
-                      padding:'13px 32px', borderRadius:'40px', border:'none',
-                      background: saving ? 'rgba(200,146,42,0.30)' : '#C8922A',
-                      color:'#FFFFFF', cursor: saving ? 'not-allowed' : 'pointer' }}>
-                    {saving ? 'Saving...' : 'Place on map →'}
-                  </button>
-                  <span style={{ ...body, fontSize:'13px', color:'rgba(15,21,35,0.50)', marginLeft:'16px' }}>
-                    Saves directly as an approved curated actor.
-                  </span>
-                </div>
-
+              <div style={{ paddingTop:'8px', borderTop:'1px solid rgba(200,146,42,0.15)',
+                display:'flex', alignItems:'center', gap:'16px' }}>
+                <button onClick={saveSelected} disabled={saving || selectedCount === 0}
+                  style={{ ...sc, fontSize:'14px', letterSpacing:'0.16em',
+                    padding:'13px 32px', borderRadius:'40px', border:'none',
+                    background: saving || selectedCount === 0
+                      ? 'rgba(200,146,42,0.30)' : '#C8922A',
+                    color:'#FFFFFF', cursor: saving || selectedCount === 0 ? 'not-allowed' : 'pointer' }}>
+                  {saving
+                    ? 'Saving...'
+                    : `Place ${selectedCount} selected →`}
+                </button>
+                <span style={{ ...body, fontSize:'13px', color:'rgba(15,21,35,0.50)' }}>
+                  Saves directly as approved curated actors.
+                </span>
               </div>
-            </div>
+            </>
           )}
         </>
       )}
     </div>
   )
 }
-
 
 // ── NOMINATIONS TAB ─────────────────────────────────────────
 

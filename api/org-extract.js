@@ -1,89 +1,72 @@
 // api/org-extract.js
-// ── NextUs Org & Practitioner Placement Extraction ────────────────────────
+// ── NextUs Multi-Record Placement Extraction ──────────────────────────────
 //
 // POST /api/org-extract
 //
-// Accepts { input } where input is one of:
-//   - A URL (starts with http)
-//   - Raw HTML source (starts with <!doctype or <html)
-//   - Plain text description
+// Accepts { input } — URL, raw HTML, or plain text description.
 //
-// Auto-detects input mode. No user selection required.
+// Returns { results: [...], mode } where results is an array of 1–3
+// placement proposals. Each proposal is a complete actor record.
 //
-// Returns a structured placement assessment:
-//   name, type, track, domain_id, subdomain_id, scale, scale_notes,
-//   location_name, website, description, impact_summary,
-//   hal_signals    — HAL conditions demonstrated (array of names)
-//   sfp_patterns   — SFP patterns active (array of names)
-//   alignment_score — 0–9 integer (draft, requires human review)
-//   placement_tier  — pattern_instance | contested | qualified | exemplar
-//   score_reasoning — plain language explanation of score
-//   dual_placement  — boolean: should this appear on both tracks?
-//   dual_note       — explanation if dual_placement is true
-//   contact_email   — extracted if visible
-//   confidence      — 0–100 integer
-//   confidence_note — what was clear vs inferred
+// The engine detects up to three distinct entities from a single source:
+//   1. Planet track entry (civilisational platform/org/project)
+//   2. Self track entry (personal development platform/programme)
+//   3. Practitioner entry (named individual founder/coach/facilitator)
 //
-// Alignment score thresholds (locked):
-//   0–4  → pattern_instance  (named on map as SFP example, not actor entry)
-//   5–6  → contested         (visible if filtered, not in default directory)
-//   7–8  → qualified         (full placement, default map)
-//   9    → exemplar          (NextUs Seal candidacy)
-//   10   → conferred by field (never assigned by platform)
+// Each is scored independently against its own track criteria.
 // ──────────────────────────────────────────────────────────────────────────
 
 const Anthropic = require('@anthropic-ai/sdk')
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-// ── Input mode detection ──────────────────────────────────────────────────
-
 function detectMode(input) {
-  const trimmed = input.trim()
-  if (/^https?:\/\//i.test(trimmed)) return 'url'
-  if (/^<!doctype|^<html/i.test(trimmed)) return 'html'
+  const t = input.trim()
+  if (/^https?:\/\//i.test(t)) return 'url'
+  if (/^<!doctype|^<html/i.test(t)) return 'html'
   return 'text'
 }
 
-// ── System prompt ─────────────────────────────────────────────────────────
+const SYSTEM_PROMPT = `You are the NextUs multi-record placement assessment engine.
 
-const SYSTEM_PROMPT = `You are the NextUs placement assessment engine.
-
-NextUs is a platform with two tracks:
+NextUs has two tracks:
 - NextUs Planet: civilisational coordination. Seven domains — Human Being, Society, Nature, Technology, Finance & Economy, Legacy, Vision. Organisations, projects, and movements working toward Horizon Goals at civilisational scale.
 - NextUs Self: personal development. Practitioners, coaches, facilitators, therapists, retreat operators, and programmes helping individuals across seven personal domains — Path, Spark, Body, Finances, Connection, Inner Game, Signal.
 
-Your job is to read an organisation or practitioner's source material and produce a structured placement assessment.
+Your job is to read source material about an organisation, platform, or individual and identify ALL distinct actor entries that should appear on the NextUs map — up to three separate records:
+
+1. PLANET entry — if the organisation/project operates at civilisational scale toward a Horizon Goal
+2. SELF entry — if there is a personal development platform, programme, or tool suite serving individual growth
+3. PRACTITIONER entry — if there is a named founder, coach, facilitator, or practitioner whose individual work is distinct from the platform
+
+Each is a separate actor with its own independent alignment assessment. Do not average scores across entries. Do not conflate the platform with the practitioner. Assess each on what IT does in ITS frame.
+
+Only generate entries that genuinely exist in the source material. If there is no named practitioner, do not generate a practitioner entry. If the work is purely individual coaching with no platform layer, only generate a practitioner entry.
 
 ──────────────────────────────────────────────────────────────────────────────
 THE ALIGNMENT SCORE (0–9)
 ──────────────────────────────────────────────────────────────────────────────
 
-The score reflects how genuinely the actor is moving toward Horizon Goals — or how much harm they are doing. The score is not about credentials, size, or visibility. It is about honest structural assessment.
-
 Score anchors:
-0 — Actively, knowingly causing harm at scale. Architecture designed to extract value while externalising maximum cost.
-1 — Systematic harm as the primary operating model. Harm is structural to how value is generated.
-2 — Significant net negative trajectory. Operating inside multiple critical structural failure patterns with no meaningful movement toward any Horizon Goal.
-3–4 — Active harm in specific dimensions alongside neutral or positive work elsewhere. The harm is real and named.
-5 — The Line. Below = more harm than good. SFP patterns and HAL conditions roughly balance.
+0 — Actively, knowingly causing harm at scale.
+1 — Systematic harm as the primary operating model.
+2 — Significant net negative trajectory.
+3–4 — Active harm in specific dimensions alongside neutral or positive work elsewhere.
+5 — The Line. Below = more harm than good.
 6 — Net positive but contested. Direction toward but structural failure patterns meaningfully active.
-7 — Floor for full placement. Clear alignment. HAL conditions demonstrably operative. Active SFPs are structural rather than predatory.
-8 — Strong alignment. Demonstrable movement toward Horizon Goal. Structural honesty about gaps.
-9 — Exemplar. Field-setting. Others in this domain point to this actor as the standard.
+7 — Floor for full placement. Clear alignment. HAL conditions demonstrably operative.
+8 — Strong alignment. Demonstrable movement toward Horizon Goal.
+9 — Exemplar. Field-setting.
 (10 is conferred by the field over time — never assigned by the platform)
 
 Placement tiers:
-- 0–4: pattern_instance — named on map as Structural Failure Pattern example. Not an actor entry.
-- 5–6: contested — visible if filtered, not in default actor directory.
-- 7–8: qualified — full actor placement. Appears on the default map.
-- 9: exemplar — elevated placement. NextUs Seal candidacy.
+- 0–4: pattern_instance
+- 5–6: contested
+- 7–8: qualified
+- 9: exemplar
 
 ──────────────────────────────────────────────────────────────────────────────
 HAL CONDITIONS (Horizon Alignment Library)
 ──────────────────────────────────────────────────────────────────────────────
-
-These are structural conditions that, when present, indicate genuine alignment.
-Look for evidence of these in the source material:
 
 Accurate Signal Read, Active Maintenance, Adaptable Identity, Adaptive Capacity, Adversarial Integration, Adversity Integration, Aesthetic Cultivation, Anti-Fragile Positioning, Asymmetric Opportunity Recognition, Authored Narrative, Awe Access, Belief Calibration, Coherence Across Domains, Committed Exploration, Compound Orientation, Conflict Source Diagnosis, Costly Signal Discipline, Creative Third Alternative, Declarative Commitment, Default Future Visibility, Deliberate Simplicity, Dymaxion Leverage, Ecological Navigation, Economic Signal Literacy, Efficiency Toward Sufficiency, Elevated Perspective, Embodied Intelligence, Emotional Granularity, Environmental Competence, Equanimity Leadership, Eustress Cycling, Evidence-Based Self-Assessment, Fresh Listening, Genuine Contact, Genuine Play, Governing Clarity, Growth Edge Operation, Horizon Orientation, Independent Verification, Influence Focus, Inhabited Integrity, Integrated Competence, Interest Visibility, Intrinsic Engagement Loop, Legible Destination, Liminal Pause, Load Intelligence, Meaning Anchoring, Mentalisation Capacity, Minimum Viable Stability, Mission Coherence, Mutual Need, Nervous System Alignment, Open Signal Architecture, Optionality Preservation, Order of Operations, Past Completion, Perceived Agency, Peripheral Vision, Potential Calibration, Pre-Articulate Vision, Productive Friction, Proportional Commitment, Recursive Learning, Relational Architecture, Resonant Engagement, Shared Horizon, Situated Perspective, Sleep Architecture Integrity, Solution Space Entry, Strategic Self-Disruption, Structural Honesty, Structural Integrity, System Signal Reading, Systemic Attribution, Tension Awareness, Threshold Identification, Threshold Passage Willingness, Transpersonal Commitment, Unconditional Ground, Unified Financial Lens, Value Restoration Practice, Value–Spend Alignment, Vision Embodiment
 
@@ -91,25 +74,7 @@ Accurate Signal Read, Active Maintenance, Adaptable Identity, Adaptive Capacity,
 STRUCTURAL FAILURE PATTERNS
 ──────────────────────────────────────────────────────────────────────────────
 
-These are mechanisms by which systems fail to move toward their stated goals.
-Look for evidence of these in the source material:
-
 Metric Substitution, Novelty Normalisation, Optimism Displacement, Survivorship Distortion, Epistemic Retreat, Abstraction Capture, Premature Closure, Narrative Inertia, Information Cascades, Social Proof Cascade, Legibility Inversion, Scale Illusion, Governance Capture, Complexity Capture, Sunk Cost Lock-In, Incentive–Outcome Divergence, Lifecycle Externalisation, Partial Solution Entrenchment, Solution Replication Lock, Isomorphic Mimicry, Harm Laundering, Accountability Diffusion, Feedback Loop Severing, Competitive Debasement, Threshold Forestalling, Short-Termism Ratchet, Value Erosion by Attrition, Defensive Equilibrium, Adversarial Co-evolution, Consensus Gravity, Coordination Void, Proxy War Displacement, Expert Capture, Trust Erosion Spiral, Knowledge Silo Formation, Narrative Monopoly, Representation Mismatch, Legitimacy Without Efficacy, Capability–Deployment Lag, Mission Drift by Funding Gravity, The Prevention Paradox, Activity–Trajectory Mismatch, Access Stratification, Horizon Collapse, Motivation Consumption, Speed–Depth Trade-off Collapse, Invisible Infrastructure Decay, Monoculture Fragility, Extraction–Regeneration Imbalance, Crisis Dependency, Positive Feedback Overshoot, Identity Rigidity, Boundary Rigidity, Specialisation Blindness, Drift Anhedonia, Missionary Postponement, Legacy Capture, Path Plurality, Borrowed Aliveness, Scarcity Inheritance, Virtue Exemption, Performance Connection, Avoidance Architecture, Passion Perfectionism, Functional Bypass, Proximity Substitution, Echo Architecture, Relational Martyrdom, Capability–Worth Conflation
-
-──────────────────────────────────────────────────────────────────────────────
-TRACK DETECTION
-──────────────────────────────────────────────────────────────────────────────
-
-Planet track: organisations, projects, movements working at civilisational scale on Human Being, Society, Nature, Technology, Finance & Economy, Legacy, or Vision.
-
-Self track: individual practitioners, coaches, therapists, facilitators, retreat operators, programmes, methodologies serving personal development across Path, Spark, Body, Finances, Connection, Inner Game, or Signal.
-
-Dual placement: an actor may belong on both tracks. A men's retreat operator is Self track AND contributes to Human Being on Planet. Flag dual_placement: true and explain in dual_note.
-
-Scale for Planet track: local | municipal | regional | national | international | global
-Scale for Self track: local | regional | global (reach of their work, not physical presence)
-
-Primary scale = coherence bandwidth of the work, not distribution reach. A podcast reaching millions is still local if the core work is one-to-one. Note reach in scale_notes.
 
 ──────────────────────────────────────────────────────────────────────────────
 DOMAINS
@@ -118,40 +83,45 @@ DOMAINS
 Planet domains (domain_id values):
 human-being, society, nature, technology, finance-economy, legacy, vision
 
-Self domains (domain_id values for Self track):
+Self domains (domain_id values):
 path, spark, body, finances, connection, inner-game, signal
 
 ──────────────────────────────────────────────────────────────────────────────
 OUTPUT FORMAT
 ──────────────────────────────────────────────────────────────────────────────
 
-Respond ONLY with valid JSON. No markdown. No preamble.
+Respond ONLY with valid JSON. No markdown. No preamble. No explanation outside the JSON.
+
+Return an array of 1–3 objects. Each object:
 
 {
-  "name": "string",
+  "label": "Planet | Self | Practitioner",
+  "name": "string — actor name for this specific entry",
   "type": "organisation | project | practitioner | programme | resource",
-  "track": "planet | self | both",
-  "domain_id": "string (primary domain)",
+  "track": "planet | self",
+  "domain_id": "string (primary domain for this entry's track)",
   "subdomain_id": "string or null",
-  "scale": "string",
-  "scale_notes": "string or null — reach/delivery distinctions",
+  "scale": "local | municipal | regional | national | international | global",
+  "scale_notes": "string or null",
   "location_name": "string or null",
   "website": "string or null",
-  "description": "string — 2-3 sentences, their work in their own language mapped to the NextUs frame",
-  "impact_summary": "string or null — specific evidence of impact if present",
-  "hal_signals": ["array of HAL condition names demonstrated"],
-  "sfp_patterns": ["array of SFP pattern names active"],
-  "alignment_score": integer 0-9,
+  "description": "string — 2–3 sentences specific to THIS entry's role",
+  "impact_summary": "string or null",
+  "hal_signals": ["array of HAL condition names relevant to THIS entry"],
+  "sfp_patterns": ["array of SFP patterns relevant to THIS entry"],
+  "alignment_score": integer 0–9,
   "placement_tier": "pattern_instance | contested | qualified | exemplar",
-  "score_reasoning": "string — plain language, 2-3 sentences explaining the score. Names specific HAL conditions and SFP patterns that drove the assessment.",
-  "dual_placement": boolean,
-  "dual_note": "string or null",
-  "contact_email": "string or null",
-  "confidence": integer 0-100,
-  "confidence_note": "string — what was clear vs what was inferred"
-}`
+  "score_reasoning": "string — 2–3 sentences explaining THIS entry's score specifically",
+  "confidence": integer 0–100,
+  "confidence_note": "string"
+}
 
-// ── HTML stripping ────────────────────────────────────────────────────────
+Example output for a platform with a named founder:
+[
+  { "label": "Planet", "name": "Acme Foundation", "track": "planet", "domain_id": "society", ... },
+  { "label": "Self", "name": "Acme Self", "track": "self", "domain_id": "path", ... },
+  { "label": "Practitioner", "name": "Jane Smith", "type": "practitioner", "track": "self", "domain_id": "inner-game", ... }
+]`
 
 function stripHtml(html) {
   return html
@@ -163,14 +133,12 @@ function stripHtml(html) {
     .slice(0, 8000)
 }
 
-// ── JSON parsing with recovery ────────────────────────────────────────────
-
 function safeJson(text) {
   const attempts = [
     () => JSON.parse(text),
     () => JSON.parse(text.replace(/```json|```/g, '').trim()),
-    () => { const m = text.match(/\{[\s\S]*\}/); return m ? JSON.parse(m[0]) : null },
-    () => JSON.parse(text.replace(/,(\s*[}\]])/g, '$1').replace(/([{,]\s*)(\w+):/g, '$1"$2":')),
+    () => { const m = text.match(/\[[\s\S]*\]/); return m ? JSON.parse(m[0]) : null },
+    () => { const m = text.match(/\{[\s\S]*\}/); const r = m ? JSON.parse(m[0]) : null; return r ? [r] : null },
   ]
   for (const attempt of attempts) {
     try { const r = attempt(); if (r) return r } catch {}
@@ -178,7 +146,14 @@ function safeJson(text) {
   return null
 }
 
-// ── Main handler ──────────────────────────────────────────────────────────
+function enforceTier(record) {
+  const s = record.alignment_score ?? 0
+  if (s <= 4)      record.placement_tier = 'pattern_instance'
+  else if (s <= 6) record.placement_tier = 'contested'
+  else if (s <= 8) record.placement_tier = 'qualified'
+  else             record.placement_tier = 'exemplar'
+  return record
+}
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -193,13 +168,10 @@ module.exports = async function handler(req, res) {
   const mode = detectMode(input)
   let content = input.trim()
 
-  // For URLs: use web_search tool to fetch content
-  // For HTML: strip tags, extract text
-  // For text: use as-is
   if (mode === 'html') {
     content = `[HTML source provided]\n\n${stripHtml(input)}`
   } else if (mode === 'url') {
-    content = `[URL provided: ${input.trim()}]\n\nPlease read this URL and extract information about the organisation or practitioner.`
+    content = `[URL provided: ${input.trim()}]\n\nRead this URL and identify all distinct NextUs actor entries — Planet platform, Self platform, and named practitioner if present.`
   } else {
     content = `[Description provided]\n\n${input.trim()}`
   }
@@ -209,38 +181,32 @@ module.exports = async function handler(req, res) {
   try {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 2000,
+      max_tokens: 4000,
       system: SYSTEM_PROMPT,
       tools,
       messages: [{ role: 'user', content }],
     })
 
-    // Collect all text blocks from response
     const rawText = response.content
       .filter(b => b.type === 'text')
       .map(b => b.text)
       .join('')
 
-    const parsed = safeJson(rawText)
+    let parsed = safeJson(rawText)
 
     if (!parsed) {
       return res.status(200).json({
         error: 'parse_failed',
         raw: rawText.slice(0, 500),
-        message: 'Could not parse assessment. Try a different input or paste more detail.'
+        message: 'Could not parse assessment. Try pasting a description instead of a URL.',
       })
     }
 
-    // Enforce placement tier consistency with score
-    const score = parsed.alignment_score ?? 0
-    let tier = parsed.placement_tier
-    if (score <= 4)      tier = 'pattern_instance'
-    else if (score <= 6) tier = 'contested'
-    else if (score <= 8) tier = 'qualified'
-    else                 tier = 'exemplar'
-    parsed.placement_tier = tier
+    // Ensure array, cap at 3, enforce tiers
+    if (!Array.isArray(parsed)) parsed = [parsed]
+    const results = parsed.slice(0, 3).map(enforceTier)
 
-    return res.status(200).json({ result: parsed, mode })
+    return res.status(200).json({ results, mode })
 
   } catch (err) {
     console.error('org-extract error:', err)

@@ -325,7 +325,7 @@ export function NextUsPlacePage() {
         return
       }
 
-      populateFromAssessment(data.result)
+      populateFromAssessment(data.results?.[0] || data.result)
     } catch (err) {
       setExtractError('Could not reach the extraction service. Try manual entry.')
     } finally {
