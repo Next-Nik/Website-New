@@ -55,14 +55,14 @@ function getNodeLabel(name) {
 function getNodeSizing(lines) {
   const maxLen = Math.max(...lines.map(l => l.length))
   const n = lines.length
-  // Cormorant SC at 19px: ~10.5px per char, so half-width = maxLen * 5.25
-  // Add 14px padding each side → minimum radius = maxLen * 5.25 + 14
-  // Height: n lines * 19px * 1.28 lineHeight / 2 + 10px padding
-  const halfW = maxLen * 5.25 + 14
-  const halfH = (n * 19 * 1.28) / 2 + 10
+  // Lora at 15px: ~8.2px per char, so half-width = maxLen * 4.1
+  // Add 16px padding each side → minimum radius = maxLen * 4.1 + 16
+  // Height: n lines * 15px * 1.35 lineHeight / 2 + 10px padding
+  const halfW = maxLen * 4.1 + 16
+  const halfH = (n * 15 * 1.35) / 2 + 10
   const raw   = Math.ceil(Math.max(halfW, halfH))
   const radius = Math.min(NODE_RADIUS_MAX, Math.max(NODE_RADIUS_MIN, raw))
-  return { fontSize: 19, radius, lineHeight: 1.28 }
+  return { fontSize: 15, radius, lineHeight: 1.35 }
 }
 
 function easeInOut(t) { return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2 }
@@ -254,6 +254,37 @@ export default function Heptagon({
         transition: bloomed ? 'none' : undefined,
       }}
     >
+      <defs>
+        <radialGradient id="orbIdle" cx="33%" cy="26%" r="75%">
+          <stop offset="0%" stopColor="#FFFEF9" />
+          <stop offset="20%" stopColor="#FCEFD0" />
+          <stop offset="60%" stopColor="#E8C97A" />
+          <stop offset="88%" stopColor="#C8922A" stopOpacity="0.55" />
+          <stop offset="100%" stopColor="#A8721A" stopOpacity="0.7" />
+        </radialGradient>
+        <radialGradient id="orbActive" cx="32%" cy="24%" r="75%">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="25%" stopColor="#FFE99A" />
+          <stop offset="65%" stopColor="#C8922A" />
+          <stop offset="100%" stopColor="#8A5E10" />
+        </radialGradient>
+        <radialGradient id="orbSpec" cx="33%" cy="24%" r="45%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
+          <stop offset="40%" stopColor="#FFFFFF" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="orbGlowIdle" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#C8922A" stopOpacity="0.35" />
+          <stop offset="55%" stopColor="#C8922A" stopOpacity="0.14" />
+          <stop offset="100%" stopColor="#C8922A" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="orbGlowActive" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#C8922A" stopOpacity="0.55" />
+          <stop offset="55%" stopColor="#C8922A" stopOpacity="0.22" />
+          <stop offset="100%" stopColor="#C8922A" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
       {/* Outer decorative rings */}
       <circle cx={CX} cy={CY} r={RADIUS + 48} fill="none" stroke="rgba(200,146,42,0.04)" strokeWidth="1" />
       <circle cx={CX} cy={CY} r={RADIUS + 24} fill="none" stroke="rgba(200,146,42,0.06)" strokeWidth="0.5" />
@@ -311,34 +342,41 @@ export default function Heptagon({
             aria-label={`Select domain: ${domain.name}`}
             onKeyDown={e => e.key === 'Enter' && handleNodeClick(i)}
           >
-            {/* Active halo */}
-            {isActive && (
-              <circle
-                cx={p.x} cy={p.y} r={r + 10}
-                fill="rgba(200,146,42,0.05)"
-                stroke="rgba(200,146,42,0.22)"
-                strokeWidth="1"
-              />
-            )}
+            {/* Ambient glow — larger circle behind, bleeds outward */}
+            <circle
+              cx={p.x} cy={p.y} r={r + 20}
+              fill={isActive ? 'url(#orbGlowActive)' : 'url(#orbGlowIdle)'}
+              style={{ pointerEvents: 'none' }}
+            />
 
-            {/* Node circle — white fill covers spoke end cleanly */}
+            {/* Orb base — convex gradient */}
             <circle
               cx={p.x} cy={p.y} r={r}
               className={styles.nodeCircle}
-              fill={isSpinning ? 'rgba(255,255,255,0.95)' : isActive ? 'rgba(200,146,42,0.05)' : '#FFFFFF'}
-              stroke={isActive ? 'rgba(200,146,42,1)' : 'rgba(200,146,42,0.78)'}
+              fill={isSpinning ? 'url(#orbIdle)' : isActive ? 'url(#orbActive)' : 'url(#orbIdle)'}
+              stroke={isActive ? 'rgba(200,146,42,1)' : 'rgba(200,146,42,0.85)'}
               strokeWidth={isActive ? 1.5 : 1}
             />
 
-            {/* Label — sits inside the circle, no backing rect */}
+            {/* Specular highlight overlay */}
+            <circle
+              cx={p.x} cy={p.y} r={r}
+              fill="url(#orbSpec)"
+              style={{ pointerEvents: 'none' }}
+            />
+
+            {/* Label — Lora with dark stroke for legibility on gold */}
             <text
               x={p.x} y={p.y}
               textAnchor="middle" dominantBaseline="middle"
-              fill={isActive ? '#A8721A' : '#0F1523'}
+              fill="#FFFFFF"
               fontSize={fontSize}
-              fontFamily="'Cormorant SC', Georgia, serif"
-              fontWeight="500"
-              letterSpacing="0.04em"
+              fontFamily="'Lora', Georgia, serif"
+              fontWeight="400"
+              stroke="#0F1523"
+              strokeWidth="3"
+              strokeLinejoin="round"
+              paintOrder="stroke fill"
               style={{ pointerEvents: 'none', userSelect: 'none' }}
             >
               {words.map((word, wi) => (
@@ -361,19 +399,29 @@ export default function Heptagon({
         onKeyDown={e => e.key === 'Enter' && onCentreClick?.()}
         style={{ cursor: onCentreClick ? 'pointer' : 'default' }}
       >
+        {/* Breathing halo ring */}
         <circle cx={CX} cy={CY} r={84} fill="none" stroke="rgba(200,146,42,0.18)" strokeWidth="1" style={{ pointerEvents: 'none' }}>
           <animate attributeName="r" values="82;90;82" dur="3s" repeatCount="indefinite" />
           <animate attributeName="stroke-opacity" values="0.18;0.04;0.18" dur="3s" repeatCount="indefinite" />
         </circle>
-        <circle cx={CX} cy={CY} r={80} fill="none" stroke="rgba(200,146,42,0.12)" strokeWidth="0.5" style={{ pointerEvents: 'none' }} />
-        <circle cx={CX} cy={CY} r={76} fill="#FFFFFF" stroke="rgba(200,146,42,0.78)" strokeWidth="1.5" className={styles.centreCircle} />
+        {/* Ambient glow */}
+        <circle cx={CX} cy={CY} r={100} fill="url(#orbGlowIdle)" style={{ pointerEvents: 'none' }} />
+        {/* Orb base */}
+        <circle cx={CX} cy={CY} r={76} fill="url(#orbIdle)" stroke="rgba(200,146,42,0.9)" strokeWidth="1.5" className={styles.centreCircle} />
+        {/* Specular */}
+        <circle cx={CX} cy={CY} r={76} fill="url(#orbSpec)" style={{ pointerEvents: 'none' }} />
         {centreLabel && (
           <text
             x={CX} y={CY}
             textAnchor="middle" dominantBaseline="middle"
-            fill="rgba(200,146,42,0.78)" fontSize="31"
+            fill="#FFFFFF"
+            fontSize="15"
             fontFamily="'Lora', Georgia, serif"
-            fontWeight="300" fontStyle="normal"
+            fontWeight="300"
+            stroke="#0F1523"
+            strokeWidth="3"
+            strokeLinejoin="round"
+            paintOrder="stroke fill"
             style={{ pointerEvents: 'none', userSelect: 'none' }}
           >
             {centreLabel.split(' ').map((word, wi, arr) => (
