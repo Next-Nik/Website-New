@@ -126,7 +126,7 @@ function Toast({ message, onClose }) {
 
 // ── Tab navigation ────────────────────────────────────────────
 
-const TABS = ['Now', 'Platform', 'Actors', 'Nominations', 'Domain Data', 'Needs', 'Contributions', 'Waitlist', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
+const TABS = ['Now', 'Platform', 'Actors', 'Place', 'Nominations', 'Domain Data', 'Needs', 'Contributions', 'Waitlist', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
 
 function TabBar({ active, setActive }) {
   return (
@@ -1683,6 +1683,347 @@ function WaitlistTab({ toast }) {
 
 // ── NOMINATIONS TAB ─────────────────────────────────────────
 
+// ── PLACE TAB ─────────────────────────────────────────────────
+
+const TIER_CONFIG = {
+  pattern_instance: { label: 'Pattern instance', color: '#8A3030', bg: 'rgba(138,48,48,0.08)', border: 'rgba(138,48,48,0.25)' },
+  contested:        { label: 'Contested',         color: '#8A6020', bg: 'rgba(200,146,42,0.08)', border: 'rgba(200,146,42,0.30)' },
+  qualified:        { label: 'Qualified',          color: '#A8721A', bg: 'rgba(168,114,26,0.08)', border: 'rgba(168,114,26,0.30)' },
+  exemplar:         { label: 'Exemplar',            color: '#6A4A10', bg: 'rgba(106,74,16,0.10)', border: 'rgba(106,74,16,0.35)' },
+}
+
+function TierBadge({ tier }) {
+  const cfg = TIER_CONFIG[tier]
+  if (!cfg) return null
+  return (
+    <span style={{
+      fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.12em',
+      padding: '3px 10px', borderRadius: '40px',
+      border: `1px solid ${cfg.border}`, color: cfg.color, background: cfg.bg,
+    }}>
+      {cfg.label}
+    </span>
+  )
+}
+
+function SignalPill({ label, variant }) {
+  const colors = {
+    green: { color: '#2A6B3A', bg: 'rgba(42,107,58,0.08)', border: 'rgba(42,107,58,0.25)' },
+    amber: { color: '#8A6020', bg: 'rgba(200,146,42,0.08)', border: 'rgba(200,146,42,0.20)' },
+    blue:  { color: '#2A4A8A', bg: 'rgba(42,74,138,0.08)', border: 'rgba(42,74,138,0.25)' },
+  }
+  const c = colors[variant] || colors.amber
+  return (
+    <span style={{
+      fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.10em',
+      padding: '2px 9px', borderRadius: '40px',
+      border: `1px solid ${c.border}`, color: c.color, background: c.bg,
+      display: 'inline-block', margin: '2px',
+    }}>
+      {label}
+    </span>
+  )
+}
+
+function PlaceTab({ toast }) {
+  const [actors, setActors]   = useState([])
+  const [loading, setLoading] = useState(true)
+  const [filter, setFilter]   = useState('pending')
+  const [scoreEdits, setScoreEdits] = useState({})
+
+  async function load() {
+    setLoading(true)
+    const { data } = await supabase
+      .from('nextus_actors')
+      .select('*')
+      .eq('seeded_by', 'community')
+      .not('alignment_reasoning', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(200)
+
+    let results = data || []
+    if (filter === 'pending')   results = results.filter(a => a.vetting_status === 'nominated')
+    if (filter === 'qualified') results = results.filter(a => ['qualified', 'exemplar'].includes(a.placement_tier) && a.seeded_by === 'nextus')
+    if (filter === 'contested') results = results.filter(a => ['contested', 'pattern_instance'].includes(a.placement_tier))
+    setActors(results)
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [filter])
+
+  function tierFromScore(s) {
+    if (s <= 4) return 'pattern_instance'
+    if (s <= 6) return 'contested'
+    if (s <= 8) return 'qualified'
+    return 'exemplar'
+  }
+
+  async function approve(actor) {
+    const rawScore = scoreEdits[actor.id]
+    const score    = rawScore !== undefined ? parseFloat(rawScore) : actor.alignment_score
+    const tier     = tierFromScore(score ?? 7)
+
+    const { error } = await supabase.from('nextus_actors').update({
+      seeded_by:       'nextus',
+      vetting_status:  'approved',
+      alignment_score: score ?? actor.alignment_score,
+      placement_tier:  tier,
+    }).eq('id', actor.id)
+
+    if (error) { toast('Error approving'); return }
+    toast(`${actor.name} approved — ${tier}`)
+    load()
+  }
+
+  async function contest(actor) {
+    const { error } = await supabase.from('nextus_actors').update({
+      placement_tier: 'contested',
+    }).eq('id', actor.id)
+    if (error) { toast('Error'); return }
+    toast(`${actor.name} moved to contested`)
+    load()
+  }
+
+  async function reject(actor) {
+    const reason = window.prompt(`Reason for rejecting "${actor.name}" (optional):`)
+    if (reason === null) return
+    const { error } = await supabase.from('nextus_actors').update({
+      vetting_status: 'rejected',
+      data_source: actor.data_source
+        ? actor.data_source + (reason ? ` | Rejected: ${reason}` : ' | Rejected')
+        : reason ? `Rejected: ${reason}` : 'Rejected',
+    }).eq('id', actor.id)
+    if (error) { toast('Error rejecting'); return }
+    toast(`${actor.name} rejected`)
+    load()
+  }
+
+  const trackLabel = t => ({ planet: 'Planet', self: 'Self', both: 'Planet + Self' })[t] || t
+
+  return (
+    <div>
+      {/* Filter pills */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
+        {[['pending','Pending'], ['qualified','Qualified'], ['contested','Contested'], ['all','All']].map(([val, label]) => (
+          <Btn key={val} small variant={filter === val ? 'primary' : 'ghost'} onClick={() => setFilter(val)}>
+            {label}
+          </Btn>
+        ))}
+        <Btn small variant="ghost" onClick={load}>Refresh</Btn>
+      </div>
+
+      {filter === 'pending' && (
+        <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px',
+          color: 'rgba(15,21,35,0.55)', marginBottom: '20px', lineHeight: 1.6, maxWidth: '560px' }}>
+          Review each placement. The AI score is a draft — adjust before approving.
+          Approve to promote to the map. Contest to hold in the contested layer. Reject to remove.
+        </div>
+      )}
+
+      {loading && <p style={{ fontFamily: "'Lora', Georgia, serif", color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {!loading && actors.length === 0 && (
+        <p style={{ fontFamily: "'Lora', Georgia, serif", color: 'rgba(15,21,35,0.55)' }}>
+          No {filter === 'all' ? '' : filter} placements.
+        </p>
+      )}
+
+      {actors.map(a => {
+        const reasoning = a.alignment_reasoning || {}
+        const hal       = reasoning.hal_signals || []
+        const sfp       = reasoning.sfp_patterns || []
+        const scoreEdit = scoreEdits[a.id]
+
+        return (
+          <Card key={a.id} style={{ borderLeft: '3px solid rgba(200,146,42,0.40)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between',
+              alignItems: 'flex-start', gap: '16px' }}>
+
+              {/* Left: all content */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+
+                {/* Name + badges */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px',
+                  marginBottom: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '18px', color: '#0F1523' }}>
+                    {a.name}
+                  </span>
+                  {a.type    && <Badge label={a.type} />}
+                  {a.scale   && <Badge label={a.scale} color="rgba(15,21,35,0.55)" />}
+                  {a.track   && <SignalPill label={trackLabel(a.track)} variant="blue" />}
+                  {a.placement_tier && <TierBadge tier={a.placement_tier} />}
+                </div>
+
+                {/* Score row */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '12px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '36px',
+                      fontWeight: 700, color: '#0F1523', lineHeight: 1 }}>
+                      {a.alignment_score ?? '—'}
+                    </span>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif",
+                      fontSize: '14px', color: 'rgba(15,21,35,0.40)' }}>
+                      /9
+                    </span>
+                  </div>
+                  {filter === 'pending' && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontFamily: "'Cormorant SC', Georgia, serif",
+                        fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
+                        Adjust:
+                      </span>
+                      <Input
+                        type="number"
+                        value={scoreEdit ?? ''}
+                        onChange={v => setScoreEdits(e => ({ ...e, [a.id]: v }))}
+                        placeholder={String(a.alignment_score ?? '')}
+                        style={{ width: '70px', padding: '5px 10px', fontSize: '14px' }}
+                      />
+                      <span style={{ fontFamily: "'Cormorant SC', Georgia, serif",
+                        fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.50)' }}>
+                        → {tierFromScore(scoreEdit !== undefined && scoreEdit !== '' ? parseFloat(scoreEdit) : (a.alignment_score ?? 7))}
+                      </span>
+                    </div>
+                  )}
+                  {reasoning.confidence !== undefined && (
+                    <span style={{ fontFamily: "'Lora', Georgia, serif",
+                      fontSize: '13px', color: 'rgba(15,21,35,0.50)' }}>
+                      {reasoning.confidence}% confidence
+                    </span>
+                  )}
+                </div>
+
+                {/* Score reasoning */}
+                {reasoning.score_reasoning && (
+                  <div style={{ borderLeft: '2px solid rgba(200,146,42,0.25)', paddingLeft: '12px', marginBottom: '12px' }}>
+                    <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px',
+                      color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>
+                      {reasoning.score_reasoning}
+                    </p>
+                  </div>
+                )}
+
+                {/* HAL signals */}
+                {hal.length > 0 && (
+                  <div style={{ marginBottom: '10px' }}>
+                    <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px',
+                      letterSpacing: '0.14em', color: '#2A6B3A', marginBottom: '6px' }}>
+                      HAL conditions demonstrated
+                    </p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                      {hal.map(s => <SignalPill key={s} label={s} variant="green" />)}
+                    </div>
+                  </div>
+                )}
+
+                {/* SFP patterns */}
+                {sfp.length > 0 && (
+                  <div style={{ marginBottom: '10px' }}>
+                    <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px',
+                      letterSpacing: '0.14em', color: '#8A6020', marginBottom: '6px' }}>
+                      Structural Failure Patterns active
+                    </p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                      {sfp.map(s => <SignalPill key={s} label={s} variant="amber" />)}
+                    </div>
+                  </div>
+                )}
+
+                {/* Confidence note */}
+                {reasoning.confidence_note && (
+                  <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px',
+                    color: 'rgba(15,21,35,0.50)', lineHeight: 1.55, marginBottom: '8px' }}>
+                    {reasoning.confidence_note}
+                  </p>
+                )}
+
+                {/* Description */}
+                {a.description && (
+                  <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.15)',
+                    borderRadius: '8px', padding: '10px 13px', marginBottom: '8px' }}>
+                    <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px',
+                      color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>
+                      {a.description}
+                    </p>
+                  </div>
+                )}
+
+                {/* Impact summary */}
+                {a.impact_summary && (
+                  <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px',
+                    color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, marginBottom: '8px' }}>
+                    {a.impact_summary}
+                  </p>
+                )}
+
+                {/* Curator notes */}
+                {reasoning.curator_notes && (
+                  <div style={{ background: 'rgba(42,74,138,0.04)', border: '1px solid rgba(42,74,138,0.15)',
+                    borderRadius: '8px', padding: '10px 13px', marginBottom: '8px' }}>
+                    <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px',
+                      letterSpacing: '0.14em', color: '#2A4A8A', marginBottom: '4px' }}>
+                      Curator notes
+                    </p>
+                    <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px',
+                      color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
+                      {reasoning.curator_notes}
+                    </p>
+                  </div>
+                )}
+
+                {/* Meta */}
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginTop: '4px' }}>
+                  {a.location_name && (
+                    <span style={{ fontFamily: "'Lora', Georgia, serif",
+                      fontSize: '13px', color: 'rgba(15,21,35,0.50)' }}>
+                      {a.location_name}
+                    </span>
+                  )}
+                  {a.website && (
+                    <a href={a.website} target="_blank" rel="noopener noreferrer"
+                      style={{ fontFamily: "'Cormorant SC', Georgia, serif",
+                        fontSize: '12px', letterSpacing: '0.12em', color: '#A8721A' }}>
+                      {a.website}
+                    </a>
+                  )}
+                  {a.nominator_email && (
+                    <span style={{ fontFamily: "'Lora', Georgia, serif",
+                      fontSize: '13px', color: 'rgba(15,21,35,0.50)' }}>
+                      {a.nominator_email}
+                    </span>
+                  )}
+                  <span style={{ fontFamily: "'Lora', Georgia, serif",
+                    fontSize: '13px', color: 'rgba(15,21,35,0.50)' }}>
+                    {a.data_source} · {new Date(a.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </span>
+                </div>
+              </div>
+
+              {/* Right: actions */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
+                {filter === 'pending' && (
+                  <>
+                    <Btn small onClick={() => approve(a)}>Approve →</Btn>
+                    <Btn small variant="ghost" onClick={() => contest(a)}>Contest</Btn>
+                    <Btn small variant="danger" onClick={() => reject(a)}>Reject</Btn>
+                  </>
+                )}
+                {(filter === 'qualified' || filter === 'all') && a.seeded_by === 'nextus' && (
+                  <a href={'/nextus/actors/' + a.id} target="_blank" rel="noopener noreferrer"
+                    style={{ fontFamily: "'Cormorant SC', Georgia, serif",
+                      fontSize: '12px', letterSpacing: '0.12em', color: '#A8721A' }}>
+                    View live →
+                  </a>
+                )}
+              </div>
+            </div>
+          </Card>
+        )
+      })}
+    </div>
+  )
+}
+
+
 function NominationsTab({ toast }) {
   const [nominations, setNominations] = useState([])
   const [loading, setLoading]         = useState(true)
@@ -1832,6 +2173,7 @@ export function AdminConsolePage() {
         {tab === 'Now'           && <NowTab />}
         {tab === 'Platform'     && <PlatformTab />}
         {tab === 'Actors'       && <ActorsTab       toast={showToast} />}
+        {tab === 'Place'        && <PlaceTab         toast={showToast} />}
         {tab === 'Nominations'  && <NominationsTab  toast={showToast} />}
         {tab === 'Domain Data'  && <DomainDataTab   toast={showToast} />}
         {tab === 'Needs'        && <NeedsTab        toast={showToast} />}
