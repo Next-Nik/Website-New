@@ -166,7 +166,7 @@ function AssessmentCard({ assessment }) {
               {assessment.alignment_score}
             </div>
             <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)' }}>
-              / 9
+              / 10
             </div>
           </div>
           <div>
@@ -399,7 +399,11 @@ export function NextUsPlacePage() {
 
     setSaving(false)
 
-    if (saveError) { setError('Something went wrong. Please try again.'); return }
+    if (saveError) {
+      console.error('Supabase insert error:', saveError)
+      setError(`Insert failed: ${saveError.message || saveError.code || 'Unknown error'}`)
+      return
+    }
     if (inserted?.id) setPlacedId(inserted.id)
     setDone(true)
   }

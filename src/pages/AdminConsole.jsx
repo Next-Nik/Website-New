@@ -1862,7 +1862,7 @@ function PlaceTab({ toast }) {
                     </span>
                     <span style={{ fontFamily: "'Cormorant SC', Georgia, serif",
                       fontSize: '14px', color: 'rgba(15,21,35,0.40)' }}>
-                      /9
+                      /10
                     </span>
                   </div>
                   {filter === 'pending' && (
