@@ -1311,18 +1311,62 @@ function PlatformTab() {
       </div>
       <Eyebrow>Domains</Eyebrow>
       <div style={{ marginBottom: '32px' }}>
-        {(stats.domainCounts || []).map(d => (
-          <Card key={d.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '14px 20px' }}>
-            <div style={{ ...body, fontSize: '16px', color: '#0F1523', width: '160px', flexShrink: 0 }}>{d.name}</div>
-            <div style={{ flex: 1, height: '6px', background: 'rgba(200,146,42,0.12)', borderRadius: '3px', overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${(d.gap_score / 10) * 100}%`, background: d.gap_score < 4 ? '#8A3030' : d.gap_score < 6 ? '#8A7030' : '#2A6B3A', borderRadius: '3px' }} />
-            </div>
-            <div style={{ ...sc, fontSize: '13px', color: gold, width: '40px', textAlign: 'right' }}>{d.gap_score}/10</div>
-            <div style={{ width: '80px', textAlign: 'right', ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>{d.total_actors} actors</div>
-            {d.gap_signal && <Badge label="gap" color="#8A3030" />}
-            {d.data_status === 'verified' && <Badge label="verified" color="#2A6B3A" />}
-          </Card>
-        ))}
+        {(stats.domainCounts || []).map(d => {
+          const hasScore    = d.gap_score != null
+          const isVerified  = d.data_status === 'verified'
+          const sufficient  = (d.total_actors || 0) >= 10
+          const showScore   = hasScore && isVerified && sufficient
+          const showIllustrative = hasScore && !isVerified
+          return (
+            <Card key={d.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '14px 20px', flexWrap: 'wrap' }}>
+              <div style={{ ...body, fontSize: '16px', color: '#0F1523', width: '160px', flexShrink: 0 }}>{d.name}</div>
+
+              {/* Progress bar — only shown when score is meaningful */}
+              <div style={{ flex: 1, height: '6px', background: 'rgba(200,146,42,0.12)', borderRadius: '3px', overflow: 'hidden', minWidth: '80px' }}>
+                {showScore && (
+                  <div style={{ height: '100%', width: `${(d.gap_score / 10) * 100}%`,
+                    background: d.gap_score < 4 ? '#8A3030' : d.gap_score < 6 ? '#8A7030' : '#2A6B3A',
+                    borderRadius: '3px' }} />
+                )}
+              </div>
+
+              {/* Score or status label */}
+              <div style={{ width: '160px', textAlign: 'right', flexShrink: 0 }}>
+                {showScore ? (
+                  <div>
+                    <span style={{ ...sc, fontSize: '14px', color: gold }}>{d.gap_score}/10</span>
+                    <div style={{ ...body, fontSize: '11px', color: 'rgba(15,21,35,0.40)', marginTop: '2px' }}>
+                      Verified · {d.total_actors} actors
+                    </div>
+                  </div>
+                ) : showIllustrative ? (
+                  <div>
+                    <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em',
+                      color: 'rgba(15,21,35,0.35)' }}>
+                      Illustrative
+                    </span>
+                    <div style={{ ...body, fontSize: '11px', color: 'rgba(15,21,35,0.35)', marginTop: '2px' }}>
+                      {d.total_actors || 0} actor{(d.total_actors || 0) !== 1 ? 's' : ''} · not yet verified
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em',
+                      color: 'rgba(15,21,35,0.35)' }}>
+                      Insufficient data
+                    </span>
+                    <div style={{ ...body, fontSize: '11px', color: 'rgba(15,21,35,0.35)', marginTop: '2px' }}>
+                      {d.total_actors || 0} actor{(d.total_actors || 0) !== 1 ? 's' : ''}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {d.gap_signal && <Badge label="gap" color="#8A3030" />}
+              {isVerified && sufficient && <Badge label="verified" color="#2A6B3A" />}
+            </Card>
+          )
+        })}
       </div>
       {stats.pendingClaims > 0 && (
         <Card style={{ borderColor: 'rgba(200,146,42,0.60)', background: 'rgba(200,146,42,0.04)' }}>
