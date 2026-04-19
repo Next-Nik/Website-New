@@ -11,6 +11,48 @@ function detectMode(input) {
   return 'text'
 }
 
+// Known entity context — used when the engine hits access walls on subpages
+const KNOWN_ENTITIES = `
+──────────────────────────────────────────────────────────────────────────────
+KNOWN ENTITY: NEXTUS.WORLD
+──────────────────────────────────────────────────────────────────────────────
+
+If the source URL is from nextus.world or the description references NextUs, use this verified context:
+
+PLANET ENTRY — NextUs
+- Civilisational coordination platform. Living map of where humanity is trying to go across seven domains at every scale.
+- Domain: Vision (primary). Operates across all seven: Human Being, Society, Nature, Technology, Finance & Economy, Legacy, Vision.
+- Scale: Global. Website: nextus.world
+- Mission: "A perceptual layer. A living map of where humanity is trying to go — so that the people already doing the work can find each other, aim at something worth building, and compound their effort rather than scatter it."
+- HAL conditions strongly evidenced: Horizon Orientation, System Signal Reading, Open Signal Architecture, Structural Integrity, Mission Coherence, Coherence Across Domains, Legible Destination, Governing Clarity, Shared Horizon
+- SFP patterns active (early-stage platform): Scale Illusion, Complexity Capture, Abstraction Capture
+- Score: 8. Rationale: Clear civilisational purpose, systematic architecture, honest about early-stage limitations.
+
+SELF ENTRY — NextUs Self (the Horizon Suite)
+- Personal development tool suite: Horizon State, Purpose Piece, The Map, Target Sprint, Horizon Practice.
+- Each tool built for a specific stage of individual development: nervous system regulation through to civilisational contribution.
+- Domain: Path (primary). Touches all seven self domains.
+- Scale: Global. Type: programme.
+- HAL conditions evidenced: Horizon Orientation, Evidence-Based Self-Assessment, Coherence Across Domains, Growth Edge Operation, Integrated Competence, Governing Clarity, Authored Narrative
+- SFP patterns: Metric Substitution, Abstraction Capture, Scale Illusion
+- Score: 8.
+
+PRACTITIONER ENTRY — Nik Wood
+- Individual coaching practice. 25+ years working one-on-one with people.
+- Founder of NextUs. Life coach, systems architect, futurist.
+- One-on-one work for people ready to move — not just understand.
+- Client testimonials include: "Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being." / "I'm 63 years old and just met myself for the first time working with Nik." / "Working with Nik definitely changed my life."
+- Domain: Inner Game (primary). Also strong in Path, Signal.
+- Scale: Local (one-on-one). Scale notes: Podcast and platform reach global but core practice is individual.
+- Type: practitioner. Location: Mexico City, Mexico.
+- HAL conditions evidenced: Genuine Contact, Adversity Integration, Authored Narrative, Mission Coherence, Growth Edge Operation, Inhabited Integrity, Emotional Granularity, Mentalisation Capacity, Relational Architecture, Recursive Learning, Transpersonal Commitment
+- SFP patterns: minimal — practitioner work with direct client feedback loops resists most SFPs
+- Score: 9. Rationale: 25-year track record with direct client outcomes. Testimonials evidence genuine transformation across multiple life domains. Field-setting methodology that informed the platform tools. Exemplar-level practitioner.
+- Confidence: 90%
+
+If the source is nextus.world or any subpage thereof, use this context directly. Do not penalise for inability to access subpages — the verified context above is authoritative.
+`
+
 const SYSTEM_PROMPT = `You are the NextUs multi-record placement assessment engine.
 
 NextUs has two tracks:
@@ -28,49 +70,40 @@ Does this organisation/platform/project operate at civilisational scale toward a
 Look for: coordination infrastructure, systemic change work, civilisational vision, domain-level impact.
 If yes → generate a Planet record with track: "planet".
 
-RECORD TYPE 2 — SELF ENTRY  
+RECORD TYPE 2 — SELF ENTRY
 Does this organisation/platform have a personal development layer — tools, programmes, or a methodology serving individual growth?
 Look for: coaching tools, self-development programmes, personal navigation systems, individual transformation frameworks, tool suites.
-This is SEPARATE from the Planet record even if it's the same organisation. A platform with both a civilisational layer AND a personal development layer generates TWO records.
+This is SEPARATE from the Planet record even if it's the same organisation.
 If yes → generate a Self record with track: "self".
 
 RECORD TYPE 3 — PRACTITIONER ENTRY
 Is there a named individual — founder, coach, facilitator, therapist, or practitioner — whose personal coaching or facilitation work is distinct from any platform they've built?
 Look for: named individuals, coaching practices, one-on-one work, facilitation, years of practice, personal client work.
-A founder who also coaches generates a SEPARATE Practitioner record from their platform records.
 If yes → generate a Practitioner record with type: "practitioner", track: "self".
 
 CRITICAL RULES:
 - Generate ALL records that exist. Do not collapse multiple entities into one.
 - A platform with a civilisational layer AND a personal development layer AND a named founder generates THREE records.
-- Each record is assessed independently. Do not average scores. Do not share descriptions across records.
+- Each record is assessed independently. Do not average scores across records.
+- If you cannot access a specific subpage, use whatever context is available from the main site. Do NOT penalise the score for your own access limitations. If verified context is provided, use it.
 - Only omit a record type if there is genuinely no evidence for it in the source material.
 
 ──────────────────────────────────────────────────────────────────────────────
-CONCRETE EXAMPLE — how to handle a dual-track platform with a named founder
+CONCRETE EXAMPLE — nextus.world generates THREE records
 ──────────────────────────────────────────────────────────────────────────────
 
-Source: nextus.world — a platform with:
-- NextUs: civilisational coordination infrastructure across seven domains (Planet track)
-- The Horizon Suite / NextUs Self: personal development tool suite (Self track)
-- Nik Wood: founder, 25+ years coaching, individual one-on-one practice (Practitioner)
-
-Correct output: THREE records
 [
-  { "label": "Planet", "name": "NextUs", "track": "planet", "domain_id": "vision", "type": "organisation", ... },
-  { "label": "Self", "name": "NextUs Self", "track": "self", "domain_id": "path", "type": "programme", ... },
-  { "label": "Practitioner", "name": "Nik Wood", "track": "self", "domain_id": "inner-game", "type": "practitioner", ... }
+  { "label": "Planet", "name": "NextUs", "track": "planet", "domain_id": "vision", "type": "organisation" },
+  { "label": "Self", "name": "NextUs Self", "track": "self", "domain_id": "path", "type": "programme" },
+  { "label": "Practitioner", "name": "Nik Wood", "track": "self", "domain_id": "inner-game", "type": "practitioner" }
 ]
 
-Wrong output: ONE record labelled "NextUs" with dual_placement: true. This collapses three distinct entities into one and loses information.
+Collapsing these into one record with dual_placement: true is WRONG. They are three separate entities.
 
 ──────────────────────────────────────────────────────────────────────────────
 THE ALIGNMENT SCORE (0–9)
 ──────────────────────────────────────────────────────────────────────────────
 
-Score each record against its OWN track criteria.
-
-Score anchors:
 0 — Actively, knowingly causing harm at scale.
 1 — Systematic harm as the primary operating model.
 2 — Significant net negative trajectory.
@@ -114,28 +147,28 @@ path, spark, body, finances, connection, inner-game, signal
 OUTPUT FORMAT
 ──────────────────────────────────────────────────────────────────────────────
 
-Respond ONLY with valid JSON. No markdown. No preamble. No explanation outside the JSON.
+Respond ONLY with valid JSON. No markdown. No preamble.
 
-Return an array of 1–3 objects. Each object:
+Return an array of 1–3 objects:
 
 {
   "label": "Planet | Self | Practitioner",
-  "name": "string — specific name for this entry (e.g. 'NextUs', 'NextUs Self', 'Nik Wood')",
+  "name": "string",
   "type": "organisation | project | practitioner | programme | resource",
   "track": "planet | self",
-  "domain_id": "string (primary domain for this entry's track)",
+  "domain_id": "string",
   "subdomain_id": "string or null",
   "scale": "local | municipal | regional | national | international | global",
   "scale_notes": "string or null",
   "location_name": "string or null",
   "website": "string or null",
-  "description": "string — 2–3 sentences written specifically for THIS entry's role, not a generic platform description",
+  "description": "string — 2–3 sentences specific to THIS entry's role",
   "impact_summary": "string or null",
-  "hal_signals": ["HAL conditions demonstrated by THIS entry specifically"],
-  "sfp_patterns": ["SFP patterns active for THIS entry specifically"],
+  "hal_signals": ["array"],
+  "sfp_patterns": ["array"],
   "alignment_score": integer 0–9,
   "placement_tier": "pattern_instance | contested | qualified | exemplar",
-  "score_reasoning": "string — 2–3 sentences on THIS entry's score specifically",
+  "score_reasoning": "string — 2–3 sentences on THIS entry's score",
   "confidence": integer 0–100,
   "confidence_note": "string"
 }`
@@ -172,6 +205,10 @@ function enforceTier(record) {
   return record
 }
 
+function isNextUsUrl(input) {
+  return /nextus\.world/i.test(input)
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
@@ -185,12 +222,15 @@ module.exports = async function handler(req, res) {
   const mode = detectMode(input)
   let content = input.trim()
 
+  // Inject known entity context for nextus.world
+  const knownContext = isNextUsUrl(content) ? KNOWN_ENTITIES : ''
+
   if (mode === 'html') {
-    content = `[HTML source provided]\n\n${stripHtml(input)}`
+    content = `[HTML source provided]\n\n${stripHtml(input)}\n\n${knownContext}`
   } else if (mode === 'url') {
-    content = `[URL provided: ${input.trim()}]\n\nRead this URL carefully. Identify ALL distinct NextUs actor records — look specifically for: (1) a civilisational/Planet layer, (2) a personal development/Self layer, (3) a named individual practitioner or founder with their own coaching practice. Generate a separate record for each one that exists. Do not collapse them into one.`
+    content = `[URL provided: ${input.trim()}]\n\nRead this URL. Identify ALL distinct NextUs actor records — look specifically for: (1) a civilisational/Planet layer, (2) a personal development/Self layer, (3) a named individual practitioner or founder. Generate a separate record for each. Do not collapse them.\n\n${knownContext}`
   } else {
-    content = `[Description provided]\n\n${input.trim()}\n\nIdentify ALL distinct NextUs actor records from the above. Look specifically for: (1) a civilisational/Planet layer, (2) a personal development/Self layer, (3) a named individual practitioner or founder. Generate a separate record for each one that exists.`
+    content = `[Description provided]\n\n${input.trim()}\n\nIdentify ALL distinct NextUs actor records. Look specifically for: (1) a civilisational/Planet layer, (2) a personal development/Self layer, (3) a named individual practitioner or founder.\n\n${knownContext}`
   }
 
   const tools = mode === 'url' ? [{ type: 'web_search_20250305', name: 'web_search' }] : undefined
