@@ -1946,8 +1946,6 @@ export function DashboardPage() {
           )}
         </div>
       )
-    }
-
       if (activeView === 'support')  return <SupportView user={user} />
     }
 
