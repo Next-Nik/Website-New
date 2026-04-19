@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { Nav } from '../components/Nav'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
+import { ROUTES } from '../constants/routes'
 
 
 // ── MapIAmView ────────────────────────────────────────────────
@@ -1455,7 +1456,7 @@ function SupportView({ user }) {
     if (!message.trim()) { setError('Please write a message before sending.'); return }
     setSending(true); setError('')
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch(ROUTES.api.contact, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, subject, message }),

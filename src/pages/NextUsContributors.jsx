@@ -108,8 +108,6 @@ const FAQS = [
 
 function FAQ({ item }) {
   const [open, setOpen] = useState(false)
-  const archetypeDesc = ARCHETYPE_CONTRIBUTION[ppArchetype] || 'contributing'
-  const domainLabel   = DOMAIN_LABEL[ppDomain] || ppDomain || 'your domain'
 
   return (
     <div

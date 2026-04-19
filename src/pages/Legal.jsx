@@ -65,7 +65,7 @@ export function PrivacyPage() {
 export function TermsPage() {
   return (
     <LegalWrap eyebrow="Terms of Service" title="Using NextUs<br><em style='color:#A8721A;'>in good faith.</span>" subtitle="Last updated March 2026 · NextUs / Nik Wood" active="">
-      <P>These terms cover your use of nextus.world and the Horizon Suite tools {'—'} Orienteering, The Map, Purpose Piece, Foundation, Target Sprint {'—'} and the NextUs platform.</P>
+      <P>These terms cover your use of nextus.world and the Horizon Suite tools {'—'} Orienteering, The Map, Purpose Piece, Horizon State, Target Sprint {'—'} and the NextUs platform.</P>
       <P>The spirit of these terms: use the platform honestly, treat what you find here with respect, and don't do things that would harm other people or the platform itself.</P>
       <H2>Your account</H2>
       <P>You need an account to save your progress and access your profile. You're responsible for keeping your login secure. You must be at least 16 years old to create an account.</P>

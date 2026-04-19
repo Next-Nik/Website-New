@@ -147,7 +147,7 @@ function FAQItem({ q, a }) {
 export function FAQPage() {
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
-      <Nav />
+      <Nav activePath="faq" />
 
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: 'clamp(88px,10vw,112px) clamp(20px,5vw,40px) 120px' }}>
 

@@ -26,6 +26,8 @@ export const ROUTES = {
   privacy:        '/privacy',
   terms:          '/terms',
   admin:          '/admin',
+  faq:            '/faq',
+  nextUsPlace:    '/nextus/place',
   contentEditor:  '/content-editor',
 
   // ── Tool paths ─────────────────────────────────────────────
@@ -55,6 +57,8 @@ export const ROUTES = {
     horizonPracticeLoop:     '/tools/horizon-practice/api/loop-chat',
     createCheckout:          '/api/create-checkout',
     debriefChat:             '/api/debrief-chat',
+    contact:                 '/api/contact',
+    orgExtract:              '/api/org-extract',
     nextusMatch:             '/api/nextus-match',
   },
 }
