@@ -11,7 +11,6 @@
     "api/integrity-cron.js":            { "maxDuration": 60 },
     "api/nextus-match.js":              { "maxDuration": 15 },
     "api/org-extract.js":               { "maxDuration": 60 },
-    "api/contact.js":                   { "maxDuration": 15 },
     "api/map-chat.js":                  { "maxDuration": 60 },
     "api/map-avatar-chat.js":           { "maxDuration": 60 },
     "api/map-scoring-chat.js":          { "maxDuration": 60 },
@@ -49,7 +48,6 @@
     { "source": "/api/create-checkout",                     "destination": "/api/create-checkout" },
     { "source": "/api/nextus-match",                        "destination": "/api/nextus-match" },
     { "source": "/api/org-extract",                         "destination": "/api/org-extract" },
-    { "source": "/api/contact",                              "destination": "/api/contact" },
     { "source": "/api/debrief-chat",                        "destination": "/api/debrief-chat" },
     { "source": "/api/integrity-cron",                      "destination": "/api/integrity-cron" },
     { "source": "/(.*)",                                    "destination": "/index.html" }
