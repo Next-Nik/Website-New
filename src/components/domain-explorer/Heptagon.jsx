@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import styles from './Heptagon.module.css'
 
-const CX = 280
-const CY = 280
+const CX = 270
+const CY = 270
 const RADIUS = 170
 const INTRO_SPIN_DEG_PER_SEC = 35
 const INTRO_SPIN_DURATION_MS = 4000
@@ -55,14 +55,14 @@ function getNodeLabel(name) {
 function getNodeSizing(lines) {
   const maxLen = Math.max(...lines.map(l => l.length))
   const n = lines.length
-  // Lora at 17px: ~9.3px per char, so half-width = maxLen * 4.65
-  // Add 16px padding each side → minimum radius = maxLen * 4.65 + 16
-  // Height: n lines * 17px * 1.35 lineHeight / 2 + 10px padding
-  const halfW = maxLen * 4.65 + 16
-  const halfH = (n * 17 * 1.35) / 2 + 10
+  // Lora at 20px: ~10.9px per char, so half-width = maxLen * 5.45
+  // Add 16px padding each side → minimum radius = maxLen * 5.45 + 16
+  // Height: n lines * 20px * 1.35 lineHeight / 2 + 10px padding
+  const halfW = maxLen * 5.45 + 16
+  const halfH = (n * 20 * 1.35) / 2 + 10
   const raw   = Math.ceil(Math.max(halfW, halfH))
   const radius = Math.min(NODE_RADIUS_MAX, Math.max(NODE_RADIUS_MIN, raw))
-  return { fontSize: 17, radius, lineHeight: 1.35 }
+  return { fontSize: 20, radius, lineHeight: 1.35 }
 }
 
 function easeInOut(t) { return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2 }
@@ -244,7 +244,7 @@ export default function Heptagon({
   return (
     <svg
       className={styles.svg}
-      viewBox="0 0 560 560"
+      viewBox="0 0 540 540"
       xmlns="http://www.w3.org/2000/svg"
       aria-label="NextUs Seven Domains"
       style={{
