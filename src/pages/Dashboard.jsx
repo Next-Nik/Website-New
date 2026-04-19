@@ -1429,6 +1429,149 @@ function WorkView({ purposeData, userId, claimedActor, activeView }) {
 
 const ZONES = ['you', 'work', 'practitioners', 'planet']
 
+// ── SupportView ───────────────────────────────────────────────
+function SupportView({ user }) {
+  const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const body = { fontFamily: "'Lora', Georgia, serif" }
+
+  const SUBJECTS = [
+    'Question about the platform',
+    'Something is broken',
+    'I don\'t understand something',
+    'Feedback or suggestion',
+    'Other',
+  ]
+
+  const [subject,   setSubject]   = useState(SUBJECTS[0])
+  const [message,   setMessage]   = useState('')
+  const [sending,   setSending]   = useState(false)
+  const [sent,      setSent]      = useState(false)
+  const [error,     setError]     = useState('')
+
+  const email = user?.email || ''
+  const name  = user?.user_metadata?.full_name || user?.user_metadata?.name || ''
+
+  async function handleSubmit() {
+    if (!message.trim()) { setError('Please write a message before sending.'); return }
+    setSending(true); setError('')
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, subject, message }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to send.')
+      setSent(true)
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.')
+    }
+    setSending(false)
+  }
+
+  if (sent) {
+    return (
+      <div style={{ maxWidth: '480px' }}>
+        <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', fontSize: '18px' }}>✦</div>
+        <div style={{ ...sc, fontSize: '18px', color: '#0F1523', marginBottom: '8px' }}>Sent.</div>
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.6)', lineHeight: 1.7, marginBottom: '20px' }}>
+          Your message is on its way to Nik. You'll hear back at {email}.
+        </p>
+        <button
+          onClick={() => { setSent(false); setMessage(''); setSubject(SUBJECTS[0]) }}
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+        >
+          Send another →
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ maxWidth: '520px' }}>
+      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', marginBottom: '4px', textTransform: 'uppercase' }}>Support</div>
+      <div style={{ ...sc, fontSize: '19px', color: '#0F1523', marginBottom: '6px' }}>Get in touch.</div>
+      <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '28px' }}>
+        Questions, something broken, something unclear — it all goes directly to Nik. No queue, no bot.
+      </p>
+
+      {/* Subject */}
+      <div style={{ marginBottom: '14px' }}>
+        <label style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>Subject</label>
+        <select
+          value={subject}
+          onChange={e => setSubject(e.target.value)}
+          style={{
+            width: '100%', padding: '10px 14px',
+            border: '1.5px solid rgba(200,146,42,0.45)',
+            borderRadius: '40px', background: '#FFFFFF',
+            ...body, fontSize: '14px', color: '#0F1523',
+            outline: 'none', cursor: 'pointer',
+            appearance: 'none',
+          }}
+        >
+          {SUBJECTS.map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+      </div>
+
+      {/* Message */}
+      <div style={{ marginBottom: '6px' }}>
+        <label style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>Message</label>
+        <textarea
+          value={message}
+          onChange={e => setMessage(e.target.value)}
+          placeholder="What's on your mind?"
+          rows={5}
+          style={{
+            width: '100%', padding: '12px 14px',
+            border: '1.5px solid rgba(200,146,42,0.45)',
+            borderRadius: '14px', background: '#FFFFFF',
+            ...body, fontSize: '15px', color: '#0F1523',
+            outline: 'none', resize: 'vertical', boxSizing: 'border-box',
+            lineHeight: 1.65,
+          }}
+          onFocus={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
+          onBlur={e => { e.currentTarget.style.borderColor = 'rgba(200,146,42,0.45)' }}
+        />
+      </div>
+
+      <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.4)', marginBottom: '18px' }}>
+        Reply goes to {email}
+      </p>
+
+      {error && (
+        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', marginBottom: '12px', padding: '10px 14px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '8px' }}>
+          {error}
+        </p>
+      )}
+
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+        <button
+          onClick={handleSubmit}
+          disabled={sending}
+          style={{
+            padding: '11px 24px', borderRadius: '40px',
+            border: '1px solid rgba(168,114,26,0.8)',
+            background: '#C8922A', color: '#FFFFFF',
+            ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em',
+            cursor: sending ? 'default' : 'pointer',
+            opacity: sending ? 0.6 : 1,
+            transition: 'opacity 0.15s',
+          }}
+        >
+          {sending ? 'Sending…' : 'Send →'}
+        </button>
+        <a
+          href="/faq"
+          style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.15)' }}
+        >
+          Browse the FAQ
+        </a>
+      </div>
+    </div>
+  )
+}
+
 const RAIL_ITEMS = {
   you:           [{ id: 'overview', label: 'Overview' }, { id: 'hs', label: 'Horizon State' }, { id: 'map', label: 'The Map' }, { id: 'sprint', label: 'Target Sprint' }, { id: 'practice', label: 'Horizon Practice' }, { id: 'purpose', label: 'Purpose Piece' }],
   work:          [{ id: 'overview', label: 'Overview' }, { id: 'orgs', label: 'Organisations' }, { id: 'offering', label: 'What I Offer' }, { id: 'needs', label: 'Where I\'m Needed' }],
@@ -1805,6 +1948,9 @@ export function DashboardPage() {
       )
     }
 
+      if (activeView === 'support')  return <SupportView user={user} />
+    }
+
     if (activeZone === 'work')          return <WorkView purposeData={purposeData} userId={user?.id} claimedActor={claimedActor} activeView={activeView} />
     if (activeZone === 'practitioners') return <PractitionersView purposeData={purposeData} />
     if (activeZone === 'planet')        return <PlanetView purposeData={purposeData} activeView={activeView} />
@@ -1974,6 +2120,14 @@ export function DashboardPage() {
                   {[archetype, domain, scale].filter(Boolean).join(' · ')}
                 </div>
               )}
+              <div style={{ paddingLeft: '36px', marginTop: '6px' }}>
+                <span
+                  onClick={e => { e.stopPropagation(); setActiveView('support'); setShowProfile(false) }}
+                  style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.38)', cursor: 'pointer', borderBottom: '1px solid rgba(15,21,35,0.15)', paddingBottom: '1px' }}
+                >
+                  Support
+                </span>
+              </div>
             </button>
           </div>
 

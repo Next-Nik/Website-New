@@ -43,6 +43,7 @@ import { NextUsFocusPage }        from './pages/NextUsFocus'
 import { WorkWithNikPage, PodcastPage } from './pages/WorkAndPodcast'
 import { LoginPage }              from './pages/Login'
 import { PrivacyPage, TermsPage } from './pages/Legal'
+import { FAQPage }               from './pages/FAQ'
 import { ProfilePage }            from './pages/Profile'
 import { DashboardPage }          from './pages/Dashboard'
 import { ContentEditorPage }      from './pages/ContentEditor'
@@ -109,6 +110,7 @@ function AppInner() {
         <Route path="/login"           element={<LoginPage />} />
         <Route path="/privacy"         element={<PrivacyPage />} />
         <Route path="/terms"           element={<TermsPage />} />
+        <Route path="/faq"             element={<FAQPage />} />
         <Route path="/profile"         element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard"       element={<DashboardPage />} />
         <Route path="/tools"           element={<ToolsPage />} />
