@@ -126,7 +126,7 @@ function Toast({ message, onClose }) {
 
 // ── Tab navigation ────────────────────────────────────────────
 
-const TABS = ['Now', 'Platform', 'Actors', 'Extract', 'Place', 'Nominations', 'Domain Data', 'Needs', 'Contributions', 'Waitlist', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
+const TABS = ['Now', 'Platform', 'Actors', 'Extract', 'Place', 'Nominations', 'Domain Data', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
 
 function TabBar({ active, setActive }) {
   return (
@@ -984,6 +984,214 @@ function UsersTab({ toast }) {
 }
 
 // ── GRANTS TAB ────────────────────────────────────────────────
+
+// ── SUBDOMAINS TAB ────────────────────────────────────────────
+// Shows all distinct subdomain strings currently in use across
+// actors, grouped by domain, with actor counts.
+// This is how the canonical subdomain vocabulary will emerge —
+// from what experts and community members actually submit.
+
+const PLANET_DOMAIN_LABELS = {
+  'human-being':     'Human Being',
+  'society':         'Society',
+  'nature':          'Nature',
+  'technology':      'Technology',
+  'finance-economy': 'Finance & Economy',
+  'legacy':          'Legacy',
+  'vision':          'Vision',
+}
+
+const SELF_DOMAIN_LABELS = {
+  'path':       'Path',
+  'spark':      'Spark',
+  'body':       'Body',
+  'finances':   'Finances',
+  'connection': 'Connection',
+  'inner-game': 'Inner Game',
+  'signal':     'Signal',
+}
+
+const ALL_DOMAIN_LABELS = { ...PLANET_DOMAIN_LABELS, ...SELF_DOMAIN_LABELS }
+
+function SubdomainsTab({ toast }) {
+  const [rows,    setRows]    = useState([])
+  const [loading, setLoading] = useState(true)
+  const [ratifying, setRatifying] = useState(null)  // subdomain string being ratified
+  const [ratifyName, setRatifyName] = useState('')
+
+  async function load() {
+    setLoading(true)
+    // Pull all actors that have a subdomain set
+    const { data, error } = await supabase
+      .from('nextus_actors')
+      .select('domain_id, subdomain_id, name')
+      .not('subdomain_id', 'is', null)
+      .neq('subdomain_id', '')
+      .order('domain_id')
+
+    if (error) { toast('Error loading: ' + error.message); setLoading(false); return }
+
+    // Group by domain_id → subdomain_id → list of actor names
+    const grouped = {}
+    for (const row of data || []) {
+      const d = row.domain_id || 'unknown'
+      const s = row.subdomain_id
+      if (!grouped[d]) grouped[d] = {}
+      if (!grouped[d][s]) grouped[d][s] = []
+      grouped[d][s].push(row.name)
+    }
+    setRows(grouped)
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [])
+
+  async function ratify(domainId, subdomainId, displayName) {
+    // Insert into nextus_subdomains as a ratified canonical entry
+    const { error } = await supabase.from('nextus_subdomains').upsert({
+      id:        subdomainId,
+      name:      displayName || subdomainId,
+      domain_id: domainId,
+    }, { onConflict: 'id' })
+    if (error) { toast('Error ratifying: ' + error.message); return }
+    toast(`Ratified: ${displayName || subdomainId}`)
+    setRatifying(null)
+    setRatifyName('')
+  }
+
+  const domainIds = Object.keys(rows).sort()
+  const totalSubdomains = domainIds.reduce((n, d) => n + Object.keys(rows[d]).length, 0)
+  const totalActors = domainIds.reduce((n, d) =>
+    n + Object.values(rows[d]).reduce((m, actors) => m + actors.length, 0), 0)
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '20px', marginBottom: '28px' }}>
+        <h2 style={{ ...body, fontSize: '22px', fontWeight: 300, color: '#0F1523' }}>
+          Subdomain vocabulary in use
+        </h2>
+        <Btn small variant="ghost" onClick={load}>Refresh</Btn>
+      </div>
+
+      <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65,
+        maxWidth: '600px', marginBottom: '28px' }}>
+        Every distinct subdomain string currently attached to an actor on the map.
+        Patterns here will surface the canonical vocabulary — contributed by the people
+        who actually know each domain. Ratify the ones that are accurate to seed them
+        as canonical entries in the database.
+      </p>
+
+      {!loading && totalSubdomains === 0 && (
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
+          No subdomains in use yet. They'll appear here as actors are placed.
+        </p>
+      )}
+
+      {!loading && totalSubdomains > 0 && (
+        <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.45)',
+          marginBottom: '24px' }}>
+          {totalSubdomains} distinct subdomain{totalSubdomains !== 1 ? 's' : ''} across {totalActors} actor{totalActors !== 1 ? 's' : ''}
+        </div>
+      )}
+
+      {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+
+      {domainIds.map(domainId => {
+        const subdomains = rows[domainId]
+        const domainLabel = ALL_DOMAIN_LABELS[domainId] || domainId
+        const track = SELF_DOMAIN_LABELS[domainId] ? 'Self' : 'Planet'
+        const trackColor = track === 'Self' ? '#2A6B3A' : '#2A4A8A'
+        const trackBg = track === 'Self' ? 'rgba(42,107,58,0.08)' : 'rgba(42,74,138,0.08)'
+        const trackBorder = track === 'Self' ? 'rgba(42,107,58,0.25)' : 'rgba(42,74,138,0.25)'
+
+        return (
+          <div key={domainId} style={{ marginBottom: '28px' }}>
+            {/* Domain header */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px',
+              marginBottom: '12px', paddingBottom: '8px',
+              borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
+              <span style={{ ...body, fontSize: '17px', color: '#0F1523' }}>
+                {domainLabel}
+              </span>
+              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                padding: '2px 8px', borderRadius: '40px',
+                border: `1px solid ${trackBorder}`, color: trackColor, background: trackBg }}>
+                {track}
+              </span>
+              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em',
+                color: 'rgba(15,21,35,0.40)' }}>
+                {Object.keys(subdomains).length} subdomain{Object.keys(subdomains).length !== 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {/* Subdomain rows */}
+            {Object.entries(subdomains)
+              .sort((a, b) => b[1].length - a[1].length)  // most-used first
+              .map(([subdomainId, actors]) => (
+                <div key={subdomainId} style={{
+                  display: 'flex', alignItems: 'flex-start',
+                  gap: '16px', padding: '10px 14px',
+                  background: '#FFFFFF',
+                  border: '1px solid rgba(200,146,42,0.18)',
+                  borderRadius: '8px', marginBottom: '6px',
+                }}>
+                  {/* Subdomain ID + actor list */}
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px',
+                      marginBottom: actors.length > 0 ? '5px' : 0 }}>
+                      <span style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em',
+                        color: '#0F1523' }}>
+                        {subdomainId}
+                      </span>
+                      <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em',
+                        color: 'rgba(15,21,35,0.40)' }}>
+                        {actors.length} actor{actors.length !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                    <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.50)',
+                      lineHeight: 1.5 }}>
+                      {actors.slice(0, 5).join(', ')}
+                      {actors.length > 5 && ` +${actors.length - 5} more`}
+                    </div>
+                  </div>
+
+                  {/* Ratify action */}
+                  {ratifying === `${domainId}:${subdomainId}` ? (
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexShrink: 0 }}>
+                      <input
+                        value={ratifyName}
+                        onChange={e => setRatifyName(e.target.value)}
+                        placeholder="Display name"
+                        style={{ ...body, fontSize: '13px', color: '#0F1523',
+                          padding: '5px 10px', borderRadius: '6px',
+                          border: '1.5px solid rgba(200,146,42,0.35)',
+                          background: '#FFFFFF', outline: 'none', width: '140px' }}
+                      />
+                      <Btn small onClick={() => ratify(domainId, subdomainId, ratifyName)}>
+                        Ratify
+                      </Btn>
+                      <Btn small variant="ghost" onClick={() => { setRatifying(null); setRatifyName('') }}>
+                        ×
+                      </Btn>
+                    </div>
+                  ) : (
+                    <Btn small variant="ghost" onClick={() => {
+                      setRatifying(`${domainId}:${subdomainId}`)
+                      setRatifyName(subdomainId)
+                    }}>
+                      Ratify
+                    </Btn>
+                  )}
+                </div>
+              ))
+            }
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 
 function GrantsTab() {
   const [grants, setGrants] = useState([])
@@ -2667,6 +2875,7 @@ export function AdminConsolePage() {
         {tab === 'Place'        && <PlaceTab         toast={showToast} />}
         {tab === 'Nominations'  && <NominationsTab  toast={showToast} />}
         {tab === 'Domain Data'  && <DomainDataTab   toast={showToast} />}
+        {tab === 'Subdomains'   && <SubdomainsTab   toast={showToast} />}
         {tab === 'Needs'        && <NeedsTab        toast={showToast} />}
         {tab === 'Contributions'&& <ContributionsTab toast={showToast} />}
         {tab === 'Waitlist'     && <WaitlistTab     toast={showToast} />}
