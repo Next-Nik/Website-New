@@ -100,7 +100,7 @@ const FAQS = [
       },
       {
         q: 'How do I give feedback?',
-        a: 'From your Dashboard, scroll to the bottom of the rail and click Support. You can ask a question, report something broken, or tell us what\'s landing. Everything goes directly to Nik.',
+        a: 'From your Dashboard, scroll to the bottom of the rail and click Support. You can ask a question, report something broken, or tell us what\'s landing. Someone from the team will get back to you.',
       },
     ],
   },
@@ -195,7 +195,7 @@ export function FAQPage() {
             Still have a question?
           </span>
           <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '480px' }}>
-            Reach out directly. Everything goes to Nik — no ticketing system, no bot.
+            Reach out directly. Someone from the team will get back to you — no ticketing system, no bot.
           </p>
           <a
             href="mailto:support@nextus.world"
