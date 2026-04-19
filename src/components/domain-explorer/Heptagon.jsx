@@ -374,7 +374,7 @@ export default function Heptagon({
               fontFamily="'Lora', Georgia, serif"
               fontWeight="400"
               stroke="#0F1523"
-              strokeWidth="1"
+              strokeWidth="2"
               strokeLinejoin="round"
               paintOrder="stroke fill"
               style={{ pointerEvents: 'none', userSelect: 'none' }}
@@ -419,7 +419,7 @@ export default function Heptagon({
             fontFamily="'Lora', Georgia, serif"
             fontWeight="300"
             stroke="#0F1523"
-            strokeWidth="1"
+            strokeWidth="2"
             strokeLinejoin="round"
             paintOrder="stroke fill"
             style={{ pointerEvents: 'none', userSelect: 'none' }}
