@@ -378,6 +378,8 @@ export function NextUsActorsPage() {
         description, impact_summary, alignment_score, winning, claimed, verified,
         nextus_needs(id, status, need_type)
       `, { count: 'exact' })
+      // Only show curated or approved actors — not pending community submissions
+      .or('seeded_by.eq.nextus,vetting_status.eq.approved')
       .order('name')
       .limit(80)
 

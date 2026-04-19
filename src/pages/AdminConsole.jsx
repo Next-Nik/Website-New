@@ -1524,7 +1524,7 @@ function NeedsTab({ toast }) {
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '10px', marginBottom: '20px' }}>
         <Select value={filterStatus} onChange={setFilterStatus} options={[{ value: '', label: 'All statuses' }, { value: 'open', label: 'Open' }, { value: 'in_progress', label: 'In Progress' }, { value: 'fulfilled', label: 'Fulfilled' }, { value: 'closed', label: 'Closed' }]} />
-        <Select value={filterType} onChange={setFilterType} options={[{ value: '', label: 'All types' }, ...['skills','capital','time','resources','partnerships','data','other'].map(t => ({ value: t, label: t }))]} />
+        <Select value={filterType} onChange={setFilterType} options={[{ value: '', label: 'All types' }, ...['skills','creative','capital','time','resources','partnerships','data','other'].map(t => ({ value: t, label: t }))]} />
         <Select value={filterDomain} onChange={setFilterDomain} options={[{ value: '', label: 'All domains' }, ...DOMAIN_LIST]} />
         <Btn onClick={fetchNeeds} small>Refresh</Btn>
       </div>
@@ -2047,8 +2047,9 @@ function NominationsTab({ toast }) {
     // Mark as winning = false, claimed = false (still needs owner to claim)
     // Visible to public — the vetting is done
     const { error } = await supabase.from('nextus_actors').update({
-      seeded_by: 'nextus',   // promote to curated
-      data_source: actor.data_source,
+      seeded_by:      'nextus',    // promote to curated
+      vetting_status: 'approved',  // flip so public directory picks it up
+      data_source:    actor.data_source,
     }).eq('id', actor.id)
     if (error) { toast('Error approving'); return }
     toast(`${actor.name} approved and now live`)
