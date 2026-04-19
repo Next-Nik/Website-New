@@ -422,7 +422,7 @@ export default function Heptagon({
             x={CX} y={CY}
             textAnchor="middle" dominantBaseline="middle"
             fill="#FFFFFF"
-            fontSize="22"
+            fontSize="36"
             fontFamily="'Lora', Georgia, serif"
             fontWeight="400"
             stroke="#0F1523"
