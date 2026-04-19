@@ -929,7 +929,7 @@ function QuoteBlock({ text, cite }) {
 
 export function HorizonStatePage() {
   const { user, loading: authLoading } = useAuth()
-  const { tier, loading: accessLoading } = useAccess('foundation')
+  const { tier, loading: accessLoading } = useAccess('horizon-state')
   const [audioUrl,     setAudioUrl]     = useState(null)
   const [audioLoading, setAudioLoading] = useState(false)
   const [audioError,   setAudioError]   = useState(null)

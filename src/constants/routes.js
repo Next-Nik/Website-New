@@ -54,6 +54,7 @@ export const ROUTES = {
     horizonPracticeDaily:    '/tools/horizon-practice/api/daily-chat',
     horizonPracticeLoop:     '/tools/horizon-practice/api/loop-chat',
     createCheckout:          '/api/create-checkout',
+    debriefChat:             '/api/debrief-chat',
     nextusMatch:             '/api/nextus-match',
   },
 }

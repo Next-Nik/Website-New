@@ -663,7 +663,7 @@ function DeepGateModal({ onUnlock, onDismiss }) {
 
 export function PurposePiecePage() {
   const { user, loading: authLoading } = useAuth()
-  const { tier, loading: accessLoading } = useAccess('purpose_piece')
+  const { tier, loading: accessLoading } = useAccess('purpose-piece')
   const navigate  = useNavigate()
   const isMobile  = useIsMobile()
 

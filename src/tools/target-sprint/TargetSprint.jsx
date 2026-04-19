@@ -1674,7 +1674,7 @@ function PhaseQuarter({ quarterType, setQuarterType, setTargetDate, setEndDateLa
 
 export function TargetSprintPage() {
   const { user, loading: authLoading } = useAuth()
-  const { tier, loading: accessLoading } = useAccess('target_goals')
+  const { tier, loading: accessLoading } = useAccess('target-sprint')
 
   const [phase,            setPhase]            = useState('select')
   const [hasMapData,       setHasMapData]       = useState(false)

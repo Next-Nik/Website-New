@@ -1220,7 +1220,7 @@ function DormantFeatureCard({ title, description, daysUntil, onActivate }) {
 
 export function HorizonPracticePage() {
   const { user, loading: authLoading } = useAuth()
-  const { tier, loading: accessLoading } = useAccess('expansion')
+  const { tier, loading: accessLoading } = useAccess('horizon-practice')
 
   const [view, setView] = useState('dashboard') // dashboard | checkin | debrief | skills | loops | patterns
   const [pendingCheckinData, setPendingCheckinData] = useState(null)

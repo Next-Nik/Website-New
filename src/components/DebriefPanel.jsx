@@ -16,6 +16,7 @@
 //   title       — override the section eyebrow (optional)
 
 import { useState, useRef, useEffect } from 'react'
+import { ROUTES } from '../constants/routes'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
@@ -52,7 +53,7 @@ export function DebriefPanel({ tool, toolContext, userId, mode = 'full', onCompl
   }, [begun])
 
   async function call(messages) {
-    const res = await fetch('/api/debrief-chat', {
+    const res = await fetch(ROUTES.api.debriefChat, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ tool, toolContext, messages, userId, mode }),
