@@ -10,7 +10,7 @@ const body = { fontFamily: "'Lora', Georgia, serif" }
 const NEXTUS_PLATFORM = [
   {
     key:      'actors',
-    label:    'Orgs in the Field',
+    label:    'Orgs and Individuals',
     subtitle: 'Who is doing the work',
     path:     '/nextus/actors',
     desc:     'Organisations, projects, and individuals placed on the map — by domain, by scale, by what they need.',

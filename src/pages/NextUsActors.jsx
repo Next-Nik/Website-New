@@ -484,7 +484,7 @@ export function NextUsActorsPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px', flexWrap: 'wrap', gap: '12px' }}>
           <ViewToggle view={view} setView={setView} />
           <span style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
-            {loading ? 'Loading…' : `${total} in the field`}
+            {loading ? 'Loading…' : `${total} orgs and individuals`}
           </span>
         </div>
 

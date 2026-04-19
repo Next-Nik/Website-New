@@ -92,7 +92,50 @@ const FAQS = [
     ],
   },
   {
-    section: 'Beta programme',
+    section: 'NextUs · Orgs and Individuals',
+    items: [
+      {
+        q: 'What is "Orgs and Individuals"?',
+        a: 'A living map of organisations, projects, and individuals working toward what NextUs calls Horizon Goals — a shared picture of what humanity is building toward across seven domains. It\'s not a directory of good organisations. It\'s a map of directional movement: who is working toward what, at what scale, with what degree of structural integrity.',
+      },
+      {
+        q: 'How do actors get on the map?',
+        a: 'Three ways. The NextUs team places actors directly through a curation process. Community members can nominate an organisation or practitioner via the Nominate form — those go into a review queue before going live. And anyone signed in can use the Place form, which runs an AI assessment on a URL or description and proposes a profile for review. Nothing from the community goes live without human review.',
+      },
+      {
+        q: 'What is the alignment score?',
+        a: 'A 0–9 assessment of how genuinely an actor is moving toward the Horizon Goal for their domain and scale. It is not a rating of how large, well-known, or well-funded they are. It is a structural assessment — does the work actually move in the direction it claims? A small local project doing honest work can score higher than a global institution running structural failure patterns. The score is a draft until reviewed; it is always subject to revision as more evidence emerges.',
+      },
+      {
+        q: 'What do the score tiers mean?',
+        a: 'Pattern Instance (0–4): the actor demonstrates a named structural failure pattern — visible on the map as a cautionary example, not a placement. Contested (5–6): net positive direction, but structural failure patterns are meaningfully active. Qualified (7–8): clear alignment, HAL conditions demonstrably operative, full placement on the default map. Exemplar (9): field-setting — others in this domain point to this actor as the standard. A score of 10 is never assigned by the platform; it is conferred by the field over time.',
+      },
+      {
+        q: 'What are HAL conditions and Structural Failure Patterns?',
+        a: 'HAL conditions — Horizon Alignment Library — are structural conditions that, when present, indicate genuine movement toward a Horizon Goal. Things like Mission Coherence, Structural Honesty, Genuine Contact, Recursive Learning. Structural Failure Patterns are mechanisms by which systems fail to move toward their stated goals — things like Metric Substitution, Scale Illusion, or Mission Drift by Funding Gravity. Both are used in the assessment to surface what is actually happening, not just what is claimed.',
+      },
+      {
+        q: 'Who does the assessment?',
+        a: 'The initial assessment is produced by an AI engine trained on the NextUs framework — HAL conditions, Structural Failure Patterns, alignment score anchors, and domain criteria. That produces a draft. Every placement is then reviewed by a human before going live. The AI scores are a starting point, not a verdict. The founder reviews contested and exemplar placements personally.',
+      },
+      {
+        q: 'What are the domain scores on the Platform page?',
+        a: 'Each of the seven NextUs domains has a gap score — a measure of how far humanity currently is from the Horizon Goal for that domain. These scores are only shown as meaningful numbers when they are verified and based on sufficient data. Until then, they show as "Illustrative" or "Insufficient data." We would rather show nothing than show a number that implies a rigour that doesn\'t yet exist.',
+      },
+      {
+        q: 'Can I nominate myself or my own organisation?',
+        a: 'Yes. Self-nomination is explicitly welcome — fill in the form as the submitter. The assessment criteria are the same regardless of who submits. If the work is genuinely aimed at the Horizon Goal for your domain and scale, and the evidence supports it, it belongs on the map.',
+      },
+      {
+        q: 'What if I think a score is wrong?',
+        a: 'Reach out at support@nextus.world with the actor name and your reasoning. The scores are drafts, not verdicts — new evidence, a better read of the structural conditions, or a change in the organisation\'s actual work can all move a score. The goal is accuracy, not finality.',
+      },
+      {
+        q: 'What is the Self track?',
+        a: 'The NextUs map has two tracks. Planet track covers organisations and projects working at civilisational scale. Self track covers practitioners, coaches, therapists, facilitators, and programmes helping individuals grow across the seven personal domains — Path, Spark, Body, Finances, Connection, Inner Game, and Signal. A single actor can appear on both tracks if their work operates genuinely at both scales.',
+      },
+    ],
+  },
     items: [
       {
         q: 'I\'m a beta tester. What does that mean?',

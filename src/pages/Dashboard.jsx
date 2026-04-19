@@ -1577,7 +1577,7 @@ const RAIL_ITEMS = {
   you:           [{ id: 'overview', label: 'Overview' }, { id: 'hs', label: 'Horizon State' }, { id: 'map', label: 'The Map' }, { id: 'sprint', label: 'Target Sprint' }, { id: 'practice', label: 'Horizon Practice' }, { id: 'purpose', label: 'Purpose Piece' }],
   work:          [{ id: 'overview', label: 'Overview' }, { id: 'orgs', label: 'Organisations' }, { id: 'offering', label: 'What I Offer' }, { id: 'needs', label: 'Where I\'m Needed' }],
   practitioners: [{ id: 'matched', label: 'Matched for You' }, { id: 'active', label: 'Active Methods' }, { id: 'browse', label: 'Browse All' }],
-  planet:        [{ id: 'overview', label: 'Overview' }, { id: 'domains', label: 'Seven Domains' }, { id: 'orgs', label: 'Orgs in the Field' }, { id: 'gap', label: 'Gap Signal' }],
+  planet:        [{ id: 'overview', label: 'Overview' }, { id: 'domains', label: 'Seven Domains' }, { id: 'orgs', label: 'Orgs and Individuals' }, { id: 'gap', label: 'Gap Signal' }],
 }
 
 const ZONE_LABELS = { you: 'You', work: 'Your Work', practitioners: 'Practitioners', planet: 'Planet' }

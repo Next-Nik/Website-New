@@ -202,7 +202,7 @@ export function NextUsNominatePage() {
           ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)',
           background: 'none', border: 'none', cursor: 'pointer', marginBottom: '32px', padding: 0,
         }}>
-          ← Orgs in the Field
+          ← Orgs and Individuals
         </button>
 
         <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: gold, display: 'block', marginBottom: '12px' }}>

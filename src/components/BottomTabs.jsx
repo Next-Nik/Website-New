@@ -46,7 +46,7 @@ function MoreMenu({ onClose }) {
 
   const nextusLinks = [
     { label: 'NextUs',         path: '/nextus',         desc: 'Seven civilisational domains' },
-    { label: 'Orgs in the Field', path: '/nextus/actors', desc: 'Who is doing the work' },
+    { label: 'Orgs and Individuals', path: '/nextus/actors', desc: 'Who is doing the work' },
     { label: 'Map',            path: '/nextus/map',     desc: 'Where the work is happening' },
   ]
 
