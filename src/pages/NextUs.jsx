@@ -256,7 +256,7 @@ export function NextUsPage() {
       <div className="nextus-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 0' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>NextUs</span>
         <h1 style={{ ...body, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          The future is not something<br /><em style={{ color: '#A8721A' }}>that happens to us.</em>
+          A chosen future<br /><em style={{ color: '#A8721A' }}>built by us.</em>
         </h1>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '520px' }}>Seven domains. A living map of who is doing the work {'—'} and how to find your place in it.</p>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '14px' }}>Explore the horizon goals</span>
