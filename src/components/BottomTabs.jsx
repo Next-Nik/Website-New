@@ -41,7 +41,7 @@ function MoreIcon({ active }) {
 
 function MoreMenu({ onClose }) {
   const lifeOSLinks = [
-    { label: 'Horizon Suite',   path: '/nextus-self',   desc: 'Overview of all tools' },
+    { label: 'NextUs Self', path: '/nextus-self', desc: 'Your life — seven domains' },
   ]
 
   const nextusLinks = [
@@ -77,7 +77,7 @@ function MoreMenu({ onClose }) {
 
         {/* NextUs Self */}
         <div style={{ padding: '12px 20px 6px' }}>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', textTransform: 'uppercase' }}>Horizon Suite</span>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', textTransform: 'uppercase' }}>NextUs Self</span>
         </div>
         {lifeOSLinks.map(l => (
           <Link key={l.path} to={l.path} onClick={onClose} style={{
@@ -134,9 +134,10 @@ export function BottomTabs() {
     ? (user.email.split('@')[0].charAt(0) || '?').toUpperCase()
     : null
 
-  const isHome  = pathname === '/'
-  const isTools = pathname.startsWith('/tools')
-  const isMore  = ['/nextus', '/work-with-nik', '/podcast', '/about', '/nextus-self', '/pricing']
+  const isHome    = pathname === '/'
+  const isSelf    = pathname.startsWith('/nextus-self') || pathname.startsWith('/tools')
+  const isPlanet  = pathname.startsWith('/nextus') && !pathname.startsWith('/nextus-self')
+  const isMore    = ['/work-with-nik', '/podcast', '/about', '/pricing']
     .some(p => pathname.startsWith(p))
 
   const tabs = [
@@ -149,12 +150,20 @@ export function BottomTabs() {
       action: null,
     },
     {
-      key:    'tools',
-      label:  'Tools',
-      icon:   <GridIcon active={isTools || drawerOpen} />,
-      active: isTools || drawerOpen,
+      key:    'self',
+      label:  'NextUs Self',
+      icon:   <GridIcon active={isSelf || drawerOpen} />,
+      active: isSelf || drawerOpen,
       to:     null,
       action: () => { setMoreOpen(false); setDrawerOpen(o => !o) },
+    },
+    {
+      key:    'planet',
+      label:  'NextUs',
+      icon:   <MoreIcon active={isPlanet} />,
+      active: isPlanet,
+      to:     '/nextus',
+      action: null,
     },
     {
       key:    'more',

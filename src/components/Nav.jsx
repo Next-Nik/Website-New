@@ -17,10 +17,10 @@ export function Nav({ activePath }) {
 
   const links = [
     { to: '/',              label: 'Home',          key: 'home'          },
-    { to: '/nextus-self',   label: 'Horizon Suite', key: 'nextus-self'   },
+    { to: '/nextus-self',   label: 'NextUs Self',   key: 'nextus-self'   },
     { to: '/nextus',        label: 'NextUs',        key: 'nextus'        },
-    { to: '/work-with-nik', label: 'Work with Nik', key: 'work-with-nik' },
     { to: '/about',         label: 'About',         key: 'about'         },
+    { to: '/work-with-nik', label: 'Work with Nik', key: 'work-with-nik' },
     { to: '/podcast',       label: 'Podcast',       key: 'podcast'       },
   ]
 

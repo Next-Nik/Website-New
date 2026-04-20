@@ -52,12 +52,12 @@ export function NextUsSelfPage() {
 
       {/* Hero */}
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: 'clamp(88px,10vw,112px) clamp(20px,5vw,40px) 80px' }}>
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>The Horizon Suite</span>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>NextUs Self</span>
         <h1 style={{ ...body, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '24px' }}>
-          The personal<br /><span style={{ color: '#A8721A' }}>navigation layer.</span>
+          A chosen<br /><span style={{ color: '#A8721A' }}>life.</span>
         </h1>
         <p style={{ ...body, fontSize: '19px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '16px', maxWidth: '580px' }}>
-          The Horizon Suite is a set of tools for seeing your life clearly and navigating it deliberately. Not a productivity system. Not a self-help programme. A navigation layer — showing you where you are, where you're going, and what the gaps are between them.
+          The Horizon Suite is the scaffold. Tools for seeing your life clearly, finding your starting point, and navigating deliberately — built on seven domains that cover the full terrain of a human life.
         </p>
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '520px' }}>
           Built on seven domains that cover the full terrain of a human life — from your daily aliveness to your deepest sense of purpose.
