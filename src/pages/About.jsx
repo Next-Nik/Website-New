@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { Nav } from '../components/Nav'
 import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkGhostButton } from '../components/DarkSection'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
@@ -185,25 +186,46 @@ export function AboutPage() {
       {/* ── NIK SECTION ── */}
       <div className="about-wrap" style={{ maxWidth: '900px', margin: '0 auto', padding: '80px 40px 100px' }}>
 
-        {/* Photo — full width, landscape crop */}
-        <div style={{
-          width: '100%',
-          aspectRatio: '16/9',
-          borderRadius: '14px',
-          overflow: 'hidden',
-          marginBottom: '64px',
-          position: 'relative',
-        }}>
+        {/* Photo — parallax, cropped to fingertip level */}
+        <style>{`
+          .nik-peru-wrap {
+            width: 100%;
+            height: clamp(340px, 55vw, 600px);
+            border-radius: 14px;
+            border: 1.5px solid rgba(200,146,42,0.55);
+            overflow: hidden;
+            margin-bottom: 64px;
+            position: relative;
+          }
+          .nik-peru-img {
+            width: 100%;
+            height: 140%;
+            object-fit: cover;
+            object-position: center 0%;
+            display: block;
+            will-change: transform;
+          }
+        `}</style>
+        <div
+          className="nik-peru-wrap"
+          ref={el => {
+            if (!el) return
+            function onScroll() {
+              const rect = el.getBoundingClientRect()
+              const viewH = window.innerHeight
+              const progress = 1 - (rect.bottom / (viewH + rect.height))
+              const shift = Math.min(Math.max(progress * 30, 0), 30)
+              const img = el.querySelector('.nik-peru-img')
+              if (img) img.style.transform = \`translateY(-\${shift}%)\`
+            }
+            window.addEventListener('scroll', onScroll, { passive: true })
+            onScroll()
+          }}
+        >
           <img
             src="/Nik_Peru.jpeg"
             alt="Nik Wood at Machu Picchu"
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              objectPosition: 'center 30%',
-              display: 'block',
-            }}
+            className="nik-peru-img"
           />
         </div>
 
