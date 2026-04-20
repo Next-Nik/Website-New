@@ -1,7 +1,7 @@
 // data.js — fetches from Supabase, falls back to static data
 
 export const TOP_LEVEL_GOAL =
-  "A world that is a net positive for all life — where human civilisation contributes to the flourishing of the planet and each other.";
+  "A thriving planet and a thriving humanity — where human civilisation is something the Earth is glad to have.";
 
 function placeholders(prefix, depth) {
   if (depth === 0) return [];

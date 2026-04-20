@@ -323,21 +323,21 @@ export default function DomainPanel({
       </div>
 
 
-      <p className={styles.horizonGoal}>
+      <div className={styles.horizonGoal}>
         {activeFocus && focusGoal ? (
           <>
-            <span className={styles.goalLabel}>Local horizon —</span>{" "}
+            <span className={styles.goalLabel}>Local horizon</span>
             {focusGoal}
           </>
         ) : isPlaceholder ? (
-          <span className={styles.comingSoon}>Horizon goal being mapped —</span>
+          <span className={styles.comingSoon}>Horizon goal being mapped</span>
         ) : (
           <>
-            <span className={styles.goalLabel}>Horizon goal —</span>{" "}
+            <span className={styles.goalLabel}>Horizon goal</span>
             {item.horizonGoal}
           </>
         )}
-      </p>
+      </div>
 
       {/* Focus context bar — z-axis navigation */}
       <FocusSelector
