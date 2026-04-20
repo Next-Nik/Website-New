@@ -36,7 +36,7 @@ function TestimonialCard({ q, cite }) {
     <div style={{
       flexShrink: 0, width: '300px',
       background: '#FFFFFF',
-      border: '2px solid rgba(200,146,42,0.78)',
+      border: '1px solid rgba(200,146,42,0.78)',
       borderRadius: '14px',
       padding: '24px 28px',
       marginRight: '20px',
@@ -54,12 +54,13 @@ function TestimonialCarousel() {
   const duration = TESTIMONIALS.length * 12
   return (
     <div style={{
-      border: '2px solid rgba(200,146,42,0.78)',
+      border: '1px solid rgba(200,146,42,0.78)',
       borderRadius: '14px',
       padding: '20px 0',
       background: '#FAFAF7',
+      overflow: 'hidden',
     }}>
-      <div style={{ overflow: 'hidden', margin: '0 -2px' }}>
+      <div style={{ overflow: 'hidden' }}>
       <style>{`
         @keyframes scrollLeft {
           0% { transform: translateX(0); }
