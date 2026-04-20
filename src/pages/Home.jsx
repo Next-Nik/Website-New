@@ -402,7 +402,7 @@ export function HomePage() {
             }
             .hero-track--light {
               background: #FAFAF7;
-              border: 1.5px solid rgba(200,146,42,0.20);
+              border: 1.5px solid rgba(200,146,42,2);
               border-left: none;
               padding: 32px 36px;
               display: flex;
