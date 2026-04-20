@@ -201,9 +201,10 @@ export function AboutPage() {
             width: 100%;
             height: 140%;
             object-fit: cover;
-            object-position: center 0%;
+            object-position: center bottom;
             display: block;
             will-change: transform;
+            transform: translateY(-30%);
           }
         `}</style>
         <div
@@ -216,7 +217,7 @@ export function AboutPage() {
               const progress = 1 - (rect.bottom / (viewH + rect.height))
               const shift = Math.min(Math.max(progress * 30, 0), 30)
               const img = el.querySelector('.nik-peru-img')
-              if (img) img.style.transform = 'translateY(' + shift + '%)'
+              if (img) img.style.transform = 'translateY(-' + (30 - shift) + '%)'
             }
             window.addEventListener('scroll', onScroll, { passive: true })
             onScroll()
