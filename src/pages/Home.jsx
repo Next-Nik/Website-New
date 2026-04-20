@@ -341,32 +341,100 @@ export function HomePage() {
       {/* Hero */}
       <section className="home-hero" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '100px 40px 80px', position: 'relative' }}>
         <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 50% 40%, rgba(200,146,42,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '680px' }}>
-          <div style={{ marginBottom: '52px' }}>
-            <img src="/logo_hero.png" alt="NextUs" style={{ height: '180px', width: 'auto', display: 'inline-block' }} />
+        <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '720px' }}>
+
+          <div style={{ marginBottom: '48px' }}>
+            <img src="/logo_hero.png" alt="NextUs" style={{ height: '160px', width: 'auto', display: 'inline-block' }} />
           </div>
-          <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.5, margin: '0 auto 36px' }} />
-          <h1 style={{ ...serif, fontSize: 'clamp(42px,6vw,72px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '24px' }}>
-            A life worth living.<br />
-            <em style={{ fontStyle: 'italic', color: '#A8721A' }}>A future worth building.</em>
-          </h1>
-          <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '16px', maxWidth: '480px', marginLeft: 'auto', marginRight: 'auto' }}>
-            Step towards the horizon.
+          <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.5, margin: '0 auto 32px' }} />
+          <p style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', marginBottom: '56px' }}>
+            A life worth living. A future worth building.
           </p>
+
+          <style>{`
+            .hero-track-btn {
+              display: inline-block;
+              padding: 12px 24px;
+              border-radius: 40px;
+              font-family: 'Cormorant SC', Georgia, serif;
+              font-size: 15px;
+              font-weight: 600;
+              letter-spacing: 0.14em;
+              text-decoration: none;
+              margin-top: 8px;
+              transition: all 0.18s;
+            }
+            .hero-track-btn--solid {
+              background: #C8922A;
+              border: 1px solid rgba(168,114,26,0.8);
+              color: #FFFFFF;
+            }
+            .hero-track-btn--ghost {
+              background: transparent;
+              border: 1.5px solid rgba(200,146,42,0.78);
+              color: #A8721A;
+            }
+            .hero-track-btn--solid:hover { background: #A8721A; }
+            .hero-track-btn--ghost:hover { background: rgba(200,146,42,0.06); }
+            .hero-tracks {
+              display: grid;
+              grid-template-columns: 1fr 1px 1fr;
+              max-width: 640px;
+              margin: 0 auto 40px;
+              text-align: left;
+              border: 1.5px solid rgba(200,146,42,0.20);
+              border-radius: 14px;
+              overflow: hidden;
+            }
+            .hero-track { padding: 32px 36px; display: flex; flex-direction: column; gap: 12px; }
+            .hero-track-divider { background: rgba(200,146,42,0.20); align-self: stretch; }
+            @media (max-width: 640px) {
+              .hero-tracks { grid-template-columns: 1fr; }
+              .hero-track { padding: 28px 24px; }
+              .hero-track:first-child { border-bottom: 1px solid rgba(200,146,42,0.20); }
+              .hero-track-divider { display: none; }
+            }
+          `}</style>
+
+          <div className="hero-tracks">
+            <div className="hero-track">
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A' }}>Your life</span>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(28px,3.5vw,40px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.1, margin: 0 }}>
+                A chosen<br /><em style={{ color: '#A8721A' }}>life.</em>
+              </h2>
+              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>
+                Tools for seeing your life clearly and navigating it deliberately. Seven domains. Your own navigation system.
+              </p>
+              <a href="/nextus-self" className="hero-track-btn hero-track-btn--solid">The Horizon Suite →</a>
+            </div>
+            <div className="hero-track-divider" />
+            <div className="hero-track">
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A' }}>The planet</span>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(28px,3.5vw,40px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.1, margin: 0 }}>
+                A chosen<br /><em style={{ color: '#A8721A' }}>planet.</em>
+              </h2>
+              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>
+                A coordination platform mapping organisations and individuals building the future. Seven domains. Find your place in the work.
+              </p>
+              <a href="/nextus" className="hero-track-btn hero-track-btn--ghost">NextUs →</a>
+            </div>
+          </div>
+
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
+            Not sure which? <a href="/tools/north-star" style={{ color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)' }}>North Star will point you somewhere real →</a>
+          </p>
+
           {!user && (
-            <p style={{ ...body, fontSize: '15px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, marginBottom: '52px', maxWidth: '400px', marginLeft: 'auto', marginRight: 'auto' }}>
-              <a href="/login" style={{ color: 'rgba(15,21,35,0.55)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign in</a> to save your work and track your progress.
+            <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', fontWeight: 300, color: 'rgba(15,21,35,0.40)', marginTop: '16px' }}>
+              <a href="/login" style={{ color: 'rgba(15,21,35,0.40)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign in</a> to save your work across sessions.
             </p>
           )}
-          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginTop: user ? '52px' : '0' }}>
-            <a href="/nextus-self" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>Horizon Suite →</a>
-            <a href="/nextus" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>NextUs World →</a>
-          </div>
         </div>
         <div style={{ position: 'absolute', bottom: '36px', left: '50%', transform: 'translateX(-50%)', textAlign: 'center' }}>
-          <p style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', opacity: 0.78 }}>nextus.world</p>
+          <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', opacity: 0.78 }}>nextus.world</p>
         </div>
       </section>
+
 
       {/* Is this for you */}
       <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 0', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
