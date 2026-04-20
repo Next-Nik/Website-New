@@ -1,0 +1,345 @@
+/* ── PANEL BASE ── */
+.panel {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  pointer-events: none;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 8px;
+}
+
+.panel.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+/* ── NAV ── */
+.topNav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.navItem {
+  background: none;
+  border: none;
+  padding: 6px 0;
+  cursor: pointer;
+  font-family: 'Cormorant SC', serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(15,21,35,0.55);
+  text-decoration: none;
+  display: inline-block;
+  transition: color 0.2s ease;
+  text-align: left;
+}
+
+.navItem:hover { color: #A8721A; }
+
+/* ── DOMAIN NAME ── */
+.domainName {
+  font-family: 'Lora', Georgia, serif;
+  font-size: clamp(36px, 5vw, 48px);
+  font-weight: 300;
+  color: #0F1523;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+.aliases {
+  font-family: 'Cormorant SC', serif;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: rgba(15,21,35,0.45);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+/* ── HORIZON GOAL ── */
+.horizonGoal {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(18px, 2.4vw, 24px);
+  font-style: italic;
+  font-weight: 300;
+  color: #0F1523;
+  line-height: 1.45;
+  margin: 16px 0 20px;
+  padding: 18px 0 18px 20px;
+  border-left: 2px solid rgba(200,146,42,0.45);
+}
+
+.goalLabel {
+  display: block;
+  font-style: normal;
+  font-weight: 600;
+  color: #A8721A;
+  font-size: 11px;
+  font-family: 'Cormorant SC', serif;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.comingSoon {
+  font-style: normal;
+  color: rgba(15,21,35,0.45);
+  font-size: 15px;
+}
+
+/* ── LIFE'S MISSION ── */
+.lifeMission {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 15px;
+  font-style: italic;
+  font-weight: 300;
+  color: rgba(15,21,35,0.55);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+/* ── FRACTAL LINK ── */
+.fractalLink {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 24px;
+  padding: 10px 14px;
+  background: rgba(200,146,42,0.04);
+  border: 1px solid rgba(200,146,42,0.18);
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+
+.fractalLabel {
+  font-family: 'Cormorant SC', serif;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: rgba(15,21,35,0.45);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.fractalValue {
+  font-family: 'Cormorant SC', serif;
+  font-size: 13px;
+  letter-spacing: 0.10em;
+  color: #A8721A;
+  font-weight: 600;
+}
+
+.fractalNote {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 13px;
+  color: rgba(15,21,35,0.45);
+}
+
+/* ── SECTION LABEL ── */
+.sectionLabel {
+  display: block;
+  font-family: 'Cormorant SC', serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: rgba(15,21,35,0.55);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+/* ── ABOUT ── */
+.aboutSection { margin-bottom: 4px; }
+
+.description {
+  font-family: 'Lora', Georgia, serif;
+  font-size: clamp(14px, 1.8vw, 16px);
+  font-weight: 300;
+  color: rgba(15,21,35,0.78);
+  line-height: 1.8;
+  margin-bottom: 4px;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  width: 48px;
+  height: 1px;
+  background: rgba(200,146,42,0.25);
+  margin: 24px 0;
+}
+
+/* ── APPROACHES ── */
+.approachesSection { margin-bottom: 8px; }
+
+.approachesHint {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 14px;
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(15,21,35,0.45);
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+
+.approachesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.approachChip {
+  font-family: 'Cormorant SC', Georgia, serif;
+  font-size: 13px;
+  letter-spacing: 0.10em;
+  color: rgba(15,21,35,0.65);
+  background: transparent;
+  border: 1px solid rgba(200,146,42,0.30);
+  border-radius: 40px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.approachChip:hover {
+  border-color: rgba(200,146,42,0.70);
+  color: #A8721A;
+  background: rgba(200,146,42,0.04);
+}
+
+.approachChipActive {
+  border-color: #A8721A;
+  color: #A8721A;
+  background: rgba(200,146,42,0.06);
+}
+
+.approachDetail {
+  background: rgba(200,146,42,0.04);
+  border: 1px solid rgba(200,146,42,0.20);
+  border-radius: 10px;
+  padding: 18px 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.approachDetailLabel {
+  font-family: 'Cormorant SC', serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #A8721A;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.approachDetailGoal {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 17px;
+  font-style: italic;
+  font-weight: 300;
+  color: #0F1523;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.approachDetailDesc {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(15,21,35,0.65);
+  line-height: 1.75;
+  margin-bottom: 14px;
+}
+
+/* ── DA SECTIONS ── */
+.daSection {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(200,146,42,0.10);
+}
+
+.daSectionLabel {
+  font-family: 'Cormorant SC', serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: rgba(15,21,35,0.55);
+  text-transform: uppercase;
+}
+
+.daSectionNote {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 13px;
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(15,21,35,0.30);
+  margin: 0;
+}
+
+/* ── SUITE SECTION ── */
+.suiteSection { margin-bottom: 8px; }
+
+/* ── MAILING LIST ── */
+.mailingList { margin-top: 4px; margin-bottom: 24px; }
+
+.mailingLabel {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(15,21,35,0.72);
+  margin-bottom: 10px;
+}
+
+.mailingForm { display: flex; gap: 0; }
+
+.mailingInput {
+  flex: 1;
+  border: 1px solid rgba(200,146,42,0.25);
+  border-right: none;
+  background: #FFFFFF;
+  padding: 9px 12px;
+  font-family: 'Lora', Georgia, serif;
+  font-size: 15px;
+  font-weight: 300;
+  color: #0F1523;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.mailingInput:focus { border-color: #A8721A; }
+.mailingInput::placeholder { color: rgba(15,21,35,0.35); }
+
+.mailingBtn {
+  background: #0F1523;
+  border: 1px solid #0F1523;
+  color: #FFFFFF;
+  font-family: 'Cormorant SC', serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 9px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.mailingBtn:hover { background: #A8721A; border-color: #A8721A; }
+
+@media (max-width: 480px) {
+  .mailingForm { flex-direction: column; }
+  .mailingInput { border-right: 1px solid rgba(200,146,42,0.25); border-bottom: none; }
+  .mailingBtn { width: 100%; }
+}

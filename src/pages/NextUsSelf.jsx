@@ -3,6 +3,9 @@ import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkG
 import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import { GlossaryPanel } from '../components/GlossaryPanel'
+import SelfExplorer from '../components/self-explorer/SelfExplorer'
+import { useAuth } from '../hooks/useAuth'
+import { supabase } from '../hooks/useSupabase'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 
 const body = { fontFamily: "'Lora', Georgia, serif" }
@@ -27,6 +30,21 @@ const SHARE_RECS = {
 
 export function NextUsSelfPage() {
   const [shareRec, setShareRec] = useState(null)
+  const [purposeData, setPurposeData] = useState(null)
+  const { user } = useAuth()
+
+  // Load Purpose Piece results to pre-highlight the user's domain
+  useState(() => {
+    if (!user?.id) return
+    supabase
+      .from('purpose_piece_results')
+      .select('profile, session')
+      .eq('user_id', user.id)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => { if (data) setPurposeData(data) })
+  }, [user?.id])
 
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
@@ -66,6 +84,11 @@ export function NextUsSelfPage() {
           </p>
         </div>
 
+      </div>
+
+      {/* Self Explorer — heptagon */}
+      <div style={{ width: '96vw', marginLeft: '50%', transform: 'translateX(-50%)', borderRadius: '14px', overflow: 'hidden', marginBottom: '0' }}>
+        <SelfExplorer purposeData={purposeData} />
       </div>
 
       {/* Seven Domains — dark section */}
