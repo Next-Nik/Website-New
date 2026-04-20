@@ -190,7 +190,7 @@ export function AboutPage() {
         <style>{`
           .nik-peru-wrap {
             width: 100%;
-            height: clamp(340px, 55vw, 600px);
+            height: clamp(340px, 55vw, 500px);
             border-radius: 14px;
             border: 1.5px solid rgba(200,146,42,0.55);
             overflow: hidden;
