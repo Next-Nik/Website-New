@@ -216,7 +216,7 @@ export function AboutPage() {
               const progress = 1 - (rect.bottom / (viewH + rect.height))
               const shift = Math.min(Math.max(progress * 30, 0), 30)
               const img = el.querySelector('.nik-peru-img')
-              if (img) img.style.transform = 'translateY(-' + shift + '%)'
+              if (img) img.style.transform = 'translateY(' + shift + '%)'
             }
             window.addEventListener('scroll', onScroll, { passive: true })
             onScroll()
