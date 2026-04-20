@@ -1,24 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { CURRENT_STATE, SCALE_LABELS, DATA_STATUS } from "./currentState";
+import { SCALE_LABELS } from "./currentState";
 import styles from "./DomainPanel.module.css";
 import { supabase } from "../../hooks/useSupabase";
-
-// ── FOCUS STATUS ──────────────────────────────────────────────────────────────
-const STATUS_CONFIG = {
-  thriving:  { label: 'Thriving',   color: '#2A6B3A' },
-  underway:  { label: 'Underway',   color: '#2A4A8A' },
-  underloved:{ label: 'Underloved', color: '#8A6B2A' },
-  unmapped:  { label: 'Unmapped',   color: 'rgba(15,21,35,0.55)' },
-}
-
-function computeStatus(actorCount, goalSet) {
-  if (!goalSet && actorCount === 0) return 'unmapped'
-  if (goalSet && actorCount >= 3)  return 'thriving'
-  if (goalSet && actorCount > 0)   return 'underway'
-  if (actorCount > 0 && !goalSet)  return 'underway'
-  if (goalSet && actorCount === 0) return 'underloved'
-  return 'unmapped'
-}
 
 // ── FOCUS SEARCH ──────────────────────────────────────────────────────────────
 function FocusSelector({ current, onSelect, onClear }) {
@@ -61,7 +44,7 @@ function FocusSelector({ current, onSelect, onClear }) {
   return (
     <div ref={wrapRef} className={styles.focusBar}>
       <button className={styles.focusTrigger} onClick={() => setOpen(o => !o)}>
-        <span className={styles.focusEyebrow}>Viewing</span>
+        <span className={styles.focusEyebrow}>Scale</span>
         <span className={styles.focusName}>{current ? current.name : 'Global'}</span>
         <span className={styles.focusChevron}>{open ? '▴' : '▾'}</span>
       </button>
@@ -108,88 +91,23 @@ function FocusSelector({ current, onSelect, onClear }) {
   )
 }
 
-// ── ILLUSTRATIVE PREVIEW COMPONENT ───────────────────────────────────────────
-// Shows the structure of the Current State layer — not content.
-// Nothing here implies knowledge of actual domain state.
-function IllustrativePreview({ cs, onContribute, entryPoint }) {
+// ── DA PLACEHOLDER SECTION ────────────────────────────────────────────────────
+function DASection({ label }) {
   return (
-    <div className={styles.illustrativeWrap}>
-      <div className={styles.currentStateDivider} />
-
-      <div className={styles.previewHeader}>
-        <span className={styles.previewEyebrow}>Current State</span>
-        <span className={styles.previewBadge}>Being Mapped</span>
-      </div>
-
-      {/* Gap bar — structural shape only */}
-      <div className={styles.previewGapSection}>
-        <div className={styles.gapBarLabels}>
-          <span>Where we are</span>
-          <span>Horizon Goal</span>
-        </div>
-        <div className={styles.gapBarTrack}>
-          <div
-            className={styles.gapBarFill}
-            style={{
-              width: cs ? `${(cs.score / 10 * 100).toFixed(1)}%` : "40%",
-              opacity: 0.25,
-            }}
-          />
-          <div className={styles.gapBarHorizon} />
-        </div>
-      </div>
-
-      {/* Indicator slots — type only, no content */}
-      <div className={styles.previewIndicators}>
-        <p className={styles.previewSectionLabel}>Key Indicators</p>
-        {[1, 2, 3].map((n) => (
-          <div key={n} className={styles.previewIndicatorRow}>
-            <span className={styles.previewIndicatorSlot}>Indicator {n}</span>
-            <span className={styles.previewIndicatorBlank}>—</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Actor slots — scale structure, no names */}
-      <div className={styles.previewActors}>
-        <p className={styles.previewSectionLabel}>In the Field</p>
-        <div className={styles.actorsRow}>
-          {["Global", "Regional", "Local"].map((scale) => (
-            <div key={scale} className={`${styles.actorChip} ${styles.actorChipMuted}`}>
-              <div className={styles.actorDot} />
-              <span className={styles.actorSlot}>— {scale}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <p className={styles.previewNote}>
-        This layer populates when Decision Analytics runs for this domain.
-      </p>
-
-      {/* Entry point — this is architectural, always real */}
-      {entryPoint && (
-        <div className={styles.entryPoint}>
-          <p className={styles.entryPointText}>{entryPoint}</p>
-          <button className={styles.entryBtn} onClick={onContribute}>
-            Find your entry &#8594;
-          </button>
-        </div>
-      )}
+    <div className={styles.daSection}>
+      <span className={styles.daSectionLabel}>{label}</span>
+      <p className={styles.daSectionNote}>Being built next</p>
     </div>
-  );
+  )
 }
 
 // ── MAIN COMPONENT ────────────────────────────────────────────────────────────
 export default function DomainPanel({
   item,
   parentLabel,
-  breadcrumb,
   onExploreSubDomains,
   onBack,
   onContribute,
-  onPrev,
-  onNext,
   level,
   isVisible,
   userData,
@@ -202,9 +120,7 @@ export default function DomainPanel({
   const [focusLoading, setFocusLoading]   = useState(false);
 
   const isPlaceholder = item.horizonGoal === "placeholder";
-  const cs = level === 0 && item.id ? CURRENT_STATE[item.id] : null;
 
-  // When focus changes, fetch actors and local goal for this domain
   useEffect(() => {
     if (!activeFocus || !item.id) {
       setFocusActors([])
@@ -235,58 +151,12 @@ export default function DomainPanel({
   }, [activeFocus, item.id])
 
   const isUserDomain = userData?.domain === item.id;
-  const userScale = userData?.scale;
-  const userArchetype = userData?.archetype;
-
-  const entryPoint = cs
-    ? (userArchetype && cs.entryPoints[userArchetype]) || cs.entryPoints.default
-    : null;
-
-  const actors = cs ? (
-    isUserDomain && userScale
-      ? [
-          ...cs.actors.filter(a => a.scale === userScale),
-          ...cs.actors.filter(a => a.scale !== userScale),
-        ]
-      : cs.actors
-  ) : [];
-
-  const gapDistance = cs ? (10 - cs.score).toFixed(1) : null;
-  const fillPct = cs ? `${(cs.score / 10 * 100).toFixed(1)}%` : "0%";
-  const isIllustrative = DATA_STATUS === "illustrative";
+  const userScale    = userData?.scale;
 
   return (
     <div className={`${styles.panel} ${isVisible ? styles.visible : ""}`}>
 
-      {breadcrumb.length > 1 && (
-        <nav className={styles.breadcrumb} aria-label="Navigation path">
-          {breadcrumb.map((crumb, i) => (
-            <span key={i}>
-              {i > 0 && <span className={styles.breadcrumbSep}>&#183;</span>}
-              <span className={i === breadcrumb.length - 1 ? styles.breadcrumbCurrent : styles.breadcrumbItem}>
-                {crumb}
-              </span>
-            </span>
-          ))}
-        </nav>
-      )}
-
-      {isUserDomain && userData && (
-        <div className={styles.yourDomainBadge}>
-          <span className={styles.yourDomainDot} />
-          <span>Your domain &#183; {userData.archetype} &#183; {SCALE_LABELS[userData.scale] || userData.scale}</span>
-        </div>
-      )}
-
-      {/* Domain name with hover tooltip showing description */}
-      <div className={styles.domainNameWrap}>
-        <h2 className={styles.domainName}>{item.name}</h2>
-        {item.description && item.description !== "placeholder" && item.description !== "Being mapped" && (
-          <div className={styles.domainTooltip}>{item.description}</div>
-        )}
-      </div>
-
-      {/* Row 1: back + explore */}
+      {/* ── 1. NAV ── */}
       <nav className={styles.topNav}>
         {onBack && (
           <button className={styles.navItem} onClick={onBack}>
@@ -301,34 +171,30 @@ export default function DomainPanel({
         )}
       </nav>
 
-
-      {/* Actors link */}
-      {rootDomainId && (
-        <div className={styles.actorsNav}>
-          <div className={styles.actorsNavLabel}>
-            <a href={'/nextus/actors?domain=' + rootDomainId} className={styles.navItem}>
-              Orgs. and individuals
-            </a>
-            <div className={styles.infoWrap}>
-              <span className={styles.infoIcon}>ⓘ</span>
-              <div className={styles.infoTooltip}>
-                The foundations, organisations, co-ops, projects, and initiatives actively working toward the horizon goal in this domain.
-              </div>
-            </div>
-          </div>
+      {/* ── DOMAIN NAME ── */}
+      {isUserDomain && userData && (
+        <div className={styles.yourDomainBadge}>
+          <span className={styles.yourDomainDot} />
+          <span>Your domain &#183; {userData.archetype} &#183; {SCALE_LABELS[userData.scale] || userData.scale}</span>
         </div>
       )}
 
+      <div className={styles.domainNameWrap}>
+        <h2 className={styles.domainName}>{item.name}</h2>
+      </div>
 
-
+      {/* ── 2. HORIZON GOAL ── */}
       <div className={styles.horizonGoal}>
         {activeFocus && focusGoal ? (
           <>
-            <span className={styles.goalLabel}>Local horizon</span>
+            <span className={styles.goalLabel}>Local horizon goal</span>
             {focusGoal}
           </>
         ) : isPlaceholder ? (
-          <span className={styles.comingSoon}>Horizon goal being mapped</span>
+          <>
+            <span className={styles.goalLabel}>Horizon goal</span>
+            <span className={styles.comingSoon}>Being mapped</span>
+          </>
         ) : (
           <>
             <span className={styles.goalLabel}>Horizon goal</span>
@@ -337,189 +203,114 @@ export default function DomainPanel({
         )}
       </div>
 
-      {/* Focus context bar — z-axis navigation */}
+      {/* ── 3. SCALE SELECTOR ── */}
       <FocusSelector
         current={activeFocus}
         onSelect={f => { setActiveFocus(f); setFieldExpanded(false) }}
         onClear={() => { setActiveFocus(null); setFocusActors([]); setFocusGoal(null) }}
       />
 
-      {/* Focus actors — shown when a Focus is active */}
-      {activeFocus && (
-        <div className={styles.focusActorsSection}>
-          <div className={styles.focusActorsHeader}>
-            <span className={styles.focusActorsLabel}>In the Field — {activeFocus.name}</span>
-            {!focusLoading && (() => {
-              const status = computeStatus(focusActors.length, !!focusGoal)
-              const cfg = STATUS_CONFIG[status]
-              return (
-                <span className={styles.statusBadge} style={{ color: cfg.color, borderColor: cfg.color }}>
-                  {cfg.label}
-                </span>
-              )
-            })()}
-          </div>
-
-          {focusLoading && <p className={styles.focusSearching}>Loading…</p>}
-
-          {!focusLoading && focusActors.length === 0 && (
-            <div className={styles.focusEmpty}>
-              <p className={styles.focusEmptyText}>
-                No actors registered in {activeFocus.name} for this domain yet.
-              </p>
-              <p className={styles.focusEmptyHint}>
-                This is an opportunity — and a need.
-              </p>
-            </div>
-          )}
-
-          {!focusLoading && focusActors.length > 0 && (
-            <div className={styles.actorsRow}>
-              {focusActors.slice(0, fieldExpanded ? focusActors.length : 4).map((actor) => (
-                <a
-                  key={actor.id}
-                  href={`/nextus/actors/${actor.id}`}
-                  className={`${styles.actorChip} ${actor.winning ? '' : styles.actorChipMuted}`}
-                  style={{ textDecoration: 'none' }}
-                >
-                  <div className={`${styles.actorDot} ${actor.winning ? styles.actorDotWinning : styles.actorDotMuted}`} />
-                  <span className={styles.actorName}>{actor.name}</span>
-                  <span className={styles.actorScale}>· {SCALE_LABELS[actor.scale] || actor.scale}</span>
-                </a>
-              ))}
-            </div>
-          )}
-
-          {!focusLoading && focusActors.length > 4 && (
-            <button className={styles.seeAllBtn} onClick={() => setFieldExpanded(e => !e)}>
-              {fieldExpanded ? 'Show less' : `See all ${focusActors.length} →`}
-            </button>
-          )}
-
-          {activeFocus?.slug && (
-            <a
-              href={`/nextus/focus/${activeFocus.slug}`}
-              className={styles.focusPageLink}
-            >
-              Full {activeFocus.name} picture →
-            </a>
-          )}
+      {/* ── 4. ABOUT THIS DOMAIN ── */}
+      {item.description && item.description !== "placeholder" && item.description !== "Being mapped" && (
+        <div className={styles.aboutSection}>
+          <span className={styles.sectionLabel}>About this domain</span>
+          <p className={styles.description}>{item.description}</p>
         </div>
-      )}
-
-      {item.description && item.description !== "placeholder" && (
-        <p className={styles.description}>{item.description}</p>
-      )}
-
-      {/* ── CURRENT STATE LAYER ── */}
-      {cs && (
-        isIllustrative ? (
-          <IllustrativePreview
-            cs={cs}
-            onContribute={onContribute}
-            entryPoint={entryPoint}
-          />
-        ) : (
-          // ── VERIFIED DATA (real DA output) ──────────────────────────────
-          <div className={styles.currentState}>
-            <div className={styles.currentStateDivider} />
-
-            {cs.gapSignal && (
-              <div className={styles.gapSignal}>
-                <div className={styles.gapSignalDot} />
-                <span className={styles.gapSignalLabel}>Gap Signal Active</span>
-                {cs.gapReason && (
-                  <span className={styles.gapSignalReason}> — {cs.gapReason}</span>
-                )}
-              </div>
-            )}
-
-            <div className={styles.scoreRow}>
-              <div>
-                <div className={styles.scoreNumber}>
-                  {cs.score}<span className={styles.scoreDenom}>/10</span>
-                </div>
-                <div className={styles.scoreLabel}>Current State</div>
-              </div>
-              <div className={styles.scoreMeta}>
-                <div className={styles.gapDistanceLabel}>{gapDistance} points to horizon</div>
-              </div>
-            </div>
-
-            <div className={styles.gapBarWrap}>
-              <div className={styles.gapBarLabels}>
-                <span>Where we are</span>
-                <span>Horizon Goal</span>
-              </div>
-              <div className={styles.gapBarTrack}>
-                <div className={styles.gapBarFill} style={{ width: fillPct }} />
-                <div className={styles.gapBarHorizon} />
-              </div>
-            </div>
-
-            {cs.indicators && cs.indicators.length > 0 && (
-              <div className={styles.indicators}>
-                {cs.indicators.map((ind, i) => (
-                  <div key={i} className={styles.indicator}>
-                    <span className={styles.indicatorLabel}>{ind.label}</span>
-                    <span className={`${styles.indicatorValue} ${styles[`trend_${ind.trend}`]}`}>
-                      {ind.value}
-                      <span className={styles.trendArrow}>
-                        {ind.trend === "up" ? " &#8593;" : ind.trend === "down" ? " &#8595;" : " &#8594;"}
-                      </span>
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <p className={styles.csNarrative}>{cs.narrative}</p>
-
-            <div className={styles.inField}>
-              <p className={styles.inFieldLabel}>In the Field</p>
-              {isUserDomain && userScale && (
-                <p className={styles.inFieldPersonalised}>
-                  Showing {SCALE_LABELS[userScale]} actors first — your scale
-                </p>
-              )}
-              <div className={styles.actorsRow}>
-                {actors.slice(0, fieldExpanded ? actors.length : 4).map((actor, i) => (
-                  <div
-                    key={i}
-                    className={`${styles.actorChip} ${actor.scale === userScale ? styles.actorChipHighlighted : ""} ${!actor.winning ? styles.actorChipMuted : ""}`}
-                  >
-                    <div className={`${styles.actorDot} ${actor.winning ? styles.actorDotWinning : styles.actorDotMuted}`} />
-                    <span className={styles.actorName}>{actor.name}</span>
-                    <span className={styles.actorScale}>· {SCALE_LABELS[actor.scale] || actor.scale}</span>
-                  </div>
-                ))}
-              </div>
-              <div className={styles.actorsFooter}>
-                {actors.length > 4 && (
-                  <button
-                    className={styles.seeAllBtn}
-                    onClick={() => setFieldExpanded(!fieldExpanded)}
-                  >
-                    {fieldExpanded ? "Show less" : `See all ${cs.totalActors} →`}
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {entryPoint && (
-              <div className={styles.entryPoint}>
-                <p className={styles.entryPointText}>{entryPoint}</p>
-                <button className={styles.entryBtn} onClick={onContribute}>
-                  Find your entry &#8594;
-                </button>
-              </div>
-            )}
-          </div>
-        )
       )}
 
       <div className={styles.divider} />
 
+      {/* ── 5. SIT REP ── */}
+      <DASection label="Sit rep" />
+
+      {/* ── 6. HOW WE MEASURE THIS ── */}
+      <DASection label="How we measure this" />
+
+      {/* ── 7. GAP MAP ── */}
+      <DASection label="Gap map" />
+
+      <div className={styles.divider} />
+
+      {/* ── 8. ORGS. AND INDIVIDUALS ── */}
+      <div className={styles.orgsSection}>
+        <div className={styles.orgsSectionHeader}>
+          <span className={styles.sectionLabel}>Orgs. and individuals</span>
+          {rootDomainId && (
+            <div className={styles.infoWrap}>
+              <span className={styles.infoIcon}>ⓘ</span>
+              <div className={styles.infoTooltip}>
+                The foundations, organisations, co-ops, projects, and initiatives actively working toward the horizon goal in this domain.
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Focus-specific actors */}
+        {activeFocus && (
+          <div className={styles.focusActorsSection}>
+            {focusLoading && <p className={styles.focusSearching}>Loading…</p>}
+
+            {!focusLoading && focusActors.length === 0 && (
+              <div className={styles.focusEmpty}>
+                <p className={styles.focusEmptyText}>
+                  No actors registered in {activeFocus.name} for this domain yet.
+                </p>
+                <p className={styles.focusEmptyHint}>
+                  This is an opportunity — and a need.
+                </p>
+              </div>
+            )}
+
+            {!focusLoading && focusActors.length > 0 && (
+              <>
+                <div className={styles.actorsRow}>
+                  {focusActors.slice(0, fieldExpanded ? focusActors.length : 4).map((actor) => (
+                    <a
+                      key={actor.id}
+                      href={`/nextus/actors/${actor.id}`}
+                      className={`${styles.actorChip} ${actor.winning ? '' : styles.actorChipMuted}`}
+                      style={{ textDecoration: 'none' }}
+                    >
+                      <div className={`${styles.actorDot} ${actor.winning ? styles.actorDotWinning : styles.actorDotMuted}`} />
+                      <span className={styles.actorName}>{actor.name}</span>
+                      <span className={styles.actorScale}>· {SCALE_LABELS[actor.scale] || actor.scale}</span>
+                    </a>
+                  ))}
+                </div>
+                {focusActors.length > 4 && (
+                  <button className={styles.seeAllBtn} onClick={() => setFieldExpanded(e => !e)}>
+                    {fieldExpanded ? 'Show less' : `See all ${focusActors.length} →`}
+                  </button>
+                )}
+                {activeFocus?.slug && (
+                  <a href={`/nextus/focus/${activeFocus.slug}`} className={styles.focusPageLink}>
+                    Full {activeFocus.name} picture →
+                  </a>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
+        {rootDomainId && (
+          <a href={'/nextus/actors?domain=' + rootDomainId} className={styles.orgsLink}>
+            See who's working on this &#8594;
+          </a>
+        )}
+      </div>
+
+      {/* ── 9. NEEDS ── */}
+      <DASection label="Needs" />
+
+      {/* ── 10. OBSTACLES ── */}
+      <DASection label="Obstacles" />
+
+      {/* ── 11. POINT SYSTEM ── */}
+      <DASection label="Point system" />
+
+      <div className={styles.divider} />
+
+      {/* ── 12. STAY CLOSE ── */}
       <div className={styles.mailingList}>
         <p className={styles.mailingLabel}>Stay close as this domain develops.</p>
         <form
@@ -544,7 +335,6 @@ export default function DomainPanel({
           </button>
         </form>
       </div>
-
 
     </div>
   );

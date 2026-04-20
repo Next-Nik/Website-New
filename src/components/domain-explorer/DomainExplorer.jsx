@@ -226,17 +226,6 @@ export default function DomainExplorer() {
               bloom={earthDone}
             />
           </div>
-          {/* Horizon goal centred below the wheel when a domain is selected */}
-          {!isIdle && selectedItem && !overviewOpen && (
-            <div className={styles.wheelGoal}>
-              <span className={styles.wheelGoalLabel}>Horizon goal</span>
-              <p className={styles.wheelGoalText}>
-                {selectedItem.horizonGoal === 'placeholder'
-                  ? 'Being mapped'
-                  : selectedItem.horizonGoal}
-              </p>
-            </div>
-          )}
           {/* Instruction only shows when truly idle — no node highlighted */}
           {isIdle && (
             <p className={styles.instruction}>
@@ -274,8 +263,6 @@ export default function DomainExplorer() {
               onExploreSubDomains={null}
               onBack={handleBack}
               onContribute={() => navigate(`/nextus/actors${selectedItem?.id ? `?domain=${selectedItem.id}` : ''}`)}
-              onPrev={handlePrev}
-              onNext={handleNext}
               level={navState.level - 1}
               isVisible={true}
               userData={null}
@@ -292,8 +279,6 @@ export default function DomainExplorer() {
               onExploreSubDomains={handleExploreSubDomains}
               onBack={handleBack}
               onContribute={() => navigate(`/nextus/actors?domain=${levelPath.length > 0 ? domainTree[levelPath[0].index]?.id : selectedItem?.id}`)}
-              onPrev={handlePrev}
-              onNext={handleNext}
               level={navState.level}
               isVisible={true}
               userData={null}

@@ -994,3 +994,76 @@
     gap: 8px;
   }
 }
+
+/* ── DA PLACEHOLDER SECTIONS ── */
+.daSection {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(200,146,42,0.10);
+}
+
+.daSectionLabel {
+  font-family: 'Cormorant SC', serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--text-meta);
+  text-transform: uppercase;
+}
+
+.daSectionNote {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 14px;
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(15,21,35,0.35);
+  margin: 0;
+}
+
+/* ── SECTION LABEL (shared eyebrow) ── */
+.sectionLabel {
+  display: block;
+  font-family: 'Cormorant SC', serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--text-meta);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+/* ── ABOUT SECTION ── */
+.aboutSection {
+  margin-bottom: 4px;
+}
+
+/* ── ORGS SECTION ── */
+.orgsSection {
+  margin-bottom: 8px;
+}
+
+.orgsSectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.orgsSectionHeader .sectionLabel {
+  margin-bottom: 0;
+}
+
+.orgsLink {
+  display: inline-block;
+  margin-top: 12px;
+  font-family: 'Cormorant SC', Georgia, serif;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  color: var(--gold-dk);
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.orgsLink:hover { opacity: 0.7; }
