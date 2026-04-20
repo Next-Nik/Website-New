@@ -23,10 +23,10 @@ const supabase = createClient(
 // group:    written to users.beta_group in Supabase
 // kitTagId: Kit tag ID — get from Kit Dashboard → Subscribers → Tags
 const PROMO_GROUP_MAP = {
-  'BETATESTER': { group: 'beta_tester', kitTagId: null }, // replace null with Kit tag ID
-  'BETACORE':   { group: 'beta_core',   kitTagId: null },
-  'NEXTCORE':   { group: 'nextus_core', kitTagId: null },
-  'EARLYBIRD':  { group: 'early_bird',  kitTagId: null },
+  'BETA50':      { group: 'beta_tester', kitTagId: 19032269 },
+  'BETACORE75':  { group: 'beta_core',   kitTagId: 19032272 },
+  'EARLYBIRD50': { group: 'early_bird',  kitTagId: 19032276 },
+  'FRIEND':      { group: 'referred',    kitTagId: 19032279 },
 }
 
 // ── Price → product mapping ───────────────────────────────────────────────────
@@ -210,6 +210,14 @@ module.exports = async function handler(req, res) {
           ?? session.discounts?.[0]?.promotion_code?.code
           ?? null
         await tagUserGroup(userId, email, promoCode)
+
+        // Store referral source if a ref code was passed through session metadata
+        const referredBy = session.metadata?.referred_by ?? null
+        if (referredBy) {
+          await supabase.from('users')
+            .update({ referred_by: referredBy })
+            .eq('id', userId)
+        }
 
         break
       }

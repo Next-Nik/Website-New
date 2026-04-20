@@ -100,9 +100,10 @@ export function CheckoutPage() {
   const [status, setStatus] = useState('idle') // idle | redirecting | error
   const [errorMsg, setErrorMsg] = useState('')
 
-  const params   = new URLSearchParams(window.location.search)
-  const priceId  = params.get('price')
+  const params    = new URLSearchParams(window.location.search)
+  const priceId   = params.get('price')
   const promoCode = params.get('promo') ?? undefined
+  const ref       = params.get('ref')   ?? undefined
 
   // ── Auth redirect ───────────────────────────────────────────────────────────
   useEffect(() => {
@@ -129,6 +130,7 @@ export function CheckoutPage() {
           priceId,
           userId:     user.id,
           promoCode,
+          ref,
           successUrl: `${window.location.origin}${ROUTES.dashboard}?checkout=success`,
           cancelUrl:  `${window.location.origin}${ROUTES.pricing}`,
         }),

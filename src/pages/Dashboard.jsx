@@ -1582,6 +1582,62 @@ const RAIL_ITEMS = {
 
 const ZONE_LABELS = { you: 'You', work: 'Your Work', practitioners: 'Practitioners', planet: 'Planet' }
 
+// ── InviteCard ────────────────────────────────────────────────────────────────
+const INVITE_GROUPS = new Set(['beta_tester', 'beta_core', 'early_bird'])
+const INVITE_PRICE  = 'price_1TKOqcCWnSAIfnqOXXzytZiC'
+
+function InviteCard({ referralCode, betaGroup }) {
+  const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const body = { fontFamily: "'Lora', Georgia, serif" }
+  const [copied, setCopied] = useState(false)
+
+  if (!INVITE_GROUPS.has(betaGroup) || !referralCode) return null
+
+  const link = `${window.location.origin}/checkout?price=${INVITE_PRICE}&promo=FRIEND&ref=${referralCode}`
+
+  function copyLink() {
+    navigator.clipboard.writeText(link).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
+  return (
+    <div style={{
+      padding: '14px 16px',
+      background: 'rgba(200,146,42,0.04)',
+      border: '1px solid rgba(200,146,42,0.25)',
+      borderRadius: '8px',
+    }}>
+      <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '4px' }}>
+        INVITE A FRIEND
+      </div>
+      <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.6)', lineHeight: 1.5, margin: '0 0 10px' }}>
+        Know someone who would get something out of this? Send them your link — two weeks free, no card required.
+      </p>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+        <div style={{
+          flex: 1, ...body, fontSize: '11px', color: 'rgba(15,21,35,0.45)',
+          background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.20)',
+          borderRadius: '6px', padding: '6px 10px',
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>
+          {link}
+        </div>
+        <button onClick={copyLink} style={{
+          flexShrink: 0, padding: '6px 14px',
+          background: copied ? 'rgba(45,106,79,0.08)' : '#C8922A',
+          border: copied ? '1px solid rgba(45,106,79,0.4)' : 'none',
+          borderRadius: '6px', ...sc, fontSize: '11px', letterSpacing: '0.12em',
+          color: copied ? '#2D6A4F' : '#FFFFFF', cursor: 'pointer', transition: 'all 0.15s',
+        }}>
+          {copied ? 'Copied ✓' : 'Copy'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 export function DashboardPage() {
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
@@ -1595,6 +1651,8 @@ export function DashboardPage() {
   const [claimedActor,   setClaimedActor]   = useState(null)
   const [horizonProfile, setHorizonProfile] = useState(null)
   const [dataLoading,    setDataLoading]    = useState(true)
+  const [referralCode,   setReferralCode]   = useState(null)
+  const [betaGroup,      setBetaGroup]      = useState(null)
 
   // Nav state
   const [activeZone, setActiveZone]   = useState('you')
@@ -1644,6 +1702,21 @@ export function DashboardPage() {
         }
         setHorizonProfile(profile)
       }
+
+      // Fetch or generate referral code
+      const { data: userData } = await supabase
+        .from('users').select('referral_code, beta_group').eq('id', user.id).maybeSingle()
+      if (userData?.referral_code) {
+        setReferralCode(userData.referral_code)
+      } else if (userData) {
+        const initials = (user.user_metadata?.full_name || user.email || '')
+          .split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'NK'
+        const code = `${initials}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`
+        await supabase.from('users').update({ referral_code: code }).eq('id', user.id)
+        setReferralCode(code)
+      }
+      if (userData?.beta_group) setBetaGroup(userData.beta_group)
+
     } catch (e) { console.error(e) }
     setDataLoading(false)
   }
@@ -1890,6 +1963,9 @@ export function DashboardPage() {
             {!purposeData && (
               <NextUpBanner label="Next unlock: Purpose Piece" sub="20 min · surfaces your archetype, domain, and scale" href="/tools/purpose-piece" />
             )}
+
+            {/* Invite a friend — beta and early bird users only */}
+            <InviteCard referralCode={referralCode} betaGroup={betaGroup} />
 
           </div>
         )

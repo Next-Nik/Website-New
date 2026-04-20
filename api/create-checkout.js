@@ -3,7 +3,7 @@
 // Passes client_reference_id so the webhook can grant access to the correct
 // Supabase user regardless of which billing email is used at checkout.
 //
-// POST body: { priceId, userId, successUrl, cancelUrl, promoCode? }
+// POST body: { priceId, userId, successUrl, cancelUrl, promoCode?, ref? }
 // Returns:   { url } — the Stripe-hosted checkout URL to redirect to
 //
 // promoCode is optional. When supplied:
@@ -11,18 +11,21 @@
 //   - If the promo code is in TRIAL_PROMO_CODES, a 14-day trial is added.
 //   - Trial codes require no payment method — opt-in conversion after 14 days.
 //   - If the user doesn't subscribe after the trial, access lapses automatically.
+//
+// ref is optional. When supplied:
+//   - Stored in session metadata so the webhook can record who referred this user.
 
 const Stripe = require('stripe')
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
 // Promo codes that include a 14-day trial with no card required.
 // Keep in sync with PROMO_GROUP_MAP in stripe-webhook.js.
-const TRIAL_PROMO_CODES = new Set(['BETA50', 'BETACORE75'])
+const TRIAL_PROMO_CODES = new Set(['BETA50', 'BETACORE75', 'FRIEND'])
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { priceId, userId, successUrl, cancelUrl, promoCode } = req.body
+  const { priceId, userId, successUrl, cancelUrl, promoCode, ref } = req.body
 
   if (!priceId)    return res.status(400).json({ error: 'Missing priceId' })
   if (!userId)     return res.status(400).json({ error: 'Missing userId — user must be logged in' })
@@ -41,6 +44,11 @@ module.exports = async (req, res) => {
       client_reference_id: userId,
       success_url:         successUrl,
       cancel_url:          cancelUrl,
+    }
+
+    // Pass referral code through session metadata
+    if (ref) {
+      sessionParams.metadata = { referred_by: ref }
     }
 
     // No card required for trial users — opt-in conversion after 14 days
@@ -65,7 +73,7 @@ module.exports = async (req, res) => {
     // Add 14-day trial for trial promo codes
     if (isTrial) {
       sessionParams.subscription_data = {
-        trial_period_days:    14,
+        trial_period_days: 14,
         trial_settings: {
           end_behavior: { missing_payment_method: 'cancel' },
         },
