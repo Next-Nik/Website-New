@@ -383,8 +383,6 @@ export function HomePage() {
               max-width: 640px;
               margin: 0 auto 40px;
               text-align: left;
-              border-radius: 14px;
-              overflow: hidden;
             }
             .hero-track--dark {
               background: #0F1523;
@@ -392,20 +390,22 @@ export function HomePage() {
               display: flex;
               flex-direction: column;
               gap: 12px;
+              border-radius: 14px 0 0 14px;
             }
             .hero-track--light {
               background: #FAFAF7;
-              border: 1.5px solid rgba(200,146,42,2);
+              border: 1.5px solid rgba(200,146,42,0.20);
               border-left: none;
               padding: 32px 36px;
               display: flex;
               flex-direction: column;
               gap: 12px;
+              border-radius: 0 14px 14px 0;
             }
             @media (max-width: 640px) {
               .hero-tracks { grid-template-columns: 1fr; }
-              .hero-track--dark { padding: 28px 24px; }
-              .hero-track--light { padding: 28px 24px; border-left: 1.5px solid rgba(200,146,42,0.20); border-top: none; }
+              .hero-track--dark { padding: 28px 24px; border-radius: 14px 14px 0 0; }
+              .hero-track--light { padding: 28px 24px; border-left: 1.5px solid rgba(200,146,42,0.20); border-top: none; border-radius: 0 0 14px 14px; }
             }
           `}</style>
 
