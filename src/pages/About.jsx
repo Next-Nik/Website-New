@@ -7,255 +7,262 @@ import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const gold = { color: '#A8721A' }
-const meta = { color: 'rgba(15,21,35,0.55)' }
-const dark = { color: '#0F1523' }
+const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const gold  = { color: '#A8721A' }
+const meta  = { color: 'rgba(15,21,35,0.55)' }
+const dark  = { color: '#0F1523' }
+
+function P({ children, style = {} }) {
+  return (
+    <p style={{ ...body, fontSize: '17px', fontWeight: 300, ...dark, lineHeight: 1.85, marginBottom: '20px', ...style }}>
+      {children}
+    </p>
+  )
+}
 
 function Rule() {
-  return <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '64px 0' }} />
-}
-
-function Featured({ children, right = false }) {
-  return (
-    <div style={{
-      borderLeft: right ? 'none' : '3px solid #C8922A',
-      borderRight: right ? '3px solid #C8922A' : 'none',
-      padding: right ? '8px 28px 8px 0' : '8px 0 8px 28px',
-      margin: '40px 0',
-      maxWidth: '640px',
-      marginLeft: right ? 'auto' : undefined,
-      marginRight: right ? 0 : undefined,
-      textAlign: right ? 'right' : undefined,
-    }}>
-      <p style={{ ...body, fontSize: 'clamp(20px,2.6vw,26px)', fontWeight: 300, ...dark, lineHeight: 1.55, margin: 0 }}>
-        {children}
-      </p>
-    </div>
-  )
-}
-
-function ToolRow({ name, desc }) {
-  return (
-    <div style={{ display: 'flex', gap: '20px', padding: '16px 0', borderBottom: '1px solid rgba(200,146,42,0.20)', alignItems: 'baseline' }}>
-      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, minWidth: '160px', flexShrink: 0 }}>{name}</span>
-      <span style={{ ...body, fontSize: '16px', ...meta, lineHeight: 1.6 }}>{desc}</span>
-    </div>
-  )
-}
-
-function Value({ name, desc }) {
-  return (
-    <div style={{ borderRight: '3px solid rgba(200,146,42,0.20)', padding: '14px 24px 14px 0', textAlign: 'right' }}>
-      <strong style={{ display: 'block', ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, marginBottom: '4px' }}>{name}</strong>
-      <p style={{ margin: 0, ...body, fontSize: '16px', ...meta }}>{desc}</p>
-    </div>
-  )
+  return <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '52px 0' }} />
 }
 
 export function AboutPage() {
-  const page = { maxWidth: '820px', margin: '0 auto', padding: '72px 40px 100px' }
-  const pageRight = { ...page, textAlign: 'right' }
-
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
       <Nav activePath="about" />
-      <style>{`@media (max-width: 640px) { .about-section { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
 
-      {/* ── SECTION ONE — NEXTUS ── */}
-      <div className="about-section" style={page}>
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '14px' }}>NextUs · Horizon Suite</span>
-        <h1 style={{ ...serif, fontSize: 'clamp(40px,5.5vw,64px)', fontWeight: 300, ...gold, lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '16px' }}>
-          A life worth living,<br />a future worth building.
+      <style>{`
+        @media (max-width: 640px) {
+          .about-cols { grid-template-columns: 1fr !important; }
+          .about-cols .about-col-divider { display: none !important; }
+          .about-cols .about-col:first-child { border-bottom: 1px solid rgba(200,146,42,0.20); padding-bottom: 52px !important; }
+          .about-wrap { padding-left: 24px !important; padding-right: 24px !important; }
+        }
+      `}</style>
+
+      {/* ── PAGE HEADER ── */}
+      <div className="about-wrap" style={{ maxWidth: '900px', margin: '0 auto', padding: 'clamp(88px,10vw,120px) 40px 64px' }}>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '14px' }}>About</span>
+        <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, ...dark, lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '0' }}>
+          A life worth living.<br />
+          <em style={{ ...gold }}>A future worth building.</em>
         </h1>
-        <p style={{ ...serif, fontSize: 'clamp(18px,2.2vw,24px)', fontWeight: 300, ...meta, marginBottom: '0', maxWidth: '640px' }}>
-          A frame for the human project.
-        </p>
-        <div style={{ width: '56px', height: '1px', background: '#C8922A', margin: '20px 0 40px' }} />
-
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px' }}>
-          Humanity has never collectively answered the most important question: what are we actually building toward? Not as ideology — as a genuine, shared picture of what flourishing looks like across every domain of human life. Some people are restoring ecosystems. Some are building ethical technology. Some are designing new economies. None of it is aimed at a common horizon.
-        </p>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px' }}>
-          This is not a resource problem or a technology problem. It is a navigation problem. You cannot coordinate around a destination that doesn't exist.
-        </p>
-
-        <Featured>What we can see clearly, we can choose. What we can coordinate around, we can change.</Featured>
-
-        <Rule />
-
       </div>
 
-      <div className="about-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px 0' }}>
+      {/* ── TWO COLUMNS ── */}
+      <div className="about-wrap" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 40px 80px' }}>
+        <div
+          className="about-cols"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1px 1fr',
+            gap: '0',
+            alignItems: 'start',
+          }}
+        >
+          {/* LEFT — NextUs Self */}
+          <div className="about-col" style={{ paddingRight: '48px' }}>
+            <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', ...gold, display: 'block', marginBottom: '20px' }}>NextUs Self</span>
+            <h2 style={{ ...serif, fontSize: 'clamp(26px,3vw,36px)', fontWeight: 300, ...dark, lineHeight: 1.15, marginBottom: '28px' }}>
+              A chosen life.
+            </h2>
 
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>The tools.</h2>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px' }}>
-          The Horizon Suite is the personal navigation layer. Each tool is built for a specific stage of the journey.
-        </p>
+            <P>
+              Most personal development tools get applied without a map. Someone finds a methodology,
+              a practice, a coach — and brings it to bear on their life without any honest picture of
+              where they actually are or what stage they're in. A tool applied at the wrong stage
+              doesn't just miss. It can actively cause harm.
+            </P>
+            <P>NextUs Self is built on a different premise.</P>
+            <P>
+              There are stages to healing and development. The Horizon Suite is a series of tools
+              designed to meet you at yours. They are diagnostic first — drawing out an honest picture
+              of where you are and where you want to go. They are agnostic about what comes next.
+              They don't prescribe a path. They illuminate the terrain and aim you toward the life
+              your healthiest, most aligned self would actually thrive in.
+            </P>
+            <P>
+              The tools can be used independently. But they are designed to stack — each one building
+              on what the last revealed. Vision first. Then embodied action. Then the methodologies,
+              practices, and support —{' '}
+              <a href="/nextus-self" style={{ ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(168,114,26,0.35)' }}>
+                from people, practitioners, and organisations around the world
+              </a>
+              {' '}— that are yours to choose freely, held by the scaffold the Suite provides.
+            </P>
+            <P>
+              Inside the elements everyone needs to function and thrive is where you bring your
+              creativity, your individuality, your magic.
+            </P>
+            <P>
+              As you start to truly thrive, so too does the world around you. That is how the
+              ecosystem works.
+            </P>
 
-        <div style={{ margin: '28px 0' }}>
-          <ToolRow name="Horizon State" desc="The nervous system layer. The regulated ground everything else runs on — capacity before content." />
-          <ToolRow name="Purpose Piece" desc="The pattern beneath how you're naturally built to contribute. Not a personality test — recognition." />
-          <ToolRow name="The Map" desc="Seven domains. Three steps each. An honest picture of where you are and where you want to be." />
-          <ToolRow name="Target Sprint" desc="Focused sprint planning across your three most urgent domains. From horizon to next action." />
-          <ToolRow name="Horizon Practice" desc="Daily practice. The return. T.E.A. alignment, skill development, and thought loop work." />
-        </div>
+            <div style={{ marginTop: '32px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+              <a href="/nextus-self" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(168,114,26,0.35)', paddingBottom: '2px' }}>
+                The Horizon Suite →
+              </a>
+              <a href="/tools/north-star" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.20)', paddingBottom: '2px' }}>
+                Find your starting point →
+              </a>
+            </div>
+          </div>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', marginTop: '52px', paddingTop: '44px', borderTop: '1px solid rgba(200,146,42,0.20)', alignItems: 'center' }}>
-          <a href="/tools/north-star" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>North Star →</a>
-          <a href="/nextus-self" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Explore the Horizon Suite →</a>
-        </div>
-      </div>
+          {/* DIVIDER */}
+          <div className="about-col-divider" style={{ background: 'rgba(200,146,42,0.20)', alignSelf: 'stretch' }} />
 
-      {/* Two scales — dark section */}
-      <DarkSection>
-        <DarkEyebrow>Two scales. One architecture.</DarkEyebrow>
-        <DarkHeading>The same navigation physics that move one life move a civilisation.</DarkHeading>
-        <DarkBody>NextUs operates at the civilisational scale — a map for the people already doing the work. The Horizon Suite operates at the personal scale — a navigation framework for individuals. These are not separate projects. A person who has learned to see their own life clearly is more capable of contributing to the larger work.</DarkBody>
-      </DarkSection>
+          {/* RIGHT — NextUs Planet */}
+          <div className="about-col" style={{ paddingLeft: '48px' }}>
+            <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', ...gold, display: 'block', marginBottom: '20px' }}>NextUs</span>
+            <h2 style={{ ...serif, fontSize: 'clamp(26px,3vw,36px)', fontWeight: 300, ...dark, lineHeight: 1.15, marginBottom: '28px' }}>
+              A chosen planet.
+            </h2>
 
-      {/* ── SECTION TWO — NIK (right-aligned) ── */}
-      <div className="about-section" style={pageRight}>
+            <P>
+              Most coordination efforts fail before they start. Not because the people aren't capable
+              or the resources don't exist — but because there's no shared picture of where we're
+              actually going. Effort scatters. Good work happens in isolation. The solutions that
+              worked in one place, in one environment, are applied to another situation with completely
+              different needs, at a completely different stage.
+            </P>
+            <P>NextUs is built on a different premise.</P>
+            <P>
+              There are domains to civilisational life — seven of them — and the work of building a
+              thriving planet is already happening inside every one. People are restoring ecosystems,
+              designing new economies, building governance frameworks, developing ethical technology.
+              The work is real. What's missing is the map, and the connection.
+            </P>
+            <P>
+              NextUs is a coordination platform designed to make that map visible, and those
+              connections real. It is diagnostic first — drawing an honest picture of where each
+              domain actually is, and what the horizon goal for that domain looks like at every scale.
+              It is agnostic about how we get there. It doesn't prescribe ideology or method. It
+              illuminates the terrain and connects the people already doing the work.
+            </P>
+            <P>
+              Organisations and individuals place themselves on the map. They name what they're
+              building, what they need, and what they have to offer. The platform surfaces the
+              connections — not as an algorithm optimising for engagement, but as infrastructure
+              for genuine coordination. Give first. Close the loop. Build a record of what actually
+              happened.
+            </P>
+            <P>
+              Somewhere inside these seven domains is where your contribution lives. The platform
+              holds the scaffold. You bring the work.
+            </P>
+            <P>
+              As more people find their place in the larger picture, the map becomes more useful,
+              the connections more precise, the effort less scattered. That is how the ecosystem works.
+            </P>
 
-        {/* Photograph — replace /nik.png with your actual image file in /public */}
-        <div style={{ marginBottom: '52px', display: 'flex', justifyContent: 'flex-end' }}>
-          <div style={{
-            width: 'clamp(200px, 40vw, 340px)',
-            aspectRatio: '3/4',
-            borderRadius: '4px',
-            overflow: 'hidden',
-            border: '1.5px solid rgba(200,146,42,0.70)',
-            outline: '1.5px solid rgba(200,146,42,0.55)',
-            outlineOffset: '5px',
-            background: 'rgba(200,146,42,0.05)',
-            position: 'relative',
-          }}>
-            <img
-              src="/nik.jpeg"
-              alt="Nik Wood"
-              style={{
-                width: '100%', height: '100%',
-                objectFit: 'cover', objectPosition: 'center top',
-                display: 'block',
-              }}
-              onError={e => {
-                // Graceful fallback if photo not yet added
-                e.currentTarget.style.display = 'none'
-                e.currentTarget.parentNode.style.display = 'flex'
-                e.currentTarget.parentNode.style.alignItems = 'center'
-                e.currentTarget.parentNode.style.justifyContent = 'center'
-                e.currentTarget.parentNode.style.background = 'rgba(200,146,42,0.05)'
-              }}
-            />
+            <div style={{ marginTop: '32px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+              <a href="/nextus" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(168,114,26,0.35)', paddingBottom: '2px' }}>
+                NextUs →
+              </a>
+              <a href="/nextus/actors" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.20)', paddingBottom: '2px' }}>
+                Who's doing the work →
+              </a>
+            </div>
           </div>
         </div>
-
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '14px' }}>Nik Wood · Founder</span>
-        <h1 style={{ ...serif, fontSize: 'clamp(40px,5.5vw,64px)', fontWeight: 300, ...gold, lineHeight: 1.15, letterSpacing: '-0.01em', marginBottom: '16px' }}>
-          The person<br />behind the work.
-        </h1>
-        <div style={{ width: '56px', height: '1px', background: '#C8922A', margin: '20px 0 32px', marginLeft: 'auto' }} />
-
-        {/* Trust paragraph */}
-        <p style={{ ...serif, fontSize: '18px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '32px', maxWidth: '600px', marginLeft: 'auto' }}>
-          Nik has worked with people for over two decades. The consistent pattern across that time isn't a particular method {'—'} it's the result: people's lives become measurably better in the areas they came for help with, and often noticeably better in areas they didn't expect. Not because of what Nik does to them, but because of what becomes possible when someone is seen clearly and worked with honestly.
-        </p>
-
-        {/* Is this for you */}
-        <div style={{ marginBottom: '48px', padding: '28px 32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '14px', textAlign: 'left' }}>
-          <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '12px' }}>Is this for you?</span>
-          <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, margin: '0 0 8px', maxWidth: '520px' }}>
-            High-functioning, self-aware, and aware that functioning well isn't the same as living from what you're actually capable of. You've done some work on yourself. Something still isn't moving.
-          </p>
-          <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, margin: '0 0 20px', maxWidth: '520px' }}>
-            That's the exact person this work is built for.
-          </p>
-          <a href="/work-with-nik" style={{ display: 'inline-block', padding: '12px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', fontWeight: 600, letterSpacing: '0.14em', textDecoration: 'none' }}>
-            Work with Nik {'→'}
-          </a>
-        </div>
-
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
-          Since 2001, Nik has been working at the intersection of personal development and civilisational navigation {'—'} first through the Life Athletics Podcast, now through the NextUs ecosystem.
-        </p>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
-          The work began with a simple observation: most people are not lost. They are unoriented. There is a difference — and the difference changes everything about what kind of attention actually moves a life forward.
-        </p>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
-          Over twenty years, that observation became a framework. The framework became tools. The tools became a platform.
-        </p>
-
-        <Featured right>A life worth living, a future worth building.</Featured>
-
-        <Rule />
-
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>The long arm.</h2>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
-          Nik's mother was a naturopathic doctor, a shaman, and an adventurer. She surrounded him with healers, teachers, and practitioners — people who understood that the work of becoming a full human being was serious, worth doing, and worth doing well.
-        </p>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
-          There were challenges in his youth — abuse and bullying — and an early decision to move through them powerfully rather than be defined by them. Inspired by Jim Rohn's observation that you are the average of the five people you spend the most time with, Nik immersed himself in every course, book, and tape series he could find.
-        </p>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
-          Eventually, something shifted. People started noticing it. They asked if he could help them find it for themselves. By his early twenties he was being paid to coach. The question was never whether this was the work. It was always how far it could go.
-        </p>
-
-        <Rule />
-
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Cracked open.</h2>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
-          In 2019, Nik broke his skull. What followed — recovery, cancer, the loss of his mother, and the loss of the friend who had saved his life — was not a detour from the work. It was the work, lived at full intensity.
-        </p>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
-          What came out the other side wasn't a new product line. It was a fundamentally different understanding of what this work is for — and the scale it needs to operate at.
-        </p>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
-          The podcast went quiet for seven years. The ecosystem was being built.
-        </p>
-
-        <Rule />
-
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>What drives this.</h2>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
-          Humanity as a whole is mostly operating the way a person operates when they have no clear direction and are carrying unresolved trauma — because that's mostly what humanity is made of.
-        </p>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
-          That's the starting point, not the verdict. There are tools that work at every stage of development. The work is matching the right one to the right stage — and then moving on from there.
-        </p>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, ...dark, lineHeight: 1.8, marginBottom: '18px', maxWidth: '640px', marginLeft: 'auto' }}>
-          Life on earth and humanity could be genuinely thriving, if that's what we individually and collectively aimed ourselves at.
-        </p>
-
-        <Rule />
-
-        <h2 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, ...dark, lineHeight: 1.25, margin: '0 0 14px' }}>Values.</h2>
-        <div style={{ display: 'grid', gap: '4px', margin: '28px 0' }}>
-          {[
-            ['Nikhedonia', 'The particular joy that comes from watching others thrive.'],
-            ['Ubuntu', 'I am because we are. In the spirit of Mandela.'],
-            ['Wonderment', 'The capacity to be genuinely astonished by what is.'],
-            ['Dymaxion', 'Maximum output from minimum input. In the spirit of Buckminster Fuller.'],
-            ['Excelsior', 'Ever upward. In the spirit of Stan Lee.'],
-            ['Enthusiasmos', 'To be filled with the divine. The animating fire.'],
-            ['Wabi Sabi', 'The beauty of imperfection, impermanence, and incompleteness.'],
-            ['Meliorism', 'The world can be made better through human effort. The belief beneath all of this.'],
-          ].map(([name, desc]) => <Value key={name} name={name} desc={desc} />)}
-        </div>
-
       </div>
 
-      {/* Purpose statement — dark closing section */}
+      {/* ── FRACTAL BRIDGE — dark section ── */}
+      <DarkSection>
+        <DarkEyebrow>The fractal</DarkEyebrow>
+        <DarkHeading>The same architecture. Two scales.</DarkHeading>
+        <DarkBody>
+          What you build in yourself maps directly onto what humanity is trying to build collectively.
+          The seven domains of your life are the same seven domains civilisation is working on.
+          The personal and the civilisational are not separate projects. They are the same work,
+          at different scales.
+        </DarkBody>
+        <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+          <DarkSolidButton href="/nextus-self">NextUs Self →</DarkSolidButton>
+          <DarkGhostButton href="/nextus">NextUs →</DarkGhostButton>
+        </div>
+      </DarkSection>
+
+      {/* ── NIK SECTION ── */}
+      <div className="about-wrap" style={{ maxWidth: '900px', margin: '0 auto', padding: '80px 40px 100px' }}>
+
+        {/* Photo — full width, landscape crop */}
+        <div style={{
+          width: '100%',
+          aspectRatio: '16/9',
+          borderRadius: '14px',
+          overflow: 'hidden',
+          marginBottom: '64px',
+          position: 'relative',
+        }}>
+          <img
+            src="/Nik_Peru.jpeg"
+            alt="Nik Wood at Machu Picchu"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center 30%',
+              display: 'block',
+            }}
+          />
+        </div>
+
+        {/* Nik text — max width, centred */}
+        <div style={{ maxWidth: '640px', margin: '0 auto' }}>
+          <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', ...gold, display: 'block', marginBottom: '14px' }}>Nik Wood · Founder</span>
+          <h2 style={{ ...serif, fontSize: 'clamp(32px,4.5vw,52px)', fontWeight: 300, ...dark, lineHeight: 1.1, marginBottom: '8px' }}>
+            The person behind the work.
+          </h2>
+          <div style={{ width: '40px', height: '1px', background: '#C8922A', margin: '24px 0 36px' }} />
+
+          <P>
+            Nik Wood has been doing this work for almost 30 years. Not building toward it — doing it.
+            Coaching people who already function well but know that they're scratching the surface of
+            their own potential. Watching what actually moves a life forward, and what doesn't.
+          </P>
+          <P>
+            This was born out of circumstances and need. There was beauty and inspiration as well as
+            trauma and abuse. He needed a way out and so he sought out what worked and built on that.
+            The hard years — a skull fracture, cancer, the loss of his mother — didn't interrupt the
+            work. They deepened it. What came out the other side wasn't a new methodology. It was a
+            fundamentally different understanding of what scale this work needs to operate at.
+          </P>
+          <P>NextUs is that understanding, made into infrastructure.</P>
+
+          <div style={{ marginTop: '40px' }}>
+            <a
+              href="/work-with-nik"
+              style={{
+                display: 'inline-block',
+                padding: '14px 32px',
+                borderRadius: '40px',
+                border: '1px solid rgba(168,114,26,0.8)',
+                background: '#C8922A',
+                color: '#FFFFFF',
+                ...sc,
+                fontSize: '15px',
+                fontWeight: 600,
+                letterSpacing: '0.16em',
+                textDecoration: 'none',
+              }}
+            >
+              Work with Nik →
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* ── CLOSING DARK ── */}
       <DarkSection style={{ textAlign: 'center' }}>
         <DarkEyebrow>The mission</DarkEyebrow>
         <DarkHeading>To live into a world where everyone is fully on their path and actively levelling up towards their full-yes life.</DarkHeading>
-        <DarkBody style={{ color: '#A8721A', marginBottom: '40px' }}>To awaken and amplify the God-Spark of humanity.</DarkBody>
+        <DarkBody style={{ color: '#A8721A', marginBottom: '40px' }}>To awaken and amplify the Godspark of humanity.</DarkBody>
         <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', justifyContent: 'center' }}>
           <DarkSolidButton href="/work-with-nik">Work directly with Nik →</DarkSolidButton>
           <DarkGhostButton href="/podcast">Listen to the podcast →</DarkGhostButton>
         </div>
       </DarkSection>
 
-      <CivilisationalFramePanel />
       <TestimonialsPanel />
       <ToolCompassPanel />
       <SiteFooter />
