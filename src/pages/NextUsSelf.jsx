@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkGhostButton } from '../components/DarkSection'
 import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
@@ -28,10 +28,77 @@ const SHARE_RECS = {
   leap:       { tool: 'Horizon Leap', url: 'https://calendly.com/nikwood/talk-to-nik', desc: `When the pattern keeps returning despite the work, the work needed is different. Horizon Leap is identity-level work facilitated by Nik. Start with a conversation.` },
 }
 
+const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+
+const STAGES = {
+  baseline:     { name: 'Baseline',     question: 'Am I functioning?',                  desc: 'The floor everything else stands on. Safety and permission to exist at a nervous-system, body level. Without it, everything feels like threat, growth feels dangerous, and insight destabilises rather than liberates. The work here is regulation, containment, and finding ground.',                                                                              primary: { title: 'Horizon State', sub: 'A guided audio practice to settle and re-establish ground.',                           url: '/tools/horizon-state', badge: 'NextUs Self Tool' }, above: { title: 'The Map',        sub: 'When you have a little more ground, see where you actually are.',                    url: '/tools/map',           badge: 'NextUs Self Tool' }, below: null,                                                                                                                                              external: ['somatic therapy', 'trauma-informed support', 'nervous system regulation', 'polyvagal therapy'] },
+  autonomy:     { name: 'Autonomy',     question: 'Do I know what I want?',              desc: 'Where the self starts moving again — not goals, not strategy, but desire. The work here is reclaiming the right to direct oneself and meeting the shame around wanting.',                                                                                                                                                                                      primary: { title: 'Horizon State', sub: 'Build the internal stability that makes self-direction possible.',                      url: '/tools/horizon-state', badge: 'NextUs Self Tool' }, above: { title: 'The Map',        sub: 'An honest picture of where you are once you can see clearly.',                          url: '/tools/map',           badge: 'NextUs Self Tool' }, below: null,                                                                                                                                              external: ['inner child work', 'parts work / IFS', 'shame resilience', 'self-compassion practices'] },
+  calibration:  { name: 'Calibration', question: 'Am I being honest with myself?',      desc: 'Reality contact — honest self-assessment, mapping life domains, seeing patterns without collapse. This is where the picture becomes clear enough to navigate from.',                                                                                                                                                                                           primary: { title: 'The Map',       sub: 'Seven domains. One honest picture of where you are right now.',                        url: '/tools/map',           badge: 'NextUs Self Tool' }, above: { title: 'Purpose Piece',  sub: 'Find your contribution pattern — the role you are built to play.',                    url: '/tools/purpose-piece', badge: 'NextUs Self Tool' }, below: { title: 'Horizon State',  sub: 'If looking clearly feels like too much — this is where to start.',                    url: '/tools/horizon-state', badge: 'NextUs Self Tool' }, external: ['journalling practices', 'life audit frameworks', 'values clarification', 'honest self-assessment'] },
+  integration:  { name: 'Integration', question: 'Am I whole?',                         desc: 'Metabolising past experience, reconciling contradictions, reducing internal fragmentation. This is where energy stops leaking and becomes available for something new.',                                                                                                                                                                                        primary: { title: 'Purpose Piece', sub: 'Surface the contribution pattern that has been there all along.',                      url: '/tools/purpose-piece', badge: 'NextUs Self Tool' }, above: { title: 'Work with Nik',  sub: 'Identity-level work for people ready to do something with what they find.',           url: '/work-with-nik',       badge: 'Facilitated'      }, below: { title: 'The Map',        sub: 'See where the fragmentation shows up across your life domains.',                      url: '/tools/map',           badge: 'NextUs Self Tool' }, external: ['parts work / IFS', 'shadow work', 'narrative therapy', 'Jungian approaches'] },
+  agency:       { name: 'Agency',       question: 'Am I living by my own choices?',      desc: 'Action becomes possible — not reactive effort, not proving, but true choice. Behaviour stabilises, discipline emerges naturally, self-trust begins to build.',                                                                                                                                                                                                primary: { title: 'Target Sprint', sub: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.',      url: '/tools/target-sprint', badge: 'NextUs Self Tool' }, above: { title: 'Work with Nik',  sub: 'For people ready to act on what they have found.',                                    url: '/work-with-nik',       badge: 'Facilitated'      }, below: { title: 'Purpose Piece',  sub: 'Clarify what you are acting toward before you act.',                                 url: '/tools/purpose-piece', badge: 'NextUs Self Tool' }, external: ['implementation intentions', 'habit architecture', 'values-based goal setting', 'accountability structures'] },
+  embodiment:   { name: 'Embodiment',   question: 'Am I becoming who I actually am?',    desc: 'Identity stops being conceptual — behaviour aligns with values, the nervous system tolerates expansion, relationships reorganise around who you actually are.',                                                                                                                                                                                               primary: { title: 'Work with Nik', sub: 'Identity-level work. The crossing from who you have been to who you are becoming.',    url: '/work-with-nik',       badge: 'Facilitated'      }, above: { title: 'NextUs',         sub: 'Find where your fully expressed self belongs in the larger project.',                  url: '/nextus',              badge: 'NextUs'           }, below: { title: 'Target Sprint',  sub: 'Operationalise the identity shift — three areas, ninety days.',                      url: '/tools/target-sprint', badge: 'NextUs Self Tool' }, external: ['embodied leadership', 'somatic coaching', 'identity-level work', 'ontological coaching'] },
+  contribution: { name: 'Contribution', question: 'What is my life in service of?',     desc: 'Meaning stabilises the psyche. Contribution integrates the self. Purpose regulates existential anxiety. This is not saviour energy — it is participation in reality.',                                                                                                                                                                                       primary: { title: 'NextUs',        sub: 'The civilisational map — seven domains, and where your work belongs.',                 url: '/nextus',              badge: 'NextUs'           }, above: null,                                                                                                                                              below: { title: 'Purpose Piece',  sub: 'What did life ask you to bring? Your archetype, domain, and scale.',                 url: '/tools/purpose-piece', badge: 'NextUs Self Tool' }, external: ['systems thinking', 'theory of change', 'purpose-driven leadership', 'civilisational contribution'] },
+}
+
+function StageRec({ rec, soft }) {
+  if (!rec) return null
+  return (
+    <a href={rec.url} style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', padding: '14px 16px', borderRadius: '14px', marginBottom: '8px', textDecoration: 'none', border: soft ? '1.5px solid rgba(200,146,42,0.20)' : '1.5px solid rgba(200,146,42,0.78)', background: soft ? 'transparent' : 'rgba(200,146,42,0.05)', transition: 'all 0.2s' }}
+      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)'; e.currentTarget.style.background = 'rgba(200,146,42,0.05)' }}
+      onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.borderColor = soft ? 'rgba(200,146,42,0.20)' : 'rgba(200,146,42,0.78)'; e.currentTarget.style.background = soft ? 'transparent' : 'rgba(200,146,42,0.05)' }}
+    >
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '40px', padding: '3px 10px', flexShrink: 0, marginTop: '2px', whiteSpace: 'nowrap' }}>{rec.badge}</span>
+      <div style={{ flex: 1 }}>
+        <div style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#A8721A', marginBottom: '3px' }}>{rec.title}</div>
+        <div style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.78)', lineHeight: 1.4 }}>{rec.sub}</div>
+      </div>
+      <span style={{ color: '#A8721A', fontSize: '15px', marginTop: '2px', flexShrink: 0 }}>{'→'}</span>
+    </a>
+  )
+}
+
+function StagePanel({ stage }) {
+  if (!stage) return null
+  const s = STAGES[stage]
+  return (
+    <div style={{ marginTop: '32px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', overflow: 'hidden', animation: 'panelIn 0.2s ease' }}>
+      <style>{`@keyframes panelIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }`}</style>
+      <div style={{ padding: '28px 28px 24px' }}>
+        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '6px' }}>{s.name}</span>
+        <div style={{ ...serif, fontSize: '26px', fontWeight: 300, color: '#0F1523', marginBottom: '4px', lineHeight: 1.1 }}>{s.name}</div>
+        <div style={{ ...body, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', marginBottom: '14px', lineHeight: 1.6 }}>{s.question}</div>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '520px' }}>{s.desc}</p>
+        <div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', marginBottom: '24px' }} />
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.78)', display: 'block', marginBottom: '12px' }}>Where to start</span>
+        <StageRec rec={s.primary} soft={false} />
+        {s.above && (<><div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', margin: '16px 0' }} /><span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.78)', display: 'block', marginBottom: '12px' }}>When you are ready for the next step</span><StageRec rec={s.above} soft={true} /></>)}
+        {s.below && (<><div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', margin: '16px 0' }} /><span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.78)', display: 'block', marginBottom: '12px' }}>If this feels like too much right now</span><StageRec rec={s.below} soft={true} /></>)}
+        {s.external?.length > 0 && (
+          <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.78)', display: 'block', marginBottom: '10px' }}>Also worth exploring</span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {s.external.map(t => <span key={t} style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '40px', padding: '6px 14px' }}>{t}</span>)}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export function NextUsSelfPage() {
   const [shareRec, setShareRec] = useState(null)
   const [purposeData, setPurposeData] = useState(null)
+  const [activeStage, setActiveStage] = useState(null)
+  const panelRef = useRef(null)
   const { user } = useAuth()
+
+  function toggleStage(key) {
+    setActiveStage(prev => prev === key ? null : key)
+    setTimeout(() => panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100)
+  }
+
+  const stageKeys = Object.keys(STAGES)
 
   // Load Purpose Piece results to pre-highlight the user's domain
   useState(() => {
@@ -90,6 +157,28 @@ export function NextUsSelfPage() {
       <div style={{ width: '96vw', marginLeft: '50%', transform: 'translateX(-50%)', borderRadius: '14px', overflow: 'hidden', marginBottom: '0' }}>
         <SelfExplorer purposeData={purposeData} />
       </div>
+
+      {/* Stage selector */}
+      <DarkSection>
+        <DarkEyebrow>Where you are in the arc</DarkEyebrow>
+        <DarkHeading style={{ marginBottom: '32px' }}>See where you are.</DarkHeading>
+        <div>
+          {stageKeys.map(key => {
+            const s = STAGES[key]
+            const isActive = activeStage === key
+            return (
+              <div key={key} onClick={() => toggleStage(key)} style={{ padding: '10px 4px', cursor: 'pointer', borderBottom: `1px solid ${isActive ? '#C8922A' : 'rgba(200,146,42,0.20)'}`, transition: 'all 0.18s', marginBottom: '4px' }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.borderBottomColor = 'rgba(200,146,42,0.40)' }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderBottomColor = 'rgba(200,146,42,0.20)' }}
+              >
+                <span style={{ ...serif, fontSize: '22px', fontWeight: 300, color: isActive ? '#C8922A' : 'rgba(255,255,255,0.92)', display: 'block', lineHeight: 1.2, marginBottom: '2px', transition: 'color 0.18s' }}>{s.name}</span>
+                <span style={{ ...body, fontSize: '17px', fontStyle: 'italic', color: isActive ? 'rgba(200,146,42,0.78)' : 'rgba(255,255,255,0.55)', lineHeight: 1.4, display: 'block', transition: 'color 0.18s' }}>{s.question}</span>
+              </div>
+            )
+          })}
+        </div>
+        <div ref={panelRef} style={{ marginTop: '8px' }}><StagePanel stage={activeStage} /></div>
+      </DarkSection>
 
       {/* Seven Domains — dark section */}
       <DarkSection>

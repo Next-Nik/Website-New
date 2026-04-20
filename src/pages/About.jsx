@@ -100,10 +100,10 @@ export function AboutPage() {
 
             <div style={{ marginTop: '32px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
               <a href="/nextus-self" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(168,114,26,0.35)', paddingBottom: '2px' }}>
-                The Horizon Suite →
+                NextUs Self →
               </a>
               <a href="/tools/north-star" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.20)', paddingBottom: '2px' }}>
-                Find your starting point →
+                North Star →
               </a>
             </div>
           </div>
@@ -190,7 +190,7 @@ export function AboutPage() {
         <style>{`
           .nik-peru-wrap {
             width: 100%;
-            height: clamp(340px, 55vw, 500px);
+            height: clamp(340px, 55vw, 600px);
             border-radius: 14px;
             border: 1.5px solid rgba(200,146,42,0.55);
             overflow: hidden;

@@ -323,15 +323,6 @@ function NorthStarEmbed() {
 
 export function HomePage() {
   const { user } = useAuth()
-  const [activeStage, setActiveStage] = useState(null)
-  const panelRef = useRef(null)
-
-  function toggleStage(key) {
-    setActiveStage(prev => prev === key ? null : key)
-    setTimeout(() => panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100)
-  }
-
-  const stageKeys = Object.keys(STAGES)
 
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
@@ -457,19 +448,6 @@ export function HomePage() {
         </div>
       </section>
 
-
-      {/* Is this for you */}
-      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 0', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Is this for you?</span>
-        <h2 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '24px' }}>This is for people who already know something isn't moving.</h2>
-        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '32px', maxWidth: '560px' }}>
-          You're not in crisis. You're not broken. But something is off — a gap between who you are and what you sense you're capable of. You've probably done some work on yourself already. And something still isn't moving.
-        </p>
-        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '0', maxWidth: '560px' }}>
-          That's the exact territory this ecosystem is built for.
-        </p>
-      </section>
-
       {/* DARK 1 — Fractal premise */}
       <DarkSection>
         <DarkEyebrow>The premise</DarkEyebrow>
@@ -477,7 +455,7 @@ export function HomePage() {
         <DarkBody>The personal and the civilisational are not separate projects. Every domain you build in yourself maps directly to a domain humanity is trying to build collectively. This is not metaphor — it is the architecture of the platform.</DarkBody>
         <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
           <DarkSolidButton href="/nextus-self">NextUs Self →</DarkSolidButton>
-          <DarkGhostButton href="/nextus">NextUs World →</DarkGhostButton>
+          <DarkGhostButton href="/nextus">NextUs Planet →</DarkGhostButton>
         </div>
       </DarkSection>
 
@@ -490,28 +468,6 @@ export function HomePage() {
         <NorthStarEmbed />
         <a href="/nextus-self" style={{ display: 'block', textAlign: 'center', ...body, fontSize: '16px', fontStyle: 'italic', color: '#A8721A', marginTop: '28px', textDecoration: 'none', opacity: 0.78 }}>or show me everything {'→'}</a>
       </section>
-
-      {/* DARK 2 — Stage selector */}
-      <DarkSection>
-        <DarkEyebrow>Where you are in the arc</DarkEyebrow>
-        <DarkHeading style={{ marginBottom: '32px' }}>See where you are.</DarkHeading>
-        <div>
-          {stageKeys.map(key => {
-            const s = STAGES[key]
-            const isActive = activeStage === key
-            return (
-              <div key={key} onClick={() => toggleStage(key)} style={{ padding: '10px 4px', cursor: 'pointer', borderBottom: `1px solid ${isActive ? '#C8922A' : 'rgba(200,146,42,0.20)'}`, transition: 'all 0.18s', marginBottom: '4px' }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.borderBottomColor = 'rgba(200,146,42,0.40)' }}
-                onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderBottomColor = 'rgba(200,146,42,0.20)' }}
-              >
-                <span style={{ ...serif, fontSize: '22px', fontWeight: 300, color: isActive ? '#C8922A' : 'rgba(255,255,255,0.92)', display: 'block', lineHeight: 1.2, marginBottom: '2px', transition: 'color 0.18s' }}>{s.name}</span>
-                <span style={{ ...body, fontSize: '17px', fontStyle: 'italic', color: isActive ? 'rgba(200,146,42,0.78)' : 'rgba(255,255,255,0.55)', lineHeight: 1.4, display: 'block', transition: 'color 0.18s' }}>{s.question}</span>
-              </div>
-            )
-          })}
-        </div>
-        <div ref={panelRef} style={{ marginTop: '8px' }}><StagePanel stage={activeStage} /></div>
-      </DarkSection>
 
       {/* Testimonials */}
       <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px' }}>

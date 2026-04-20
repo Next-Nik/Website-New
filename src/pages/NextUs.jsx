@@ -287,7 +287,7 @@ export function NextUsPage() {
         <DarkEyebrow>The fractal</DarkEyebrow>
         <DarkHeading>The same seven domains. Two scales.</DarkHeading>
         <DarkBody>What you develop in yourself, you contribute to the world. The seven domains of your life map directly onto the seven domains of civilisation. Your personal work is not a detour from the larger work. It is the larger work, at a different scale.</DarkBody>
-        <DarkGhostButton href="/nextus-self">Explore the Horizon Suite →</DarkGhostButton>
+        <DarkGhostButton href="/nextus-self">NextUs Self →</DarkGhostButton>
       </DarkSection>
 
       <div className="nextus-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '0 40px 120px' }}>
