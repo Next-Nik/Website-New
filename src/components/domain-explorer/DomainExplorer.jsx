@@ -226,6 +226,17 @@ export default function DomainExplorer() {
               bloom={earthDone}
             />
           </div>
+          {/* Horizon goal centred below the wheel when a domain is selected */}
+          {!isIdle && selectedItem && !overviewOpen && (
+            <div className={styles.wheelGoal}>
+              <span className={styles.wheelGoalLabel}>Horizon goal</span>
+              <p className={styles.wheelGoalText}>
+                {selectedItem.horizonGoal === 'placeholder'
+                  ? 'Being mapped'
+                  : selectedItem.horizonGoal}
+              </p>
+            </div>
+          )}
           {/* Instruction only shows when truly idle — no node highlighted */}
           {isIdle && (
             <p className={styles.instruction}>

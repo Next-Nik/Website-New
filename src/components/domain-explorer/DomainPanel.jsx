@@ -301,12 +301,13 @@ export default function DomainPanel({
         )}
       </nav>
 
-      {/* Row 2: view actors centered above prev/next arrows */}
-      <div className={styles.actorsNav}>
-        {rootDomainId && (
+
+      {/* Actors link */}
+      {rootDomainId && (
+        <div className={styles.actorsNav}>
           <div className={styles.actorsNavLabel}>
             <a href={'/nextus/actors?domain=' + rootDomainId} className={styles.navItem}>
-              Who's working on this
+              Orgs. and individuals
             </a>
             <div className={styles.infoWrap}>
               <span className={styles.infoIcon}>ⓘ</span>
@@ -315,12 +316,9 @@ export default function DomainPanel({
               </div>
             </div>
           </div>
-        )}
-        <div className={styles.navArrows}>
-          <button className={styles.navBtn} onClick={onPrev} aria-label="Previous domain">‹</button>
-          <button className={styles.navBtn} onClick={onNext} aria-label="Next domain">›</button>
         </div>
-      </div>
+      )}
+
 
 
       <div className={styles.horizonGoal}>

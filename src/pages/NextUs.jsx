@@ -258,7 +258,7 @@ export function NextUsPage() {
         <h1 style={{ ...body, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           A chosen future<br /><em style={{ color: '#A8721A' }}>built by us.</em>
         </h1>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '520px' }}>What do we want for the planet — and for ourselves? Seven domains. A living map of who is doing the work, and where you fit in it.</p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '520px' }}>As far as we can see from where we are, what do we want for the planet... for ourselves? {'—'} where do we all fit in the building of that horizon vision?</p>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '14px' }}>Explore the horizon goals</span>
       </div>
 
