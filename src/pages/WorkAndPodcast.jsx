@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from 'react'
 import { Nav } from '../components/Nav'
 import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkGhostButton } from '../components/DarkSection'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
@@ -290,24 +291,300 @@ export function WorkWithNikPage() {
   )
 }
 
+// ── Podcast archive sub-components ───────────────────────────────────────────
+
+function PlayIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+  )
+}
+
+function PauseIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+  )
+}
+
+function SearchIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+  )
+}
+
+function EpisodeCard({ ep, isPlaying, onPlay }) {
+  const [expanded, setExpanded] = useState(false)
+  const dateStr = ep.pubDate
+    ? new Date(ep.pubDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+    : ''
+
+  return (
+    <div style={{
+      background: isPlaying ? 'rgba(200,146,42,0.05)' : '#FFFFFF',
+      border: `1.5px solid ${isPlaying ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.20)'}`,
+      borderRadius: '14px',
+      padding: '18px 22px',
+      transition: 'border-color 0.2s, background 0.2s',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+        {/* Play button */}
+        <button
+          onClick={() => onPlay(ep)}
+          aria-label={isPlaying ? 'Pause' : 'Play'}
+          style={{
+            flexShrink: 0,
+            width: '36px',
+            height: '36px',
+            borderRadius: '50%',
+            border: '1.5px solid rgba(200,146,42,0.78)',
+            background: isPlaying ? '#C8922A' : 'rgba(200,146,42,0.05)',
+            color: isPlaying ? '#FFFFFF' : '#A8721A',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            marginTop: '2px',
+          }}
+          onMouseEnter={e => { if (!isPlaying) { e.currentTarget.style.background = '#C8922A'; e.currentTarget.style.color = '#FFFFFF' } }}
+          onMouseLeave={e => { if (!isPlaying) { e.currentTarget.style.background = 'rgba(200,146,42,0.05)'; e.currentTarget.style.color = '#A8721A' } }}
+        >
+          {isPlaying ? <PauseIcon /> : <PlayIcon />}
+        </button>
+
+        <div style={{ flex: 1, minWidth: 0 }}>
+          {/* Meta row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px', flexWrap: 'wrap' }}>
+            {ep.episodeNum && (
+              <span style={{ ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em', color: '#A8721A' }}>
+                EP {ep.episodeNum}
+              </span>
+            )}
+            <span style={{ ...sc, fontSize: '11px', fontWeight: 400, letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>{dateStr}</span>
+            {ep.duration && (
+              <span style={{ ...sc, fontSize: '11px', fontWeight: 400, letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>{ep.duration}</span>
+            )}
+          </div>
+
+          {/* Title */}
+          <h3 style={{ ...serif, fontSize: '18px', fontWeight: 400, color: '#0F1523', margin: '0 0 6px', lineHeight: 1.3 }}>
+            {ep.title}
+          </h3>
+
+          {/* Description */}
+          {ep.description && (
+            <>
+              <p style={{
+                ...body,
+                fontSize: '15px',
+                color: 'rgba(15,21,35,0.72)',
+                lineHeight: 1.65,
+                margin: '0 0 6px',
+                display: '-webkit-box',
+                WebkitLineClamp: expanded ? 'unset' : 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: expanded ? 'visible' : 'hidden',
+              }}>
+                {ep.description}
+              </p>
+              {ep.description.length > 180 && (
+                <button
+                  onClick={() => setExpanded(v => !v)}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '12px', fontWeight: 600, letterSpacing: '0.14em', color: '#A8721A' }}
+                >
+                  {expanded ? 'Show less' : 'Read more'}
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function StickyPlayer({ episode, onClose }) {
+  const audioRef = useRef(null)
+  const [playing, setPlaying] = useState(false)
+  const [progress, setProgress] = useState(0)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+    audio.play().then(() => setPlaying(true)).catch(() => {})
+    const onTime = () => {
+      setCurrentTime(audio.currentTime)
+      setDuration(audio.duration || 0)
+      setProgress(audio.duration ? (audio.currentTime / audio.duration) * 100 : 0)
+    }
+    const onEnd = () => setPlaying(false)
+    audio.addEventListener('timeupdate', onTime)
+    audio.addEventListener('ended', onEnd)
+    return () => { audio.removeEventListener('timeupdate', onTime); audio.removeEventListener('ended', onEnd) }
+  }, [episode])
+
+  const toggle = () => {
+    const audio = audioRef.current
+    if (!audio) return
+    if (playing) { audio.pause(); setPlaying(false) } else { audio.play(); setPlaying(true) }
+  }
+
+  const seek = (e) => {
+    const audio = audioRef.current
+    if (!audio || !audio.duration) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration
+  }
+
+  const fmt = (s) => {
+    if (!s || isNaN(s)) return '0:00'
+    return `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`
+  }
+
+  return (
+    <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: '#0F1523', borderTop: '1px solid rgba(200,146,42,0.30)', padding: '12px 24px', zIndex: 200, display: 'flex', alignItems: 'center', gap: '14px' }}>
+      <audio ref={audioRef} src={episode.audioUrl} preload="metadata" />
+      <button onClick={toggle} style={{ flexShrink: 0, width: '36px', height: '36px', borderRadius: '50%', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.15)', color: '#A8721A', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+        {playing ? <PauseIcon /> : <PlayIcon />}
+      </button>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ ...sc, fontSize: '11px', color: '#A8721A', letterSpacing: '0.14em', marginBottom: '5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{episode.title}</div>
+        <div onClick={seek} style={{ width: '100%', height: '3px', background: 'rgba(200,146,42,0.20)', borderRadius: '2px', cursor: 'pointer', position: 'relative' }}>
+          <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${progress}%`, background: '#C8922A', borderRadius: '2px' }} />
+        </div>
+      </div>
+      <span style={{ ...sc, fontSize: '11px', color: 'rgba(255,255,255,0.55)', flexShrink: 0 }}>{fmt(currentTime)} / {fmt(duration)}</span>
+      <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', cursor: 'pointer', fontSize: '20px', lineHeight: 1, padding: '4px', flexShrink: 0 }} aria-label="Close player">×</button>
+    </div>
+  )
+}
+
+function PodcastArchive() {
+  const [episodes, setEpisodes] = useState([])
+  const [loading, setLoading]   = useState(true)
+  const [error, setError]       = useState(null)
+  const [query, setQuery]       = useState('')
+  const [page, setPage]         = useState(1)
+  const [activeEp, setActiveEp] = useState(null)
+  const [playingId, setPlayingId] = useState(null)
+  const PAGE_SIZE = 20
+
+  useEffect(() => {
+    fetch('/api/podcast-feed')
+      .then(r => r.json())
+      .then(data => { if (data.error) throw new Error(data.error); setEpisodes(data.episodes); setLoading(false) })
+      .catch(err => { setError(err.message); setLoading(false) })
+  }, [])
+
+  useEffect(() => { setPage(1) }, [query])
+
+  const filtered   = episodes.filter(ep => !query || ep.title.toLowerCase().includes(query.toLowerCase()) || ep.description.toLowerCase().includes(query.toLowerCase()))
+  const paginated  = filtered.slice(0, page * PAGE_SIZE)
+  const hasMore    = paginated.length < filtered.length
+
+  const handlePlay = (ep) => {
+    if (playingId === ep.guid) { setActiveEp(null); setPlayingId(null) }
+    else { setActiveEp(ep); setPlayingId(ep.guid) }
+  }
+
+  return (
+    <>
+      <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 48px' }} />
+
+      {/* Archive header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '20px', marginBottom: '28px', flexWrap: 'wrap' }}>
+        <div>
+          <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '4px' }}>Episode Archive</span>
+          {!loading && (
+            <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
+              {query ? `${filtered.length} episodes found` : `${episodes.length} episodes`}
+            </span>
+          )}
+        </div>
+
+        {/* Search */}
+        <div style={{ position: 'relative' }}>
+          <span style={{ position: 'absolute', left: '13px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', pointerEvents: 'none' }}>
+            <SearchIcon />
+          </span>
+          <input
+            type="text"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="Search episodes..."
+            style={{ ...body, fontSize: '15px', paddingLeft: '38px', paddingRight: '16px', paddingTop: '10px', paddingBottom: '10px', border: '1.5px solid rgba(200,146,42,0.40)', borderRadius: '40px', background: '#FFFFFF', color: '#0F1523', outline: 'none', width: '210px', transition: 'border-color 0.2s' }}
+            onFocus={e => e.target.style.borderColor = 'rgba(200,146,42,0.78)'}
+            onBlur={e => e.target.style.borderColor = 'rgba(200,146,42,0.40)'}
+          />
+        </div>
+      </div>
+
+      {/* States */}
+      {loading && (
+        <div style={{ textAlign: 'center', padding: '60px 0' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)' }}>Loading episodes...</p>
+        </div>
+      )}
+
+      {error && (
+        <div style={{ background: 'rgba(138,48,48,0.05)', border: '1.5px solid rgba(138,48,48,0.20)', borderRadius: '14px', padding: '24px', textAlign: 'center' }}>
+          <p style={{ ...body, fontSize: '15px', color: '#8A3030', margin: 0 }}>Couldn't load episodes. Please try again shortly.</p>
+        </div>
+      )}
+
+      {!loading && !error && filtered.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '60px 0' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)' }}>No episodes match that search.</p>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: hasMore ? '32px' : '0' }}>
+          {paginated.map(ep => (
+            <EpisodeCard key={ep.guid || ep.title} ep={ep} isPlaying={playingId === ep.guid} onPlay={handlePlay} />
+          ))}
+        </div>
+      )}
+
+      {hasMore && (
+        <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+          <button
+            onClick={() => setPage(p => p + 1)}
+            style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.16em', padding: '14px 36px', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', background: 'rgba(200,146,42,0.05)', color: '#A8721A', cursor: 'pointer', transition: 'all 0.2s' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.08)'; e.currentTarget.style.transform = 'translateY(-2px)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.05)'; e.currentTarget.style.transform = 'translateY(0)' }}
+          >
+            Load more episodes
+          </button>
+        </div>
+      )}
+
+      {activeEp && <StickyPlayer episode={activeEp} onClose={() => { setActiveEp(null); setPlayingId(null) }} />}
+    </>
+  )
+}
+
 export function PodcastPage() {
   const platforms = [
-    { label: 'Spotify', url: 'https://open.spotify.com/show/65LzAbOCuOZW7mvHTKsIbY' },
+    { label: 'Spotify',       url: 'https://open.spotify.com/show/65LzAbOCuOZW7mvHTKsIbY' },
     { label: 'Apple Podcasts', url: 'https://podcasts.apple.com/us/podcast/nextus/id1760250059' },
-    { label: 'YouTube', url: 'https://www.youtube.com/@NextUs-World' },
-    { label: 'iHeart', url: 'https://www.iheart.com/podcast/263-nextus-podcast-326612424/' },
-    { label: 'Amazon Music', url: 'https://www.amazon.com/NextUs-Podcast/dp/B0GSCQ989S/' },
-    { label: 'RSS Feed', url: 'https://feeds.libsyn.com/66392/rss' },
+    { label: 'YouTube',       url: 'https://www.youtube.com/@NextUs-World' },
+    { label: 'iHeart',        url: 'https://www.iheart.com/podcast/263-nextus-podcast-326612424/' },
+    { label: 'Amazon Music',  url: 'https://www.amazon.com/NextUs-Podcast/dp/B0GSCQ989S/' },
+    { label: 'RSS Feed',      url: 'https://feeds.libsyn.com/66392/rss' },
   ]
 
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
-      <style>{`@media (max-width: 640px) { .pod-main { padding-left: 24px !important; padding-right: 24px !important; } .pod-dark { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
+      <style>{`@media (max-width: 640px) { .pod-main { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
       <Nav activePath="podcast" />
       <div className="pod-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>The Podcast</span>
         <h1 style={{ ...serif, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
-          NextUs.<br /><em style={{ fontStyle: 'italic', color: '#A8721A' }}>The conversation.</em>
+          NextUs Conversations.
         </h1>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.7, marginBottom: '56px', maxWidth: '500px' }}>220+ episodes since 2015. Long-form conversations at the intersection of personal development, human potential, and civilisational possibility.</p>
 
@@ -326,6 +603,11 @@ export function PodcastPage() {
             <span style={{ color: '#A8721A', fontSize: '16px' }}>{'→'}</span>
           </a>
         ))}
+
+        {/* ── Episode Archive ── */}
+        <div style={{ marginTop: '64px' }}>
+          <PodcastArchive />
+        </div>
       </div>
 
       {/* Stay close — dark section */}

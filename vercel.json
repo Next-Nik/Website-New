@@ -27,7 +27,8 @@
     "api/horizon-practice-daily-chat.js":  { "maxDuration": 60 },
     "api/horizon-practice-loop-chat.js":   { "maxDuration": 60 },
     "api/stripe-webhook.js":            { "maxDuration": 30 },
-    "api/create-checkout.js":           { "maxDuration": 15 }
+    "api/create-checkout.js":           { "maxDuration": 15 },
+    "api/podcast-feed.js":              { "maxDuration": 15 }
   },
   "rewrites": [
     { "source": "/tools/north-star/api/chat",             "destination": "/api/orienteering-chat" },
@@ -50,6 +51,7 @@
     { "source": "/api/org-extract",                         "destination": "/api/org-extract" },
     { "source": "/api/debrief-chat",                        "destination": "/api/debrief-chat" },
     { "source": "/api/integrity-cron",                      "destination": "/api/integrity-cron" },
+    { "source": "/api/podcast-feed",                        "destination": "/api/podcast-feed" },
     { "source": "/(.*)",                                    "destination": "/index.html" }
   ]
 }
