@@ -2210,6 +2210,14 @@ export function DashboardPage() {
                   FAQ
                 </a>
               </div>
+              <div style={{ paddingLeft: '36px', marginTop: '10px' }}>
+                <span
+                  onClick={e => { e.stopPropagation(); signOut() }}
+                  style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.35)', cursor: 'pointer', borderBottom: '1px solid rgba(15,21,35,0.12)', paddingBottom: '1px' }}
+                >
+                  Sign out
+                </span>
+              </div>
             </button>
           </div>
 
