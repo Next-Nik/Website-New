@@ -1067,3 +1067,66 @@
 }
 
 .orgsLink:hover { opacity: 0.7; }
+
+/* ── SCALE SELECTOR — LEVEL NAVIGATION ── */
+.focusLevelHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(200,146,42,0.12);
+}
+
+.focusBackBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Cormorant SC', serif;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--gold-dk);
+  padding: 0;
+  transition: opacity 0.15s;
+}
+
+.focusBackBtn:hover { opacity: 0.7; }
+
+.focusLevelLabel {
+  font-family: 'Cormorant SC', serif;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: rgba(15,21,35,0.55);
+  text-transform: uppercase;
+}
+
+/* ── GOAL SCOPE MODIFIER ── */
+.goalScope {
+  font-style: italic;
+  color: var(--gold-dk);
+}
+
+/* ── CONTRIBUTING-TO CHAIN ── */
+.contributingChain {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: -16px 0 20px 20px;
+  padding-left: 20px;
+  border-left: 2px solid rgba(200,146,42,0.20);
+}
+
+.contributingLabel {
+  font-family: 'Cormorant SC', serif;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: rgba(15,21,35,0.40);
+  text-transform: uppercase;
+}
+
+.contributingPath {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(15,21,35,0.55);
+  line-height: 1.6;
+}

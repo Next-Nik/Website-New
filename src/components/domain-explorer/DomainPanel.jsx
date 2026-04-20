@@ -3,47 +3,96 @@ import { SCALE_LABELS } from "./currentState";
 import styles from "./DomainPanel.module.css";
 import { supabase } from "../../hooks/useSupabase";
 
-// ── FOCUS SEARCH ──────────────────────────────────────────────────────────────
-function FocusSelector({ current, onSelect, onClear }) {
-  const [open, setOpen]       = useState(false)
-  const [query, setQuery]     = useState('')
-  const [results, setResults] = useState([])
-  const [busy, setBusy]       = useState(false)
-  const debounce              = useRef(null)
-  const wrapRef               = useRef(null)
+// ── SCALE HIERARCHY ──────────────────────────────────────────────────────────
+const SCALE_LEVELS = [
+  { type: 'continent',    label: 'Continent' },
+  { type: 'nation',       label: 'Nation' },
+  { type: 'province',     label: 'Province / Territory' },
+  { type: 'city',         label: 'City' },
+  { type: 'neighbourhood',label: 'Neighbourhood' },
+]
+
+// Walk parent_id chain upward to build contributing-to breadcrumb
+async function buildChain(focus) {
+  const chain = []
+  let current = focus
+  while (current.parent_id) {
+    const { data } = await supabase
+      .from('nextus_focuses')
+      .select('id, name, type, parent_id')
+      .eq('id', current.parent_id)
+      .single()
+    if (!data) break
+    chain.push(data)
+    current = data
+  }
+  // chain is from immediate parent up to planet — reverse so it reads planet-down
+  return chain.reverse()
+}
+
+// ── FOCUS SELECTOR ────────────────────────────────────────────────────────────
+function FocusSelector({ current, chain, onSelect, onClear }) {
+  const [open, setOpen]         = useState(false)
+  const [activeType, setActiveType] = useState(null)
+  const [results, setResults]   = useState([])
+  const [query, setQuery]       = useState('')
+  const [busy, setBusy]         = useState(false)
+  const debounce                = useRef(null)
+  const wrapRef                 = useRef(null)
 
   useEffect(() => {
     function handleClick(e) {
-      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false)
+      if (wrapRef.current && !wrapRef.current.contains(e.target)) {
+        setOpen(false); setActiveType(null); setResults([]); setQuery('')
+      }
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
   }, [])
 
+  async function selectLevel(type) {
+    setActiveType(type)
+    setQuery('')
+    setBusy(true)
+    const { data } = await supabase
+      .from('nextus_focuses')
+      .select('id, name, type, slug, parent_id')
+      .eq('type', type)
+      .order('name')
+      .limit(80)
+    setResults(data || [])
+    setBusy(false)
+  }
+
   useEffect(() => {
-    if (query.trim().length < 2) { setResults([]); return }
+    if (!activeType || !query.trim()) return
     clearTimeout(debounce.current)
     debounce.current = setTimeout(async () => {
       setBusy(true)
       const { data } = await supabase
         .from('nextus_focuses')
-        .select('id, name, type, slug')
+        .select('id, name, type, slug, parent_id')
+        .eq('type', activeType)
         .ilike('name', `%${query.trim()}%`)
-        .order('type').limit(10)
+        .order('name').limit(40)
       setResults(data || [])
       setBusy(false)
-    }, 280)
-  }, [query])
+    }, 220)
+  }, [query, activeType])
 
-  const TYPE_LABEL = {
-    planet:'Planet', continent:'Continent', nation:'Nation',
-    province:'Province', city:'City', neighbourhood:'Neighbourhood',
-    organisation:'Organisation',
+  async function handleSelect(f) {
+    setOpen(false); setActiveType(null); setResults([]); setQuery('')
+    const upChain = await buildChain(f)
+    onSelect(f, upChain)
   }
+
+  const displayResults = query.trim()
+    ? results.filter(r => r.name.toLowerCase().includes(query.toLowerCase()))
+    : results
 
   return (
     <div ref={wrapRef} className={styles.focusBar}>
-      <button className={styles.focusTrigger} onClick={() => setOpen(o => !o)}>
+      <button className={styles.focusTrigger} onClick={() => { setOpen(o => !o); setActiveType(null); setResults([]) }}>
         <span className={styles.focusEyebrow}>Scale</span>
         <span className={styles.focusName}>{current ? current.name : 'Global'}</span>
         <span className={styles.focusChevron}>{open ? '▴' : '▾'}</span>
@@ -55,36 +104,53 @@ function FocusSelector({ current, onSelect, onClear }) {
 
       {open && (
         <div className={styles.focusDropdown}>
-          <div className={styles.focusSearchWrap}>
-            <input
-              autoFocus
-              value={query}
-              onChange={e => setQuery(e.target.value)}
-              placeholder="Country, province, city…"
-              className={styles.focusInput}
-            />
-          </div>
-
-          {!query && (
-            <button className={styles.focusOption} onClick={() => { onClear(); setOpen(false) }}>
-              <span className={styles.focusOptionName}>Global</span>
-              <span className={styles.focusOptionType}>Planet</span>
-            </button>
+          {/* Step 1 — pick a scale level */}
+          {!activeType && (
+            <>
+              <button className={styles.focusOption} onClick={() => { onClear(); setOpen(false) }}>
+                <span className={styles.focusOptionName}>Global</span>
+                <span className={styles.focusOptionType}>Planet</span>
+              </button>
+              {SCALE_LEVELS.map(s => (
+                <button key={s.type} className={styles.focusOption} onClick={() => selectLevel(s.type)}>
+                  <span className={styles.focusOptionName}>{s.label}</span>
+                  <span className={styles.focusOptionType}>›</span>
+                </button>
+              ))}
+            </>
           )}
 
-          {busy && <p className={styles.focusSearching}>Searching…</p>}
-
-          {!busy && query.trim().length >= 2 && results.length === 0 && (
-            <p className={styles.focusSearching}>No results</p>
+          {/* Step 2 — pick a place within that level */}
+          {activeType && (
+            <>
+              <div className={styles.focusLevelHeader}>
+                <button className={styles.focusBackBtn} onClick={() => { setActiveType(null); setResults([]); setQuery('') }}>
+                  ← Back
+                </button>
+                <span className={styles.focusLevelLabel}>
+                  {SCALE_LEVELS.find(s => s.type === activeType)?.label}
+                </span>
+              </div>
+              <div className={styles.focusSearchWrap}>
+                <input
+                  autoFocus
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  placeholder={`Search…`}
+                  className={styles.focusInput}
+                />
+              </div>
+              {busy && <p className={styles.focusSearching}>Loading…</p>}
+              {!busy && displayResults.length === 0 && (
+                <p className={styles.focusSearching}>No results</p>
+              )}
+              {!busy && displayResults.map(f => (
+                <button key={f.id} className={styles.focusOption} onClick={() => handleSelect(f)}>
+                  <span className={styles.focusOptionName}>{f.name}</span>
+                </button>
+              ))}
+            </>
           )}
-
-          {results.map(f => (
-            <button key={f.id} className={styles.focusOption}
-              onClick={() => { onSelect(f); setOpen(false); setQuery('') }}>
-              <span className={styles.focusOptionName}>{f.name}</span>
-              <span className={styles.focusOptionType}>{TYPE_LABEL[f.type] || f.type}</span>
-            </button>
-          ))}
         </div>
       )}
     </div>
@@ -118,6 +184,7 @@ export default function DomainPanel({
   const [focusActors, setFocusActors]     = useState([]);
   const [focusGoal, setFocusGoal]         = useState(null);
   const [focusLoading, setFocusLoading]   = useState(false);
+  const [focusChain, setFocusChain]       = useState([]);
 
   const isPlaceholder = item.horizonGoal === "placeholder";
 
@@ -128,6 +195,7 @@ export default function DomainPanel({
       return
     }
     setFocusLoading(true)
+    setFocusChain([])
     Promise.all([
       supabase
         .from('nextus_actors')
@@ -185,12 +253,7 @@ export default function DomainPanel({
 
       {/* ── 2. HORIZON GOAL ── */}
       <div className={styles.horizonGoal}>
-        {activeFocus && focusGoal ? (
-          <>
-            <span className={styles.goalLabel}>Local horizon goal</span>
-            {focusGoal}
-          </>
-        ) : isPlaceholder ? (
+        {isPlaceholder ? (
           <>
             <span className={styles.goalLabel}>Horizon goal</span>
             <span className={styles.comingSoon}>Being mapped</span>
@@ -199,15 +262,33 @@ export default function DomainPanel({
           <>
             <span className={styles.goalLabel}>Horizon goal</span>
             {item.horizonGoal}
+            {activeFocus && (
+              <span className={styles.goalScope}> — in {activeFocus.name}.</span>
+            )}
           </>
         )}
       </div>
+      {/* Contributing-to chain */}
+      {activeFocus && focusChain.length > 0 && (
+        <div className={styles.contributingChain}>
+          <span className={styles.contributingLabel}>Contributing to</span>
+          <span className={styles.contributingPath}>
+            {focusChain.map((f, i) => (
+              <span key={f.id}>
+                {f.name}{i < focusChain.length - 1 ? ' → ' : ' → Global'}
+              </span>
+            ))}
+            {focusChain.length === 0 && 'Global'}
+          </span>
+        </div>
+      )}
 
       {/* ── 3. SCALE SELECTOR ── */}
       <FocusSelector
         current={activeFocus}
-        onSelect={f => { setActiveFocus(f); setFieldExpanded(false) }}
-        onClear={() => { setActiveFocus(null); setFocusActors([]); setFocusGoal(null) }}
+        chain={focusChain}
+        onSelect={(f, chain) => { setActiveFocus(f); setFocusChain(chain || []); setFieldExpanded(false) }}
+        onClear={() => { setActiveFocus(null); setFocusActors([]); setFocusGoal(null); setFocusChain([]) }}
       />
 
       {/* ── 4. ABOUT THIS DOMAIN ── */}
