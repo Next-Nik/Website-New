@@ -36,7 +36,7 @@ function TestimonialCard({ q, cite }) {
     <div style={{
       flexShrink: 0, width: '300px',
       background: '#FFFFFF',
-      border: '1.5px solid rgba(200,146,42,0.20)',
+      border: '2px solid rgba(200,146,42,0.78)',
       borderRadius: '14px',
       padding: '24px 28px',
       marginRight: '20px',
@@ -53,7 +53,13 @@ function TestimonialCarousel() {
   const row2 = [...TESTIMONIALS, ...TESTIMONIALS]
   const duration = TESTIMONIALS.length * 12
   return (
-    <div style={{ overflow: 'hidden', margin: '0 -40px' }}>
+    <div style={{
+      border: '2px solid rgba(200,146,42,0.78)',
+      borderRadius: '14px',
+      padding: '20px 0',
+      background: '#FAFAF7',
+    }}>
+      <div style={{ overflow: 'hidden', margin: '0 -2px' }}>
       <style>{`
         @keyframes scrollLeft {
           0% { transform: translateX(0); }
@@ -85,6 +91,7 @@ function TestimonialCarousel() {
           {row2.map((t, i) => <TestimonialCard key={i} q={t.q} cite={t.cite} />)}
         </div>
       </div>
+    </div>
     </div>
   )
 }
@@ -394,7 +401,7 @@ export function HomePage() {
             }
             .hero-track--light {
               background: #FAFAF7;
-              border: 1.5px solid rgba(200,146,42,2);
+              border: 1.5px solid rgba(200,146,42,0.20);
               border-left: none;
               padding: 32px 36px;
               display: flex;
