@@ -448,6 +448,18 @@ export function HomePage() {
         </div>
       </section>
 
+      {/* Is this for you */}
+      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 0', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Is this for you?</span>
+        <h2 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '28px' }}>
+          Do you have a life you're trying to live well?<br />
+          Do you care about the state of the planet?
+        </h2>
+        <p style={{ ...body, fontSize: '19px', fontWeight: 300, color: '#A8721A', lineHeight: 1.6 }}>
+          Then yes. This is for you.
+        </p>
+      </section>
+
       {/* DARK 1 — Fractal premise */}
       <DarkSection>
         <DarkEyebrow>The premise</DarkEyebrow>

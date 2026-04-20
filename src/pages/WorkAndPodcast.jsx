@@ -202,6 +202,87 @@ export function WorkWithNikPage() {
         <CalendlyEmbed />
         <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', marginTop: '14px' }}>30 minutes · no cost · no obligation</p>
       </div>
+
+      {/* Nik's story */}
+      <div className="wap-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 0' }}>
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 64px' }} />
+
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '14px' }}>Nik Wood · Founder</span>
+        <h2 style={{ ...serif, fontSize: 'clamp(32px,4.5vw,52px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.1, marginBottom: '40px' }}>
+          The person behind the work.
+        </h2>
+
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '20px', maxWidth: '640px' }}>
+          Nik Wood has been doing this work for almost 30 years. Not building toward it — doing it. Coaching people who already function well but know that they're scratching the surface of their own potential. Watching what actually moves a life forward, and what doesn't.
+        </p>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '20px', maxWidth: '640px' }}>
+          This was born out of circumstances and need. There was beauty and inspiration as well as trauma and abuse. He needed a way out and so he sought out what worked and built on that. The hard years — a skull fracture, cancer, the loss of his mother — didn't interrupt the work. They deepened it. What came out the other side wasn't a new methodology. It was a fundamentally different understanding of what scale this work needs to operate at.
+        </p>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '52px', maxWidth: '640px' }}>
+          NextUs is that understanding, made into infrastructure.
+        </p>
+
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 52px' }} />
+
+        <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.25, margin: '0 0 20px' }}>The long arm.</h3>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '18px', maxWidth: '640px' }}>
+          Nik's mother was a naturopathic doctor, a shaman, and an adventurer. She surrounded him with healers, teachers, and practitioners — people who understood that the work of becoming a full human being was serious, worth doing, and worth doing well.
+        </p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '18px', maxWidth: '640px' }}>
+          There were challenges in his youth — abuse and bullying — and an early decision to move through them powerfully rather than be defined by them. Inspired by Jim Rohn's observation that you are the average of the five people you spend the most time with, Nik immersed himself in every course, book, and tape series he could find.
+        </p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '52px', maxWidth: '640px' }}>
+          Eventually, something shifted. People started noticing it. They asked if he could help them find it for themselves. By his early twenties he was being paid to coach. The question was never whether this was the work. It was always how far it could go.
+        </p>
+
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 52px' }} />
+
+        <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.25, margin: '0 0 20px' }}>Cracked open.</h3>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '18px', maxWidth: '640px' }}>
+          In 2019, Nik broke his skull. What followed — recovery, cancer, the loss of his mother, and the loss of the friend who had saved his life — was not a detour from the work. It was the work, lived at full intensity.
+        </p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '18px', maxWidth: '640px' }}>
+          What came out the other side wasn't a new product line. It was a fundamentally different understanding of what this work is for — and the scale it needs to operate at.
+        </p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '52px', maxWidth: '640px' }}>
+          The podcast went quiet for seven years. The ecosystem was being built.
+        </p>
+
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 52px' }} />
+
+        <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.25, margin: '0 0 20px' }}>What drives this.</h3>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '18px', maxWidth: '640px' }}>
+          Humanity as a whole is mostly operating the way a person operates when they have no clear direction and are carrying unresolved trauma — because that's mostly what humanity is made of.
+        </p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '18px', maxWidth: '640px' }}>
+          That's the starting point, not the verdict. There are tools that work at every stage of development. The work is matching the right one to the right stage — and then moving on from there.
+        </p>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.85, marginBottom: '52px', maxWidth: '640px' }}>
+          Life on earth and humanity could be genuinely thriving, if that's what we individually and collectively aimed ourselves at.
+        </p>
+
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '0 0 52px' }} />
+
+        <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.25, margin: '0 0 28px' }}>Values.</h3>
+        <div style={{ display: 'grid', gap: '4px', marginBottom: '80px' }}>
+          {[
+            ['Nikhedonia',   'The particular joy that comes from watching others thrive.'],
+            ['Ubuntu',       'I am because we are. In the spirit of Mandela.'],
+            ['Wonderment',   'The capacity to be genuinely astonished by what is.'],
+            ['Dymaxion',     'Maximum output from minimum input. In the spirit of Buckminster Fuller.'],
+            ['Excelsior',    'Ever upward. In the spirit of Stan Lee.'],
+            ['Enthusiasmos', 'To be filled with the divine. The animating fire.'],
+            ['Wabi Sabi',    'The beauty of imperfection, impermanence, and incompleteness.'],
+            ['Meliorism',    'The world can be made better through human effort. The belief beneath all of this.'],
+          ].map(([name, desc]) => (
+            <div key={name} style={{ borderRight: '3px solid rgba(200,146,42,0.20)', padding: '14px 24px 14px 0', textAlign: 'right' }}>
+              <strong style={{ display: 'block', ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '4px' }}>{name}</strong>
+              <p style={{ margin: 0, ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)' }}>{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <ScalePanel side="right" />
       <ToolCompassPanel />
       <SiteFooter />
