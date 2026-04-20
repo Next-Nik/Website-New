@@ -50,8 +50,8 @@ export function NextUsSelfPage() {
           <a href="/tools" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>
             See all tools →
           </a>
-          <a href="/tools/orienteering" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>
-            Find my starting point →
+          <a href="/tools/north-star" style={{ display: 'inline-block', padding: '16px 36px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'transparent', color: '#A8721A', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', textDecoration: 'none' }}>
+            North Star →
           </a>
         </div>
 
@@ -168,7 +168,7 @@ export function NextUsSelfPage() {
         <DarkBody>Each tool is built for a specific stage of the journey. You don't need all of them. Start where you are.</DarkBody>
         <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
           <DarkSolidButton href="/tools">See all tools →</DarkSolidButton>
-          <DarkGhostButton href="/tools/orienteering">Find my starting point →</DarkGhostButton>
+          <DarkGhostButton href="/tools/north-star">North Star — find your starting point →</DarkGhostButton>
         </div>
       </DarkSection>
 

@@ -12,7 +12,7 @@ const FAQS = [
     items: [
       {
         q: 'Where do I begin?',
-        a: 'If you\'re not sure, start with Orienteering — a short conversation that reads where you are and points you toward the right tool. If you\'d rather just dive in, The Map is a good first move: ten minutes, seven domains, an honest picture of where things actually stand.',
+        a: 'If you\'re not sure, start with North Star — a short conversation that reads where you are and points you toward the right tool. If you\'d rather just dive in, The Map is a good first move: ten minutes, seven domains, an honest picture of where things actually stand.',
       },
       {
         q: 'Do I need to use all the tools?',
@@ -20,7 +20,7 @@ const FAQS = [
       },
       {
         q: 'What order should I use the tools in?',
-        a: 'There\'s no prescribed sequence, but the tools are built with a logic. Horizon State builds the regulated ground everything else stands on. The Map tells you where you are. Purpose Piece surfaces your contribution pattern. Target Sprint gives you a ninety-day operational arc. Horizon Practice keeps the daily thread. If you\'re new, Orienteering will suggest a starting point based on where you actually are.',
+        a: 'There\'s no prescribed sequence, but the tools are built with a logic. Horizon State builds the regulated ground everything else stands on. The Map tells you where you are. Purpose Piece surfaces your contribution pattern. Target Sprint gives you a ninety-day operational arc. Horizon Practice keeps the daily thread. If you\'re new, North Star will suggest a starting point based on where you actually are.',
       },
       {
         q: 'Is this a self-help programme?',
@@ -52,8 +52,8 @@ const FAQS = [
         a: 'A daily practice layer for the T.E.A. framework — Thoughts, Emotions, Actions. Keeps the thread between sessions alive and builds the habit of showing up to the work consistently.',
       },
       {
-        q: 'What is Orienteering?',
-        a: 'A short conversational tool that reads where you are and recommends a starting point. It\'s not on the main tools menu because it\'s a front door, not a destination. If you don\'t know where to begin, begin here.',
+        q: 'What is North Star?',
+        a: 'A short conversational tool that reads where you are and recommends a starting point — for your own life, for the planet, or both. It\'s not on the main tools menu because it\'s a front door, not a destination. If you don\'t know where to begin, begin here.',
       },
     ],
   },

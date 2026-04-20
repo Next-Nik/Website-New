@@ -31,7 +31,7 @@ export const ROUTES = {
   contentEditor:  '/content-editor',
 
   // ── Tool paths ─────────────────────────────────────────────
-  orienteering:     '/tools/orienteering',
+  northStar:        '/tools/north-star',
   map:              '/tools/map',
   horizonState:     '/tools/horizon-state',
   purposePiece:     '/tools/purpose-piece',
@@ -41,7 +41,7 @@ export const ROUTES = {
 
   // ── Tool API fetch paths ────────────────────────────────────
   api: {
-    orienteeringChat:        '/tools/orienteering/api/chat',
+    northStarChat:           '/tools/north-star/api/chat',
     mapChat:                 '/tools/map/api/chat',
     mapAvatarChat:           '/tools/map/api/avatar-chat',
     mapConnectionSynthesis:  '/tools/map/api/connection-synthesis',

@@ -30,7 +30,7 @@
     "api/create-checkout.js":           { "maxDuration": 15 }
   },
   "rewrites": [
-    { "source": "/tools/orienteering/api/chat",             "destination": "/api/orienteering-chat" },
+    { "source": "/tools/north-star/api/chat",             "destination": "/api/orienteering-chat" },
     { "source": "/tools/map/api/chat",                      "destination": "/api/map-chat" },
     { "source": "/tools/map/api/avatar-chat",               "destination": "/api/map-avatar-chat" },
     { "source": "/tools/map/api/connection-synthesis",      "destination": "/api/connection-synthesis-chat" },

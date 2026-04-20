@@ -238,7 +238,7 @@ export function DomainsPanel() {
             {/* Footer */}
             <div style={{ padding: '16px 24px 32px', borderTop: '1px solid rgba(200,146,42,0.12)', marginTop: 'auto' }}>
               <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65 }}>
-                Seven domains, seven life's mission questions. The Map scores them. Orienteering starts with whichever one is most alive right now.
+                Seven domains, seven life's mission questions. The Map scores them. North Star starts with whichever one is most alive right now.
               </p>
             </div>
           </div>

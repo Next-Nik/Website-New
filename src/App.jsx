@@ -56,7 +56,7 @@ import { CheckoutPage }          from './pages/Checkout'
 import { AuthCallbackPage }       from './pages/AuthCallback'
 
 // ── Tools ─────────────────────────────────────────────────────
-import { OrienteeringPage }                        from './tools/orienteering/Orienteering'
+import { NorthStarPage }                           from './tools/orienteering/Orienteering'
 import { MapPage }                                 from './tools/map/Map'
 import { HorizonStatePage }                        from './tools/horizon-state/HorizonState'
 import { PurposePiecePage, PurposePieceDeepPage }  from './tools/purpose-piece/PurposePiece'
@@ -119,7 +119,8 @@ function AppInner() {
         <Route path="/content-editor"  element={<ContentEditorPage />} />
 
         {/* ── Tools ── */}
-        <Route path="/tools/orienteering"        element={<OrienteeringPage />} />
+        <Route path="/tools/north-star"          element={<NorthStarPage />} />
+        <Route path="/tools/orienteering"        element={<Navigate to="/tools/north-star" replace />} />
         <Route path="/tools/map"                 element={<MapPage />} />
         <Route path="/tools/horizon-state"       element={<HorizonStatePage />} />
         <Route path="/tools/purpose-piece"       element={<PurposePiecePage />} />

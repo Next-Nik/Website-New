@@ -307,7 +307,7 @@ export function PricingPage() {
             },
             {
               q: 'Is there a free trial?',
-              a: 'Orienteering is always free — no sign-up required. It reads where you are and points you to the right starting point. Beta cohort members received a 14-day free trial of the full suite.',
+              a: 'North Star is always free — no sign-up required. It reads where you are and points you to the right starting point. Beta cohort members received a 14-day free trial of the full suite.',
             },
             {
               q: "What's the founding member pricing?",

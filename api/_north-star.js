@@ -45,14 +45,14 @@ function formatNorthStarContext(ctx) {
   lines.push('This context comes from their own work in other tools. Use it naturally — you know their story. Do not narrate that you are reading notes. If asked directly how you know something, be honest that it comes from their previous work in the ecosystem.')
   lines.push('')
 
-  const toolOrder = ['map', 'purpose-piece', 'target-sprint', 'horizon-practice', 'horizon-state', 'orienteering']
+  const toolOrder = ['map', 'purpose-piece', 'target-sprint', 'horizon-practice', 'horizon-state', 'north-star']
   const toolLabels = {
     'map':              'The Map',
     'purpose-piece':    'Purpose Piece',
     'target-sprint':    'Target Sprint',
     'horizon-practice': 'Horizon Practice',
     'horizon-state':    'Horizon State',
-    'orienteering':     'Orienteering',
+    'north-star':      'North Star',
   }
 
   for (const tool of toolOrder) {

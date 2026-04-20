@@ -102,7 +102,7 @@ export function AboutPage() {
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '24px', marginTop: '52px', paddingTop: '44px', borderTop: '1px solid rgba(200,146,42,0.20)', alignItems: 'center' }}>
-          <a href="/tools/orienteering" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Find your entry point →</a>
+          <a href="/tools/north-star" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>North Star →</a>
           <a href="/nextus-self" style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)', paddingBottom: '3px' }}>Explore the Horizon Suite →</a>
         </div>
       </div>

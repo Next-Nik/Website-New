@@ -121,7 +121,7 @@ export function ToolCompassPanel() {
             {/* Intro */}
             <div style={{ padding: '16px 24px 8px' }}>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.88)', lineHeight: 1.7 }}>
-                Begin with Orienteering — it reads where you are and points you somewhere real. Everything else follows from honest location.
+                Begin with North Star — it reads where you are and points you somewhere real. Everything else follows from honest location.
               </p>
             </div>
 

@@ -14,7 +14,7 @@ const meta  = { color: 'rgba(15,21,35,0.78)' }
 
 const OPENING_MESSAGE = `Tell me where you are right now — what's present, what's on your mind, or just how things feel. I'll work out where to point you from there.`
 
-export function OrienteeringPage() {
+export function NorthStarPage() {
   const { user, loading } = useAuth()
   const [messages, setMessages] = useState([
     { role: 'assistant', content: OPENING_MESSAGE }
@@ -57,7 +57,7 @@ export function OrienteeringPage() {
     setThinking(true)
 
     try {
-      const res = await fetch('/tools/orienteering/api/chat', {
+      const res = await fetch('/tools/north-star/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -83,14 +83,14 @@ export function OrienteeringPage() {
 
         // M1 fix: write North Star notes for signed-in full-page users
         if (user?.id && parsed.stage) {
-          try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'orienteering') } catch {}
+          try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'north-star') } catch {}
           const oriNotes = [
-            parsed.stage       ? `Orienteering stage: ${parsed.stage}` : null,
+            parsed.stage       ? `North Star stage: ${parsed.stage}` : null,
             parsed.stage_note  ? `Stage context: ${parsed.stage_note}` : null,
             parsed.recommendations?.[0]?.title ? `Recommended entry point: ${parsed.recommendations[0].title}` : null,
           ].filter(Boolean)
           if (oriNotes.length) {
-            try { await supabase.from('north_star_notes').insert(oriNotes.map(note => ({ user_id: user.id, tool: 'orienteering', note }))) } catch {}
+            try { await supabase.from('north_star_notes').insert(oriNotes.map(note => ({ user_id: user.id, tool: 'north-star', note }))) } catch {}
           }
         }
       } else {
@@ -101,7 +101,7 @@ export function OrienteeringPage() {
         ...prev,
         { role: 'assistant', content: 'Something went wrong. Please try again.' }
       ])
-      console.error('Orienteering API error:', err)
+      console.error('North Star API error:', err)
     } finally {
       setThinking(false)
     }
@@ -115,10 +115,10 @@ export function OrienteeringPage() {
 
       <div className="tool-wrap">
         <div className="tool-header">
-          <span className="tool-eyebrow">Horizon Suite</span>
-          <h1 className="tool-title">Orienteering</h1>
+          <span className="tool-eyebrow">NextUs</span>
+          <h1 className="tool-title">North Star</h1>
           <p style={{ ...body, fontSize: '1.25rem', fontWeight: 300, ...meta, marginTop: '6px', lineHeight: 1.65, maxWidth: '420px' }}>
-            A short conversation — three to five exchanges — that reads where you are and points you somewhere real. No jargon, no sign-up required.
+            A short conversation — three to five exchanges — that reads where you are and points you somewhere real. Your life, the planet, or both.
           </p>
         </div>
 

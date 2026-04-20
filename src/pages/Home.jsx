@@ -205,7 +205,7 @@ function StagePanel({ stage }) {
   )
 }
 
-function OrienteeringEmbed() {
+function NorthStarEmbed() {
   const { user } = useAuth()
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
@@ -231,7 +231,7 @@ function OrienteeringEmbed() {
     if (textareaRef.current) textareaRef.current.style.height = 'auto'
     setWaiting(true)
     try {
-      const res = await fetch('/tools/orienteering/api/chat', {
+      const res = await fetch('/tools/north-star/api/chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: next.map(m => ({ role: m.role, content: m.content })), userId: user?.id })
       })
@@ -243,14 +243,14 @@ function OrienteeringEmbed() {
         setDone(true)
         // Write to North Star cross-tool memory if signed in
         if (user?.id && parsed.stage) {
-          try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'orienteering') } catch {}
+          try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'north-star') } catch {}
           const oriNotes = [
-            parsed.stage ? `Orienteering stage: ${parsed.stage}` : null,
+            parsed.stage ? `North Star stage: ${parsed.stage}` : null,
             parsed.stage_note ? `Stage context: ${parsed.stage_note}` : null,
             parsed.recommendations?.[0]?.title ? `Recommended entry point: ${parsed.recommendations[0].title}` : null,
           ].filter(Boolean)
           if (oriNotes.length) {
-            try { await supabase.from('north_star_notes').insert(oriNotes.map(note => ({ user_id: user.id, tool: 'orienteering', note }))) } catch {}
+            try { await supabase.from('north_star_notes').insert(oriNotes.map(note => ({ user_id: user.id, tool: 'north-star', note }))) } catch {}
           }
         }
       } else {
@@ -391,13 +391,13 @@ export function HomePage() {
         </div>
       </DarkSection>
 
-      {/* Orienteering embed */}
+      {/* North Star embed */}
       <section id="start" className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px' }}>
         <div style={{ width: '1px', height: '52px', background: 'rgba(200,146,42,0.20)', margin: '0 auto 64px' }} />
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Where you are</span>
-        <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>Find your starting point.</h2>
-        <p style={{ ...body, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Tell me a little about where you are right now. Three to five exchanges — I'll point you somewhere real.</p>
-        <OrienteeringEmbed />
+        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>North Star</span>
+        <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>Tell me where you are.</h2>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Three to five exchanges. I'll read where you are and point you somewhere real — your life, the planet, or both.</p>
+        <NorthStarEmbed />
         <a href="/nextus-self" style={{ display: 'block', textAlign: 'center', ...body, fontSize: '16px', fontStyle: 'italic', color: '#A8721A', marginTop: '28px', textDecoration: 'none', opacity: 0.78 }}>or show me everything {'→'}</a>
       </section>
 

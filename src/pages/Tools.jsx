@@ -107,11 +107,11 @@ export function ToolsPage() {
 
       </div>
 
-      {/* Orienteering nudge — dark section */}
+      {/* North Star nudge — dark section */}
       <DarkSection>
         <DarkEyebrow>Not sure where to start?</DarkEyebrow>
         <DarkHeading>A short conversation — and I’ll point you somewhere real.</DarkHeading>
-        <DarkSolidButton href="/tools/orienteering">Find my starting point →</DarkSolidButton>
+        <DarkSolidButton href="/tools/north-star">North Star →</DarkSolidButton>
       </DarkSection>
 
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: '80px clamp(20px,5vw,40px) 120px' }}>
