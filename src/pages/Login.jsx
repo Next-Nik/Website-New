@@ -64,7 +64,7 @@ export function LoginPage() {
   const [sending, setSending]       = useState(false)
   const [sent, setSent]             = useState(false)
   const [error, setError]           = useState('')
-  const [termsAccepted, setTerms]   = useState(false)
+  const [termsAccepted, setTerms]   = useState(true)
   const [mailingOptIn, setMailing]  = useState(false)
   const [termsError, setTermsError] = useState(false)
 

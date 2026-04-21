@@ -26,7 +26,7 @@ function getDestination() {
     const url = new URL(dest)
     const allowed = ['nextus.world', 'www.nextus.world']
     const isVercel = url.hostname.endsWith('.vercel.app')
-    if (allowed.includes(url.hostname) || isVercel) return url.pathname + url.search + url.hash
+    if (allowed.includes(url.hostname) || isVercel) return dest
   } catch {}
 
   return '/'
@@ -88,7 +88,7 @@ export function AuthCallbackPage() {
       supabase.auth.getSession().then(({ data: { session } }) => {
         window.location.replace(session?.user ? getDestination() : '/login')
       })
-    }, 8000)
+    }, 3000)
 
     return () => {
       subscription.unsubscribe()
