@@ -43,13 +43,13 @@ function WelcomeCard() {
         <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '36px' }}>
           Two weeks on us. No card, no catch.<br />Go explore. Change the world.
         </p>
-        <a href={ROUTES.dashboard} style={{
+        <a href={ROUTES.home} style={{
           display: 'block', width: '100%', padding: '14px 0',
           background: '#C8922A', border: 'none', borderRadius: '40px',
           ...sc, fontSize: '15px', letterSpacing: '0.16em',
           color: '#FFFFFF', textDecoration: 'none', textAlign: 'center',
         }}>
-          Go to your Dashboard →
+          Go to NextUs →
         </a>
       </div>
     </div>
