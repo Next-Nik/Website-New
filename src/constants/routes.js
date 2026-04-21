@@ -56,6 +56,7 @@ export const ROUTES = {
     horizonPracticeDaily:    '/tools/horizon-practice/api/daily-chat',
     horizonPracticeLoop:     '/tools/horizon-practice/api/loop-chat',
     createCheckout:          '/api/create-checkout',
+    grantBetaAccess:         '/api/grant-beta-access',
     debriefChat:             '/api/debrief-chat',
     contact:                 '/api/contact',
     orgExtract:              '/api/org-extract',
