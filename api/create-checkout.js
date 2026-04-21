@@ -61,7 +61,7 @@ module.exports = async (req, res) => {
       const promoCodes = await stripe.promotionCodes.list({ code: promoCode, limit: 1, active: true })
       if (promoCodes.data.length > 0) {
         sessionParams.discounts = [{ promotion_code: promoCodes.data[0].id }]
-        sessionParams.allow_promotion_codes = false
+        // Note: cannot set allow_promotion_codes when discounts is set
       } else {
         console.warn('Promo code not found or inactive:', promoCode)
         sessionParams.allow_promotion_codes = true
