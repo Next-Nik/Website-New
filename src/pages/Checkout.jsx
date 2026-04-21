@@ -1,9 +1,7 @@
 // src/pages/Checkout.jsx
 // Authenticated checkout gateway.
 //
-// Beta promo codes (BETA50, BETACORE75, FRIEND) bypass Stripe entirely —
-// access is granted directly and a welcome card is shown.
-//
+// Beta/NextCore promo codes bypass Stripe entirely — access granted directly.
 // All other codes go through Stripe checkout as normal.
 //
 // Accepts URL params:
@@ -18,10 +16,18 @@ import { ROUTES } from '../constants/routes'
 const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
-// Beta codes that skip Stripe — must match api/grant-beta-access.js
+// Known beta codes that bypass Stripe — personal NextCore codes are validated server-side
 const BETA_CODES = new Set(['BETA50', 'BETACORE75', 'FRIEND'])
 
-function WelcomeCard() {
+// ── Welcome cards ─────────────────────────────────────────────────────────────
+
+function WelcomeCard({ type }) {
+  const isBeta     = type === 'beta'
+  const heading    = "You're in."
+  const message    = isBeta
+    ? "Two weeks on us. No card, no catch.\nGo explore. Change the world."
+    : "You matter to me and to the planet.\nThis one's on me — no expiry, no catch. Welcome."
+
   return (
     <div style={{
       minHeight: '100vh', background: '#FAFAF7',
@@ -38,10 +44,10 @@ function WelcomeCard() {
           Welcome
         </span>
         <h1 style={{ ...body, fontSize: '32px', fontWeight: 300, color: '#0F1523', marginBottom: '16px', lineHeight: 1.2 }}>
-          You're in.
+          {heading}
         </h1>
-        <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '36px' }}>
-          Two weeks on us. No card, no catch.<br />Go explore. Change the world.
+        <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '36px', whiteSpace: 'pre-line' }}>
+          {message}
         </p>
         <a href={ROUTES.home} style={{
           display: 'block', width: '100%', padding: '14px 0',
@@ -100,17 +106,22 @@ function Spinner({ label }) {
   )
 }
 
+// ── Main page ─────────────────────────────────────────────────────────────────
+
 export function CheckoutPage() {
   const { user, loading: authLoading } = useAuth()
-  const [status, setStatus] = useState('idle')
-  const [errorMsg, setErrorMsg] = useState('')
+  const [status, setStatus]       = useState('idle')
+  const [welcomeType, setWelcome] = useState(null)
+  const [errorMsg, setErrorMsg]   = useState('')
 
   const params    = new URLSearchParams(window.location.search)
   const priceId   = params.get('price')
   const promoCode = params.get('promo') ?? undefined
   const ref       = params.get('ref')   ?? undefined
 
-  const isBeta = promoCode && BETA_CODES.has(promoCode.toUpperCase())
+  // Beta codes bypass Stripe — NextCore personal codes also bypass (validated server-side)
+  // We attempt bypass for any code not going to Stripe pricing
+  const tryBypass = !!promoCode
 
   useEffect(() => {
     if (authLoading) return
@@ -122,15 +133,18 @@ export function CheckoutPage() {
 
   useEffect(() => {
     if (authLoading || !user || status !== 'idle') return
-    if (isBeta) {
-      grantBetaAccess()
+    if (BETA_CODES.has(promoCode?.toUpperCase())) {
+      grantDirectAccess()
+    } else if (promoCode && !priceId) {
+      // Could be a NextCore personal code — try server-side validation
+      grantDirectAccess()
     } else {
       if (!priceId) return
       startStripeCheckout()
     }
   }, [user, authLoading, status])
 
-  async function grantBetaAccess() {
+  async function grantDirectAccess() {
     setStatus('processing')
     try {
       const res = await fetch(ROUTES.api.grantBetaAccess, {
@@ -139,10 +153,15 @@ export function CheckoutPage() {
         body: JSON.stringify({ userId: user.id, promoCode, ref }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error ?? 'Could not grant access.')
+      if (!res.ok) {
+        // Not a valid bypass code — fall through to Stripe if we have a priceId
+        if (priceId) { startStripeCheckout(); return }
+        throw new Error(data.error ?? 'Could not grant access.')
+      }
+      setWelcome(data.welcomeType)
       setStatus('welcome')
     } catch (err) {
-      console.error('Beta access error:', err)
+      console.error('Direct access error:', err)
       setErrorMsg(err.message ?? 'Something went wrong. Please try again.')
       setStatus('error')
     }
@@ -170,7 +189,7 @@ export function CheckoutPage() {
     }
   }
 
-  if (!isBeta && !priceId) {
+  if (!promoCode && !priceId) {
     return (
       <StatusCard
         eyebrow="Checkout"
@@ -182,9 +201,9 @@ export function CheckoutPage() {
   }
 
   if (authLoading || !user) return <Spinner label="One moment…" />
-  if (status === 'welcome') return <WelcomeCard />
+  if (status === 'welcome') return <WelcomeCard type={welcomeType} />
   if (status === 'idle' || status === 'processing' || status === 'redirecting') {
-    return <Spinner label={isBeta ? 'Getting you in…' : 'Taking you to checkout…'} />
+    return <Spinner label="Getting you in…" />
   }
 
   return (

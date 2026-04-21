@@ -1,25 +1,28 @@
 // api/grant-beta-access.js
-// Grants full access to beta users directly — no Stripe checkout required.
-// Called from Checkout.jsx when a beta promo code is detected.
+// Grants full access directly — no Stripe checkout required.
+// Handles two types:
+//   - Beta codes (BETA50, BETACORE75, FRIEND) — known set, welcome type: 'beta'
+//   - NextCore codes (personal per-user codes) — validated via Stripe, welcome type: 'nextcore'
 //
 // POST body: { userId, promoCode, ref? }
-// Returns:   { success: true } or { error: string }
+// Returns:   { success: true, welcomeType: 'beta'|'nextcore' } or { error: string }
 
+const Stripe = require('stripe')
 const { createClient } = require('@supabase/supabase-js')
 
+const stripe   = new Stripe(process.env.STRIPE_SECRET_KEY)
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY
 )
 
-// Beta promo codes that bypass Stripe entirely.
-// Must match TRIAL_PROMO_CODES in create-checkout.js.
+// Known beta codes
 const BETA_PROMO_CODES = new Set(['BETA50', 'BETACORE75', 'FRIEND'])
 
-// All tools granted with beta access
-const BETA_PRODUCTS = ['horizon-state', 'purpose-piece', 'map', 'target-sprint', 'horizon-practice']
+// All tools granted with access
+const ALL_PRODUCTS = ['horizon-state', 'purpose-piece', 'map', 'target-sprint', 'horizon-practice']
 
-// Kit tag IDs — keep in sync with PROMO_GROUP_MAP in stripe-webhook.js
+// Kit tag IDs
 const PROMO_GROUP_MAP = {
   'BETA50':      { group: 'beta_tester', kitTagId: 19032269 },
   'BETACORE75':  { group: 'beta_core',   kitTagId: 19032272 },
@@ -27,30 +30,25 @@ const PROMO_GROUP_MAP = {
   'FRIEND':      { group: 'referred',    kitTagId: 19032279 },
 }
 
-async function grantAccess(userId) {
-  for (const product of BETA_PRODUCTS) {
+async function grantAccess(userId, source) {
+  for (const product of ALL_PRODUCTS) {
     await supabase.from('access').upsert({
       user_id:    userId,
       product,
       tier:       'full',
-      source:     'beta',
+      source,
       granted_at: new Date().toISOString(),
       expires_at: null,
     }, { onConflict: 'user_id,product' })
   }
 }
 
-async function tagUserGroup(userId, email, promoCode) {
-  if (!promoCode) return
-  const mapping = PROMO_GROUP_MAP[promoCode.toUpperCase()]
-  if (!mapping) return
-
-  await supabase.from('users')
-    .update({ beta_group: mapping.group })
-    .eq('id', userId)
-
-  if (email && mapping.kitTagId) {
-    await tagInKit(email, mapping.kitTagId)
+async function tagUserGroup(userId, email, code, group, kitTagId) {
+  if (group) {
+    await supabase.from('users').update({ beta_group: group }).eq('id', userId)
+  }
+  if (email && kitTagId) {
+    await tagInKit(email, kitTagId)
   }
 }
 
@@ -62,10 +60,7 @@ async function tagInKit(email, tagId) {
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ api_key: process.env.KIT_API_KEY, email }),
     })
-    if (!res.ok) {
-      const body = await res.text()
-      console.error('Kit tag error:', res.status, body)
-    }
+    if (!res.ok) console.error('Kit tag error:', res.status, await res.text())
   } catch (err) {
     console.error('Kit tag fetch failed:', err)
   }
@@ -74,6 +69,18 @@ async function tagInKit(email, tagId) {
 async function getUserEmail(userId) {
   const { data } = await supabase.from('users').select('email').eq('id', userId).limit(1).maybeSingle()
   return data?.email ?? null
+}
+
+// Validate a NextCore code via Stripe — must be active and 100% off
+async function validateNextCoreCode(code) {
+  try {
+    const promoCodes = await stripe.promotionCodes.list({ code, limit: 1, active: true })
+    if (!promoCodes.data.length) return false
+    const coupon = promoCodes.data[0].coupon
+    return coupon.percent_off === 100
+  } catch {
+    return false
+  }
 }
 
 module.exports = async (req, res) => {
@@ -85,25 +92,40 @@ module.exports = async (req, res) => {
   if (!promoCode) return res.status(400).json({ error: 'Missing promoCode' })
 
   const code = promoCode.toUpperCase()
+  let welcomeType = null
 
-  if (!BETA_PROMO_CODES.has(code)) {
-    return res.status(400).json({ error: 'Not a beta promo code' })
+  // Determine welcome type
+  if (BETA_PROMO_CODES.has(code)) {
+    welcomeType = 'beta'
+  } else {
+    // Check Stripe — NextCore personal code
+    const isNextCore = await validateNextCoreCode(code)
+    if (isNextCore) {
+      welcomeType = 'nextcore'
+    } else {
+      return res.status(400).json({ error: 'Not a valid access code' })
+    }
   }
 
   try {
-    // Grant access to all tools
-    await grantAccess(userId)
+    const source = welcomeType === 'nextcore' ? 'nextcore' : 'beta'
+    await grantAccess(userId, source)
 
-    // Tag in Supabase and Kit
     const email = await getUserEmail(userId)
-    await tagUserGroup(userId, email, code)
+    const mapping = PROMO_GROUP_MAP[code]
 
-    // Store referral source if present
+    if (welcomeType === 'nextcore') {
+      await supabase.from('users').update({ beta_group: 'nextus_core' }).eq('id', userId)
+      if (email) await tagInKit(email, 19032283) // NextCore Kit tag
+    } else {
+      await tagUserGroup(userId, email, code, mapping?.group, mapping?.kitTagId)
+    }
+
     if (ref) {
       await supabase.from('users').update({ referred_by: ref }).eq('id', userId)
     }
 
-    return res.json({ success: true })
+    return res.json({ success: true, welcomeType })
 
   } catch (err) {
     console.error('grant-beta-access error:', err)
