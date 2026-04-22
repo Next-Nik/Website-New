@@ -1,14 +1,6 @@
 // src/pages/AuthCallback.jsx
-// Supabase processes the ?code= or #access_token from the URL automatically
-// when detectSessionInUrl: true (set in useSupabase.js).
-// This page waits for the SIGNED_IN event, writes consent flags if present,
-// then redirects to the stored destination.
-
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { supabase } from '../hooks/useSupabase'
-
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 function getDestination() {
   const params = new URLSearchParams(window.location.search)
@@ -26,7 +18,8 @@ function getDestination() {
     const url = new URL(dest)
     const allowed = ['nextus.world', 'www.nextus.world']
     const isVercel = url.hostname.endsWith('.vercel.app')
-    if (allowed.includes(url.hostname) || isVercel) return dest
+    // Return pathname only — avoids cross-origin redirect issues
+    if (allowed.includes(url.hostname) || isVercel) return url.pathname + url.search + url.hash
   } catch {}
 
   return '/'
@@ -34,61 +27,64 @@ function getDestination() {
 
 async function writeConsent(userId) {
   try {
-    const termsAt  = sessionStorage.getItem('consent_terms_at')
-    const mailing  = sessionStorage.getItem('consent_mailing')
-
-    // Only write if consent flags are present — skips returning users
-    // who sign in without going through the login form this session
+    const termsAt = sessionStorage.getItem('consent_terms_at')
+    const mailing = sessionStorage.getItem('consent_mailing')
     if (!termsAt) return
-
     await supabase.from('user_consent').upsert(
       {
-        user_id:          userId,
+        user_id: userId,
         terms_accepted_at: termsAt,
-        mailing_opt_in:   mailing === 'true',
-        updated_at:       new Date().toISOString(),
+        mailing_opt_in: mailing === 'true',
+        updated_at: new Date().toISOString(),
       },
       { onConflict: 'user_id' }
     )
-
     sessionStorage.removeItem('consent_terms')
     sessionStorage.removeItem('consent_terms_at')
     sessionStorage.removeItem('consent_mailing')
-  } catch {
-    // Non-fatal — don't block redirect on a consent write failure
-  }
+  } catch {}
 }
 
 export function AuthCallbackPage() {
-  const [status, setStatus] = useState('Signing you in…')
-
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        await writeConsent(session.user.id)
-        window.location.replace(getDestination())
-      }
+    let redirected = false
+
+    async function doRedirect(session) {
+      if (redirected) return
+      redirected = true
+      await writeConsent(session.user.id)
+      window.location.replace(getDestination())
+    }
+
+    // Immediate check — handles hash-based flow and fast PKCE
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) doRedirect(session)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_IN' && session?.user) {
+    // Auth state listener — INITIAL_SESSION fires fastest, SIGNED_IN after PKCE exchange
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (
+        (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') &&
+        session?.user
+      ) {
         subscription.unsubscribe()
-        await writeConsent(session.user.id)
-        window.location.replace(getDestination())
+        clearTimeout(timer)
+        doRedirect(session)
       }
-      if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT' && !redirected) {
         subscription.unsubscribe()
+        clearTimeout(timer)
         window.location.replace('/login')
       }
     })
 
-    const timer = setTimeout(() => {
+    // 8s timeout matches the original working version — enough for slow PKCE exchanges
+    const timer = setTimeout(async () => {
       subscription.unsubscribe()
-      setStatus('Taking longer than expected…')
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        window.location.replace(session?.user ? getDestination() : '/login')
-      })
-    }, 3000)
+      if (redirected) return
+      const { data: { session } } = await supabase.auth.getSession()
+      window.location.replace(session?.user ? getDestination() : '/login')
+    }, 8000)
 
     return () => {
       subscription.unsubscribe()
@@ -97,14 +93,24 @@ export function AuthCallbackPage() {
   }, [])
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{
+      minHeight: '100vh', background: '#FAFAF7',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
       <div style={{ textAlign: 'center' }}>
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>
-          The Horizon Suite
-        </span>
-        <p style={{ ...body, fontSize: '20px', color: 'rgba(15,21,35,0.55)' }}>
-          {status}
-        </p>
+        <img
+          src="/logo_nav.png"
+          alt="NextUs"
+          style={{ width: '44px', height: '44px', objectFit: 'contain', marginBottom: '28px', opacity: 0.7 }}
+        />
+        <div style={{
+          width: '28px', height: '28px', margin: '0 auto',
+          border: '2px solid rgba(200,146,42,0.18)',
+          borderTopColor: '#C8922A',
+          borderRadius: '50%',
+          animation: 'spin 0.8s linear infinite',
+        }} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </div>
     </div>
   )
