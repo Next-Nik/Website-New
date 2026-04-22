@@ -130,24 +130,25 @@ function SignInScreen({ onSwitch, onDone, notice }) {
 
   return (
     <>
-      <h1 style={{ ...body, fontSize: '28px', fontWeight: 300, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Welcome back.</h1>
-      <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '24px', lineHeight: 1.5 }}>Sign in to continue.</p>
+      <h1 style={{ ...body, fontSize: '28px', fontWeight: 300, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Welcome.</h1>
+      <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '24px', lineHeight: 1.5 }}>Sign in or create your account.</p>
       {notice && <NoticeMsg>{notice}</NoticeMsg>}
       <GoogleButton />
       <Divider />
       <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Email</label>
       <input type="email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} placeholder="your@email.com" autoComplete="email" style={inputStyle} />
       <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Password</label>
-      <input type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} placeholder="••••••••" autoComplete="current-password" style={inputStyle} />
+      <input type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} placeholder="••••••••" autoComplete="new-password" style={inputStyle} />
       <div style={{ textAlign: 'right', marginTop: '-4px', marginBottom: '20px' }}>
         <button onClick={() => onSwitch('reset')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...body, fontSize: '13px', color: 'rgba(15,21,35,0.45)', textDecoration: 'underline' }}>Forgot password?</button>
       </div>
       <PrimaryButton onClick={handleSubmit} loading={loading} label="Sign in →" />
       {error && <ErrorMsg>{error}</ErrorMsg>}
-      <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.45)', marginTop: '24px', textAlign: 'center' }}>
-        New here?{' '}
-        <button onClick={() => onSwitch('signup')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...body, fontSize: '14px', color: '#A8721A', textDecoration: 'underline' }}>Create an account</button>
-      </p>
+      <div style={{ marginTop: '16px', borderTop: '1px solid rgba(200,146,42,0.15)', paddingTop: '20px' }}>
+        <button onClick={() => onSwitch('signup')} style={{ width: '100%', padding: '14px', background: 'transparent', border: '1.5px solid rgba(200,146,42,0.40)', borderRadius: '40px', ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.14em', color: 'rgba(168,114,26,0.8)', cursor: 'pointer' }}>
+          Create an account →
+        </button>
+      </div>
     </>
   )
 }
