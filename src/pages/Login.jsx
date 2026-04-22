@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../hooks/useSupabase'
+import { markAsRecovery } from '../pages/AuthCallback'
 
 const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
@@ -248,6 +249,9 @@ function ResetScreen({ onSwitch }) {
   async function handleSubmit() {
     if (!email) { setError('Please enter your email.'); return }
     setLoading(true); setError('')
+    // Flag this in sessionStorage so AuthCallback knows to show new-password screen.
+    // Must be set BEFORE the redirect, in the same browser tab.
+    markAsRecovery()
     // Always show success — don't reveal whether an account exists
     await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/callback`,

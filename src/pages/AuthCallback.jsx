@@ -24,11 +24,20 @@ function hasAuthCode() {
   return !!(search.get('code') || hash.get('access_token'))
 }
 
-// Check if the URL itself signals a recovery flow (implicit/legacy flow)
-function isRecoveryInUrl() {
-  const hash   = new URLSearchParams(window.location.hash.replace('#', '?'))
-  const search = new URLSearchParams(window.location.search)
-  return hash.get('type') === 'recovery' || search.get('type') === 'recovery'
+// The reset password link stores a flag before redirecting so we know
+// to show the new-password screen when we come back.
+const RECOVERY_FLAG = 'nextus_password_recovery'
+
+function markAsRecovery() {
+  try { localStorage.setItem(RECOVERY_FLAG, '1') } catch {}
+}
+
+function consumeRecoveryFlag() {
+  try {
+    const val = localStorage.getItem(RECOVERY_FLAG)
+    localStorage.removeItem(RECOVERY_FLAG)
+    return val === '1'
+  } catch { return false }
 }
 
 async function writeConsent(userId) {
@@ -48,12 +57,6 @@ async function writeConsent(userId) {
 
 export function AuthCallbackPage() {
   useEffect(() => {
-    // Implicit flow: type=recovery visible in URL right now
-    if (isRecoveryInUrl()) {
-      window.location.replace('/login?screen=new-password')
-      return
-    }
-
     let handled = false
 
     function goToNewPassword() {
@@ -69,10 +72,20 @@ export function AuthCallbackPage() {
       window.location.replace(getDestination())
     }
 
-    // Only do immediate session check when no code is being exchanged
+    async function handleSession(session) {
+      if (handled) return
+      if (!session?.user) return
+      // If this session came from a password reset link, go to new-password screen
+      if (consumeRecoveryFlag()) {
+        goToNewPassword()
+      } else {
+        goToApp(session)
+      }
+    }
+
     if (!hasAuthCode()) {
       supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session?.user) goToApp(session)
+        if (session?.user) handleSession(session)
       })
     }
 
@@ -86,21 +99,10 @@ export function AuthCallbackPage() {
         return
       }
 
-      if (event === 'SIGNED_IN' && session?.user) {
-        // With PKCE, PASSWORD_RECOVERY may arrive just after SIGNED_IN.
-        // Wait a beat to see if PASSWORD_RECOVERY follows before redirecting to app.
-        await new Promise(r => setTimeout(r, 500))
-        if (handled) return // PASSWORD_RECOVERY fired during the wait
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
         subscription.unsubscribe()
         clearTimeout(timer)
-        goToApp(session)
-        return
-      }
-
-      if (event === 'INITIAL_SESSION' && session?.user) {
-        subscription.unsubscribe()
-        clearTimeout(timer)
-        goToApp(session)
+        await handleSession(session)
         return
       }
 
@@ -116,7 +118,7 @@ export function AuthCallbackPage() {
       if (handled) return
       const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
-        goToApp(session)
+        await handleSession(session)
       } else {
         handled = true
         window.location.replace('/login?expired=1')
@@ -136,3 +138,5 @@ export function AuthCallbackPage() {
     </div>
   )
 }
+
+export { markAsRecovery }
