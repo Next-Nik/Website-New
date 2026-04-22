@@ -47,16 +47,13 @@ function Checkbox({ checked, onChange, children }) {
 
 export function LoginPage() {
   const [email, setEmail]           = useState('')
-  const [step, setStep]             = useState('email')   // 'email' | 'code' | 'verifying'
-  const [code, setCode]             = useState('')
   const [sending, setSending]       = useState(false)
-  const [verifying, setVerifying]   = useState(false)
+  const [sent, setSent]             = useState(false)
   const [error, setError]           = useState('')
   const [termsAccepted, setTerms]   = useState(true)
   const [mailingOptIn, setMailing]  = useState(false)
   const [termsError, setTermsError] = useState(false)
 
-  // If already signed in, skip straight to destination
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
@@ -96,7 +93,7 @@ export function LoginPage() {
     if (error) setError(error.message)
   }
 
-  async function handleSendCode() {
+  async function handleEmail() {
     if (!checkTerms()) return
     if (!email || !email.includes('@')) { setError('Please enter a valid email address.'); return }
     setSending(true); setError('')
@@ -108,73 +105,13 @@ export function LoginPage() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(dest)}`,
         shouldCreateUser: true,
-        // No emailRedirectTo — we're using code entry, not magic link
       }
     })
     if (error) { setError(error.message); setSending(false); return }
+    setSent(true)
     setSending(false)
-    setStep('code')
-  }
-
-  async function handleVerifyCode() {
-    const trimmed = code.replace(/\s/g, '')
-    if (trimmed.length !== 6) { setError('Please enter the 6-digit code from your email.'); return }
-    setVerifying(true); setError('')
-
-    const { data, error } = await supabase.auth.verifyOtp({
-      email,
-      token: trimmed,
-      type: 'email',
-    })
-
-    if (error) {
-      setVerifying(false)
-      setError('That code didn\'t work. Double-check it or request a new one.')
-      return
-    }
-
-    // Write consent now that we have a session
-    if (data?.session?.user) {
-      try {
-        const termsAt = sessionStorage.getItem('consent_terms_at')
-        const mailing = sessionStorage.getItem('consent_mailing')
-        if (termsAt) {
-          await supabase.from('user_consent').upsert(
-            {
-              user_id: data.session.user.id,
-              terms_accepted_at: termsAt,
-              mailing_opt_in: mailing === 'true',
-              updated_at: new Date().toISOString(),
-            },
-            { onConflict: 'user_id' }
-          )
-          sessionStorage.removeItem('consent_terms')
-          sessionStorage.removeItem('consent_terms_at')
-          sessionStorage.removeItem('consent_mailing')
-        }
-      } catch {}
-    }
-
-    let dest = null
-    try { dest = localStorage.getItem('auth_redirect') } catch {}
-    if (!dest) dest = getIntendedDestination()
-    try { localStorage.removeItem('auth_redirect') } catch {}
-    window.location.replace(dest || '/')
-  }
-
-  const inputStyle = {
-    width: '100%', padding: '13px 16px',
-    background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)',
-    borderRadius: '40px', ...body, fontSize: '16px', color: '#0F1523',
-    outline: 'none', marginBottom: '12px', boxSizing: 'border-box',
-  }
-
-  const btnPrimary = {
-    width: '100%', padding: '16px',
-    background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)',
-    borderRadius: '40px', ...sc, fontSize: '16px', fontWeight: 600,
-    letterSpacing: '0.16em', color: '#A8721A', cursor: 'pointer',
   }
 
   return (
@@ -189,8 +126,7 @@ export function LoginPage() {
       </a>
 
       <div style={{ width: '100%', maxWidth: '400px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 36px 36px' }}>
-
-        {step === 'email' && (
+        {!sent ? (
           <>
             <h1 style={{ ...body, fontSize: '28px', fontWeight: 300, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Welcome.</h1>
             <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '32px', lineHeight: 1.5 }}>Sign in or create your account to continue.</p>
@@ -209,9 +145,9 @@ export function LoginPage() {
             <label style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Email</label>
             <input
               type="email" value={email} onChange={e => setEmail(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSendCode()}
+              onKeyDown={e => e.key === 'Enter' && handleEmail()}
               placeholder="your@email.com" autoComplete="email"
-              style={inputStyle}
+              style={{ width: '100%', padding: '13px 16px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...body, fontSize: '16px', color: '#0F1523', outline: 'none', marginBottom: '12px', boxSizing: 'border-box' }}
             />
 
             <div style={{ margin: '4px 0 16px' }}>
@@ -231,61 +167,29 @@ export function LoginPage() {
               </Checkbox>
             </div>
 
-            <button onClick={handleSendCode} disabled={sending} style={{ ...btnPrimary, opacity: sending ? 0.5 : 1 }}>
-              {sending ? 'Sending…' : 'Continue with email →'}
+            <button onClick={handleEmail} disabled={sending} style={{ width: '100%', padding: '16px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', color: '#A8721A', cursor: 'pointer', opacity: sending ? 0.5 : 1 }}>
+              {sending ? 'On its way…' : 'Continue with email →'}
             </button>
             {error && <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', marginTop: '8px', padding: '10px 14px', background: 'rgba(200,146,42,0.05)', borderRadius: '14px', border: '1.5px solid rgba(200,146,42,0.35)' }}>{error}</p>}
           </>
-        )}
-
-        {step === 'code' && (
-          <>
-            <button
-              onClick={() => { setStep('email'); setCode(''); setError('') }}
-              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '6px' }}
-            >
-              ← Back
-            </button>
-
-            <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: '22px' }}>✶</div>
-              <h2 style={{ ...body, fontSize: '24px', fontWeight: 300, color: '#0F1523', marginBottom: '8px' }}>Check your email.</h2>
-              <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.6)', lineHeight: 1.6 }}>
-                We sent a 6-digit code to<br />
-                <span style={{ color: '#A8721A' }}>{email}</span>
-              </p>
-            </div>
-
-            <label style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Code</label>
-            <input
-              type="text"
-              inputMode="numeric"
-              pattern="[0-9]*"
-              maxLength={6}
-              value={code}
-              onChange={e => { setCode(e.target.value.replace(/\D/g, '')); setError('') }}
-              onKeyDown={e => e.key === 'Enter' && handleVerifyCode()}
-              placeholder="123456"
-              autoFocus
-              style={{ ...inputStyle, fontSize: '24px', letterSpacing: '0.3em', textAlign: 'center' }}
-            />
-
-            <button onClick={handleVerifyCode} disabled={verifying || code.length < 6} style={{ ...btnPrimary, opacity: (verifying || code.length < 6) ? 0.5 : 1, marginTop: '4px' }}>
-              {verifying ? 'Verifying…' : 'Sign in →'}
-            </button>
-
-            {error && <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', marginTop: '8px', padding: '10px 14px', background: 'rgba(200,146,42,0.05)', borderRadius: '14px', border: '1.5px solid rgba(200,146,42,0.35)' }}>{error}</p>}
-
-            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.45)', marginTop: '20px', textAlign: 'center' }}>
-              Didn't get it?{' '}
-              <button
-                onClick={() => { setCode(''); setError(''); handleSendCode() }}
-                style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...body, fontSize: '14px', color: '#A8721A', textDecoration: 'underline' }}
-              >
-                Send again
-              </button>
+        ) : (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '22px' }}>✶</div>
+            <h2 style={{ ...body, fontSize: '24px', fontWeight: 300, color: '#0F1523', marginBottom: '10px' }}>Check your email.</h2>
+            <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+              We sent a sign-in link to<br />
+              <span style={{ color: '#A8721A' }}>{email}</span>
             </p>
-          </>
+            <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginTop: '12px', lineHeight: 1.6 }}>
+              Click the link in your email to continue.
+            </p>
+            <button
+              onClick={() => { setSent(false); setEmail('') }}
+              style={{ marginTop: '24px', background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', textDecoration: 'underline' }}
+            >
+              Use a different email
+            </button>
+          </div>
         )}
       </div>
 
