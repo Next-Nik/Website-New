@@ -26,6 +26,12 @@ function getInitialScreen() {
   return 'signin'
 }
 
+function getInitialNotice() {
+  const params = new URLSearchParams(window.location.search)
+  if (params.get('expired') === '1') return 'That link has expired. Please request a new one.'
+  return ''
+}
+
 function storeConsent(mailingOptIn) {
   try {
     sessionStorage.setItem('consent_terms', 'true')
@@ -33,6 +39,8 @@ function storeConsent(mailingOptIn) {
     sessionStorage.setItem('consent_mailing', mailingOptIn ? 'true' : 'false')
   } catch {}
 }
+
+// ── Shared UI ──────────────────────────────────────────────────
 
 function Checkbox({ checked, onChange, children }) {
   return (
@@ -82,9 +90,22 @@ function ErrorMsg({ children }) {
   return <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', marginTop: '8px', padding: '10px 14px', background: 'rgba(200,146,42,0.05)', borderRadius: '14px', border: '1.5px solid rgba(200,146,42,0.35)' }}>{children}</p>
 }
 
+function NoticeMsg({ children }) {
+  return <p style={{ ...body, fontSize: '15px', color: '#A8721A', marginBottom: '16px', padding: '10px 14px', background: 'rgba(200,146,42,0.05)', borderRadius: '14px', border: '1.5px solid rgba(200,146,42,0.35)' }}>{children}</p>
+}
+
+function Spinner() {
+  return (
+    <div style={{ textAlign: 'center', padding: '40px 0' }}>
+      <div style={{ width: '28px', height: '28px', margin: '0 auto', border: '2px solid rgba(200,146,42,0.18)', borderTopColor: '#C8922A', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+    </div>
+  )
+}
+
 // ── Sign In ────────────────────────────────────────────────────
 
-function SignInScreen({ onSwitch, onDone }) {
+function SignInScreen({ onSwitch, onDone, notice }) {
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading]   = useState(false)
@@ -94,14 +115,23 @@ function SignInScreen({ onSwitch, onDone }) {
     if (!email || !password) { setError('Please enter your email and password.'); return }
     setLoading(true); setError('')
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) { setLoading(false); setError('Email or password incorrect. Try again or reset your password.'); return }
+    if (error) {
+      setLoading(false)
+      if (error.message.toLowerCase().includes('email not confirmed')) {
+        setError('Please confirm your email address before signing in. Check your inbox.')
+      } else {
+        setError('Email or password incorrect. Try again or reset your password.')
+      }
+      return
+    }
     onDone()
   }
 
   return (
     <>
       <h1 style={{ ...body, fontSize: '28px', fontWeight: 300, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Welcome back.</h1>
-      <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '32px', lineHeight: 1.5 }}>Sign in to continue.</p>
+      <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '24px', lineHeight: 1.5 }}>Sign in to continue.</p>
+      {notice && <NoticeMsg>{notice}</NoticeMsg>}
       <GoogleButton />
       <Divider />
       <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Email</label>
@@ -144,18 +174,18 @@ function SignUpScreen({ onSwitch, onDone }) {
     const dest = getIntendedDestination()
     try { localStorage.setItem('auth_redirect', dest) } catch {}
 
-    const { error: signUpError } = await supabase.auth.signUp({ email, password,
+    const { error: signUpError } = await supabase.auth.signUp({
+      email, password,
       options: { emailRedirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(dest)}` }
     })
 
-    // "User already registered" — just sign them in instead
-    if (signUpError && signUpError.message.toLowerCase().includes('already registered')) {
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
-      if (signInError) {
+    // Already registered — try signing them in with the password they just typed
+    if (signUpError?.message?.toLowerCase().includes('already registered')) {
+      const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password })
+      if (signInErr) {
         setLoading(false)
-        setError('You already have an account. Try signing in, or reset your password if you forgot it.')
-        // Switch to sign-in screen with the email pre-noted
-        setTimeout(() => onSwitch('signin'), 2000)
+        setError('You already have an account. Use the correct password or reset it below.')
+        setTimeout(() => onSwitch('signin'), 2500)
         return
       }
       onDone(); return
@@ -163,13 +193,15 @@ function SignUpScreen({ onSwitch, onDone }) {
 
     if (signUpError) { setLoading(false); setError(signUpError.message); return }
 
-    // Sign straight in after signup
+    // Try immediate sign-in. If Supabase "confirm email" is ON this will fail —
+    // show a clear message rather than leaving them stranded.
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
-    if (signInError) {
+    if (signInError?.message?.toLowerCase().includes('email not confirmed')) {
       setLoading(false)
-      setError('Account created — check your email to confirm, then sign in.')
+      setError('Almost there — check your email and click the confirmation link, then come back to sign in.')
       return
     }
+    if (signInError) { setLoading(false); setError(signInError.message); return }
     onDone()
   }
 
@@ -216,11 +248,11 @@ function ResetScreen({ onSwitch }) {
   async function handleSubmit() {
     if (!email) { setError('Please enter your email.'); return }
     setLoading(true); setError('')
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    // Always show success — don't reveal whether an account exists
+    await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/callback`,
     })
     setLoading(false)
-    if (error) { setError(error.message); return }
     setSent(true)
   }
 
@@ -229,7 +261,7 @@ function ResetScreen({ onSwitch }) {
       <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '22px' }}>✶</div>
       <h2 style={{ ...body, fontSize: '24px', fontWeight: 300, color: '#0F1523', marginBottom: '10px' }}>Check your email.</h2>
       <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
-        We sent a reset link to <span style={{ color: '#A8721A' }}>{email}</span>.<br />Click it to set a new password.
+        If <span style={{ color: '#A8721A' }}>{email}</span> has an account, a reset link is on its way.
       </p>
       <button onClick={() => onSwitch('signin')} style={{ marginTop: '24px', background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', textDecoration: 'underline' }}>Back to sign in</button>
     </div>
@@ -248,13 +280,44 @@ function ResetScreen({ onSwitch }) {
   )
 }
 
-// ── New Password (after reset link click) ──────────────────────
+// ── New Password ───────────────────────────────────────────────
 
 function NewPasswordScreen({ onDone }) {
   const [password, setPassword] = useState('')
   const [confirm, setConfirm]   = useState('')
   const [loading, setLoading]   = useState(false)
+  const [ready, setReady]       = useState(false)
+  const [expired, setExpired]   = useState(false)
   const [error, setError]       = useState('')
+
+  useEffect(() => {
+    // Check if a recovery session is already active (e.g. page refresh)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) setReady(true)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY' && session?.user) {
+        setReady(true)
+        return
+      }
+      // SIGNED_IN also fires during recovery flow — accept it
+      if (event === 'SIGNED_IN' && session?.user) {
+        setReady(true)
+        return
+      }
+    })
+
+    // If nothing fires in 10s, the link has expired
+    const expiry = setTimeout(() => {
+      setExpired(true)
+    }, 10000)
+
+    return () => {
+      subscription.unsubscribe()
+      clearTimeout(expiry)
+    }
+  }, [])
 
   async function handleSubmit() {
     if (password.length < 8) { setError('Password must be at least 8 characters.'); return }
@@ -264,6 +327,20 @@ function NewPasswordScreen({ onDone }) {
     if (error) { setLoading(false); setError(error.message); return }
     onDone()
   }
+
+  if (expired && !ready) return (
+    <>
+      <h1 style={{ ...body, fontSize: '24px', fontWeight: 300, color: '#0F1523', marginBottom: '10px' }}>Link expired.</h1>
+      <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '24px', lineHeight: 1.6 }}>
+        Reset links expire after a short time. Request a new one and try again.
+      </p>
+      <a href="/login?screen=reset" style={{ display: 'block', width: '100%', padding: '16px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', color: '#A8721A', cursor: 'pointer', textAlign: 'center', textDecoration: 'none', boxSizing: 'border-box' }}>
+        Request new link →
+      </a>
+    </>
+  )
+
+  if (!ready) return <Spinner />
 
   return (
     <>
@@ -284,10 +361,13 @@ function NewPasswordScreen({ onDone }) {
 
 export function LoginPage() {
   const [screen, setScreen] = useState(getInitialScreen)
+  const notice = getInitialNotice()
 
   useEffect(() => {
+    // Skip auto-redirect if showing the new-password screen
+    if (screen === 'new-password') return
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user && screen !== 'new-password') {
+      if (session?.user) {
         let dest = null
         try { dest = localStorage.getItem('auth_redirect') } catch {}
         if (!dest) dest = getIntendedDestination()
@@ -321,7 +401,7 @@ export function LoginPage() {
       )}
 
       <div style={{ width: '100%', maxWidth: '400px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 36px 36px' }}>
-        {screen === 'signin'       && <SignInScreen      onSwitch={setScreen} onDone={handleDone} />}
+        {screen === 'signin'       && <SignInScreen      onSwitch={setScreen} onDone={handleDone} notice={notice} />}
         {screen === 'signup'       && <SignUpScreen      onSwitch={setScreen} onDone={handleDone} />}
         {screen === 'reset'        && <ResetScreen       onSwitch={setScreen} />}
         {screen === 'new-password' && <NewPasswordScreen onDone={handleDone} />}

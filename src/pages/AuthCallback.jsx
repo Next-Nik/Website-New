@@ -18,6 +18,21 @@ function getDestination() {
   return '/'
 }
 
+// Returns true if the URL contains a Supabase auth code to be exchanged.
+// When a code is present, we MUST NOT call getSession() early — we have to
+// let onAuthStateChange process the exchange first, so we get the correct event.
+function hasAuthCode() {
+  const search = new URLSearchParams(window.location.search)
+  const hash   = new URLSearchParams(window.location.hash.replace('#', '?'))
+  return !!(search.get('code') || hash.get('access_token'))
+}
+
+// Synchronous check for recovery type in hash (implicit/legacy flow only)
+function isRecoveryInHash() {
+  const hash = new URLSearchParams(window.location.hash.replace('#', '?'))
+  return hash.get('type') === 'recovery'
+}
+
 async function writeConsent(userId) {
   try {
     const termsAt = sessionStorage.getItem('consent_terms_at')
@@ -35,6 +50,12 @@ async function writeConsent(userId) {
 
 export function AuthCallbackPage() {
   useEffect(() => {
+    // Legacy implicit flow: type=recovery is in the hash right now
+    if (isRecoveryInHash()) {
+      window.location.replace('/login?screen=new-password')
+      return
+    }
+
     let redirected = false
 
     async function doRedirect(session) {
@@ -44,12 +65,19 @@ export function AuthCallbackPage() {
       window.location.replace(getDestination())
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) doRedirect(session)
-    })
+    // Only do an immediate session check when there's NO code to exchange.
+    // If there IS a code (PKCE), we must wait for onAuthStateChange to process
+    // the exchange — calling getSession() first would race against it and could
+    // redirect before we see the PASSWORD_RECOVERY event.
+    if (!hasAuthCode()) {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) doRedirect(session)
+      })
+    }
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // PASSWORD_RECOVERY — send to a dedicated reset page instead of the app
+      // PASSWORD_RECOVERY must be caught before SIGNED_IN —
+      // Supabase fires SIGNED_IN for recovery sessions too
       if (event === 'PASSWORD_RECOVERY') {
         subscription.unsubscribe()
         clearTimeout(timer)
@@ -61,6 +89,7 @@ export function AuthCallbackPage() {
         subscription.unsubscribe()
         clearTimeout(timer)
         doRedirect(session)
+        return
       }
 
       if (event === 'SIGNED_OUT' && !redirected) {
@@ -74,7 +103,7 @@ export function AuthCallbackPage() {
       subscription.unsubscribe()
       if (redirected) return
       const { data: { session } } = await supabase.auth.getSession()
-      window.location.replace(session?.user ? getDestination() : '/login')
+      window.location.replace(session?.user ? getDestination() : '/login?expired=1')
     }, 8000)
 
     return () => { subscription.unsubscribe(); clearTimeout(timer) }
