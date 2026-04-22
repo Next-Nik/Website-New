@@ -18,19 +18,17 @@ function getDestination() {
   return '/'
 }
 
-// Returns true if the URL contains a Supabase auth code to be exchanged.
-// When a code is present, we MUST NOT call getSession() early — we have to
-// let onAuthStateChange process the exchange first, so we get the correct event.
 function hasAuthCode() {
   const search = new URLSearchParams(window.location.search)
   const hash   = new URLSearchParams(window.location.hash.replace('#', '?'))
   return !!(search.get('code') || hash.get('access_token'))
 }
 
-// Synchronous check for recovery type in hash (implicit/legacy flow only)
-function isRecoveryInHash() {
-  const hash = new URLSearchParams(window.location.hash.replace('#', '?'))
-  return hash.get('type') === 'recovery'
+// Check if the URL itself signals a recovery flow (implicit/legacy flow)
+function isRecoveryInUrl() {
+  const hash   = new URLSearchParams(window.location.hash.replace('#', '?'))
+  const search = new URLSearchParams(window.location.search)
+  return hash.get('type') === 'recovery' || search.get('type') === 'recovery'
 }
 
 async function writeConsent(userId) {
@@ -50,49 +48,63 @@ async function writeConsent(userId) {
 
 export function AuthCallbackPage() {
   useEffect(() => {
-    // Legacy implicit flow: type=recovery is in the hash right now
-    if (isRecoveryInHash()) {
+    // Implicit flow: type=recovery visible in URL right now
+    if (isRecoveryInUrl()) {
       window.location.replace('/login?screen=new-password')
       return
     }
 
-    let redirected = false
+    let handled = false
 
-    async function doRedirect(session) {
-      if (redirected) return
-      redirected = true
+    function goToNewPassword() {
+      if (handled) return
+      handled = true
+      window.location.replace('/login?screen=new-password')
+    }
+
+    async function goToApp(session) {
+      if (handled) return
+      handled = true
       await writeConsent(session.user.id)
       window.location.replace(getDestination())
     }
 
-    // Only do an immediate session check when there's NO code to exchange.
-    // If there IS a code (PKCE), we must wait for onAuthStateChange to process
-    // the exchange — calling getSession() first would race against it and could
-    // redirect before we see the PASSWORD_RECOVERY event.
+    // Only do immediate session check when no code is being exchanged
     if (!hasAuthCode()) {
       supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session?.user) doRedirect(session)
+        if (session?.user) goToApp(session)
       })
     }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      // PASSWORD_RECOVERY must be caught before SIGNED_IN —
-      // Supabase fires SIGNED_IN for recovery sessions too
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (handled) return
+
       if (event === 'PASSWORD_RECOVERY') {
         subscription.unsubscribe()
         clearTimeout(timer)
-        window.location.replace('/login?screen=new-password')
+        goToNewPassword()
         return
       }
 
-      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session?.user) {
+      if (event === 'SIGNED_IN' && session?.user) {
+        // With PKCE, PASSWORD_RECOVERY may arrive just after SIGNED_IN.
+        // Wait a beat to see if PASSWORD_RECOVERY follows before redirecting to app.
+        await new Promise(r => setTimeout(r, 500))
+        if (handled) return // PASSWORD_RECOVERY fired during the wait
         subscription.unsubscribe()
         clearTimeout(timer)
-        doRedirect(session)
+        goToApp(session)
         return
       }
 
-      if (event === 'SIGNED_OUT' && !redirected) {
+      if (event === 'INITIAL_SESSION' && session?.user) {
+        subscription.unsubscribe()
+        clearTimeout(timer)
+        goToApp(session)
+        return
+      }
+
+      if (event === 'SIGNED_OUT' && !handled) {
         subscription.unsubscribe()
         clearTimeout(timer)
         window.location.replace('/login')
@@ -101,10 +113,15 @@ export function AuthCallbackPage() {
 
     const timer = setTimeout(async () => {
       subscription.unsubscribe()
-      if (redirected) return
+      if (handled) return
       const { data: { session } } = await supabase.auth.getSession()
-      window.location.replace(session?.user ? getDestination() : '/login?expired=1')
-    }, 8000)
+      if (session?.user) {
+        goToApp(session)
+      } else {
+        handled = true
+        window.location.replace('/login?expired=1')
+      }
+    }, 12000)
 
     return () => { subscription.unsubscribe(); clearTimeout(timer) }
   }, [])

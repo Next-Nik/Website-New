@@ -291,32 +291,24 @@ function NewPasswordScreen({ onDone }) {
   const [error, setError]       = useState('')
 
   useEffect(() => {
-    // Check if a recovery session is already active (e.g. page refresh)
+    // With PKCE, the recovery session may already be established by the time
+    // we land here. Check immediately — any active session is sufficient to
+    // allow the password update.
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) setReady(true)
+      if (session?.user) { setReady(true); return }
+
+      // No session yet — listen for it
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        if ((event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') && session?.user) {
+          subscription.unsubscribe()
+          clearTimeout(expiry)
+          setReady(true)
+        }
+      })
+
+      // If nothing arrives in 12s, the link has expired
+      const expiry = setTimeout(() => setExpired(true), 12000)
     })
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'PASSWORD_RECOVERY' && session?.user) {
-        setReady(true)
-        return
-      }
-      // SIGNED_IN also fires during recovery flow — accept it
-      if (event === 'SIGNED_IN' && session?.user) {
-        setReady(true)
-        return
-      }
-    })
-
-    // If nothing fires in 10s, the link has expired
-    const expiry = setTimeout(() => {
-      setExpired(true)
-    }, 10000)
-
-    return () => {
-      subscription.unsubscribe()
-      clearTimeout(expiry)
-    }
   }, [])
 
   async function handleSubmit() {
