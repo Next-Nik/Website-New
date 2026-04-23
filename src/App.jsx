@@ -54,6 +54,7 @@ import { ToolsPage }              from './pages/Tools'
 import { PricingPage }            from './pages/Pricing'
 import { CheckoutPage }          from './pages/Checkout'
 import { AuthCallbackPage }       from './pages/AuthCallback'
+import { WatchPage }              from './pages/Watch'
 
 // ── Tools ─────────────────────────────────────────────────────
 import { NorthStarPage }                           from './tools/orienteering/Orienteering'
@@ -117,6 +118,7 @@ function AppInner() {
         <Route path="/dashboard"       element={<DashboardPage />} />
         <Route path="/tools"           element={<ToolsPage />} />
         <Route path="/content-editor"  element={<ContentEditorPage />} />
+        <Route path="/watch"           element={<WatchPage />} />
 
         {/* ── Tools ── */}
         <Route path="/tools/north-star"          element={<NorthStarPage />} />

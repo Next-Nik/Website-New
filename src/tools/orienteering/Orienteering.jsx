@@ -12,7 +12,7 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = { color: '#A8721A' }
 const meta  = { color: 'rgba(15,21,35,0.78)' }
 
-const OPENING_MESSAGE = `Tell me where you are right now — what's present, what's on your mind, or just how things feel. I'll work out where to point you from there.`
+const OPENING_MESSAGE = `Tell me a little about what's going on. I'll point you somewhere useful.`
 
 export function NorthStarPage() {
   const { user, loading } = useAuth()

@@ -4,12 +4,15 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { SiteFooter } from '../components/SiteFooter'
-import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkGhostButton } from '../components/DarkSection'
+import { DarkSection, DarkHeading, DarkBody } from '../components/DarkSection'
 
-const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const body  = { fontFamily: "'Lora', Georgia, serif" }
 
+// ─────────────────────────────────────────────────────────────
+// Testimonials — unchanged content, they're guests not claims
+// ─────────────────────────────────────────────────────────────
 const TESTIMONIALS = [
   { q: 'Working with Nik definitely changed my life. He has the ability to build up the right foundation and the right container to actually be vulnerable and go straight to where you need to.', cite: 'S.H.' },
   { q: `The work we've done has peeled back the narrative that said 'I can't do that' and revealed another world of possibility. I feel like I've been liberated.`, cite: 'C.W.' },
@@ -62,25 +65,11 @@ function TestimonialCarousel() {
     }}>
       <div style={{ overflow: 'hidden' }}>
       <style>{`
-        @keyframes scrollLeft {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        @keyframes scrollRight {
-          0% { transform: translateX(-50%); }
-          100% { transform: translateX(0); }
-        }
-        .home-carousel-left {
-          display: flex; width: max-content;
-          animation: scrollLeft ${duration}s linear infinite;
-        }
-        .home-carousel-right {
-          display: flex; width: max-content;
-          animation: scrollRight ${duration}s linear infinite;
-        }
-        .home-carousel-left:hover, .home-carousel-right:hover {
-          animation-play-state: paused;
-        }
+        @keyframes scrollLeft  { 0% { transform: translateX(0); }   100% { transform: translateX(-50%); } }
+        @keyframes scrollRight { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
+        .home-carousel-left  { display: flex; width: max-content; animation: scrollLeft ${duration}s linear infinite; }
+        .home-carousel-right { display: flex; width: max-content; animation: scrollRight ${duration}s linear infinite; }
+        .home-carousel-left:hover, .home-carousel-right:hover { animation-play-state: paused; }
       `}</style>
       <div style={{ marginBottom: '20px', padding: '8px 0' }}>
         <div className="home-carousel-left">
@@ -92,139 +81,32 @@ function TestimonialCarousel() {
           {row2.map((t, i) => <TestimonialCard key={i} q={t.q} cite={t.cite} />)}
         </div>
       </div>
-    </div>
-    </div>
-  )
-}
-
-const STAGES = {
-  baseline: {
-    name: 'Baseline', question: 'Am I functioning?',
-    desc: 'The floor everything else stands on. Safety and permission to exist at a nervous-system, body level. Without it, everything feels like threat, growth feels dangerous, and insight destabilises rather than liberates. The work here is regulation, containment, and finding ground.',
-    primary: { title: 'Horizon State', sub: 'A guided audio practice to settle and re-establish ground.', url: '/tools/horizon-state', badge: 'NextUs Self Tool' },
-    above: { title: 'The Map', sub: 'When you have a little more ground, see where you actually are.', url: '/tools/map', badge: 'NextUs Self Tool' },
-    below: null,
-    external: ['somatic therapy', 'trauma-informed support', 'nervous system regulation', 'polyvagal therapy']
-  },
-  autonomy: {
-    name: 'Autonomy', question: 'Do I know what I want?',
-    desc: 'Where the self starts moving again — not goals, not strategy, but desire. The work here is reclaiming the right to direct oneself and meeting the shame around wanting.',
-    primary: { title: 'Horizon State', sub: 'Build the internal stability that makes self-direction possible.', url: '/tools/horizon-state', badge: 'NextUs Self Tool' },
-    above: { title: 'The Map', sub: 'An honest picture of where you are once you can see clearly.', url: '/tools/map', badge: 'NextUs Self Tool' },
-    below: null,
-    external: ['inner child work', 'parts work / IFS', 'shame resilience', 'self-compassion practices']
-  },
-  calibration: {
-    name: 'Calibration', question: 'Am I being honest with myself?',
-    desc: 'Reality contact — honest self-assessment, mapping life domains, seeing patterns without collapse. This is where the picture becomes clear enough to navigate from.',
-    primary: { title: 'The Map', sub: 'Seven domains. One honest picture of where you are right now.', url: '/tools/map', badge: 'NextUs Self Tool' },
-    above: { title: 'Purpose Piece', sub: 'Find your contribution pattern — the role you are built to play.', url: '/tools/purpose-piece', badge: 'NextUs Self Tool' },
-    below: { title: 'Horizon State', sub: 'If looking clearly feels like too much — this is where to start.', url: '/tools/horizon-state', badge: 'NextUs Self Tool' },
-    external: ['journalling practices', 'life audit frameworks', 'values clarification', 'honest self-assessment']
-  },
-  integration: {
-    name: 'Integration', question: 'Am I whole?',
-    desc: 'Metabolising past experience, reconciling contradictions, reducing internal fragmentation. This is where energy stops leaking and becomes available for something new.',
-    primary: { title: 'Purpose Piece', sub: 'Surface the contribution pattern that has been there all along.', url: '/tools/purpose-piece', badge: 'NextUs Self Tool' },
-    above: { title: 'Work with Nik', sub: 'Identity-level work for people ready to do something with what they find.', url: '/work-with-nik', badge: 'Facilitated' },
-    below: { title: 'The Map', sub: 'See where the fragmentation shows up across your life domains.', url: '/tools/map', badge: 'NextUs Self Tool' },
-    external: ['parts work / IFS', 'shadow work', 'narrative therapy', 'Jungian approaches']
-  },
-  agency: {
-    name: 'Agency', question: 'Am I living by my own choices?',
-    desc: 'Action becomes possible — not reactive effort, not proving, but true choice. Behaviour stabilises, discipline emerges naturally, self-trust begins to build.',
-    primary: { title: 'Target Sprint', sub: 'Three areas. Ninety days. A route reverse-engineered from where you want to be.', url: '/tools/target-sprint', badge: 'NextUs Self Tool' },
-    above: { title: 'Work with Nik', sub: 'For people ready to act on what they have found.', url: '/work-with-nik', badge: 'Facilitated' },
-    below: { title: 'Purpose Piece', sub: 'Clarify what you are acting toward before you act.', url: '/tools/purpose-piece', badge: 'NextUs Self Tool' },
-    external: ['implementation intentions', 'habit architecture', 'values-based goal setting', 'accountability structures']
-  },
-  embodiment: {
-    name: 'Embodiment', question: 'Am I becoming who I actually am?',
-    desc: 'Identity stops being conceptual — behaviour aligns with values, the nervous system tolerates expansion, relationships reorganise around who you actually are.',
-    primary: { title: 'Work with Nik', sub: 'Identity-level work. The crossing from who you have been to who you are becoming.', url: '/work-with-nik', badge: 'Facilitated' },
-    above: { title: 'NextUs', sub: 'Find where your fully expressed self belongs in the larger project.', url: '/nextus', badge: 'NextUs' },
-    below: { title: 'Target Sprint', sub: 'Operationalise the identity shift — three areas, ninety days.', url: '/tools/target-sprint', badge: 'NextUs Self Tool' },
-    external: ['embodied leadership', 'somatic coaching', 'identity-level work', 'ontological coaching']
-  },
-  contribution: {
-    name: 'Contribution', question: 'What is my life in service of?',
-    desc: 'Meaning stabilises the psyche. Contribution integrates the self. Purpose regulates existential anxiety. This is not saviour energy — it is participation in reality.',
-    primary: { title: 'NextUs', sub: 'The civilisational map — seven domains, and where your work belongs.', url: '/nextus', badge: 'NextUs' },
-    above: null,
-    below: { title: 'Purpose Piece', sub: 'What did life ask you to bring? Your archetype, domain, and scale.', url: '/tools/purpose-piece', badge: 'NextUs Self Tool' },
-    external: ['systems thinking', 'theory of change', 'purpose-driven leadership', 'civilisational contribution']
-  }
-}
-
-function StageRec({ rec, soft }) {
-  if (!rec) return null
-  return (
-    <a href={rec.url} style={{
-      display: 'flex', alignItems: 'flex-start', gap: '14px',
-      padding: '14px 16px', borderRadius: '14px', marginBottom: '8px',
-      textDecoration: 'none',
-      border: soft ? '1.5px solid rgba(200,146,42,0.20)' : '1.5px solid rgba(200,146,42,0.78)',
-      background: soft ? 'transparent' : 'rgba(200,146,42,0.05)',
-      transition: 'all 0.2s',
-    }}
-      onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)'; e.currentTarget.style.background = 'rgba(200,146,42,0.05)' }}
-      onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = soft ? 'rgba(200,146,42,0.20)' : 'rgba(200,146,42,0.78)'; e.currentTarget.style.background = soft ? 'transparent' : 'rgba(200,146,42,0.05)' }}
-    >
-      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '40px', padding: '3px 10px', flexShrink: 0, marginTop: '2px', whiteSpace: 'nowrap' }}>{rec.badge}</span>
-      <div style={{ flex: 1 }}>
-        <div style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#A8721A', marginBottom: '3px' }}>{rec.title}</div>
-        <div style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.78)', lineHeight: 1.4 }}>{rec.sub}</div>
-      </div>
-      <span style={{ color: '#A8721A', fontSize: '15px', marginTop: '2px', flexShrink: 0 }}>{'→'}</span>
-    </a>
-  )
-}
-
-function StagePanel({ stage }) {
-  if (!stage) return null
-  const s = STAGES[stage]
-  return (
-    <div style={{
-      marginTop: '32px', background: '#FFFFFF',
-      border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', overflow: 'hidden',
-      animation: 'panelIn 0.2s ease',
-    }}>
-      <style>{`@keyframes panelIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }`}</style>
-      <div style={{ padding: '28px 28px 24px' }}>
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '6px' }}>{s.name}</span>
-        <div style={{ ...serif, fontSize: '26px', fontWeight: 300, color: '#0F1523', marginBottom: '4px', lineHeight: 1.1 }}>{s.name}</div>
-        <div style={{ ...body, fontSize: '16px', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', marginBottom: '14px', lineHeight: 1.6 }}>{s.question}</div>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '24px', maxWidth: '520px' }}>{s.desc}</p>
-        <div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', marginBottom: '24px' }} />
-        <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.78)', display: 'block', marginBottom: '12px' }}>Where to start</span>
-        <StageRec rec={s.primary} soft={false} />
-        {s.above && (<><div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', margin: '16px 0' }} /><span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.78)', display: 'block', marginBottom: '12px' }}>When you are ready for the next step</span><StageRec rec={s.above} soft={true} /></>)}
-        {s.below && (<><div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', margin: '16px 0' }} /><span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.78)', display: 'block', marginBottom: '12px' }}>If this feels like too much right now</span><StageRec rec={s.below} soft={true} /></>)}
-        {s.external && s.external.length > 0 && (
-          <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
-            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.78)', display: 'block', marginBottom: '10px' }}>Also worth exploring</span>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              {s.external.map(t => <span key={t} style={{ ...sc, fontSize: '15px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '40px', padding: '6px 14px' }}>{t}</span>)}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   )
 }
 
-function NorthStarEmbed() {
+// ─────────────────────────────────────────────────────────────
+// North Star — the locating layer, embedded inline in the hero
+// ─────────────────────────────────────────────────────────────
+// Opening line is the softened version from the spec:
+// "Tell me a little about what's going on. I'll point you somewhere useful."
+//
+// This component mirrors the behavior of the full Orienteering page —
+// same API, same result rendering, same North Star memory writes when
+// the user is signed in. The difference is only visual: it lives in the
+// homepage hero so visitors don't have to navigate to be received.
+
+const NS_OPENING = `Tell me a little about what's going on. I'll point you somewhere useful.`
+
+function NorthStarInline() {
   const { user } = useAuth()
-  const [messages, setMessages] = useState([])
-  const [input, setInput] = useState('')
-  const [waiting, setWaiting] = useState(false)
-  const [done, setDone] = useState(false)
+  const [messages, setMessages] = useState([{ role: 'assistant', content: NS_OPENING }])
+  const [input, setInput]       = useState('')
+  const [waiting, setWaiting]   = useState(false)
+  const [done, setDone]         = useState(false)
   const messagesRef = useRef(null)
   const textareaRef = useRef(null)
-
-  useEffect(() => {
-    setMessages([{ role: 'assistant', content: `Tell me a little about where you are right now — what's on your mind, what you're looking for, or just how things feel. I'll point you in the right direction.` }])
-  }, [])
 
   useEffect(() => {
     if (messagesRef.current) messagesRef.current.scrollTop = messagesRef.current.scrollHeight
@@ -240,8 +122,12 @@ function NorthStarEmbed() {
     setWaiting(true)
     try {
       const res = await fetch('/tools/north-star/api/chat', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: next.map(m => ({ role: m.role, content: m.content })), userId: user?.id })
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: next.map(m => ({ role: m.role, content: m.content })),
+          userId: user?.id
+        })
       })
       const data = await res.json()
       let parsed = null
@@ -249,37 +135,61 @@ function NorthStarEmbed() {
       if (parsed?.type === 'results') {
         setMessages(prev => [...prev, { role: 'result', data: parsed }])
         setDone(true)
-        // Write to North Star cross-tool memory if signed in
         if (user?.id && parsed.stage) {
           try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'north-star') } catch {}
-          const oriNotes = [
-            parsed.stage ? `North Star stage: ${parsed.stage}` : null,
-            parsed.stage_note ? `Stage context: ${parsed.stage_note}` : null,
+          const notes = [
+            parsed.stage       ? `North Star stage: ${parsed.stage}` : null,
+            parsed.stage_note  ? `Stage context: ${parsed.stage_note}` : null,
             parsed.recommendations?.[0]?.title ? `Recommended entry point: ${parsed.recommendations[0].title}` : null,
           ].filter(Boolean)
-          if (oriNotes.length) {
-            try { await supabase.from('north_star_notes').insert(oriNotes.map(note => ({ user_id: user.id, tool: 'north-star', note }))) } catch {}
+          if (notes.length) {
+            try { await supabase.from('north_star_notes').insert(notes.map(n => ({ user_id: user.id, tool: 'north-star', note: n }))) } catch {}
           }
         }
       } else {
         setMessages(prev => [...prev, { role: 'assistant', content: data.message || data.reply || '' }])
       }
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Something went quiet on my end. Try refreshing.' }])
+      setMessages(prev => [...prev, { role: 'assistant', content: 'Something went quiet on my end. Try again in a moment.' }])
     }
     setWaiting(false)
   }
 
   return (
-    <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', overflow: 'hidden', maxWidth: '600px', margin: '0 auto' }}>
-      <div ref={messagesRef} style={{ minHeight: '180px', maxHeight: '420px', overflowY: 'auto', padding: '28px 28px 8px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div style={{
+      background: '#FFFFFF',
+      border: '1.5px solid rgba(200,146,42,0.78)',
+      borderRadius: '14px',
+      overflow: 'hidden',
+      width: '100%',
+      maxWidth: '640px',
+      margin: '0 auto',
+      textAlign: 'left',
+    }}>
+      <div ref={messagesRef} style={{
+        minHeight: '160px',
+        maxHeight: '420px',
+        overflowY: 'auto',
+        padding: '28px 28px 8px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+      }}>
         {messages.map((m, i) => {
-          if (m.role === 'assistant') return <div key={i} style={{ ...body, fontSize: '16px', lineHeight: 1.8, color: '#0F1523', alignSelf: 'flex-start', maxWidth: '88%' }}>{m.content}</div>
-          if (m.role === 'user') return <div key={i} style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px', padding: '10px 14px', alignSelf: 'flex-end', maxWidth: '80%' }}>{m.content}</div>
+          if (m.role === 'assistant') return (
+            <div key={i} style={{ ...body, fontSize: '16px', lineHeight: 1.8, color: '#0F1523', alignSelf: 'flex-start', maxWidth: '92%' }}>
+              {m.content}
+            </div>
+          )
+          if (m.role === 'user') return (
+            <div key={i} style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderRadius: '10px', padding: '10px 14px', alignSelf: 'flex-end', maxWidth: '80%' }}>
+              {m.content}
+            </div>
+          )
           if (m.role === 'result') {
             const d = m.data
             return (
-              <div key={i} style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', padding: '22px', alignSelf: 'flex-start', maxWidth: '92%' }}>
+              <div key={i} style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', padding: '22px', alignSelf: 'flex-start', maxWidth: '96%' }}>
                 {d.stage && <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px' }}>{d.stage}</div>}
                 <div style={{ ...body, fontSize: '16px', lineHeight: 1.8, color: '#0F1523', marginBottom: '16px' }}>{d.reflection}</div>
                 {(d.recommendations || []).map((r, ri) => (
@@ -287,7 +197,7 @@ function NorthStarEmbed() {
                     <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', marginBottom: '4px' }}>{r.category}</div>
                     <div style={{ ...body, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>{r.title}</div>
                     <div style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.65, marginBottom: '8px' }}>{r.description}</div>
-                    {r.link && r.link !== 'null' && <a href={r.link} style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>{r.link_text || 'Learn more →'}</a>}
+                    {r.link && r.link !== 'null' && <a href={r.link} style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>{r.link_text || 'Go there →'}</a>}
                   </div>
                 ))}
                 {d.closing && <div style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>{d.closing}</div>}
@@ -298,8 +208,8 @@ function NorthStarEmbed() {
         })}
         {waiting && (
           <div style={{ display: 'flex', gap: '5px', alignItems: 'center', padding: '4px 0' }}>
-            {[0, 0.2, 0.4].map((d, i) => <div key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(200,146,42,0.45)', animation: `orPulse 1.4s ease ${d}s infinite` }} />)}
-            <style>{`@keyframes orPulse { 0%,80%,100%{transform:scale(0.7);opacity:0.4} 40%{transform:scale(1);opacity:1} }`}</style>
+            {[0, 0.2, 0.4].map((d, i) => <div key={i} style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'rgba(200,146,42,0.45)', animation: `nsPulse 1.4s ease ${d}s infinite` }} />)}
+            <style>{`@keyframes nsPulse { 0%,80%,100%{transform:scale(0.7);opacity:0.4} 40%{transform:scale(1);opacity:1} }`}</style>
           </div>
         )}
       </div>
@@ -308,19 +218,102 @@ function NorthStarEmbed() {
           <textarea
             ref={textareaRef}
             value={input}
-            onChange={e => { setInput(e.target.value); const el = e.target; el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px' }}
+            onChange={e => {
+              setInput(e.target.value)
+              const el = e.target
+              el.style.height = 'auto'
+              el.style.height = Math.min(el.scrollHeight, 120) + 'px'
+            }}
             onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
-            placeholder="Write your response here..."
+            placeholder="Take your time…"
             rows={1}
-            style={{ flex: 1, resize: 'none', border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '10px', padding: '11px 14px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: '#0F1523', background: '#FAFAF7', outline: 'none', lineHeight: 1.5, maxHeight: '120px', overflowY: 'auto' }}
+            style={{
+              flex: 1, resize: 'none',
+              border: '1.5px solid rgba(200,146,42,0.30)',
+              borderRadius: '10px',
+              padding: '11px 14px',
+              ...body, fontSize: '16px', color: '#0F1523',
+              background: '#FAFAF7', outline: 'none',
+              lineHeight: 1.5, maxHeight: '120px', overflowY: 'auto',
+            }}
           />
-          <button onClick={send} disabled={!input.trim() || waiting} style={{ flexShrink: 0, padding: '11px 22px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', fontWeight: 600, letterSpacing: '0.14em', color: '#A8721A', cursor: 'pointer', whiteSpace: 'nowrap', opacity: (!input.trim() || waiting) ? 0.4 : 1 }}>Send</button>
+          <button
+            onClick={send}
+            disabled={!input.trim() || waiting}
+            style={{
+              flexShrink: 0,
+              padding: '11px 22px',
+              borderRadius: '40px',
+              border: '1.5px solid rgba(200,146,42,0.78)',
+              background: 'rgba(200,146,42,0.05)',
+              ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.14em',
+              color: '#A8721A', cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              opacity: (!input.trim() || waiting) ? 0.4 : 1,
+            }}
+          >Send</button>
         </div>
       )}
     </div>
   )
 }
 
+// ─────────────────────────────────────────────────────────────
+// Known-path cards — for visitors who already know what they need
+// ─────────────────────────────────────────────────────────────
+const KNOWN_PATHS = [
+  {
+    label: 'Working on yourself',
+    sub:   'Tools for your own life',
+    href:  '/tools',
+  },
+  {
+    label: 'Working on a project',
+    sub:   'Find where it fits in the work',
+    href:  '/tools/purpose-piece',
+  },
+  {
+    label: 'Representing an organisation or practice',
+    sub:   'Map what you are building',
+    href:  '/nextus/place',
+  },
+]
+
+function KnownPathCard({ label, sub, href }) {
+  return (
+    <a href={href} style={{
+      display: 'block',
+      padding: '20px 24px',
+      border: '1px solid rgba(200,146,42,0.25)',
+      borderRadius: '14px',
+      background: 'rgba(200,146,42,0.03)',
+      textDecoration: 'none',
+      transition: 'all 0.18s',
+    }}
+      onMouseEnter={e => {
+        e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)'
+        e.currentTarget.style.background   = 'rgba(200,146,42,0.07)'
+        e.currentTarget.style.transform    = 'translateY(-2px)'
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.borderColor = 'rgba(200,146,42,0.25)'
+        e.currentTarget.style.background   = 'rgba(200,146,42,0.03)'
+        e.currentTarget.style.transform    = ''
+      }}
+    >
+      <div style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', marginBottom: '4px', lineHeight: 1.3 }}>
+        {label} <span style={{ color: '#A8721A' }}>→</span>
+      </div>
+      <div style={{ ...body, fontSize: '14px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.4 }}>
+        {sub}
+      </div>
+    </a>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────
+// HomePage — the hospitality entry
+// ─────────────────────────────────────────────────────────────
 export function HomePage() {
   const { user } = useAuth()
 
@@ -330,180 +323,243 @@ export function HomePage() {
 
       <style>{`
         @media (max-width: 640px) {
-          .home-hero { padding-left: 24px !important; padding-right: 24px !important; }
+          .home-hero    { padding-left: 24px !important; padding-right: 24px !important; }
           .home-section { padding-left: 24px !important; padding-right: 24px !important; }
-          .home-dark { padding-left: 24px !important; padding-right: 24px !important; }
+          .home-paths   { grid-template-columns: 1fr !important; }
         }
         .home-section { position: relative; z-index: 1; }
-        .home-hero { position: relative; z-index: 1; }
+        .home-hero    { position: relative; z-index: 1; }
       `}</style>
-      {/* Hero */}
-      <section className="home-hero" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '100px 40px 80px', position: 'relative' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 50% 40%, rgba(200,146,42,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+      {/* ─────────────────────────────────────────────────────
+          HERO — greeting, the Field line, and the one question
+          One name, one line, one door. North Star sits directly
+          below so the visitor can be met without navigating away.
+      ───────────────────────────────────────────────────── */}
+      <section className="home-hero" style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: 'clamp(72px, 10vw, 112px) 40px 64px',
+        position: 'relative',
+      }}>
+        <div style={{
+          position: 'absolute', inset: 0,
+          background: 'radial-gradient(ellipse 70% 60% at 50% 40%, rgba(200,146,42,0.06) 0%, transparent 70%)',
+          pointerEvents: 'none',
+        }} />
+
         <div style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '720px' }}>
 
-          <div style={{ marginBottom: '48px' }}>
-            <img src="/logo_hero.png" alt="NextUs" style={{ height: '160px', width: 'auto', display: 'inline-block' }} />
-          </div>
-          <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.5, margin: '0 auto 32px' }} />
-          <p style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', marginBottom: '56px' }}>
-            A life worth living. A future worth building.
-          </p>
-
-          <style>{`
-            .hero-track-btn {
-              display: inline-block;
-              padding: 12px 24px;
-              border-radius: 40px;
-              font-family: 'Cormorant SC', Georgia, serif;
-              font-size: 15px;
-              font-weight: 600;
-              letter-spacing: 0.14em;
-              text-decoration: none;
-              margin-top: 8px;
-              transition: all 0.18s;
-              align-self: flex-start;
-            }
-            .hero-track-btn--dark {
-              background: #FAFAF7;
-              border: 1px solid rgba(250,250,247,0.8);
-              color: #0F1523;
-            }
-            .hero-track-btn--dark:hover { background: #FFFFFF; }
-            .hero-track-btn--light {
-              background: transparent;
-              border: 1.5px solid rgba(200,146,42,0.78);
-              color: #A8721A;
-            }
-            .hero-track-btn--light:hover { background: rgba(200,146,42,0.06); }
-            .hero-tracks {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              max-width: 640px;
-              margin: 0 auto 40px;
-              text-align: left;
-            }
-            .hero-track--dark {
-              background: #0F1523;
-              padding: 32px 36px;
-              display: flex;
-              flex-direction: column;
-              gap: 12px;
-              border-radius: 14px 0 0 14px;
-            }
-            .hero-track--light {
-              background: #FAFAF7;
-              border: 1.5px solid rgba(200,146,42,2);
-              border-left: none;
-              padding: 32px 36px;
-              display: flex;
-              flex-direction: column;
-              gap: 12px;
-              border-radius: 0 14px 14px 0;
-            }
-            @media (max-width: 640px) {
-              .hero-tracks { grid-template-columns: 1fr; }
-              .hero-track--dark { padding: 28px 24px; border-radius: 14px 14px 0 0; }
-              .hero-track--light { padding: 28px 24px; border-left: 1.5px solid rgba(200,146,42,0.20); border-top: none; border-radius: 0 0 14px 14px; }
-            }
-          `}</style>
-
-          <div className="hero-tracks">
-            {/* LEFT — NextUs Self — dark card */}
-            <div className="hero-track--dark">
-              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.20em', color: '#C8922A' }}>Your life</span>
-              <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(28px,3.5vw,40px)', fontWeight: 300, color: '#FAFAF7', lineHeight: 1.1, margin: 0 }}>
-                A chosen<br /><em style={{ color: '#C8922A' }}>life.</em>
-              </h2>
-              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 300, color: 'rgba(250,250,247,0.65)', lineHeight: 1.7, margin: 0 }}>
-                Tools for seeing your life clearly and navigating it deliberately. Seven domains. Your own navigation system.
-              </p>
-              <a href="/nextus-self" className="hero-track-btn hero-track-btn--dark">NextUs Self →</a>
-            </div>
-            {/* RIGHT — NextUs Planet — light card */}
-            <div className="hero-track--light">
-              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A' }}>The planet</span>
-              <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(28px,3.5vw,40px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.1, margin: 0 }}>
-                A chosen<br /><em style={{ color: '#A8721A' }}>planet.</em>
-              </h2>
-              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, margin: 0 }}>
-                A coordination platform mapping organisations and individuals building the future. Seven domains. Find your place in the work.
-              </p>
-              <a href="/nextus" className="hero-track-btn hero-track-btn--light">NextUs Planet →</a>
-            </div>
+          {/* The name */}
+          <div style={{ marginBottom: '32px' }}>
+            <img src="/logo_hero.png" alt="NextUs" style={{ height: 'clamp(96px, 14vw, 140px)', width: 'auto', display: 'inline-block' }} />
           </div>
 
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
-            Not sure which? <a href="/tools/north-star" style={{ color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)' }}>North Star will point you somewhere real →</a>
+          {/* Gold hairline */}
+          <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.5, margin: '0 auto 28px' }} />
+
+          {/* The Field line — the only claim at the door */}
+          <p style={{
+            ...serif,
+            fontSize: 'clamp(22px, 2.8vw, 30px)',
+            fontWeight: 300,
+            fontStyle: 'italic',
+            color: '#0F1523',
+            lineHeight: 1.35,
+            marginBottom: '40px',
+            maxWidth: '560px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+          }}>
+            NextUs takes <em style={{ color: '#A8721A', fontStyle: 'normal' }}>us</em> from where we are to where we want to be.
           </p>
+
+          {/* The one question — North Star embed */}
+          <NorthStarInline />
 
           {!user && (
-            <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', fontWeight: 300, color: 'rgba(15,21,35,0.40)', marginTop: '16px' }}>
-              <a href="/login" style={{ color: 'rgba(15,21,35,0.40)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign in</a> to save your work across sessions.
+            <p style={{
+              ...body,
+              fontSize: '14px',
+              fontWeight: 300,
+              color: 'rgba(15,21,35,0.45)',
+              marginTop: '18px',
+            }}>
+              <a href="/login" style={{ color: 'rgba(15,21,35,0.55)', textDecoration: 'underline', textUnderlineOffset: '3px' }}>Sign in</a> to save your work across sessions.
             </p>
           )}
         </div>
-        <div style={{ position: 'absolute', bottom: '36px', left: '50%', transform: 'translateX(-50%)', textAlign: 'center' }}>
-          <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', opacity: 0.78 }}>nextus.world</p>
-        </div>
       </section>
 
-      {/* Is this for you */}
-      <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 0', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Is this for you?</span>
-        <h2 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '28px' }}>
-          Do you have a life you're trying to live well?<br />
-          Do you care about the state of the planet?
-        </h2>
-        <p style={{ ...body, fontSize: '19px', fontWeight: 300, color: '#A8721A', lineHeight: 1.6 }}>
-          Then yes. This is for you.
+      {/* ─────────────────────────────────────────────────────
+          ALREADY KNOW WHAT YOU NEED?
+          Small, quiet, opt-in. For visitors who arrived with
+          clarity and don't need the locating conversation.
+          Three cards route straight to the door that matches.
+      ───────────────────────────────────────────────────── */}
+      <section className="home-section" style={{
+        maxWidth: '820px',
+        margin: '0 auto',
+        padding: '80px 40px 40px',
+        borderTop: '1px solid rgba(200,146,42,0.20)',
+      }}>
+        <span style={{ ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>
+          Already know what you need?
+        </span>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '32px', maxWidth: '520px' }}>
+          Skip the conversation and go straight to the door that matches.
         </p>
+        <div className="home-paths" style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '14px',
+        }}>
+          {KNOWN_PATHS.map(p => (
+            <KnownPathCard key={p.href} {...p} />
+          ))}
+        </div>
       </section>
 
-      {/* DARK 1 — Fractal premise */}
-      <DarkSection>
-        <DarkEyebrow>The premise</DarkEyebrow>
-        <DarkHeading>What you build in yourself, you contribute to the world.</DarkHeading>
-        <DarkBody>The personal and the civilisational are not separate projects. Every domain you build in yourself maps directly to a domain humanity is trying to build collectively. This is not metaphor — it is the architecture of the platform.</DarkBody>
-        <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
-          <DarkSolidButton href="/nextus-self">NextUs Self →</DarkSolidButton>
-          <DarkGhostButton href="/nextus">NextUs Planet →</DarkGhostButton>
+      {/* ─────────────────────────────────────────────────────
+          NOT READY TO DO ANYTHING?
+          The observer path — watching is legitimate.
+          A visitor who isn't ready to act can still be received.
+      ───────────────────────────────────────────────────── */}
+      <section className="home-section" style={{
+        maxWidth: '820px',
+        margin: '0 auto',
+        padding: '32px 40px 80px',
+      }}>
+        <div style={{
+          padding: '28px 32px',
+          border: '1px dashed rgba(200,146,42,0.35)',
+          borderRadius: '14px',
+          background: 'rgba(200,146,42,0.02)',
+        }}>
+          <span style={{ ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '10px' }}>
+            Not ready to do anything?
+          </span>
+          <p style={{ ...body, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: '#0F1523', lineHeight: 1.7, marginBottom: '16px', maxWidth: '520px' }}>
+            You can just watch for a while. Come back when something pulls.
+          </p>
+          <a href="/watch" style={{
+            ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.14em',
+            color: '#A8721A', textDecoration: 'none',
+            borderBottom: '1px solid rgba(200,146,42,0.35)',
+            paddingBottom: '2px',
+          }}>
+            See what's happening →
+          </a>
         </div>
+      </section>
+
+      {/* ─────────────────────────────────────────────────────
+          THE PREMISE — earned, not declared
+          Arrives after the visitor has been offered four ways
+          to be received. The claim is permitted now because
+          it explains an experience they've already had.
+      ───────────────────────────────────────────────────── */}
+      <DarkSection>
+        <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '14px' }}>
+          The premise
+        </span>
+        <DarkHeading>
+          What you build in yourself, you contribute to the world.
+        </DarkHeading>
+        <DarkBody>
+          The personal and the civilisational are not separate projects. Every domain you build in yourself maps directly to a domain humanity is trying to build together. This is not metaphor — it is the architecture of the platform.
+        </DarkBody>
+        <a href="/nextus" style={{
+          display: 'inline-block',
+          ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.16em',
+          padding: '13px 32px', borderRadius: '40px',
+          border: '1.5px solid rgba(200,146,42,0.7)',
+          color: '#A8721A',
+          background: 'rgba(200,146,42,0.07)',
+          textDecoration: 'none',
+        }}>
+          See how the whole thing fits →
+        </a>
       </DarkSection>
 
-      {/* North Star embed */}
-      <section id="start" className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px' }}>
-        <div style={{ width: '1px', height: '52px', background: 'rgba(200,146,42,0.20)', margin: '0 auto 64px' }} />
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>North Star</span>
-        <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '16px' }}>Tell me where you are.</h2>
-        <p style={{ ...body, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.88)', lineHeight: 1.75, marginBottom: '40px', maxWidth: '480px' }}>Three to five exchanges. I'll read where you are and point you somewhere real — your life, the planet, or both.</p>
-        <NorthStarEmbed />
-        <a href="/nextus-self" style={{ display: 'block', textAlign: 'center', ...body, fontSize: '16px', fontStyle: 'italic', color: '#A8721A', marginTop: '28px', textDecoration: 'none', opacity: 0.78 }}>or show me everything {'→'}</a>
-      </section>
-
-      {/* Testimonials */}
+      {/* ─────────────────────────────────────────────────────
+          TESTIMONIALS — the only section about the platform
+          is one spoken in the voices of guests, not the host.
+      ───────────────────────────────────────────────────── */}
       <section className="home-section" style={{ maxWidth: '820px', margin: '0 auto', padding: '96px 40px' }}>
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px', textAlign: 'center' }}>What people say</span>
-        <h2 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.14, marginBottom: '48px', textAlign: 'center' }}>Real words from real people.</h2>
+        <span style={{ ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '14px', textAlign: 'center' }}>
+          What people say
+        </span>
+        <h2 style={{ ...serif, fontSize: 'clamp(26px, 3.5vw, 38px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.2, marginBottom: '48px', textAlign: 'center' }}>
+          Real words from real people.
+        </h2>
         <TestimonialCarousel />
-        <div style={{ textAlign: 'center', marginTop: '40px' }}>
-          <a href="/work-with-nik" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', opacity: 0.78 }}>More on working with Nik {'→'}</a>
+        <div style={{ textAlign: 'center', marginTop: '32px' }}>
+          <a href="/work-with-nik" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', opacity: 0.78 }}>
+            More on working with Nik →
+          </a>
         </div>
       </section>
 
-      {/* DARK 3 — Email signup */}
+      {/* ─────────────────────────────────────────────────────
+          STAY CLOSE — the gentle door held open for later.
+          No conversion pressure. Just: when you want more, we're here.
+      ───────────────────────────────────────────────────── */}
       <DarkSection style={{ textAlign: 'center' }}>
         <div style={{ marginBottom: '24px' }}>
-          <img src="/logo_nav.png" alt="NextUs" style={{ height: '40px', width: 'auto', display: 'inline-block', opacity: 0.78 }} />
+          <img src="/logo_nav.png" alt="NextUs" style={{ height: '36px', width: 'auto', display: 'inline-block', opacity: 0.78 }} />
         </div>
-        <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.4, margin: '0 auto 36px' }} />
+        <div style={{ width: '28px', height: '1px', background: '#C8922A', opacity: 0.4, margin: '0 auto 32px' }} />
         <DarkHeading>Stay close.</DarkHeading>
-        <DarkBody style={{ maxWidth: '320px', margin: '0 auto 40px' }}>The work is evolving. This is where we share it.</DarkBody>
+        <DarkBody style={{ maxWidth: '340px', margin: '0 auto 36px' }}>
+          The work is evolving. This is where we share it.
+        </DarkBody>
         <div style={{ maxWidth: '380px', margin: '0 auto' }}>
           <script src="https://f.convertkit.com/ckjs/ck.5.js"></script>
-          <form action="https://app.kit.com/forms/9215183/subscriptions" className="seva-form formkit-form" method="post" data-sv-form="9215183" data-uid="d323427d8c" data-format="inline" data-version="5">
-            <input type="email" name="email_address" placeholder="your@email.com" required style={{ width: '100%', padding: '15px 18px', marginBottom: '10px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '40px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(255,255,255,0.88)', outline: 'none' }} />
-            <button type="submit" style={{ width: '100%', padding: '16px', background: '#C8922A', border: '1px solid rgba(168,114,26,0.8)', borderRadius: '40px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '16px', letterSpacing: '0.16em', color: '#FFFFFF', cursor: 'pointer' }}>Stay connected {'→'}</button>
+          <form
+            action="https://app.kit.com/forms/9215183/subscriptions"
+            className="seva-form formkit-form"
+            method="post"
+            data-sv-form="9215183"
+            data-uid="d323427d8c"
+            data-format="inline"
+            data-version="5"
+          >
+            <input
+              type="email"
+              name="email_address"
+              placeholder="your@email.com"
+              required
+              style={{
+                width: '100%',
+                padding: '15px 18px',
+                marginBottom: '10px',
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(200,146,42,0.25)',
+                borderRadius: '40px',
+                ...body, fontSize: '16px',
+                color: 'rgba(255,255,255,0.88)',
+                outline: 'none',
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                width: '100%',
+                padding: '16px',
+                background: '#C8922A',
+                border: '1px solid rgba(168,114,26,0.8)',
+                borderRadius: '40px',
+                ...sc, fontSize: '16px', letterSpacing: '0.16em',
+                color: '#FFFFFF',
+                cursor: 'pointer',
+              }}
+            >
+              Stay connected →
+            </button>
           </form>
         </div>
       </DarkSection>
