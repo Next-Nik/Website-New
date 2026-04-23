@@ -519,7 +519,11 @@ async function handleRoleStage(session, latestInput, res, northStarCtx) {
   if (nextQI < total) {
     const nextQ = questions[nextQI]
     session.currentQuestion = nextQ.text
+    // NB: message must carry the next question text (matching the pull-stage
+    // pattern). Without this the frontend sees an advance response with no
+    // message field and appends nothing — silent hang between questions.
     return res.status(200).json({
+      message:       nextQ.text,
       questionLabel: `Role · ${nextQI + 1} of ${total} · ${nextQ.label}`,
       session,
       stage:         'role',

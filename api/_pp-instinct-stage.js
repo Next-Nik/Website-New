@@ -389,8 +389,15 @@ async function advanceInstinctStage(session, res, prefixMessage = null) {
   if (nextQI < total) {
     const nextQ = INSTINCT_QUESTIONS[nextQI]
     session.currentQuestion = nextQ.text
+    // NB: message must carry the next question text (matching the pull-stage
+    // pattern). If prefixMessage is set, prepend it. Without this, the frontend
+    // sees an advance response with no message field and appends nothing —
+    // silent hang between questions.
+    const message = prefixMessage
+      ? `${prefixMessage}\n\n${nextQ.text}`
+      : nextQ.text
     return res.status(200).json({
-      message:       prefixMessage || undefined,
+      message,
       questionLabel: `Instinct · ${nextQI + 1} of ${total} · ${nextQ.label}`,
       session,
       stage:         'instinct',
