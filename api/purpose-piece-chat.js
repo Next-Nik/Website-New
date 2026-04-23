@@ -255,10 +255,26 @@ ${session.horizon_goal}`
     })
 }
 
-module.exports = {
-  handlePurposePieceChat,
-  savePurposePieceSession,
-  loadPurposePieceSession,
-  writeToNorthStar,
-  migrateSessionIfNeeded,
+// ─── Vercel serverless handler ───────────────────────────────────────────────
+// Vercel hits the default export. Route rewrite in vercel.json maps
+//   /tools/purpose-piece/api/chat  →  /api/purpose-piece-chat
+// so this file needs to be a callable (req, res) handler, not just a library.
+//
+// We keep the named exports below for tests / other modules that import this
+// file, but the default export is what Vercel invokes in production.
+
+module.exports = async (req, res) => {
+  // Basic method guard — the tool only POSTs
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST')
+    return res.status(405).json({ error: 'Method not allowed. Use POST.' })
+  }
+  return handlePurposePieceChat(req, res)
 }
+
+// Named exports for tests and downstream modules
+module.exports.handlePurposePieceChat  = handlePurposePieceChat
+module.exports.savePurposePieceSession = savePurposePieceSession
+module.exports.loadPurposePieceSession = loadPurposePieceSession
+module.exports.writeToNorthStar        = writeToNorthStar
+module.exports.migrateSessionIfNeeded  = migrateSessionIfNeeded
