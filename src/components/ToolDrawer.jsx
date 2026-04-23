@@ -129,10 +129,14 @@ export function ToolDrawer({ open, onClose }) {
   const navigate   = useNavigate()
   const overlayRef = useRef(null)
 
-  // Logged-out → NextUs Self page anchor for that tool
-  // Logged-in  → directly into the tool
+  // Always route directly to the tool. Tools handle their own sign-in nudge
+  // (at completion for Purpose Piece and North Star; at start for gated
+  // tools like The Map via AuthGate). The old logged-out behaviour of
+  // routing to /nextus-self#anchor was from an earlier posture where
+  // landing pages intercepted visitors to pitch sign-up — that's no longer
+  // how any of these tools are designed to be entered.
   function toolHref(tool) {
-    return user ? tool.path : `/nextus-self#${tool.anchor}`
+    return tool.path
   }
 
   useEffect(() => {
