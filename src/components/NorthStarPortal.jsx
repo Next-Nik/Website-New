@@ -237,8 +237,8 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
       {/* Content inside oval */}
       <div style={{
         position: 'absolute',
-        top: '14%', bottom: '14%',
-        left: '12%', right: '12%',
+        top: '18%', bottom: '18%',
+        left: '16%', right: '16%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
