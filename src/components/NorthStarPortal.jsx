@@ -301,6 +301,13 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
               ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em',
               color: GOLD_TEXT, cursor: 'pointer', whiteSpace: 'nowrap',
               opacity: 1,
+            }}
+          >Send</button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 // ─── NorthStarPortal — orchestrates the two views ────────────
 export function NorthStarPortal() {
