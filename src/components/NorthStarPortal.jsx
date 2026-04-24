@@ -2,9 +2,9 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 const GOLD      = '#C8922A'
 const GOLD_TEXT = '#A8721A'
@@ -12,157 +12,30 @@ const DARK      = '#0F1523'
 
 const NS_OPENING = `Tell me a little about what's going on. I'll point you somewhere useful.`
 
-// ─── SVG geometry constants ───────────────────────────────────
+// SVG coordinate space: 900 wide × 400 tall, centre at 450,200
 const CX = 450, CY = 200
 
-// Primary rays top — endpoints follow bold ring ellipse, scaled 125%
 const RAYS_TOP = [
-  { id:'r0', x2:-212, y2:106  },
-  { id:'r1', x2:-125, y2:-25  },
-  { id:'r2', x2:25,   y2:-131 },
-  { id:'r3', x2:225,  y2:-144 },
-  { id:'r4', x2:450,  y2:-150 },
-  { id:'r5', x2:675,  y2:-144 },
-  { id:'r6', x2:875,  y2:-131 },
-  { id:'r7', x2:1025, y2:-25  },
-  { id:'r8', x2:1112, y2:106  },
+  { x2:-212, y2:106  }, { x2:-125, y2:-25  }, { x2:25,   y2:-131 },
+  { x2:225,  y2:-144 }, { x2:450,  y2:-150 }, { x2:675,  y2:-144 },
+  { x2:875,  y2:-131 }, { x2:1025, y2:-25  }, { x2:1112, y2:106  },
 ]
-// Primary rays bottom — exact mirror y2 = 400 - y2_top
-const RAYS_BOT = RAYS_TOP.map((r, i) => ({ id: `rb${i}`, x2: r.x2, y2: 400 - r.y2 }))
-
-// Intermediate rays top — 75% opacity, 75% length, midpoint angles
+const RAYS_BOT     = RAYS_TOP.map(r => ({ x2: r.x2, y2: 400 - r.y2 }))
 const RAYS_INT_TOP = [
-  { id:'ri0', x2:-16,  y2:78  },
-  { id:'ri1', x2:74,   y2:-15 },
-  { id:'ri2', x2:209,  y2:-62 },
-  { id:'ri3', x2:369,  y2:-74 },
-  { id:'ri4', x2:531,  y2:-74 },
-  { id:'ri5', x2:691,  y2:-62 },
-  { id:'ri6', x2:826,  y2:-15 },
-  { id:'ri7', x2:916,  y2:78  },
+  { x2:-16, y2:78  }, { x2:74,  y2:-15 }, { x2:209, y2:-62 }, { x2:369, y2:-74 },
+  { x2:531, y2:-74 }, { x2:691, y2:-62 }, { x2:826, y2:-15 }, { x2:916, y2:78  },
 ]
-const RAYS_INT_BOT = RAYS_INT_TOP.map((r, i) => ({ id: `rib${i}`, x2: r.x2, y2: 400 - r.y2 }))
+const RAYS_INT_BOT = RAYS_INT_TOP.map(r => ({ x2: r.x2, y2: 400 - r.y2 }))
 
-// All ray groups
-const ALL_RAYS = [...RAYS_TOP, ...RAYS_BOT, ...RAYS_INT_TOP, ...RAYS_INT_BOT]
-
-// Depth fill ellipses — stacked, all same opacity, accumulate toward centre
 const DEPTH_FILLS = [
-  { rx:370, ry:156 }, { rx:330, ry:139 }, { rx:294, ry:124 },
-  { rx:262, ry:110 }, { rx:233, ry:98  }, { rx:207, ry:87  },
-  { rx:183, ry:77  }, { rx:161, ry:68  }, { rx:141, ry:59  },
-  { rx:123, ry:52  }, { rx:107, ry:45  }, { rx:92,  ry:39  },
-  { rx:79,  ry:33  }, { rx:67,  ry:28  }, { rx:56,  ry:24  },
-  { rx:46,  ry:19  }, { rx:37,  ry:16  }, { rx:29,  ry:12  },
-  { rx:22,  ry:9   }, { rx:16,  ry:7   }, { rx:10,  ry:4   },
-  { rx:5,   ry:2   },
+  {rx:370,ry:156},{rx:330,ry:139},{rx:294,ry:124},{rx:262,ry:110},
+  {rx:233,ry:98 },{rx:207,ry:87 },{rx:183,ry:77 },{rx:161,ry:68 },
+  {rx:141,ry:59 },{rx:123,ry:52 },{rx:107,ry:45 },{rx:92, ry:39 },
+  {rx:79, ry:33 },{rx:67, ry:28 },{rx:56, ry:24 },{rx:46, ry:19 },
+  {rx:37, ry:16 },{rx:29, ry:12 },{rx:22, ry:9  },{rx:16, ry:7  },
+  {rx:10, ry:4  },{rx:5,  ry:2  },
 ]
 
-// Grad ID lists for stop animation
-const GRAD_IDS = [
-  'rg0','rg1','rg2','rg3','rg4','rg5','rg6','rg7','rg8',
-  'rgb0','rgb1','rgb2','rgb3','rgb4','rgb5','rgb6','rgb7','rgb8',
-  'ri0','ri1','ri2','ri3','ri4','ri5','ri6','ri7',
-  'rib0','rib1','rib2','rib3','rib4','rib5','rib6','rib7','rgh',
-]
-
-// ─────────────────────────────────────────────────────────────
-// The portal SVG — geometry only, no interaction logic
-// ─────────────────────────────────────────────────────────────
-function PortalSVG({ svgRef }) {
-  return (
-    <svg
-      ref={svgRef}
-      viewBox="0 0 900 400"
-      style={{
-        position: 'absolute',
-        inset: 0,
-        width: '100%',
-        height: '100%',
-        overflow: 'visible',
-        pointerEvents: 'none',
-      }}
-    >
-      <defs>
-        {/* Horizon gradient */}
-        <linearGradient id="rgh" x1="-100" y1="200" x2="1000" y2="200" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"   stopColor={GOLD} stopOpacity="0"/>
-          <stop offset="40%"  stopColor={GOLD} stopOpacity="0.45"/>
-          <stop offset="60%"  stopColor={GOLD} stopOpacity="0.45"/>
-          <stop offset="100%" stopColor={GOLD} stopOpacity="0"/>
-        </linearGradient>
-
-        {/* Primary ray gradients top */}
-        {RAYS_TOP.map((r, i) => (
-          <linearGradient key={i} id={`rg${i}`} x1={CX} y1={CY} x2={r.x2} y2={r.y2} gradientUnits="userSpaceOnUse">
-            <stop offset="0%"   stopColor={GOLD} stopOpacity="0"/>
-            <stop offset="40%"  stopColor={GOLD} stopOpacity="0.45"/>
-            <stop offset="100%" stopColor={GOLD} stopOpacity="0"/>
-          </linearGradient>
-        ))}
-
-        {/* Primary ray gradients bottom */}
-        {RAYS_BOT.map((r, i) => (
-          <linearGradient key={i} id={`rgb${i}`} x1={CX} y1={CY} x2={r.x2} y2={r.y2} gradientUnits="userSpaceOnUse">
-            <stop offset="0%"   stopColor={GOLD} stopOpacity="0"/>
-            <stop offset="40%"  stopColor={GOLD} stopOpacity="0.45"/>
-            <stop offset="100%" stopColor={GOLD} stopOpacity="0"/>
-          </linearGradient>
-        ))}
-
-        {/* Intermediate ray gradients top */}
-        {RAYS_INT_TOP.map((r, i) => (
-          <linearGradient key={i} id={`ri${i}`} x1={CX} y1={CY} x2={r.x2} y2={r.y2} gradientUnits="userSpaceOnUse">
-            <stop offset="0%"   stopColor={GOLD} stopOpacity="0"/>
-            <stop offset="40%"  stopColor={GOLD} stopOpacity="0.34"/>
-            <stop offset="100%" stopColor={GOLD} stopOpacity="0"/>
-          </linearGradient>
-        ))}
-
-        {/* Intermediate ray gradients bottom */}
-        {RAYS_INT_BOT.map((r, i) => (
-          <linearGradient key={i} id={`rib${i}`} x1={CX} y1={CY} x2={r.x2} y2={r.y2} gradientUnits="userSpaceOnUse">
-            <stop offset="0%"   stopColor={GOLD} stopOpacity="0"/>
-            <stop offset="40%"  stopColor={GOLD} stopOpacity="0.34"/>
-            <stop offset="100%" stopColor={GOLD} stopOpacity="0"/>
-          </linearGradient>
-        ))}
-      </defs>
-
-      {/* Depth fills — grouped so group opacity controls the whole tunnel */}
-      <g id="portalDepthGroup" opacity="0">
-        {DEPTH_FILLS.map((d, i) => (
-          <ellipse key={i} cx={CX} cy={CY} rx={d.rx} ry={d.ry} fill={GOLD} fillOpacity="0.035"/>
-        ))}
-      </g>
-
-      {/* Horizon */}
-      <line id="portalHorizon" x1="-100" y1={CY} x2="1000" y2={CY}
-        stroke={`url(#rgh)`} strokeWidth="0.8" strokeOpacity="0"/>
-
-      {/* All rays */}
-      {ALL_RAYS.map(r => (
-        <line key={r.id} id={r.id}
-          x1={CX} y1={CY} x2={r.x2} y2={r.y2}
-          stroke={`url(#${r.id.startsWith('rib') ? 'rib' + r.id.slice(3) : r.id.startsWith('rb') ? 'rgb' + r.id.slice(2) : r.id.startsWith('ri') ? 'ri' + r.id.slice(2) : 'rg' + r.id.slice(1)})`}
-          strokeWidth="0.8"
-        />
-      ))}
-
-      {/* Faint outer ring */}
-      <ellipse id="portalFaintRing" cx={CX} cy={CY} rx="404" ry="171"
-        fill="none" stroke={GOLD} strokeWidth="0.8" strokeOpacity="0"/>
-
-      {/* Bold ring — always visible */}
-      <ellipse id="portalBoldRing" cx={CX} cy={CY} rx="370" ry="156"
-        fill="none" stroke={GOLD} strokeWidth="2.4" strokeOpacity="0.88"/>
-    </svg>
-  )
-}
-
-// ─────────────────────────────────────────────────────────────
-// NorthStarPortal — drop-in replacement for NorthStarInline
-// ─────────────────────────────────────────────────────────────
 export function NorthStarPortal() {
   const { user } = useAuth()
   const [messages, setMessages] = useState([{ role: 'assistant', content: NS_OPENING }])
@@ -171,68 +44,60 @@ export function NorthStarPortal() {
   const [done, setDone]         = useState(false)
   const messagesRef = useRef(null)
   const textareaRef = useRef(null)
-  const svgRef      = useRef(null)
   const wrapRef     = useRef(null)
-  const stateRef    = useRef(0)
-  const targetRef   = useRef(0)
-  const rafRef      = useRef(null)
 
-  // Scroll messages
+  // Animated element refs
+  const boldRingRef    = useRef(null)
+  const faintRingRef   = useRef(null)
+  const horizonRef     = useRef(null)
+  const depthGroupRef  = useRef(null)
+  const raysTopRefs    = useRef(RAYS_TOP.map(() => null))
+  const raysBotRefs    = useRef(RAYS_BOT.map(() => null))
+  const raysIntTopRefs = useRef(RAYS_INT_TOP.map(() => null))
+  const raysIntBotRefs = useRef(RAYS_INT_BOT.map(() => null))
+  const gradRefs       = useRef({ rg:{}, rgb:{}, ri:{}, rib:{}, rgh: null })
+
+  const stateRef  = useRef(0)
+  const targetRef = useRef(0)
+  const rafRef    = useRef(null)
+
   useEffect(() => {
     if (messagesRef.current)
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight
   }, [messages, waiting])
 
-  // Animation loop
   useEffect(() => {
-    const svg = svgRef.current
-    if (!svg) return
-
-    function safe(id, attr, val) {
-      const el = svg.getElementById ? svg.getElementById(id) : document.getElementById(id)
-      if (el) el.setAttribute(attr, val)
-    }
-
-    function getEl(id) {
-      return svg.getElementById ? svg.getElementById(id) : document.getElementById(id)
-    }
-
-    const depthGroup = getEl('portalDepthGroup')
-    const boldRing   = getEl('portalBoldRing')
-    const faintRing  = getEl('portalFaintRing')
-    const horizon    = getEl('portalHorizon')
-    const allRayEls  = ALL_RAYS.map(r => getEl(r.id)).filter(Boolean)
-    const gradStops  = GRAD_IDS.map(id => {
-      const g = getEl(id)
-      return g ? g.querySelectorAll('stop')[0] : null
-    }).filter(Boolean)
-
-    const B = { rx: 370, ry: 156, sw: 2.4, so: 0.88 }
-    const F = { rx: 404, ry: 171, so: 0.22 }
+    const B = { rx:370, ry:156, sw:2.4, so:0.88 }
+    const F = { rx:404, ry:171, so:0.22 }
 
     function frame() {
       const s = stateRef.current
-      const t = targetRef.current
-      stateRef.current = s + (t - s) * 0.05
+      stateRef.current = s + (targetRef.current - s) * 0.05
+      const st = stateRef.current
 
-      const state = stateRef.current
-
-      if (boldRing) {
-        boldRing.setAttribute('rx', B.rx + state * 8)
-        boldRing.setAttribute('ry', B.ry + state * 4)
-        boldRing.setAttribute('stroke-width', B.sw + state * 1.2)
-        boldRing.setAttribute('stroke-opacity', B.so)
+      if (boldRingRef.current) {
+        boldRingRef.current.setAttribute('rx', B.rx + st * 8)
+        boldRingRef.current.setAttribute('ry', B.ry + st * 4)
+        boldRingRef.current.setAttribute('stroke-width', B.sw + st * 1.2)
+        boldRingRef.current.setAttribute('stroke-opacity', B.so)
       }
-      if (faintRing) {
-        faintRing.setAttribute('rx', F.rx + state * 12)
-        faintRing.setAttribute('ry', F.ry + state * 5)
-        faintRing.setAttribute('stroke-opacity', state * F.so)
+      if (faintRingRef.current) {
+        faintRingRef.current.setAttribute('rx', F.rx + st * 12)
+        faintRingRef.current.setAttribute('ry', F.ry + st * 5)
+        faintRingRef.current.setAttribute('stroke-opacity', st * F.so)
       }
-      if (depthGroup) depthGroup.setAttribute('opacity', state)
-      if (horizon)    horizon.setAttribute('stroke-opacity', state * 0.22)
+      if (depthGroupRef.current) depthGroupRef.current.setAttribute('opacity', st)
+      if (horizonRef.current)    horizonRef.current.setAttribute('stroke-opacity', st * 0.22)
 
-      allRayEls.forEach(r => r.setAttribute('stroke-width', 0.55 + state * 1.0))
-      gradStops.forEach(s => s.setAttribute('stop-opacity', state * 0.45))
+      ;[...raysTopRefs.current, ...raysBotRefs.current,
+        ...raysIntTopRefs.current, ...raysIntBotRefs.current]
+        .forEach(el => { if (el) el.setAttribute('stroke-width', 0.55 + st * 1.0) })
+
+      const g = gradRefs.current
+      ;[...Object.values(g.rg), ...Object.values(g.rgb),
+        ...Object.values(g.ri), ...Object.values(g.rib), g.rgh]
+        .filter(Boolean)
+        .forEach(el => el.setAttribute('stop-opacity', st * 0.45))
 
       rafRef.current = requestAnimationFrame(frame)
     }
@@ -241,11 +106,9 @@ export function NorthStarPortal() {
     return () => cancelAnimationFrame(rafRef.current)
   }, [])
 
-  // Mouse enter/leave
   const handleEnter = useCallback(() => { targetRef.current = 1 }, [])
   const handleLeave = useCallback(() => { targetRef.current = 0 }, [])
 
-  // Chat send
   async function send() {
     const text = input.trim()
     if (!text || waiting) return
@@ -297,63 +160,164 @@ export function NorthStarPortal() {
       style={{
         position: 'relative',
         width: '100%',
-        maxWidth: '720px',
+        maxWidth: '760px',
         margin: '0 auto',
       }}
     >
-      {/* Portal SVG — sits behind content, sized to match the oval */}
+      {/*
+        The SVG defines the layout space via viewBox="0 0 900 400".
+        All geometry is in that coordinate space.
+        The content div is absolutely positioned over the SVG,
+        inset to match the oval interior — roughly 15% from edges.
+        Both share the same bounding box. No drift possible.
+      */}
+
+      {/* SVG — defines the oval and all geometry */}
+      <svg
+        viewBox="0 0 900 400"
+        style={{ width: '100%', display: 'block', overflow: 'visible' }}
+        aria-hidden="true"
+      >
+        <defs>
+          <linearGradient id="ns-rgh" x1="-100" y1="200" x2="1000" y2="200" gradientUnits="userSpaceOnUse">
+            <stop ref={el => { gradRefs.current.rgh = el }} offset="0%"   stopColor={GOLD} stopOpacity="0"/>
+            <stop offset="40%"  stopColor={GOLD} stopOpacity="0.45"/>
+            <stop offset="60%"  stopColor={GOLD} stopOpacity="0.45"/>
+            <stop offset="100%" stopColor={GOLD} stopOpacity="0"/>
+          </linearGradient>
+          {RAYS_TOP.map((r, i) => (
+            <linearGradient key={i} id={`ns-rg${i}`} x1={CX} y1={CY} x2={r.x2} y2={r.y2} gradientUnits="userSpaceOnUse">
+              <stop ref={el => { gradRefs.current.rg[i] = el }} offset="0%"   stopColor={GOLD} stopOpacity="0"/>
+              <stop offset="40%"  stopColor={GOLD} stopOpacity="0.45"/>
+              <stop offset="100%" stopColor={GOLD} stopOpacity="0"/>
+            </linearGradient>
+          ))}
+          {RAYS_BOT.map((r, i) => (
+            <linearGradient key={i} id={`ns-rgb${i}`} x1={CX} y1={CY} x2={r.x2} y2={r.y2} gradientUnits="userSpaceOnUse">
+              <stop ref={el => { gradRefs.current.rgb[i] = el }} offset="0%"   stopColor={GOLD} stopOpacity="0"/>
+              <stop offset="40%"  stopColor={GOLD} stopOpacity="0.45"/>
+              <stop offset="100%" stopColor={GOLD} stopOpacity="0"/>
+            </linearGradient>
+          ))}
+          {RAYS_INT_TOP.map((r, i) => (
+            <linearGradient key={i} id={`ns-ri${i}`} x1={CX} y1={CY} x2={r.x2} y2={r.y2} gradientUnits="userSpaceOnUse">
+              <stop ref={el => { gradRefs.current.ri[i] = el }} offset="0%"   stopColor={GOLD} stopOpacity="0"/>
+              <stop offset="40%"  stopColor={GOLD} stopOpacity="0.34"/>
+              <stop offset="100%" stopColor={GOLD} stopOpacity="0"/>
+            </linearGradient>
+          ))}
+          {RAYS_INT_BOT.map((r, i) => (
+            <linearGradient key={i} id={`ns-rib${i}`} x1={CX} y1={CY} x2={r.x2} y2={r.y2} gradientUnits="userSpaceOnUse">
+              <stop ref={el => { gradRefs.current.rib[i] = el }} offset="0%"   stopColor={GOLD} stopOpacity="0"/>
+              <stop offset="40%"  stopColor={GOLD} stopOpacity="0.34"/>
+              <stop offset="100%" stopColor={GOLD} stopOpacity="0"/>
+            </linearGradient>
+          ))}
+        </defs>
+
+        {/* Depth fills */}
+        <g ref={depthGroupRef} opacity="0">
+          {DEPTH_FILLS.map((d, i) => (
+            <ellipse key={i} cx={CX} cy={CY} rx={d.rx} ry={d.ry} fill={GOLD} fillOpacity="0.035"/>
+          ))}
+        </g>
+
+        {/* Horizon */}
+        <line ref={horizonRef} x1="-100" y1={CY} x2="1000" y2={CY}
+          stroke="url(#ns-rgh)" strokeWidth="0.8" strokeOpacity="0"/>
+
+        {/* Primary rays top */}
+        {RAYS_TOP.map((r, i) => (
+          <line key={i} ref={el => { raysTopRefs.current[i] = el }}
+            x1={CX} y1={CY} x2={r.x2} y2={r.y2}
+            stroke={`url(#ns-rg${i})`} strokeWidth="0.8"/>
+        ))}
+
+        {/* Primary rays bottom */}
+        {RAYS_BOT.map((r, i) => (
+          <line key={i} ref={el => { raysBotRefs.current[i] = el }}
+            x1={CX} y1={CY} x2={r.x2} y2={r.y2}
+            stroke={`url(#ns-rgb${i})`} strokeWidth="0.8"/>
+        ))}
+
+        {/* Intermediate rays top */}
+        {RAYS_INT_TOP.map((r, i) => (
+          <line key={i} ref={el => { raysIntTopRefs.current[i] = el }}
+            x1={CX} y1={CY} x2={r.x2} y2={r.y2}
+            stroke={`url(#ns-ri${i})`} strokeWidth="0.8"/>
+        ))}
+
+        {/* Intermediate rays bottom */}
+        {RAYS_INT_BOT.map((r, i) => (
+          <line key={i} ref={el => { raysIntBotRefs.current[i] = el }}
+            x1={CX} y1={CY} x2={r.x2} y2={r.y2}
+            stroke={`url(#ns-rib${i})`} strokeWidth="0.8"/>
+        ))}
+
+        {/* Faint outer ring */}
+        <ellipse ref={faintRingRef}
+          cx={CX} cy={CY} rx="404" ry="171"
+          fill="none" stroke={GOLD} strokeWidth="0.8" strokeOpacity="0"/>
+
+        {/* Bold ring — always visible */}
+        <ellipse ref={boldRingRef}
+          cx={CX} cy={CY} rx="370" ry="156"
+          fill="none" stroke={GOLD} strokeWidth="2.4" strokeOpacity="0.88"/>
+      </svg>
+
+      {/*
+        Content overlay — absolutely positioned over the SVG.
+        The oval interior in viewBox coords runs roughly:
+          x: 80px to 820px (of 900) → ~9% to 91% → inset ~9% left/right
+          y: 44px to 356px (of 400) → ~11% to 89% → inset ~11% top/bottom
+        We add a little extra padding inside those margins.
+      */}
       <div style={{
         position: 'absolute',
-        inset: '-18% -12%',   // bleed wider/taller than content so oval encloses it
-        pointerEvents: 'none',
-        zIndex: 0,
+        top: '14%',
+        bottom: '14%',
+        left: '12%',
+        right: '12%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        pointerEvents: 'none', // let through to SVG for hover
       }}>
-        <PortalSVG svgRef={svgRef} />
-      </div>
-
-      {/* Chat content — sits inside the oval */}
-      <div style={{ position: 'relative', zIndex: 1 }}>
         {/* Messages */}
         <div
           ref={messagesRef}
           style={{
-            minHeight: '120px',
-            maxHeight: '380px',
+            flex: 1,
             overflowY: 'auto',
-            padding: '32px 48px 12px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '16px',
+            justifyContent: 'center',
+            gap: '12px',
+            paddingBottom: '8px',
+            pointerEvents: 'all',
           }}
         >
           {messages.map((m, i) => {
             if (m.role === 'assistant') return (
               <div key={i} style={{
                 ...serif,
-                fontSize: 'clamp(17px, 2vw, 21px)',
+                fontSize: 'clamp(15px, 1.8vw, 19px)',
                 fontWeight: 300,
                 lineHeight: 1.55,
                 color: DARK,
-                alignSelf: 'flex-start',
-                maxWidth: '92%',
                 textAlign: 'center',
-                width: '100%',
               }}>
                 {m.content}
               </div>
             )
             if (m.role === 'user') return (
               <div key={i} style={{
-                ...body,
-                fontSize: '15px',
-                fontStyle: 'italic',
+                ...body, fontSize: '14px', fontStyle: 'italic',
                 color: 'rgba(15,21,35,0.72)',
                 background: 'rgba(200,146,42,0.06)',
                 border: '1px solid rgba(200,146,42,0.20)',
-                borderRadius: '10px',
-                padding: '10px 14px',
-                alignSelf: 'flex-end',
-                maxWidth: '80%',
+                borderRadius: '8px', padding: '8px 12px',
+                alignSelf: 'flex-end', maxWidth: '80%',
               }}>
                 {m.content}
               </div>
@@ -364,37 +328,25 @@ export function NorthStarPortal() {
                 <div key={i} style={{
                   background: '#FAFAF7',
                   border: '1.5px solid rgba(200,146,42,0.78)',
-                  borderRadius: '12px',
-                  padding: '22px',
-                  alignSelf: 'flex-start',
-                  maxWidth: '96%',
-                  textAlign: 'left',
+                  borderRadius: '10px', padding: '16px',
+                  alignSelf: 'stretch', textAlign: 'left',
+                  fontSize: '13px',
                 }}>
-                  {d.stage && (
-                    <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: GOLD_TEXT, marginBottom: '8px' }}>
-                      {d.stage}
-                    </div>
-                  )}
-                  <div style={{ ...body, fontSize: '16px', lineHeight: 1.8, color: DARK, marginBottom: '16px' }}>
-                    {d.reflection}
-                  </div>
+                  {d.stage && <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: GOLD_TEXT, marginBottom: '6px' }}>{d.stage}</div>}
+                  <div style={{ ...body, fontSize: '14px', lineHeight: 1.7, color: DARK, marginBottom: '10px' }}>{d.reflection}</div>
                   {(d.recommendations || []).map((r, ri) => (
-                    <div key={ri} style={{ borderTop: '1px solid rgba(200,146,42,0.20)', paddingTop: '14px', marginTop: '14px' }}>
-                      <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', marginBottom: '4px' }}>{r.category}</div>
-                      <div style={{ ...body, fontSize: '17px', color: DARK, marginBottom: '4px' }}>{r.title}</div>
-                      <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.88)', lineHeight: 1.65, marginBottom: '8px' }}>{r.description}</div>
+                    <div key={ri} style={{ borderTop: '1px solid rgba(200,146,42,0.15)', paddingTop: '10px', marginTop: '10px' }}>
+                      <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.65)', marginBottom: '3px' }}>{r.category}</div>
+                      <div style={{ ...body, fontSize: '15px', color: DARK, marginBottom: '3px' }}>{r.title}</div>
+                      <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.85)', lineHeight: 1.6, marginBottom: '6px' }}>{r.description}</div>
                       {r.link && r.link !== 'null' && (
-                        <a href={r.link} style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: GOLD_TEXT, textDecoration: 'none' }}>
+                        <a href={r.link} style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: GOLD_TEXT, textDecoration: 'none' }}>
                           {r.link_text || 'Go there →'}
                         </a>
                       )}
                     </div>
                   ))}
-                  {d.closing && (
-                    <div style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.20)' }}>
-                      {d.closing}
-                    </div>
-                  )}
+                  {d.closing && <div style={{ ...body, fontSize: '13px', fontStyle: 'italic', color: 'rgba(15,21,35,0.65)', marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(200,146,42,0.15)' }}>{d.closing}</div>}
                 </div>
               )
             }
@@ -402,15 +354,11 @@ export function NorthStarPortal() {
           })}
 
           {waiting && (
-            <div style={{ display: 'flex', gap: '5px', alignItems: 'center', padding: '4px 0', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: '5px', alignItems: 'center', justifyContent: 'center' }}>
               {[0, 0.2, 0.4].map((d, i) => (
-                <div key={i} style={{
-                  width: '6px', height: '6px', borderRadius: '50%',
-                  background: 'rgba(200,146,42,0.45)',
-                  animation: `nsPulse 1.4s ease ${d}s infinite`,
-                }}/>
+                <div key={i} style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'rgba(200,146,42,0.5)', animation: `nsPulse 1.4s ease ${d}s infinite` }}/>
               ))}
-              <style>{`@keyframes nsPulse { 0%,80%,100%{transform:scale(0.7);opacity:0.4} 40%{transform:scale(1);opacity:1} }`}</style>
+              <style>{`@keyframes nsPulse{0%,80%,100%{transform:scale(0.7);opacity:0.4}40%{transform:scale(1);opacity:1}}`}</style>
             </div>
           )}
         </div>
@@ -418,60 +366,44 @@ export function NorthStarPortal() {
         {/* Input row */}
         {!done && (
           <div style={{
-            padding: '12px 40px 28px',
             display: 'flex',
-            gap: '12px',
+            gap: '8px',
             alignItems: 'flex-end',
+            pointerEvents: 'all',
           }}>
             <textarea
               ref={textareaRef}
               value={input}
               onChange={e => {
                 setInput(e.target.value)
-                const el = e.target
-                el.style.height = 'auto'
-                el.style.height = Math.min(el.scrollHeight, 120) + 'px'
+                e.target.style.height = 'auto'
+                e.target.style.height = Math.min(e.target.scrollHeight, 80) + 'px'
               }}
               onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
               placeholder="Take your time…"
               rows={1}
               style={{
-                flex: 1,
-                resize: 'none',
+                flex: 1, resize: 'none',
                 border: '1.5px solid rgba(200,146,42,0.35)',
-                borderRadius: '10px',
-                padding: '11px 14px',
-                ...body,
-                fontSize: '16px',
-                color: DARK,
-                background: '#FAFAF7',
-                outline: 'none',
-                lineHeight: 1.5,
-                maxHeight: '120px',
-                overflowY: 'auto',
+                borderRadius: '8px', padding: '9px 12px',
+                ...body, fontSize: '15px', color: DARK,
+                background: '#FAFAF7', outline: 'none',
+                lineHeight: 1.4, maxHeight: '80px', overflowY: 'auto',
               }}
             />
             <button
               onClick={send}
               disabled={!input.trim() || waiting}
               style={{
-                flexShrink: 0,
-                padding: '11px 22px',
+                flexShrink: 0, padding: '9px 18px',
                 borderRadius: '40px',
                 border: '1.5px solid rgba(200,146,42,0.78)',
                 background: '#FAFAF7',
-                ...sc,
-                fontSize: '15px',
-                fontWeight: 600,
-                letterSpacing: '0.14em',
-                color: GOLD_TEXT,
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
+                ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em',
+                color: GOLD_TEXT, cursor: 'pointer', whiteSpace: 'nowrap',
                 opacity: (!input.trim() || waiting) ? 0.4 : 1,
               }}
-            >
-              Send
-            </button>
+            >Send</button>
           </div>
         )}
       </div>
