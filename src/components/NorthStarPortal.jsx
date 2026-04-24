@@ -198,7 +198,7 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
 
         <g ref={depthGroupRef} opacity="0">
           {DEPTH_FILLS.map((d, i) => (
-            <ellipse key={i} cx={CX} cy={CY} rx={d.rx} ry={d.ry} fill="#A8721A" fillOpacity="0.025"/>
+            <ellipse key={i} cx={CX} cy={CY} rx={d.rx} ry={d.ry} fill="#8B6014" fillOpacity="0.055"/>
           ))}
         </g>
 
@@ -237,8 +237,8 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
       {/* Content inside oval */}
       <div style={{
         position: 'absolute',
-        top: '18%', bottom: '18%',
-        left: '16%', right: '16%',
+        top: '14%', bottom: '14%',
+        left: '12%', right: '12%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
