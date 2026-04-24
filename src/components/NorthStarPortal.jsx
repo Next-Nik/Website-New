@@ -168,30 +168,30 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
           </linearGradient>
           {RAYS_TOP.map((r, i) => (
             <linearGradient key={i} id={`ns-rg${i}`} x1={CX} y1={CY} x2={r.x2} y2={r.y2} gradientUnits="userSpaceOnUse">
-              <stop ref={el => { gradRefs.current.rg[i] = el }} offset="0%"   stopColor={GOLD} stopOpacity="0"/>
-              <stop offset="40%"  stopColor={GOLD} stopOpacity="0.45"/>
-              <stop offset="100%" stopColor={GOLD} stopOpacity="0"/>
+              <stop offset="0%"   stopColor={GOLD} stopOpacity="0"/>
+              <stop offset="50%"  stopColor={GOLD} stopOpacity="0.08"/>
+              <stop ref={el => { gradRefs.current.rg[i] = el }} offset="100%" stopColor={GOLD} stopOpacity="0.20"/>
             </linearGradient>
           ))}
           {RAYS_BOT.map((r, i) => (
             <linearGradient key={i} id={`ns-rgb${i}`} x1={CX} y1={CY} x2={r.x2} y2={r.y2} gradientUnits="userSpaceOnUse">
-              <stop ref={el => { gradRefs.current.rgb[i] = el }} offset="0%"   stopColor={GOLD} stopOpacity="0"/>
-              <stop offset="40%"  stopColor={GOLD} stopOpacity="0.45"/>
-              <stop offset="100%" stopColor={GOLD} stopOpacity="0"/>
+              <stop offset="0%"   stopColor={GOLD} stopOpacity="0"/>
+              <stop offset="50%"  stopColor={GOLD} stopOpacity="0.08"/>
+              <stop ref={el => { gradRefs.current.rgb[i] = el }} offset="100%" stopColor={GOLD} stopOpacity="0.20"/>
             </linearGradient>
           ))}
           {RAYS_INT_TOP.map((r, i) => (
             <linearGradient key={i} id={`ns-ri${i}`} x1={CX} y1={CY} x2={r.x2} y2={r.y2} gradientUnits="userSpaceOnUse">
-              <stop ref={el => { gradRefs.current.ri[i] = el }} offset="0%"   stopColor={GOLD} stopOpacity="0"/>
-              <stop offset="40%"  stopColor={GOLD} stopOpacity="0.34"/>
-              <stop offset="100%" stopColor={GOLD} stopOpacity="0"/>
+              <stop offset="0%"   stopColor={GOLD} stopOpacity="0"/>
+              <stop offset="50%"  stopColor={GOLD} stopOpacity="0.06"/>
+              <stop ref={el => { gradRefs.current.ri[i] = el }} offset="100%" stopColor={GOLD} stopOpacity="0.15"/>
             </linearGradient>
           ))}
           {RAYS_INT_BOT.map((r, i) => (
             <linearGradient key={i} id={`ns-rib${i}`} x1={CX} y1={CY} x2={r.x2} y2={r.y2} gradientUnits="userSpaceOnUse">
-              <stop ref={el => { gradRefs.current.rib[i] = el }} offset="0%"   stopColor={GOLD} stopOpacity="0"/>
-              <stop offset="40%"  stopColor={GOLD} stopOpacity="0.34"/>
-              <stop offset="100%" stopColor={GOLD} stopOpacity="0"/>
+              <stop offset="0%"   stopColor={GOLD} stopOpacity="0"/>
+              <stop offset="50%"  stopColor={GOLD} stopOpacity="0.06"/>
+              <stop ref={el => { gradRefs.current.rib[i] = el }} offset="100%" stopColor={GOLD} stopOpacity="0.15"/>
             </linearGradient>
           ))}
         </defs>
@@ -300,14 +300,7 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
               background: '#FAFAF7',
               ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.14em',
               color: GOLD_TEXT, cursor: 'pointer', whiteSpace: 'nowrap',
-              opacity: (!input.trim() || waiting) ? 0.4 : 1,
-            }}
-          >Send</button>
-        </div>
-      </div>
-    </div>
-  )
-}
+              opacity: 1,
 
 // ─── NorthStarPortal — orchestrates the two views ────────────
 export function NorthStarPortal() {
@@ -366,7 +359,7 @@ export function NorthStarPortal() {
         faintRingRef.current.setAttribute('stroke-opacity', st * F.so)
       }
       if (depthGroupRef.current) depthGroupRef.current.setAttribute('opacity', st)
-      if (horizonRef.current)    horizonRef.current.setAttribute('stroke-opacity', st * 0.22)
+      if (horizonRef.current)    horizonRef.current.setAttribute('stroke-opacity', st * 0.35)
 
       ;[...raysTopRefs.current, ...raysBotRefs.current,
         ...raysIntTopRefs.current, ...raysIntBotRefs.current]
@@ -374,9 +367,9 @@ export function NorthStarPortal() {
 
       const g = gradRefs.current
       ;[...Object.values(g.rg), ...Object.values(g.rgb),
-        ...Object.values(g.ri), ...Object.values(g.rib), g.rgh]
+        ...Object.values(g.ri), ...Object.values(g.rib)]
         .filter(Boolean)
-        .forEach(el => el.setAttribute('stop-opacity', st * 0.45))
+        .forEach(el => el.setAttribute('stop-opacity', st * 0.20))
 
       rafRef.current = requestAnimationFrame(frame)
     }
