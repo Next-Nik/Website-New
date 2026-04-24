@@ -198,7 +198,11 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
 
         <g ref={depthGroupRef} opacity="0">
           {DEPTH_FILLS.map((d, i) => (
-            <ellipse key={i} cx={CX} cy={CY} rx={d.rx} ry={d.ry} fill="#A8721A" fillOpacity="0.005"/>
+            <rect key={i}
+              x={CX - d.rx} y={CY - d.ry}
+              width={d.rx * 2} height={d.ry * 2}
+              rx={d.ry * 0.55}
+              fill="#A8721A" fillOpacity="0.025"/>
           ))}
         </g>
 
@@ -226,11 +230,13 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
             stroke={`url(#ns-rib${i})`} strokeWidth="0.8"/>
         ))}
 
-        <ellipse ref={faintRingRef}
-          cx={CX} cy={CY} rx="404" ry="171"
+        <rect ref={faintRingRef}
+          x="46" y="29" width="808" height="342"
+          rx="88"
           fill="none" stroke={GOLD} strokeWidth="0.8" strokeOpacity="0"/>
-        <ellipse ref={boldRingRef}
-          cx={CX} cy={CY} rx="370" ry="156"
+        <rect ref={boldRingRef}
+          x="80" y="44" width="740" height="312"
+          rx="80"
           fill="none" stroke={GOLD} strokeWidth="2.4" strokeOpacity="0.88"/>
       </svg>
 
@@ -346,8 +352,10 @@ export function NorthStarPortal() {
   // Animation loop — only runs during portal phase
   useEffect(() => {
     if (phase === 'chat') return
-    const B = { rx:370, ry:156, sw:2.4, so:0.88 }
-    const F = { rx:404, ry:171, so:0.22 }
+    // Bold rect base: x=80 y=44 width=740 height=312
+    const B = { x:80, y:44, w:740, h:312, sw:2.4, so:0.88 }
+    // Faint rect base: x=46 y=29 width=808 height=342
+    const F = { x:46, y:29, w:808, h:342, so:0.22 }
 
     function frame() {
       const s = stateRef.current
@@ -355,14 +363,20 @@ export function NorthStarPortal() {
       const st = stateRef.current
 
       if (boldRingRef.current) {
-        boldRingRef.current.setAttribute('rx', B.rx + st * 8)
-        boldRingRef.current.setAttribute('ry', B.ry + st * 4)
+        const swell = st * 8
+        boldRingRef.current.setAttribute('x',      B.x - swell)
+        boldRingRef.current.setAttribute('y',      B.y - swell * 0.5)
+        boldRingRef.current.setAttribute('width',  B.w + swell * 2)
+        boldRingRef.current.setAttribute('height', B.h + swell)
         boldRingRef.current.setAttribute('stroke-width', B.sw + st * 1.2)
         boldRingRef.current.setAttribute('stroke-opacity', B.so)
       }
       if (faintRingRef.current) {
-        faintRingRef.current.setAttribute('rx', F.rx + st * 12)
-        faintRingRef.current.setAttribute('ry', F.ry + st * 5)
+        const swell = st * 12
+        faintRingRef.current.setAttribute('x',      F.x - swell)
+        faintRingRef.current.setAttribute('y',      F.y - swell * 0.5)
+        faintRingRef.current.setAttribute('width',  F.w + swell * 2)
+        faintRingRef.current.setAttribute('height', F.h + swell)
         faintRingRef.current.setAttribute('stroke-opacity', st * F.so)
       }
       if (depthGroupRef.current) depthGroupRef.current.setAttribute('opacity', st)
