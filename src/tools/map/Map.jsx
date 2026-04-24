@@ -8,6 +8,7 @@ import { AccessGate } from '../../components/AccessGate'
 import { supabase } from '../../hooks/useSupabase'
 import { ScalePanel } from '../../components/ScalePanel'
 import { DebriefPanel } from '../../components/DebriefPanel'
+import { CrisisRedirectCard } from '../../components/CrisisRedirectCard'
 
 // ─── Mobile hook ─────────────────────────────────────────────────────────────
 
@@ -2036,10 +2037,11 @@ export function MapPage() {
   const [spinCount,    setSpinCount]    = useState(0)
   const [currentScores,setCurrentScores]= useState({})
   const [horizonScores,setHorizonScores]= useState({})
-  const [phase,        setPhase]        = useState('mapping') // 'welcome' | 'mapping' | 'synthesis' | 'debrief' | 'results'
+  const [phase,        setPhase]        = useState('mapping') // 'welcome' | 'mapping' | 'synthesis' | 'debrief' | 'results' | 'crisis_gate'
   const [synthesis,    setSynthesis]    = useState(null)
   const [showMapDebrief, setShowMapDebrief] = useState(false)
   const [mapData,      setMapData]      = useState(null)
+  const [crisisGate,   setCrisisGate]   = useState(null)
   const [thinking,     setThinking]     = useState(false)
   const [sessionId,    setSessionId]    = useState(null)
   const [showWelcome,  setShowWelcome]  = useState(() => {
@@ -2191,6 +2193,7 @@ export function MapPage() {
     setPhase('synthesis')
     setThinking(true)
     setSynthesis(null)
+    setCrisisGate(null)
     try {
       const res = await fetch('/api/map-synthesis-chat', {
         method: 'POST',
@@ -2199,6 +2202,17 @@ export function MapPage() {
       })
       const data = await res.json()
       setThinking(false)
+
+      // Crisis gate triggered — no synthesis, redirect to support
+      if (data.crisisGate?.triggered) {
+        setCrisisGate(data.crisisGate)
+        setMapData(null)
+        setSynthesis(null)
+        setPhase('crisis_gate')
+        await saveResults(domainData, null, { crisisGate: data.crisisGate })
+        return
+      }
+
       if (data.mapData) {
         setMapData(data.mapData)
         setSynthesis(data.synthesis || data.mapData.overall_reflection || '')
@@ -2213,20 +2227,26 @@ export function MapPage() {
     }
   }
 
-  async function saveResults(allData, map) {
+  async function saveResults(allData, map, options = {}) {
     if (!user?.id) return
+    const isCrisis = !!options.crisisGate
     try {
       const { data } = await supabase.from('map_results').upsert({
         user_id:             user.id,
         session:             { domainData: allData, currentScores, horizonScores },
-        phase:               'complete',
-        complete:            true,
+        phase:               isCrisis ? 'crisis_gate' : 'complete',
+        complete:            !isCrisis,
         map_data:            map,
         horizon_goal_system: map?.life_horizon_draft ?? null,
+        crisis_gate_triggered: isCrisis,
         completed_at:        new Date().toISOString(),
         updated_at:          new Date().toISOString(),
       }, { onConflict: 'user_id' }).select('id').single()
       if (data?.id) setSessionId(data.id)
+
+      // When crisis gate fires, do NOT write notes to north_star_notes.
+      // The crisis state must not propagate into other tools as if it were a synthesis result.
+      if (isCrisis) return
 
       // Write to North Star cross-tool memory
       const notes = []
@@ -2521,6 +2541,20 @@ export function MapPage() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Crisis gate — fires when scores cross safety thresholds */}
+        {phase === 'crisis_gate' && crisisGate && (
+          <div style={{ animation: 'fadeUp 0.4s ease-out' }}>
+            <CrisisRedirectCard
+              message={crisisGate.message}
+              onExit={() => {
+                // Save and exit — return to mapping but keep their data
+                setPhase('mapping')
+                setCrisisGate(null)
+              }}
+            />
           </div>
         )}
 

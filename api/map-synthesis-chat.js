@@ -2,7 +2,7 @@
 // Dedicated synthesis endpoint for The Map.
 // Accepts { domainData, userId } — domainData uses Map.jsx field names:
 //   currentScore, realityFinal, horizonText, avatarFinal
-// Returns { mapData, synthesis }
+// Returns { mapData, synthesis } OR { crisisGate, ... } when thresholds crossed.
 
 const Anthropic = require('@anthropic-ai/sdk')
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -29,6 +29,55 @@ const DOMAIN_QUESTIONS = {
   inner_game: 'What story about myself is quietly running the room — and is that story still true?',
   signal:     'Is what I\'m broadcasting aligned with who I actually am?',
 }
+
+// ── CRISIS GATE ─────────────────────────────────────────────
+//
+// Thresholds:
+//   - Any single domain ≤ 2.0  → severe_domain
+//   - Average across all ≤ 3.0 → severe_average
+//
+// When triggered, no AI synthesis runs. The user gets a redirect to
+// real human support. The Map data is still saved so they can return.
+
+const CRISIS_DOMAIN_FLOOR = 2.0
+const CRISIS_AVERAGE_FLOOR = 3.0
+
+const CRISIS_REDIRECT_MESSAGE = `Thank you for being honest with me.
+
+Looking at what you shared, I'm not going to give you a developmental synthesis right now. The picture you've drawn is at a level where the right next step isn't more reflection from me — it's real, immediate, in-person support.
+
+We're here. We're not dropping you. Before we do more of this work, please reach out to someone trained to help.
+
+Your Map is saved. Come back and continue when it feels right for you. Nothing is lost.`
+
+function detectCrisis(domainData) {
+  const scores = Object.values(domainData || {})
+    .map(d => d?.currentScore)
+    .filter(s => typeof s === 'number')
+
+  if (scores.length === 0) return null
+
+  const min = Math.min(...scores)
+  const avg = scores.reduce((a, b) => a + b, 0) / scores.length
+
+  if (min <= CRISIS_DOMAIN_FLOOR) {
+    return {
+      reason: 'severe_domain',
+      min: Math.round(min * 10) / 10,
+      avg: Math.round(avg * 10) / 10,
+    }
+  }
+  if (avg <= CRISIS_AVERAGE_FLOOR) {
+    return {
+      reason: 'severe_average',
+      min: Math.round(min * 10) / 10,
+      avg: Math.round(avg * 10) / 10,
+    }
+  }
+  return null
+}
+
+// ────────────────────────────────────────────────────────────
 
 function buildSynthesisPrompt(domainData, northStarCtx) {
   const domainSummaries = Object.entries(domainData).map(([id, data]) => {
@@ -100,6 +149,23 @@ module.exports = async (req, res) => {
 
     if (!domainData) return res.status(400).json({ error: 'Missing domainData' })
 
+    // ── Crisis gate check — runs BEFORE any AI call ─────────
+    const crisis = detectCrisis(domainData)
+    if (crisis) {
+      return res.json({
+        mapData:   null,
+        synthesis: null,
+        crisisGate: {
+          triggered: true,
+          reason:    crisis.reason,
+          min:       crisis.min,
+          avg:       crisis.avg,
+          message:   CRISIS_REDIRECT_MESSAGE,
+        },
+      })
+    }
+
+    // ── Normal path: run synthesis + horizon in parallel ─────
     const northStarCtx = userId ? await getNorthStarContext(userId) : null
 
     const [synthResponse, horizonResponse] = await Promise.all([

@@ -126,7 +126,7 @@ function Toast({ message, onClose }) {
 
 // ── Tab navigation ────────────────────────────────────────────
 
-const TABS = ['Now', 'Platform', 'Actors', 'Extract', 'Place', 'Nominations', 'Domain Data', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
+const TABS = ['Now', 'Platform', 'Actors', 'Extract', 'Place', 'Nominations', 'Domain Data', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
 
 function TabBar({ active, setActive }) {
   return (
@@ -1933,6 +1933,195 @@ function WaitlistTab({ toast }) {
 }
 
 
+// ── RESOURCES TAB ─────────────────────────────────────────────
+// Crisis resource registry maintenance. The integrity-cron verifies
+// URLs weekly (Mondays). Resources marked 'unverified' need manual
+// review or removal.
+
+const RESOURCE_STATUS_CFG = {
+  active:     { color: '#2A6B3A', bg: 'rgba(42,107,58,0.08)',  border: 'rgba(42,107,58,0.25)' },
+  unverified: { color: '#8A6020', bg: 'rgba(200,146,42,0.10)', border: 'rgba(200,146,42,0.30)' },
+  dead:       { color: '#8A3030', bg: 'rgba(138,48,48,0.08)',  border: 'rgba(138,48,48,0.25)' },
+}
+
+function ResourcesTab({ toast }) {
+  const [resources, setResources] = useState([])
+  const [loading, setLoading]     = useState(true)
+  const [filter, setFilter]       = useState('all')
+  const [verifying, setVerifying] = useState(false)
+  const [editing, setEditing]     = useState(null)
+
+  async function load() {
+    setLoading(true)
+    const { data } = await supabase
+      .from('crisis_resources')
+      .select('*')
+      .order('country_code', { ascending: true })
+      .order('display_order', { ascending: true })
+    setResources(data || [])
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [])
+
+  async function setStatus(id, status) {
+    const { error } = await supabase
+      .from('crisis_resources')
+      .update({ status, last_verified_at: new Date().toISOString() })
+      .eq('id', id)
+    if (error) { toast('Error: ' + error.message); return }
+    toast(`Status set to ${status}`)
+    load()
+  }
+
+  async function deleteResource(id, name) {
+    if (!window.confirm(`Delete "${name}"? This cannot be undone.`)) return
+    const { error } = await supabase.from('crisis_resources').delete().eq('id', id)
+    if (error) { toast('Error: ' + error.message); return }
+    toast('Deleted')
+    load()
+  }
+
+  async function runVerification() {
+    if (!window.confirm('Trigger a verification run now? This may take a minute.')) return
+    setVerifying(true)
+    try {
+      const res = await fetch('/api/integrity-cron', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-cron-secret': window.prompt('Cron secret (CRON_SECRET env var):') || '',
+        },
+      })
+      const data = await res.json()
+      if (data.crisisResources) {
+        toast(`Verified ${data.crisisResources.verified}, ${data.crisisResources.dead} unverified`)
+      } else {
+        toast('Verification ran (resource check skipped — only runs Mondays)')
+      }
+      load()
+    } catch (err) {
+      toast('Verification failed: ' + err.message)
+    } finally {
+      setVerifying(false)
+    }
+  }
+
+  const filtered = resources.filter(r => filter === 'all' ? true : r.status === filter)
+  const counts = {
+    all:        resources.length,
+    active:     resources.filter(r => r.status === 'active').length,
+    unverified: resources.filter(r => r.status === 'unverified').length,
+    dead:       resources.filter(r => r.status === 'dead').length,
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '20px', marginBottom: '20px', flexWrap: 'wrap' }}>
+        <h2 style={{ ...body, fontSize: '22px', fontWeight: 300, color: '#0F1523' }}>
+          Crisis resources
+        </h2>
+        <Btn small variant="ghost" onClick={load}>Refresh</Btn>
+        <Btn small variant="ghost" onClick={runVerification} disabled={verifying}>
+          {verifying ? 'Verifying...' : 'Run verification now'}
+        </Btn>
+      </div>
+
+      <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65,
+        maxWidth: '600px', marginBottom: '24px' }}>
+        Resources surfaced when the Map crisis gate fires and on the public /support page.
+        URLs auto-verified weekly. Phone numbers need manual review periodically.
+      </p>
+
+      {/* Filter pills */}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
+        {[
+          ['all',        `All (${counts.all})`],
+          ['active',     `Active (${counts.active})`],
+          ['unverified', `Unverified (${counts.unverified})`],
+          ['dead',       `Dead (${counts.dead})`],
+        ].map(([val, label]) => (
+          <Btn key={val} small variant={filter === val ? 'primary' : 'ghost'} onClick={() => setFilter(val)}>
+            {label}
+          </Btn>
+        ))}
+      </div>
+
+      {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {!loading && filtered.length === 0 && (
+        <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No resources match this filter.</p>
+      )}
+
+      {/* Resource cards */}
+      {filtered.map(r => {
+        const cfg = RESOURCE_STATUS_CFG[r.status] || RESOURCE_STATUS_CFG.active
+        const lastVerified = r.last_verified_at ? new Date(r.last_verified_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'never'
+
+        return (
+          <Card key={r.id} style={{ borderLeft: `3px solid ${cfg.border}` }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '16px', alignItems: 'flex-start' }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                  <Badge label={r.country_code} />
+                  <span style={{ ...body, fontSize: '17px', color: '#0F1523', fontWeight: 500 }}>
+                    {r.name}
+                  </span>
+                  <span style={{
+                    ...sc, fontSize: '11px', letterSpacing: '0.12em',
+                    padding: '2px 9px', borderRadius: '40px',
+                    border: `1px solid ${cfg.border}`, color: cfg.color, background: cfg.bg,
+                  }}>
+                    {r.status}
+                  </span>
+                </div>
+
+                {/* Contact */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px 20px', marginBottom: '8px' }}>
+                  {r.phone && <span style={{ ...body, fontSize: '14px', color: '#0F1523' }}>📞 {r.phone}</span>}
+                  {r.sms && <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)' }}>SMS: {r.sms}</span>}
+                  {r.web_url && (
+                    <a href={r.web_url} target="_blank" rel="noopener noreferrer"
+                      style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}>
+                      {r.web_url}
+                    </a>
+                  )}
+                </div>
+
+                {r.hours && (
+                  <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', margin: '0 0 6px' }}>
+                    Hours: {r.hours}
+                  </p>
+                )}
+
+                {r.description && (
+                  <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.6, marginBottom: '6px' }}>
+                    {r.description}
+                  </p>
+                )}
+
+                <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.45)', margin: '6px 0 0' }}>
+                  Last verified: {lastVerified}
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
+                {r.status !== 'active' && <Btn small onClick={() => setStatus(r.id, 'active')}>Mark active</Btn>}
+                {r.status !== 'unverified' && <Btn small variant="ghost" onClick={() => setStatus(r.id, 'unverified')}>Mark unverified</Btn>}
+                {r.status !== 'dead' && <Btn small variant="ghost" onClick={() => setStatus(r.id, 'dead')}>Mark dead</Btn>}
+                <Btn small variant="danger" onClick={() => deleteResource(r.id, r.name)}>Delete</Btn>
+              </div>
+            </div>
+          </Card>
+        )
+      })}
+    </div>
+  )
+}
+
+
 // ── EXTRACT TAB ───────────────────────────────────────────────
 // Founder-only: paste a URL or description, get up to three proposed
 // actor records (Planet, Self, Practitioner), tick/untick each,
@@ -2923,6 +3112,7 @@ export function AdminConsolePage() {
         {tab === 'Needs'        && <NeedsTab        toast={showToast} />}
         {tab === 'Contributions'&& <ContributionsTab toast={showToast} />}
         {tab === 'Waitlist'     && <WaitlistTab     toast={showToast} />}
+        {tab === 'Resources'    && <ResourcesTab    toast={showToast} />}
         {tab === 'Groups'       && <GroupsTab       toast={showToast} />}
         {tab === 'Members'      && <MembersTab      toast={showToast} />}
         {tab === 'Entitlements' && <EntitlementsTab toast={showToast} />}

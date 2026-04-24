@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useEffect, Component } from 'react'
 import { BottomTabs } from './components/BottomTabs'
+import { TermsAcceptanceModal } from './components/TermsAcceptanceModal'
 
 // Error boundary
 class ErrorBoundary extends Component {
@@ -44,6 +45,7 @@ import { NextUsFocusPage }        from './pages/NextUsFocus'
 import { WorkWithNikPage, PodcastPage } from './pages/WorkAndPodcast'
 import { LoginPage }              from './pages/Login'
 import { PrivacyPage, TermsPage } from './pages/Legal'
+import { SupportResourcesPage } from './pages/SupportResources'
 import { FAQPage }               from './pages/FAQ'
 import { ProfilePage }            from './pages/Profile'
 import { DashboardPage }          from './pages/Dashboard'
@@ -113,6 +115,7 @@ function AppInner() {
         <Route path="/login"           element={<LoginPage />} />
         <Route path="/privacy"         element={<PrivacyPage />} />
         <Route path="/terms"           element={<TermsPage />} />
+        <Route path="/support"         element={<SupportResourcesPage />} />
         <Route path="/faq"             element={<FAQPage />} />
         <Route path="/profile"         element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard"       element={<DashboardPage />} />
@@ -144,6 +147,9 @@ function AppInner() {
 
       {/* Mobile bottom tabs — hidden on desktop via CSS */}
       <BottomTabs />
+
+      {/* Terms acceptance — appears once for signed-in users when version changes */}
+      <TermsAcceptanceModal />
     </>
   )
 }

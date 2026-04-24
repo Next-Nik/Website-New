@@ -4,6 +4,11 @@ import { SiteFooter } from '../components/SiteFooter'
 const body = { fontFamily: "'Lora', Georgia, serif" }
 const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
+// ── Versioning ──────────────────────────────────────────────
+// Bump this when Terms content changes materially.
+// Users are re-prompted to accept the new version on next sign-in.
+export const TERMS_VERSION = '2026-04-23'
+
 function LegalWrap({ title, eyebrow, subtitle, active, children }) {
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
@@ -30,9 +35,44 @@ function UL({ items }) {
   return <ul style={{ paddingLeft: '24px', marginBottom: '18px', maxWidth: '600px' }}>{items.map((item, i) => <li key={i} style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '6px' }} dangerouslySetInnerHTML={{ __html: item }} />)}</ul>
 }
 
-export function PrivacyPage() {
+// ── Shared content components ───────────────────────────────
+// Exported so the Terms acceptance modal renders identical content.
+
+export function TermsContent() {
   return (
-    <LegalWrap eyebrow="Privacy" title="How we handle<br><em style='color:#A8721A;'>your information.</span>" subtitle="Last updated March 2026 · NextUs / Nik Wood" active="">
+    <>
+      <P>These terms cover your use of nextus.world and the Horizon Suite tools {'—'} North Star, The Map, Purpose Piece, Horizon State, Target Sprint, Horizon Practice {'—'} and the NextUs platform.</P>
+      <P>The spirit of these terms: use the platform honestly, treat what you find here with respect, and don't do things that would harm other people or the platform itself.</P>
+      <H2>Your account</H2>
+      <P>You need an account to save your progress and access your profile. You're responsible for keeping your login secure. You must be at least 16 years old to create an account.</P>
+      <H2>Your content</H2>
+      <P>Anything you write in the tools belongs to you. We don't claim ownership over it. We store it so you can access it.</P>
+      <H2>What the platform is for</H2>
+      <P>NextUs and the Horizon Suite are tools for honest self-knowledge and civilisational orientation. They support structured reflection, planning, and orientation toward the life you want to build.</P>
+      <H2>What this platform is not for</H2>
+      <P>NextUs is a developmental tool. It is not therapy. It is not crisis support. It is not a substitute for medical, psychiatric, or psychological care.</P>
+      <P>If you are in active crisis, working through trauma, experiencing thoughts of self-harm, or in serious psychological distress, please get support from a trained professional or a crisis service first. The Suite will be here when you're ready.</P>
+      <P>If you are currently working with a therapist, counsellor, or doctor on something significant, we recommend talking with them before you begin substantive work in the tools. Some of what surfaces here may be valuable to bring into that work.</P>
+      <P>By using NextUs, you confirm that you understand the platform's scope as described above and that you take responsibility for seeking appropriate professional support when needed.</P>
+      <H2>What you agree not to do</H2>
+      <UL items={["Use the platform to harm, harass, or deceive other people.", "Attempt to access data that isn't yours.", "Use automated tools to scrape or overload the platform.", "Misrepresent yourself or your credentials in ways that affect other users.", "Reproduce or distribute platform content without permission."]} />
+      <H2>Intellectual property</H2>
+      <P>The platform, the tools, the domain architecture, the archetype frameworks, the Horizon Goals structure, and all copy on nextus.world are the work of Nik Wood and NextUs. They're protected by copyright.</P>
+      <H2>The platform is a living thing</H2>
+      <P>NextUs is being built in the open. Tools will change. Features will be added. Occasionally something will break. We'll fix it when it does.</P>
+      <H2>Limitation of liability</H2>
+      <P>We provide the platform as-is. We're not liable for decisions you make based on what you find here. If something goes wrong that is genuinely our fault, our liability is limited to the amount you've paid us in the preceding twelve months.</P>
+      <H2>Ending your account</H2>
+      <P>You can close your account any time by emailing <a href="mailto:hello@nextus.world" style={{ color: '#A8721A', textDecoration: 'none' }}>hello@nextus.world</a>.</P>
+      <H2>Governing law</H2>
+      <P>These terms are governed by the laws of the province of British Columbia, Canada.</P>
+    </>
+  )
+}
+
+export function PrivacyContent() {
+  return (
+    <>
       <P>NextUs is built on the premise that honest self-knowledge is valuable {'—'} and that what you discover about yourself belongs to you. This policy explains what we collect, why, and what we do and don't do with it.</P>
       <P>The short version: we collect what we need to make the tools work and remember your progress. We don't sell your data. We don't share it with advertisers. We don't use it to build profiles for anyone other than you.</P>
       <H2>What we collect</H2>
@@ -56,6 +96,14 @@ export function PrivacyPage() {
       <P>NextUs is not designed for or directed at anyone under 16.</P>
       <H2>Changes to this policy</H2>
       <P>If we make material changes to how we handle your data, we'll update this page and note the date.</P>
+    </>
+  )
+}
+
+export function PrivacyPage() {
+  return (
+    <LegalWrap eyebrow="Privacy" title="How we handle<br><em style='color:#A8721A;'>your information.</em>" subtitle="Last updated April 2026 · NextUs / Nik Wood" active="">
+      <PrivacyContent />
       <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '48px 0 24px' }} />
       <P>Questions? <a href="mailto:hello@nextus.world" style={{ color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.3)' }}>hello@nextus.world</a></P>
     </LegalWrap>
@@ -64,27 +112,8 @@ export function PrivacyPage() {
 
 export function TermsPage() {
   return (
-    <LegalWrap eyebrow="Terms of Service" title="Using NextUs<br><em style='color:#A8721A;'>in good faith.</span>" subtitle="Last updated March 2026 · NextUs / Nik Wood" active="">
-      <P>These terms cover your use of nextus.world and the Horizon Suite tools {'—'} North Star, The Map, Purpose Piece, Horizon State, Target Sprint {'—'} and the NextUs platform.</P>
-      <P>The spirit of these terms: use the platform honestly, treat what you find here with respect, and don't do things that would harm other people or the platform itself.</P>
-      <H2>Your account</H2>
-      <P>You need an account to save your progress and access your profile. You're responsible for keeping your login secure. You must be at least 16 years old to create an account.</P>
-      <H2>Your content</H2>
-      <P>Anything you write in the tools belongs to you. We don't claim ownership over it. We store it so you can access it.</P>
-      <H2>What the platform is for</H2>
-      <P>NextUs and the Horizon Suite are tools for honest self-knowledge and civilisational orientation. They're not therapy, not medical advice, not financial advice, and not a substitute for professional support when professional support is what's needed.</P>
-      <H2>What you agree not to do</H2>
-      <UL items={["Use the platform to harm, harass, or deceive other people.", "Attempt to access data that isn't yours.", "Use automated tools to scrape or overload the platform.", "Misrepresent yourself or your credentials in ways that affect other users.", "Reproduce or distribute platform content without permission."]} />
-      <H2>Intellectual property</H2>
-      <P>The platform, the tools, the domain architecture, the archetype frameworks, the Horizon Goals structure, and all copy on nextus.world are the work of Nik Wood and NextUs. They're protected by copyright.</P>
-      <H2>The platform is a living thing</H2>
-      <P>NextUs is being built in the open. Tools will change. Features will be added. Occasionally something will break. We'll fix it when it does.</P>
-      <H2>Limitation of liability</H2>
-      <P>We provide the platform as-is. We're not liable for decisions you make based on what you find here. If something goes wrong that is genuinely our fault, our liability is limited to the amount you've paid us in the preceding twelve months.</P>
-      <H2>Ending your account</H2>
-      <P>You can close your account any time by emailing <a href="mailto:hello@nextus.world" style={{ color: '#A8721A', textDecoration: 'none' }}>hello@nextus.world</a>.</P>
-      <H2>Governing law</H2>
-      <P>These terms are governed by the laws of the province of British Columbia, Canada.</P>
+    <LegalWrap eyebrow="Terms of Service" title="Using NextUs<br><em style='color:#A8721A;'>in good faith.</em>" subtitle="Last updated April 2026 · NextUs / Nik Wood" active="">
+      <TermsContent />
       <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', margin: '48px 0 24px' }} />
       <P>Questions? <a href="mailto:hello@nextus.world" style={{ color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.3)' }}>hello@nextus.world</a></P>
     </LegalWrap>

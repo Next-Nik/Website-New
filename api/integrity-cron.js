@@ -257,6 +257,85 @@ async function computeAlignmentScores() {
   return updated
 }
 
+// ── Rule 5: Crisis resource verification ──────────────────────
+// Weekly check (Mondays only) that crisis resource URLs are still alive.
+// Marks dead links as 'unverified' so admin can re-verify or remove.
+// Phone numbers cannot be auto-verified — those need manual review.
+//
+// This is the prototype for a broader live information layer.
+// The pattern (HEAD check, status update, admin queue) generalises
+// to any registry that tracks external resources.
+
+async function verifyCrisisResources() {
+  log('Running crisis resource verification...')
+
+  const { data, error: fetchError } = await supabase
+    .from('crisis_resources')
+    .select('id, name, web_url, country_code')
+    .neq('status', 'dead')
+
+  if (fetchError) { log('Error fetching crisis resources:', fetchError.message); return { checked: 0, dead: 0 } }
+  if (!data?.length) { log('No crisis resources to verify.'); return { checked: 0, dead: 0 } }
+
+  const dead = []
+  let verified = 0
+
+  for (const resource of data) {
+    if (!resource.web_url) continue
+
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 8000)
+
+      // Try HEAD first (lighter), fall back to GET if HEAD is rejected
+      let res
+      try {
+        res = await fetch(resource.web_url, {
+          method: 'HEAD',
+          signal: controller.signal,
+          headers: { 'User-Agent': 'NextUs-CrisisResourceCheck/1.0' },
+        })
+      } catch {
+        res = await fetch(resource.web_url, {
+          method: 'GET',
+          signal: controller.signal,
+          headers: { 'User-Agent': 'NextUs-CrisisResourceCheck/1.0' },
+        })
+      }
+
+      clearTimeout(timeoutId)
+
+      if (res.ok || res.status === 405) {
+        // 405 Method Not Allowed on HEAD is fine — server is alive
+        await supabase
+          .from('crisis_resources')
+          .update({
+            last_verified_at: new Date().toISOString(),
+            status: 'active',
+          })
+          .eq('id', resource.id)
+        verified++
+      } else {
+        dead.push({ id: resource.id, name: resource.name, status: res.status })
+      }
+    } catch (err) {
+      dead.push({ id: resource.id, name: resource.name, error: err.message })
+    }
+  }
+
+  if (dead.length > 0) {
+    await supabase
+      .from('crisis_resources')
+      .update({ status: 'unverified' })
+      .in('id', dead.map(d => d.id))
+
+    log(`Marked ${dead.length} resources as unverified:`, dead.map(d => d.name).join(', '))
+  }
+
+  log(`Verified ${verified} crisis resources, ${dead.length} unverified.`)
+  return { checked: data.length, verified, dead: dead.length }
+}
+
 // ── Main handler ──────────────────────────────────────────────
 
 module.exports = async function handler(req, res) {
@@ -284,8 +363,20 @@ module.exports = async function handler(req, res) {
       computeAlignmentScores(),
     ])
 
+    // Weekly: verify crisis resources (Mondays only)
+    let crisisResources = null
+    const dayOfWeek = new Date().getUTCDay()
+    if (dayOfWeek === 1) {
+      crisisResources = await verifyCrisisResources()
+    }
+
     const duration = Date.now() - startTime
-    const result = { hidden, restored, dormant, scored, duration_ms: duration, ran_at: new Date().toISOString() }
+    const result = {
+      hidden, restored, dormant, scored,
+      crisisResources,
+      duration_ms: duration,
+      ran_at: new Date().toISOString(),
+    }
 
     log('Integrity cron complete.', result)
     return res.status(200).json({ ok: true, ...result })
