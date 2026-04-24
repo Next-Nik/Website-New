@@ -245,7 +245,7 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
       }}>
         {/* Opening line */}
         <div style={{
-          flex: .5,
+          flex: 2,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
