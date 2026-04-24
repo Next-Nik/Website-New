@@ -237,7 +237,7 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
       {/* Content inside oval */}
       <div style={{
         position: 'absolute',
-        top: '14%', bottom: '14%',
+        top: '14%', bottom: '25%',
         left: '12%', right: '12%',
         display: 'flex',
         flexDirection: 'column',
@@ -287,7 +287,7 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
               borderRadius: '8px', padding: '9px 12px',
               ...body, fontSize: '15px', color: DARK,
               background: '#FAFAF7', outline: 'none',
-              lineHeight: 1.4, maxHeight: '50px', overflowY: 'auto',
+              lineHeight: 1.4, maxHeight: '90', overflowY: 'auto',
             }}
           />
           <button
