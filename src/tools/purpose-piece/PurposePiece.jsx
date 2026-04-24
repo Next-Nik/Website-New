@@ -52,6 +52,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { ToolCompassPanel } from '../../components/ToolCompassPanel'
+import { VoiceInput } from '../../components/VoiceInput'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 
@@ -204,10 +205,24 @@ function Breadcrumb({ currentPhase, visible }) {
 }
 
 // ─── Question label (inside a stage) ────────────────────────────────────────
-// Shows e.g. "Instinct · 2 of 5 · The Frustration" — the backend gives us
-// this string directly.
+// The backend sends labels like "Pull · 2 of 3 · The Frustration". The stage
+// name at the front is system-facing vocabulary — it doesn't help the visitor.
+// We strip it and show just the question topic and progress, e.g.
+// "The Frustration · 2 of 3" or just the topic alone if no progress info.
 function QuestionLabel({ text }) {
   if (!text) return null
+  // Parse "Stage · N of M · Label" shape and keep just the last two parts
+  const parts = text.split('·').map(s => s.trim()).filter(Boolean)
+  // Expected shapes:
+  //   3 parts: [stage, "N of M", topic]  →  show "topic · N of M"
+  //   2 parts: [stage, topic]            →  show "topic"
+  //   otherwise: show as-is (defensive)
+  let display = text
+  if (parts.length === 3) {
+    display = `${parts[2]} · ${parts[1]}`
+  } else if (parts.length === 2) {
+    display = parts[1]
+  }
   return (
     <div style={{
       ...sc,
@@ -216,7 +231,7 @@ function QuestionLabel({ text }) {
       textTransform: 'uppercase',
       color: GOLD,
       marginBottom: '10px',
-    }}>{text}</div>
+    }}>{display}</div>
   )
 }
 
@@ -304,6 +319,15 @@ function ProfileCard({ profile, civilisationalStatement, horizonGoal }) {
     return <div style={{ ...body, color: INK, lineHeight: 1.75 }} dangerouslySetInnerHTML={{ __html: profile }} />
   }
 
+  // Grammar defense: fix "a Advisor" / "a Architect" / "a Explorer" etc.
+  // The backend was generating these because the prompt hardcoded "I am a".
+  // We repair here regardless of the source.
+  const repairArticles = (s) =>
+    typeof s === 'string'
+      ? s.replace(/\b([Aa]) ([AEIOUaeiou])/g, (_, a, v) => (a === 'A' ? 'An' : 'an') + ' ' + v)
+      : s
+  const statement = repairArticles(civilisationalStatement)
+
   // Structured JSON path — extract what we know the profile carries.
   // Profile shape from _pp-synthesis.js generateProfile:
   //   { framing, archetype, sub_function_label, domain, scale, statement, sections }
@@ -320,7 +344,7 @@ function ProfileCard({ profile, civilisationalStatement, horizonGoal }) {
         Your Purpose Piece
       </div>
 
-      {civilisationalStatement && (
+      {statement && (
         <p style={{
           ...ser,
           fontSize: 'clamp(22px, 3vw, 28px)',
@@ -329,7 +353,7 @@ function ProfileCard({ profile, civilisationalStatement, horizonGoal }) {
           color: INK,
           marginBottom: '24px',
         }}>
-          {civilisationalStatement}
+          {statement}
         </p>
       )}
 
@@ -816,6 +840,48 @@ export function PurposePiecePage() {
             setCivStatement(saved.civStatement || null)
             setHorizonGoal(saved.horizonGoal || null)
             setInputMode(saved.isComplete ? 'none' : 'text')
+
+            // ── Ball-in-its-court detection ─────────────────────────────
+            // The backend's session has the user's last answer recorded
+            // (the session is persisted with that answer baked in). But if
+            // the reply from that turn was lost in a refresh, the thread
+            // ends with a user bubble and no next question. The user should
+            // not have to re-send — politely poke the backend to continue.
+            //
+            // We only poke if: not complete, last message is from user, and
+            // we have a session to work with.
+            const msgs = saved.messages || []
+            const last = msgs[msgs.length - 1]
+            const ballInBackendsCourt =
+              !saved.isComplete &&
+              last?.role === 'user' &&
+              saved.session
+
+            if (ballInBackendsCourt) {
+              setThinking(true)
+              try {
+                // Call with message:null and the saved session — the backend
+                // will pick up from wherever it was and return the next step.
+                const res = await fetch('/tools/purpose-piece/api/chat', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ message: null, session: saved.session }),
+                })
+                if (res.ok) {
+                  const data = await res.json()
+                  setThinking(false)
+                  await applyResponse(data)
+                } else {
+                  setThinking(false)
+                  // Fall back silently — the user still has their answer
+                  // visible and can manually resend if needed.
+                  console.warn('Continue-on-restore failed:', res.status)
+                }
+              } catch (err) {
+                setThinking(false)
+                console.warn('Continue-on-restore error:', err)
+              }
+            }
             return
           }
         }
@@ -997,12 +1063,18 @@ export function PurposePiecePage() {
         {/* ── Confirmation: Profile + Mirror + Placement ──────────────── */}
         {isComplete && (
           <div style={{ marginTop: '16px' }}>
-            {/* Complete disc (all three wedges lit) */}
+            {/* Purpose Piece logo — the mark of the tool, not a progress
+                indicator. Replaces the process-wedges disc since the process
+                is done here. */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
-              <PurposeDisc
-                active={null}
-                complete={{ wish: true, instinct: true, role: true }}
-                size={180}
+              <img
+                src="/purpose-piece-logo.png"
+                alt="Purpose Piece"
+                style={{
+                  width: '180px',
+                  height: 'auto',
+                  display: 'block',
+                }}
               />
             </div>
 
@@ -1073,6 +1145,19 @@ export function PurposePiecePage() {
                   onKeyDown={onKeyDown}
                   placeholder="Take your time…"
                   rows={1}
+                  disabled={thinking}
+                />
+                <VoiceInput
+                  value={input}
+                  onChange={(v) => {
+                    setInput(v)
+                    // Resize textarea to fit dictated text
+                    const el = textareaRef.current
+                    if (el) {
+                      el.style.height = 'auto'
+                      el.style.height = `${Math.min(el.scrollHeight, 160)}px`
+                    }
+                  }}
                   disabled={thinking}
                 />
                 <button

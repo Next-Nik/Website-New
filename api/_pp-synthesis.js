@@ -167,7 +167,7 @@ STRUCTURE — return JSON with these fields:
 
   "responsibility": "2-4 sentences. What this asks of them. Not a warning — a weight. Include one line grounding in capacity: this exists in them because something in them is built for it.",
 
-  "civilisational_statement": "Exact format: 'I am a [Sub-function label] in [Domain] at the [Scale] scale, working toward [Horizon Goal].' Use the exact Horizon Goal text provided. This is orientation, not aspiration.",
+  "civilisational_statement": "Exact format: 'I am a [Sub-function label] in [Domain] at the [Scale] scale, working toward [Horizon Goal].' Use 'an' instead of 'a' when the Sub-function label begins with a vowel sound (Advisor, Architect, Explorer, Activist, etc.). Use the exact Horizon Goal text provided. This is orientation, not aspiration.",
 
   "actions": {
     "light":  "30-60 minutes this week. Something they could start today. Specific to their context, not generic archetype advice.",
@@ -354,8 +354,13 @@ function buildCivilisationalStatement(session) {
   const domain     = session.domain
   const scaleLabel = SCALE_LABELS[session.scale] || session.scale
   const horizonGoal = DOMAIN_HORIZON_GOALS[domain] || ''
+  // Pick the right article — "an" before vowel-sound labels (Advisor,
+  // Architect, Explorer, Activist…). Not bulletproof for silent-h / "u" as
+  // "you"-sound edge cases, but covers every archetype and sub-function in
+  // the v10 taxonomy correctly.
+  const article = /^[aeiou]/i.test(subFunctionLabel) ? 'an' : 'a'
 
-  return `I am a ${subFunctionLabel} in ${domain} at the ${scaleLabel} scale, working toward a world in which ${horizonGoal.replace(/\.$/, '')}.`
+  return `I am ${article} ${subFunctionLabel} in ${domain} at the ${scaleLabel} scale, working toward a world in which ${horizonGoal.replace(/\.$/, '')}.`
 }
 
 // ─── Main synthesis handler ─────────────────────────────────────────────────
