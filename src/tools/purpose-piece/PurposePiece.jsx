@@ -400,9 +400,11 @@ function ProfileCard({ profile, civilisationalStatement, horizonGoal }) {
 // Routes on confirm:
 //   join     → /nextus/contributors?pp_archetype=X&pp_domain=Y&pp_scale=Z
 //   start    → /nextus/place (organisation/practitioner placement)
-//   transmit → /nextus/focus/:domain-slug (their node, for now — transmit
-//              submission flow is a future build; the node is the best
-//              honest destination until then)
+//   transmit → /domain/:slug — the user's civilisational domain page,
+//              where the horizon goal and actors in that territory are
+//              visible. A dedicated transmit-submission flow is a future
+//              build; the domain page is the architecturally-correct
+//              destination either way.
 function PlacementCard({ placement, session, onChooseReadiness }) {
   const suggested = placement?.suggested_readiness || 'join'
   const [chosen, setChosen] = useState(suggested)
@@ -491,12 +493,35 @@ function PlacementCard({ placement, session, onChooseReadiness }) {
         </div>
       </div>
 
-      {/* Frame for the chosen path */}
+      {/* Frame for the chosen path — with the primary action button in-line.
+          The same button also appears at the bottom of the card alongside
+          'See your domain'. Two copies so the action is never out of sight:
+          one for users who act on impulse after selecting, one for users
+          who read through the whole card first. */}
       {chosenPath?.frame && (
         <div style={{ padding: '20px', background: '#FFFFFF', borderRadius: '10px', border: '1px solid rgba(15,21,35,0.08)', marginBottom: '20px' }}>
-          <p style={{ ...body, fontSize: '16px', lineHeight: 1.8, color: INK, margin: 0 }}>
+          <p style={{ ...body, fontSize: '16px', lineHeight: 1.8, color: INK, margin: '0 0 18px 0' }}>
             {chosenPath.frame}
           </p>
+          <button
+            onClick={() => onChooseReadiness(chosen)}
+            style={{
+              ...sc,
+              fontSize: '15px',
+              letterSpacing: '0.14em',
+              padding: '13px 28px',
+              border: `1.5px solid ${GOLD_L}`,
+              background: GOLD_L,
+              color: '#FFFFFF',
+              borderRadius: '40px',
+              cursor: 'pointer',
+              transition: 'all 0.18s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = GOLD; e.currentTarget.style.transform = 'translateY(-1px)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = GOLD_L; e.currentTarget.style.transform = '' }}
+          >
+            Go {chosen} →
+          </button>
         </div>
       )}
 
@@ -552,7 +577,7 @@ function PlacementCard({ placement, session, onChooseReadiness }) {
           Go {chosen} →
         </button>
         <a
-          href={`/nextus/focus/${session?.domain_id || ''}`}
+          href={`/domain/${session?.domain_id || ''}`}
           style={{
             ...sc,
             fontSize: '15px',
@@ -992,9 +1017,9 @@ export function PurposePiecePage() {
       navigate('/nextus/place')
     } else if (path === 'transmit') {
       // Transmit submission flow doesn't exist yet. Best honest destination:
-      // the user's node, where they can see their domain's Horizon Goal and
-      // actors working in that territory.
-      navigate(`/nextus/focus/${domainSlug}`)
+      // the user's domain page, where they can see the domain's Horizon Goal,
+      // the personal-scale mirror, and actors working in that territory.
+      navigate(`/domain/${domainSlug}`)
     }
   }
 

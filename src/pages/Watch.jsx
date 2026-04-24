@@ -31,14 +31,18 @@ const body  = { fontFamily: "'Lora', Georgia, serif" }
 //     what it becomes." That's both true and generous.
 //   - The page is a porch. Sit as long as you like.
 
-// A small editorial selection — the 3–4 focuses we want visitors
-// to have a chance to discover if they're just browsing. Keeping
-// these hand-picked (rather than algorithmic) preserves the feel
-// of a curated home, not a feed.
-const FEATURED_FOCUS_SLUGS = [
-  'planet',        // the root — a visitor who picks this gets the whole picture
-  'human-being',   // the domain most people have the nearest handle on
-  'nature',        // the domain most people feel viscerally about right now
+// The seven civilisational domains, rendered as "territories you could
+// wander into." These are static (not a DB query) because they're the
+// conceptual spine of the whole project — they exist whether or not the
+// actor base around them does yet.
+const DOMAINS = [
+  { slug: 'human-being',     name: 'Human Being',       short: 'What each person needs to develop as themselves.' },
+  { slug: 'society',         name: 'Society',            short: 'How we live together.' },
+  { slug: 'nature',          name: 'Nature',             short: 'The living world and our place inside it.' },
+  { slug: 'technology',      name: 'Technology',         short: 'What we build, and whether it remembers what it is for.' },
+  { slug: 'finance-economy', name: 'Finance & Economy',  short: 'How value moves — what gets rewarded, what gets abandoned.' },
+  { slug: 'legacy',          name: 'Legacy',             short: 'What we leave for those who come after us.' },
+  { slug: 'vision',          name: 'Vision',             short: 'Where we are going. Collective imagination, shared direction.' },
 ]
 
 const PODCAST_FALLBACK = [
@@ -46,19 +50,11 @@ const PODCAST_FALLBACK = [
 ]
 
 export function WatchPage() {
-  const [focuses, setFocuses] = useState(null)   // null = loading, [] = empty, [...] = loaded
   const [actorCount, setActorCount] = useState(null)
 
   useEffect(() => {
     let cancelled = false
     async function load() {
-      // Pull the featured focuses. Fall back gracefully if the table
-      // isn't populated yet — the page is designed to be real either way.
-      const { data: focusData } = await supabase
-        .from('nextus_focuses')
-        .select('id, name, slug, type, description')
-        .in('slug', FEATURED_FOCUS_SLUGS)
-
       // Pull a real actor count — if the query fails or returns nothing,
       // we just don't show a number. Honest over impressive.
       const { count } = await supabase
@@ -67,15 +63,6 @@ export function WatchPage() {
         .or('seeded_by.eq.nextus,vetting_status.eq.approved')
 
       if (!cancelled) {
-        // Preserve the FEATURED_FOCUS_SLUGS order — the editorial sequence matters.
-        if (focusData && focusData.length) {
-          const ordered = FEATURED_FOCUS_SLUGS
-            .map(slug => focusData.find(f => f.slug === slug))
-            .filter(Boolean)
-          setFocuses(ordered)
-        } else {
-          setFocuses([])
-        }
         setActorCount(typeof count === 'number' ? count : null)
       }
     }
@@ -141,9 +128,10 @@ export function WatchPage() {
       </div>
 
       {/* ─────────────────────────────────────────────────
-          Domains to wander into
-          Real focuses pulled from the DB. If none exist yet,
-          the empty state is welcoming, not apologetic.
+          Territories to wander into
+          The seven civilisational domains, rendered from
+          static data. They exist whether or not the actor
+          base around them does yet — they're the spine.
       ───────────────────────────────────────────────── */}
       <div className="watch-wrap" style={{
         maxWidth: '780px',
@@ -152,77 +140,53 @@ export function WatchPage() {
         borderTop: '1px solid rgba(200,146,42,0.18)',
       }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '14px' }}>
-          Places you could wander into
+          Territories you could wander into
         </span>
         <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '28px', maxWidth: '560px' }}>
-          Each of these is a territory the platform is slowly mapping. Follow one for a while. See what's there.
+          Seven domains cover the full terrain of civilisational work. Follow one for a while. See what's there.
         </p>
 
-        {focuses === null && (
-          <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.45)', fontStyle: 'italic' }}>Loading…</p>
-        )}
-
-        {focuses !== null && focuses.length === 0 && (
-          <div style={{
-            padding: '24px 28px',
-            border: '1px dashed rgba(200,146,42,0.35)',
-            borderRadius: '14px',
-            background: 'rgba(200,146,42,0.03)',
-          }}>
-            <p style={{ ...body, fontSize: '16px', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.75)', lineHeight: 1.7, margin: 0 }}>
-              The map is just being drawn. Come back in a little while — or, if you'd like to help draw it,{' '}
-              <Link to="/nextus/place" style={{ color: '#A8721A', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)' }}>
-                place something on it
-              </Link>.
-            </p>
-          </div>
-        )}
-
-        {focuses !== null && focuses.length > 0 && (
-          <div className="watch-focuses" style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '14px',
-          }}>
-            {focuses.map(f => (
-              <Link
-                key={f.id}
-                to={`/nextus/focus/${f.slug}`}
-                style={{
-                  display: 'block',
-                  padding: '22px 24px',
-                  border: '1px solid rgba(200,146,42,0.22)',
-                  borderRadius: '14px',
-                  background: 'rgba(200,146,42,0.03)',
-                  textDecoration: 'none',
-                  transition: 'all 0.18s',
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)'
-                  e.currentTarget.style.background   = 'rgba(200,146,42,0.07)'
-                  e.currentTarget.style.transform    = 'translateY(-2px)'
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.borderColor = 'rgba(200,146,42,0.22)'
-                  e.currentTarget.style.background   = 'rgba(200,146,42,0.03)'
-                  e.currentTarget.style.transform    = ''
-                }}
-              >
-                <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.72)', textTransform: 'uppercase', marginBottom: '6px' }}>
-                  {f.type || 'Focus'}
-                </div>
-                <div style={{ ...body, fontSize: '19px', fontWeight: 300, color: '#0F1523', marginBottom: '8px', lineHeight: 1.2 }}>
-                  {f.name}
-                </div>
-                {f.description && (
-                  <div style={{ ...body, fontSize: '14px', fontWeight: 300, color: 'rgba(15,21,35,0.6)', lineHeight: 1.6 }}>
-                    {f.description.length > 120 ? f.description.slice(0, 117) + '…' : f.description}
-                  </div>
-                )}
-              </Link>
-            ))}
-          </div>
-        )}
+        <div className="watch-focuses" style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gap: '14px',
+        }}>
+          {DOMAINS.map(d => (
+            <Link
+              key={d.slug}
+              to={`/domain/${d.slug}`}
+              style={{
+                display: 'block',
+                padding: '22px 24px',
+                border: '1px solid rgba(200,146,42,0.22)',
+                borderRadius: '14px',
+                background: 'rgba(200,146,42,0.03)',
+                textDecoration: 'none',
+                transition: 'all 0.18s',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)'
+                e.currentTarget.style.background   = 'rgba(200,146,42,0.07)'
+                e.currentTarget.style.transform    = 'translateY(-2px)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'rgba(200,146,42,0.22)'
+                e.currentTarget.style.background   = 'rgba(200,146,42,0.03)'
+                e.currentTarget.style.transform    = ''
+              }}
+            >
+              <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.72)', textTransform: 'uppercase', marginBottom: '6px' }}>
+                Domain
+              </div>
+              <div style={{ ...body, fontSize: '19px', fontWeight: 300, color: '#0F1523', marginBottom: '8px', lineHeight: 1.2 }}>
+                {d.name}
+              </div>
+              <div style={{ ...body, fontSize: '14px', fontWeight: 300, color: 'rgba(15,21,35,0.6)', lineHeight: 1.6 }}>
+                {d.short}
+              </div>
+            </Link>
+          ))}
+        </div>
 
         {/* A gentle link out to the broader actor browser — not a CTA, just a door left ajar */}
         {actorCount !== null && actorCount > 0 && (
