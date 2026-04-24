@@ -287,7 +287,7 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
               borderRadius: '8px', padding: '9px 12px',
               ...body, fontSize: '15px', color: DARK,
               background: '#FAFAF7', outline: 'none',
-              lineHeight: 1.4, maxHeight: '80px', overflowY: 'auto',
+              lineHeight: 1.4, maxHeight: '90px', overflowY: 'auto',
             }}
           />
           <button
