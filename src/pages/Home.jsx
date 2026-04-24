@@ -5,6 +5,7 @@ import { supabase } from '../hooks/useSupabase'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { SiteFooter } from '../components/SiteFooter'
 import { DarkSection, DarkHeading, DarkBody } from '../components/DarkSection'
+import { NorthStarPortal } from '../components/NorthStarPortal'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -377,8 +378,8 @@ export function HomePage() {
             NextUs takes <em style={{ color: '#A8721A', fontStyle: 'normal' }}>us</em> from where we are to where we want to be.
           </p>
 
-          {/* The one question — North Star embed */}
-          <NorthStarInline />
+          {/* The one question — North Star portal */}
+          <NorthStarPortal />
 
           {!user && (
             <p style={{
