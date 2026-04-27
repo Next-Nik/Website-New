@@ -972,7 +972,7 @@ export function HorizonStatePage() {
   if (authLoading || accessLoading) return <div className="loading" />
 
   return (
-    <AccessGate productKey="foundation" toolName="Horizon State">
+    <AccessGate productKey="horizon-state" toolName="Horizon State">
     <div className="page-shell">
       <style>{MOBILE_STYLES}</style>
       <Nav activePath="nextus-self" />

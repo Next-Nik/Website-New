@@ -1957,7 +1957,7 @@ export function TargetSprintPage() {
   if (authLoading || accessLoading) return <div className="loading" />
 
   return (
-    <AccessGate productKey="target_goals" toolName="Target Sprint">
+    <AccessGate productKey="target-sprint" toolName="Target Sprint">
     <div className="page-shell">
       <style>{`
         @media (max-width: 640px) {

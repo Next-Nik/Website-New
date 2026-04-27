@@ -1478,7 +1478,7 @@ export function HorizonPracticePage() {
   }
 
   return (
-    <AccessGate productKey="expansion" toolName="Horizon Practice">
+    <AccessGate productKey="horizon-practice" toolName="Horizon Practice">
       <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
         <Nav activePath="nextus-self" />
 
