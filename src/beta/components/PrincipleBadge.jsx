@@ -1,203 +1,86 @@
-import { useEffect, useRef, useState } from 'react'
-import { PRINCIPLES, isValidPrincipleSlug } from '../constants/principles'
+// src/beta/components/PrincipleBadge.jsx
+// Module 1.5 primitive. Small chip rendering one of the four platform principles.
+// Weight: primary | secondary | tertiary
+// Click expands to a definition tooltip.
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PrincipleBadge
-//
-// Small chip rendering one of the four cross-domain platform-level principles
-// with a weight indicator (primary / secondary / tertiary). Click toggles a
-// tooltip with the canonical definition.
-//
-// Visual language: small, dignified, never decorative. Design tokens only.
-// Cormorant SC for label (UI chrome), Lora for the definition (reading text).
-//
-// Weight is communicated by border weight and gold-fill density. Primary uses
-// the gold-faint card tint; secondary uses an unfilled card with a one-pixel
-// border; tertiary uses a lighter border. The principle label and definition
-// are identical regardless of weight — weight is positional, not categorical.
-//
-// Props:
-//   slug      — one of the four canonical principle slugs (required)
-//   weight    — 'primary' | 'secondary' | 'tertiary' (default 'primary')
-//   size      — 'sm' | 'md' (default 'sm')
-//   onClick   — optional override. Default behaviour is toggle definition.
-//   className — optional className passthrough
-// ─────────────────────────────────────────────────────────────────────────────
+import { useState, useRef, useEffect } from 'react'
+import { PRINCIPLE_BY_SLUG } from '../constants/principles'
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
 
 const WEIGHT_STYLES = {
-  primary: {
-    background: 'rgba(200, 146, 42, 0.08)',
-    border: '1px solid rgba(200, 146, 42, 0.45)',
-  },
-  secondary: {
-    background: 'rgba(200, 146, 42, 0.05)',
-    border: '1px solid rgba(200, 146, 42, 0.30)',
-  },
-  tertiary: {
-    background: 'transparent',
-    border: '1px solid rgba(200, 146, 42, 0.20)',
-  },
+  primary:   { opacity: 1,    border: '1.5px solid rgba(200,146,42,0.65)', bg: 'rgba(200,146,42,0.10)' },
+  secondary: { opacity: 0.85, border: '1px solid rgba(200,146,42,0.40)',   bg: 'rgba(200,146,42,0.06)' },
+  tertiary:  { opacity: 0.65, border: '1px solid rgba(200,146,42,0.22)',   bg: 'transparent'           },
 }
 
-const SIZE_STYLES = {
-  sm: {
-    padding: '4px 10px',
-    fontSize: '13px',
-    letterSpacing: '0.04em',
-    height: '24px',
-  },
-  md: {
-    padding: '6px 14px',
-    fontSize: '14px',
-    letterSpacing: '0.04em',
-    height: '30px',
-  },
-}
-
-export default function PrincipleBadge({
-  slug,
-  weight = 'primary',
-  size = 'sm',
-  onClick,
-  className,
-}) {
+export function PrincipleBadge({ slug, weight = 'primary', inline = false }) {
+  const principle = PRINCIPLE_BY_SLUG[slug]
   const [open, setOpen] = useState(false)
-  const wrapperRef = useRef(null)
+  const ref = useRef(null)
 
-  if (!isValidPrincipleSlug(slug)) {
-    return null
-  }
-  const principle = PRINCIPLES[slug]
-
-  const weightStyle = WEIGHT_STYLES[weight] || WEIGHT_STYLES.primary
-  const sizeStyle   = SIZE_STYLES[size] || SIZE_STYLES.sm
-
-  // Click outside closes the tooltip.
   useEffect(() => {
     if (!open) return
     function handler(e) {
-      if (!wrapperRef.current) return
-      if (!wrapperRef.current.contains(e.target)) setOpen(false)
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false)
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
   }, [open])
 
-  // Esc closes the tooltip.
-  useEffect(() => {
-    if (!open) return
-    function handler(e) {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('keydown', handler)
-    return () => document.removeEventListener('keydown', handler)
-  }, [open])
+  if (!principle) return null
 
-  function handleClick(e) {
-    if (onClick) {
-      onClick(e)
-      return
-    }
-    setOpen((v) => !v)
-  }
+  const ws = WEIGHT_STYLES[weight] || WEIGHT_STYLES.primary
 
   return (
-    <span
-      ref={wrapperRef}
-      className={className}
-      style={{ position: 'relative', display: 'inline-block' }}
-    >
+    <div ref={ref} style={{ position: 'relative', display: inline ? 'inline-block' : 'block' }}>
       <button
-        type="button"
-        onClick={handleClick}
-        aria-expanded={open}
-        aria-label={`${principle.label} principle. ${weight}. Click for definition.`}
+        onClick={() => setOpen(o => !o)}
         style={{
           ...sc,
-          ...sizeStyle,
-          background: weightStyle.background,
-          border: weightStyle.border,
-          borderRadius: '40px',
+          fontSize: '11px',
+          letterSpacing: '0.12em',
           color: '#A8721A',
-          fontWeight: weight === 'primary' ? 600 : 400,
-          textTransform: 'none',
+          background: ws.bg,
+          border: ws.border,
+          borderRadius: '4px',
+          padding: '3px 9px',
           cursor: 'pointer',
+          opacity: ws.opacity,
           display: 'inline-flex',
           alignItems: 'center',
-          gap: '6px',
-          lineHeight: 1,
-          transition: 'background 120ms ease',
+          gap: '4px',
+          transition: 'opacity 0.15s',
+          whiteSpace: 'nowrap',
         }}
-        onMouseEnter={(e) => {
-          if (weight === 'tertiary') {
-            e.currentTarget.style.background = 'rgba(200, 146, 42, 0.05)'
-          }
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.background = weightStyle.background
-        }}
+        aria-expanded={open}
       >
-        {weight === 'primary' && (
-          <span
-            aria-hidden
-            style={{
-              width: '5px',
-              height: '5px',
-              borderRadius: '50%',
-              background: '#A8721A',
-              display: 'inline-block',
-            }}
-          />
-        )}
-        <span>{principle.label}</span>
+        {principle.shortLabel}
+        <span style={{ fontSize: '9px', opacity: 0.6 }}>{open ? '▴' : '▾'}</span>
       </button>
 
       {open && (
-        <span
-          role="tooltip"
-          style={{
-            position: 'absolute',
-            zIndex: 9999,
-            top: 'calc(100% + 8px)',
-            left: 0,
-            width: 'min(360px, 80vw)',
-            background: '#0F1523',
-            color: '#FFFFFF',
-            borderRadius: '14px',
-            padding: '14px 16px',
-            boxShadow: '0 10px 30px rgba(15, 21, 35, 0.25)',
-            border: '1px solid rgba(200, 146, 42, 0.20)',
-          }}
-        >
-          <span
-            style={{
-              ...sc,
-              display: 'block',
-              fontSize: '12px',
-              letterSpacing: '0.08em',
-              color: '#C8922A',
-              marginBottom: '6px',
-              fontWeight: 600,
-            }}
-          >
+        <div style={{
+          position: 'absolute',
+          top: 'calc(100% + 6px)',
+          left: 0,
+          zIndex: 100,
+          width: '280px',
+          background: '#FFFFFF',
+          border: '1.5px solid rgba(200,146,42,0.35)',
+          borderRadius: '10px',
+          padding: '14px 16px',
+          boxShadow: '0 4px 24px rgba(15,21,35,0.10)',
+        }}>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', marginBottom: '8px' }}>
             {principle.label}
-          </span>
-          <span
-            style={{
-              ...body,
-              display: 'block',
-              fontSize: '15px',
-              lineHeight: 1.55,
-              color: '#FFFFFF',
-            }}
-          >
+          </div>
+          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
             {principle.definition}
-          </span>
-        </span>
+          </p>
+        </div>
       )}
-    </span>
+    </div>
   )
 }
