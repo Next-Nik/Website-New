@@ -5,10 +5,16 @@
     {
       "path": "/api/integrity-cron",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/indicator-cron",
+      "schedule": "0 3 * * *"
     }
   ],
   "functions": {
     "api/integrity-cron.js":            { "maxDuration": 60 },
+    "api/indicator-cron.js":            { "maxDuration": 60 },
+    "api/indicator-worker.js":          { "maxDuration": 60 },
     "api/nextus-match.js":              { "maxDuration": 15 },
     "api/org-extract.js":               { "maxDuration": 60 },
     "api/map-chat.js":                  { "maxDuration": 60 },
