@@ -1,334 +1,120 @@
 // src/beta/constants/domains.js
-//
-// Module 9 addition to the beta constants layer.
-// Exports canonical domain and subdomain constants consumed by
-// BetaAdminConsole, BetaNominate, and any subsequent module that
-// needs the locked taxonomy.
-//
-// CIV_DOMAINS is the canonical seven-entry list. Every module imports
-// from here. Inline duplication is forbidden.
-//
-// SUBDOMAIN_MAP_BETA augments the original SUBDOMAIN_MAP with the v3.8
-// Nature revision (five canonical elements). Other domains carry the v2
-// placeholder structure until their v3 review is complete. Entries
-// flagged subdomain_pending_v3_review should be treated as provisional.
-//
-// When the canon evolves, it evolves here. Modules pick up the change
-// automatically on next build.
-
-// ── Seven civilisational domains ─────────────────────────────
+// Canonical source of truth for all domain taxonomy.
+// All modules import from here. Inline duplication is forbidden.
 
 export const CIV_DOMAINS = [
-  {
-    slug:        'human-being',
-    label:       'Human Being',
-    shortLabel:  'Human',
-    color:       '#2A6B9E',
-    horizonGoal: 'Every human held in dignity, met with care, supported in becoming most fully themselves.',
-  },
-  {
-    slug:        'society',
-    label:       'Society',
-    shortLabel:  'Society',
-    color:       '#6B2A9E',
-    horizonGoal: 'A structure that gives everyone space to function and the possibility to thrive.',
-  },
-  {
-    slug:        'nature',
-    label:       'Nature',
-    shortLabel:  'Nature',
-    color:       '#2A6B3A',
-    horizonGoal: 'The living planet is thriving, and humanity lives as a regenerative participant in it.',
-  },
-  {
-    slug:        'technology',
-    label:       'Technology',
-    shortLabel:  'Tech',
-    color:       '#8A6B2A',
-    horizonGoal: 'Technology in service of life, human and planetary, designed to restore as it operates.',
-  },
-  {
-    slug:        'finance-economy',
-    label:       'Finance & Economy',
-    shortLabel:  'Finance',
-    color:       '#6B3A2A',
-    horizonGoal: 'An economy in which everyone has enough to act on what matters.',
-  },
-  {
-    slug:        'legacy',
-    label:       'Legacy',
-    shortLabel:  'Legacy',
-    color:       '#4A6B2A',
-    horizonGoal: 'A civilisation that knows what it carries, tends what it transmits, repairs what it broke.',
-  },
-  {
-    slug:        'vision',
-    label:       'Vision',
-    shortLabel:  'Vision',
-    color:       '#2A4A6B',
-    horizonGoal: 'Creating forward, as far as we can see, in service of the brightest future for all.',
-  },
+  { slug: 'human-being',    label: 'Human Being',     color: '#5C7FA3', colorMuted: 'rgba(92,127,163,0.12)'  },
+  { slug: 'society',        label: 'Society',          color: '#7A6B8A', colorMuted: 'rgba(122,107,138,0.12)' },
+  { slug: 'nature',         label: 'Nature',           color: '#4A8C6F', colorMuted: 'rgba(74,140,111,0.12)'  },
+  { slug: 'technology',     label: 'Technology',       color: '#5F8DAA', colorMuted: 'rgba(95,141,170,0.12)'  },
+  { slug: 'finance-economy',label: 'Finance & Economy',color: '#8C7A3E', colorMuted: 'rgba(140,122,62,0.12)'  },
+  { slug: 'legacy',         label: 'Legacy',           color: '#8A6952', colorMuted: 'rgba(138,105,82,0.12)'  },
+  { slug: 'vision',         label: 'Vision',           color: '#6B5EA8', colorMuted: 'rgba(107,94,168,0.12)'  },
 ]
 
-export const CIV_DOMAIN_BY_SLUG = Object.fromEntries(
-  CIV_DOMAINS.map(d => [d.slug, d]),
+export const DOMAIN_COLORS = Object.fromEntries(
+  CIV_DOMAINS.map(d => [d.slug, d.color])
 )
 
-export const CIV_DOMAIN_COLOR = Object.fromEntries(
-  CIV_DOMAINS.map(d => [d.slug, d.color]),
+export const DOMAIN_COLORS_MUTED = Object.fromEntries(
+  CIV_DOMAINS.map(d => [d.slug, d.colorMuted])
 )
 
-// ── Seven Self domains ────────────────────────────────────────
+export const DOMAIN_HORIZON_GOALS = {
+  'human-being':    'Every human held in dignity, met with care, supported in becoming most fully themselves.',
+  'society':        'A structure that gives everyone space to function and the possibility to thrive.',
+  'nature':         'The living planet is thriving, and humanity lives as a regenerative participant in it — not separate from, not above, but of.',
+  'technology':     'Technology in service of life — human and planetary — designed to restore as it operates, accessible to those it affects, and honest about what it costs.',
+  'finance-economy':'An economy in which everyone has enough to act on what matters, contribution is freely chosen rather than coerced, and the living systems that make all exchange possible are counted, sustained, and restored.',
+  'legacy':         'A civilisation that knows what it carries, tends what it transmits, repairs what it broke, and plants with love for people it will never meet.',
+  'vision':         'Creating forward — as far as we can see — in service of the brightest future for all.',
+}
 
 export const SELF_DOMAINS = [
-  { slug: 'body',        label: 'Body',       atlasCounterpart: 'nature',          color: '#2A6B3A' },
-  { slug: 'connection',  label: 'Connection', atlasCounterpart: 'society',         color: '#6B2A9E' },
-  { slug: 'signal',      label: 'Signal',     atlasCounterpart: 'technology',      color: '#8A6B2A' },
-  { slug: 'finances',    label: 'Finances',   atlasCounterpart: 'finance-economy', color: '#6B3A2A' },
-  { slug: 'inner-game',  label: 'Inner Game', atlasCounterpart: 'legacy',          color: '#4A6B2A' },
-  { slug: 'path',        label: 'Path',       atlasCounterpart: 'vision',          color: '#2A4A6B' },
-  { slug: 'spark',       label: 'Spark',      atlasCounterpart: 'human-being',     color: '#2A6B9E' },
+  { slug: 'path',       label: 'Path'       },
+  { slug: 'spark',      label: 'Spark'      },
+  { slug: 'body',       label: 'Body'       },
+  { slug: 'finances',   label: 'Finances'   },
+  { slug: 'connection', label: 'Connection' },
+  { slug: 'inner-game', label: 'Inner Game' },
+  { slug: 'signal',     label: 'Signal'     },
 ]
 
-// Fractal mapping: Self domain slug -> Atlas (civ) domain slug
-export const SELF_TO_ATLAS_MAP = Object.fromEntries(
-  SELF_DOMAINS.map(d => [d.slug, d.atlasCounterpart]),
-)
-
-// ── Subdomains — v3.8 canonical where complete ────────────────
-// Nature subdomains are locked at v3.8 (five elements).
-// All other domains carry v2 placeholder structure with
-// subdomain_pending_v3_review flag.
-
-export const SUBDOMAIN_MAP_BETA = {
-  // ── Nature (v3.8 canonical) ─────────────────────────────────
-  'nature': {
-    v3_locked: true,
-    subdomains: [
-      {
-        slug:  'nat-earth',
-        label: 'Earth',
-        fields: [
-          'Soil & Living Ground',
-          'Geology & Mineral Systems',
-          'Land Use & Stewardship',
-          'Landscape & Terrain',
-        ],
-        lenses: [
-          'Climate',
-          'Pollution & Waste',
-          'Conservation & Regeneration',
-          'Human Use & Stewardship',
-          'Indigenous & Relational Knowledge',
-        ],
-      },
-      {
-        slug:  'nat-air',
-        label: 'Air',
-        fields: [
-          'Atmosphere & Climate Systems',
-          'Air Quality',
-          'Airborne Ecosystems',
-        ],
-        lenses: [
-          'Climate',
-          'Pollution & Waste',
-          'Conservation & Regeneration',
-          'Human Use & Stewardship',
-          'Indigenous & Relational Knowledge',
-        ],
-      },
-      {
-        slug:  'nat-water',
-        label: 'Water',
-        fields: [
-          'Freshwater Systems',
-          'Saltwater & Ocean Systems',
-          'Ice & Cryosphere',
-          'Wetlands & Transitional Waters',
-        ],
-        lenses: [
-          'Climate',
-          'Pollution & Waste',
-          'Conservation & Regeneration',
-          'Human Use & Stewardship',
-          'Indigenous & Relational Knowledge',
-        ],
-      },
-      {
-        slug:  'nat-flora',
-        label: 'Flora',
-        fields: [
-          'Forest & Woodland Systems',
-          'Grassland & Savanna',
-          'Aquatic & Wetland Flora',
-          'Agricultural & Cultivated Flora',
-          'Relational & Systemic Flora',
-        ],
-        lenses: [
-          'Climate',
-          'Pollution & Waste',
-          'Conservation & Regeneration',
-          'Human Use & Stewardship',
-          'Indigenous & Relational Knowledge',
-        ],
-      },
-      {
-        slug:  'nat-fauna',
-        label: 'Fauna',
-        fields: [
-          'Terrestrial Animals',
-          'Marine & Freshwater Animals',
-          'Birds & Migratory Species',
-          'Insects & Invertebrates',
-          'Keystone & Indicator Species',
-        ],
-        lenses: [
-          'Climate',
-          'Pollution & Waste',
-          'Conservation & Regeneration',
-          'Human Use & Stewardship',
-          'Indigenous & Relational Knowledge',
-        ],
-      },
-    ],
-  },
-
-  // ── Remaining domains (v2 placeholder, pending v3 review) ───
-  // subdomain_pending_v3_review: true signals these are provisional.
-
-  'human-being': {
-    v3_locked: false,
-    subdomain_pending_v3_review: true,
-    subdomains: [
-      { slug: 'hb-body',        label: 'Body' },
-      { slug: 'hb-expression',  label: 'Expression' },
-      { slug: 'hb-inner-life',  label: 'Inner Life' },
-      { slug: 'hb-connection',  label: 'Connection' },
-      { slug: 'hb-finances',    label: 'Finances' },
-      { slug: 'hb-path',        label: 'Path' },
-      { slug: 'hb-conditions',  label: 'Outer Conditions' },
-    ],
-  },
-
-  'society': {
-    v3_locked: false,
-    subdomain_pending_v3_review: true,
-    subdomains: [
-      { slug: 'soc-family',      label: 'Family & Kinship' },
-      { slug: 'soc-community',   label: 'Community & Locality' },
-      { slug: 'soc-civil',       label: 'Civil Society' },
-      { slug: 'soc-governance',  label: 'Governance & Institutions' },
-      { slug: 'soc-commons',     label: 'Commons' },
-      { slug: 'soc-public',      label: 'Public Sphere' },
-    ],
-  },
-
-  'technology': {
-    v3_locked: false,
-    subdomain_pending_v3_review: true,
-    subdomains: [
-      { slug: 'tech-materials',    label: 'Materials & Making' },
-      { slug: 'tech-energy',       label: 'Energy' },
-      { slug: 'tech-info',         label: 'Information & Computation' },
-      { slug: 'tech-bio',          label: 'Biological & Life Sciences' },
-      { slug: 'tech-mechanical',   label: 'Mechanical & Structural' },
-      { slug: 'tech-built',        label: 'Built Environment' },
-      { slug: 'tech-comms',        label: 'Communication & Media' },
-      { slug: 'tech-regen',        label: 'Regenerative Technologies' },
-    ],
-  },
-
-  'finance-economy': {
-    v3_locked: false,
-    subdomain_pending_v3_review: true,
-    subdomains: [
-      { slug: 'fe-capital',      label: 'Capital & Investment' },
-      { slug: 'fe-currency',     label: 'Currency & Exchange' },
-      { slug: 'fe-labour',       label: 'Labour & Livelihoods' },
-      { slug: 'fe-markets',      label: 'Markets & Commerce' },
-      { slug: 'fe-commons',      label: 'Commons & Alternative Economies' },
-      { slug: 'fe-measurement',  label: 'Measurement & Accounting' },
-      { slug: 'fe-ownership',    label: 'Ownership & Property' },
-    ],
-  },
-
-  'legacy': {
-    v3_locked: false,
-    subdomain_pending_v3_review: true,
-    subdomains: [
-      { slug: 'leg-memory',          label: 'Memory & History' },
-      { slug: 'leg-cultural-trans',  label: 'Cultural Transmission' },
-      { slug: 'leg-lineage',         label: 'Lineage & Ancestry' },
-      { slug: 'leg-material',        label: 'Material & Built Heritage' },
-      { slug: 'leg-ecological',      label: 'Ecological Legacy' },
-      { slug: 'leg-knowledge',       label: 'Knowledge & Wisdom Traditions' },
-      { slug: 'leg-repair',          label: 'Repair & Reckoning' },
-      { slug: 'leg-gift',            label: 'Gift & Aspiration' },
-      { slug: 'leg-presence',        label: 'Presence & Testimony' },
-    ],
-  },
-
-  'vision': {
-    v3_locked: false,
-    subdomain_pending_v3_review: true,
-    subdomains: [
-      { slug: 'vis-imagination',  label: 'Imagination & Possibility' },
-      { slug: 'vis-cultural',     label: 'Cultural Creation' },
-      { slug: 'vis-intention',    label: 'Intention & Direction' },
-      { slug: 'vis-blank-slate',  label: 'The Blank Slate Question' },
-      { slug: 'vis-ecological',   label: 'Ecological Vision' },
-      { slug: 'vis-knowledge',    label: 'Emerging Knowledge' },
-      { slug: 'vis-design',       label: 'Design & Intention' },
-      { slug: 'vis-horizon',      label: 'Horizon & Commitment' },
-      { slug: 'vis-declaration',  label: 'Declaration & Becoming' },
-    ],
-  },
+// Fractal Self <-> Atlas mapping
+export const SELF_TO_ATLAS_MAP = {
+  'path':       'vision',
+  'spark':      'human-being',
+  'body':       'nature',
+  'finances':   'finance-economy',
+  'connection': 'society',
+  'inner-game': 'legacy',
+  'signal':     'technology',
 }
 
-// ── Eight-level scale ─────────────────────────────────────────
-
-export const SCALES = [
-  { value: 'local',         label: 'Local' },
-  { value: 'municipal',     label: 'Municipal' },
-  { value: 'regional',      label: 'Regional' },
-  { value: 'national',      label: 'National' },
-  { value: 'international', label: 'International' },
-  { value: 'global',        label: 'Global' },
-]
-
-// ── Resolution layers ─────────────────────────────────────────
-
-export const RESOLUTION_LAYERS = [
-  { value: 'local',      label: 'Local' },
-  { value: 'regional',   label: 'Regional' },
-  { value: 'planetary',  label: 'Planetary' },
-]
-
-// ── Lenses (Nature pilot; other domains pending v3 review) ────
-
-export const LENSES_PER_DOMAIN = {
-  'nature': [
-    'Climate',
-    'Pollution & Waste',
-    'Conservation & Regeneration',
-    'Human Use & Stewardship',
-    'Indigenous & Relational Knowledge',
+export const SUBDOMAINS = {
+  'human-being': [
+    { slug: 'hb-body',        label: 'Body'               },
+    { slug: 'hb-expression',  label: 'Expression'         },
+    { slug: 'hb-inner-life',  label: 'Inner Life'         },
+    { slug: 'hb-connection',  label: 'Connection'         },
+    { slug: 'hb-finances',    label: 'Finances'           },
+    { slug: 'hb-path',        label: 'Path'               },
+    { slug: 'hb-outer',       label: 'Outer Conditions'   },
   ],
-  // Other domains: pending v3 subdomain review before lenses are locked.
-}
-
-// ── Helper: get flat subdomains array for a domain slug ───────
-// Returns { slug, label }[] for use in Select components.
-
-export function getSubdomains(domainSlug) {
-  const entry = SUBDOMAIN_MAP_BETA[domainSlug]
-  if (!entry) return []
-  return entry.subdomains.map(s => ({ slug: s.slug, label: s.label }))
-}
-
-// ── Helper: get lenses for a domain slug ─────────────────────
-
-export function getLenses(domainSlug) {
-  return (LENSES_PER_DOMAIN[domainSlug] || []).map(l => ({ value: l, label: l }))
+  'society': [
+    { slug: 'soc-family',     label: 'Family & Kinship'         },
+    { slug: 'soc-community',  label: 'Community & Locality'     },
+    { slug: 'soc-civil',      label: 'Civil Society'            },
+    { slug: 'soc-governance', label: 'Governance & Institutions'},
+    { slug: 'soc-commons',    label: 'Commons'                  },
+    { slug: 'soc-public',     label: 'Public Sphere'            },
+  ],
+  'nature': [
+    { slug: 'nat-earth',  label: 'Earth' },
+    { slug: 'nat-air',    label: 'Air'   },
+    { slug: 'nat-water',  label: 'Water' },
+    { slug: 'nat-flora',  label: 'Flora' },
+    { slug: 'nat-fauna',  label: 'Fauna' },
+  ],
+  'technology': [
+    { slug: 'tech-materials',   label: 'Materials & Making'           },
+    { slug: 'tech-energy',      label: 'Energy'                       },
+    { slug: 'tech-information', label: 'Information & Computation'    },
+    { slug: 'tech-biological',  label: 'Biological & Life Sciences'   },
+    { slug: 'tech-mechanical',  label: 'Mechanical & Structural'      },
+    { slug: 'tech-built',       label: 'Built Environment'            },
+    { slug: 'tech-communication', label: 'Communication & Media'      },
+    { slug: 'tech-regenerative', label: 'Regenerative Technologies'   },
+  ],
+  'finance-economy': [
+    { slug: 'fe-capital',     label: 'Capital & Investment'          },
+    { slug: 'fe-currency',    label: 'Currency & Exchange'           },
+    { slug: 'fe-labour',      label: 'Labour & Livelihoods'          },
+    { slug: 'fe-markets',     label: 'Markets & Commerce'            },
+    { slug: 'fe-commons',     label: 'Commons & Alternative Economies'},
+    { slug: 'fe-measurement', label: 'Measurement & Accounting'      },
+    { slug: 'fe-ownership',   label: 'Ownership & Property'         },
+  ],
+  'legacy': [
+    { slug: 'leg-memory',     label: 'Memory & History'              },
+    { slug: 'leg-cultural',   label: 'Cultural Transmission'         },
+    { slug: 'leg-lineage',    label: 'Lineage & Ancestry'            },
+    { slug: 'leg-material',   label: 'Material & Built Heritage'     },
+    { slug: 'leg-ecological', label: 'Ecological Legacy'             },
+    { slug: 'leg-knowledge',  label: 'Knowledge & Wisdom Traditions' },
+    { slug: 'leg-repair',     label: 'Repair & Reckoning'            },
+    { slug: 'leg-gift',       label: 'Gift & Aspiration'             },
+    { slug: 'leg-presence',   label: 'Presence & Testimony'          },
+  ],
+  'vision': [
+    { slug: 'vis-imagination', label: 'Imagination & Possibility' },
+    { slug: 'vis-cultural',    label: 'Cultural Creation'          },
+    { slug: 'vis-intention',   label: 'Intention & Direction'      },
+    { slug: 'vis-blank',       label: 'The Blank Slate Question'   },
+    { slug: 'vis-ecological',  label: 'Ecological Vision'          },
+    { slug: 'vis-emerging',    label: 'Emerging Knowledge'         },
+    { slug: 'vis-design',      label: 'Design & Intention'         },
+    { slug: 'vis-horizon',     label: 'Horizon & Commitment'       },
+    { slug: 'vis-declaration', label: 'Declaration & Becoming'     },
+  ],
 }

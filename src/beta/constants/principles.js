@@ -1,54 +1,42 @@
 // src/beta/constants/principles.js
-//
-// Canonical four cross-domain platform principles.
-// Mirrors the platform_principles lookup table seeded in Module 1 / sql/beta/02.
-// Voice is exact. Do not paraphrase.
-//
-// Every module that needs principles imports from here.
-// PrincipleBadge, PrincipleStrip, OfferingPanel, BetaAdminConsole,
-// BetaNominate, FilterPanel, and any future surface all consume this file.
+// The four cross-domain platform-level principles.
+// Canonical definitions. Do not paraphrase.
 
-export const PRINCIPLES_ORDERED = [
+export const PLATFORM_PRINCIPLES = [
   {
-    slug:      'indigenous-relational',
-    label:     'Indigenous and Relational Knowing',
+    slug: 'indigenous-relational',
+    label: 'Indigenous & Relational',
     shortLabel: 'Indigenous & Relational',
+    definition:
+      'The corrective epistemology. The dominant frameworks that shaped modern civilisation have produced both extraordinary progress and profound damage. Indigenous and matriarchal knowledge traditions offer a corrective intelligence: relational, long-arc, stewardship-oriented, reciprocal. Asks of every domain: what would this look like if we were thinking in generations rather than quarters? Accountable to the living systems around us? Organised around reciprocity rather than extraction?',
     sortOrder: 1,
-    definition:
-      'Honouring knowledge systems rooted in long relationship with place, community, and living systems. Recognising that ways of knowing developed through sustained presence carry validity that abstracted, extractive knowledge does not.',
   },
   {
-    slug:      'substrate-health',
-    label:     'Substrate Health',
+    slug: 'substrate-health',
+    label: 'Substrate Health',
     shortLabel: 'Substrate Health',
+    definition:
+      'The apex depends on the ecosystem. The ecosystem does not depend on the apex. A field of only apex predators is a collapse in slow motion. Asks of every actor, structure, system: are you investing in or extracting from the substrate you depend on? A governance system that depletes its citizenry is ecologically stupid, not merely unjust. A corporation that hollows out its community is sawing the branch.',
     sortOrder: 2,
-    definition:
-      'Every domain rests on a substrate. The ecosystem does not depend on the apex. Asks of every actor, structure, system: are you investing in or extracting from the substrate you depend on?',
   },
   {
-    slug:      'not-knowing-stance',
-    label:     'Not-Knowing Stance',
+    slug: 'not-knowing-stance',
+    label: 'The Not-Knowing Stance',
     shortLabel: 'Not-Knowing',
-    sortOrder: 3,
     definition:
-      'Holding positions lightly in proportion to the evidence available. Naming uncertainty rather than papering over it. Treating the living map as perpetually provisional. The foundation of honest signal.',
+      'Some of the most important questions the platform holds are genuinely unresolved. On these, the platform names what is currently supported by evidence, names what is genuinely uncertain, names the most serious actors engaging with the uncertainty honestly, and holds the Horizon without pretending to know the route where it does not.',
+    sortOrder: 3,
   },
   {
-    slug:      'legacy-temporal-dimension',
-    label:     'Legacy and Temporal Dimension',
-    shortLabel: 'Legacy Temporal',
-    sortOrder: 4,
+    slug: 'legacy-temporal-dimension',
+    label: 'Legacy as Temporal Dimension',
+    shortLabel: 'Legacy as Time',
     definition:
-      'Every decision carries a temporal shadow. The platform operates with awareness of what is being handed forward, not only what is being accomplished now. Seven-generation thinking applied structurally, not only rhetorically.',
+      'The axis of time running through all seven domains. Every domain transmits something forward whether consciously or not. Asks of each: what are you carrying forward, what needs releasing, what needs repair, what are you planting? Shadow legacies run beneath every domain\'s surface. Intentional stewardship is possible in every domain.',
+    sortOrder: 4,
   },
 ]
 
 export const PRINCIPLE_BY_SLUG = Object.fromEntries(
-  PRINCIPLES_ORDERED.map(p => [p.slug, p]),
+  PLATFORM_PRINCIPLES.map(p => [p.slug, p])
 )
-
-export const PRINCIPLE_WEIGHTS = ['primary', 'secondary', 'tertiary']
-
-export function getPrinciple(slug) {
-  return PRINCIPLE_BY_SLUG[slug] || null
-}

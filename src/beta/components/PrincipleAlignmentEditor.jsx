@@ -28,7 +28,7 @@ import { tagPrinciple, untagPrinciple } from '../hooks/useTaggedPrinciples'
 //
 // Props:
 //   userId            — current user id (required)
-//   engagedPrinciples — array of slugs, drawn from contributor_profiles
+//   engagedPrinciples — array of slugs, drawn from contributor_profiles_beta
 //                       .engaged_principles (required)
 //   initialAlignment  — optional [{ principle_slug, weight, note }] preload
 //   onSaved(rows)     — optional callback after a successful save

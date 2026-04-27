@@ -1,24 +1,24 @@
 // src/beta/pages/BetaOrgPublic.jsx
 // Module 6: read-only public org profile at /beta/org/:id
-// Mirrors contributor profile shape: identity strip, mission, methodology,
-// focuses, structural posture, needs (when needs_visible), offerings,
-// principle alignment, receipts (empty state v1).
+// Module 13 update: GradientPosition rendered in identity strip when set.
+//   Trajectory arrow on name. Greenwashing flag when conditions met.
 // No engagement metrics. No edit affordances.
 
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { Nav } from '../../components/Nav'
-import { SiteFooter } from '../../components/SiteFooter'
-import { supabase } from '../../hooks/useSupabase'
-import { useAuth } from '../../hooks/useAuth'
+import { useParams, Link }     from 'react-router-dom'
+import { Nav }                 from '../../components/Nav'
+import { SiteFooter }          from '../../components/SiteFooter'
+import { supabase }            from '../../hooks/useSupabase'
+import { useAuth }             from '../../hooks/useAuth'
 import {
   body, sc, gold, dark, parch,
   DOMAIN_LABEL, SCALE_LABEL,
   OFFERING_TYPES, CONTRIBUTION_MODES, ACCESS_TYPES,
   PLACEMENT_TIER,
 } from '../components/OrgShared'
-import { PrincipleStrip } from '../components/PrincipleStrip'
-import { DOMAIN_COLORS } from '../constants/domains'
+import { PrincipleStrip }      from '../components/PrincipleStrip'
+import { DOMAIN_COLORS }       from '../constants/domains'
+import { GradientPosition, TrajectoryArrow } from '../components/GradientPosition'  // Module 13
 
 // ── Small utilities ──────────────────────────────────────────
 
@@ -47,7 +47,7 @@ function NotFound() {
   )
 }
 
-// ── Identity strip ───────────────────────────────────────────
+// ── Identity strip (Module 13 updated) ──────────────────────
 
 function OrgIdentityStrip({ actor, focusName, primaryDomain, principalTier, isOwner }) {
   const domainColor = DOMAIN_COLORS[primaryDomain] || gold
@@ -73,9 +73,12 @@ function OrgIdentityStrip({ actor, focusName, primaryDomain, principalTier, isOw
         </div>
       )}
 
-      {/* Name */}
-      <h1 style={{ ...body, fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 300, color: dark, lineHeight: 1.06, letterSpacing: '-0.01em', margin: '0 0 12px' }}>
+      {/* Name + trajectory arrow (Module 13) */}
+      <h1 style={{ ...body, fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 300, color: dark, lineHeight: 1.06, letterSpacing: '-0.01em', margin: '0 0 12px', display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: '6px' }}>
         {actor.name}
+        {actor.gradient_trajectory && (
+          <TrajectoryArrow trajectory={actor.gradient_trajectory} />
+        )}
       </h1>
 
       {/* Location */}
@@ -94,6 +97,17 @@ function OrgIdentityStrip({ actor, focusName, primaryDomain, principalTier, isOw
         </div>
       )}
 
+      {/* Module 13: Gradient position bar */}
+      {actor.gradient_position != null && (
+        <div style={{ marginBottom: '20px', maxWidth: '380px' }}>
+          <GradientPosition
+            position={actor.gradient_position}
+            trajectory={actor.gradient_trajectory}
+            actorName={actor.name}
+          />
+        </div>
+      )}
+
       {/* Reach */}
       {actor.reach && (
         <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.60)', margin: '0 0 20px' }}>
@@ -101,18 +115,18 @@ function OrgIdentityStrip({ actor, focusName, primaryDomain, principalTier, isOw
         </p>
       )}
 
-      {/* Website + manage link row */}
+      {/* Website + manage link */}
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
         {actor.website && (
           <a href={actor.website} target="_blank" rel="noopener noreferrer"
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, textDecoration: 'none' }}>
-            Website →
+            Website
           </a>
         )}
         {isOwner && (
           <Link to={`/beta/org/${actor.id}/manage`}
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', textDecoration: 'none' }}>
-            Manage →
+            Manage
           </Link>
         )}
       </div>
@@ -120,7 +134,7 @@ function OrgIdentityStrip({ actor, focusName, primaryDomain, principalTier, isOw
   )
 }
 
-// ── Mission section ───────────────────────────────────────────
+// ── Mission ──────────────────────────────────────────────────
 
 function OrgMission({ description, impactSummary }) {
   if (!description && !impactSummary) return null
@@ -154,15 +168,11 @@ function OrgPlacement({ domains, subdomains, lenses, problemChains, alignmentNot
     <div style={{ marginBottom: '72px' }}>
       <Eyebrow>Where this work belongs</Eyebrow>
 
-      {/* Domain stack — primary prominent, others quieter */}
       {hasDomains && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
           {domains.map((slug, i) => {
             const color = DOMAIN_COLORS[slug] || gold
             const note  = alignmentNotes?.[slug]
-            const domainSubs = (subdomains || []).filter(sub =>
-              sub.startsWith(slug.slice(0, 3)) // rough prefix match
-            )
             return (
               <div key={slug} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                 <div style={{ width: '3px', background: color, borderRadius: '2px', flexShrink: 0, alignSelf: 'stretch', opacity: i === 0 ? 1 : 0.45 }} />
@@ -187,12 +197,9 @@ function OrgPlacement({ domains, subdomains, lenses, problemChains, alignmentNot
         </div>
       )}
 
-      {/* Lenses */}
       {hasLenses && (
         <div style={{ marginBottom: '16px' }}>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.35)', marginBottom: '10px' }}>
-            Lenses
-          </div>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.35)', marginBottom: '10px' }}>Lenses</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
             {lenses.map(l => (
               <span key={l} style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.04)', border: '1px solid rgba(15,21,35,0.10)', borderRadius: '4px', padding: '3px 9px' }}>
@@ -203,12 +210,9 @@ function OrgPlacement({ domains, subdomains, lenses, problemChains, alignmentNot
         </div>
       )}
 
-      {/* Primary problem chain */}
       {hasProblems && (
         <div>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.35)', marginBottom: '10px' }}>
-            Problem addressed
-          </div>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.35)', marginBottom: '10px' }}>Problem addressed</div>
           <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, margin: 0 }}>
             {problemChains[0]}
           </p>
@@ -237,31 +241,21 @@ function OrgOfferings({ offerings }) {
       <Eyebrow>Offerings</Eyebrow>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {sorted.map(o => {
-          const typeLabel   = OFFERING_TYPES.find(t => t.value === o.offering_type)?.label || o.offering_type
+          const typeLabel   = OFFERING_TYPES.find(t => t.value === o.offering_type)?.label   || o.offering_type
           const modeLabel   = CONTRIBUTION_MODES.find(m => m.value === o.contribution_mode)?.label || o.contribution_mode
-          const accessLabel = ACCESS_TYPES.find(a => a.value === o.access_type)?.label || o.access_type
+          const accessLabel = ACCESS_TYPES.find(a => a.value === o.access_type)?.label       || o.access_type
 
           return (
             <div key={o.id} style={{ padding: '22px 24px', background: o.is_flagship ? 'rgba(200,146,42,0.04)' : '#FFFFFF', border: o.is_flagship ? '1.5px solid rgba(200,146,42,0.35)' : '1px solid rgba(200,146,42,0.14)', borderRadius: '12px' }}>
               <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
-                {o.is_flagship && (
-                  <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', background: '#C8922A', color: '#FFFFFF', padding: '2px 10px', borderRadius: '40px' }}>Flagship</span>
-                )}
+                {o.is_flagship && <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', background: '#C8922A', color: '#FFFFFF', padding: '2px 10px', borderRadius: '40px' }}>Flagship</span>}
                 <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold, background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '4px', padding: '2px 8px' }}>{typeLabel}</span>
                 <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.45)', background: 'rgba(15,21,35,0.04)', borderRadius: '4px', padding: '2px 8px' }}>{modeLabel}</span>
                 <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.45)' }}>{accessLabel}</span>
               </div>
               <h3 style={{ ...body, fontSize: '18px', fontWeight: 300, color: dark, margin: '0 0 8px', lineHeight: 1.3 }}>{o.title}</h3>
-              {o.description && (
-                <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.7, margin: o.url ? '0 0 10px' : 0 }}>
-                  {o.description}
-                </p>
-              )}
-              {o.url && (
-                <a href={o.url} target="_blank" rel="noopener noreferrer" style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}>
-                  Learn more →
-                </a>
-              )}
+              {o.description && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.7, margin: o.url ? '0 0 10px' : 0 }}>{o.description}</p>}
+              {o.url && <a href={o.url} target="_blank" rel="noopener noreferrer" style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}>Learn more</a>}
             </div>
           )
         })}
@@ -270,10 +264,9 @@ function OrgOfferings({ offerings }) {
   )
 }
 
-// ── Public needs ─────────────────────────────────────────────
+// ── Needs ────────────────────────────────────────────────────
 
 function OrgNeeds({ needs }) {
-  // In-person first within open, then in-progress
   const openNeeds = needs
     .filter(n => n.status === 'open')
     .sort((a, b) => {
@@ -291,24 +284,12 @@ function OrgNeeds({ needs }) {
         {openNeeds.map(n => (
           <div key={n.id} style={{ padding: '20px 22px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.14)', borderRadius: '12px' }}>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.50)' }}>
-                {n.need_type} · {n.size}
-              </span>
-              {n.medium === 'in_person' && (
-                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: gold, background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '4px', padding: '2px 8px' }}>
-                  In person
-                </span>
-              )}
-              {n.time_estimate && (
-                <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.45)' }}>{n.time_estimate}</span>
-              )}
+              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.50)' }}>{n.need_type} · {n.size}</span>
+              {n.medium === 'in_person' && <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: gold, background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '4px', padding: '2px 8px' }}>In person</span>}
+              {n.time_estimate && <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.45)' }}>{n.time_estimate}</span>}
             </div>
             <h4 style={{ ...body, fontSize: '17px', fontWeight: 300, color: dark, margin: '0 0 6px' }}>{n.title}</h4>
-            {n.description && (
-              <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.65, margin: 0 }}>
-                {n.description}
-              </p>
-            )}
+            {n.description && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.65, margin: 0 }}>{n.description}</p>}
           </div>
         ))}
       </div>
@@ -328,7 +309,7 @@ function OrgPrincipleAlignment({ principleTaggings }) {
   )
 }
 
-// ── Sprint receipts stub (v1) ────────────────────────────────
+// ── Receipts stub ────────────────────────────────────────────
 
 function OrgReceiptsStub() {
   return (
@@ -344,20 +325,21 @@ function OrgReceiptsStub() {
 // ── Main page ────────────────────────────────────────────────
 
 export function BetaOrgPublicPage() {
-  const { id } = useParams()
+  const { id }   = useParams()
   const { user } = useAuth()
 
-  const [actor, setActor]           = useState(null)
-  const [offerings, setOfferings]   = useState([])
-  const [needs, setNeeds]           = useState([])
+  const [actor,      setActor]      = useState(null)
+  const [offerings,  setOfferings]  = useState([])
+  const [needs,      setNeeds]      = useState([])
   const [principles, setPrinciples] = useState([])
-  const [focusName, setFocusName]   = useState(null)
-  const [loading, setLoading]       = useState(true)
+  const [focusName,  setFocusName]  = useState(null)
+  const [loading,    setLoading]    = useState(true)
 
   useEffect(() => {
     async function load() {
       setLoading(true)
       const [actorRes, offeringsRes, needsRes, principlesRes] = await Promise.all([
+        // Module 13: fetch gradient_position and gradient_trajectory
         supabase.from('nextus_actors')
           .select('*, focus:focus_id(id, name, type, slug)')
           .eq('id', id)
@@ -400,17 +382,12 @@ export function BetaOrgPublicPage() {
 
   if (!actor) return <NotFound />
 
-  const isOwner        = user?.id === actor.profile_owner
-  const primaryDomain  = (actor.domains || [])[0] || actor.domain_id || null
-  const allDomains     = actor.domains || (actor.domain_id ? [actor.domain_id] : [])
-  const allSubdomains  = actor.subdomains || []
-  const lenses         = actor.lenses || []
-  const problemChains  = actor.problem_chains || []
-  const alignmentNotes = actor.domain_alignment_notes || {}
+  const isOwner       = user?.id === actor.profile_owner
+  const primaryDomain = (actor.domains || [])[0] || actor.domain_id || null
+  const allDomains    = actor.domains || (actor.domain_id ? [actor.domain_id] : [])
 
-  // Placement tier from alignment_score
-  const score = actor.alignment_score
-  const tier  = score == null ? null
+  const score  = actor.alignment_score
+  const tier   = score == null ? null
     : score >= 9 ? 'exemplar'
     : score >= 7 ? 'qualified'
     : score >= 5 ? 'contested'
@@ -428,9 +405,12 @@ export function BetaOrgPublicPage() {
         }
       `}</style>
 
-      <div className="beta-org-public" style={{ maxWidth: '680px', margin: '0 auto', padding: 'clamp(96px, 12vw, 128px) clamp(20px, 5vw, 48px) 160px' }}>
+      <div className="beta-org-public" style={{
+        maxWidth: '680px',
+        margin: '0 auto',
+        padding: 'clamp(96px, 12vw, 128px) clamp(20px, 5vw, 48px) 160px',
+      }}>
 
-        {/* Identity */}
         <OrgIdentityStrip
           actor={actor}
           focusName={focusName}
@@ -439,30 +419,25 @@ export function BetaOrgPublicPage() {
           isOwner={isOwner}
         />
 
-        {/* Mission */}
         <OrgMission description={actor.description} impactSummary={actor.impact_summary} />
-
         {(actor.description || actor.impact_summary) && <Rule />}
 
-        {/* Civilisational placement */}
         {allDomains.length > 0 && (
           <>
             <OrgPlacement
               domains={allDomains}
-              subdomains={allSubdomains}
-              lenses={lenses}
-              problemChains={problemChains}
-              alignmentNotes={alignmentNotes}
+              subdomains={actor.subdomains || []}
+              lenses={actor.lenses || []}
+              problemChains={actor.problem_chains || []}
+              alignmentNotes={actor.domain_alignment_notes || {}}
             />
             <Rule />
           </>
         )}
 
-        {/* Offerings */}
         <OrgOfferings offerings={offerings} />
         {offerings.length > 0 && <Rule />}
 
-        {/* Open needs */}
         {showNeeds && (
           <>
             <OrgNeeds needs={needs} />
@@ -470,7 +445,6 @@ export function BetaOrgPublicPage() {
           </>
         )}
 
-        {/* Principle alignment */}
         {principles.length > 0 && (
           <>
             <OrgPrincipleAlignment principleTaggings={principles} />
@@ -478,7 +452,6 @@ export function BetaOrgPublicPage() {
           </>
         )}
 
-        {/* Receipts — v1 stub */}
         <OrgReceiptsStub />
 
       </div>

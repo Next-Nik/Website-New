@@ -1,8 +1,6 @@
 # Module 3 — Profile Edit: Notes
 
-The page renders at `/beta/profile/edit`. This file holds the wiring decisions and references the live schema.
-
-This is the **fixed** version of Module 3, post-consolidated-migration. The `_beta` overlay pattern was abandoned; this surface writes directly to the canonical `contributor_profiles` table.
+The page renders at `/beta/profile/edit`. This file holds the wiring decisions that aren't obvious from reading the code, plus the open items that the next module touches.
 
 ---
 
@@ -17,36 +15,21 @@ import BetaProfileEdit from './beta/pages/BetaProfileEdit'
 <Route path="/beta/profile/edit" element={<BetaProfileEdit />} />
 ```
 
-That's it. No SQL to run; the consolidated migration already landed every column this surface needs.
+Add to `src/constants/routes.js` if route constants are used in the nav:
+
+```js
+betaProfileEdit: '/beta/profile/edit',
+```
+
+The "View public profile" button opens `/beta/profile/<userId>` in a new tab. That route is the public profile module's job, not this one. Until that module ships, the button opens a 404 — that is fine. The contract is held here.
 
 ---
 
-## Schema this surface uses
+## Visibility model
 
-All tables already exist after the consolidated migration ran.
+Every visibility toggle reads and writes `artefact_visibility`. Default state when no row exists is `private`. The hook only writes a row on user action.
 
-### `contributor_profiles` (one row per user, PK is `id`)
-
-| Column | Used for |
-| --- | --- |
-| `id` | Primary key. FK to `auth.users.id`. Read/written via `.eq('id', userId)`. |
-| `display_name` | "Display name" field. Auto-saves on blur. |
-| `headline` | "Headline" field. Auto-saves on blur. |
-| `what_i_stand_for` | First "I am" statement. Auto-saves on blur. |
-| `count_on_me_for` | Second "I am" statement. Auto-saves on blur. |
-| `dont_count_on_me_for` | Third "I am" statement. Auto-saves on blur. |
-| `engaged_civ_domains` | Multi-select. Saves on Save click. |
-| `engaged_self_domains` | Multi-select. Saves on Save click. |
-| `engaged_principles` | Multi-select. Saves on Save click. Drives the alignment editor. |
-| `location_focus_id` | Reserved for future Focus picker. Not yet wired. |
-
-**Note on the FK column:** the existing `contributor_profiles` table uses `id` as both primary key and the FK to `auth.users.id`. The user's auth uuid is the row identifier, not a separate `user_id` column. Every query and update against this table uses `.eq('id', userId)`.
-
-### `artefact_visibility`
-
-One row per (user, artefact_type, artefact_id). Default state when no row exists is `private`.
-
-Mapping from UI control to row:
+Mapping from UI → `artefact_visibility` columns:
 
 | UI control | `artefact_type` | `artefact_id` |
 | --- | --- | --- |
@@ -54,31 +37,63 @@ Mapping from UI control to row:
 | "Count on me for" toggle | `ia_statement` | `count_on_me_for` |
 | "Don't count on me for" toggle | `ia_statement` | `dont_count_on_me_for` |
 | Public placement bundle toggle | `focus_claim` | `placement_bundle` |
-| Each active sprint | `sprint` | `<sprint id>` |
-| Each completed sprint | `sprint_completion` | `<sprint id>` |
+| Each active sprint | `sprint` | `<sprint_id>` |
+| Each completed sprint | `sprint_completion` | `<sprint_id>` |
 
-The wheels do not write rows. Both the Self wheel and the Civilisational wheel are the user's own navigation — neither is published.
+The wheels do not write rows. Both the Self wheel and the Civilisational wheel are the user's own navigation — neither is public.
 
-The migration's enum still includes `wheel_self` and `wheel_civ` for future use (saved snapshots, comparison views). This surface does not use them.
+The Module 1 enum still includes `wheel_self` and `wheel_civ`. Those values are not used by this surface and may be removed or repurposed in a future schema revision. Flagged.
 
-### `principle_taggings`
+---
 
-For per-principle weight (`primary` / `secondary` / `tertiary`). Written by the alignment editor via `tagPrinciple` from Module 1.5. Rows use `target_type='contributor'`, `target_id=<userId as text>`.
+## Principle alignment
 
-### `contributor_principle_notes`
+The editor reads engaged principles from `contributor_profiles_beta.engaged_principles`. The user toggles principles on the multi-select section above; the editor card list updates from that selection.
 
-For per-principle short note. Primary key is `(user_id, principle_slug)`. Created by the consolidated migration. The alignment editor writes here on save.
+Per-principle weights are written as `principle_taggings` rows with `target_type='contributor'` and `target_id=<userId>`, via `tagPrinciple` from Module 1.5. Removing a principle from the multi-select also removes its tagging row on the next save.
 
-### `target_sprint_sessions`
+Per-principle notes are written to `contributor_principle_notes`. **This table does not exist yet.** The component handles its absence gracefully — weight saves succeed, note saves are skipped with a console warning. When the next module (or a small Module 1 follow-on) adds the table, notes start persisting automatically.
 
-Read-only from this surface. Active sprints filter on `status = 'active'`; completed sprints filter on `completed_at IS NOT NULL`, ordered by `completed_at` desc, top six. Module 3's `SprintsVisibilitySection` does this defensively (probes for column names) but the live schema confirms `status` and `completed_at` exist as expected.
+Suggested shape:
+
+```sql
+create table contributor_principle_notes (
+  user_id        uuid not null references auth.users(id) on delete cascade,
+  principle_slug text not null references platform_principles(slug),
+  note           text,
+  updated_at     timestamptz not null default now(),
+  primary key (user_id, principle_slug)
+);
+```
+
+---
+
+## "I am" statements — flagged
+
+The brief described "visibility toggles for each 'I am' statement." Module 1 gives three free-text fields on `contributor_profiles_beta`: `what_i_stand_for`, `count_on_me_for`, `dont_count_on_me_for`. This module treats those three as the toggleable statements.
+
+Nik flagged in this session that the canonical "I am..." statements are something else (the per-domain statements written inside The Map / Dashboard). Those statements live on `horizon_profile.ia_statement` per Self domain row and are not edited from this surface.
+
+Both sets of statements share the `artefact_type='ia_statement'` namespace and never collide on `artefact_id`:
+- The three contributor-profile statements use the column name as `artefact_id`.
+- The seven per-domain statements would use the domain slug as `artefact_id`.
+
+If a future module decides to publish the per-domain statements, they will plug into the same `artefact_visibility` shape with no collision. If the canonical "I am..." statements need their own enum value, that is a Module 1 schema revision — flag for that thread.
+
+---
+
+## Sprints — defensive read
+
+`SprintsVisibilitySection` reads from `target_sprint_sessions`. The exact column names for "completed at" and "title" vary across the existing schema (different versions of the sprint tool used different fields). The component tries a small set of candidate column names and falls back to a generic display label if none resolves.
+
+If the table is missing entirely, the section renders the honest empty state ("Sprint history is not available yet on this account") rather than failing the page.
 
 ---
 
 ## Auto-save vs save buttons
 
-- **Auto-save on blur:** display name, headline, the three "I am" statements.
-- **Explicit save buttons:** the three multi-selects (civ domains, Self domains, principles), the principle alignment editor.
+- **Auto-save on blur:** all free-text fields (display name, headline, the three statements, the per-principle note textarea inside the alignment editor — though the alignment editor's notes are saved as part of the "Save alignment" button rather than per-textarea blur, since they batch with the weights).
+- **Explicit save buttons:** the three multi-selects (civ domains, Self domains, principles) and the principle alignment editor.
 - **Optimistic, instant:** all visibility toggles.
 
 The footer message names this contract for the user in one line: *"Free-text fields save when you click away. Selections save when you press Save. Visibility changes are instant."*
@@ -96,20 +111,4 @@ The page uses `max-width: 760px` and `padding: 0 20px` on the container. Section
 - It does not build the wheel components themselves. The toggle frame is here; the wheels render in their own module and slot in via the `selfSlot` / `civSlot` props on `WheelsToggleSection`.
 - It does not build the public profile page at `/beta/profile/<userId>`. That is a separate surface.
 - It does not build the curator review UI for any flagged content. Module 1.5 owns the queue table; the surface to work it lives elsewhere.
-- It does not gate principle taggings or visibility through the Horizon Floor admission check. Profile editing is between the user and their own profile; the admission check fires on contributions out into the platform (actors, practices, bilateral artefacts, nominations).
-
----
-
-## Beta gating
-
-This surface is reachable at `/beta/profile/edit`. Beta gating happens at the route level via the existing `AccessGate` / `AuthGate` components in `src/components/`. Beta users are the ones with `users.beta_group` set non-null and a `('beta', 'full')` row in `access`.
-
-When wrapping the route in `App.jsx`, use whatever gate component the rest of the `/beta/*` routes use. This component does not enforce its own gate.
-
----
-
-## "I am..." statements — flagged
-
-The brief described "visibility toggles for each 'I am' statement." This module treats the three free-text columns on `contributor_profiles` (`what_i_stand_for`, `count_on_me_for`, `dont_count_on_me_for`) as the toggleable statements.
-
-The canonical per-domain "I am..." statements (the ones generated by the Horizon Goal process inside The Map) live on `horizon_profile.ia_statement` per Self domain row. They are not edited from this surface — they are generated by The Map. A future module may surface them here with their own visibility toggles. The wiring already supports it: both sets share the `ia_statement` namespace cleanly via different `artefact_id` keys (column name for the contributor-profile statements; domain slug for the per-domain ones). No collision.
+- It does not gate principle taggings or visibility through the Horizon Floor admission check. Profile editing is between the user and their own profile; admission check fires on contributions out into the platform (actors, practices, bilateral artefacts, nominations).
