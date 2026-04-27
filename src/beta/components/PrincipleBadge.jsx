@@ -84,3 +84,5 @@ export function PrincipleBadge({ slug, weight = 'primary', inline = false }) {
     </div>
   )
 }
+
+export default PrincipleBadge
