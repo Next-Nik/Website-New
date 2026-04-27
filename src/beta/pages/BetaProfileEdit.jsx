@@ -1,667 +1,704 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+// src/beta/pages/BetaProfileEdit.jsx
+// Module 3 profile edit surface at /beta/profile/edit.
+// Module 10 addition: BilateralInbox panel as the final section.
+//
+// Sections:
+//   Profile fields (auto-save on blur)
+//   Visibility toggles (artefact_visibility, default private)
+//   Domain engagement
+//   Principle alignment
+//   Bilateral cards (Module 10)
+
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { Link } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
-import { useAuth } from '../../hooks/useAuth'
+import { SiteFooter } from '../../components/SiteFooter'
 import { supabase } from '../../hooks/useSupabase'
-import { PRINCIPLES_ORDERED } from '../constants/principles'
-import { useArtefactVisibility } from '../hooks/useArtefactVisibility'
-import VisibilityToggle from '../components/VisibilityToggle'
-import AutoSaveTextarea from '../components/AutoSaveTextarea'
-import MultiSelectChips from '../components/MultiSelectChips'
-import WheelsToggleSection from '../components/WheelsToggleSection'
-import PrincipleAlignmentEditor from '../components/PrincipleAlignmentEditor'
-import SprintsVisibilitySection from '../components/SprintsVisibilitySection'
+import { useAuth } from '../../hooks/useAuth'
+import { BilateralInbox } from '../components/BilateralInbox'
 
-// ─────────────────────────────────────────────────────────────────────────────
-// /beta/profile/edit
-//
-// Profile edit surface. Free-text fields auto-save on blur. Multi-input
-// sections use explicit save buttons. Visibility toggles are optimistic.
-// Default state for any artefact is private.
-//
-// Wheels share one surface with a Self / Civilisational toggle. Neither
-// wheel is published — what is shareable, only when the user chooses, is
-// their placement in the ecosystem.
-//
-// References Module 1.5 for principle primitives.
-//
-// SCHEMA NOTE: writes to the canonical contributor_profiles table. The
-// table's primary key column is `id` and references auth.users.id. All
-// queries against contributor_profiles use .eq('id', userId), not
-// 'user_id'. Other tables in this surface (contributor_principle_notes,
-// principle_taggings, artefact_visibility) do use user_id / target_id
-// columns; that is correct for those tables.
-// ─────────────────────────────────────────────────────────────────────────────
+const body  = { fontFamily: "'Lora', Georgia, serif" }
+const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const gold  = '#A8721A'
+const dark  = '#0F1523'
+const parch = '#FAFAF7'
 
-const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body    = { fontFamily: "'Lora', Georgia, serif" }
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-
-const CIV_DOMAIN_OPTIONS = [
-  { value: 'human-being',     label: 'Human Being' },
-  { value: 'society',         label: 'Society' },
-  { value: 'nature',          label: 'Nature' },
-  { value: 'technology',      label: 'Technology' },
-  { value: 'finance-economy', label: 'Finance & Economy' },
-  { value: 'legacy',          label: 'Legacy' },
-  { value: 'vision',          label: 'Vision' },
+const CIV_DOMAINS = [
+  { value: 'human-being',    label: 'Human Being'      },
+  { value: 'society',        label: 'Society'           },
+  { value: 'nature',         label: 'Nature'            },
+  { value: 'technology',     label: 'Technology'        },
+  { value: 'finance-economy',label: 'Finance and Economy' },
+  { value: 'legacy',         label: 'Legacy'            },
+  { value: 'vision',         label: 'Vision'            },
 ]
 
-const SELF_DOMAIN_OPTIONS = [
-  { value: 'path',       label: 'Path' },
-  { value: 'spark',      label: 'Spark' },
-  { value: 'body',       label: 'Body' },
-  { value: 'finances',   label: 'Finances' },
-  { value: 'connection', label: 'Connection' },
-  { value: 'inner_game', label: 'Inner Game' },
-  { value: 'signal',     label: 'Signal' },
+const SELF_DOMAINS = [
+  { value: 'path',        label: 'Path'       },
+  { value: 'spark',       label: 'Spark'      },
+  { value: 'body',        label: 'Body'       },
+  { value: 'finances',    label: 'Finances'   },
+  { value: 'connection',  label: 'Connection' },
+  { value: 'inner-game',  label: 'Inner Game' },
+  { value: 'signal',      label: 'Signal'     },
 ]
 
-const PRINCIPLE_OPTIONS = PRINCIPLES_ORDERED.map((p) => ({
-  value: p.slug,
-  label: p.label,
-}))
-
-// Free-text statement keys. Each gets its own visibility toggle keyed by
-// (user_id, 'ia_statement', <column_name>). The artefact_id is the column
-// name itself, which keeps the row stable across schema migrations.
-const STATEMENTS = [
-  {
-    key: 'what_i_stand_for',
-    label: 'What I stand for',
-    helper: 'A short statement of what you carry.',
-  },
-  {
-    key: 'count_on_me_for',
-    label: 'Count on me for',
-    helper: 'Where you are reliable. What others can come to you for.',
-  },
-  {
-    key: 'dont_count_on_me_for',
-    label: "Don't count on me for",
-    helper: 'Where you are not the right person. Honest, not apologetic.',
-  },
+const PLATFORM_PRINCIPLES = [
+  { value: 'indigenous-relational',     label: 'Indigenous and Relational'  },
+  { value: 'substrate-health',          label: 'Substrate Health'           },
+  { value: 'not-knowing-stance',        label: 'The Not-Knowing Stance'     },
+  { value: 'legacy-temporal-dimension', label: 'Legacy as Temporal Dimension' },
 ]
 
-export default function BetaProfileEdit() {
-  const { user, loading: authLoading } = useAuth()
-  const [profile, setProfile] = useState(null)
-  const [profileLoading, setProfileLoading] = useState(true)
-  const [profileError, setProfileError] = useState(null)
-  const [principleAlignment, setPrincipleAlignment] = useState([])
+const WEIGHT_OPTIONS = [
+  { value: 'primary',   label: 'Primary'   },
+  { value: 'secondary', label: 'Secondary' },
+  { value: 'tertiary',  label: 'Tertiary'  },
+]
 
-  const userId = user?.id
+// ── Shared primitives ────────────────────────────────────────
 
-  const loadProfile = useCallback(async () => {
-    if (!userId) return
-    setProfileLoading(true)
-    setProfileError(null)
-
-    const { data, error } = await supabase
-      .from('contributor_profiles')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle()
-
-    if (error) {
-      setProfileError(error)
-      setProfileLoading(false)
-      return
-    }
-    if (!data) {
-      // First visit: insert an empty row so the rest of the page reads cleanly.
-      // The PK on contributor_profiles is `id` and FKs to auth.users.id.
-      const { data: created, error: insertError } = await supabase
-        .from('contributor_profiles')
-        .insert({ id: userId })
-        .select()
-        .single()
-      if (insertError) {
-        setProfileError(insertError)
-      } else {
-        setProfile(created)
-      }
-    } else {
-      setProfile(data)
-    }
-    setProfileLoading(false)
-  }, [userId])
-
-  useEffect(() => {
-    if (userId) loadProfile()
-  }, [userId, loadProfile])
-
-  // Load existing principle taggings (weight) for the user.
-  useEffect(() => {
-    if (!userId) return
-    let cancelled = false
-    ;(async () => {
-      const { data, error } = await supabase
-        .from('principle_taggings')
-        .select('principle_slug, weight')
-        .eq('target_type', 'contributor')
-        .eq('target_id', userId)
-      if (cancelled) return
-      if (error) {
-        setPrincipleAlignment([])
-        return
-      }
-      // Optional notes lookup. If the table is missing, notes stay empty.
-      let notesByKey = {}
-      const { data: notes } = await supabase
-        .from('contributor_principle_notes')
-        .select('principle_slug, note')
-        .eq('user_id', userId)
-      if (notes) {
-        notesByKey = Object.fromEntries(notes.map((n) => [n.principle_slug, n.note]))
-      }
-      setPrincipleAlignment(
-        (data || []).map((row) => ({
-          principle_slug: row.principle_slug,
-          weight: row.weight,
-          note: notesByKey[row.principle_slug] || '',
-        })),
-      )
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [userId])
-
-  async function saveProfileField(column, value) {
-    if (!userId) return
-    const { error } = await supabase
-      .from('contributor_profiles')
-      .update({ [column]: value, updated_at: new Date().toISOString() })
-      .eq('id', userId)
-    if (error) throw error
-    setProfile((p) => (p ? { ...p, [column]: value } : p))
-  }
-
-  async function saveProfileArray(column, values) {
-    return saveProfileField(column, values)
-  }
-
-  function openPublicProfile() {
-    if (!userId) return
-    window.open(`/beta/profile/${userId}`, '_blank', 'noopener,noreferrer')
-  }
-
-  if (authLoading || profileLoading) {
-    return (
-      <PageShell>
-        <p
-          style={{
-            ...body,
-            fontSize: '16px',
-            color: 'rgba(15, 21, 35, 0.55)',
-            margin: 0,
-          }}
-        >
-          Loading your profile.
-        </p>
-      </PageShell>
-    )
-  }
-
-  if (!user) {
-    return (
-      <PageShell>
-        <p
-          style={{
-            ...body,
-            fontSize: '16px',
-            color: '#0F1523',
-            margin: 0,
-          }}
-        >
-          Sign in to edit your profile.
-        </p>
-      </PageShell>
-    )
-  }
-
-  if (profileError) {
-    return (
-      <PageShell>
-        <p
-          style={{
-            ...body,
-            fontSize: '16px',
-            color: 'rgba(138, 48, 48, 0.85)',
-            margin: 0,
-          }}
-        >
-          Could not load your profile. Refresh to try again.
-        </p>
-      </PageShell>
-    )
-  }
-
+function Label({ children }) {
   return (
-    <PageShell>
-      <PageHeader onViewPublic={openPublicProfile} />
-
-      {/* Identity and orientation */}
-      <Section eyebrow="Identity" title="Display">
-        <Row>
-          <FieldColumn label="Display name">
-            <AutoSaveTextarea
-              id="display-name"
-              value={profile?.display_name || ''}
-              onSave={(next) => saveProfileField('display_name', next)}
-              maxLength={120}
-              rows={1}
-              placeholder=""
-            />
-          </FieldColumn>
-          <FieldColumn label="Headline">
-            <AutoSaveTextarea
-              id="headline"
-              value={profile?.headline || ''}
-              onSave={(next) => saveProfileField('headline', next)}
-              maxLength={200}
-              rows={2}
-              placeholder=""
-              helperText="One line. What you do, in your own words."
-            />
-          </FieldColumn>
-        </Row>
-      </Section>
-
-      {/* Three free-text statements, each with its own visibility toggle. */}
-      <Section eyebrow="Statements" title="What you carry">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {STATEMENTS.map((stmt) => (
-            <StatementBlock
-              key={stmt.key}
-              userId={userId}
-              column={stmt.key}
-              label={stmt.label}
-              helper={stmt.helper}
-              value={profile?.[stmt.key] || ''}
-              onSave={(next) => saveProfileField(stmt.key, next)}
-            />
-          ))}
-        </div>
-      </Section>
-
-      {/* Wheels — Self / Civilisational toggle. No visibility — they are nav. */}
-      <Section eyebrow="Wheels" title="Your navigation">
-        <WheelsToggleSection />
-      </Section>
-
-      {/* Public placement — what is shareable, when the user chooses. */}
-      <Section
-        eyebrow="Public placement"
-        title="Where you stand in the ecosystem"
-      >
-        <PlacementVisibilityRow userId={userId} />
-
-        <div style={{ height: '24px' }} />
-
-        <MultiSelectChips
-          label="Civilisational domains you are engaged with"
-          helperText="Choose the civilisational domains where your work lives."
-          options={CIV_DOMAIN_OPTIONS}
-          value={profile?.engaged_civ_domains || []}
-          onSave={(next) => saveProfileArray('engaged_civ_domains', next)}
-        />
-
-        <div style={{ height: '20px' }} />
-
-        <MultiSelectChips
-          label="Self domains you are working with"
-          helperText="The domains of your own life you are tending right now."
-          options={SELF_DOMAIN_OPTIONS}
-          value={profile?.engaged_self_domains || []}
-          onSave={(next) => saveProfileArray('engaged_self_domains', next)}
-        />
-
-        <div style={{ height: '20px' }} />
-
-        <MultiSelectChips
-          label="Platform principles you align with"
-          helperText="The cross-domain commitments your work materially engages."
-          options={PRINCIPLE_OPTIONS}
-          value={profile?.engaged_principles || []}
-          onSave={async (next) => {
-            await saveProfileArray('engaged_principles', next)
-            // Reload taggings so the alignment editor reflects new selections.
-            const { data } = await supabase
-              .from('principle_taggings')
-              .select('principle_slug, weight')
-              .eq('target_type', 'contributor')
-              .eq('target_id', userId)
-            setPrincipleAlignment(
-              (data || []).map((row) => ({
-                principle_slug: row.principle_slug,
-                weight: row.weight,
-                note:
-                  principleAlignment.find((a) => a.principle_slug === row.principle_slug)?.note ||
-                  '',
-              })),
-            )
-          }}
-        />
-      </Section>
-
-      {/* Principle alignment — per-principle weight + optional note. */}
-      <Section
-        eyebrow="Principle alignment"
-        title="How each principle lands in your work"
-      >
-        <PrincipleAlignmentEditor
-          userId={userId}
-          engagedPrinciples={profile?.engaged_principles || []}
-          initialAlignment={principleAlignment}
-          onSaved={(rows) => {
-            setPrincipleAlignment(
-              rows.map((r) => ({
-                principle_slug: r.slug,
-                weight: r.weight,
-                note: r.note,
-              })),
-            )
-          }}
-        />
-      </Section>
-
-      {/* Sprints — active and last six completed. */}
-      <Section eyebrow="Sprints" title="What you are working on">
-        <SprintsVisibilitySection userId={userId} />
-      </Section>
-
-      <FooterMeta />
-    </PageShell>
+    <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '6px' }}>
+      {children}
+    </label>
   )
 }
 
-// ─── Page chrome ────────────────────────────────────────────────────────────
-
-function PageShell({ children }) {
+function Hint({ children }) {
   return (
-    <>
-      <Nav />
-      <main
+    <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '5px', lineHeight: 1.55 }}>
+      {children}
+    </p>
+  )
+}
+
+function AutoSaveField({ label, value, onSave, multiline, placeholder, hint, rows = 3 }) {
+  const [local, setLocal] = useState(value || '')
+  const [saving, setSaving] = useState(false)
+  const prevRef = useRef(value || '')
+
+  useEffect(() => { setLocal(value || '') }, [value])
+
+  async function handleBlur() {
+    if (local === prevRef.current) return
+    setSaving(true)
+    await onSave(local)
+    prevRef.current = local
+    setSaving(false)
+  }
+
+  const sharedStyle = {
+    ...body, fontSize: '15px', color: dark,
+    padding: '11px 16px', borderRadius: '8px',
+    border: '1.5px solid rgba(200,146,42,0.30)',
+    background: '#FFFFFF', outline: 'none', width: '100%',
+    lineHeight: 1.65,
+  }
+
+  return (
+    <div style={{ marginBottom: '22px' }}>
+      <Label>{label}{saving && <span style={{ marginLeft: '8px', color: 'rgba(15,21,35,0.40)', fontStyle: 'italic' }}>Saving...</span>}</Label>
+      {multiline ? (
+        <textarea
+          value={local}
+          onChange={e => setLocal(e.target.value)}
+          onBlur={handleBlur}
+          placeholder={placeholder}
+          rows={rows}
+          style={{ ...sharedStyle, resize: 'vertical' }}
+        />
+      ) : (
+        <input
+          value={local}
+          onChange={e => setLocal(e.target.value)}
+          onBlur={handleBlur}
+          placeholder={placeholder}
+          style={sharedStyle}
+        />
+      )}
+      {hint && <Hint>{hint}</Hint>}
+    </div>
+  )
+}
+
+// ── Visibility toggle ────────────────────────────────────────
+// Default is private. Writes/deletes a row in artefact_visibility.
+
+function VisibilityToggle({ userId, artefactType, artefactId, label }) {
+  const [isPublic, setIsPublic] = useState(false)
+  const [loaded, setLoaded]     = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    supabase
+      .from('artefact_visibility')
+      .select('visibility')
+      .eq('user_id', userId)
+      .eq('artefact_type', artefactType)
+      .eq('artefact_id', artefactId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (cancelled) return
+        setIsPublic(data?.visibility === 'public')
+        setLoaded(true)
+      })
+    return () => { cancelled = true }
+  }, [userId, artefactType, artefactId])
+
+  async function toggle() {
+    const next = !isPublic
+    // Optimistic
+    setIsPublic(next)
+
+    if (next) {
+      await supabase.from('artefact_visibility').upsert({
+        user_id:      userId,
+        artefact_type: artefactType,
+        artefact_id:  artefactId,
+        visibility:   'public',
+      }, { onConflict: 'user_id,artefact_type,artefact_id' })
+    } else {
+      await supabase
+        .from('artefact_visibility')
+        .delete()
+        .eq('user_id', userId)
+        .eq('artefact_type', artefactType)
+        .eq('artefact_id', artefactId)
+    }
+  }
+
+  if (!loaded) return null
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
+      <button
+        onClick={toggle}
         style={{
-          background: '#FAFAF7',
-          minHeight: '100vh',
-          paddingTop: '32px',
-          paddingBottom: '64px',
+          width: '36px', height: '20px', borderRadius: '10px', flexShrink: 0,
+          background: isPublic ? gold : 'rgba(15,21,35,0.20)',
+          border: 'none', cursor: 'pointer', position: 'relative',
+          transition: 'background 0.15s',
         }}
       >
-        <div
-          style={{
-            maxWidth: '760px',
-            margin: '0 auto',
-            padding: '0 20px',
-          }}
-        >
-          {children}
+        <span style={{
+          position: 'absolute', top: '3px', left: isPublic ? '18px' : '3px',
+          width: '14px', height: '14px', borderRadius: '50%',
+          background: '#FFFFFF', transition: 'left 0.15s',
+        }} />
+      </button>
+      <span style={{ ...body, fontSize: '14px', color: isPublic ? dark : 'rgba(15,21,35,0.50)' }}>
+        {label}
+      </span>
+      <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: isPublic ? gold : 'rgba(15,21,35,0.40)', marginLeft: 'auto' }}>
+        {isPublic ? 'Public' : 'Private'}
+      </span>
+    </div>
+  )
+}
+
+// ── Domain engagement chips ──────────────────────────────────
+
+function DomainChips({ domains, selected, onToggle }) {
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+      {domains.map(d => {
+        const on = selected.includes(d.value)
+        return (
+          <button
+            key={d.value}
+            type="button"
+            onClick={() => onToggle(d.value)}
+            style={{
+              ...sc, fontSize: '11px', letterSpacing: '0.12em',
+              padding: '6px 14px', borderRadius: '40px', cursor: 'pointer',
+              border: on ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.25)',
+              background: on ? 'rgba(200,146,42,0.10)' : 'transparent',
+              color: on ? gold : 'rgba(15,21,35,0.55)',
+              transition: 'all 0.15s',
+            }}
+          >
+            {d.label}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+// ── Section wrapper ──────────────────────────────────────────
+
+function Section({ title, subtitle, children }) {
+  return (
+    <div style={{ marginBottom: '56px' }}>
+      <div style={{ marginBottom: '24px' }}>
+        <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: 'rgba(15,21,35,0.40)', textTransform: 'uppercase', marginBottom: '6px' }}>
+          {title}
+        </p>
+        {subtitle && (
+          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>
+            {subtitle}
+          </p>
+        )}
+      </div>
+      <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.16)', borderRadius: '14px', padding: '28px 32px' }}>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+// ── Sprint visibility section ────────────────────────────────
+
+function SprintVisibility({ userId }) {
+  const [sprints, setSprints] = useState([])
+
+  useEffect(() => {
+    supabase
+      .from('target_sprint_sessions')
+      .select('id, domains, domain_data, status, created_at, completed_at')
+      .eq('user_id', userId)
+      .in('status', ['active', 'complete'])
+      .order('created_at', { ascending: false })
+      .limit(9)  // 3 active + 6 completed
+      .then(({ data }) => setSprints(data || []))
+  }, [userId])
+
+  const active    = sprints.filter(s => s.status === 'active')
+  const completed = sprints.filter(s => s.status === 'complete').slice(0, 6)
+
+  function sprintLabel(s) {
+    const domains = s.domains || []
+    const dd = s.domain_data || {}
+    const firstGoal = domains.map(d => dd[d]?.targetGoal).filter(Boolean)[0]
+    const domainNames = domains.map(d => d).join(', ')
+    return firstGoal ? firstGoal.slice(0, 60) + (firstGoal.length > 60 ? '...' : '') : domainNames || 'Sprint'
+  }
+
+  if (sprints.length === 0) return (
+    <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.45)' }}>No sprints yet.</p>
+  )
+
+  return (
+    <>
+      {active.length > 0 && (
+        <div style={{ marginBottom: '16px' }}>
+          <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.50)', marginBottom: '8px' }}>Active sprints</p>
+          {active.map(s => (
+            <VisibilityToggle key={s.id} userId={userId} artefactType="sprint" artefactId={s.id} label={sprintLabel(s)} />
+          ))}
         </div>
-      </main>
+      )}
+      {completed.length > 0 && (
+        <div>
+          <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.50)', marginBottom: '8px' }}>Completed sprints (last 6)</p>
+          {completed.map(s => (
+            <VisibilityToggle key={s.id} userId={userId} artefactType="sprint" artefactId={s.id} label={sprintLabel(s)} />
+          ))}
+        </div>
+      )}
     </>
   )
 }
 
-function PageHeader({ onViewPublic }) {
+// ── IA statement visibility ──────────────────────────────────
+
+function IAStatementVisibility({ userId }) {
+  const [rows, setRows] = useState([])
+
+  useEffect(() => {
+    supabase
+      .from('horizon_profile')
+      .select('domain, ia_statement')
+      .eq('user_id', userId)
+      .not('ia_statement', 'is', null)
+      .then(({ data }) => setRows(data || []))
+  }, [userId])
+
+  const SELF_DOMAIN_LABEL = {
+    path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances',
+    connection: 'Connection', 'inner-game': 'Inner Game', signal: 'Signal',
+  }
+
+  if (rows.length === 0) return (
+    <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.45)' }}>No "I am" statements written yet.</p>
+  )
+
   return (
-    <header
-      style={{
-        marginBottom: '32px',
-        display: 'flex',
-        alignItems: 'flex-end',
-        justifyContent: 'space-between',
-        gap: '16px',
-        flexWrap: 'wrap',
-      }}
-    >
-      <div>
-        <span
-          style={{
-            ...sc,
-            display: 'block',
-            fontSize: '13px',
-            letterSpacing: '0.08em',
-            color: '#A8721A',
-            fontWeight: 600,
-            marginBottom: '6px',
-          }}
-        >
-          Your profile
-        </span>
-        <h1
-          style={{
-            ...display,
-            fontSize: 'clamp(28px, 4vw, 44px)',
-            fontWeight: 300,
-            lineHeight: 1.15,
-            color: '#0F1523',
-            margin: 0,
-          }}
-        >
-          Edit
-        </h1>
-      </div>
-      <button
-        type="button"
-        onClick={onViewPublic}
-        style={{
-          ...sc,
-          background: 'transparent',
-          border: '1px solid rgba(200, 146, 42, 0.45)',
-          borderRadius: '40px',
-          padding: '8px 18px',
-          fontSize: '14px',
-          letterSpacing: '0.04em',
-          fontWeight: 600,
-          color: '#A8721A',
-          cursor: 'pointer',
-          transition: 'background 120ms ease',
-        }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.background = 'rgba(200, 146, 42, 0.05)')
-        }
-        onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
-      >
-        View public profile
-      </button>
-    </header>
+    <>
+      {rows.map(r => (
+        <VisibilityToggle
+          key={r.domain}
+          userId={userId}
+          artefactType="ia_statement"
+          artefactId={r.domain}
+          label={`${SELF_DOMAIN_LABEL[r.domain] || r.domain}: ${r.ia_statement.slice(0, 55)}${r.ia_statement.length > 55 ? '...' : ''}`}
+        />
+      ))}
+    </>
   )
 }
 
-function Section({ eyebrow, title, children }) {
-  return (
-    <section
-      style={{
-        marginBottom: '40px',
-        paddingBottom: '32px',
-        borderBottom: '1px solid rgba(200, 146, 42, 0.20)',
-      }}
-    >
-      <div style={{ marginBottom: '20px' }}>
-        <span
-          style={{
-            ...sc,
-            display: 'block',
-            fontSize: '12px',
-            letterSpacing: '0.08em',
-            color: '#A8721A',
-            fontWeight: 600,
-            marginBottom: '6px',
-          }}
-        >
-          {eyebrow}
-        </span>
-        <h2
-          style={{
-            ...display,
-            fontSize: 'clamp(22px, 3vw, 30px)',
-            fontWeight: 300,
-            lineHeight: 1.2,
-            color: '#0F1523',
-            margin: 0,
-          }}
-        >
-          {title}
-        </h2>
-      </div>
-      {children}
-    </section>
-  )
-}
+// ── Principle alignment editor ───────────────────────────────
 
-function Row({ children }) {
-  return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-        gap: '20px',
-      }}
-    >
-      {children}
-    </div>
-  )
-}
+function PrincipleAlignmentEditor({ userId, engagedPrinciples, onEngagedChange }) {
+  const [taggings, setTaggings] = useState([])
 
-function FieldColumn({ label, children }) {
+  useEffect(() => {
+    supabase
+      .from('principle_taggings')
+      .select('principle_slug, weight, note')
+      .eq('target_type', 'contributor')
+      .eq('target_id', userId)
+      .then(({ data }) => setTaggings(data || []))
+  }, [userId])
+
+  async function upsertTagging(slug, updates) {
+    await supabase.from('principle_taggings').upsert({
+      target_type:    'contributor',
+      target_id:      userId,
+      principle_slug: slug,
+      ...updates,
+    }, { onConflict: 'target_type,target_id,principle_slug' })
+    // Refresh
+    const { data } = await supabase
+      .from('principle_taggings')
+      .select('principle_slug, weight, note')
+      .eq('target_type', 'contributor')
+      .eq('target_id', userId)
+    setTaggings(data || [])
+  }
+
+  async function removeTagging(slug) {
+    await supabase.from('principle_taggings')
+      .delete()
+      .eq('target_type', 'contributor')
+      .eq('target_id', userId)
+      .eq('principle_slug', slug)
+    setTaggings(t => t.filter(x => x.principle_slug !== slug))
+  }
+
   return (
     <div>
-      <span
-        style={{
-          ...sc,
-          display: 'block',
-          fontSize: '12px',
-          letterSpacing: '0.08em',
-          color: 'rgba(15, 21, 35, 0.72)',
-          fontWeight: 600,
-          marginBottom: '6px',
-        }}
-      >
-        {label}
-      </span>
-      {children}
+      <div style={{ marginBottom: '16px' }}>
+        <DomainChips
+          domains={PLATFORM_PRINCIPLES}
+          selected={engagedPrinciples}
+          onToggle={async (slug) => {
+            const next = engagedPrinciples.includes(slug)
+              ? engagedPrinciples.filter(p => p !== slug)
+              : [...engagedPrinciples, slug]
+            await onEngagedChange(next)
+            if (!next.includes(slug)) await removeTagging(slug)
+          }}
+        />
+      </div>
+
+      {engagedPrinciples.map(slug => {
+        const principle = PLATFORM_PRINCIPLES.find(p => p.value === slug)
+        if (!principle) return null
+        const tagging = taggings.find(t => t.principle_slug === slug)
+
+        return (
+          <div key={slug} style={{
+            padding: '14px 18px', borderRadius: '10px',
+            background: 'rgba(200,146,42,0.04)',
+            border: '1px solid rgba(200,146,42,0.18)',
+            marginBottom: '10px',
+          }}>
+            <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, marginBottom: '10px' }}>
+              {principle.label}
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: '12px', alignItems: 'flex-start' }}>
+              <div>
+                <Label>Weight</Label>
+                <select
+                  value={tagging?.weight || 'primary'}
+                  onChange={async e => {
+                    await upsertTagging(slug, { weight: e.target.value, note: tagging?.note || null })
+                  }}
+                  style={{ ...body, fontSize: '14px', color: dark, padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
+                >
+                  {WEIGHT_OPTIONS.map(w => <option key={w.value} value={w.value}>{w.label}</option>)}
+                </select>
+              </div>
+              <div>
+                <Label>How (optional)</Label>
+                <input
+                  defaultValue={tagging?.note || ''}
+                  onBlur={async e => {
+                    await upsertTagging(slug, { weight: tagging?.weight || 'primary', note: e.target.value.trim() || null })
+                  }}
+                  placeholder="One sentence on how this principle shows up in your work."
+                  style={{ ...body, fontSize: '14px', color: dark, padding: '9px 14px', borderRadius: '6px', border: '1px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}
+                />
+              </div>
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }
 
-function StatementBlock({ userId, column, label, helper, value, onSave }) {
-  // Each statement gets its own visibility toggle.
-  // artefact_type='ia_statement', artefact_id=<column name>.
-  const { visibility, setVisibility, loading } = useArtefactVisibility(
-    userId,
-    'ia_statement',
-    column,
-  )
+// ── Main page ────────────────────────────────────────────────
 
-  return (
-    <article
-      style={{
-        background: '#FFFFFF',
-        border: '1px solid rgba(200, 146, 42, 0.20)',
-        borderRadius: '14px',
-        padding: '16px 18px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'space-between',
-          gap: '16px',
-          flexWrap: 'wrap',
-          marginBottom: '10px',
-        }}
-      >
-        <span
-          style={{
-            ...sc,
-            fontSize: '13px',
-            letterSpacing: '0.06em',
-            color: '#A8721A',
-            fontWeight: 600,
-          }}
-        >
-          {label}
-        </span>
-        <VisibilityToggle
-          value={visibility}
-          onChange={(next) => setVisibility(next).catch(() => {})}
-          disabled={loading}
-          compact
-        />
+export function BetaProfileEditPage() {
+  const { user, loading: authLoading } = useAuth()
+  const [profile, setProfile]         = useState(null)
+  const [loading, setLoading]         = useState(true)
+
+  // Local state for multi-select fields — saved to DB on change
+  const [engagedCivDomains, setEngagedCivDomains]   = useState([])
+  const [engagedSelfDomains, setEngagedSelfDomains]  = useState([])
+  const [engagedPrinciples, setEngagedPrinciples]    = useState([])
+  const [savingDomains, setSavingDomains]             = useState(false)
+
+  useEffect(() => {
+    if (authLoading || !user) return
+    supabase
+      .from('contributor_profiles_beta')
+      .select('*')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        setProfile(data || {})
+        setEngagedCivDomains(data?.engaged_civ_domains || [])
+        setEngagedSelfDomains(data?.engaged_self_domains || [])
+        setEngagedPrinciples(data?.engaged_principles || [])
+        setLoading(false)
+      })
+  }, [user, authLoading])
+
+  async function saveField(field, value) {
+    if (!user) return
+    await supabase
+      .from('contributor_profiles_beta')
+      .upsert({ user_id: user.id, [field]: value }, { onConflict: 'user_id' })
+  }
+
+  async function saveDomains(civDomains, selfDomains, principles) {
+    if (!user) return
+    setSavingDomains(true)
+    await supabase.from('contributor_profiles_beta').upsert({
+      user_id:             user.id,
+      engaged_civ_domains: civDomains,
+      engaged_self_domains: selfDomains,
+      engaged_principles:  principles,
+    }, { onConflict: 'user_id' })
+    setSavingDomains(false)
+  }
+
+  async function toggleCivDomain(slug) {
+    const next = engagedCivDomains.includes(slug)
+      ? engagedCivDomains.filter(d => d !== slug)
+      : [...engagedCivDomains, slug]
+    setEngagedCivDomains(next)
+    await saveDomains(next, engagedSelfDomains, engagedPrinciples)
+  }
+
+  async function toggleSelfDomain(slug) {
+    const next = engagedSelfDomains.includes(slug)
+      ? engagedSelfDomains.filter(d => d !== slug)
+      : [...engagedSelfDomains, slug]
+    setEngagedSelfDomains(next)
+    await saveDomains(engagedCivDomains, next, engagedPrinciples)
+  }
+
+  async function updatePrinciples(next) {
+    setEngagedPrinciples(next)
+    await saveDomains(engagedCivDomains, engagedSelfDomains, next)
+  }
+
+  if (authLoading || loading) {
+    return (
+      <div style={{ background: parch, minHeight: '100vh' }}>
+        <Nav activePath="" />
+        <div style={{ maxWidth: '680px', margin: '0 auto', padding: '120px 40px', textAlign: 'center' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.50)' }}>Loading your profile...</p>
+        </div>
       </div>
-      <AutoSaveTextarea
-        id={`stmt-${column}`}
-        value={value}
-        onSave={onSave}
-        rows={3}
-        maxLength={500}
-        placeholder=""
-        helperText={helper}
-      />
-    </article>
-  )
-}
+    )
+  }
 
-function PlacementVisibilityRow({ userId }) {
-  // Single visibility row that gates the entire placement bundle.
-  const { visibility, setVisibility, loading } = useArtefactVisibility(
-    userId,
-    'focus_claim',
-    'placement_bundle',
-  )
-  return (
-    <article
-      style={{
-        background: '#FFFFFF',
-        border: '1px solid rgba(200, 146, 42, 0.20)',
-        borderRadius: '14px',
-        padding: '14px 16px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '16px',
-        flexWrap: 'wrap',
-      }}
-    >
-      <p
-        style={{
-          ...body,
-          margin: 0,
-          fontSize: '15px',
-          lineHeight: 1.55,
-          color: '#0F1523',
-          flex: 1,
-          minWidth: '200px',
-        }}
-      >
-        Show your placement on your public profile.
-      </p>
-      <VisibilityToggle
-        value={visibility}
-        onChange={(next) => setVisibility(next).catch(() => {})}
-        disabled={loading}
-      />
-    </article>
-  )
-}
+  if (!user) return null
 
-function FooterMeta() {
   return (
-    <p
-      style={{
-        ...body,
-        fontSize: '13px',
-        lineHeight: 1.55,
-        color: 'rgba(15, 21, 35, 0.55)',
-        margin: '24px 0 0',
-        textAlign: 'center',
-      }}
-    >
-      Free-text fields save when you click away. Selections save when you press
-      Save. Visibility changes are instant.
-    </p>
+    <div style={{ background: parch, minHeight: '100vh' }}>
+      <Nav activePath="" />
+
+      <style>{`
+        @media (max-width: 640px) {
+          .beta-edit-main { padding-left: 20px !important; padding-right: 20px !important; }
+        }
+      `}</style>
+
+      <div className="beta-edit-main" style={{
+        maxWidth: '680px',
+        margin: '0 auto',
+        padding: 'clamp(96px, 12vw, 128px) clamp(20px, 5vw, 48px) 160px',
+      }}>
+
+        {/* Page header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '52px' }}>
+          <div>
+            <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: gold, marginBottom: '10px' }}>
+              Profile
+            </p>
+            <h1 style={{ ...body, fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 300, color: dark, lineHeight: 1.1, margin: 0 }}>
+              {profile?.display_name || 'Your profile'}
+            </h1>
+          </div>
+          <Link
+            to={`/beta/profile/${user.id}`}
+            target="_blank"
+            style={{
+              ...sc, fontSize: '12px', letterSpacing: '0.14em',
+              padding: '10px 20px', borderRadius: '40px',
+              border: '1px solid rgba(15,21,35,0.25)',
+              color: 'rgba(15,21,35,0.55)', textDecoration: 'none',
+              flexShrink: 0, marginTop: '4px',
+            }}
+          >
+            View public profile
+          </Link>
+        </div>
+
+        {/* ── Profile fields ────────────────────────────── */}
+        <Section
+          title="About"
+          subtitle="Auto-saves when you leave a field."
+        >
+          <AutoSaveField
+            label="Display name"
+            value={profile?.display_name}
+            onSave={v => saveField('display_name', v)}
+            placeholder="Your name as it appears on your profile"
+          />
+          <AutoSaveField
+            label="Headline"
+            value={profile?.headline}
+            onSave={v => saveField('headline', v)}
+            placeholder="One line. What you are building or doing."
+          />
+          <AutoSaveField
+            label="What I stand for"
+            value={profile?.what_i_stand_for}
+            onSave={v => saveField('what_i_stand_for', v)}
+            multiline
+            rows={4}
+            placeholder="Free text. What principles or commitments guide your work?"
+            hint="This appears in the 'What I stand for' section of your public profile."
+          />
+          <AutoSaveField
+            label="What I am offering"
+            value={profile?.count_on_me_for}
+            onSave={v => saveField('count_on_me_for', v)}
+            multiline
+            rows={3}
+            placeholder="What can people count on you for?"
+          />
+          <AutoSaveField
+            label="What I am not for"
+            value={profile?.dont_count_on_me_for}
+            onSave={v => saveField('dont_count_on_me_for', v)}
+            multiline
+            rows={3}
+            placeholder="What should people not expect of you?"
+          />
+        </Section>
+
+        {/* ── Visibility ───────────────────────────────── */}
+        <Section
+          title="Visibility"
+          subtitle='Everything is private by default. Toggle on to make an artefact visible on your public profile.'
+        >
+          <div style={{ marginBottom: '20px' }}>
+            <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.50)', marginBottom: '10px' }}>
+              Self wheel
+            </p>
+            {SELF_DOMAINS.map(d => (
+              <VisibilityToggle key={d.value} userId={user.id} artefactType="wheel_self" artefactId={d.value} label={d.label} />
+            ))}
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.50)', marginBottom: '10px' }}>
+              Civilisational wheel
+            </p>
+            {CIV_DOMAINS.map(d => (
+              <VisibilityToggle key={d.value} userId={user.id} artefactType="wheel_civ" artefactId={d.value} label={d.label} />
+            ))}
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.50)', marginBottom: '10px' }}>
+              "I am" statements
+            </p>
+            <IAStatementVisibility userId={user.id} />
+          </div>
+
+          <div>
+            <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.50)', marginBottom: '10px' }}>
+              Sprints
+            </p>
+            <SprintVisibility userId={user.id} />
+          </div>
+        </Section>
+
+        {/* ── Domain engagement ─────────────────────────── */}
+        <Section
+          title="Domain engagement"
+          subtitle="Which civilisational and personal domains does your work genuinely touch?"
+        >
+          <div style={{ marginBottom: '24px' }}>
+            <Label>
+              Civilisational domains
+              {savingDomains && <span style={{ marginLeft: '8px', color: 'rgba(15,21,35,0.40)', fontStyle: 'normal', fontSize: '11px' }}>Saving...</span>}
+            </Label>
+            <div style={{ marginTop: '10px' }}>
+              <DomainChips domains={CIV_DOMAINS} selected={engagedCivDomains} onToggle={toggleCivDomain} />
+            </div>
+            <Hint>These appear on your civilisational wheel when marked public.</Hint>
+          </div>
+          <div>
+            <Label>
+              Self domains
+              {savingDomains && <span style={{ marginLeft: '8px', color: 'rgba(15,21,35,0.40)', fontStyle: 'normal', fontSize: '11px' }}>Saving...</span>}
+            </Label>
+            <div style={{ marginTop: '10px' }}>
+              <DomainChips domains={SELF_DOMAINS} selected={engagedSelfDomains} onToggle={toggleSelfDomain} />
+            </div>
+            <Hint>These appear on your self wheel when marked public.</Hint>
+          </div>
+        </Section>
+
+        {/* ── Principle alignment ───────────────────────── */}
+        <Section
+          title="Principle alignment"
+          subtitle="Which of the four platform principles does your work engage? Choose freely. Set weight and add a note for each."
+        >
+          <PrincipleAlignmentEditor
+            userId={user.id}
+            engagedPrinciples={engagedPrinciples}
+            onEngagedChange={updatePrinciples}
+          />
+        </Section>
+
+        {/* ── Bilateral cards (Module 10) ───────────────── */}
+        <Section
+          title="Bilateral cards"
+        >
+          <BilateralInbox
+            currentUserId={user.id}
+            currentDisplayName={profile?.display_name}
+          />
+        </Section>
+
+      </div>
+
+      <SiteFooter />
+    </div>
   )
 }
