@@ -59,6 +59,25 @@ import { CheckoutPage }          from './pages/Checkout'
 import { AuthCallbackPage }       from './pages/AuthCallback'
 import { WatchPage }              from './pages/Watch'
 
+// ── Beta pages (Section 7 of NextUs Beta Build Architecture v1.2) ──
+// Open access during the build. Walk the new flow at /beta/dashboard.
+import BetaDashboard              from './beta/pages/BetaDashboard'
+import BetaProfileEdit            from './beta/pages/BetaProfileEdit'
+import { BetaPublicProfile }      from './beta/pages/BetaPublicProfile'
+import { BetaFeedPage }           from './beta/pages/BetaFeed'
+import BetaContribution           from './beta/pages/BetaContribution'
+import { BetaOrgPublicPage }      from './beta/pages/BetaOrgPublic'
+import { BetaOrgManagePage }      from './beta/pages/BetaOrgManage'
+import { BetaMapPage }            from './beta/pages/BetaMap'
+import { BetaAdminConsolePage }   from './beta/pages/BetaAdminConsole'
+import { BetaNominatePage }       from './beta/pages/BetaNominate'
+import { BetaDomainPage }         from './beta/pages/BetaDomain'
+import BetaPractices              from './beta/pages/BetaPractices'
+import BetaPracticeDetail         from './beta/pages/BetaPracticeDetail'
+import BetaPracticeContribute     from './beta/pages/BetaPracticeContribute'
+import { BetaInvitationPage }     from './beta/pages/BetaInvitation'
+import { BetaInvitationIndexPage } from './beta/pages/BetaInvitationIndex'
+
 // ── Tools ─────────────────────────────────────────────────────
 import { NorthStarPage }                           from './tools/orienteering/Orienteering'
 import { MapPage }                                 from './tools/map/Map'
@@ -134,6 +153,25 @@ function AppInner() {
         <Route path="/tools/purpose-piece/deep"  element={<PurposePieceDeepPage />} />
         <Route path="/tools/target-sprint"       element={<TargetSprintPage />} />
         <Route path="/tools/horizon-practice"    element={<HorizonPracticePage />} />
+
+        {/* ── Beta — open access during the build. /beta lands on Mission Control. ── */}
+        <Route path="/beta"                      element={<Navigate to="/beta/dashboard" replace />} />
+        <Route path="/beta/dashboard"            element={<BetaDashboard />} />
+        <Route path="/beta/profile/edit"         element={<BetaProfileEdit />} />
+        <Route path="/beta/profile/:id"          element={<BetaPublicProfile />} />
+        <Route path="/beta/feed"                 element={<BetaFeedPage />} />
+        <Route path="/beta/contribution"         element={<BetaContribution />} />
+        <Route path="/beta/org/:slug"            element={<BetaOrgPublicPage />} />
+        <Route path="/beta/org/:slug/manage"     element={<BetaOrgManagePage />} />
+        <Route path="/beta/map"                  element={<BetaMapPage />} />
+        <Route path="/beta/admin"                element={<BetaAdminConsolePage />} />
+        <Route path="/beta/nominate"             element={<BetaNominatePage />} />
+        <Route path="/beta/domain/:slug"         element={<BetaDomainPage />} />
+        <Route path="/beta/practices"            element={<BetaPractices />} />
+        <Route path="/beta/practices/new"        element={<BetaPracticeContribute />} />
+        <Route path="/beta/practice/:slug"       element={<BetaPracticeDetail />} />
+        <Route path="/beta/invitation"           element={<BetaInvitationIndexPage />} />
+        <Route path="/beta/invitation/:slug"     element={<BetaInvitationPage />} />
 
         {/* ── Legacy redirects — clean once confirmed dead ── */}
         <Route path="/life-os"             element={<Navigate to="/nextus-self" replace />} />
