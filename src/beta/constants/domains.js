@@ -118,3 +118,70 @@ export const SUBDOMAINS = {
     { slug: 'vis-declaration', label: 'Declaration & Becoming'     },
   ],
 }
+
+// ─── Derived / aliased exports ───────────────────────────────────────────────
+// Several modules reach for these names; keeping them as exported aliases
+// preserves a single source of truth.
+
+// Slug → CIV_DOMAIN object. Used by PracticeCard, BetaPracticeDetail.
+export const CIV_DOMAIN_BY_SLUG = Object.fromEntries(
+  CIV_DOMAINS.map((d) => [d.slug, d])
+)
+
+// SUBDOMAIN_MAP_BETA — wraps SUBDOMAINS in the shape consumers settled on:
+//   { [domainSlug]: { subdomains: [{ slug, label }, ...] } }
+// Used by BetaAdminConsole, BetaPracticeContribute, BetaPracticeDetail.
+export const SUBDOMAIN_MAP_BETA = Object.fromEntries(
+  Object.entries(SUBDOMAINS).map(([domainSlug, list]) => [
+    domainSlug,
+    { subdomains: list },
+  ])
+)
+
+// LENSES_PER_DOMAIN — re-export from lenses.js for the two pages that import
+// it from this module. The canonical definition lives in constants/lenses.js;
+// importing from there is preferred for new code, but legacy imports here
+// keep working.
+export { LENSES_PER_DOMAIN } from './lenses'
+
+// ─── FIELDS — substrate-within-subdomain detail ─────────────────────────────
+// Nature is the pilot per architecture v1.2; field-level taxonomy for the
+// other six domains is "Pending v3 review" in NextUs_Domain_Structure_COMPLETE
+// and ships empty here. Consumers use Object.values(FIELDS) and tolerate
+// missing keys.
+//
+// Keyed by SUBDOMAIN slug (not domain slug) because field detail belongs to
+// the substrate, not the dimension. BetaMap iterates Object.values(FIELDS).
+
+export const FIELDS = {
+  // ── Nature ────────────────────────────────────────────────────────────────
+  'nat-earth': [
+    { slug: 'nat-earth-soil',           label: 'Soil & Living Ground'      },
+    { slug: 'nat-earth-landscape',      label: 'Landscape & Bioregion'     },
+    { slug: 'nat-earth-geology',        label: 'Geology & Deep Earth'      },
+  ],
+  'nat-air': [
+    { slug: 'nat-air-breath',           label: 'Breath & Local Air'                },
+    { slug: 'nat-air-weather',          label: 'Weather & Atmospheric Systems'     },
+    { slug: 'nat-air-planetary',        label: 'Planetary Atmosphere'              },
+  ],
+  'nat-water': [
+    { slug: 'nat-water-fresh',          label: 'Freshwater Systems'                },
+    { slug: 'nat-water-ocean',          label: 'Ocean & Marine Systems'            },
+    { slug: 'nat-water-cryosphere',     label: 'Cryosphere & Frozen Water'         },
+  ],
+  'nat-flora': [
+    { slug: 'nat-flora-wild',           label: 'Wild & Foundational Flora'         },
+    { slug: 'nat-flora-cultivated',     label: 'Cultivated Flora'                  },
+    { slug: 'nat-flora-relational',     label: 'Relational & Systemic Flora'       },
+  ],
+  'nat-fauna': [
+    { slug: 'nat-fauna-wild',           label: 'Wild Fauna'                        },
+    { slug: 'nat-fauna-domesticated',   label: 'Domesticated Fauna'                },
+    { slug: 'nat-fauna-relational',     label: 'Relational & Cross-Domain Fauna'   },
+  ],
+
+  // Other six domains: pending v3 field-level taxonomy review. Empty arrays
+  // keep Object.values(FIELDS) consistent and avoid undefined access.
+}
+

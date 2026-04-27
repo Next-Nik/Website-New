@@ -73,7 +73,7 @@ function OrderedList({ items, onReorder, onRemove, renderItem }) {
           borderRadius: '8px',
         }}>
           {i === 0 && (
-            <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: gold, background: '#C8922A', color: '#FFFFFF', padding: '2px 8px', borderRadius: '40px', flexShrink: 0 }}>
+            <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', background: '#C8922A', color: '#FFFFFF', padding: '2px 8px', borderRadius: '40px', flexShrink: 0 }}>
               Primary
             </span>
           )}

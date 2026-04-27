@@ -43,3 +43,5 @@ export function PrincipleStrip({ taggings = [], maxVisible = 4 }) {
     </div>
   )
 }
+
+export default PrincipleStrip
