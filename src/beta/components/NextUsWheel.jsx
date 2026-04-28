@@ -179,7 +179,7 @@ export default function NextUsWheel({
                 textAnchor={anchor}
                 dominantBaseline="middle"
                 fontFamily="'Cormorant SC', Georgia, serif"
-                fontSize="8"
+                fontSize="11"
                 letterSpacing="0.5"
                 fill={isActive ? d.color : 'rgba(15,21,35,0.55)'}
               >

@@ -177,7 +177,7 @@ export default function SelfWheel({
                 textAnchor={anchor}
                 dominantBaseline="middle"
                 fontFamily="'Cormorant SC', Georgia, serif"
-                fontSize="8.5"
+                fontSize="11"
                 letterSpacing="0.5"
                 fill="rgba(15,21,35,0.55)"
               >

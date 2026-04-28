@@ -27,10 +27,10 @@ import NextUsWheel from '../components/NextUsWheel'
 import SprintSlate from '../components/SprintSlate'
 import PrincipleBadge from '../components/PrincipleBadge'
 
-// ─── Font constants ────────────────────────────────────────────────────────────
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+// ─── Font constants (canonical order: serif, body, sc) ─────────────────────────
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+const body  = { fontFamily: "'Lora', Georgia, serif" }
+const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 // ─── Shared primitives ─────────────────────────────────────────────────────────
 
@@ -38,7 +38,7 @@ function Eyebrow({ children, style = {} }) {
   return (
     <span style={{
       ...sc,
-      fontSize: '11px',
+      fontSize: '13px',
       letterSpacing: '0.2em',
       color: '#A8721A',
       textTransform: 'uppercase',
@@ -52,7 +52,7 @@ function Eyebrow({ children, style = {} }) {
 }
 
 function Rule() {
-  return <div style={{ height: '1px', background: 'rgba(200,146,42,0.15)', margin: '28px 0' }} />
+  return <div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', margin: '28px 0' }} />
 }
 
 // ─── Loading skeleton ──────────────────────────────────────────────────────────
@@ -63,7 +63,7 @@ function LoadingBar({ width = '100%', height = '16px', borderRadius = '4px' }) {
       width,
       height,
       borderRadius,
-      background: 'rgba(200,146,42,0.06)',
+      background: 'rgba(200,146,42,0.05)',
       animation: 'pulse 1.8s ease-in-out infinite',
     }} />
   )
@@ -87,8 +87,8 @@ function IdentityBar({ user, profile, focusName, loading }) {
       flexWrap: 'wrap',
       gap: '12px',
       padding: '20px 24px',
-      background: 'rgba(200,146,42,0.03)',
-      border: '1px solid rgba(200,146,42,0.15)',
+      background: 'rgba(200,146,42,0.05)',
+      border: '1px solid rgba(200,146,42,0.20)',
       borderRadius: '14px',
       marginBottom: '28px',
     }}>
@@ -99,7 +99,7 @@ function IdentityBar({ user, profile, focusName, loading }) {
         ) : (
           <div style={{
             ...serif,
-            fontSize: 'clamp(22px, 3vw, 30px)',
+            fontSize: 'clamp(22px, 3vw, 32px)',
             fontWeight: 300,
             color: '#0F1523',
             lineHeight: 1.2,
@@ -112,7 +112,7 @@ function IdentityBar({ user, profile, focusName, loading }) {
         {focusName && (
           <div style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             color: 'rgba(15,21,35,0.55)',
             marginBottom: '10px',
@@ -137,7 +137,7 @@ function IdentityBar({ user, profile, focusName, loading }) {
           to={`/beta/profile/${user.id}`}
           style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             color: '#A8721A',
             textDecoration: 'none',
@@ -163,7 +163,7 @@ function HorizonStatePanel({ horizonProfile, loading }) {
     <div style={{
       padding: '18px 20px',
       background: '#FFFFFF',
-      border: '1px solid rgba(200,146,42,0.18)',
+      border: '1px solid rgba(200,146,42,0.20)',
       borderRadius: '14px',
       flex: 1,
       minWidth: 0,
@@ -174,12 +174,12 @@ function HorizonStatePanel({ horizonProfile, loading }) {
         <LoadingBar width="80%" height="14px" />
       ) : !hasAny ? (
         <div>
-          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, margin: '0 0 12px' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, margin: '0 0 12px' }}>
             Your daily check-in grounds the rest.
           </p>
           <a
             href="/tools/horizon-state"
-            style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}
           >
             Begin check-in
           </a>
@@ -192,10 +192,10 @@ function HorizonStatePanel({ horizonProfile, loading }) {
               if (d.current_score == null) return null
               return (
                 <div key={d.domain} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', textTransform: 'capitalize' }}>
+                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', textTransform: 'capitalize' }}>
                     {d.domain?.replace('_', ' ')}
                   </span>
-                  <span style={{ ...sc, fontSize: '12px', color: getTierColor(d.current_score) }}>
+                  <span style={{ ...sc, fontSize: '13px', color: getTierColor(d.current_score) }}>
                     {d.current_score}
                   </span>
                 </div>
@@ -204,7 +204,7 @@ function HorizonStatePanel({ horizonProfile, loading }) {
           </div>
           <a
             href="/tools/horizon-state"
-            style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}
           >
             Today's check-in
           </a>
@@ -221,7 +221,7 @@ function TodayPracticeCard({ practice, loading }) {
     <div style={{
       padding: '18px 20px',
       background: '#FFFFFF',
-      border: '1px solid rgba(200,146,42,0.18)',
+      border: '1px solid rgba(200,146,42,0.20)',
       borderRadius: '14px',
       flex: 1,
       minWidth: 0,
@@ -232,12 +232,12 @@ function TodayPracticeCard({ practice, loading }) {
         <LoadingBar width="90%" height="14px" />
       ) : !practice ? (
         <div>
-          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, margin: '0 0 12px' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, margin: '0 0 12px' }}>
             A single practice, done with attention, is enough.
           </p>
           <a
             href="/tools/horizon-practice"
-            style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}
           >
             Set up Horizon Practice
           </a>
@@ -246,7 +246,7 @@ function TodayPracticeCard({ practice, loading }) {
         <div>
           <p style={{
             ...body,
-            fontSize: '15px',
+            fontSize: '17px',
             color: '#0F1523',
             lineHeight: 1.55,
             fontWeight: 400,
@@ -255,13 +255,13 @@ function TodayPracticeCard({ practice, loading }) {
             {practice.focus}
           </p>
           {practice.today && (
-            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, margin: '0 0 12px' }}>
+            <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, margin: '0 0 12px' }}>
               {practice.today.slice(0, 120)}{practice.today.length > 120 ? '...' : ''}
             </p>
           )}
           <a
             href="/tools/horizon-practice"
-            style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none' }}
           >
             Open practice
           </a>
@@ -274,7 +274,7 @@ function TodayPracticeCard({ practice, loading }) {
 // ─── Tier color helper ─────────────────────────────────────────────────────────
 
 function getTierColor(n) {
-  if (n == null) return 'rgba(200,146,42,0.3)'
+  if (n == null) return 'rgba(200,146,42,0.5)'
   if (n >= 9)   return '#3B6B9E'
   if (n >= 7)   return '#5A8AB8'
   if (n >= 5)   return '#8A8070'
@@ -295,7 +295,7 @@ function BetaFooter() {
     <div style={{
       marginTop: '48px',
       paddingTop: '20px',
-      borderTop: '1px solid rgba(200,146,42,0.15)',
+      borderTop: '1px solid rgba(200,146,42,0.20)',
       display: 'flex',
       gap: '24px',
       flexWrap: 'wrap',
@@ -306,7 +306,7 @@ function BetaFooter() {
           to={l.to}
           style={{
             ...sc,
-            fontSize: '12px',
+            fontSize: '13px',
             letterSpacing: '0.16em',
             color: 'rgba(15,21,35,0.55)',
             textDecoration: 'none',
@@ -623,7 +623,7 @@ function SelfWheelDivider() {
   return (
     <div style={{
       width: '1px',
-      background: 'rgba(200,146,42,0.12)',
+      background: 'rgba(200,146,42,0.08)',
       alignSelf: 'stretch',
       flexShrink: 0,
     }}
