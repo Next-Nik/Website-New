@@ -252,11 +252,11 @@ function TodayPracticeCard({ practice, loading }) {
             fontWeight: 400,
             margin: '0 0 8px',
           }}>
-            {practice.name || practice.title}
+            {practice.focus}
           </p>
-          {practice.description && (
+          {practice.today && (
             <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, margin: '0 0 12px' }}>
-              {practice.description.slice(0, 120)}{practice.description.length > 120 ? '...' : ''}
+              {practice.today.slice(0, 120)}{practice.today.length > 120 ? '...' : ''}
             </p>
           )}
           <a
@@ -402,14 +402,14 @@ export default function BetaDashboard() {
           .from('purpose_piece_results')
           .select('session')
           .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
+          .order('updated_at', { ascending: false })
           .limit(1)
           .maybeSingle(),
 
         // Today's practice (most recent active horizon_practice session)
         supabase
           .from('horizon_practice_sessions')
-          .select('name, description, practice_id')
+          .select('focus, skill, today, identity_anchor, session_date')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(1)
