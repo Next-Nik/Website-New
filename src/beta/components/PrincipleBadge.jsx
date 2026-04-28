@@ -6,13 +6,16 @@
 import { useState, useRef, useEffect } from 'react'
 import { PRINCIPLE_BY_SLUG } from '../constants/principles'
 
-const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
+// Visual weight differentiation comes from border + background only.
+// Text opacity is governed by the three-level rule (full / 0.72 / 0.55) and is
+// not used here to imply hierarchy.
 const WEIGHT_STYLES = {
-  primary:   { opacity: 1,    border: '1.5px solid rgba(200,146,42,0.65)', bg: 'rgba(200,146,42,0.10)' },
-  secondary: { opacity: 0.85, border: '1px solid rgba(200,146,42,0.40)',   bg: 'rgba(200,146,42,0.06)' },
-  tertiary:  { opacity: 0.65, border: '1px solid rgba(200,146,42,0.22)',   bg: 'transparent'           },
+  primary:   { border: '1.5px solid rgba(200,146,42,0.78)', bg: 'rgba(200,146,42,0.08)' },
+  secondary: { border: '1px solid rgba(200,146,42,0.20)',   bg: 'rgba(200,146,42,0.05)' },
+  tertiary:  { border: '1px solid rgba(200,146,42,0.20)',   bg: 'transparent'           },
 }
 
 export function PrincipleBadge({ slug, weight = 'primary', inline = false }) {
@@ -39,7 +42,7 @@ export function PrincipleBadge({ slug, weight = 'primary', inline = false }) {
         onClick={() => setOpen(o => !o)}
         style={{
           ...sc,
-          fontSize: '11px',
+          fontSize: '13px',
           letterSpacing: '0.12em',
           color: '#A8721A',
           background: ws.bg,
@@ -47,17 +50,16 @@ export function PrincipleBadge({ slug, weight = 'primary', inline = false }) {
           borderRadius: '4px',
           padding: '3px 9px',
           cursor: 'pointer',
-          opacity: ws.opacity,
           display: 'inline-flex',
           alignItems: 'center',
           gap: '4px',
-          transition: 'opacity 0.15s',
+          transition: 'background 0.15s, border-color 0.15s',
           whiteSpace: 'nowrap',
         }}
         aria-expanded={open}
       >
         {principle.shortLabel}
-        <span style={{ fontSize: '9px', opacity: 0.6 }}>{open ? '▴' : '▾'}</span>
+        <span style={{ fontSize: '13px', color: '#A8721A' }}>{open ? '▴' : '▾'}</span>
       </button>
 
       {open && (
@@ -68,15 +70,15 @@ export function PrincipleBadge({ slug, weight = 'primary', inline = false }) {
           zIndex: 100,
           width: '280px',
           background: '#FFFFFF',
-          border: '1.5px solid rgba(200,146,42,0.35)',
-          borderRadius: '10px',
+          border: '1.5px solid rgba(200,146,42,0.20)',
+          borderRadius: '14px',
           padding: '14px 16px',
           boxShadow: '0 4px 24px rgba(15,21,35,0.10)',
         }}>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', marginBottom: '8px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', marginBottom: '8px' }}>
             {principle.label}
           </div>
-          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
+          <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
             {principle.definition}
           </p>
         </div>

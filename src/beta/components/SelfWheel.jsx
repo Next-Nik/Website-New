@@ -13,14 +13,14 @@
 
 import { useState } from 'react'
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const SELF_LABELS = ['Path', 'Spark', 'Body', 'Finances', 'Connection', 'Inner Game', 'Signal']
 const SELF_KEYS   = ['path', 'spark', 'body', 'finances', 'connection', 'inner_game', 'signal']
 
 function getTierColor(n) {
-  if (n == null) return 'rgba(200,146,42,0.3)'
+  if (n == null) return 'rgba(200,146,42,0.5)'
   if (n >= 9)   return '#3B6B9E'
   if (n >= 7)   return '#5A8AB8'
   if (n >= 5)   return '#8A8070'
@@ -58,7 +58,7 @@ export default function SelfWheel({
     <div style={{ position: 'relative', display: 'inline-block' }}>
       {/* Eyebrow */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase' }}>
           Self
         </span>
         {onToggleVisibility && (
@@ -75,9 +75,9 @@ export default function SelfWheel({
               alignItems: 'center',
               gap: '4px',
               ...sc,
-              fontSize: '10px',
+              fontSize: '13px',
               letterSpacing: '0.1em',
-              color: visible ? '#A8721A' : 'rgba(15,21,35,0.35)',
+              color: visible ? '#A8721A' : 'rgba(15,21,35,0.55)',
               transition: 'color 150ms ease',
             }}
             onMouseEnter={() => setHovered(true)}
@@ -114,7 +114,7 @@ export default function SelfWheel({
                 key={v}
                 points={pts}
                 fill="none"
-                stroke={v === 5 ? 'rgba(138,48,48,0.12)' : 'rgba(200,146,42,0.07)'}
+                stroke={v === 5 ? 'rgba(138,48,48,0.12)' : 'rgba(200,146,42,0.08)'}
                 strokeWidth={v === 5 ? 1 : 0.5}
                 strokeDasharray={v === 5 ? '2 2' : 'none'}
               />
@@ -136,8 +136,8 @@ export default function SelfWheel({
           {hasScores && (
             <polygon
               points={currentPts}
-              fill="rgba(200,146,42,0.07)"
-              stroke="rgba(200,146,42,0.55)"
+              fill="rgba(200,146,42,0.08)"
+              stroke="rgba(200,146,42,0.5)"
               strokeWidth="1.5"
               strokeLinejoin="round"
             />
@@ -163,7 +163,7 @@ export default function SelfWheel({
             )
           })}
 
-          {/* Axis labels */}
+          {/* Axis labels — sized to fit 220px wheel viewport (data viz, not body text) */}
           {SELF_KEYS.map((k, i) => {
             const a = (Math.PI * 2 * i) / n - Math.PI / 2
             const lx = cx + maxR * 1.22 * Math.cos(a)
@@ -198,12 +198,12 @@ export default function SelfWheel({
             flexDirection: 'column',
             gap: '4px',
           }}>
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.4)' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
               Complete The Map
             </span>
             <a
               href="/tools/map"
-              style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em', color: '#A8721A', textDecoration: 'none' }}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', textDecoration: 'none' }}
             >
               Begin
             </a>

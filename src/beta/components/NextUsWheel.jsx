@@ -14,8 +14,8 @@
 
 import { useState } from 'react'
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
+const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 export const CIV_DOMAINS = [
   { slug: 'human-being',     label: 'Human Being',     shortLabel: 'Human',   color: '#2A6B9E' },
@@ -51,7 +51,7 @@ export default function NextUsWheel({
     <div style={{ position: 'relative', display: 'inline-block' }}>
       {/* Eyebrow */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase' }}>
           Civilisational
         </span>
         {onToggleVisibility && (
@@ -68,9 +68,9 @@ export default function NextUsWheel({
               alignItems: 'center',
               gap: '4px',
               ...sc,
-              fontSize: '10px',
+              fontSize: '13px',
               letterSpacing: '0.1em',
-              color: visible ? '#A8721A' : 'rgba(15,21,35,0.35)',
+              color: visible ? '#A8721A' : 'rgba(15,21,35,0.55)',
               transition: 'color 150ms ease',
             }}
           >
@@ -99,7 +99,7 @@ export default function NextUsWheel({
                 key={frac}
                 points={pts}
                 fill="none"
-                stroke="rgba(200,146,42,0.07)"
+                stroke="rgba(200,146,42,0.08)"
                 strokeWidth="0.5"
               />
             )
@@ -121,7 +121,7 @@ export default function NextUsWheel({
             )
           })}
 
-          {/* Engaged domain fills */}
+          {/* Engaged domain fills (data viz — opacity exempt) */}
           {CIV_DOMAINS.map((d, i) => {
             const isEngaged  = engagedDomains.includes(d.slug)
             const isPrimary  = d.slug === primaryDomain
@@ -138,12 +138,12 @@ export default function NextUsWheel({
                 stroke={d.color}
                 strokeWidth={isPrimary ? 3 : 1.5}
                 strokeLinecap="round"
-                opacity={isPrimary ? 0.85 : 0.45}
+                opacity={isPrimary ? 0.85 : 0.5}
               />
             )
           })}
 
-          {/* Engaged domain dots */}
+          {/* Engaged domain dots (data viz — opacity exempt) */}
           {CIV_DOMAINS.map((d, i) => {
             const isEngaged = engagedDomains.includes(d.slug)
             const isPrimary = d.slug === primaryDomain
@@ -159,12 +159,12 @@ export default function NextUsWheel({
                 fill={d.color}
                 stroke="rgba(250,250,247,0.9)"
                 strokeWidth="1.5"
-                opacity={isPrimary ? 1 : 0.7}
+                opacity={isPrimary ? 1 : 0.72}
               />
             )
           })}
 
-          {/* Labels */}
+          {/* Labels — sized to fit 220px wheel viewport (data viz, not body text) */}
           {CIV_DOMAINS.map((d, i) => {
             const a    = (Math.PI * 2 * i) / n - Math.PI / 2
             const lx   = cx + maxR * 1.24 * Math.cos(a)
@@ -181,7 +181,7 @@ export default function NextUsWheel({
                 fontFamily="'Cormorant SC', Georgia, serif"
                 fontSize="8"
                 letterSpacing="0.5"
-                fill={isActive ? d.color : 'rgba(15,21,35,0.4)'}
+                fill={isActive ? d.color : 'rgba(15,21,35,0.55)'}
               >
                 {d.shortLabel}
               </text>
@@ -200,12 +200,12 @@ export default function NextUsWheel({
             flexDirection: 'column',
             gap: '4px',
           }}>
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.4)' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
               Complete Purpose Piece
             </span>
             <a
               href="/tools/purpose-piece"
-              style={{ ...sc, fontSize: '10px', letterSpacing: '0.1em', color: '#A8721A', textDecoration: 'none' }}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', textDecoration: 'none' }}
             >
               Begin
             </a>
