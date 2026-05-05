@@ -2,7 +2,7 @@
 // TopStrip.jsx
 //
 // The top strip on Mission Control. Three columns:
-//   • Left  — NEXT·US brand
+//   • Left  — NextUs brand
 //   • Centre — user identity: name + thin divider + placement meta
 //   • Right — "MISSION CONTROL" eyebrow
 //
@@ -16,7 +16,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import {
-  GOLD, GOLD_RULE,
+  GOLD_RULE,
   TEXT_INK, TEXT_WHITE, TEXT_META, TEXT_WHITE_META,
   FONT_DISPLAY, FONT_SC,
 } from './tokens'
@@ -29,9 +29,7 @@ export default function TopStrip({
     <div className="mc-top-strip">
       <style>{TOP_CSS}</style>
 
-      <div className="mc-brand">
-        NEXT<span className="mc-brand-dot">·</span>US
-      </div>
+      <div className="mc-brand">NextUs</div>
 
       <div className="mc-identity">
         <div className="mc-identity-name">{userName}</div>
@@ -58,14 +56,13 @@ const TOP_CSS = `
 }
 
 .mc-brand {
-  font-family: ${FONT_SC};
-  font-size: 17px;
-  letter-spacing: 0.20em;
+  font-family: ${FONT_DISPLAY};
+  font-size: 22px;
+  font-weight: 500;
   color: ${TEXT_INK};
-  font-weight: 600;
+  letter-spacing: -0.005em;
 }
 [data-stage="dark"] .mc-brand { color: ${TEXT_WHITE}; }
-.mc-brand-dot { color: ${GOLD}; margin: 0 6px; }
 
 .mc-identity {
   display: flex;
