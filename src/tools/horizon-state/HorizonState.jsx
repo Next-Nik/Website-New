@@ -796,13 +796,51 @@ export function useHorizonStateData(user) {
       setAudioLoading(false)
     }
     supabase
-      .from('pulse_entries')
+      .from('horizon_state_checkins')
       .select('*')
       .eq('user_id', user.id)
-      .eq('source', 'foundation')
-      .order('completed_at', { ascending: false })
+      .order('created_at', { ascending: false })
       .limit(200)
-      .then(({ data }) => { if (data) setSessions(data) })
+      .then(({ data }) => {
+        if (!data) return
+        // Expand each wide row into two virtual "session" objects
+        // (one before, one after) so the rest of the component, which
+        // was written against the old tall schema, keeps working.
+        const expanded = []
+        for (const row of data) {
+          const baseDate = row.before_at || row.after_at || row.created_at
+          const d = baseDate ? new Date(baseDate) : new Date()
+          const weekId    = row.week_id    || getWeekId(d)
+          const monthId   = row.month_id   || getMonthId(d)
+          const quarterId = row.quarter_id || getQuarterId(d)
+          const yearId    = row.year_id    || getYearId(d)
+          if (row.before_value !== null && row.before_value !== undefined) {
+            expanded.push({
+              checkin_stage: 'before',
+              value:         row.before_value,
+              note:          row.before_note,
+              completed_at:  row.before_at,
+              week_id:       weekId,
+              month_id:      monthId,
+              quarter_id:    quarterId,
+              year_id:       yearId,
+            })
+          }
+          if (row.after_value !== null && row.after_value !== undefined) {
+            expanded.push({
+              checkin_stage: 'after',
+              value:         row.after_value,
+              note:          row.after_note,
+              completed_at:  row.after_at,
+              week_id:       weekId,
+              month_id:      monthId,
+              quarter_id:    quarterId,
+              year_id:       yearId,
+            })
+          }
+        }
+        setSessions(expanded)
+      })
     supabase
       .from('map_results')
       .select('life_ia_statement')
@@ -897,13 +935,37 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
     const monthId   = getMonthId(now)
     const quarterId = getQuarterId(now)
     const yearId    = getYearId(now)
-    const periodId  = `${dateStr}-foundation-baseline-${stage}`
-    await supabase.from('pulse_entries').upsert({
-      user_id: user.id, type: 'foundation_checkin', period_id: periodId,
-      source: 'foundation', audio_phase: 'baseline', checkin_stage: stage,
-      week_id: weekId, month_id: monthId, quarter_id: quarterId, year_id: yearId,
-      value, note: note || null, completed_at: nowStr, updated_at: nowStr,
-    }, { onConflict: 'user_id,type,period_id' })
+    const periodId  = `${dateStr}-foundation-baseline`
+
+    // Wide schema: one row per (user_id, period_id), before/after on same row.
+    // Only set the half corresponding to this stage; the other half is left
+    // alone on update (Supabase upsert sends only the columns we name).
+    const payload = {
+      user_id:     user.id,
+      period_id:   periodId,
+      audio_phase: 'baseline',
+      week_id:     weekId,
+      month_id:    monthId,
+      quarter_id:  quarterId,
+      year_id:     yearId,
+    }
+    if (stage === 'before') {
+      payload.before_value = value
+      payload.before_note  = note || null
+      payload.before_at    = nowStr
+    } else {
+      payload.after_value  = value
+      payload.after_note   = note || null
+      payload.after_at     = nowStr
+    }
+
+    const { error } = await supabase
+      .from('horizon_state_checkins')
+      .upsert(payload, { onConflict: 'user_id,period_id' })
+    if (error) {
+      console.error('[HorizonState] saveCheckin failed:', error)
+      throw error
+    }
   }
 
   async function handleBegin() {
