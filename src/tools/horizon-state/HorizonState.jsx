@@ -41,7 +41,7 @@ function getYearId(date = new Date()) { return String(date.getFullYear()) }
 // ─── Summary writer ───────────────────────────────────────────────────────────
 // Called after every after check-in. Computes and upserts foundation_summary.
 
-async function writeSummary(user, allSessions, afterResult, beforeResult) {
+export async function writeSummary(user, allSessions, afterResult, beforeResult) {
   if (!user?.id) return
   try {
     const now     = new Date()
@@ -431,9 +431,394 @@ function FoundationReview({ user, sessions }) {
   )
 }
 
+// ─── Foundation Reports ───────────────────────────────────────────────────────
+//
+// Archive-page surface. Shows stored reviews from horizon_state_reviews
+// across all four periods (weekly, monthly, quarterly, yearly), and lets
+// the user request a fresh review for the current period when the minimum
+// session threshold is met.
+//
+// This supersedes the older FoundationReview which was weekly-only and
+// gated on weeklyAvailable. FoundationReview is preserved above as
+// internal reference but is no longer rendered.
+
+function FoundationReports({ user, sessions }) {
+  const [activePeriod, setActivePeriod] = useState('weekly')
+  const [storedReviews, setStoredReviews] = useState([])
+  const [loadingStored, setLoadingStored] = useState(true)
+  const [requesting, setRequesting] = useState(false)
+  const [freshReview, setFreshReview] = useState('')
+  const [error, setError] = useState('')
+  const [showDebrief, setShowDebrief] = useState(false)
+  const [debriefDone, setDebriefDone] = useState(false)
+  const [debriefCtx, setDebriefCtx] = useState(null)
+
+  const now         = new Date()
+  const weekId      = getWeekId(now)
+  const monthId     = getMonthId(now)
+  const quarterId   = getQuarterId(now)
+  const yearId      = getYearId(now)
+
+  const sessionsThisWeek    = sessions.filter(s => s.week_id    === weekId    && s.checkin_stage === 'after')
+  const sessionsThisMonth   = sessions.filter(s => s.month_id   === monthId   && s.checkin_stage === 'after')
+  const sessionsThisQuarter = sessions.filter(s => s.quarter_id === quarterId && s.checkin_stage === 'after')
+  const sessionsThisYear    = sessions.filter(s => s.year_id    === yearId    && s.checkin_stage === 'after')
+
+  const PERIODS = [
+    { key: 'weekly',    label: 'Weekly',    threshold: 3, current: sessionsThisWeek.length,    id: weekId    },
+    { key: 'monthly',   label: 'Monthly',   threshold: 8, current: sessionsThisMonth.length,   id: monthId   },
+    { key: 'quarterly', label: 'Quarterly', threshold: 20, current: sessionsThisQuarter.length, id: quarterId },
+    { key: 'yearly',    label: 'Yearly',    threshold: 40, current: sessionsThisYear.length,    id: yearId    },
+  ]
+
+  // Load all stored reviews once
+  useEffect(() => {
+    if (!user?.id) { setLoadingStored(false); return }
+    setLoadingStored(true)
+    supabase
+      .from('horizon_state_reviews')
+      .select('period_type, period_id, period_label, review_text, created_at, session_count')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(40)
+      .then(({ data }) => {
+        setStoredReviews(data || [])
+        setLoadingStored(false)
+      })
+  }, [user])
+
+  const periodMeta    = PERIODS.find(p => p.key === activePeriod)
+  const periodReviews = storedReviews.filter(r => r.period_type === activePeriod)
+  const currentPeriodReview = periodReviews.find(r => r.period_id === periodMeta.id) || null
+  const pastPeriodReviews   = periodReviews.filter(r => r.period_id !== periodMeta.id)
+
+  // Reset transient state when switching periods
+  useEffect(() => {
+    setFreshReview('')
+    setError('')
+    setShowDebrief(false)
+    setDebriefDone(false)
+    setDebriefCtx(null)
+  }, [activePeriod])
+
+  async function requestReview() {
+    setRequesting(true); setError(''); setFreshReview('')
+    try {
+      let previousReviews = []
+      if (user?.id) {
+        const { data } = await supabase
+          .from('horizon_state_reviews')
+          .select('period_type, period_label, review_text, created_at')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(4)
+        previousReviews = data || []
+      }
+      const label = periodLabel(activePeriod, periodMeta.id)
+      const relevant = sessions.filter(s =>
+        activePeriod === 'weekly'    ? s.week_id    === weekId    :
+        activePeriod === 'monthly'   ? s.month_id   === monthId   :
+        activePeriod === 'quarterly' ? s.quarter_id === quarterId :
+                                       s.year_id    === yearId
+      )
+      const res = await fetch('/tools/horizon-state/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ period: { type: activePeriod, id: periodMeta.id, label }, sessions: relevant, previousReviews, userId: user?.id }),
+      })
+      if (!res.ok) throw new Error('API error')
+      const data = await res.json()
+      const text = data.review || ''
+      setFreshReview(text)
+
+      if (text) {
+        const periodSessions = relevant.filter(s => s.checkin_stage === 'after')
+        const avgDelta = periodSessions.length > 0
+          ? parseFloat((periodSessions.reduce((sum, s) => {
+              const before = sessions.find(b => b.checkin_stage === 'before' && b.completed_at?.slice(0, 10) === s.completed_at?.slice(0, 10))
+              return sum + (before ? s.value - before.value : 0)
+            }, 0) / periodSessions.length).toFixed(2))
+          : null
+        setDebriefCtx({
+          periodType: activePeriod,
+          periodLabel: label,
+          reviewText: text,
+          sessionCount: periodSessions.length,
+          avgDelta,
+        })
+        setShowDebrief(true)
+      }
+
+      if (user?.id && text) {
+        await supabase.from('horizon_state_reviews').upsert({
+          user_id: user.id, period_type: activePeriod, period_id: periodMeta.id, period_label: label,
+          session_count: relevant.length, review_text: text,
+          created_at: now.toISOString(), updated_at: now.toISOString(),
+        }, { onConflict: 'user_id,period_type,period_id' })
+        // Refresh stored reviews so the freshly-saved one shows up below
+        const { data: refreshed } = await supabase
+          .from('horizon_state_reviews')
+          .select('period_type, period_id, period_label, review_text, created_at, session_count')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(40)
+        setStoredReviews(refreshed || [])
+        writeSummary(user, sessions, null, null)
+      }
+    } catch {
+      setError('Reflection unavailable. Please try again shortly.')
+    }
+    setRequesting(false)
+  }
+
+  const reviewBelow = freshReview || currentPeriodReview?.review_text || ''
+  const reviewLabel = freshReview
+    ? periodLabel(activePeriod, periodMeta.id)
+    : currentPeriodReview?.period_label || periodLabel(activePeriod, periodMeta.id)
+  const meetsThreshold = periodMeta.current >= periodMeta.threshold
+
+  return (
+    <div>
+      {/* Period tabs */}
+      <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid rgba(200,146,42,0.18)', marginBottom: '24px' }}>
+        {PERIODS.map(p => {
+          const isActive = activePeriod === p.key
+          return (
+            <button
+              key={p.key}
+              onClick={() => setActivePeriod(p.key)}
+              style={{
+                ...sc, fontSize: '13px', letterSpacing: '0.18em',
+                padding: '10px 16px',
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: isActive ? '#A8721A' : 'rgba(15,21,35,0.55)',
+                borderBottom: isActive ? '2px solid #A8721A' : '2px solid transparent',
+                marginBottom: '-1px',
+                transition: 'all 0.2s',
+              }}
+            >
+              {p.label}
+            </button>
+          )
+        })}
+      </div>
+
+      {/* Current period state */}
+      <div style={{ padding: '20px 24px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '14px', marginBottom: '24px' }}>
+        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>
+          {periodMeta.label} {'·'} {periodLabel(activePeriod, periodMeta.id)}
+        </span>
+        <p style={{ ...body, fontSize: '15px', ...muted, lineHeight: 1.6, margin: '0 0 12px 0' }}>
+          {periodMeta.current} session{periodMeta.current === 1 ? '' : 's'} this period.
+          {!meetsThreshold && !currentPeriodReview && (
+            <> A reflection becomes available at {periodMeta.threshold}.</>
+          )}
+        </p>
+        {meetsThreshold && !reviewBelow && !requesting && (
+          <button
+            onClick={requestReview}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', ...gold, background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '10px 22px', cursor: 'pointer' }}
+          >
+            {currentPeriodReview ? 'Refresh reflection' : 'Request reflection'} {'→'}
+          </button>
+        )}
+        {requesting && <p style={{ ...body, fontSize: '15px', ...muted, margin: 0 }}>Reading your practice{'…'}</p>}
+        {error && <p style={{ ...body, fontSize: '15px', color: 'rgba(138,48,48,0.7)', margin: 0 }}>{error}</p>}
+      </div>
+
+      {/* Active reflection (current period — fresh or stored) */}
+      {reviewBelow && (
+        <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', padding: '4px 0 4px 20px', marginBottom: '24px' }}>
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: 'rgba(168,114,26,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+            {reviewLabel}
+          </span>
+          <p style={{ ...body, fontSize: '17px', lineHeight: 1.85, ...meta, margin: 0, whiteSpace: 'pre-wrap' }}>{reviewBelow}</p>
+        </div>
+      )}
+
+      {/* Debrief — offered after a fresh review renders */}
+      {showDebrief && !debriefDone && debriefCtx && (
+        <div style={{ marginBottom: '24px' }}>
+          <DebriefPanel
+            tool="horizon-state"
+            toolContext={debriefCtx}
+            userId={user?.id}
+            mode="light"
+            onComplete={() => { setShowDebrief(false); setDebriefDone(true) }}
+            onSkip={() => { setShowDebrief(false); setDebriefDone(true) }}
+            title={`Reflect on your ${debriefCtx.periodType}`}
+          />
+        </div>
+      )}
+
+      {/* Past reflections in this period type */}
+      {pastPeriodReviews.length > 0 && (
+        <div>
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: 'rgba(168,114,26,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '14px' }}>
+            Earlier {periodMeta.label.toLowerCase()} reflections
+          </span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+            {pastPeriodReviews.map(r => (
+              <div key={r.period_id} style={{ borderLeft: '2px solid rgba(200,146,42,0.18)', padding: '4px 0 4px 18px' }}>
+                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                  {r.period_label}
+                </span>
+                <p style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: 'rgba(15,21,35,0.65)', margin: 0, whiteSpace: 'pre-wrap' }}>{r.review_text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Empty state when no past reviews and current period below threshold */}
+      {!loadingStored && pastPeriodReviews.length === 0 && !reviewBelow && !meetsThreshold && (
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
+          Nothing to reflect on yet at this cadence. Keep checking in.
+        </p>
+      )}
+    </div>
+  )
+}
+
+// ─── Foundation Logs ──────────────────────────────────────────────────────────
+//
+// Chronological list of past Foundation check-ins. One row per day where
+// at least a BEFORE was recorded. Shows date, before/after values, delta,
+// and the journal notes inline.
+
+function FoundationLogs({ sessions }) {
+  // Group by date — pair before + after on the same date
+  const byDate = {}
+  for (const s of sessions) {
+    const d = s.completed_at?.slice(0, 10)
+    if (!d) continue
+    if (!byDate[d]) byDate[d] = { date: d, before: null, after: null }
+    if (s.checkin_stage === 'before') byDate[d].before = s
+    if (s.checkin_stage === 'after')  byDate[d].after  = s
+  }
+  const days = Object.values(byDate).sort((a, b) => b.date.localeCompare(a.date))
+
+  if (days.length === 0) {
+    return (
+      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
+        No check-ins yet.
+      </p>
+    )
+  }
+
+  function formatDate(isoDate) {
+    const [y, m, d] = isoDate.split('-')
+    const dt = new Date(+y, +m - 1, +d)
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday']
+    return `${days[dt.getDay()]}, ${months[dt.getMonth()]} ${dt.getDate()}`
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {days.map(day => {
+        const before = day.before
+        const after = day.after
+        const delta = (before && after) ? (after.value - before.value) : null
+        const deltaColor =
+          delta == null ? 'rgba(15,21,35,0.4)' :
+          delta > 0 ? '#5A8AB8' :
+          delta < 0 ? '#8A7030' :
+          'rgba(15,21,35,0.55)'
+
+        return (
+          <div key={day.date} style={{ padding: '18px 22px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '12px', flexWrap: 'wrap', gap: '8px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase' }}>
+                {formatDate(day.date)}
+              </span>
+              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: deltaColor }}>
+                {before ? `${before.value}` : '—'}
+                {' → '}
+                {after ? `${after.value}` : '—'}
+                {delta != null && (
+                  <span style={{ marginLeft: '10px', color: deltaColor }}>
+                    {delta > 0 ? `+${delta}` : delta}
+                  </span>
+                )}
+              </span>
+            </div>
+
+            {before?.note && (
+              <div style={{ marginBottom: after?.note ? '10px' : 0 }}>
+                <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em', color: 'rgba(168,114,26,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Before</span>
+                <p style={{ ...body, fontSize: '15px', lineHeight: 1.6, ...muted, margin: 0, whiteSpace: 'pre-wrap' }}>{before.note}</p>
+              </div>
+            )}
+            {after?.note && (
+              <div>
+                <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em', color: 'rgba(168,114,26,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>After</span>
+                <p style={{ ...body, fontSize: '15px', lineHeight: 1.6, ...muted, margin: 0, whiteSpace: 'pre-wrap' }}>{after.note}</p>
+              </div>
+            )}
+            {!before?.note && !after?.note && (
+              <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.4)', fontStyle: 'italic', margin: 0 }}>
+                No notes recorded.
+              </p>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 // ─── Baseline Card ────────────────────────────────────────────────────────────
 
-function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAfterComplete, lifeIaStatement }) {
+// useHorizonStateData — shared hook for both the archive page and the
+// Mission Control slider panel. Loads audio URL, foundation sessions,
+// and the user's Life I-am statement from the same sources HorizonStatePage
+// has always read. Returns null/empty values when the user is not signed in
+// so callers can render gracefully without extra guards.
+export function useHorizonStateData(user) {
+  const [audioUrl,        setAudioUrl]        = useState(null)
+  const [audioLoading,    setAudioLoading]    = useState(false)
+  const [audioError,      setAudioError]      = useState(null)
+  const [sessions,        setSessions]        = useState([])
+  const [lifeIaStatement, setLifeIaStatement] = useState(null)
+  const [reloadTick,      setReloadTick]      = useState(0)
+
+  useEffect(() => {
+    if (!user) return
+    setAudioLoading(true)
+    try {
+      const { data } = supabase.storage.from(BUCKET).getPublicUrl(AUDIO_FILE)
+      if (data?.publicUrl) setAudioUrl(data.publicUrl)
+      else setAudioError('Unable to load audio. Please try again shortly.')
+    } catch {
+      setAudioError('Something went wrong. Please refresh the page.')
+    } finally {
+      setAudioLoading(false)
+    }
+    supabase
+      .from('pulse_entries')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('source', 'foundation')
+      .order('completed_at', { ascending: false })
+      .limit(200)
+      .then(({ data }) => { if (data) setSessions(data) })
+    supabase
+      .from('map_results')
+      .select('life_ia_statement')
+      .eq('user_id', user.id)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => { if (data?.life_ia_statement) setLifeIaStatement(data.life_ia_statement) })
+  }, [user, reloadTick])
+
+  function reload() { setReloadTick(t => t + 1) }
+
+  return { audioUrl, audioLoading, audioError, sessions, lifeIaStatement, reload }
+}
+
+export function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAfterComplete, lifeIaStatement, compact = false }) {
   const today = getLocalDateStr()
 
   const todayBefore = sessions.find(s => s.checkin_stage === 'before' && s.completed_at?.startsWith(today))
@@ -582,7 +967,7 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
   }
 
   return (
-    <div style={{ position: 'relative', minHeight: '420px' }}>
+    <div data-compact={compact ? 'true' : 'false'} style={{ position: 'relative', minHeight: compact ? 'auto' : '420px' }}>
       <style>{`
         /* ── Desktop: three-column grid ── */
         .hs-baseline-grid {
@@ -637,10 +1022,43 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
           .hs-col-after-desktop,
           .hs-col-audio-desktop { display: flex !important; }
         }
+
+        /* ── Compact override: force mobile layout regardless of viewport.
+             Used when BaselineCard renders inside a narrow panel
+             (e.g. Mission Control slider). ── */
+        [data-compact="true"] .hs-baseline-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+        }
+        [data-compact="true"] .hs-flames-row {
+          display: flex;
+          gap: 12px;
+          justify-content: space-between;
+          margin-bottom: 16px;
+        }
+        [data-compact="true"] .hs-flame-col {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        [data-compact="true"] .hs-audio-mobile { margin-bottom: 16px; }
+        [data-compact="true"] .hs-journal-mobile { margin-bottom: 12px; }
+        [data-compact="true"] .hs-col-before-desktop,
+        [data-compact="true"] .hs-col-after-desktop,
+        [data-compact="true"] .hs-col-audio-desktop {
+          display: none !important;
+        }
+        [data-compact="true"] .hs-mobile-only {
+          display: flex !important;
+        }
       `}</style>
 
-      {/* ── Begin popup — fires every visit, click anywhere dismisses ── */}
-      {showBeginPopup && (
+      {/* ── Begin popup — fires every visit, click anywhere dismisses.
+           Suppressed in compact mode: the slider panel is itself the
+           entry point, so a fullscreen popup over it is wrong. ── */}
+      {showBeginPopup && !compact && (
         <div
           onClick={() => setShowBeginPopup(false)}
           style={{
@@ -891,85 +1309,37 @@ function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAf
     </div>
   )
 }
-// ─── Phase helpers ────────────────────────────────────────────────────────────
 
-function PhaseBlock({ number, name, desc, children }) {
-  return (
-    <div style={{ marginBottom: '40px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '10px' }}>
-        <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', ...gold, flexShrink: 0 }}>{number}</span>
-        <span style={{ ...body, fontSize: '1.25rem', fontWeight: 300, color: '#0F1523' }}>{name}</span>
-      </div>
-      <p style={{ ...body, fontSize: '1.25rem', fontWeight: 300, ...meta, lineHeight: 1.75, marginBottom: '20px' }}>{desc}</p>
-      {children}
-    </div>
-  )
-}
-
-function PhasePlaceholder({ title }) {
-  return (
-    <div style={{ background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', padding: '24px 28px' }}>
-      <span style={{ display: 'block', ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '8px' }}>Coming</span>
-      <div style={{ ...body, fontSize: '1.1875rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', marginBottom: '6px' }}>{title}</div>
-      <p style={{ ...body, fontSize: '1.3125rem', ...muted, lineHeight: 1.6 }}>This phase unlocks as the protocol develops.</p>
-    </div>
-  )
-}
-
-function QuoteBlock({ text, cite }) {
-  return (
-    <div style={{ borderLeft: '2px solid rgba(200,146,42,0.2)', padding: '16px 0 16px 24px', margin: '40px 0' }}>
-      <p style={{ ...body, fontSize: '1.3125rem', fontStyle: 'italic', fontWeight: 300, ...meta, lineHeight: 1.75, marginBottom: '12px' }}>"{text}"</p>
-      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', ...gold }}>{'—'} {cite}</span>
-    </div>
-  )
-}
-
-// ─── Main page ────────────────────────────────────────────────────────────────
+// ─── Horizon State Archive Page ───────────────────────────────────────────────
+//
+// /tools/horizon-state — the archive surface. Daily ritual lives in the
+// Mission Control slider; this page is for everything else.
+//
+// Phase tabs at the top: Foundation (active), Calibration / Embodying
+// (coming soon). Foundation content has two sub-tabs: Reports (default)
+// and Logs.
+//
+// First-time pitch: a one-time intro renders only when the user has
+// zero foundation sessions. Once they have any, the pitch never fires
+// again — they're past the front door.
 
 export function HorizonStatePage() {
   const { user, loading: authLoading } = useAuth()
   const { tier, loading: accessLoading } = useAccess('horizon-state')
-  const [audioUrl,     setAudioUrl]     = useState(null)
-  const [audioLoading, setAudioLoading] = useState(false)
-  const [audioError,   setAudioError]   = useState(null)
-  const [sessions,     setSessions]     = useState([])
-  const [activePhase,  setActivePhase]  = useState('foundation')
-  const [lifeIaStatement, setLifeIaStatement] = useState(null)
+  const { audioUrl, audioLoading, audioError, sessions, lifeIaStatement } = useHorizonStateData(user)
 
-  useEffect(() => {
-    if (!user) return
-    setAudioLoading(true)
-    try {
-      const { data } = supabase.storage.from(BUCKET).getPublicUrl(AUDIO_FILE)
-      if (data?.publicUrl) setAudioUrl(data.publicUrl)
-      else setAudioError('Unable to load audio. Please try again shortly.')
-    } catch {
-      setAudioError('Something went wrong. Please refresh the page.')
-    } finally {
-      setAudioLoading(false)
-    }
-    // Load session history
-    supabase
-      .from('pulse_entries')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('source', 'foundation')
-      .order('completed_at', { ascending: false })
-      .limit(200)
-      .then(({ data }) => { if (data) setSessions(data) })
-    // Load Life Horizon I am statement
-    supabase
-      .from('map_results')
-      .select('life_ia_statement')
-      .eq('user_id', user.id)
-      .order('updated_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-      .then(({ data }) => { if (data?.life_ia_statement) setLifeIaStatement(data.life_ia_statement) })
-  }, [user])
+  const [activePhase, setActivePhase] = useState('foundation')
+  const [activeView,  setActiveView]  = useState('reports')
 
   if (authLoading || accessLoading) return <div className="loading" />
+
+  const phases = [
+    { key: 'foundation',  label: 'Foundation',  number: '1', locked: false },
+    { key: 'calibration', label: 'Calibration', number: '2', locked: true  },
+    { key: 'embodying',   label: 'Embodying',   number: '3', locked: true  },
+  ]
+
+  const isFirstTime = sessions.length === 0
 
   return (
     <AccessGate productKey="horizon-state" toolName="Horizon State">
@@ -977,120 +1347,134 @@ export function HorizonStatePage() {
       <style>{MOBILE_STYLES}</style>
       <Nav activePath="nextus-self" />
       <div className="tool-wrap">
-        <div className="tool-header">
+
+        {/* Eyebrow only — no marketing copy. Users on this page are users. */}
+        <div style={{ marginBottom: '32px' }}>
           <span className="tool-eyebrow">Horizon Suite {'·'} Horizon State</span>
-          <p style={{ ...body, fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '8px 0 12px', maxWidth: '520px' }}>
-            The regulated ground everything else runs on.
-          </p>
-          <h1 style={{ ...serif, fontSize: 'clamp(2.25rem, 5.5vw, 3.25rem)', fontWeight: 300, color: '#0F1523', lineHeight: 1.06, letterSpacing: '-0.01em', marginBottom: '16px' }}>
-            The layer beneath<br /><em style={{ ...gold }}>everything else.</em>
-          </h1>
-          <p style={{ ...body, fontSize: '1.3125rem', fontWeight: 300, ...meta, lineHeight: 1.65, maxWidth: '480px' }}>
-            Most frameworks assume baseline stability is already there. This builds it.
-          </p>
         </div>
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.2)', margin: '40px 0' }} />
-
-        {/* ── Phase tab toggle ── */}
-        {(() => {
-          const phases = [
-            { key: 'foundation',  label: 'Foundation',  number: '1' },
-            { key: 'calibration', label: 'Calibration', number: '2' },
-            { key: 'embodying',   label: 'Embodying',   number: '3' },
-          ]
-
-          return (
-            <div>
-              {/* Tab bar */}
-              <div style={{ display: 'flex', gap: '0', marginBottom: '32px', borderBottom: '1px solid rgba(200,146,42,0.2)' }}>
-                {phases.map(p => {
-                  const isActive = activePhase === p.key
-                  const isLocked = p.key !== 'foundation'
-                  return (
-                    <button
-                      key={p.key}
-                      onClick={() => setActivePhase(p.key)}
-                      style={{
-                        ...sc, fontSize: '15px', letterSpacing: '0.16em',
-                        padding: '12px 20px',
-                        background: 'none', border: 'none', cursor: 'pointer',
-                        color: isActive ? '#A8721A' : isLocked ? 'rgba(200,146,42,0.3)' : 'rgba(200,146,42,0.55)',
-                        borderBottom: isActive ? '2px solid #A8721A' : '2px solid transparent',
-                        marginBottom: '-1px',
-                        transition: 'all 0.2s',
-                      }}
-                    >
-                      <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: 'inherit', display: 'block', marginBottom: '2px', opacity: 0.7 }}>
-                        Phase {p.number}
-                      </span>
-                      {p.label}
-                    </button>
-                  )
-                })}
-              </div>
-
-              {/* Phase 1 — Foundation */}
-              {activePhase === 'foundation' && (
-                <div>
-                  <BaselineCard
-                    user={user}
-                    audioUrl={audioUrl}
-                    audioLoading={audioLoading}
-                    audioError={audioError}
-                    sessions={sessions}
-                    lifeIaStatement={lifeIaStatement}
-                    onAfterComplete={async (afterData, beforeData, updatedSessions) => {
-                      await writeSummary(user, updatedSessions, afterData, beforeData)
-                      supabase.from('north_star_notes').upsert(
-                        { user_id: user.id, tool: 'horizon-state', note: 'Horizon State Baseline practice active.' },
-                        { onConflict: 'user_id,tool,note' }
-                      )
-                    }}
-                  />
-                </div>
-              )}
-
-              {/* Phase 2 — Calibration (coming) */}
-              {activePhase === 'calibration' && (
-                <div style={{ padding: '40px 0', textAlign: 'center' }}>
-                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>
-                    Coming soon
-                  </span>
-                  <p style={{ ...body, fontSize: '1.25rem', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, maxWidth: '380px', margin: '0 auto' }}>
-                    Developing the capacity to move your state deliberately — not just recover from it.
-                  </p>
-                </div>
-              )}
-
-              {/* Phase 3 — Embodying (coming) */}
-              {activePhase === 'embodying' && (
-                <div style={{ padding: '40px 0', textAlign: 'center' }}>
-                  <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>
-                    Coming soon
-                  </span>
-                  <p style={{ ...body, fontSize: '1.25rem', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, maxWidth: '380px', margin: '0 auto' }}>
-                    Living from a regulated ground — not as practice, but as your natural state.
-                  </p>
-                </div>
-              )}
-            </div>
-          )
-        })()}
-
-        <QuoteBlock text="It has helped me reset my baseline in the middle of the day — to relax, let go, and create space for a more supportive inner story. One that naturally inspires aligned action rather than effort or striving." cite="David William Pierce" />
-        <QuoteBlock text="There was this sense of feeling held throughout. His presence is unmistakably there." cite="David William Pierce" />
-
-        <div style={{ background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '24px 28px', marginTop: '48px' }}>
-          <span style={{ display: 'block', ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '10px' }}>How to use this</span>
-          <p style={{ ...body, fontSize: '1.25rem', fontWeight: 300, ...meta, lineHeight: 1.75 }}>
-            Return to Baseline as often as you need to. The before and after check-ins are optional, but over time they show you what the practice is actually doing to your system.
-          </p>
+        {/* Phase tabs */}
+        <div style={{ display: 'flex', gap: 0, marginBottom: '32px', borderBottom: '1px solid rgba(200,146,42,0.2)' }}>
+          {phases.map(p => {
+            const isActive = activePhase === p.key
+            return (
+              <button
+                key={p.key}
+                onClick={() => setActivePhase(p.key)}
+                style={{
+                  ...sc, fontSize: '15px', letterSpacing: '0.16em',
+                  padding: '12px 20px',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  color: isActive ? '#A8721A' : p.locked ? 'rgba(200,146,42,0.3)' : 'rgba(200,146,42,0.55)',
+                  borderBottom: isActive ? '2px solid #A8721A' : '2px solid transparent',
+                  marginBottom: '-1px',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: 'inherit', display: 'block', marginBottom: '2px', opacity: 0.7 }}>
+                  Phase {p.number}
+                </span>
+                {p.label}
+              </button>
+            )
+          })}
         </div>
+
+        {/* Phase 1 — Foundation */}
+        {activePhase === 'foundation' && (
+          <div>
+            {isFirstTime ? (
+              <FirstTimePitch onContinue={() => {}} />
+            ) : (
+              <>
+                {/* Reports / Logs sub-tabs */}
+                <div style={{ display: 'flex', gap: 0, marginBottom: '24px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
+                  {[
+                    { key: 'reports', label: 'Reports' },
+                    { key: 'logs',    label: 'Logs'    },
+                  ].map(v => {
+                    const isActive = activeView === v.key
+                    return (
+                      <button
+                        key={v.key}
+                        onClick={() => setActiveView(v.key)}
+                        style={{
+                          ...sc, fontSize: '12px', letterSpacing: '0.18em',
+                          padding: '10px 14px',
+                          background: 'none', border: 'none', cursor: 'pointer',
+                          color: isActive ? '#0F1523' : 'rgba(15,21,35,0.45)',
+                          borderBottom: isActive ? '2px solid #A8721A' : '2px solid transparent',
+                          marginBottom: '-1px',
+                          transition: 'all 0.2s',
+                          textTransform: 'uppercase',
+                        }}
+                      >
+                        {v.label}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {activeView === 'reports' && <FoundationReports user={user} sessions={sessions} />}
+                {activeView === 'logs'    && <FoundationLogs              sessions={sessions} />}
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Phase 2 — Calibration */}
+        {activePhase === 'calibration' && (
+          <div style={{ padding: '60px 0', textAlign: 'center' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>
+              Coming soon
+            </span>
+            <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, maxWidth: '380px', margin: '0 auto' }}>
+              Developing the capacity to move your state deliberately {'—'} not just recover from it.
+            </p>
+          </div>
+        )}
+
+        {/* Phase 3 — Embodying */}
+        {activePhase === 'embodying' && (
+          <div style={{ padding: '60px 0', textAlign: 'center' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>
+              Coming soon
+            </span>
+            <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, maxWidth: '380px', margin: '0 auto' }}>
+              Living from a regulated ground {'—'} not as practice, but as your natural state.
+            </p>
+          </div>
+        )}
+
       </div>
       <ToolCompassPanel />
       <ProtocolPanel />
     </div>
     </AccessGate>
+  )
+}
+
+// ─── First-time pitch ─────────────────────────────────────────────────────────
+//
+// Renders only on the archive page when the user has zero foundation
+// sessions. The point is to give first-timers context the first time
+// they land here. Once they have any session, the pitch never returns.
+
+function FirstTimePitch() {
+  return (
+    <div style={{ padding: '40px 32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '14px', textAlign: 'center', maxWidth: '560px', margin: '0 auto' }}>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px', textTransform: 'uppercase' }}>
+        Horizon State {'·'} Foundation
+      </span>
+      <h2 style={{ ...serif, fontSize: '28px', fontWeight: 400, color: '#0F1523', lineHeight: 1.25, marginBottom: '16px' }}>
+        The layer beneath everything else.
+      </h2>
+      <p style={{ ...body, fontSize: '17px', fontWeight: 300, ...meta, lineHeight: 1.7, marginBottom: '20px' }}>
+        Most frameworks assume baseline stability is already there. This builds it. The daily check-in lives on Mission Control. This page is where your reflections and logs accumulate over time.
+      </p>
+      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, fontStyle: 'italic', margin: 0 }}>
+        Once you've done your first check-in, this introduction won't appear again.
+      </p>
+    </div>
   )
 }

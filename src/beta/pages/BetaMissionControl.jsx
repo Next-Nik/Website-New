@@ -51,6 +51,13 @@ import Panel         from '../components/mission-control/Panel'
 import useMissionControlData from '../components/mission-control/useMissionControlData'
 import { BG_PARCHMENT, BG_INK } from '../components/mission-control/tokens'
 
+// Horizon State daily ritual — embedded in the slider panel
+import {
+  BaselineCard,
+  useHorizonStateData,
+  writeSummary as writeHorizonStateSummary,
+} from '../../tools/horizon-state/HorizonState'
+
 // ─── Spoke order matters. These two arrays are the canonical
 //     order on Mission Control. The labels are what render on the
 //     wheel; the keys are what the data layer queries by.
@@ -386,15 +393,12 @@ export default function BetaMissionControl() {
         eyebrow="DAILY · HORIZON STATE"
         title="How are you arriving today?"
         actions={[
-          { label: 'OPEN HORIZON STATE', primary: true,
+          { label: 'REPORTS & LOGS →', primary: true,
             onClick: () => navigate('/tools/horizon-state') },
-          { label: 'LATER', onClick: closePanel },
+          { label: 'CLOSE', onClick: closePanel },
         ]}
       >
-        <p>A short check-in with your nervous system. Two minutes. No right answer. The point is noticing where you're starting from before the day takes hold.</p>
-        <div className="mc-panel-build-edge">
-          Building in progress. The full check-in flow opens at /tools/horizon-state.
-        </div>
+        <HorizonStateSlider user={data.user} />
       </Panel>
 
       <Panel
@@ -598,3 +602,35 @@ const STAGE_CSS = `
   .mc-actions { grid-template-columns: 1fr; gap: 16px; }
 }
 `
+
+// ─── HorizonStateSlider ───────────────────────────────────────────────────────
+//
+// Wrapper that fetches Horizon State data inside the panel and renders the
+// shared BaselineCard in compact mode. Lives inside the panel so the data
+// loading hook only fires when the panel is opened, not on every Mission
+// Control render.
+//
+// When the user signs out or hasn't signed in yet, the BaselineCard renders
+// the auth-modal-prompting state on its own — no extra guard needed here.
+
+function HorizonStateSlider({ user }) {
+  const { audioUrl, audioLoading, audioError, sessions, lifeIaStatement, reload } = useHorizonStateData(user)
+
+  async function handleAfterComplete(afterData, beforeData, updatedSessions) {
+    await writeHorizonStateSummary(user, updatedSessions, afterData, beforeData)
+    reload()
+  }
+
+  return (
+    <BaselineCard
+      compact
+      user={user}
+      audioUrl={audioUrl}
+      audioLoading={audioLoading}
+      audioError={audioError}
+      sessions={sessions}
+      lifeIaStatement={lifeIaStatement}
+      onAfterComplete={handleAfterComplete}
+    />
+  )
+}
