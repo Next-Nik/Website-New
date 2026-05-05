@@ -1,106 +1,125 @@
 // ─────────────────────────────────────────────────────────────
 // Ticker.jsx
 //
-// Single-line rotating ticker that surfaces recent platform motion.
-// One line at a time, rotates every 4500ms, pauses on hover.
+// v4 ticker. A single line of activity rotates every ~4.5s through
+// a list of strings. When the list is empty, renders the locked
+// empty-state line: "Quiet right now."
+//
+// The data source for this ticker is the future nextus_activity_feed
+// query. Nothing is launched yet, so the parent passes [] to render
+// the empty state. Wire-up point lives in BetaMissionControl.
 //
 // Props:
-//   eyebrow: string — small static label on the left (e.g. "On the platform")
-//   lines:   string[] — array of ticker lines, rotated cyclically
+//   eyebrow: string      — small label on the left ("RECENTLY ACROSS YOUR SLICE")
+//   lines:  string[]     — activity lines to rotate; [] renders empty state
 // ─────────────────────────────────────────────────────────────
 
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import {
-  GOLD_DK, GOLD_RULE,
-  FONT_SC, FONT_DISPLAY,
-  TEXT_INK, TEXT_META, BG_PARCHMENT,
+  GOLD, GOLD_DK, GOLD_RULE,
+  TEXT_INK, TEXT_META, TEXT_FAINT,
+  TEXT_WHITE, TEXT_WHITE_META, TEXT_WHITE_FAINT,
+  FONT_DISPLAY, FONT_SC, FONT_BODY,
 } from './tokens'
 
-const ROTATION_MS = 4500
+const ROTATE_MS = 4500
 
-/**
- * @param {Object} props
- * @param {string} [props.eyebrow]
- * @param {string[]} props.lines
- */
-export default function Ticker({ eyebrow, lines }) {
+export default function Ticker({ eyebrow = 'RECENTLY', lines = [] }) {
   const [idx, setIdx] = useState(0)
-  const [fading, setFading] = useState(false)
-  const pausedRef = useRef(false)
 
   useEffect(() => {
-    if (!lines || lines.length <= 1) return
+    if (lines.length <= 1) return
+    const t = setInterval(() => {
+      setIdx((i) => (i + 1) % lines.length)
+    }, ROTATE_MS)
+    return () => clearInterval(t)
+  }, [lines.length])
 
-    let timer
-    const advance = () => {
-      if (pausedRef.current) {
-        timer = setTimeout(advance, 800)
-        return
-      }
-      setFading(true)
-      setTimeout(() => {
-        setIdx(i => (i + 1) % lines.length)
-        setFading(false)
-      }, 280)
-      timer = setTimeout(advance, ROTATION_MS)
-    }
-    timer = setTimeout(advance, ROTATION_MS)
-    return () => clearTimeout(timer)
-  }, [lines])
+  // Reset index if lines list shrinks
+  useEffect(() => {
+    if (idx >= lines.length) setIdx(0)
+  }, [lines.length, idx])
 
-  if (!lines || lines.length === 0) return null
+  const isEmpty = lines.length === 0
 
   return (
-    <div
-      className="mc-ticker"
-      onMouseEnter={() => { pausedRef.current = true }}
-      onMouseLeave={() => { pausedRef.current = false }}
-    >
+    <div className="mc-ticker">
       <style>{TICKER_CSS}</style>
-      {eyebrow && <span className="mc-ticker-eyebrow">{eyebrow}</span>}
-      <span className={`mc-ticker-line${fading ? ' fading' : ''}`}>
-        {lines[idx]}
-      </span>
+      <div className="mc-ticker-eyebrow">{eyebrow}</div>
+      <div className="mc-ticker-content">
+        {isEmpty ? (
+          <div className="mc-ticker-line mc-visible mc-ticker-empty">
+            Quiet right now.
+          </div>
+        ) : (
+          lines.map((line, i) => (
+            <div
+              key={i}
+              className={`mc-ticker-line ${i === idx ? 'mc-visible' : ''}`}
+            >
+              {line}
+            </div>
+          ))
+        )}
+      </div>
     </div>
   )
 }
 
 const TICKER_CSS = `
 .mc-ticker {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 10px 28px;
-  background: ${BG_PARCHMENT};
+  padding: 12px 40px;
   border-bottom: 1px solid ${GOLD_RULE};
-  font-family: ${FONT_DISPLAY};
+  background: rgba(200, 146, 42, 0.04);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 20px;
+  align-items: center;
+  font-size: 14px;
+  font-family: ${FONT_BODY};
+  color: ${TEXT_META};
   overflow: hidden;
-  white-space: nowrap;
+  min-height: 50px;
 }
+[data-stage="dark"] .mc-ticker {
+  border-bottom: 1px solid rgba(200, 146, 42, 0.20);
+  background: rgba(200, 146, 42, 0.08);
+  color: ${TEXT_WHITE_META};
+}
+
 .mc-ticker-eyebrow {
   font-family: ${FONT_SC};
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.20em;
-  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.2em;
   color: ${GOLD_DK};
   flex-shrink: 0;
+  white-space: nowrap;
+}
+[data-stage="dark"] .mc-ticker-eyebrow { color: ${GOLD}; }
+
+.mc-ticker-content {
+  position: relative;
+  height: 22px;
+  overflow: hidden;
 }
 .mc-ticker-line {
-  font-size: 16px;
-  font-weight: 300;
-  color: ${TEXT_INK};
-  opacity: 1;
-  transition: opacity 0.28s ease-out;
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex: 1 1 auto;
-  min-width: 0;
+  padding-right: 20px;
 }
-.mc-ticker-line.fading { opacity: 0; }
+.mc-ticker-line.mc-visible { opacity: 1; }
+.mc-ticker-empty {
+  font-style: italic;
+  opacity: 0.7;
+}
 
-@media (max-width: 640px) {
-  .mc-ticker { padding: 8px 16px; gap: 10px; }
-  .mc-ticker-line { font-size: 14px; }
+@media (max-width: 880px) {
+  .mc-ticker { padding: 10px 16px; gap: 12px; }
 }
 `

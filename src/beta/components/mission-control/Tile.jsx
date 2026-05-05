@@ -1,137 +1,143 @@
 // ─────────────────────────────────────────────────────────────
 // Tile.jsx
 //
-// The side-rail tile. Each tile is a workspace doorway — clicking
-// opens a Panel with the tool's simplest useful form.
+// Single rail icon. Used inside SideRail on both left (personal)
+// and right (planet) rails. Renders glyph + label + state. The
+// state line takes a sentinel "—" when there's nothing meaningful
+// to surface yet, matching the v4 mockup's empty-rail aesthetic.
 //
-// Props (per Mission Control chunk 1 brief):
-//   glyph:         string|node — small marker rendered above the label
-//   label:         string — the tile's name
-//   status:        string — short status line (e.g. "day 12 of 90", "Empty.")
-//   statusVariant: 'gold' | 'empty' | 'default'
-//   dot:           boolean — small accent dot beside the label
-//   pulse:         boolean — applies a slow gold-glow pulse (use sparingly)
-//   onClick:       () => void
+// On desktop (>1024px), the tile is a vertical column 56px wide.
+// Below 1024px, the rail collapses to a horizontal strip and the
+// tiles become inline rows with the glyph beside the label.
+//
+// Props:
+//   glyph:    string         — the unicode/short symbol shown at top
+//   label:    string | node  — main label, two lines OK (use <br/> if needed)
+//   state:    string         — small state line ("UNTOUCHED", "D 12 / 90", "—", etc.)
+//   pulse:    boolean        — if true, glyph pulses (used for an unattended-today HS)
+//   onClick:  () => void
+//   title:    string         — hover/aria title
 // ─────────────────────────────────────────────────────────────
 
 import {
-  TILE_W, GOLD, GOLD_DK, GOLD_RULE, GOLD_HOVER,
-  FONT_SC, FONT_BODY, TEXT_INK, TEXT_META, TEXT_FAINT, BG_PAGE,
+  GOLD, GOLD_DK, GOLD_LT, GOLD_RULE,
+  BG_CARD, BG_INK_SOFT,
+  TEXT_META, TEXT_WHITE_META, TEXT_FAINT, TEXT_WHITE_FAINT,
+  FONT_DISPLAY, FONT_SC,
 } from './tokens'
 
-const STATUS_COLORS = {
-  gold:    GOLD_DK,
-  empty:   TEXT_FAINT,
-  default: TEXT_META,
-}
-
-/**
- * @param {Object} props
- * @param {string|React.ReactNode} [props.glyph]
- * @param {string} props.label
- * @param {string} [props.status]
- * @param {'gold'|'empty'|'default'} [props.statusVariant]
- * @param {boolean} [props.dot]
- * @param {boolean} [props.pulse]
- * @param {() => void} props.onClick
- */
 export default function Tile({
   glyph,
   label,
-  status,
-  statusVariant = 'default',
-  dot = false,
+  state,
   pulse = false,
   onClick,
+  title,
 }) {
   return (
-    <button
-      type="button"
+    <div
+      className={`mc-rail-icon ${pulse ? 'mc-pulse' : ''}`}
       onClick={onClick}
-      className={`mc-tile${pulse ? ' mc-tile-pulse' : ''}`}
-      aria-label={label}
+      role="button"
+      tabIndex={0}
+      title={title}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick?.()
+        }
+      }}
     >
       <style>{TILE_CSS}</style>
-      {glyph != null && <div className="mc-tile-glyph">{glyph}</div>}
-      <div className="mc-tile-label-row">
-        {dot && <span className="mc-tile-dot" />}
-        <span className="mc-tile-label">{label}</span>
-      </div>
-      {status && (
-        <div className="mc-tile-status" style={{ color: STATUS_COLORS[statusVariant] }}>
-          {status}
-        </div>
-      )}
-    </button>
+      <div className="mc-rail-glyph">{glyph}</div>
+      <div className="mc-rail-label">{label}</div>
+      {state && <div className="mc-rail-state">{state}</div>}
+    </div>
   )
 }
 
 const TILE_CSS = `
-.mc-tile {
-  width: ${TILE_W}px;
-  background: ${BG_PAGE};
+.mc-rail-icon {
+  width: 56px;
+  background: ${BG_CARD};
   border: 1px solid ${GOLD_RULE};
-  border-radius: 12px;
-  padding: 12px 8px 10px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  transition: border-color 0.18s, background 0.18s, transform 0.18s;
-  font-family: ${FONT_BODY};
+  padding: 10px 6px 8px;
   text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  user-select: none;
 }
-.mc-tile:hover {
+[data-stage="dark"] .mc-rail-icon {
+  background: ${BG_INK_SOFT};
+  border: 1px solid rgba(200, 146, 42, 0.30);
+}
+.mc-rail-icon:hover {
+  background: rgba(200, 146, 42, 0.05);
   border-color: ${GOLD};
-  background: ${GOLD_HOVER};
-  transform: translateY(-1px);
 }
-.mc-tile-glyph {
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+[data-stage="dark"] .mc-rail-icon:hover {
+  background: rgba(200, 146, 42, 0.10);
+}
+.mc-rail-icon:focus-visible {
+  outline: 2px solid ${GOLD};
+  outline-offset: 2px;
+}
+
+.mc-rail-glyph {
+  font-family: ${FONT_DISPLAY};
+  font-size: 22px;
   color: ${GOLD_DK};
+  line-height: 1;
+  margin-bottom: 5px;
+}
+[data-stage="dark"] .mc-rail-glyph { color: ${GOLD_LT}; }
+
+.mc-rail-label {
   font-family: ${FONT_SC};
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 0.10em;
-}
-.mc-tile-label-row {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.mc-tile-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: ${GOLD};
-  flex-shrink: 0;
-}
-.mc-tile-label {
-  font-family: ${FONT_SC};
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: ${TEXT_INK};
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  color: ${TEXT_META};
   line-height: 1.2;
 }
-.mc-tile-status {
-  font-family: ${FONT_BODY};
-  font-size: 11px;
-  font-weight: 400;
-  line-height: 1.3;
-  text-align: center;
-  min-height: 14px;
+[data-stage="dark"] .mc-rail-label { color: ${TEXT_WHITE_META}; }
+
+.mc-rail-state {
+  font-family: ${FONT_SC};
+  font-size: 7.5px;
+  letter-spacing: 0.12em;
+  color: ${TEXT_FAINT};
+  margin-top: 2px;
 }
-@keyframes mcTilePulse {
-  0%   { box-shadow: 0 0 0 0 rgba(200,146,42,0); border-color: ${GOLD_RULE}; }
-  50%  { box-shadow: 0 0 18px 2px rgba(200,146,42,0.32); border-color: ${GOLD}; }
-  100% { box-shadow: 0 0 0 0 rgba(200,146,42,0); border-color: ${GOLD_RULE}; }
+[data-stage="dark"] .mc-rail-state { color: ${TEXT_WHITE_FAINT}; }
+
+.mc-rail-icon.mc-pulse .mc-rail-glyph {
+  animation: mcIconPulse 2.5s ease-in-out infinite;
 }
-.mc-tile-pulse { animation: mcTilePulse 6s ease-in-out infinite; }
+@keyframes mcIconPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.6; transform: scale(1.08); }
+}
+
+@media (max-width: 1280px) {
+  .mc-rail-icon { width: 50px; padding: 8px 4px 6px; }
+  .mc-rail-glyph { font-size: 18px; margin-bottom: 4px; }
+  .mc-rail-label { font-size: 8px; letter-spacing: 0.12em; }
+  .mc-rail-state { font-size: 7px; }
+}
+
+@media (max-width: 1024px) {
+  .mc-rail-icon {
+    width: auto;
+    min-width: 90px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-align: left;
+  }
+  .mc-rail-glyph { font-size: 16px; margin-bottom: 0; }
+  .mc-rail-label { font-size: 9px; }
+  .mc-rail-state { font-size: 8px; margin-top: 1px; }
+}
 `

@@ -1,67 +1,64 @@
 // ─────────────────────────────────────────────────────────────
 // BetaMissionControl — /beta/dashboard
 //
-// The cockpit. Logged-in user lands here. Four regions:
-//   • Top strip: brand · identity · glance wheel
-//   • Ticker: rotating platform-motion line
-//   • Centre: horizon scene with two BUILD buttons
-//   • Side rails (left/right) and bottom dock: tile workspaces
+// v4 swap. The wheel IS the cockpit. Users steer between Your Life
+// (personal seven-domain wheel) and The Planet (civilisational
+// seven-domain wheel) via a switcher pill at the bottom of the
+// stage. Switching to The Planet flips the whole stage to dark via
+// the data-stage="dark" attribute on the root.
 //
-// This is the SHELL. Each tile opens a Panel with placeholder
-// content; the real tool bodies (Horizon State check-in inline,
-// Target Sprint task list, etc.) get wired in chunk 2 per the
-// Welcome plan §4.
+// Surface layout:
+//   • TopStrip                 — brand · identity · MISSION CONTROL
+//   • Ticker                   — single rotating activity line
+//                                (empty state: "Quiet right now.")
+//   • SideRail (left)          — Horizon State · Target Sprint ·
+//                                Horizon Practice · Resources
+//   • WheelStage               — the wheel cockpit + switcher
+//   • SideRail (right)         — World View · What's So · Missions
+//   • ActionCard × 2           — next move on each side
+//   • Dock                     — Profile · Purpose Piece · The Map · Settings
 //
-// To find the wire-up points, search for "PANEL TODO".
+// Data layer (untouched from v3 build):
+//   useMissionControlData() returns user, profile, mapData,
+//   purposeData, sprintData, practiceData, foundationData.
+//
+// Empty-state philosophy (locked, see Working_With_Nik §5):
+//   • Personal wheel — when no current scores have flowed yet,
+//     the polygon is replaced with a small dashed centre marker.
+//   • Civ wheel — same dashed empty state, until the indicator
+//     pipeline is wired into a 0–10 score per domain.
+//   • Walker layer — RENDERS NOTHING when count is zero. No demo
+//     numbers. Wire-up point marked below.
+//   • Ticker — empty state line: "Quiet right now."
+//
+// Wire-up points marked with WIRE: comments. Each one names what
+// the source will be when it is built.
 // ─────────────────────────────────────────────────────────────
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+
 import TopStrip      from '../components/mission-control/TopStrip'
 import Ticker        from '../components/mission-control/Ticker'
-import HorizonScene  from '../components/mission-control/HorizonScene'
+import WheelStage    from '../components/mission-control/WheelStage'
+import ActionCard    from '../components/mission-control/ActionCard'
 import SideRail      from '../components/mission-control/SideRail'
-import Dock          from '../components/mission-control/Dock'
 import Tile          from '../components/mission-control/Tile'
+import Dock          from '../components/mission-control/Dock'
 import DockTile      from '../components/mission-control/DockTile'
 import Panel         from '../components/mission-control/Panel'
-import GlanceWheel   from '../components/mission-control/GlanceWheel'
-import WorldWheel    from '../components/mission-control/WorldWheel'
+
 import useMissionControlData from '../components/mission-control/useMissionControlData'
-import { GOLD_DK, BG_PARCHMENT } from '../components/mission-control/tokens'
+import { BG_PARCHMENT, BG_INK } from '../components/mission-control/tokens'
 
-// ─── Personal dimensions for the GlanceWheel ──────────────
-const SELF_DIMENSIONS = [
-  { key: 'path',        label: 'Path' },
-  { key: 'spark',       label: 'Spark' },
-  { key: 'body',        label: 'Body' },
-  { key: 'finances',    label: 'Finances' },
-  { key: 'connection',  label: 'Connection' },
-  { key: 'inner_game',  label: 'Inner Game' },
-  { key: 'signal',      label: 'Signal' },
-]
+// ─── Spoke order matters. These two arrays are the canonical
+//     order on Mission Control. The labels are what render on the
+//     wheel; the keys are what the data layer queries by.
+const SELF_LABELS = ['PATH', 'SPARK', 'BODY', 'FINANCES', 'CONNECTION', 'INNER GAME', 'SIGNAL']
+const SELF_KEYS   = ['path', 'spark', 'body', 'finances', 'connection', 'inner_game', 'signal']
 
-// ─── Civ domains for the WorldWheel ───────────────────────
-const CIV_DOMAINS = [
-  { slug: 'human-being',     label: 'Human',    color: '#2A6B9E' },
-  { slug: 'society',         label: 'Society',  color: '#6B2A9E' },
-  { slug: 'nature',          label: 'Nature',   color: '#2A6B3A' },
-  { slug: 'technology',      label: 'Tech',     color: '#8A6B2A' },
-  { slug: 'finance-economy', label: 'Finance',  color: '#6B3A2A' },
-  { slug: 'legacy',          label: 'Legacy',   color: '#4A6B2A' },
-  { slug: 'vision',          label: 'Vision',   color: '#2A4A6B' },
-]
-
-// ─── Static demo ticker lines.
-//     Replaced by live activity feed when that pipeline is wired
-//     (Welcome plan §3, "Ticker" — real data when available, demo
-//     strings for now). ───────────────────────────
-const DEMO_TICKER_LINES = [
-  'Two new Connectors placed themselves in Society at neighbourhood scale.',
-  'A Practitioner committed to a 90-day sprint on Path.',
-  'Three contributions logged in Nature this week.',
-  'A new Need posted in Finance & Economy.',
-]
+const CIV_LABELS  = ['VISION', 'HUMAN', 'NATURE', 'FINANCE', 'TECH', 'LEGACY', 'SOCIETY']
+const CIV_KEYS    = ['vision', 'human', 'nature', 'finance', 'tech', 'legacy', 'society']
 
 // Helper: derive map score lookups from the horizon_profile rows
 function buildScoreMap(mapRows) {
@@ -77,381 +74,527 @@ function buildScoreMap(mapRows) {
   return { horizons, current }
 }
 
-// Count how many dimensions actually have a current score
 function countPlaced(current) {
   return Object.values(current).filter(v => v != null).length
 }
 
-// Format the placement string from purpose_piece_results.session
+// Format placement caption from purpose_piece_results.session
 function formatPlacement(purposeData) {
   if (!purposeData) return null
   const archetype = purposeData?.archetype?.label || purposeData?.archetype || null
   const domain    = purposeData?.domain?.label    || purposeData?.domain    || null
   const scale     = purposeData?.scale?.label     || purposeData?.scale     || null
   const parts = [archetype, domain, scale].filter(Boolean)
-  return parts.length > 0 ? parts.join(' · ') : null
+  return parts.length > 0 ? parts.join(' · ').toUpperCase() : null
 }
 
-// Derive today's orientation. For now, simple heuristic:
-//   • If user has an active sprint, surface that.
-//   • Else if user has a recent practice, surface that.
-//   • Else neutral fallback.
-// Replaced by the same "today's focus" logic that /dashboard uses
-// when the wire-up is clean. (Welcome plan §3.)
-function todaysOrientation({ sprintData, practiceData }) {
-  if (sprintData && sprintData.length > 0) {
-    const s = sprintData[0]
-    const domains = Array.isArray(s.domains) ? s.domains.join(' · ') : 'a sprint'
-    return {
-      eyebrow: 'Pulling at you today',
-      line: `Your active sprint on ${domains} is the work in front of you.`,
-    }
+// Active sprint key — the personal-wheel spoke that gets the glow.
+// Reads the first active sprint and returns its primary domain.
+function activeSprintKey(sprintData) {
+  if (!Array.isArray(sprintData) || sprintData.length === 0) return null
+  const s = sprintData[0]
+  if (!Array.isArray(s.domains) || s.domains.length === 0) return null
+  const first = s.domains[0]
+  // Domain keys in the sprint table use the same slugs as SELF_KEYS
+  return SELF_KEYS.includes(first) ? first : null
+}
+
+// Civ placement key — the civ-wheel spoke that gets the placement marker.
+function civPlacementKey(purposeData) {
+  if (!purposeData) return null
+  const slug = purposeData?.domain?.slug || purposeData?.domain || null
+  if (!slug) return null
+  // Map placement domain slugs (e.g. "human-being") to civ wheel keys
+  const slugToKey = {
+    'human-being':     'human',
+    'society':         'society',
+    'nature':          'nature',
+    'technology':      'tech',
+    'finance-economy': 'finance',
+    'legacy':          'legacy',
+    'vision':          'vision',
   }
-  if (practiceData?.focus) {
-    return {
-      eyebrow: 'Pulling at you today',
-      line: `${practiceData.focus} — from your most recent practice.`,
-    }
-  }
-  return {
-    eyebrow: 'Pulling at you today',
-    line: 'Nothing committed yet. The Map and the Purpose Piece are the doors.',
-  }
+  return slugToKey[slug] || (CIV_KEYS.includes(slug) ? slug : null)
 }
 
 export default function BetaMissionControl() {
   const navigate = useNavigate()
   const data = useMissionControlData()
   const [activePanel, setActivePanel] = useState(null)
+  const [currentWheel, setCurrentWheel] = useState('personal')
 
-  const { horizons, current } = useMemo(
+  // Personal wheel data
+  const { horizons: selfHorizons, current: selfCurrent } = useMemo(
     () => buildScoreMap(data.mapData),
     [data.mapData]
   )
+  const placedCount = countPlaced(selfCurrent)
+  const sprintKey = activeSprintKey(data.sprintData)
 
-  const placedCount = countPlaced(current)
-  const userName = data.profile?.display_name || data.user?.email?.split('@')[0] || 'friend'
-  const placement = formatPlacement(data.purposeData)
-  const orientation = todaysOrientation(data)
+  // Civ wheel data — until the indicator pipeline produces a 0–10
+  // score per civ domain, civ_current is empty {} which renders the
+  // dashed empty polygon. Horizons are uniform 10 by spec.
+  // WIRE: replace the empty civ_current object with a query against
+  // the score weights table once headline indicators are flowing.
+  const civCurrent = {}
+  const civHorizons = useMemo(
+    () => Object.fromEntries(CIV_KEYS.map(k => [k, 10])),
+    []
+  )
 
-  const civPlacementSlug = data.purposeData?.domain?.slug || data.purposeData?.domain || null
+  // Walker layer — empty by default. RENDERS NOTHING when 0.
+  // WIRE: replace with a contributor_profiles_beta count query
+  // grouped by sprint domain (personal) and placement domain (civ)
+  // once the contributor density layer is built.
+  const personalWalkers = {}
+  const civWalkers = {}
+
+  // Identity strings
+  const userName  = data.profile?.display_name || data.user?.email?.split('@')[0] || 'Your name'
+  const placement = formatPlacement(data.purposeData) || 'PURPOSE PIECE NOT YET PLACED'
+
+  // Civ placement marker
+  const civPlacement = civPlacementKey(data.purposeData)
+
+  // Stage dark-mode flip
+  useEffect(() => {
+    const stage = document.getElementById('mc-stage-root')
+    if (!stage) return
+    if (currentWheel === 'civ') {
+      stage.setAttribute('data-stage', 'dark')
+    } else {
+      stage.removeAttribute('data-stage')
+    }
+  }, [currentWheel])
 
   const closePanel = () => setActivePanel(null)
 
-  // Shell — top strip, ticker, centre, rails, dock all wired up.
+  // ─── Action card content ─────────────────────────────────────
+  // Personal: derive from sprintData if a sprint exists, otherwise
+  // fall through to the neutral "nothing committed yet" copy.
+  const personalAction = (() => {
+    const s = Array.isArray(data.sprintData) && data.sprintData[0]
+    if (s) {
+      const domain = Array.isArray(s.domains) && s.domains[0]
+      const domainLabel = domain ? domain.replace('_', ' ').toUpperCase() : 'A SPRINT'
+      return {
+        empty: false,
+        eyebrow: 'YOUR LIFE · NEXT MOVE',
+        context: `${domainLabel} SPRINT · ACTIVE`,
+        title: 'Open your active sprint.',
+        body:  'Your sprint is the work in front of you. Open it for next actions and the conversation log.',
+        primaryLabel:  'OPEN SPRINT',
+        onPrimary:     () => navigate('/tools/target-sprint'),
+        tertiaryLabel: 'LATER',
+        onTertiary:    closePanel,
+      }
+    }
+    return {
+      empty: true,
+      eyebrow: 'YOUR LIFE · NEXT MOVE',
+      context: 'NOTHING COMMITTED YET',
+      title: 'The Map and the Purpose Piece are the doors.',
+      body:  'When a sprint is active or a practice is running, the next move surfaces here.',
+      primaryLabel:  'OPEN THE MAP',
+      onPrimary:     () => navigate('/tools/map'),
+      tertiaryLabel: 'PURPOSE PIECE',
+      onTertiary:    () => navigate('/tools/purpose-piece'),
+    }
+  })()
+
+  // Civ: missions feed is not yet built. Empty state always for now.
+  // WIRE: replace with a query against the missions/quests table once
+  // the org-posts-a-mission backend ships.
+  const civAction = {
+    empty: true,
+    eyebrow: 'THE PLANET · NEXT MOVE',
+    context: placement === 'PURPOSE PIECE NOT YET PLACED'
+      ? 'PLACE YOURSELF FIRST'
+      : 'NO MISSIONS IN YOUR RANGE YET',
+    title: placement === 'PURPOSE PIECE NOT YET PLACED'
+      ? 'Place yourself, then the planet shows up.'
+      : 'No missions in your range yet.',
+    body: placement === 'PURPOSE PIECE NOT YET PLACED'
+      ? 'The Purpose Piece sets your archetype, domain, and scale. The mission feed surfaces here once you place yourself.'
+      : 'Missions and quests appear here as orgs in your area post them. Browse broader if nothing is here yet.',
+    primaryLabel: placement === 'PURPOSE PIECE NOT YET PLACED' ? 'PLACE YOURSELF' : 'BROWSE BROADER',
+    onPrimary:    () => navigate(
+      placement === 'PURPOSE PIECE NOT YET PLACED' ? '/tools/purpose-piece' : '/beta/missions'
+    ),
+    tertiaryLabel: 'LATER',
+    onTertiary:    closePanel,
+  }
+
+  // ─── Rail states ─────────────────────────────────────────────
+  // Each rail tile gets a small state line. Until launch, most
+  // states fall back to "—" because no real activity exists yet.
+  const hsState = data.foundationData?.streak_days
+    ? `${data.foundationData.streak_days}D STREAK`
+    : 'UNTOUCHED'
+  const hsPulse = !data.foundationData?.last_session_at
+  const tsState = Array.isArray(data.sprintData) && data.sprintData.length > 0
+    ? `${data.sprintData.length} ACTIVE`
+    : 'NONE'
+  const hpState = data.practiceData?.session_date ? 'RECENT' : 'NONE'
+
+  // Ticker — empty list until the activity feed is wired.
+  // WIRE: replace [] with a query against the future
+  // nextus_activity_feed table, scoped to the user's slice.
+  const tickerLines = []
+
   return (
-    <div style={{ background: BG_PARCHMENT, minHeight: '100dvh', paddingBottom: 140 }}>
-      <TopStrip
-        brand="NextUs"
-        userName={userName}
-        userPlacement={placement}
-        glanceLabel="You"
-        glanceSummary={`${placedCount} of 7 dimensions placed`}
-        glanceWheel={
-          <GlanceWheel
-            dimensions={SELF_DIMENSIONS}
-            horizons={horizons}
-            current={current}
-            size={56}
-          />
-        }
-        onGlanceClick={() => setActivePanel('worldview')}
-      />
+    <div
+      id="mc-stage-root"
+      className="mc-stage-root"
+      style={{
+        minHeight: '100dvh',
+        display: 'grid',
+        gridTemplateRows: 'auto auto 1fr auto',
+        background: BG_PARCHMENT,
+        transition: 'background 0.6s ease',
+        color: '#0F1523',
+      }}
+    >
+      <style>{STAGE_CSS}</style>
+
+      <TopStrip userName={userName} placement={placement} />
 
       <Ticker
-        eyebrow="On the platform"
-        lines={DEMO_TICKER_LINES}
+        eyebrow="RECENTLY ACROSS YOUR SLICE"
+        lines={tickerLines}
       />
 
-      <HorizonScene
-        aboveEyebrow={orientation.eyebrow}
-        aboveLine={orientation.line}
-        leftButton={{
-          label: 'Your Life',
-          context: 'Build →',
-          onClick: () => setActivePanel('horizon-state'),
-        }}
-        rightButton={{
-          label: 'The World',
-          context: '← Build',
-          onClick: () => setActivePanel('worldview'),
-        }}
-        userName={userName}
-        userMeta={placement || 'Place yourself with the Purpose Piece'}
-      />
+      <div className="mc-centre">
+        <div className="mc-scene">
+          <WheelStage
+            currentWheel={currentWheel}
+            onSwitchWheel={setCurrentWheel}
+            personalProps={{
+              labels:    SELF_LABELS,
+              keys:      SELF_KEYS,
+              horizons:  selfHorizons,
+              current:   selfCurrent,
+              activeKey: sprintKey,
+              walkers:   personalWalkers,
+              isEmpty:   placedCount === 0,
+            }}
+            civProps={{
+              labels:        CIV_LABELS,
+              keys:          CIV_KEYS,
+              horizons:      civHorizons,
+              current:       civCurrent,
+              placementKey:  civPlacement,
+              walkers:       civWalkers,
+              isEmpty:       Object.keys(civCurrent).length === 0,
+            }}
+          />
+        </div>
 
-      {/* Left rail — personal-side tools */}
+        <div className="mc-actions">
+          <ActionCard {...personalAction} dark={false} />
+          <ActionCard {...civAction}      dark={currentWheel === 'civ'} />
+        </div>
+      </div>
+
+      {/* LEFT RAIL — personal-side tools */}
       <SideRail side="left">
         <Tile
-          glyph="HS"
-          label="Horizon State"
-          status={data.foundationData?.streak_days ? `${data.foundationData.streak_days}d streak` : 'Empty.'}
-          statusVariant={data.foundationData?.streak_days ? 'gold' : 'empty'}
+          glyph="◐"
+          label={<>HORIZON<br/>STATE</>}
+          state={hsState}
+          pulse={hsPulse}
           onClick={() => setActivePanel('horizon-state')}
+          title="Horizon State — daily check-in"
         />
         <Tile
-          glyph="TS"
-          label="Target Sprint"
-          status={data.sprintData?.length ? `${data.sprintData.length} active` : 'Empty.'}
-          statusVariant={data.sprintData?.length ? 'gold' : 'empty'}
+          glyph="▲"
+          label={<>TARGET<br/>SPRINT</>}
+          state={tsState}
           onClick={() => setActivePanel('target-sprint')}
+          title="Target Sprint"
         />
         <Tile
-          glyph="HP"
-          label="Horizon Practice"
-          status={data.practiceData?.session_date ? 'Recent' : 'Empty.'}
-          statusVariant={data.practiceData?.session_date ? 'gold' : 'empty'}
+          glyph="✦"
+          label={<>HORIZON<br/>PRACTICE</>}
+          state={hpState}
           onClick={() => setActivePanel('horizon-practice')}
+          title="Horizon Practice"
         />
         <Tile
-          glyph="R"
-          label="Resources"
-          status="Library"
+          glyph="≡"
+          label="RESOURCES"
+          state="—"
           onClick={() => setActivePanel('resources')}
+          title="Resources for self"
         />
       </SideRail>
 
-      {/* Right rail — civ-side panels */}
+      {/* RIGHT RAIL — planet surfaces */}
       <SideRail side="right">
         <Tile
-          glyph="W"
-          label="World View"
-          status={placement ? 'Placed' : 'Unplaced'}
-          statusVariant={placement ? 'gold' : 'empty'}
-          dot={!!placement}
-          onClick={() => setActivePanel('worldview')}
+          glyph="◯"
+          label={<>WORLD<br/>VIEW</>}
+          state={civPlacement ? 'PLACED' : 'UNPLACED'}
+          onClick={() => setActivePanel('world-view')}
+          title="World View — current state of all seven civ domains"
         />
         <Tile
-          glyph="WS"
-          label="What's So"
-          status="Indicators"
+          glyph="◊"
+          label={<>WHAT'S<br/>SO</>}
+          state={civPlacement ? 'YOUR VECTOR' : '—'}
           onClick={() => setActivePanel('whats-so')}
+          title="What's So — drill-in indicator data at your vector"
         />
         <Tile
-          glyph="M"
-          label="Missions"
-          status="Open feed"
+          glyph="⇶"
+          label={<>MISSIONS<br/>&amp; QUESTS</>}
+          state="EMPTY"
           onClick={() => setActivePanel('missions')}
+          title="Missions & Quests — feed of contributions in your range"
         />
       </SideRail>
 
-      {/* Bottom dock — Profile, Purpose Piece, The Map, Settings */}
+      {/* BOTTOM UTILITY RAIL */}
       <Dock>
         <DockTile
-          eyebrow="Profile · You"
-          name={userName}
-          status="View / edit"
-          primary
+          label="YOU"
+          name="Profile"
           onClick={() => setActivePanel('profile')}
         />
         <DockTile
-          eyebrow="Tool · Placement"
+          label="PLACEMENT"
           name="Purpose Piece"
-          status={placement ? 'Complete' : 'Not yet placed'}
-          statusVariant={placement ? 'complete' : 'default'}
           onClick={() => setActivePanel('purpose-piece')}
         />
         <DockTile
-          eyebrow="Tool · Audit"
+          label="FOUNDATION"
           name="The Map"
-          status={placedCount === 7 ? 'Complete' : `${placedCount} of 7`}
-          statusVariant={placedCount === 7 ? 'complete' : 'default'}
           onClick={() => setActivePanel('map')}
         />
         <DockTile
-          eyebrow="Account"
+          label="SYSTEM"
           name="Settings"
-          status="Account · privacy"
           onClick={() => setActivePanel('settings')}
         />
       </Dock>
 
-      {/* ─────────────────────────────────────────────────────
-          PANELS — placeholder content for chunk 1 shell.
-          Each TODO marks the wire-up point for the real tool.
-          ───────────────────────────────────────────────────── */}
+      {/* ─── PANELS ──────────────────────────────────────────── */}
 
-      {/* PANEL TODO: HorizonState — port the multi-step nervous-system
-          check-in from /tools/horizon-state. First prompt fits inline;
-          if it doesn't, "continue full version →" routes to the page. */}
       <Panel
         open={activePanel === 'horizon-state'}
         onClose={closePanel}
-        eyebrow="Personal · Foundation"
-        title="Horizon State"
+        eyebrow="DAILY · HORIZON STATE"
+        title="How are you arriving today?"
         actions={[
-          { label: 'Continue full version →', primary: true, onClick: () => navigate('/tools/horizon-state') },
+          { label: 'OPEN HORIZON STATE', primary: true,
+            onClick: () => navigate('/tools/horizon-state') },
+          { label: 'LATER', onClick: closePanel },
         ]}
       >
-        <PlaceholderBody
-          status={data.foundationData}
-          message="Wire the inline check-in here in chunk 2."
-        />
+        <p>A short check-in with your nervous system. Two minutes. No right answer. The point is noticing where you're starting from before the day takes hold.</p>
+        <div className="mc-panel-build-edge">
+          Building in progress. The full check-in flow opens at /tools/horizon-state.
+        </div>
       </Panel>
 
-      {/* PANEL TODO: TargetSprint — show next-actions across active
-          sprint domains, checkable inline. */}
       <Panel
         open={activePanel === 'target-sprint'}
         onClose={closePanel}
-        eyebrow="Personal · Sprint"
-        title="Target Sprint"
+        eyebrow="90-DAY COMMITMENT · TARGET SPRINT"
+        title="Your active sprint"
         actions={[
-          { label: 'Review the full plan →', primary: true, onClick: () => navigate('/tools/target-sprint') },
+          { label: 'OPEN TARGET SPRINT', primary: true,
+            onClick: () => navigate('/tools/target-sprint') },
+          { label: 'LATER', onClick: closePanel },
         ]}
       >
-        <PlaceholderBody
-          status={data.sprintData}
-          message={
-            data.sprintData?.length
-              ? `${data.sprintData.length} active sprint(s). Wire next-actions inline in chunk 2.`
-              : 'No active sprint. The full tool starts one.'
-          }
-        />
+        <p>Three things a week. Notes after each. The point is to feel out the actual shape of what's pulling at you.</p>
+        <div className="mc-panel-build-edge">
+          Building in progress. The full sprint detail, conversation log, and reflection prompts open at /tools/target-sprint.
+        </div>
       </Panel>
 
-      {/* PANEL TODO: HorizonPractice — daily practice pulse. */}
       <Panel
         open={activePanel === 'horizon-practice'}
         onClose={closePanel}
-        eyebrow="Personal · Practice"
-        title="Horizon Practice"
+        eyebrow="DAILY ANCHORS · HORIZON PRACTICE"
+        title="What you're tending to today"
         actions={[
-          { label: 'Open practice →', primary: true, onClick: () => navigate('/tools/horizon-practice') },
+          { label: 'OPEN PRACTICE', primary: true,
+            onClick: () => navigate('/tools/horizon-practice') },
+          { label: 'LATER', onClick: closePanel },
         ]}
       >
-        <PlaceholderBody
-          status={data.practiceData}
-          message="Wire today's practice card here in chunk 2."
-        />
+        <p>Practices are short daily things — five minutes, ten minutes — that hold the work between sprint days. The I Am statements you wrote in The Map anchor the practice from underneath.</p>
+        <div className="mc-panel-build-edge">
+          Building in progress. Full practice library and daily check-in flow open at /tools/horizon-practice.
+        </div>
       </Panel>
 
-      {/* PANEL TODO: Resources — library of materials. */}
       <Panel
         open={activePanel === 'resources'}
         onClose={closePanel}
-        eyebrow="Personal · Library"
-        title="Resources"
+        eyebrow="FOR YOUR WORK · RESOURCES"
+        title="Things that fit where you are"
       >
-        <PlaceholderBody message="Resource library wires up in chunk 2." />
+        <p>Surfaced from across NextUs based on your active sprint and current practice. Articles, conversations, practitioners, books, exercises. Updated as your work moves.</p>
+        <div className="mc-panel-build-edge">
+          Building in progress. Resource library wires up when the surface is wired.
+        </div>
       </Panel>
 
-      {/* PANEL TODO: WorldView — the full-size civ wheel with placement,
-          engaged domains, and links to surface contribution opportunities. */}
       <Panel
-        open={activePanel === 'worldview'}
+        open={activePanel === 'world-view'}
         onClose={closePanel}
-        eyebrow="World · Civilisational"
-        title="World View"
+        eyebrow="CIVILISATIONAL · WORLD VIEW"
+        title="The state of the world right now"
         dark
       >
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0 28px' }}>
-          <WorldWheel
-            dimensions={CIV_DOMAINS}
-            placement={civPlacementSlug}
-            size={340}
-          />
+        <p>The seven civilisational domains — Vision, Human, Nature, Finance, Tech, Legacy, Society — with current global state and Horizon Future for each. The wheel you saw on Mission Control, opened up.</p>
+        <div className="mc-panel-build-edge">
+          Building in progress. The full World View — interactive civ wheel, drill-down per domain, indicator detail with sources — renders here as the data sourcing layer fills in.
         </div>
-        <PlaceholderBody
-          dark
-          message={
-            placement
-              ? `You're placed: ${placement}. Engaged-domain rendering and contribution surfaces wire up in chunk 2.`
-              : 'Not yet placed. The Purpose Piece places you.'
-          }
-        />
       </Panel>
 
-      {/* PANEL TODO: WhatsSo — indicator pipeline. May ship with demo
-          slots per Decision 4. */}
       <Panel
         open={activePanel === 'whats-so'}
         onClose={closePanel}
-        eyebrow="World · State"
-        title="What's So"
+        eyebrow="YOUR VECTOR · WHAT'S SO"
+        title={civPlacement ? `Your vector, right now` : 'Place yourself, then drill in.'}
         dark
       >
-        <PlaceholderBody dark message="Indicator pipeline wires up when the data layer is ready (Welcome plan §5 · D4)." />
+        <p>{civPlacement
+          ? `The honest picture at your specific Purpose Piece vector. Not curated. Not optimistic. What the indicators actually say about your placement in the civ board.`
+          : `What's So drills into the indicator data at your vector — your archetype, domain, and scale. Until you've placed yourself with the Purpose Piece, there's no vector to drill into.`
+        }</p>
+        <div className="mc-panel-build-edge">
+          Building in progress. Full indicator detail at your vector renders here once the data sourcing layer is wired across all seven civ domains.
+        </div>
       </Panel>
 
-      {/* PANEL TODO: Missions — feed of open contribution opportunities. */}
       <Panel
         open={activePanel === 'missions'}
         onClose={closePanel}
-        eyebrow="World · Action"
-        title="Missions"
+        eyebrow="FEED · MISSIONS & QUESTS"
+        title="No missions in your range yet."
         dark
       >
-        <PlaceholderBody dark message="Mission feed wires up when the org-posts-a-mission backend lands (Welcome plan §6, out of scope this round)." />
+        <p>Missions and quests are specific contributions you can take on, posted by orgs in your area or surfaced by the platform based on your vector. They appear here as orgs join NextUs and post them.</p>
+        <div className="mc-panel-build-edge">
+          Building in progress. Full mission feed, accept-mission flow, and contribution log render here once orgs start posting.
+        </div>
       </Panel>
 
-      {/* PANEL TODO: Profile, Purpose Piece, Map, Settings — dock panels.
-          Likely each routes to its existing page rather than inlining. */}
       <Panel
         open={activePanel === 'profile'}
         onClose={closePanel}
-        eyebrow="You"
-        title="Profile"
+        eyebrow="YOU · PROFILE"
+        title="What others see of you on NextUs"
         actions={[
-          { label: 'Edit profile →', primary: true, onClick: () => navigate('/beta/profile/edit') },
+          { label: 'EDIT PROFILE', primary: true,
+            onClick: () => navigate('/beta/profile/edit') },
+          { label: 'CLOSE', onClick: closePanel },
         ]}
       >
-        <PlaceholderBody status={data.profile} message="Profile summary view wires up in chunk 2." />
+        <p>Your public face on the platform. Your I Am statements, your placement, what you're working on, how others can reach you. You control what's visible.</p>
+        <div className="mc-panel-build-edge">
+          Building in progress. Full profile editor, visibility controls per field, and public preview wire up at /beta/profile/edit.
+        </div>
       </Panel>
 
       <Panel
         open={activePanel === 'purpose-piece'}
         onClose={closePanel}
-        eyebrow="Tool · Placement"
-        title="Purpose Piece"
+        eyebrow="PLACEMENT · PURPOSE PIECE"
+        title={placement !== 'PURPOSE PIECE NOT YET PLACED' ? placement.split(' · ').map(s => s.toLowerCase()).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' · ') : 'Place yourself in the larger picture'}
         actions={[
-          { label: placement ? 'View / re-place →' : 'Begin →', primary: true, onClick: () => navigate('/tools/purpose-piece') },
+          { label: placement !== 'PURPOSE PIECE NOT YET PLACED' ? 'REVISIT YOUR PLACEMENT' : 'BEGIN', primary: true,
+            onClick: () => navigate('/tools/purpose-piece') },
+          { label: 'LATER', onClick: closePanel },
         ]}
       >
-        <PlaceholderBody status={data.purposeData} message="Purpose Piece summary inline in chunk 2." />
+        <p>Where you've placed yourself in the larger picture. Archetype, civilisational domain, scale. About an hour to do well; you can revisit and adjust as the work moves.</p>
+        <div className="mc-panel-build-edge">
+          Building in progress. Full Purpose Piece editor, archetype browser, and scale-shift flow open at /tools/purpose-piece.
+        </div>
       </Panel>
 
       <Panel
         open={activePanel === 'map'}
         onClose={closePanel}
-        eyebrow="Tool · Audit"
-        title="The Map"
+        eyebrow="FOUNDATION · THE MAP"
+        title="Your seven domains"
         actions={[
-          { label: 'Continue the audit →', primary: true, onClick: () => navigate('/tools/map') },
+          { label: placedCount === 7 ? 'REVISIT A DOMAIN' : 'CONTINUE THE AUDIT', primary: true,
+            onClick: () => navigate('/tools/map') },
+          { label: 'CLOSE', onClick: closePanel },
         ]}
       >
-        <PlaceholderBody status={data.mapData} message={`${placedCount} of 7 dimensions audited. Inline domain summary in chunk 2.`} />
+        <p>The Map is where you wrote your I Am statements and set your Horizon scores across the seven personal domains. Real work — typically a week or more if done well, one domain at a time. You revisit it when something shifts.</p>
+        <p style={{ marginTop: 12, fontSize: 14 }}>
+          {placedCount} of 7 domains audited.
+        </p>
+        <div className="mc-panel-build-edge">
+          Building in progress. Full Map flow, domain detail editor, and I Am statement revision open at /tools/map.
+        </div>
       </Panel>
 
       <Panel
         open={activePanel === 'settings'}
         onClose={closePanel}
-        eyebrow="Account"
-        title="Settings"
+        eyebrow="SYSTEM · SETTINGS"
+        title="Account & preferences"
       >
-        <PlaceholderBody message="Account / privacy settings wire up in chunk 2." />
+        <p>Your account, your privacy, your notifications, your data. Quiet controls.</p>
+        <div className="mc-panel-build-edge">
+          Building in progress. Full settings panel wires up when the surface is wired.
+        </div>
       </Panel>
     </div>
   )
 }
 
-// ─── Placeholder body. Used by every panel that hasn't had its
-//     real tool wired in yet. Single point of edit when chunk 2
-//     replaces these. ──────────────────────────────────────────
-function PlaceholderBody({ message, status, dark }) {
-  const hasStatus = status != null && (Array.isArray(status) ? status.length > 0 : Object.keys(status || {}).length > 0)
-  return (
-    <div style={{
-      padding: '24px 0',
-      color: dark ? 'rgba(255,255,255,0.85)' : GOLD_DK,
-      textAlign: 'center',
-    }}>
-      <p style={{ marginBottom: hasStatus ? 12 : 0, fontSize: 17 }}>{message}</p>
-      {hasStatus && (
-        <p style={{ fontSize: 13, opacity: 0.6 }}>
-          (Data is loaded — open this file and replace the placeholder.)
-        </p>
-      )}
-    </div>
-  )
+const STAGE_CSS = `
+.mc-stage-root[data-stage="dark"] {
+  background: ${BG_INK} !important;
+  color: #FFFFFF;
 }
+
+.mc-centre {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding: 32px 40px 28px;
+  align-items: center;
+  gap: 28px;
+}
+
+.mc-scene {
+  position: relative;
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mc-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  max-width: 1080px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+@media (max-width: 1280px) {
+  .mc-centre { padding-left: 80px; padding-right: 80px; }
+}
+@media (max-width: 1024px) {
+  .mc-centre { padding: 24px 24px; }
+}
+@media (max-width: 880px) {
+  .mc-centre { padding: 20px 16px 24px; }
+  .mc-scene { min-height: 320px; }
+  .mc-actions { grid-template-columns: 1fr; gap: 16px; }
+}
+`

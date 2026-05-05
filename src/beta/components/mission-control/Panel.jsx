@@ -1,254 +1,249 @@
 // ─────────────────────────────────────────────────────────────
 // Panel.jsx
 //
-// The overlay panel that opens when a Tile or DockTile is clicked.
-// Gold-bordered, parchment or dark, with header (eyebrow + title),
-// scrollable body, and an action bar across the bottom.
+// The overlay panel. v4 aesthetic: parchment background (or ink
+// when `dark`), single gold border, generous padding, close pill
+// in the top-right corner. Click the backdrop to dismiss; press
+// Escape to dismiss.
 //
-// The panel's job is to BE the tool, not describe it. Each panel's
-// body is whatever the tool needs to be in its simplest useful
-// form.
+// Body content is supplied as children. Optional `actions` array
+// renders one primary + one tertiary button at the foot of the
+// panel.
 //
 // Props:
 //   open:     boolean
 //   onClose:  () => void
-//   eyebrow:  string — small label above the title
-//   title:    string — main title
-//   children: React.ReactNode — the panel body
-//   dark:     boolean — dark theme (used for civ panels)
-//   actions:  Array<{ label: string, primary?: boolean, onClick: () => void }>
-//
-// Escape closes. Backdrop click closes.
+//   eyebrow:  string         — small uppercase eyebrow above the title
+//   title:    string         — display-font title
+//   dark:     boolean        — render the dark variant
+//   actions:  Array<{ label, primary, onClick }>
+//   children: panel body
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect } from 'react'
 import {
-  GOLD, GOLD_DK, GOLD_RULE,
-  BG_PARCHMENT, BG_INK, BG_PAGE,
-  TEXT_INK, TEXT_META, TEXT_WHITE,
-  FONT_SC, FONT_BODY, FONT_DISPLAY,
-  PANEL_MAX_W,
+  GOLD, GOLD_DK, GOLD_LT, GOLD_RULE,
+  BG_PARCHMENT, BG_INK,
+  TEXT_INK, TEXT_WHITE, TEXT_META, TEXT_WHITE_META,
+  FONT_DISPLAY, FONT_SC, FONT_BODY,
 } from './tokens'
 
-/**
- * @param {Object} props
- * @param {boolean} props.open
- * @param {() => void} props.onClose
- * @param {string} [props.eyebrow]
- * @param {string} props.title
- * @param {React.ReactNode} props.children
- * @param {boolean} [props.dark]
- * @param {Array<{label: string, primary?: boolean, onClick: () => void}>} [props.actions]
- */
 export default function Panel({
   open,
   onClose,
   eyebrow,
   title,
-  children,
   dark = false,
-  actions = [],
+  actions,
+  children,
 }) {
   useEffect(() => {
     if (!open) return
-    const handler = (e) => { if (e.key === 'Escape') onClose() }
-    document.addEventListener('keydown', handler)
-    // Lock body scroll while panel is open
-    const prev = document.body.style.overflow
+    const onKey = (e) => { if (e.key === 'Escape') onClose?.() }
+    document.addEventListener('keydown', onKey)
     document.body.style.overflow = 'hidden'
     return () => {
-      document.removeEventListener('keydown', handler)
-      document.body.style.overflow = prev
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
     }
   }, [open, onClose])
 
   if (!open) return null
 
   return (
-    <>
+    <div
+      className="mc-overlay"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose?.() }}
+    >
       <style>{PANEL_CSS}</style>
-      <div
-        className="mc-panel-backdrop"
-        onClick={onClose}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="mc-panel-title"
-      >
-        <div
-          className={`mc-panel-card${dark ? ' mc-panel-dark' : ''}`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button className="mc-panel-close" onClick={onClose} aria-label="Close">
-            ×
-          </button>
-          <div className="mc-panel-header">
-            {eyebrow && <div className="mc-panel-eyebrow">{eyebrow}</div>}
-            <h2 id="mc-panel-title" className="mc-panel-title">{title}</h2>
-          </div>
-          <div className="mc-panel-body">
-            {children}
-          </div>
-          {actions.length > 0 && (
-            <div className="mc-panel-actions">
-              {actions.map((action, i) => (
+      <div className={`mc-panel ${dark ? 'mc-panel-dark' : ''}`}>
+        <button className="mc-panel-close" onClick={onClose}>CLOSE ✕</button>
+        {eyebrow && <div className="mc-panel-eyebrow">{eyebrow}</div>}
+        {title && <div className="mc-panel-title">{title}</div>}
+        <div className="mc-panel-body">
+          {children}
+        </div>
+        {actions && actions.length > 0 && (
+          <div className="mc-panel-actions">
+            {actions.map((a, i) =>
+              a.primary ? (
                 <button
                   key={i}
-                  className={`mc-panel-action${action.primary ? ' mc-panel-action-primary' : ''}`}
-                  onClick={action.onClick}
+                  className="mc-panel-btn-primary"
+                  onClick={a.onClick}
                 >
-                  {action.label}
+                  {a.label}
                 </button>
-              ))}
-            </div>
-          )}
-        </div>
+              ) : (
+                <button
+                  key={i}
+                  className="mc-panel-btn-tertiary"
+                  onClick={a.onClick}
+                >
+                  {a.label}
+                </button>
+              )
+            )}
+          </div>
+        )}
       </div>
-    </>
+    </div>
   )
 }
 
 const PANEL_CSS = `
-.mc-panel-backdrop {
+.mc-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(15, 21, 35, 0.62);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  z-index: 300;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15, 21, 35, 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 200;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
-  animation: mcPanelFadeIn 0.2s ease-out;
+  padding: 40px 20px;
 }
-@keyframes mcPanelFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-.mc-panel-card {
+.mc-panel {
   background: ${BG_PARCHMENT};
-  color: ${TEXT_INK};
-  border: 1px solid ${GOLD_RULE};
-  border-radius: 18px;
+  border: 1px solid ${GOLD};
+  box-shadow: 0 20px 60px rgba(15, 21, 35, 0.30);
   width: 100%;
-  max-width: ${PANEL_MAX_W}px;
-  max-height: 86vh;
-  overflow: hidden;
-  padding: 36px 44px 0;
-  box-shadow: 0 24px 80px rgba(15,21,35,0.18);
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 36px 44px;
   position: relative;
-  display: flex;
-  flex-direction: column;
+  color: ${TEXT_INK};
 }
-@media (max-width: 640px) {
-  .mc-panel-card { padding: 28px 22px 0; max-height: 92vh; }
-}
-
-.mc-panel-dark {
+.mc-panel.mc-panel-dark {
   background: ${BG_INK};
+  border: 1px solid rgba(200, 146, 42, 0.50);
   color: ${TEXT_WHITE};
-  border-color: rgba(200, 146, 42, 0.28);
-}
-.mc-panel-dark .mc-panel-eyebrow { color: ${GOLD}; }
-.mc-panel-dark .mc-panel-title { color: ${TEXT_WHITE}; }
-.mc-panel-dark .mc-panel-actions {
-  border-top-color: rgba(200,146,42,0.32);
-  background: linear-gradient(to bottom, rgba(15,21,35,0) 0%, ${BG_INK} 30%);
 }
 
 .mc-panel-close {
   position: absolute;
-  top: 12px;
-  right: 14px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  top: 18px;
+  right: 22px;
   background: transparent;
-  border: 1px solid ${GOLD_RULE};
+  border: none;
+  font-family: ${FONT_SC};
+  font-size: 11px;
+  letter-spacing: 0.18em;
   color: ${TEXT_META};
-  font-size: 18px;
-  line-height: 1;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: border-color 0.18s, color 0.18s, background 0.18s;
-  z-index: 5;
+  padding: 4px 8px;
 }
-.mc-panel-close:hover {
-  border-color: ${GOLD};
-  color: ${GOLD_DK};
-  background: rgba(200,146,42,0.08);
-}
-.mc-panel-dark .mc-panel-close {
-  color: ${TEXT_WHITE};
-  border-color: rgba(200,146,42,0.32);
-}
-.mc-panel-dark .mc-panel-close:hover { color: ${GOLD}; border-color: ${GOLD}; }
+.mc-panel.mc-panel-dark .mc-panel-close { color: ${TEXT_WHITE_META}; }
+.mc-panel-close:hover { color: ${GOLD_DK}; }
 
-.mc-panel-header {
-  flex-shrink: 0;
-  margin-bottom: 18px;
-  text-align: center;
-}
 .mc-panel-eyebrow {
   font-family: ${FONT_SC};
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 11px;
   letter-spacing: 0.22em;
   color: ${GOLD_DK};
-  text-transform: uppercase;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
+.mc-panel.mc-panel-dark .mc-panel-eyebrow { color: ${GOLD_LT}; }
+
 .mc-panel-title {
   font-family: ${FONT_DISPLAY};
-  font-size: 36px;
-  font-weight: 300;
+  font-size: 32px;
+  font-weight: 500;
   color: ${TEXT_INK};
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
   line-height: 1.15;
 }
+.mc-panel.mc-panel-dark .mc-panel-title { color: ${TEXT_WHITE}; }
 
 .mc-panel-body {
-  flex: 1 1 auto;
-  overflow-y: auto;
-  padding-bottom: 16px;
   font-family: ${FONT_BODY};
-  font-size: 17px;
-  line-height: 1.6;
+  font-size: 16px;
+  color: ${TEXT_META};
+  line-height: 1.55;
 }
-.mc-panel-body::-webkit-scrollbar { width: 6px; }
-.mc-panel-body::-webkit-scrollbar-thumb { background: ${GOLD_RULE}; border-radius: 3px; }
+.mc-panel.mc-panel-dark .mc-panel-body { color: ${TEXT_WHITE_META}; }
 
 .mc-panel-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 14px 0 18px;
+  margin-top: 20px;
+  padding-top: 20px;
   border-top: 1px solid ${GOLD_RULE};
-  flex-shrink: 0;
-  background: linear-gradient(to bottom, rgba(250,250,247,0) 0%, ${BG_PARCHMENT} 30%);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.mc-panel.mc-panel-dark .mc-panel-actions {
+  border-top: 1px solid rgba(200, 146, 42, 0.20);
 }
 
-.mc-panel-action {
+.mc-panel-btn-primary {
+  background: ${GOLD_DK};
+  color: ${TEXT_WHITE};
   font-family: ${FONT_SC};
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.20em;
-  text-transform: uppercase;
-  color: ${GOLD_DK};
-  background: ${BG_PAGE};
-  border: 1.5px solid ${GOLD};
-  border-radius: 40px;
-  padding: 10px 22px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  padding: 12px 24px;
+  border: none;
   cursor: pointer;
-  transition: background 0.18s, color 0.18s, transform 0.18s;
+  transition: background 0.15s ease;
+  font-weight: 500;
 }
-.mc-panel-action:hover { background: ${GOLD}; color: white; transform: translateY(-1px); }
-.mc-panel-action-primary { background: ${GOLD}; color: white; }
-.mc-panel-action-primary:hover { background: ${GOLD_DK}; }
-.mc-panel-dark .mc-panel-action {
-  background: ${BG_INK};
-  color: ${GOLD};
-  border-color: ${GOLD};
+.mc-panel-btn-primary:hover { background: ${GOLD}; }
+
+.mc-panel-btn-tertiary {
+  background: transparent;
+  color: ${TEXT_META};
+  font-family: ${FONT_SC};
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  padding: 12px 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
 }
-.mc-panel-dark .mc-panel-action:hover { background: ${GOLD}; color: ${BG_INK}; }
+.mc-panel.mc-panel-dark .mc-panel-btn-tertiary { color: ${TEXT_WHITE_META}; }
+.mc-panel-btn-tertiary:hover { color: ${TEXT_INK}; }
+.mc-panel.mc-panel-dark .mc-panel-btn-tertiary:hover { color: ${TEXT_WHITE}; }
+
+/* Helper sections that panel children may use */
+.mc-panel-section {
+  padding: 18px 0;
+  border-top: 1px solid ${GOLD_RULE};
+  margin-top: 4px;
+}
+.mc-panel.mc-panel-dark .mc-panel-section {
+  border-top: 1px solid rgba(200, 146, 42, 0.20);
+}
+.mc-panel-section-label {
+  font-family: ${FONT_SC};
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: ${GOLD_DK};
+  margin-bottom: 6px;
+}
+.mc-panel.mc-panel-dark .mc-panel-section-label { color: ${GOLD_LT}; }
+.mc-panel-section-content {
+  font-family: ${FONT_BODY};
+  font-size: 15px;
+  color: ${TEXT_INK};
+  line-height: 1.5;
+}
+.mc-panel.mc-panel-dark .mc-panel-section-content { color: ${TEXT_WHITE}; }
+
+.mc-panel-build-edge {
+  margin-top: 24px;
+  padding: 14px 18px;
+  background: rgba(200, 146, 42, 0.06);
+  border-left: 3px solid ${GOLD};
+  font-family: ${FONT_BODY};
+  font-size: 14px;
+  color: ${TEXT_META};
+  font-style: italic;
+}
+.mc-panel.mc-panel-dark .mc-panel-build-edge {
+  background: rgba(200, 146, 42, 0.10);
+  color: ${TEXT_WHITE_META};
+}
 `

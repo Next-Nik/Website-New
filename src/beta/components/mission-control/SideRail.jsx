@@ -1,78 +1,60 @@
 // ─────────────────────────────────────────────────────────────
 // SideRail.jsx
 //
-// Wrapper for the left or right rail of the cockpit. Holds a
-// vertical column of <Tile /> on desktop. Below 880px breakpoint
-// the rail collapses into a horizontal scrollable strip — tiles
-// reflow horizontally in source order.
+// Vertical icon strip on either side of the centre stage. Holds
+// Tile components. Below 1024px the rail collapses to a horizontal
+// strip above the centre stage; below 880px it stays horizontal but
+// wraps tighter. Dark-mode flip honoured via [data-stage="dark"].
 //
 // Props:
 //   side:     'left' | 'right'
-//   children: React.ReactNode (Tile components)
+//   children: <Tile> elements
 // ─────────────────────────────────────────────────────────────
 
-import { GOLD_RULE, BG_PARCHMENT, BREAKPOINT_NARROW } from './tokens'
+import { GOLD_RULE, BG_CARD, BG_INK_SOFT } from './tokens'
 
-/**
- * @param {Object} props
- * @param {'left'|'right'} props.side
- * @param {React.ReactNode} props.children
- */
 export default function SideRail({ side, children }) {
   return (
-    <div className={`mc-rail mc-rail-${side}`}>
-      <style>{RAIL_CSS}</style>
-      <div className="mc-rail-inner">
-        {children}
-      </div>
+    <div className={`mc-side-rail mc-side-${side}`}>
+      <style>{SIDE_RAIL_CSS}</style>
+      {children}
     </div>
   )
 }
 
-const RAIL_CSS = `
-.mc-rail {
+const SIDE_RAIL_CSS = `
+.mc-side-rail {
   position: fixed;
-  top: 110px;          /* below TopStrip + Ticker */
-  bottom: 120px;       /* above Dock */
-  width: 110px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   z-index: 20;
-  display: flex;
-  flex-direction: column;
 }
-.mc-rail-left  { left: 16px; }
-.mc-rail-right { right: 16px; }
+.mc-side-left  { left: 16px; }
+.mc-side-right { right: 16px; }
 
-.mc-rail-inner {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 8px 0;
-  overflow-y: auto;
-  flex: 1 1 auto;
-  align-items: center;
+@media (max-width: 1280px) {
+  .mc-side-left  { left: 8px; }
+  .mc-side-right { right: 8px; }
 }
-.mc-rail-inner::-webkit-scrollbar { width: 4px; }
-.mc-rail-inner::-webkit-scrollbar-thumb { background: ${GOLD_RULE}; border-radius: 2px; }
 
-@media (max-width: ${BREAKPOINT_NARROW}px) {
-  .mc-rail {
-    position: relative;
-    top: auto;
-    bottom: auto;
-    left: auto;
-    right: auto;
-    width: 100%;
-    background: ${BG_PARCHMENT};
-    padding: 12px 0;
-    border-top: 1px solid ${GOLD_RULE};
-  }
-  .mc-rail-inner {
+@media (max-width: 1024px) {
+  .mc-side-rail {
+    position: static;
+    transform: none;
     flex-direction: row;
-    gap: 10px;
-    padding: 0 16px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    align-items: stretch;
+    gap: 4px;
+    padding: 8px 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    background: rgba(200, 146, 42, 0.03);
+    border-bottom: 1px solid ${GOLD_RULE};
+  }
+  [data-stage="dark"] .mc-side-rail {
+    background: rgba(200, 146, 42, 0.06);
+    border-bottom: 1px solid rgba(200, 146, 42, 0.20);
   }
 }
 `

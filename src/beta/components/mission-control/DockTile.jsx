@@ -1,109 +1,86 @@
 // ─────────────────────────────────────────────────────────────
 // DockTile.jsx
 //
-// Bottom-dock tile. Wider than a side-rail Tile, has an eyebrow
-// above the name, and an optional gold left border for the
-// "primary" tile.
+// A single tile in the bottom utility rail. v4 aesthetic: small
+// label above, display-font name below, vertical separator from
+// neighbours. Used for Profile, Purpose Piece, The Map, Settings.
 //
 // Props:
-//   eyebrow:       string — small label above the name (e.g. "Profile · You")
-//   name:          string — main name
-//   status:        string — short status line
-//   statusVariant: 'default' | 'complete'
-//   primary:       boolean — adds gold left border
-//   onClick:       () => void
+//   label:   string         — small uppercase eyebrow ("YOU", "PLACEMENT", "FOUNDATION", "SYSTEM")
+//   name:    string         — display-font name ("Profile", "Purpose Piece", ...)
+//   onClick: () => void
 // ─────────────────────────────────────────────────────────────
 
 import {
-  GOLD, GOLD_DK, GOLD_RULE, GOLD_HOVER,
-  FONT_SC, FONT_BODY, FONT_DISPLAY,
-  TEXT_INK, TEXT_META, BG_PAGE,
+  GOLD_DK, GOLD_LT, GOLD_RULE, GOLD_HOVER,
+  TEXT_INK, TEXT_WHITE,
+  FONT_DISPLAY, FONT_SC,
 } from './tokens'
 
-const STATUS_COLORS = {
-  default:  TEXT_META,
-  complete: GOLD_DK,
-}
-
-/**
- * @param {Object} props
- * @param {string} [props.eyebrow]
- * @param {string} props.name
- * @param {string} [props.status]
- * @param {'default'|'complete'} [props.statusVariant]
- * @param {boolean} [props.primary]
- * @param {() => void} props.onClick
- */
-export default function DockTile({
-  eyebrow,
-  name,
-  status,
-  statusVariant = 'default',
-  primary = false,
-  onClick,
-}) {
+export default function DockTile({ label, name, onClick }) {
   return (
-    <button
-      type="button"
+    <div
+      className="mc-utility"
       onClick={onClick}
-      className={`mc-dock-tile${primary ? ' mc-dock-primary' : ''}`}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick?.()
+        }
+      }}
     >
       <style>{DOCK_TILE_CSS}</style>
-      {eyebrow && <div className="mc-dock-eyebrow">{eyebrow}</div>}
-      <div className="mc-dock-name">{name}</div>
-      {status && (
-        <div className="mc-dock-status" style={{ color: STATUS_COLORS[statusVariant] }}>
-          {status}
-        </div>
-      )}
-    </button>
+      {label && <div className="mc-utility-label">{label}</div>}
+      {name && <div className="mc-utility-name">{name}</div>}
+    </div>
   )
 }
 
 const DOCK_TILE_CSS = `
-.mc-dock-tile {
-  background: ${BG_PAGE};
-  border: 1px solid ${GOLD_RULE};
-  border-radius: 12px;
-  padding: 14px 18px;
+.mc-utility {
+  flex: 0 1 auto;
+  padding: 6px 24px;
+  text-align: center;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  text-align: left;
-  min-width: 140px;
-  transition: border-color 0.18s, background 0.18s, transform 0.18s;
-  font-family: ${FONT_BODY};
+  transition: all 0.2s ease;
+  border-right: 1px solid ${GOLD_RULE};
+  min-width: 130px;
+  user-select: none;
 }
-.mc-dock-tile:hover {
-  border-color: ${GOLD};
-  background: ${GOLD_HOVER};
-  transform: translateY(-1px);
+[data-stage="dark"] .mc-utility {
+  border-right: 1px solid rgba(200, 146, 42, 0.20);
 }
-.mc-dock-primary {
-  border-left: 3px solid ${GOLD};
-  padding-left: 16px;
+.mc-utility:last-child { border-right: none; }
+.mc-utility:hover { background: ${GOLD_HOVER}; }
+.mc-utility:focus-visible {
+  outline: 2px solid ${GOLD_DK};
+  outline-offset: -2px;
 }
-.mc-dock-eyebrow {
+
+.mc-utility-label {
   font-family: ${FONT_SC};
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.2em;
   color: ${GOLD_DK};
+  margin-bottom: 3px;
 }
-.mc-dock-name {
+[data-stage="dark"] .mc-utility-label { color: ${GOLD_LT}; }
+
+.mc-utility-name {
   font-family: ${FONT_DISPLAY};
-  font-size: 19px;
-  font-weight: 400;
+  font-size: 16px;
+  font-weight: 500;
   color: ${TEXT_INK};
-  line-height: 1.2;
+  letter-spacing: -0.005em;
 }
-.mc-dock-status {
-  font-family: ${FONT_BODY};
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.3;
+[data-stage="dark"] .mc-utility-name { color: ${TEXT_WHITE}; }
+
+@media (max-width: 880px) {
+  .mc-utility {
+    min-width: auto;
+    padding: 8px 12px;
+  }
 }
 `
