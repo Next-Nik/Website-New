@@ -219,7 +219,7 @@ export default function BetaMissionControl() {
       : 'Missions and quests appear here as orgs in your area post them. Browse broader if nothing is here yet.',
     primaryLabel: placement === 'PURPOSE PIECE NOT YET PLACED' ? 'PLACE YOURSELF' : 'BROWSE BROADER',
     onPrimary:    () => navigate(
-      placement === 'PURPOSE PIECE NOT YET PLACED' ? '/tools/purpose-piece' : '/beta/missions'
+      placement === 'PURPOSE PIECE NOT YET PLACED' ? '/tools/purpose-piece' : '/beta/contribution'
     ),
     tertiaryLabel: 'LATER',
     onTertiary:    closePanel,
