@@ -5,29 +5,42 @@ import { useAuth } from '../hooks/useAuth'
 // ─── Colour scale — cool ember to blazing scarf gold ─────────────────────────
 
 // ─── Horizon Scale labels — 0.5 increments ───────────────────────────────────
-// 0 = really struggling · 5 = neutral / "fine" · 10 = absolutely extraordinary
+// Three named anchor labels:
+//   0  = Really Struggling
+//   5  = "Fine"   (the air-quoted "fine" you say when you're not really fine)
+//   10 = My Absolute Best
+// All other values show the numeric value itself rather than a copywritten label.
+// Visual props (color / glow / scale) preserve the current slider's expression
+// across the range; only the labels are restricted to the three anchor points.
 const FLAME_SCALE = {
-  0:    { color: '#4B5563', glow: 'rgba(75,85,99,0.10)',    scale: 0.42, label: 'really struggling' },
-  0.5:  { color: '#5C6675', glow: 'rgba(92,102,117,0.12)',  scale: 0.47, label: 'barely holding on' },
-  1:    { color: '#6B7280', glow: 'rgba(107,114,128,0.14)', scale: 0.52, label: 'running on empty' },
-  1.5:  { color: '#7A7A72', glow: 'rgba(122,122,114,0.16)', scale: 0.57, label: 'heavy going' },
-  2:    { color: '#8B7355', glow: 'rgba(139,115,85,0.20)',  scale: 0.62, label: 'low but alive' },
-  2.5:  { color: '#96804A', glow: 'rgba(150,128,74,0.24)',  scale: 0.67, label: 'a flicker still there' },
-  3:    { color: '#A0845C', glow: 'rgba(160,132,92,0.26)',  scale: 0.72, label: 'getting through it' },
-  3.5:  { color: '#AA8A42', glow: 'rgba(170,138,66,0.30)',  scale: 0.77, label: 'steadying' },
-  4:    { color: '#B8923A', glow: 'rgba(184,146,58,0.33)',  scale: 0.80, label: 'starting to warm' },
-  4.5:  { color: '#C09A30', glow: 'rgba(192,154,48,0.36)',  scale: 0.82, label: 'almost there' },
-  5:    { color: '#A8721A', glow: 'rgba(200,146,42,0.38)',  scale: 0.84, label: 'present' },
-  5.5:  { color: '#C4821A', glow: 'rgba(196,130,26,0.42)',  scale: 0.87, label: 'good, actually' },
-  6:    { color: '#D4821A', glow: 'rgba(212,130,26,0.46)',  scale: 0.89, label: 'warming up' },
-  6.5:  { color: '#CC7818', glow: 'rgba(204,120,24,0.50)',  scale: 0.91, label: 'genuinely well' },
-  7:    { color: '#C8721A', glow: 'rgba(200,114,26,0.54)',  scale: 0.93, label: 'lit' },
-  7.5:  { color: '#C26418', glow: 'rgba(194,100,24,0.58)', scale: 0.95, label: 'alive and moving' },
-  8:    { color: '#C05A10', glow: 'rgba(192,90,16,0.62)',   scale: 0.97, label: 'burning well' },
-  8.5:  { color: '#B85010', glow: 'rgba(184,80,16,0.66)',   scale: 0.99, label: 'clear and strong' },
-  9:    { color: '#A8721A', glow: 'rgba(168,114,26,0.70)',  scale: 1.01, label: 'bright and steady' },
-  9.5:  { color: '#C8922A', glow: 'rgba(200,146,42,0.76)', scale: 1.04, label: 'extraordinary' },
-  10:   { color: '#C8922A', glow: 'rgba(200,146,42,0.82)', scale: 1.08, label: 'absolutely on fire' },
+  0:    { color: '#4B5563', glow: 'rgba(75,85,99,0.10)',    scale: 0.42, label: 'Really Struggling' },
+  0.5:  { color: '#5C6675', glow: 'rgba(92,102,117,0.12)',  scale: 0.47, label: '' },
+  1:    { color: '#6B7280', glow: 'rgba(107,114,128,0.14)', scale: 0.52, label: '' },
+  1.5:  { color: '#7A7A72', glow: 'rgba(122,122,114,0.16)', scale: 0.57, label: '' },
+  2:    { color: '#8B7355', glow: 'rgba(139,115,85,0.20)',  scale: 0.62, label: '' },
+  2.5:  { color: '#96804A', glow: 'rgba(150,128,74,0.24)',  scale: 0.67, label: '' },
+  3:    { color: '#A0845C', glow: 'rgba(160,132,92,0.26)',  scale: 0.72, label: '' },
+  3.5:  { color: '#AA8A42', glow: 'rgba(170,138,66,0.30)',  scale: 0.77, label: '' },
+  4:    { color: '#B8923A', glow: 'rgba(184,146,58,0.33)',  scale: 0.80, label: '' },
+  4.5:  { color: '#C09A30', glow: 'rgba(192,154,48,0.36)',  scale: 0.82, label: '' },
+  5:    { color: '#A8721A', glow: 'rgba(200,146,42,0.38)',  scale: 0.84, label: '"Fine"' },
+  5.5:  { color: '#C4821A', glow: 'rgba(196,130,26,0.42)',  scale: 0.87, label: '' },
+  6:    { color: '#D4821A', glow: 'rgba(212,130,26,0.46)',  scale: 0.89, label: '' },
+  6.5:  { color: '#CC7818', glow: 'rgba(204,120,24,0.50)',  scale: 0.91, label: '' },
+  7:    { color: '#C8721A', glow: 'rgba(200,114,26,0.54)',  scale: 0.93, label: '' },
+  7.5:  { color: '#C26418', glow: 'rgba(194,100,24,0.58)', scale: 0.95, label: '' },
+  8:    { color: '#C05A10', glow: 'rgba(192,90,16,0.62)',   scale: 0.97, label: '' },
+  8.5:  { color: '#B85010', glow: 'rgba(184,80,16,0.66)',   scale: 0.99, label: '' },
+  9:    { color: '#A8721A', glow: 'rgba(168,114,26,0.70)',  scale: 1.01, label: '' },
+  9.5:  { color: '#C8922A', glow: 'rgba(200,146,42,0.76)', scale: 1.04, label: '' },
+  10:   { color: '#C8922A', glow: 'rgba(200,146,42,0.82)', scale: 1.08, label: 'My Absolute Best' },
+}
+
+// Numeric display helper for non-anchor values. Renders integers without a
+// decimal, half-values as "X.5".
+function formatScaleValue(v) {
+  const n = Math.round(v * 2) / 2
+  return Number.isInteger(n) ? String(n) : n.toFixed(1)
 }
 
 function getFlameProps(v) {
@@ -286,7 +299,7 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
         </div>
       </div>
 
-      {/* Label */}
+      {/* Label — anchor copy at 0/5/10, numeric value elsewhere */}
       <div style={{
         fontFamily: "'Lora', Georgia, serif",
         fontSize: '1.3125rem',
@@ -294,7 +307,7 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
         transition: 'color 0.4s ease',
         textAlign: 'center', minHeight: '20px',
       }}>
-        {getFlameProps(value).label}
+        {getFlameProps(value).label || formatScaleValue(value)}
       </div>
     </div>
   )

@@ -465,10 +465,10 @@ function FoundationReports({ user, sessions }) {
   const sessionsThisYear    = sessions.filter(s => s.year_id    === yearId    && s.checkin_stage === 'after')
 
   const PERIODS = [
-    { key: 'weekly',    label: 'Weekly',    threshold: 3, current: sessionsThisWeek.length,    id: weekId    },
-    { key: 'monthly',   label: 'Monthly',   threshold: 8, current: sessionsThisMonth.length,   id: monthId   },
-    { key: 'quarterly', label: 'Quarterly', threshold: 20, current: sessionsThisQuarter.length, id: quarterId },
-    { key: 'yearly',    label: 'Yearly',    threshold: 40, current: sessionsThisYear.length,    id: yearId    },
+    { key: 'weekly',    label: 'Weekly',    noun: 'week',    threshold: 3,  current: sessionsThisWeek.length,    id: weekId    },
+    { key: 'monthly',   label: 'Monthly',   noun: 'month',   threshold: 8,  current: sessionsThisMonth.length,   id: monthId   },
+    { key: 'quarterly', label: 'Quarterly', noun: 'quarter', threshold: 20, current: sessionsThisQuarter.length, id: quarterId },
+    { key: 'yearly',    label: 'Yearly',    noun: 'year',    threshold: 40, current: sessionsThisYear.length,    id: yearId    },
   ]
 
   // Load all stored reviews once
@@ -609,9 +609,9 @@ function FoundationReports({ user, sessions }) {
           {periodMeta.label} {'·'} {periodLabel(activePeriod, periodMeta.id)}
         </span>
         <p style={{ ...body, fontSize: '15px', ...muted, lineHeight: 1.6, margin: '0 0 12px 0' }}>
-          {periodMeta.current} session{periodMeta.current === 1 ? '' : 's'} this period.
+          {periodMeta.current} session{periodMeta.current === 1 ? '' : 's'} this {periodMeta.noun}.
           {!meetsThreshold && !currentPeriodReview && (
-            <> A reflection becomes available at {periodMeta.threshold}.</>
+            <> A reflection becomes available at {periodMeta.threshold} in the {periodMeta.noun}.</>
           )}
         </p>
         {meetsThreshold && !reviewBelow && !requesting && (
@@ -872,6 +872,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
   const [saving,        setSaving]        = useState(false)
   const [showModal,     setShowModal]     = useState(false)
   const [showBeginPopup, setShowBeginPopup] = useState(true)
+  const [saveError,     setSaveError]     = useState('')
 
   // Mobile audio state — shared between play button and scrubber
   const mobileAudioRef   = useRef(null)
@@ -971,13 +972,20 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
   async function handleBegin() {
     if (!user) { setShowModal(true); return }
     setSaving(true)
-    try { await saveCheckin('before', beforeValue, beforeNote) } catch(e) { console.warn(e) }
+    setSaveError('')
+    try {
+      await saveCheckin('before', beforeValue, beforeNote)
+      setBeforeDone(true)
+    } catch (e) {
+      console.error('[HorizonState] handleBegin save failed:', e)
+      setSaveError(`Couldn't save your check-in. ${e?.message || 'Please try again.'}`)
+    }
     setSaving(false)
-    setBeforeDone(true)
   }
 
   async function handleSave() {
     setSaving(true)
+    setSaveError('')
     try {
       await saveCheckin('after', afterValue, afterNote)
       const updatedSessions = [
@@ -986,9 +994,12 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
       ]
       const currentBefore = { value: beforeValue, note: beforeNote }
       onAfterComplete?.({ value: afterValue, note: afterNote, timestamp: new Date().toISOString() }, currentBefore, updatedSessions)
-    } catch(e) { console.warn(e) }
+      setAfterDone(true)
+    } catch (e) {
+      console.error('[HorizonState] handleSave save failed:', e)
+      setSaveError(`Couldn't save your check-in. ${e?.message || 'Please try again.'}`)
+    }
     setSaving(false)
-    setAfterDone(true)
   }
 
   // Done state
@@ -1145,6 +1156,40 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
         </div>
       )}
 
+      {/* Save error banner — visible across both layouts when a save fails. */}
+      {saveError && (
+        <div
+          role="alert"
+          style={{
+            margin: '0 0 16px',
+            padding: '12px 16px',
+            background: 'rgba(196,80,16,0.08)',
+            border: '1px solid rgba(196,80,16,0.30)',
+            borderLeft: '3px solid #B85010',
+            borderRadius: '6px',
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'space-between',
+            gap: '12px',
+          }}
+        >
+          <span style={{ ...body, fontSize: '14px', color: '#7A2D08', lineHeight: 1.5 }}>
+            {saveError}
+          </span>
+          <button
+            onClick={() => setSaveError('')}
+            aria-label="Dismiss"
+            style={{
+              ...sc, fontSize: '10px', letterSpacing: '0.18em',
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              color: '#7A2D08', flexShrink: 0, padding: '2px 6px',
+            }}
+          >
+            DISMISS
+          </button>
+        </div>
+      )}
+
       {/* ══ MOBILE LAYOUT ════════════════════════════════════════════════════════ */}
       <div className="hs-mobile-only" style={{ flexDirection: 'column' }}>
 
@@ -1171,7 +1216,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
           {/* Before flame */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: beforeDone ? 'rgba(168,114,26,0.55)' : '#A8721A', textTransform: 'uppercase', marginBottom: '8px' }}>
-              Before
+              Starting State
             </span>
             <div style={{ pointerEvents: beforeDone ? 'none' : 'auto', opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
               <FlameSlider value={beforeValue} onChange={setBeforeValue} ghostValue={null} />
@@ -1209,7 +1254,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
           {/* After flame */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: afterUnlocked ? 1 : 0.22, transition: 'opacity 0.8s ease', pointerEvents: afterUnlocked ? 'auto' : 'none' }}>
             <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '8px' }}>
-              After
+              After State
             </span>
             <FlameSlider value={afterValue} onChange={setAfterValue} ghostValue={beforeDone ? beforeValue : null} />
             <span style={{ ...body, fontSize: '0.875rem', color: 'rgba(15,21,35,0.55)', marginTop: '6px' }}>
@@ -1251,7 +1296,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
               <textarea
                 value={beforeNote}
                 onChange={e => setBeforeNote(e.target.value)}
-                placeholder={'what walked in with you today…'}
+                placeholder={'A note about where you\'re starting…'}
                 rows={3}
                 disabled={beforeDone}
                 style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, transition: 'border-color 0.2s', boxSizing: 'border-box', opacity: beforeDone ? 0.5 : 1 }}
@@ -1269,7 +1314,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
               <textarea
                 value={afterNote}
                 onChange={e => setAfterNote(e.target.value)}
-                placeholder={"What I'm stepping away with…"}
+                placeholder={"A note about how you\'re leaving…"}
                 rows={3}
                 style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, transition: 'border-color 0.2s', boxSizing: 'border-box' }}
                 onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
@@ -1313,14 +1358,13 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
 
         {/* Before */}
         <div className="hs-col-before-desktop" style={{ flexDirection: 'column', alignItems: 'center', opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
-          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>Before</span>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '12px' }}>Before {'·'} Foundation</span>
-          <p style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginBottom: '20px', lineHeight: 1.55 }}>Where is the flame right now?</p>
+          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>Starting State</span>
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>Foundation</span>
           <div style={{ pointerEvents: beforeDone ? 'none' : 'auto', marginBottom: '14px' }}>
             <FlameSlider value={beforeValue} onChange={setBeforeValue} ghostValue={null} />
           </div>
           <textarea value={beforeNote} onChange={e => setBeforeNote(e.target.value)}
-            placeholder={'what walked in with you today…'} rows={2} disabled={beforeDone}
+            placeholder={'A note about where you\'re starting…'} rows={2} disabled={beforeDone}
             style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
             onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
             onBlur={e => { e.target.style.borderColor = 'rgba(200,146,42,0.18)' }}
@@ -1348,14 +1392,13 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
 
         {/* After */}
         <div className="hs-col-after-desktop" style={{ flexDirection: 'column', alignItems: 'center', opacity: afterUnlocked ? 1 : 0.22, transition: 'opacity 0.8s ease', pointerEvents: afterUnlocked ? 'auto' : 'none' }}>
-          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>After</span>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '12px' }}>After {'·'} Foundation</span>
-          <p style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginBottom: '20px', lineHeight: 1.55 }}>And now{'—'}?</p>
+          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>After State</span>
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>Foundation</span>
           <div style={{ marginBottom: '14px' }}>
             <FlameSlider value={afterValue} onChange={setAfterValue} ghostValue={beforeDone ? beforeValue : null} />
           </div>
           <textarea value={afterNote} onChange={e => setAfterNote(e.target.value)}
-            placeholder={"What I'm stepping away with…"} rows={2}
+            placeholder={"A note about how you\'re leaving…"} rows={2}
             style={{ width: '100%', padding: '10px 14px', fontFamily: "'Lora',Georgia,serif", fontSize: '1rem', color: 'rgba(15,21,35,0.72)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', outline: 'none', resize: 'none', lineHeight: 1.6, marginBottom: '14px', transition: 'border-color 0.2s', boxSizing: 'border-box' }}
             onFocus={e => { e.target.style.borderColor = 'rgba(200,146,42,0.45)' }}
             onBlur={e => { e.target.style.borderColor = 'rgba(200,146,42,0.18)' }}

@@ -156,9 +156,19 @@ export default function BetaMissionControl() {
   const personalWalkers = {}
   const civWalkers = {}
 
-  // Identity strings
-  const userName  = data.profile?.display_name || data.user?.email?.split('@')[0] || 'Your name'
+  // Identity strings.
+  // Defensive capitalisation: render the name with a capital first character
+  // even if the stored display_name is lowercase. The canonical fix is on
+  // save (in the profile editor); this is the safety net for old data.
+  const rawName  = data.profile?.display_name || data.user?.email?.split('@')[0] || 'Your name'
+  const userName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : rawName
+
+  // Two values for placement: an internal sentinel used as control flow
+  // (compared in several places below), and a user-visible caption rendered
+  // in the top strip.
   const placement = formatPlacement(data.purposeData) || 'PURPOSE PIECE NOT YET PLACED'
+  const isUnplaced = placement === 'PURPOSE PIECE NOT YET PLACED'
+  const displayPlacement = isUnplaced ? 'NO FIT FOUND YET' : placement
 
   // Civ placement marker
   const civPlacement = civPlacementKey(data.purposeData)
@@ -215,18 +225,18 @@ export default function BetaMissionControl() {
   const civAction = {
     empty: true,
     eyebrow: 'THE PLANET · NEXT MOVE',
-    context: placement === 'PURPOSE PIECE NOT YET PLACED'
-      ? 'PLACE YOURSELF FIRST'
+    context: isUnplaced
+      ? 'FIND YOUR FIT FIRST'
       : 'NO MISSIONS IN YOUR RANGE YET',
-    title: placement === 'PURPOSE PIECE NOT YET PLACED'
-      ? 'Place yourself, then the planet shows up.'
+    title: isUnplaced
+      ? 'Find where you fit.'
       : 'No missions in your range yet.',
-    body: placement === 'PURPOSE PIECE NOT YET PLACED'
-      ? 'The Purpose Piece sets your archetype, domain, and scale. The mission feed surfaces here once you place yourself.'
+    body: isUnplaced
+      ? 'In building the future of the planet. The Purpose Piece sets your archetype, domain, and scale. The mission feed surfaces here once you find your fit.'
       : 'Missions and quests appear here as orgs in your area post them. Browse broader if nothing is here yet.',
-    primaryLabel: placement === 'PURPOSE PIECE NOT YET PLACED' ? 'PLACE YOURSELF' : 'BROWSE BROADER',
+    primaryLabel: isUnplaced ? 'FIND YOUR FIT' : 'BROWSE BROADER',
     onPrimary:    () => navigate(
-      placement === 'PURPOSE PIECE NOT YET PLACED' ? '/tools/purpose-piece' : '/beta/contribution'
+      isUnplaced ? '/tools/purpose-piece' : '/beta/contribution'
     ),
     tertiaryLabel: 'LATER',
     onTertiary:    closePanel,
@@ -264,7 +274,7 @@ export default function BetaMissionControl() {
     >
       <style>{STAGE_CSS}</style>
 
-      <TopStrip userName={userName} placement={placement} />
+      <TopStrip userName={userName} placement={displayPlacement} />
 
       <Ticker
         eyebrow="RECENTLY ACROSS YOUR SLICE"
@@ -341,7 +351,7 @@ export default function BetaMissionControl() {
         <Tile
           glyph="◯"
           label={<>WORLD<br/>VIEW</>}
-          state={civPlacement ? 'PLACED' : 'UNPLACED'}
+          state={civPlacement ? 'FIT FOUND' : 'NO FIT YET'}
           onClick={() => setActivePanel('world-view')}
           title="World View — current state of all seven civ domains"
         />
@@ -369,7 +379,7 @@ export default function BetaMissionControl() {
           onClick={() => setActivePanel('profile')}
         />
         <DockTile
-          label="PLACEMENT"
+          label="YOUR FIT"
           name="Purpose Piece"
           onClick={() => setActivePanel('purpose-piece')}
         />
@@ -464,12 +474,12 @@ export default function BetaMissionControl() {
         open={activePanel === 'whats-so'}
         onClose={closePanel}
         eyebrow="YOUR VECTOR · WHAT'S SO"
-        title={civPlacement ? `Your vector, right now` : 'Place yourself, then drill in.'}
+        title={civPlacement ? `Your vector, right now` : 'Find your fit, then drill in.'}
         dark
       >
         <p>{civPlacement
-          ? `The honest picture at your specific Purpose Piece vector. Not curated. Not optimistic. What the indicators actually say about your placement in the civ board.`
-          : `What's So drills into the indicator data at your vector — your archetype, domain, and scale. Until you've placed yourself with the Purpose Piece, there's no vector to drill into.`
+          ? `The honest picture at your specific Purpose Piece vector. Not curated. Not optimistic. What the indicators actually say about where you fit on the civ board.`
+          : `What's So drills into the indicator data at your vector — your archetype, domain, and scale. Until you've found your fit with the Purpose Piece, there's no vector to drill into.`
         }</p>
         <div className="mc-panel-build-edge">
           Building in progress. Full indicator detail at your vector renders here once the data sourcing layer is wired across all seven civ domains.
@@ -500,7 +510,7 @@ export default function BetaMissionControl() {
           { label: 'CLOSE', onClick: closePanel },
         ]}
       >
-        <p>Your public face on the platform. Your I Am statements, your placement, what you're working on, how others can reach you. You control what's visible.</p>
+        <p>Your public face on the platform. Your I Am statements, your fit, what you're working on, how others can reach you. You control what's visible.</p>
         <div className="mc-panel-build-edge">
           Building in progress. Full profile editor, visibility controls per field, and public preview wire up at /beta/profile/edit.
         </div>
@@ -509,15 +519,15 @@ export default function BetaMissionControl() {
       <Panel
         open={activePanel === 'purpose-piece'}
         onClose={closePanel}
-        eyebrow="PLACEMENT · PURPOSE PIECE"
-        title={placement !== 'PURPOSE PIECE NOT YET PLACED' ? placement.split(' · ').map(s => s.toLowerCase()).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' · ') : 'Place yourself in the larger picture'}
+        eyebrow="YOUR FIT · PURPOSE PIECE"
+        title={!isUnplaced ? placement.split(' · ').map(s => s.toLowerCase()).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' · ') : 'Find where you fit.'}
         actions={[
-          { label: placement !== 'PURPOSE PIECE NOT YET PLACED' ? 'REVISIT YOUR PLACEMENT' : 'BEGIN', primary: true,
+          { label: !isUnplaced ? 'REVISIT YOUR FIT' : 'BEGIN', primary: true,
             onClick: () => navigate('/tools/purpose-piece') },
           { label: 'LATER', onClick: closePanel },
         ]}
       >
-        <p>Where you've placed yourself in the larger picture. Archetype, civilisational domain, scale. About an hour to do well; you can revisit and adjust as the work moves.</p>
+        <p>Where you fit in building the future of the planet. Archetype, civilisational domain, scale. About an hour to do well; you can revisit and adjust as the work moves.</p>
         <div className="mc-panel-build-edge">
           Building in progress. Full Purpose Piece editor, archetype browser, and scale-shift flow open at /tools/purpose-piece.
         </div>
