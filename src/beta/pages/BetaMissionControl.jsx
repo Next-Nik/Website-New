@@ -47,6 +47,9 @@ import Tile          from '../components/mission-control/Tile'
 import Dock          from '../components/mission-control/Dock'
 import DockTile      from '../components/mission-control/DockTile'
 import Panel         from '../components/mission-control/Panel'
+import HorizonStateGauge from '../components/mission-control/HorizonStateGauge'
+import MapPinGlyph        from '../components/mission-control/MapPinGlyph'
+import PurposePieceGlyph  from '../components/mission-control/PurposePieceGlyph'
 
 import useMissionControlData from '../components/mission-control/useMissionControlData'
 import { BG_PARCHMENT, BG_INK } from '../components/mission-control/tokens'
@@ -248,11 +251,21 @@ export default function BetaMissionControl() {
   const hsState = data.foundationData?.streak_days
     ? `${data.foundationData.streak_days}D STREAK`
     : 'UNTOUCHED'
-  const hsPulse = !data.foundationData?.last_session_at
   const tsState = Array.isArray(data.sprintData) && data.sprintData.length > 0
     ? `${data.sprintData.length} ACTIVE`
     : 'NONE'
   const hpState = data.practiceData?.session_date ? 'RECENT' : 'NONE'
+
+  // The Map tile state — number of domains audited out of seven.
+  // Counts rows in mapData that have a non-null current_score.
+  const mapAudited = Array.isArray(data.mapData)
+    ? data.mapData.filter(r => r?.current_score != null).length
+    : 0
+  const mapState = mapAudited === 0
+    ? 'UNAUDITED'
+    : mapAudited === 7
+      ? 'COMPLETE'
+      : `${mapAudited} OF 7`
 
   // Ticker — empty list until the activity feed is wired.
   // WIRE: replace [] with a query against the future
@@ -313,13 +326,21 @@ export default function BetaMissionControl() {
         </div>
       </div>
 
-      {/* LEFT RAIL — personal-side tools */}
+      {/* LEFT RAIL — personal-side tools.
+          The Map sits at the top: it's the foundation/orientation of
+          everything below it. The daily/active tools follow. */}
       <SideRail side="left">
         <Tile
-          glyph="◐"
+          glyph={<MapPinGlyph />}
+          label={<>THE<br/>MAP</>}
+          state={mapState}
+          onClick={() => setActivePanel('map')}
+          title="The Map — your seven domains"
+        />
+        <Tile
+          glyph={<HorizonStateGauge />}
           label={<>HORIZON<br/>STATE</>}
           state={hsState}
-          pulse={hsPulse}
           onClick={() => setActivePanel('horizon-state')}
           title="Horizon State — daily check-in"
         />
@@ -346,8 +367,17 @@ export default function BetaMissionControl() {
         />
       </SideRail>
 
-      {/* RIGHT RAIL — planet surfaces */}
+      {/* RIGHT RAIL — planet surfaces.
+          Purpose Piece sits at the top: it's the foundation/orientation
+          of the planet-side surfaces below it. */}
       <SideRail side="right">
+        <Tile
+          glyph={<PurposePieceGlyph />}
+          label={<>PURPOSE<br/>PIECE</>}
+          state={isUnplaced ? 'NO FIT YET' : 'FIT FOUND'}
+          onClick={() => setActivePanel('purpose-piece')}
+          title="Purpose Piece — where you fit"
+        />
         <Tile
           glyph="◯"
           label={<>WORLD<br/>VIEW</>}
@@ -371,22 +401,14 @@ export default function BetaMissionControl() {
         />
       </SideRail>
 
-      {/* BOTTOM UTILITY RAIL */}
+      {/* BOTTOM UTILITY RAIL — collapsed to two tiles after Map and
+          Purpose Piece moved up to the rails. Profile and Settings are
+          utility shelves; two is honest. */}
       <Dock>
         <DockTile
           label="YOU"
           name="Profile"
           onClick={() => setActivePanel('profile')}
-        />
-        <DockTile
-          label="YOUR FIT"
-          name="Purpose Piece"
-          onClick={() => setActivePanel('purpose-piece')}
-        />
-        <DockTile
-          label="FOUNDATION"
-          name="The Map"
-          onClick={() => setActivePanel('map')}
         />
         <DockTile
           label="SYSTEM"
