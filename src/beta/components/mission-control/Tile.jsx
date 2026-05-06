@@ -2,21 +2,20 @@
 // Tile.jsx
 //
 // Single rail icon. Used inside SideRail on both left (personal)
-// and right (planet) rails. Renders glyph + label + state. The
-// state line takes a sentinel "—" when there's nothing meaningful
-// to surface yet, matching the v4 mockup's empty-rail aesthetic.
+// and right (planet) rails. Renders glyph + label. State line
+// only appears when there's actual state to report — no more
+// empty sentinels like "—" or "NONE".
 //
-// On desktop (>1024px), the tile is a vertical column 56px wide.
-// Below 1024px, the rail collapses to a horizontal strip and the
-// tiles become inline rows with the glyph beside the label.
+// Layout: vertical column, glyph on top, label below, optional
+// state line at bottom. Width adapts to viewport.
 //
 // Props:
-//   glyph:    string         — the unicode/short symbol shown at top
-//   label:    string | node  — main label, two lines OK (use <br/> if needed)
-//   state:    string         — small state line ("UNTOUCHED", "D 12 / 90", "—", etc.)
-//   pulse:    boolean        — if true, glyph pulses (used for an unattended-today HS)
+//   glyph:    string|node  — unicode/svg/component shown at top
+//   label:    string|node  — main label, two lines OK (use <br/>)
+//   state:    string|null  — small state line; falsy → no line
+//   active:   boolean      — visually emphasises this tile
 //   onClick:  () => void
-//   title:    string         — hover/aria title
+//   title:    string       — hover/aria title
 // ─────────────────────────────────────────────────────────────
 
 import {
@@ -26,17 +25,28 @@ import {
   FONT_DISPLAY, FONT_SC,
 } from './tokens'
 
+// Treat these strings as "no real state to report" — same posture
+// as null/undefined. A holdover until all callers stop passing them.
+const EMPTY_SENTINELS = new Set(['—', '-', 'NONE', 'EMPTY', 'UNAUDITED', 'UNTOUCHED', 'NO FIT YET'])
+
+function isMeaningfulState(s) {
+  if (!s) return false
+  if (typeof s !== 'string') return true
+  return !EMPTY_SENTINELS.has(s.trim().toUpperCase())
+}
+
 export default function Tile({
   glyph,
   label,
   state,
-  pulse = false,
+  active = false,
   onClick,
   title,
 }) {
+  const showState = isMeaningfulState(state)
   return (
     <div
-      className={`mc-rail-icon ${pulse ? 'mc-pulse' : ''}`}
+      className={`mc-rail-icon ${active ? 'mc-rail-active' : ''}`}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -51,14 +61,14 @@ export default function Tile({
       <style>{TILE_CSS}</style>
       <div className="mc-rail-glyph">{glyph}</div>
       <div className="mc-rail-label">{label}</div>
-      {state && <div className="mc-rail-state">{state}</div>}
+      {showState && <div className="mc-rail-state">{state}</div>}
     </div>
   )
 }
 
 const TILE_CSS = `
 .mc-rail-icon {
-  width: 56px;
+  width: 100%;
   background: ${BG_CARD};
   border: 1px solid ${GOLD_RULE};
   padding: 10px 6px 8px;
@@ -67,6 +77,11 @@ const TILE_CSS = `
   transition: all 0.2s ease;
   position: relative;
   user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 [data-stage="dark"] .mc-rail-icon {
   background: ${BG_INK_SOFT};
@@ -83,61 +98,73 @@ const TILE_CSS = `
   outline: 2px solid ${GOLD};
   outline-offset: 2px;
 }
+.mc-rail-icon.mc-rail-active {
+  border-color: ${GOLD};
+  background: rgba(200, 146, 42, 0.08);
+}
 
 .mc-rail-glyph {
   font-family: ${FONT_DISPLAY};
-  font-size: 22px;
+  font-size: 24px;
   color: ${GOLD_DK};
   line-height: 1;
-  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
 }
 [data-stage="dark"] .mc-rail-glyph { color: ${GOLD_LT}; }
 
 .mc-rail-label {
   font-family: ${FONT_SC};
-  font-size: 8.5px;
+  font-size: 9px;
   letter-spacing: 0.14em;
   color: ${TEXT_META};
   line-height: 1.2;
+  text-transform: uppercase;
 }
 [data-stage="dark"] .mc-rail-label { color: ${TEXT_WHITE_META}; }
 
 .mc-rail-state {
   font-family: ${FONT_SC};
-  font-size: 7.5px;
-  letter-spacing: 0.12em;
+  font-size: 8px;
+  letter-spacing: 0.10em;
   color: ${TEXT_FAINT};
-  margin-top: 2px;
 }
 [data-stage="dark"] .mc-rail-state { color: ${TEXT_WHITE_FAINT}; }
 
-.mc-rail-icon.mc-pulse .mc-rail-glyph {
-  animation: mcIconPulse 2.5s ease-in-out infinite;
-}
-@keyframes mcIconPulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%      { opacity: 0.6; transform: scale(1.08); }
-}
-
-@media (max-width: 1280px) {
-  .mc-rail-icon { width: 50px; padding: 8px 4px 6px; }
-  .mc-rail-glyph { font-size: 18px; margin-bottom: 4px; }
-  .mc-rail-label { font-size: 8px; letter-spacing: 0.12em; }
-  .mc-rail-state { font-size: 7px; }
-}
-
-@media (max-width: 1024px) {
+/* On larger screens, tiles get more breathing room and labels can
+   sit on a single line where they fit. */
+@media (min-width: 1024px) {
   .mc-rail-icon {
-    width: auto;
-    min-width: 90px;
-    padding: 6px 12px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    text-align: left;
+    padding: 12px 8px 10px;
+    gap: 5px;
   }
-  .mc-rail-glyph { font-size: 16px; margin-bottom: 0; }
-  .mc-rail-label { font-size: 9px; }
-  .mc-rail-state { font-size: 8px; margin-top: 1px; }
+  .mc-rail-glyph {
+    font-size: 26px;
+    min-height: 32px;
+  }
+  .mc-rail-label {
+    font-size: 9.5px;
+  }
+}
+
+@media (max-width: 640px) {
+  .mc-rail-icon {
+    padding: 8px 4px 6px;
+    gap: 3px;
+  }
+  .mc-rail-glyph {
+    font-size: 20px;
+    min-height: 22px;
+  }
+  .mc-rail-label {
+    font-size: 8px;
+    letter-spacing: 0.10em;
+  }
+  .mc-rail-state {
+    font-size: 7px;
+    letter-spacing: 0.08em;
+  }
 }
 `

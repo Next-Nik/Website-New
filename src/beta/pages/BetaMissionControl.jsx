@@ -1,52 +1,57 @@
 // ─────────────────────────────────────────────────────────────
 // BetaMissionControl — /beta/dashboard
 //
-// v4 swap. The wheel IS the cockpit. Users steer between Your Life
-// (personal seven-domain wheel) and The Planet (civilisational
-// seven-domain wheel) via a switcher pill at the bottom of the
-// stage. Switching to The Planet flips the whole stage to dark via
-// the data-stage="dark" attribute on the root.
+// Drop 1 frame rebuild. Mobile-canonical layout. Desktop adapts up.
 //
-// Surface layout:
-//   • TopStrip                 — brand · identity · MISSION CONTROL
-//   • Ticker                   — single rotating activity line
-//                                (empty state: "Quiet right now.")
-//   • SideRail (left)          — Horizon State · Target Sprint ·
-//                                Horizon Practice · Resources
-//   • WheelStage               — the wheel cockpit + switcher
-//   • SideRail (right)         — World View · What's So · Missions
-//   • ActionCard × 2           — next move on each side
-//   • Dock                     — Profile · Purpose Piece · The Map · Settings
+// ──────────────────────────────────────────────────────────────
+// LAYOUT (top to bottom on every viewport):
 //
-// Data layer (untouched from v3 build):
-//   useMissionControlData() returns user, profile, mapData,
-//   purposeData, sprintData, practiceData, foundationData.
+//   ┌─────────────────────────────────────────────────────┐
+//   │  NextUs                          [profile] [gear]   │  IdentityStrip — brand bar
+//   ├─────────────────────────────────────────────────────┤
+//   │  Nik     Architect · Vision · Civilisational        │  IdentityStrip — identity bar
+//   ├─────────────────────────────────────────────────────┤
+//   │  Your Life                          The Planet      │  PoleHeader (toggle)
+//   ├──────┬───────────────────────────────────────┬──────┤
+//   │ Map  │                                       │ Plac │
+//   │ HS   │       MissionWheel over Dymaxion      │ WV   │
+//   │ TS   │                                       │ PS   │
+//   │ HP   │                                       │      │
+//   │ Res  │                                       │      │
+//   ├──────┴───────────────────────────────────────┴──────┤
+//   │       Personal action  ·  Planet action             │  ActionCards (scroll target)
+//   └─────────────────────────────────────────────────────┘
 //
-// Empty-state philosophy (locked, see Working_With_Nik §5):
-//   • Personal wheel — when no current scores have flowed yet,
-//     the polygon is replaced with a small dashed centre marker.
-//   • Civ wheel — same dashed empty state, until the indicator
-//     pipeline is wired into a 0–10 score per domain.
-//   • Walker layer — RENDERS NOTHING when count is zero. No demo
-//     numbers. Wire-up point marked below.
-//   • Ticker — empty state line: "Quiet right now."
+// Substrate: Dymaxion projection SVG behind the wheel (and
+// continuing into the action card region), themeable via CSS.
 //
-// Wire-up points marked with WIRE: comments. Each one names what
-// the source will be when it is built.
-// ─────────────────────────────────────────────────────────────
+// Dark-stage flip: tapping any right-rail tile or the "The Planet"
+// pole header sets currentWheel='civ' which triggers the data-stage
+// attribute flip on the root.
+//
+// Removed in this drop:
+//   • TopStrip → IdentityStrip
+//   • Switcher pill → PoleHeader
+//   • Ticker → gone (was empty chrome)
+//   • Dock + DockTile → Profile + Settings moved to brand-bar icons
+//   • Sentinel state lines → Tile renders state line only when meaningful
+//
+// Wheel internals stay as-is for Drop 1. Drop 2 adds the
+// featured-node interaction model.
+// ──────────────────────────────────────────────────────────────
 
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import TopStrip      from '../components/mission-control/TopStrip'
-import Ticker        from '../components/mission-control/Ticker'
-import WheelStage    from '../components/mission-control/WheelStage'
-import ActionCard    from '../components/mission-control/ActionCard'
-import SideRail      from '../components/mission-control/SideRail'
-import Tile          from '../components/mission-control/Tile'
-import Dock          from '../components/mission-control/Dock'
-import DockTile      from '../components/mission-control/DockTile'
-import Panel         from '../components/mission-control/Panel'
+import IdentityStrip      from '../components/mission-control/IdentityStrip'
+import PoleHeader         from '../components/mission-control/PoleHeader'
+import WorldMapSubstrate  from '../components/mission-control/WorldMapSubstrate'
+import WheelStage         from '../components/mission-control/WheelStage'
+import ActionCard         from '../components/mission-control/ActionCard'
+import SideRail           from '../components/mission-control/SideRail'
+import Tile               from '../components/mission-control/Tile'
+import Panel              from '../components/mission-control/Panel'
+
 import HorizonStateGauge   from '../components/mission-control/HorizonStateGauge'
 import MapPinGlyph         from '../components/mission-control/MapPinGlyph'
 import PurposePieceGlyph   from '../components/mission-control/PurposePieceGlyph'
@@ -101,13 +106,11 @@ function formatPlacement(purposeData) {
 }
 
 // Active sprint key — the personal-wheel spoke that gets the glow.
-// Reads the first active sprint and returns its primary domain.
 function activeSprintKey(sprintData) {
   if (!Array.isArray(sprintData) || sprintData.length === 0) return null
   const s = sprintData[0]
   if (!Array.isArray(s.domains) || s.domains.length === 0) return null
   const first = s.domains[0]
-  // Domain keys in the sprint table use the same slugs as SELF_KEYS
   return SELF_KEYS.includes(first) ? first : null
 }
 
@@ -116,7 +119,6 @@ function civPlacementKey(purposeData) {
   if (!purposeData) return null
   const slug = purposeData?.domain?.slug || purposeData?.domain || null
   if (!slug) return null
-  // Map placement domain slugs (e.g. "human-being") to civ wheel keys
   const slugToKey = {
     'human-being':     'human',
     'society':         'society',
@@ -135,6 +137,8 @@ export default function BetaMissionControl() {
   const [activePanel, setActivePanel] = useState(null)
   const [currentWheel, setCurrentWheel] = useState('personal')
 
+  const isCiv = currentWheel === 'civ'
+
   // Personal wheel data
   const { horizons: selfHorizons, current: selfCurrent } = useMemo(
     () => buildScoreMap(data.mapData),
@@ -143,11 +147,11 @@ export default function BetaMissionControl() {
   const placedCount = countPlaced(selfCurrent)
   const sprintKey = activeSprintKey(data.sprintData)
 
-  // Civ wheel data — until the indicator pipeline produces a 0–10
-  // score per civ domain, civ_current is empty {} which renders the
-  // dashed empty polygon. Horizons are uniform 10 by spec.
-  // WIRE: replace the empty civ_current object with a query against
-  // the score weights table once headline indicators are flowing.
+  // Civ wheel data — until indicator pipeline produces a 0–10 score
+  // per civ domain, civ_current is empty {} (renders dashed empty
+  // polygon). Horizons are uniform 10 by spec.
+  // WIRE: replace civCurrent with a query against the score weights
+  // table once headline indicators flow.
   const civCurrent = {}
   const civHorizons = useMemo(
     () => Object.fromEntries(CIV_KEYS.map(k => [k, 10])),
@@ -155,25 +159,17 @@ export default function BetaMissionControl() {
   )
 
   // Walker layer — empty by default. RENDERS NOTHING when 0.
-  // WIRE: replace with a contributor_profiles_beta count query
-  // grouped by sprint domain (personal) and placement domain (civ)
-  // once the contributor density layer is built.
   const personalWalkers = {}
   const civWalkers = {}
 
   // Identity strings.
-  // Defensive capitalisation: render the name with a capital first character
-  // even if the stored display_name is lowercase. The canonical fix is on
-  // save (in the profile editor); this is the safety net for old data.
   const rawName  = data.profile?.display_name || data.user?.email?.split('@')[0] || 'Your name'
-  const userName = rawName ? rawName.charAt(0).toUpperCase() + rawName.slice(1) : rawName
+  const userName = rawName
 
-  // Two values for placement: an internal sentinel used as control flow
-  // (compared in several places below), and a user-visible caption rendered
-  // in the top strip.
+  // Placement: internal sentinel for control flow + display variant.
   const placement = formatPlacement(data.purposeData) || 'PURPOSE PIECE NOT YET PLACED'
   const isUnplaced = placement === 'PURPOSE PIECE NOT YET PLACED'
-  const displayPlacement = isUnplaced ? 'NO FIT FOUND YET' : placement
+  const displayPlacement = isUnplaced ? null : placement
 
   // Civ placement marker
   const civPlacement = civPlacementKey(data.purposeData)
@@ -182,18 +178,29 @@ export default function BetaMissionControl() {
   useEffect(() => {
     const stage = document.getElementById('mc-stage-root')
     if (!stage) return
-    if (currentWheel === 'civ') {
+    if (isCiv) {
       stage.setAttribute('data-stage', 'dark')
     } else {
       stage.removeAttribute('data-stage')
     }
-  }, [currentWheel])
+  }, [isCiv])
 
   const closePanel = () => setActivePanel(null)
 
+  // Tapping a right-rail tile flips to civ AND opens the panel.
+  // Tapping a left-rail tile flips to personal AND opens the panel.
+  const openPersonalPanel = (key) => {
+    setCurrentWheel('personal')
+    setActivePanel(key)
+  }
+  const openCivPanel = (key) => {
+    setCurrentWheel('civ')
+    setActivePanel(key)
+  }
+
   // ─── Action card content ─────────────────────────────────────
-  // Personal: derive from sprintData if a sprint exists, otherwise
-  // fall through to the neutral "nothing committed yet" copy.
+  // NOTE: The smarter "next move" state machine lands in Drop 3.
+  // For Drop 1, the existing fallback copy holds.
   const personalAction = (() => {
     const s = Array.isArray(data.sprintData) && data.sprintData[0]
     if (s) {
@@ -224,21 +231,18 @@ export default function BetaMissionControl() {
     }
   })()
 
-  // Civ: missions feed is not yet built. Empty state always for now.
-  // WIRE: replace with a query against the missions/quests table once
-  // the org-posts-a-mission backend ships.
   const civAction = {
     empty: true,
     eyebrow: 'THE PLANET · NEXT MOVE',
     context: isUnplaced
-      ? 'FIND YOUR FIT FIRST'
-      : 'NO MISSIONS IN YOUR RANGE YET',
+      ? 'PLACEMENT FIRST'
+      : 'NO QUESTS IN YOUR RANGE YET',
     title: isUnplaced
       ? 'Find where you fit.'
-      : 'No missions in your range yet.',
+      : 'No quests in your range yet.',
     body: isUnplaced
-      ? 'In building the future of the planet. The Purpose Piece sets your archetype, domain, and scale. The mission feed surfaces here once you find your fit.'
-      : 'Missions and quests appear here as orgs in your area post them. Browse broader if nothing is here yet.',
+      ? 'In building the future of the planet. The Purpose Piece sets your archetype, domain, and scale. The quests feed surfaces here once you find your fit.'
+      : 'Quests appear here as orgs in your area post them. Browse broader if nothing is here yet.',
     primaryLabel: isUnplaced ? 'FIND YOUR FIT' : 'BROWSE BROADER',
     onPrimary:    () => navigate(
       isUnplaced ? '/tools/purpose-piece' : '/beta/contribution'
@@ -248,17 +252,16 @@ export default function BetaMissionControl() {
   }
 
   // ─── Rail states ─────────────────────────────────────────────
-  // Each rail tile gets a small state line. Until launch, most
-  // states fall back to "—" because no real activity exists yet.
+  // State lines now render only when meaningful. Empty → null.
+
   const hsState = data.foundationData?.streak_days
     ? `${data.foundationData.streak_days}D STREAK`
-    : 'UNTOUCHED'
-  // Target Sprint state — surfaces time-axis position (the bullseye
-  // logo says aim+bearing+time; the rail line carries the time piece).
-  // WEEK N / 13 when active, NONE otherwise. If multiple sprints are
-  // active (rare), uses the most recent.
+    : null
+
+  // Target Sprint — week of 13, surfaces the time axis from the
+  // bullseye logo's grid.
   const tsState = (() => {
-    if (!Array.isArray(data.sprintData) || data.sprintData.length === 0) return 'NONE'
+    if (!Array.isArray(data.sprintData) || data.sprintData.length === 0) return null
     const sprint = data.sprintData[0]
     if (!sprint?.created_at) return 'ACTIVE'
     const start = new Date(sprint.created_at)
@@ -267,168 +270,155 @@ export default function BetaMissionControl() {
     const week = Math.max(1, Math.min(13, Math.floor(days / 7) + 1))
     return `WEEK ${week} / 13`
   })()
-  const hpState = data.practiceData?.session_date ? 'RECENT' : 'NONE'
 
-  // The Map tile state — number of domains audited out of seven.
-  // Counts rows in mapData that have a non-null current_score.
+  const hpState = data.practiceData?.session_date ? 'RECENT' : null
+
+  // Map: only show count when audit has actually started.
   const mapAudited = Array.isArray(data.mapData)
     ? data.mapData.filter(r => r?.current_score != null).length
     : 0
   const mapState = mapAudited === 0
-    ? 'UNAUDITED'
+    ? null
     : mapAudited === 7
       ? 'COMPLETE'
       : `${mapAudited} OF 7`
 
-  // Ticker — empty list until the activity feed is wired.
-  // WIRE: replace [] with a query against the future
-  // nextus_activity_feed table, scoped to the user's slice.
-  const tickerLines = []
+  // Placement: shows archetype as state line when placed.
+  const placementState = isUnplaced ? null : placement.split(' · ')[0]
+
+  // World View / Planet Sprint: no real state until civ data flows.
+  const worldViewState = null
+  const planetSprintState = null
 
   return (
     <div
       id="mc-stage-root"
       className="mc-stage-root"
-      style={{
-        minHeight: '100dvh',
-        display: 'grid',
-        gridTemplateRows: 'auto auto 1fr auto',
-        background: BG_PARCHMENT,
-        transition: 'background 0.6s ease',
-        color: '#0F1523',
-      }}
     >
       <style>{STAGE_CSS}</style>
 
-      <TopStrip userName={userName} placement={displayPlacement} />
-
-      <Ticker
-        eyebrow="RECENTLY ACROSS YOUR SLICE"
-        lines={tickerLines}
+      <IdentityStrip
+        userName={userName}
+        placement={displayPlacement}
+        onProfile={() => setActivePanel('profile')}
+        onSettings={() => setActivePanel('settings')}
+        onFindFit={() => openCivPanel('purpose-piece')}
       />
 
-      <div className="mc-centre">
-        <div className="mc-scene">
-          <WheelStage
-            currentWheel={currentWheel}
-            onSwitchWheel={setCurrentWheel}
-            personalProps={{
-              labels:    SELF_LABELS,
-              keys:      SELF_KEYS,
-              horizons:  selfHorizons,
-              current:   selfCurrent,
-              activeKey: sprintKey,
-              walkers:   personalWalkers,
-              isEmpty:   placedCount === 0,
-            }}
-            civProps={{
-              labels:        CIV_LABELS,
-              keys:          CIV_KEYS,
-              horizons:      civHorizons,
-              current:       civCurrent,
-              placementKey:  civPlacement,
-              walkers:       civWalkers,
-              isEmpty:       Object.keys(civCurrent).length === 0,
-            }}
-          />
+      <PoleHeader
+        active={isCiv ? 'civ' : 'self'}
+        onSelectSelf={() => setCurrentWheel('personal')}
+        onSelectCiv={() => setCurrentWheel('civ')}
+      />
+
+      {/* ─── BODY: rails + wheel + scroll-below ──────────────── */}
+
+      <main className="mc-body">
+        <WorldMapSubstrate />
+
+        <div className="mc-grid">
+
+          {/* LEFT RAIL — Your Life */}
+          <SideRail side="left">
+            <Tile
+              glyph={<MapPinGlyph />}
+              label={<>THE<br/>MAP</>}
+              state={mapState}
+              onClick={() => openPersonalPanel('map')}
+              title="The Map — your seven domains"
+            />
+            <Tile
+              glyph={<HorizonStateGauge />}
+              label={<>HORIZON<br/>STATE</>}
+              state={hsState}
+              onClick={() => openPersonalPanel('horizon-state')}
+              title="Horizon State — daily check-in"
+            />
+            <Tile
+              glyph={<TargetSprintGlyph />}
+              label={<>TARGET<br/>SPRINT</>}
+              state={tsState}
+              onClick={() => openPersonalPanel('target-sprint')}
+              title="Target Sprint — 90-day commitment"
+            />
+            <Tile
+              glyph="✦"
+              label={<>HORIZON<br/>PRACTICE</>}
+              state={hpState}
+              onClick={() => openPersonalPanel('horizon-practice')}
+              title="Horizon Practice"
+            />
+            <Tile
+              glyph="≡"
+              label="RESOURCES"
+              state={null}
+              onClick={() => openPersonalPanel('resources')}
+              title="Resources for self"
+            />
+          </SideRail>
+
+          {/* CENTRE — wheel */}
+          <div className="mc-centre-col">
+            <WheelStage
+              currentWheel={currentWheel}
+              onSwitchWheel={setCurrentWheel}
+              personalProps={{
+                labels:    SELF_LABELS,
+                keys:      SELF_KEYS,
+                horizons:  selfHorizons,
+                current:   selfCurrent,
+                activeKey: sprintKey,
+                walkers:   personalWalkers,
+                isEmpty:   placedCount === 0,
+              }}
+              civProps={{
+                labels:        CIV_LABELS,
+                keys:          CIV_KEYS,
+                horizons:      civHorizons,
+                current:       civCurrent,
+                placementKey:  civPlacement,
+                walkers:       civWalkers,
+                isEmpty:       Object.keys(civCurrent).length === 0,
+              }}
+            />
+          </div>
+
+          {/* RIGHT RAIL — The Planet (3 tiles, working titles)
+              Top:    Placement (Purpose Piece grown up)
+              Middle: World View (planetary explore)
+              Bottom: Planet Sprint (Target Sprint civ-side, accepts org-posted quests) */}
+          <SideRail side="right">
+            <Tile
+              glyph={<PurposePieceGlyph />}
+              label={<>PLACE<br/>MENT</>}
+              state={placementState}
+              onClick={() => openCivPanel('purpose-piece')}
+              title="Placement — where you fit"
+            />
+            <Tile
+              glyph="◯"
+              label={<>WORLD<br/>VIEW</>}
+              state={worldViewState}
+              onClick={() => openCivPanel('world-view')}
+              title="World View — explore the planetary state"
+            />
+            <Tile
+              glyph="⇶"
+              label={<>PLANET<br/>SPRINT</>}
+              state={planetSprintState}
+              onClick={() => openCivPanel('missions')}
+              title="Planet Sprint — quests offered by orgs"
+            />
+          </SideRail>
+
         </div>
 
+        {/* SCROLL-BELOW: action cards */}
         <div className="mc-actions">
           <ActionCard {...personalAction} dark={false} />
-          <ActionCard {...civAction}      dark={currentWheel === 'civ'} />
+          <ActionCard {...civAction}      dark={isCiv} />
         </div>
-      </div>
-
-      {/* LEFT RAIL — personal-side tools.
-          The Map sits at the top: it's the foundation/orientation of
-          everything below it. The daily/active tools follow. */}
-      <SideRail side="left">
-        <Tile
-          glyph={<MapPinGlyph />}
-          label={<>THE<br/>MAP</>}
-          state={mapState}
-          onClick={() => setActivePanel('map')}
-          title="The Map — your seven domains"
-        />
-        <Tile
-          glyph={<HorizonStateGauge />}
-          label={<>HORIZON<br/>STATE</>}
-          state={hsState}
-          onClick={() => setActivePanel('horizon-state')}
-          title="Horizon State — daily check-in"
-        />
-        <Tile
-          glyph={<TargetSprintGlyph />}
-          label={<>TARGET<br/>SPRINT</>}
-          state={tsState}
-          onClick={() => setActivePanel('target-sprint')}
-          title="Target Sprint — 90-day commitment"
-        />
-        <Tile
-          glyph="✦"
-          label={<>HORIZON<br/>PRACTICE</>}
-          state={hpState}
-          onClick={() => setActivePanel('horizon-practice')}
-          title="Horizon Practice"
-        />
-        <Tile
-          glyph="≡"
-          label="RESOURCES"
-          state="—"
-          onClick={() => setActivePanel('resources')}
-          title="Resources for self"
-        />
-      </SideRail>
-
-      {/* RIGHT RAIL — planet surfaces.
-          Purpose Piece sits at the top: it's the foundation/orientation
-          of the planet-side surfaces below it. */}
-      <SideRail side="right">
-        <Tile
-          glyph={<PurposePieceGlyph />}
-          label={<>PURPOSE<br/>PIECE</>}
-          state={isUnplaced ? 'NO FIT YET' : 'FIT FOUND'}
-          onClick={() => setActivePanel('purpose-piece')}
-          title="Purpose Piece — where you fit"
-        />
-        <Tile
-          glyph="◯"
-          label={<>WORLD<br/>VIEW</>}
-          state={civPlacement ? 'FIT FOUND' : 'NO FIT YET'}
-          onClick={() => setActivePanel('world-view')}
-          title="World View — current state of all seven civ domains"
-        />
-        <Tile
-          glyph="◊"
-          label={<>WHAT'S<br/>SO</>}
-          state={civPlacement ? 'YOUR VECTOR' : '—'}
-          onClick={() => setActivePanel('whats-so')}
-          title="What's So — drill-in indicator data at your vector"
-        />
-        <Tile
-          glyph="⇶"
-          label={<>MISSIONS<br/>&amp; QUESTS</>}
-          state="EMPTY"
-          onClick={() => setActivePanel('missions')}
-          title="Missions & Quests — feed of contributions in your range"
-        />
-      </SideRail>
-
-      {/* BOTTOM UTILITY RAIL — collapsed to two tiles after Map and
-          Purpose Piece moved up to the rails. Profile and Settings are
-          utility shelves; two is honest. */}
-      <Dock>
-        <DockTile
-          label="YOU"
-          name="Profile"
-          onClick={() => setActivePanel('profile')}
-        />
-        <DockTile
-          label="SYSTEM"
-          name="Settings"
-          onClick={() => setActivePanel('settings')}
-        />
-      </Dock>
+      </main>
 
       {/* ─── PANELS ──────────────────────────────────────────── */}
 
@@ -475,7 +465,7 @@ export default function BetaMissionControl() {
           { label: 'LATER', onClick: closePanel },
         ]}
       >
-        <p>Practices are short daily things — five minutes, ten minutes — that hold the work between sprint days. The I Am statements you wrote in The Map anchor the practice from underneath.</p>
+        <p>Practices are short daily things, five minutes or ten, that hold the work between sprint days. The I Am statements you wrote in The Map anchor the practice from underneath.</p>
         <div className="mc-panel-build-edge">
           Building in progress. Full practice library and daily check-in flow open at /tools/horizon-practice.
         </div>
@@ -500,38 +490,22 @@ export default function BetaMissionControl() {
         title="The state of the world right now"
         dark
       >
-        <p>The seven civilisational domains — Vision, Human, Nature, Finance, Tech, Legacy, Society — with current global state and Horizon Future for each. The wheel you saw on Mission Control, opened up.</p>
+        <p>The seven civilisational domains, with current global state and Horizon Future for each. Click any domain or subdomain to see what's happening there: actors, contributions, gap signals, horizon goals being worked on.</p>
         <div className="mc-panel-build-edge">
-          Building in progress. The full World View — interactive civ wheel, drill-down per domain, indicator detail with sources — renders here as the data sourcing layer fills in.
-        </div>
-      </Panel>
-
-      <Panel
-        open={activePanel === 'whats-so'}
-        onClose={closePanel}
-        eyebrow="YOUR VECTOR · WHAT'S SO"
-        title={civPlacement ? `Your vector, right now` : 'Find your fit, then drill in.'}
-        dark
-      >
-        <p>{civPlacement
-          ? `The honest picture at your specific Purpose Piece vector. Not curated. Not optimistic. What the indicators actually say about where you fit on the civ board.`
-          : `What's So drills into the indicator data at your vector — your archetype, domain, and scale. Until you've found your fit with the Purpose Piece, there's no vector to drill into.`
-        }</p>
-        <div className="mc-panel-build-edge">
-          Building in progress. Full indicator detail at your vector renders here once the data sourcing layer is wired across all seven civ domains.
+          Building in progress. The full World View, with interactive civ wheel, drill-down per domain, and indicator detail with sources, renders here as the data sourcing layer fills in.
         </div>
       </Panel>
 
       <Panel
         open={activePanel === 'missions'}
         onClose={closePanel}
-        eyebrow="FEED · MISSIONS & QUESTS"
-        title="No missions in your range yet."
+        eyebrow="OUTWARD AIM · PLANET SPRINT"
+        title="Quests in your range"
         dark
       >
-        <p>Missions and quests are specific contributions you can take on, posted by orgs in your area or surfaced by the platform based on your vector. They appear here as orgs join NextUs and post them.</p>
+        <p>Planet Sprint is Target Sprint pointed outward. Same architecture, civilisational target. Quests are sprints offered by orgs and other actors, ready to accept. Time-frames vary: a doc edit by Tuesday, a community garden build over six weeks, a multi-month policy push.</p>
         <div className="mc-panel-build-edge">
-          Building in progress. Full mission feed, accept-mission flow, and contribution log render here once orgs start posting.
+          Building in progress. Quest feed, accept-quest flow, and contribution log render here once orgs start posting.
         </div>
       </Panel>
 
@@ -562,6 +536,7 @@ export default function BetaMissionControl() {
             onClick: () => navigate('/tools/purpose-piece') },
           { label: 'LATER', onClick: closePanel },
         ]}
+        dark
       >
         <p>Where you fit in building the future of the planet. Archetype, civilisational domain, scale. About an hour to do well; you can revisit and adjust as the work moves.</p>
         <div className="mc-panel-build-edge">
@@ -580,7 +555,7 @@ export default function BetaMissionControl() {
           { label: 'CLOSE', onClick: closePanel },
         ]}
       >
-        <p>The Map is where you wrote your I Am statements and set your Horizon scores across the seven personal domains. Real work — typically a week or more if done well, one domain at a time. You revisit it when something shifts.</p>
+        <p>The Map is where you wrote your I Am statements and set your Horizon scores across the seven personal domains. Real work, typically a week or more if done well, one domain at a time. You revisit it when something shifts.</p>
         <p style={{ marginTop: 12, fontSize: 14 }}>
           {placedCount} of 7 domains audited.
         </p>
@@ -605,59 +580,112 @@ export default function BetaMissionControl() {
 }
 
 const STAGE_CSS = `
+.mc-stage-root {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: ${BG_PARCHMENT};
+  transition: background 0.6s ease;
+  color: #0F1523;
+}
 .mc-stage-root[data-stage="dark"] {
-  background: ${BG_INK} !important;
+  background: ${BG_INK};
   color: #FFFFFF;
 }
 
-.mc-centre {
-  display: grid;
-  grid-template-rows: 1fr auto;
-  padding: 32px 40px 28px;
-  align-items: center;
-  gap: 28px;
+/* ─── BODY: relative parent for the absolute substrate ───── */
+
+.mc-body {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-.mc-scene {
+/* ─── GRID: rails + wheel ──────────────────────────────────── */
+
+.mc-grid {
   position: relative;
-  min-height: 380px;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 90px 1fr 90px;
+  gap: 16px;
+  padding: 28px 24px 16px;
+  align-items: start;
+}
+
+.mc-centre-col {
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 380px;
+  padding: 0 24px;
 }
 
+/* ─── ACTION CARDS — scroll-below ──────────────────────────── */
+
 .mc-actions {
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 28px;
-  max-width: 1080px;
-  margin-left: auto;
-  margin-right: auto;
+  gap: 24px;
+  padding: 16px 24px 32px;
+  max-width: 1100px;
+  margin: 0 auto;
   width: 100%;
 }
 
-@media (max-width: 1280px) {
-  .mc-centre { padding-left: 80px; padding-right: 80px; }
+/* ─── BREAKPOINTS ──────────────────────────────────────────── */
+
+@media (min-width: 1024px) {
+  .mc-grid {
+    grid-template-columns: 110px 1fr 110px;
+    gap: 24px;
+    padding: 36px 40px 20px;
+  }
+  .mc-centre-col {
+    min-height: 480px;
+    padding: 0 40px;
+  }
+  .mc-actions {
+    padding: 24px 40px 40px;
+    gap: 32px;
+  }
 }
-@media (max-width: 1024px) {
-  .mc-centre { padding: 24px 24px; }
+
+@media (max-width: 640px) {
+  .mc-grid {
+    grid-template-columns: 64px 1fr 64px;
+    gap: 8px;
+    padding: 16px 12px 12px;
+  }
+  .mc-centre-col {
+    min-height: 320px;
+    padding: 0 6px;
+  }
+  .mc-actions {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 12px 16px 28px;
+  }
 }
-@media (max-width: 880px) {
-  .mc-centre { padding: 20px 16px 24px; }
-  .mc-scene { min-height: 320px; }
-  .mc-actions { grid-template-columns: 1fr; gap: 16px; }
+
+/* Even tighter on the smallest phones */
+@media (max-width: 380px) {
+  .mc-grid {
+    grid-template-columns: 56px 1fr 56px;
+    gap: 6px;
+    padding: 12px 8px 8px;
+  }
 }
 `
 
-// ─── HorizonStateSlider ───────────────────────────────────────────────────────
+// ─── HorizonStateSlider ───────────────────────────────────────
 //
-// Wrapper that fetches Horizon State data inside the panel and renders the
-// shared BaselineCard in compact mode. Lives inside the panel so the data
-// loading hook only fires when the panel is opened, not on every Mission
-// Control render.
-//
-// When the user signs out or hasn't signed in yet, the BaselineCard renders
-// the auth-modal-prompting state on its own — no extra guard needed here.
+// Wrapper that fetches Horizon State data inside the panel and
+// renders the shared BaselineCard in compact mode. Hook fires only
+// when the panel opens.
 
 function HorizonStateSlider({ user }) {
   const { audioUrl, audioLoading, audioError, sessions, lifeIaStatement, reload } = useHorizonStateData(user)
