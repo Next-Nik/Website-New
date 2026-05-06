@@ -47,9 +47,11 @@ import Tile          from '../components/mission-control/Tile'
 import Dock          from '../components/mission-control/Dock'
 import DockTile      from '../components/mission-control/DockTile'
 import Panel         from '../components/mission-control/Panel'
-import HorizonStateGauge from '../components/mission-control/HorizonStateGauge'
-import MapPinGlyph        from '../components/mission-control/MapPinGlyph'
-import PurposePieceGlyph  from '../components/mission-control/PurposePieceGlyph'
+import HorizonStateGauge   from '../components/mission-control/HorizonStateGauge'
+import MapPinGlyph         from '../components/mission-control/MapPinGlyph'
+import PurposePieceGlyph   from '../components/mission-control/PurposePieceGlyph'
+import TargetSprintGlyph   from '../components/mission-control/TargetSprintGlyph'
+import TargetSprintSlider  from '../components/mission-control/TargetSprintSlider'
 
 import useMissionControlData from '../components/mission-control/useMissionControlData'
 import { BG_PARCHMENT, BG_INK } from '../components/mission-control/tokens'
@@ -251,9 +253,20 @@ export default function BetaMissionControl() {
   const hsState = data.foundationData?.streak_days
     ? `${data.foundationData.streak_days}D STREAK`
     : 'UNTOUCHED'
-  const tsState = Array.isArray(data.sprintData) && data.sprintData.length > 0
-    ? `${data.sprintData.length} ACTIVE`
-    : 'NONE'
+  // Target Sprint state — surfaces time-axis position (the bullseye
+  // logo says aim+bearing+time; the rail line carries the time piece).
+  // WEEK N / 13 when active, NONE otherwise. If multiple sprints are
+  // active (rare), uses the most recent.
+  const tsState = (() => {
+    if (!Array.isArray(data.sprintData) || data.sprintData.length === 0) return 'NONE'
+    const sprint = data.sprintData[0]
+    if (!sprint?.created_at) return 'ACTIVE'
+    const start = new Date(sprint.created_at)
+    const now = new Date()
+    const days = Math.floor((now - start) / (1000 * 60 * 60 * 24))
+    const week = Math.max(1, Math.min(13, Math.floor(days / 7) + 1))
+    return `WEEK ${week} / 13`
+  })()
   const hpState = data.practiceData?.session_date ? 'RECENT' : 'NONE'
 
   // The Map tile state — number of domains audited out of seven.
@@ -345,11 +358,11 @@ export default function BetaMissionControl() {
           title="Horizon State — daily check-in"
         />
         <Tile
-          glyph="▲"
+          glyph={<TargetSprintGlyph />}
           label={<>TARGET<br/>SPRINT</>}
           state={tsState}
           onClick={() => setActivePanel('target-sprint')}
-          title="Target Sprint"
+          title="Target Sprint — 90-day commitment"
         />
         <Tile
           glyph="✦"
@@ -437,17 +450,18 @@ export default function BetaMissionControl() {
         open={activePanel === 'target-sprint'}
         onClose={closePanel}
         eyebrow="90-DAY COMMITMENT · TARGET SPRINT"
-        title="Your active sprint"
+        title="Today's bearing"
         actions={[
-          { label: 'OPEN TARGET SPRINT', primary: true,
+          { label: 'FULL SPRINT VIEW →', primary: true,
             onClick: () => navigate('/tools/target-sprint') },
-          { label: 'LATER', onClick: closePanel },
+          { label: 'CLOSE', onClick: closePanel },
         ]}
       >
-        <p>Three things a week. Notes after each. The point is to feel out the actual shape of what's pulling at you.</p>
-        <div className="mc-panel-build-edge">
-          Building in progress. The full sprint detail, conversation log, and reflection prompts open at /tools/target-sprint.
-        </div>
+        <TargetSprintSlider
+          user={data.user}
+          sprintData={data.sprintData}
+          onNavigate={navigate}
+        />
       </Panel>
 
       <Panel
