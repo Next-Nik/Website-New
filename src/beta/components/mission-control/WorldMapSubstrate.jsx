@@ -1,36 +1,24 @@
 // ─────────────────────────────────────────────────────────────
 // WorldMapSubstrate.jsx
 //
-// World projection sits behind the wheel as substrate — the
-// platform's thesis rendered as cartography (Bucky Fuller is in
-// the locked intellectual lineage; the projection asset itself
-// can be swapped without touching this component).
+// Fuller's Dymaxion Map sits as a small floating element behind
+// the wheel — the platform's thesis rendered as cartography.
+// The asset itself can be swapped without touching this component.
 //
-// The SVG file lives at /public/dymaxion-substrate.svg. We render
-// it via an <img> tag so the browser caches it once and reuses
-// it across renders.
-//
-// Positioning: TOP-ANCHORED, WIDTH-DRIVEN.
-//   The projection starts at the top of its container and runs
-//   down at half viewport width — sized to sit behind the wheel
-//   without dominating the layout.
+// Layout:
+//   The "window" — the .mc-substrate container — covers the
+//   entire viewport (position: fixed, full-screen). The FDM
+//   image inside it is sized to 25% of viewport width and
+//   positioned in the upper-middle, behind the wheel.
 //
 // Parallax:
-//   The substrate drifts vertically as the page scrolls, on the
-//   same pattern used by the About page Peru photo. Image is
-//   taller than the visible band; translateY shifts within a
-//   bounded range so geography moves slower than the foreground,
-//   creating depth without obscuring the wheel.
+//   Same easing pattern as the About page Peru photo. As the
+//   page scrolls, the FDM drifts downward within its bounds —
+//   geography moves slower than the foreground, creating depth.
 //
 // Theming via CSS opacity:
-//   light stage  → 0.22 opacity (0.18 on phones), warm-grey on
-//                  parchment
-//   dark stage   → 0.28 opacity (0.24 on phones), light-on-ink
-//                  via filter: invert
-//
-// MOUNT POINT:
-//   This component is rendered as a sibling at the top of
-//   .mc-stage-root. The parent must be position: relative.
+//   light stage  → 0.22 opacity (0.18 on phones)
+//   dark stage   → 0.28 opacity (0.24 on phones), inverted
 // ─────────────────────────────────────────────────────────────
 
 export default function WorldMapSubstrate() {
@@ -40,19 +28,25 @@ export default function WorldMapSubstrate() {
       aria-hidden="true"
       ref={el => {
         if (!el) return
-        // Parallax: same easing math as About page Peru photo.
-        // Image starts at translateY(-30%) and eases toward
-        // translateY(0) as the stage scrolls past. The translateX
-        // is preserved to keep the image horizontally centered.
+        // Parallax: image starts slightly above its anchor and
+        // eases down as the page scrolls. We measure relative to
+        // the document scroll position so the FDM keeps drifting
+        // even though the .mc-substrate container itself is fixed.
         function onScroll() {
-          const rect = el.getBoundingClientRect()
-          const viewH = window.innerHeight
-          const progress = 1 - (rect.bottom / (viewH + rect.height))
-          const shift = Math.min(Math.max(progress * 30, 0), 30)
+          const maxScroll = Math.max(
+            document.documentElement.scrollHeight - window.innerHeight,
+            1
+          )
+          const progress = Math.min(
+            Math.max(window.scrollY / maxScroll, 0),
+            1
+          )
+          // Drift range: -8% to +8% of viewport height.
+          const shiftVh = -8 + progress * 16
           const img = el.querySelector('.mc-substrate-img')
           if (img) {
             img.style.transform =
-              'translateX(-50%) translateY(' + (-30 + shift) + '%)'
+              'translateX(-50%) translateY(calc(' + shiftVh + 'vh))'
           }
         }
         window.addEventListener('scroll', onScroll, { passive: true })
@@ -70,12 +64,12 @@ export default function WorldMapSubstrate() {
 }
 
 const SUBSTRATE_CSS = `
+/* Full-screen window — the FDM floats inside this. position:
+   fixed so it doesn't get clipped by ancestor stacking contexts
+   and stays put through parallax. */
 .mc-substrate {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: fixed;
+  inset: 0;
   pointer-events: none;
   overflow: hidden;
   z-index: 0;
@@ -83,50 +77,38 @@ const SUBSTRATE_CSS = `
 
 .mc-substrate-img {
   position: absolute;
-  /* Top-anchored, horizontally centred. Half viewport width on
-     mobile — sits behind the wheel without spanning the full
-     stage. translateY is set dynamically by the scroll handler;
-     translateX(-50%) keeps the image centered. */
-  top: 0;
+  /* Anchor to upper-middle of the viewport, horizontally
+     centered. The wheel sits roughly here so the FDM reads as
+     "behind the wheel." */
+  top: 28vh;
   left: 50%;
-  transform: translateX(-50%) translateY(-30%);
-  width: 50%;
+  transform: translateX(-50%);
+
+  /* Small. 25% of viewport width on desktop. */
+  width: 25vw;
   height: auto;
   max-width: none;
 
-  /* Light stage: visible warm-grey continents on parchment. */
   opacity: 0.22;
   filter: sepia(0.25) hue-rotate(-12deg) saturate(0.6);
 
-  /* Hint to the browser that this element will animate, so it
-     gets its own compositor layer and parallax stays smooth. */
   will-change: transform;
-
   user-select: none;
   pointer-events: none;
 }
 
-/* Dark stage: invert the map (dark-on-light → light-on-dark),
-   slightly higher opacity so it reads against the ink. */
+/* Dark stage: invert + slightly higher opacity for ink backdrop. */
 [data-stage="dark"] .mc-substrate-img {
   opacity: 0.28;
   filter: invert(1) sepia(0.25) hue-rotate(-12deg) saturate(0.6);
 }
 
-/* On wider viewports, scale up modestly so the projection still
-   reads as a substantial backdrop on a desktop. Aspect-ratio
-   stays fixed to the SVG so geography doesn't distort. */
-@media (min-width: 768px) {
-  .mc-substrate-img {
-    width: 50%;
-    max-width: 600px;
-  }
-}
-
-/* On smaller phones the opacity is tempered slightly to avoid
-   overwhelming the wheel and rails. */
+/* Phones: scale up a little because the wheel itself is larger
+   relative to viewport, but still sits behind it. */
 @media (max-width: 640px) {
   .mc-substrate-img {
+    width: 50vw;
+    top: 22vh;
     opacity: 0.18;
   }
   [data-stage="dark"] .mc-substrate-img {
