@@ -77,17 +77,34 @@ const SELF_KEYS   = ['path', 'spark', 'body', 'finances', 'connection', 'inner_g
 const CIV_LABELS  = ['VISION', 'HUMAN', 'NATURE', 'FINANCE', 'TECH', 'LEGACY', 'SOCIETY']
 const CIV_KEYS    = ['vision', 'human', 'nature', 'finance', 'tech', 'legacy', 'society']
 
-// Helper: derive map score lookups from the horizon_profile rows
-function buildScoreMap(mapRows) {
+// Helper: derive map score lookups from the horizon_profile rows.
+// Falls back to map_results.session.{currentScores,horizonScores}
+// for users whose Map predates horizon_profile being populated.
+function buildScoreMap(mapRows, mapResults) {
   const horizons = {}
   const current = {}
-  if (!Array.isArray(mapRows)) return { horizons, current }
-  for (const row of mapRows) {
-    if (row?.domain) {
-      horizons[row.domain] = row.horizon_score ?? row.horizon_goal ?? null
-      current[row.domain] = row.current_score ?? null
+
+  if (Array.isArray(mapRows)) {
+    for (const row of mapRows) {
+      if (row?.domain) {
+        horizons[row.domain] = row.horizon_score ?? row.horizon_goal ?? null
+        current[row.domain] = row.current_score ?? null
+      }
     }
   }
+
+  // Fallback: pull anything missing from the Map session blob.
+  const sessCurrent = mapResults?.session?.currentScores
+  const sessHorizon = mapResults?.session?.horizonScores
+  for (const k of SELF_KEYS) {
+    if (current[k] == null && sessCurrent && sessCurrent[k] != null) {
+      current[k] = sessCurrent[k]
+    }
+    if (horizons[k] == null && sessHorizon && sessHorizon[k] != null) {
+      horizons[k] = sessHorizon[k]
+    }
+  }
+
   return { horizons, current }
 }
 
@@ -95,12 +112,55 @@ function countPlaced(current) {
   return Object.values(current).filter(v => v != null).length
 }
 
-// Format placement caption from purpose_piece_results.session
+// Resolve placement from a purpose_piece_results row. The writer has
+// gone through three eras; we walk all sources of truth in order of
+// recency until one produces a value.
+//
+//   1. Top-level columns:         row.archetype, row.domain, row.scale (v10+)
+//   2. Resolved profile column:   row.profile.{archetype,domain,scale}
+//   3. Session flat fields:       row.session.{archetype,domain,scale} (v10 sessions)
+//   4. Session tentative nested:  row.session.tentative.{archetype.archetype,
+//                                 domain.domain, scale.scale} (pre-v10)
+//   5. Session p4Profile fallback: row.session.p4Profile.{archetype,domain,scale}
+//
+// purposeData here is the FULL ROW (the hook now passes the row,
+// not just .session). When called with anything falsy, returns null.
+function resolvePlacementFields(purposeData) {
+  if (!purposeData) return { archetype: null, domain: null, scale: null }
+
+  const session = purposeData.session || null
+  const profile = purposeData.profile || session?.p4Profile || null
+
+  // Each field tries the chain independently so a row that has,
+  // say, a top-level archetype but only a session.tentative domain
+  // still fully resolves.
+  const archetype =
+    purposeData.archetype ||
+    profile?.archetype ||
+    session?.archetype ||
+    session?.tentative?.archetype?.archetype ||
+    null
+
+  const domain =
+    purposeData.domain ||
+    profile?.domain ||
+    session?.domain ||
+    session?.tentative?.domain?.domain ||
+    null
+
+  const scale =
+    purposeData.scale ||
+    profile?.scale ||
+    session?.scale ||
+    session?.tentative?.scale?.scale ||
+    null
+
+  return { archetype, domain, scale }
+}
+
+// Format placement caption — "ARCHETYPE · DOMAIN · SCALE".
 function formatPlacement(purposeData) {
-  if (!purposeData) return null
-  const archetype = purposeData?.archetype?.label || purposeData?.archetype || null
-  const domain    = purposeData?.domain?.label    || purposeData?.domain    || null
-  const scale     = purposeData?.scale?.label     || purposeData?.scale     || null
+  const { archetype, domain, scale } = resolvePlacementFields(purposeData)
   const parts = [archetype, domain, scale].filter(Boolean)
   return parts.length > 0 ? parts.join(' · ').toUpperCase() : null
 }
@@ -115,11 +175,26 @@ function activeSprintKey(sprintData) {
 }
 
 // Civ placement key — the civ-wheel spoke that gets the placement marker.
+// Domain may arrive as a slug ('human-being'), a label ('Human Being'),
+// or a key ('human'). Map all known shapes onto the civ wheel keys.
 function civPlacementKey(purposeData) {
   if (!purposeData) return null
-  const slug = purposeData?.domain?.slug || purposeData?.domain || null
-  if (!slug) return null
-  const slugToKey = {
+
+  // Try the slug first if the writer left one on the row.
+  const session = purposeData.session || null
+  const slug =
+    purposeData.domain_id ||
+    purposeData.profile?.domain_id ||
+    session?.domain_id ||
+    session?.tentative?.domain?.domain_id ||
+    session?.tentative?.domain?.slug ||
+    null
+
+  // Otherwise fall back to whatever the resolver gave us as the
+  // domain string (could be a label or a key).
+  const { domain } = resolvePlacementFields(purposeData)
+
+  const slugMap = {
     'human-being':     'human',
     'society':         'society',
     'nature':          'nature',
@@ -128,7 +203,31 @@ function civPlacementKey(purposeData) {
     'legacy':          'legacy',
     'vision':          'vision',
   }
-  return slugToKey[slug] || (CIV_KEYS.includes(slug) ? slug : null)
+
+  const labelMap = {
+    'human being':       'human',
+    'human':             'human',
+    'society':           'society',
+    'nature':            'nature',
+    'technology':        'tech',
+    'tech':              'tech',
+    'finance & economy': 'finance',
+    'finance and economy': 'finance',
+    'finance':           'finance',
+    'legacy':            'legacy',
+    'vision':            'vision',
+  }
+
+  if (slug && slugMap[slug]) return slugMap[slug]
+  if (slug && CIV_KEYS.includes(slug)) return slug
+
+  if (domain) {
+    const norm = String(domain).toLowerCase().trim()
+    if (labelMap[norm]) return labelMap[norm]
+    if (CIV_KEYS.includes(norm)) return norm
+  }
+
+  return null
 }
 
 export default function BetaMissionControl() {
@@ -141,8 +240,8 @@ export default function BetaMissionControl() {
 
   // Personal wheel data
   const { horizons: selfHorizons, current: selfCurrent } = useMemo(
-    () => buildScoreMap(data.mapData),
-    [data.mapData]
+    () => buildScoreMap(data.mapData, data.mapResults),
+    [data.mapData, data.mapResults]
   )
   const placedCount = countPlaced(selfCurrent)
   const sprintKey = activeSprintKey(data.sprintData)
@@ -274,9 +373,9 @@ export default function BetaMissionControl() {
   const hpState = data.practiceData?.session_date ? 'RECENT' : null
 
   // Map: only show count when audit has actually started.
-  const mapAudited = Array.isArray(data.mapData)
-    ? data.mapData.filter(r => r?.current_score != null).length
-    : 0
+  // Count from the resolved selfCurrent so map_results fallback
+  // is reflected in the rail state line.
+  const mapAudited = countPlaced(selfCurrent)
   const mapState = mapAudited === 0
     ? null
     : mapAudited === 7
@@ -297,6 +396,15 @@ export default function BetaMissionControl() {
     >
       <style>{STAGE_CSS}</style>
 
+      {/* Substrate sits at the top of the stage so it bleeds up
+          behind the identity band and the PoleHeader, then runs
+          full-height down through the wheel and action cards.
+          The brand bar sits above it (z-index 10 via the identity
+          strip's stacking context) with its own opaque parchment
+          background; everything else is either transparent or
+          translucent. */}
+      <WorldMapSubstrate />
+
       <IdentityStrip
         userName={userName}
         placement={displayPlacement}
@@ -314,7 +422,6 @@ export default function BetaMissionControl() {
       {/* ─── BODY: rails + wheel + scroll-below ──────────────── */}
 
       <main className="mc-body">
-        <WorldMapSubstrate />
 
         <div className="mc-grid">
 
@@ -390,7 +497,7 @@ export default function BetaMissionControl() {
           <SideRail side="right">
             <Tile
               glyph={<PurposePieceGlyph />}
-              label={<>PLACE<br/>MENT</>}
+              label="PLACEMENT"
               state={placementState}
               onClick={() => openCivPanel('purpose-piece')}
               title="Placement — where you fit"
@@ -581,6 +688,7 @@ export default function BetaMissionControl() {
 
 const STAGE_CSS = `
 .mc-stage-root {
+  position: relative;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -593,10 +701,11 @@ const STAGE_CSS = `
   color: #FFFFFF;
 }
 
-/* ─── BODY: relative parent for the absolute substrate ───── */
+/* ─── BODY: contains rails + wheel above the substrate ────── */
 
 .mc-body {
   position: relative;
+  z-index: 2;
   flex: 1;
   display: flex;
   flex-direction: column;

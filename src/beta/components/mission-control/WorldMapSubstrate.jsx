@@ -1,27 +1,41 @@
 // ─────────────────────────────────────────────────────────────
 // WorldMapSubstrate.jsx
 //
-// Fuller's Dymaxion projection sits behind the wheel as substrate.
-// One continuous landmass, no privileged centre — the platform's
-// thesis rendered as cartography (Bucky Fuller is in the locked
-// intellectual lineage).
+// World projection sits behind the wheel as substrate — the
+// platform's thesis rendered as cartography (Bucky Fuller is in
+// the locked intellectual lineage; the projection asset itself
+// can be swapped without touching this component).
 //
 // The SVG file lives at /public/dymaxion-substrate.svg. We render
 // it via an <img> tag so the browser caches it once and reuses
 // it across renders.
 //
+// Positioning: TOP-ANCHORED, WIDTH-DRIVEN.
+//   The projection starts at the top of its container and runs
+//   down. At the SVG's 612×792 portrait aspect ratio, fitting to
+//   width produces a projection that naturally covers the upper
+//   portion of the stage (brand-bar-down-through-wheel-area), the
+//   way the v4 mockup specifies. Action cards below sit on plain
+//   parchment.
+//
 // Theming via CSS opacity:
-//   light stage  → 0.10 opacity, sits on parchment
-//   dark stage   → 0.18 opacity, sits on ink (the map intensifies
-//                  on the planet side per architectural decision)
+//   light stage  → 0.22 opacity (0.18 on phones), warm-grey on
+//                  parchment
+//   dark stage   → 0.28 opacity (0.24 on phones), light-on-ink
+//                  via filter: invert
 //
-// We use mix-blend-mode: multiply on light stage so the dark map
-// strokes blend warmly into the parchment instead of sitting on
-// top as flat black. On dark stage we use a CSS filter to invert
-// the map (originally dark-on-light → becomes light-on-dark).
+// No mix-blend-mode — at low opacity it produced ghost continents
+// that read as nothing on bright phone screens. Plain compositing
+// at higher opacity reads correctly across viewing conditions.
+// A subtle warm filter biases the near-black continents toward
+// the parchment/gold palette.
 //
-// Position: absolute, fills its containing element. The parent
-// (the wheel area in BetaMissionControl) sets `position: relative`.
+// MOUNT POINT:
+//   This component is rendered as a sibling at the top of
+//   .mc-stage-root (just below the brand bar) so the substrate
+//   bleeds up under the identity band and the PoleHeader, the
+//   way the v4 mockup specifies. The parent must be position:
+//   relative; the substrate fills it with position: absolute.
 // ─────────────────────────────────────────────────────────────
 
 export default function WorldMapSubstrate() {
@@ -51,41 +65,52 @@ const SUBSTRATE_CSS = `
 
 .mc-substrate-img {
   position: absolute;
-  /* center the map on the wheel area, slightly oversized so the
-     graticule lines bleed past the edges of the visible region */
-  top: 50%;
+  /* Top-anchored, horizontally centred. Width-fit so continents
+     span the viewport — at the SVG's 612×792 aspect ratio this
+     produces a projection that runs from below the brand bar
+     down through the wheel area, the way the v4 mockup specifies. */
+  top: 0;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 120%;
+  transform: translateX(-50%);
+  width: 100%;
   height: auto;
-  min-height: 120%;
   max-width: none;
 
-  /* Light stage: dark continents at low opacity, multiply into parchment */
-  opacity: 0.10;
-  mix-blend-mode: multiply;
+  /* Light stage: visible warm-grey continents on parchment.
+     No mix-blend-mode (made it invisible on bright screens).
+     Filter biases near-black toward warm grey to fit palette. */
+  opacity: 0.22;
+  filter: sepia(0.25) hue-rotate(-12deg) saturate(0.6);
 
   user-select: none;
   pointer-events: none;
 }
 
 /* Dark stage: invert the map (dark-on-light → light-on-dark),
-   slightly higher opacity so it reads against the ink */
+   slightly higher opacity so it reads against the ink. */
 [data-stage="dark"] .mc-substrate-img {
-  opacity: 0.18;
-  mix-blend-mode: screen;
-  filter: invert(1);
+  opacity: 0.28;
+  filter: invert(1) sepia(0.25) hue-rotate(-12deg) saturate(0.6);
 }
 
-/* On smaller screens, the substrate tightens to the wheel area
-   instead of bleeding wide — keeps it from overwhelming the rails */
+/* On wider viewports, scale the projection up so it stays a
+   substantial backdrop rather than a thin band. The aspect-ratio
+   stays fixed to the SVG so geography doesn't distort. */
+@media (min-width: 768px) {
+  .mc-substrate-img {
+    width: 90%;
+    max-width: 900px;
+  }
+}
+
+/* On smaller phones the substrate still runs full-width; only the
+   opacity is tempered to avoid overwhelming the wheel and rails. */
 @media (max-width: 640px) {
   .mc-substrate-img {
-    width: 140%;
-    opacity: 0.08;
+    opacity: 0.18;
   }
   [data-stage="dark"] .mc-substrate-img {
-    opacity: 0.14;
+    opacity: 0.24;
   }
 }
 `

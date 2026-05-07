@@ -29,6 +29,7 @@ import {
   GOLD, GOLD_DK, GOLD_RULE,
   TEXT_INK, TEXT_WHITE, TEXT_META, TEXT_WHITE_META,
   FONT_DISPLAY, FONT_SC,
+  BG_PARCHMENT, BG_INK,
 } from './tokens'
 
 // Defensive capitalisation — handles any old data with lowercase names.
@@ -125,13 +126,19 @@ const STRIP_CSS = `
   border-bottom: 1px solid rgba(200, 146, 42, 0.30);
 }
 
-/* ─── Brand bar ───────────────────────── */
+/* ─── Brand bar ─────────────────────────
+   Opaque parchment background — substrate is hidden behind the
+   wordmark and icon row so they read cleanly. */
 
 .mc-brand-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 14px 28px 10px;
+  background: ${BG_PARCHMENT};
+}
+[data-stage="dark"] .mc-brand-bar {
+  background: ${BG_INK};
 }
 
 .mc-brand {
@@ -166,7 +173,10 @@ const STRIP_CSS = `
 [data-stage="dark"] .mc-icon-btn { color: ${TEXT_WHITE_META}; }
 [data-stage="dark"] .mc-icon-btn:hover { color: ${GOLD}; }
 
-/* ─── Identity bar ─────────────────────── */
+/* ─── Identity bar ───────────────────────
+   Translucent parchment — substrate shows through faintly behind
+   the name and fit signature, the way the v4 mockup specifies.
+   Backdrop-filter softens the substrate so the type stays legible. */
 
 .mc-identity-bar {
   display: grid;
@@ -174,6 +184,12 @@ const STRIP_CSS = `
   align-items: baseline;
   gap: 24px;
   padding: 8px 28px 14px;
+  background: rgba(250, 250, 247, 0.62);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+[data-stage="dark"] .mc-identity-bar {
+  background: rgba(15, 21, 35, 0.62);
 }
 
 .mc-identity-name {
