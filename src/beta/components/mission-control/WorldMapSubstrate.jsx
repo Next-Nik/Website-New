@@ -1,47 +1,40 @@
 // ─────────────────────────────────────────────────────────────
 // WorldMapSubstrate.jsx
 //
-// Fuller's Dymaxion Map fills the viewport as a fixed-position
-// substrate. Standard responsive full-bleed background pattern.
+// Fuller's Dymaxion Map sits as a fixed-position substrate
+// behind the wheel. The image renders at its natural size and
+// is sized + positioned via transform — never cropped.
 //
 // ╭─────────────────────────────────────────────────────────╮
 // │  EDIT KNOBS — change these to tune size and placement.  │
 // ╰─────────────────────────────────────────────────────────╯
 //
-//   FDM_SCALE          — overall size. 1.0 = covers whole viewport,
-//                        0.5 = half size, 0.3 = 30%, etc.
-//                        Independent on desktop vs mobile.
-//   FDM_OFFSET_X_VW    — horizontal nudge in vw units (viewport
-//                        widths). 0 = centered, 10 = 10vw right,
-//                        -10 = 10vw left.
-//   FDM_OFFSET_Y_VH    — vertical nudge in vh units. 0 = centered,
-//                        positive = down, negative = up.
-//   FDM_PARALLAX_VH    — how far it drifts as page scrolls, in vh.
+//   FDM_WIDTH_PX       — base width in pixels. The image's height
+//                        scales automatically to preserve aspect
+//                        ratio. Larger number = bigger map.
+//   FDM_OFFSET_X_PX    — horizontal nudge from centre, in pixels.
+//                        0 = centred. Positive = right, negative = left.
+//   FDM_OFFSET_Y_PX    — vertical nudge from centre, in pixels.
+//                        0 = centred. Positive = down, negative = up.
+//   FDM_PARALLAX_PX    — how far it drifts as page scrolls, in px.
 //                        Set to 0 to disable parallax.
 //   FDM_OPACITY        — visibility. 0 = invisible, 1 = solid.
-//   FDM_OBJECT_POSITION — which slice of the projection stays
-//                        visible when the image is cropped.
-//                        'center', 'top', 'left center', '30% 50%',
-//                        etc. (Only matters if FDM_SCALE produces
-//                        cropping — at FDM_SCALE < 1 it doesn't.)
 // ─────────────────────────────────────────────────────────────
 
 const FDM_DESKTOP = {
-  SCALE:           0.5,      // half size
-  OFFSET_X_VW:     0,        // centered horizontally
-  OFFSET_Y_VH:     0,        // centered vertically
-  PARALLAX_VH:     6,        // drift ±3vh as you scroll
-  OPACITY:         0.22,
-  OBJECT_POSITION: 'center',
+  WIDTH_PX:     600,    // base width — change this to resize
+  OFFSET_X_PX:  0,      // horizontal nudge from centre
+  OFFSET_Y_PX:  0,      // vertical nudge from centre
+  PARALLAX_PX:  60,     // drift range across the page
+  OPACITY:      0.22,
 }
 
 const FDM_MOBILE = {
-  SCALE:           0.9,      // larger on phone (viewport is narrower)
-  OFFSET_X_VW:     0,
-  OFFSET_Y_VH:     0,
-  PARALLAX_VH:     6,
-  OPACITY:         0.18,
-  OBJECT_POSITION: 'center',
+  WIDTH_PX:     340,
+  OFFSET_X_PX:  0,
+  OFFSET_Y_PX:  0,
+  PARALLAX_PX:  40,
+  OPACITY:      0.18,
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -53,7 +46,7 @@ export default function WorldMapSubstrate() {
       aria-hidden="true"
       ref={el => {
         if (!el) return
-        function onScroll() {
+        function applyConfig() {
           const isMobile = window.matchMedia('(max-width: 640px)').matches
           const cfg = isMobile ? FDM_MOBILE : FDM_DESKTOP
 
@@ -65,24 +58,27 @@ export default function WorldMapSubstrate() {
             Math.max(window.scrollY / maxScroll, 0),
             1
           )
-          // Drift centered on offset-y: half above, half below.
-          const driftVh = cfg.PARALLAX_VH
-            ? -cfg.PARALLAX_VH / 2 + progress * cfg.PARALLAX_VH
+          const driftPx = cfg.PARALLAX_PX
+            ? -cfg.PARALLAX_PX / 2 + progress * cfg.PARALLAX_PX
             : 0
-          const totalY = cfg.OFFSET_Y_VH + driftVh
+          const totalY = cfg.OFFSET_Y_PX + driftPx
 
           const img = el.querySelector('.mc-substrate-img')
           if (img) {
+            img.style.width = cfg.WIDTH_PX + 'px'
+            // translate(-50%, -50%) centres the image on the
+            // anchor point; OFFSET_X / OFFSET_Y nudge from centre.
             img.style.transform =
-              'translate(' + cfg.OFFSET_X_VW + 'vw, ' + totalY + 'vh) ' +
-              'scale(' + cfg.SCALE + ')'
+              'translate(' +
+                'calc(-50% + ' + cfg.OFFSET_X_PX + 'px), ' +
+                'calc(-50% + ' + totalY + 'px)' +
+              ')'
             img.style.opacity = cfg.OPACITY
-            img.style.objectPosition = cfg.OBJECT_POSITION
           }
         }
-        window.addEventListener('scroll',  onScroll, { passive: true })
-        window.addEventListener('resize',  onScroll, { passive: true })
-        onScroll()
+        window.addEventListener('scroll', applyConfig, { passive: true })
+        window.addEventListener('resize', applyConfig, { passive: true })
+        applyConfig()
       }}
     >
       <style>{SUBSTRATE_CSS}</style>
@@ -105,17 +101,14 @@ const SUBSTRATE_CSS = `
 }
 
 .mc-substrate-img {
-  /* Box is full-viewport. Visible size and placement come from
-     the JS knobs at the top of the file (transform: scale +
-     translate). object-fit: cover only matters when scale = 1; at
-     smaller scales the image renders at its own aspect ratio
-     centered in the box. */
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
+  /* Anchor at viewport centre. Width is set via JS knob; height
+     is auto so aspect ratio is preserved. The image renders at
+     its natural shape and is never cropped. */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: auto;
 
-  /* Warm-grey filter biases the projection's near-black continents
-     toward the parchment/gold palette. */
   filter: sepia(0.25) hue-rotate(-12deg) saturate(0.6);
 
   will-change: transform, opacity;
