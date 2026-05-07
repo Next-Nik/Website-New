@@ -1,20 +1,14 @@
 // ─────────────────────────────────────────────────────────────
 // WorldMapSubstrate.jsx
 //
-// Fuller's Dymaxion Map sits as a small floating element behind
-// the wheel — the platform's thesis rendered as cartography.
-// The asset itself can be swapped without touching this component.
+// Fuller's Dymaxion Map fills the viewport as a fixed-position
+// substrate. Standard responsive full-bleed background pattern:
+// position: fixed + inset: 0 + width/height 100vw/vh +
+// object-fit: cover. Works at any viewport size — phone gets a
+// portrait crop, desktop gets a landscape crop, both intentional.
 //
-// Layout:
-//   The "window" — the .mc-substrate container — covers the
-//   entire viewport (position: fixed, full-screen). The FDM
-//   image inside it is sized to 25% of viewport width and
-//   positioned in the upper-middle, behind the wheel.
-//
-// Parallax:
-//   Same easing pattern as the About page Peru photo. As the
-//   page scrolls, the FDM drifts downward within its bounds —
-//   geography moves slower than the foreground, creating depth.
+// Parallax: image translates vertically as the page scrolls,
+// matching the About-page Peru photo pattern.
 //
 // Theming via CSS opacity:
 //   light stage  → 0.22 opacity (0.18 on phones)
@@ -28,10 +22,6 @@ export default function WorldMapSubstrate() {
       aria-hidden="true"
       ref={el => {
         if (!el) return
-        // Parallax: image starts slightly above its anchor and
-        // eases down as the page scrolls. We measure relative to
-        // the document scroll position so the FDM keeps drifting
-        // even though the .mc-substrate container itself is fixed.
         function onScroll() {
           const maxScroll = Math.max(
             document.documentElement.scrollHeight - window.innerHeight,
@@ -41,12 +31,11 @@ export default function WorldMapSubstrate() {
             Math.max(window.scrollY / maxScroll, 0),
             1
           )
-          // Drift range: -8% to +8% of viewport height.
-          const shiftVh = -8 + progress * 16
+          // Drift range: -6vh to +6vh of viewport height.
+          const shiftVh = -6 + progress * 12
           const img = el.querySelector('.mc-substrate-img')
           if (img) {
-            img.style.transform =
-              'translateX(-50%) translateY(calc(' + shiftVh + 'vh))'
+            img.style.transform = 'translateY(' + shiftVh + 'vh)'
           }
         }
         window.addEventListener('scroll', onScroll, { passive: true })
@@ -64,9 +53,6 @@ export default function WorldMapSubstrate() {
 }
 
 const SUBSTRATE_CSS = `
-/* Full-screen window — the FDM floats inside this. position:
-   fixed so it doesn't get clipped by ancestor stacking contexts
-   and stays put through parallax. */
 .mc-substrate {
   position: fixed;
   inset: 0;
@@ -76,18 +62,10 @@ const SUBSTRATE_CSS = `
 }
 
 .mc-substrate-img {
-  position: absolute;
-  /* Anchor to upper-middle of the viewport, horizontally
-     centered. The wheel sits roughly here so the FDM reads as
-     "behind the wheel." */
-  top: 28vh;
-  left: 50%;
-  transform: translateX(-50%);
-
-  /* Small. 25% of viewport width on desktop. */
-  width: 25vw;
-  height: auto;
-  max-width: none;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  object-position: center;
 
   opacity: 0.22;
   filter: sepia(0.25) hue-rotate(-12deg) saturate(0.6);
@@ -97,18 +75,13 @@ const SUBSTRATE_CSS = `
   pointer-events: none;
 }
 
-/* Dark stage: invert + slightly higher opacity for ink backdrop. */
 [data-stage="dark"] .mc-substrate-img {
   opacity: 0.28;
   filter: invert(1) sepia(0.25) hue-rotate(-12deg) saturate(0.6);
 }
 
-/* Phones: scale up a little because the wheel itself is larger
-   relative to viewport, but still sits behind it. */
 @media (max-width: 640px) {
   .mc-substrate-img {
-    width: 50vw;
-    top: 22vh;
     opacity: 0.18;
   }
   [data-stage="dark"] .mc-substrate-img {
