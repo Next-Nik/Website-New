@@ -12,11 +12,15 @@
 //
 // Positioning: TOP-ANCHORED, WIDTH-DRIVEN.
 //   The projection starts at the top of its container and runs
-//   down. At the SVG's 612×792 portrait aspect ratio, fitting to
-//   width produces a projection that naturally covers the upper
-//   portion of the stage (brand-bar-down-through-wheel-area), the
-//   way the v4 mockup specifies. Action cards below sit on plain
-//   parchment.
+//   down at half viewport width — sized to sit behind the wheel
+//   without dominating the layout.
+//
+// Parallax:
+//   The substrate drifts vertically as the page scrolls, on the
+//   same pattern used by the About page Peru photo. Image is
+//   taller than the visible band; translateY shifts within a
+//   bounded range so geography moves slower than the foreground,
+//   creating depth without obscuring the wheel.
 //
 // Theming via CSS opacity:
 //   light stage  → 0.22 opacity (0.18 on phones), warm-grey on
@@ -24,23 +28,37 @@
 //   dark stage   → 0.28 opacity (0.24 on phones), light-on-ink
 //                  via filter: invert
 //
-// No mix-blend-mode — at low opacity it produced ghost continents
-// that read as nothing on bright phone screens. Plain compositing
-// at higher opacity reads correctly across viewing conditions.
-// A subtle warm filter biases the near-black continents toward
-// the parchment/gold palette.
-//
 // MOUNT POINT:
 //   This component is rendered as a sibling at the top of
-//   .mc-stage-root (just below the brand bar) so the substrate
-//   bleeds up under the identity band and the PoleHeader, the
-//   way the v4 mockup specifies. The parent must be position:
-//   relative; the substrate fills it with position: absolute.
+//   .mc-stage-root. The parent must be position: relative.
 // ─────────────────────────────────────────────────────────────
 
 export default function WorldMapSubstrate() {
   return (
-    <div className="mc-substrate" aria-hidden="true">
+    <div
+      className="mc-substrate"
+      aria-hidden="true"
+      ref={el => {
+        if (!el) return
+        // Parallax: same easing math as About page Peru photo.
+        // Image starts at translateY(-30%) and eases toward
+        // translateY(0) as the stage scrolls past. The translateX
+        // is preserved to keep the image horizontally centered.
+        function onScroll() {
+          const rect = el.getBoundingClientRect()
+          const viewH = window.innerHeight
+          const progress = 1 - (rect.bottom / (viewH + rect.height))
+          const shift = Math.min(Math.max(progress * 30, 0), 30)
+          const img = el.querySelector('.mc-substrate-img')
+          if (img) {
+            img.style.transform =
+              'translateX(-50%) translateY(' + (-30 + shift) + '%)'
+          }
+        }
+        window.addEventListener('scroll', onScroll, { passive: true })
+        onScroll()
+      }}
+    >
       <style>{SUBSTRATE_CSS}</style>
       <img
         src="/dymaxion-substrate.svg"
@@ -65,22 +83,24 @@ const SUBSTRATE_CSS = `
 
 .mc-substrate-img {
   position: absolute;
-  /* Top-anchored, horizontally centred. Width-fit so continents
-     span the viewport — at the SVG's 612×792 aspect ratio this
-     produces a projection that runs from below the brand bar
-     down through the wheel area, the way the v4 mockup specifies. */
+  /* Top-anchored, horizontally centred. Half viewport width on
+     mobile — sits behind the wheel without spanning the full
+     stage. translateY is set dynamically by the scroll handler;
+     translateX(-50%) keeps the image centered. */
   top: 0;
   left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
+  transform: translateX(-50%) translateY(-30%);
+  width: 50%;
   height: auto;
   max-width: none;
 
-  /* Light stage: visible warm-grey continents on parchment.
-     No mix-blend-mode (made it invisible on bright screens).
-     Filter biases near-black toward warm grey to fit palette. */
+  /* Light stage: visible warm-grey continents on parchment. */
   opacity: 0.22;
   filter: sepia(0.25) hue-rotate(-12deg) saturate(0.6);
+
+  /* Hint to the browser that this element will animate, so it
+     gets its own compositor layer and parallax stays smooth. */
+  will-change: transform;
 
   user-select: none;
   pointer-events: none;
@@ -93,18 +113,18 @@ const SUBSTRATE_CSS = `
   filter: invert(1) sepia(0.25) hue-rotate(-12deg) saturate(0.6);
 }
 
-/* On wider viewports, scale the projection up so it stays a
-   substantial backdrop rather than a thin band. The aspect-ratio
+/* On wider viewports, scale up modestly so the projection still
+   reads as a substantial backdrop on a desktop. Aspect-ratio
    stays fixed to the SVG so geography doesn't distort. */
 @media (min-width: 768px) {
   .mc-substrate-img {
-    width: 90%;
-    max-width: 900px;
+    width: 50%;
+    max-width: 600px;
   }
 }
 
-/* On smaller phones the substrate still runs full-width; only the
-   opacity is tempered to avoid overwhelming the wheel and rails. */
+/* On smaller phones the opacity is tempered slightly to avoid
+   overwhelming the wheel and rails. */
 @media (max-width: 640px) {
   .mc-substrate-img {
     opacity: 0.18;
