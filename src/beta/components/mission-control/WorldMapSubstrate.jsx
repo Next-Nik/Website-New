@@ -22,7 +22,7 @@
 // ─────────────────────────────────────────────────────────────
 
 const FDM_DESKTOP = {
-  WIDTH_PX:     800,    // base width — change this to resize
+  WIDTH_PX:     700,    // base width — change this to resize
   OFFSET_X_PX:  0,      // horizontal nudge from centre
   OFFSET_Y_PX:  150,      // vertical nudge from centre
   PARALLAX_PX:  -60,     // drift range across the page
@@ -59,7 +59,7 @@ export default function WorldMapSubstrate() {
             1
           )
           const driftPx = cfg.PARALLAX_PX
-            ? -cfg.PARALLAX_PX / 2 + progress * cfg.PARALLAX_PX
+            ? -cfg.PARALLAX_PX / 2 - progress * cfg.PARALLAX_PX
             : 0
           const totalY = cfg.OFFSET_Y_PX + driftPx
 
