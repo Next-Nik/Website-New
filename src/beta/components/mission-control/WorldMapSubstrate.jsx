@@ -62,12 +62,12 @@ const SUBSTRATE_CSS = `
 }
 
 .mc-substrate-img {
-  width: 25vw;
-  height: 25vh;
+  width: 100vw;
+  height: 100vh;
   object-fit: cover;
   object-position: center;
 
-  opacity: 0.22;
+  opacity: 0.12;
   filter: sepia(0.25) hue-rotate(-12deg) saturate(0.6);
 
   will-change: transform;
