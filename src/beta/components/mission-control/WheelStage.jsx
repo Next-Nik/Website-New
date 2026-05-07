@@ -16,6 +16,24 @@
 // the same wheel) plus the polygon redraw as nodes feature.
 // For now: the arrows still flip pole, matching current behaviour.
 //
+// ╭─────────────────────────────────────────────────────────╮
+// │  EDIT KNOBS — change these to tune wheel size.          │
+// ╰─────────────────────────────────────────────────────────╯
+//
+//   WHEEL_DESKTOP_PX  — max wheel width on desktop. Wheel is
+//                       always square (aspect-ratio: 1/1), so
+//                       this is also the max height.
+//   WHEEL_MOBILE_PX   — same for phones (≤640px viewport).
+//
+// Original values were 480 / 320. Larger values let the wheel
+// dominate the centre column more.
+// ─────────────────────────────────────────────────────────────
+
+const WHEEL_DESKTOP_PX = 800
+const WHEEL_MOBILE_PX  = 360
+
+// ─────────────────────────────────────────────────────────────
+//
 // Props:
 //   currentWheel:   'personal' | 'civ'
 //   onSwitchWheel:  (next) => void
@@ -88,7 +106,7 @@ const WHEEL_STAGE_CSS = `
 .mc-wheel-stage {
   position: relative;
   width: 100%;
-  max-width: 480px;
+  max-width: ${WHEEL_DESKTOP_PX}px;
   aspect-ratio: 1 / 1;
   margin: 0 auto;
   display: flex;
@@ -115,10 +133,21 @@ const WHEEL_STAGE_CSS = `
 }
 
 .mc-wheel-svg {
+  width: 100%;
+  height: 100%;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* MissionWheel renders an inline SVG. Make it scale to fill the
+   stage so the wheel grows when WHEEL_DESKTOP_PX grows. */
+.mc-wheel-svg > svg {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .mc-scene-arrow {
@@ -155,7 +184,7 @@ const WHEEL_STAGE_CSS = `
 
 @media (max-width: 640px) {
   .mc-wheel-stage {
-    max-width: 320px;
+    max-width: ${WHEEL_MOBILE_PX}px;
   }
   .mc-scene-arrow {
     width: 24px;

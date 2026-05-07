@@ -2,17 +2,48 @@
 // WorldMapSubstrate.jsx
 //
 // Fuller's Dymaxion Map fills the viewport as a fixed-position
-// substrate. Standard responsive full-bleed background pattern:
-// position: fixed + inset: 0 + width/height 100vw/vh +
-// object-fit: cover. Works at any viewport size — phone gets a
-// portrait crop, desktop gets a landscape crop, both intentional.
+// substrate. Standard responsive full-bleed background pattern.
 //
-// Parallax: image translates vertically as the page scrolls,
-// matching the About-page Peru photo pattern.
+// ╭─────────────────────────────────────────────────────────╮
+// │  EDIT KNOBS — change these to tune size and placement.  │
+// ╰─────────────────────────────────────────────────────────╯
 //
-// Theming via CSS opacity:
-//   light stage  → 0.22 opacity (0.18 on phones)
-//   dark stage   → 0.28 opacity (0.24 on phones), inverted
+//   FDM_SCALE          — overall size. 1.0 = covers whole viewport,
+//                        0.5 = half size, 0.3 = 30%, etc.
+//                        Independent on desktop vs mobile.
+//   FDM_OFFSET_X_VW    — horizontal nudge in vw units (viewport
+//                        widths). 0 = centered, 10 = 10vw right,
+//                        -10 = 10vw left.
+//   FDM_OFFSET_Y_VH    — vertical nudge in vh units. 0 = centered,
+//                        positive = down, negative = up.
+//   FDM_PARALLAX_VH    — how far it drifts as page scrolls, in vh.
+//                        Set to 0 to disable parallax.
+//   FDM_OPACITY        — visibility. 0 = invisible, 1 = solid.
+//   FDM_OBJECT_POSITION — which slice of the projection stays
+//                        visible when the image is cropped.
+//                        'center', 'top', 'left center', '30% 50%',
+//                        etc. (Only matters if FDM_SCALE produces
+//                        cropping — at FDM_SCALE < 1 it doesn't.)
+// ─────────────────────────────────────────────────────────────
+
+const FDM_DESKTOP = {
+  SCALE:           0.5,      // half size
+  OFFSET_X_VW:     0,        // centered horizontally
+  OFFSET_Y_VH:     0,        // centered vertically
+  PARALLAX_VH:     6,        // drift ±3vh as you scroll
+  OPACITY:         0.22,
+  OBJECT_POSITION: 'center',
+}
+
+const FDM_MOBILE = {
+  SCALE:           0.9,      // larger on phone (viewport is narrower)
+  OFFSET_X_VW:     0,
+  OFFSET_Y_VH:     0,
+  PARALLAX_VH:     6,
+  OPACITY:         0.18,
+  OBJECT_POSITION: 'center',
+}
+
 // ─────────────────────────────────────────────────────────────
 
 export default function WorldMapSubstrate() {
@@ -23,6 +54,9 @@ export default function WorldMapSubstrate() {
       ref={el => {
         if (!el) return
         function onScroll() {
+          const isMobile = window.matchMedia('(max-width: 640px)').matches
+          const cfg = isMobile ? FDM_MOBILE : FDM_DESKTOP
+
           const maxScroll = Math.max(
             document.documentElement.scrollHeight - window.innerHeight,
             1
@@ -31,14 +65,23 @@ export default function WorldMapSubstrate() {
             Math.max(window.scrollY / maxScroll, 0),
             1
           )
-          // Drift range: -6vh to +6vh of viewport height.
-          const shiftVh = -6 + progress * 12
+          // Drift centered on offset-y: half above, half below.
+          const driftVh = cfg.PARALLAX_VH
+            ? -cfg.PARALLAX_VH / 2 + progress * cfg.PARALLAX_VH
+            : 0
+          const totalY = cfg.OFFSET_Y_VH + driftVh
+
           const img = el.querySelector('.mc-substrate-img')
           if (img) {
-            img.style.transform = 'translateY(' + shiftVh + 'vh)'
+            img.style.transform =
+              'translate(' + cfg.OFFSET_X_VW + 'vw, ' + totalY + 'vh) ' +
+              'scale(' + cfg.SCALE + ')'
+            img.style.opacity = cfg.OPACITY
+            img.style.objectPosition = cfg.OBJECT_POSITION
           }
         }
-        window.addEventListener('scroll', onScroll, { passive: true })
+        window.addEventListener('scroll',  onScroll, { passive: true })
+        window.addEventListener('resize',  onScroll, { passive: true })
         onScroll()
       }}
     >
@@ -62,30 +105,25 @@ const SUBSTRATE_CSS = `
 }
 
 .mc-substrate-img {
+  /* Box is full-viewport. Visible size and placement come from
+     the JS knobs at the top of the file (transform: scale +
+     translate). object-fit: cover only matters when scale = 1; at
+     smaller scales the image renders at its own aspect ratio
+     centered in the box. */
   width: 100vw;
   height: 100vh;
   object-fit: cover;
-  object-position: center;
 
-  opacity: 0.12;
+  /* Warm-grey filter biases the projection's near-black continents
+     toward the parchment/gold palette. */
   filter: sepia(0.25) hue-rotate(-12deg) saturate(0.6);
 
-  will-change: transform;
+  will-change: transform, opacity;
   user-select: none;
   pointer-events: none;
 }
 
 [data-stage="dark"] .mc-substrate-img {
-  opacity: 0.28;
   filter: invert(1) sepia(0.25) hue-rotate(-12deg) saturate(0.6);
-}
-
-@media (max-width: 640px) {
-  .mc-substrate-img {
-    opacity: 0.18;
-  }
-  [data-stage="dark"] .mc-substrate-img {
-    opacity: 0.24;
-  }
 }
 `
