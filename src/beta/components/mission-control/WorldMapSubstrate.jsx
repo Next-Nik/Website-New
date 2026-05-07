@@ -62,8 +62,8 @@ const SUBSTRATE_CSS = `
 }
 
 .mc-substrate-img {
-  width: 100vw;
-  height: 100vh;
+  width: 25vw;
+  height: 25vh;
   object-fit: cover;
   object-position: center;
 
