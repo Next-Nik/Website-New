@@ -22,7 +22,7 @@
 // ─────────────────────────────────────────────────────────────
 
 const FDM_DESKTOP = {
-  WIDTH_PX:     700,    // base width — change this to resize
+  WIDTH_PX:     500,    // base width — change this to resize
   OFFSET_X_PX:  0,      // horizontal nudge from centre
   OFFSET_Y_PX:  100,      // vertical nudge from centre
   PARALLAX_PX:  60,     // drift range across the page
