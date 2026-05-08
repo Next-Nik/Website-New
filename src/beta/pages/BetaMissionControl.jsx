@@ -51,6 +51,8 @@ import PurposePieceMissionPanel   from '../components/mission-control/PurposePie
 import HorizonStateMissionPanel   from '../components/mission-control/HorizonStateMissionPanel'
 import ProfileMissionPanel        from '../components/mission-control/ProfileMissionPanel'
 import SettingsMissionPanel       from '../components/mission-control/SettingsMissionPanel'
+import WorldViewMissionPanel      from '../components/mission-control/WorldViewMissionPanel'
+import { useCivDomainScores }     from '../hooks/useDomainIndicators'
 
 import HorizonStateGauge   from '../components/mission-control/HorizonStateGauge'
 import MapPinGlyph         from '../components/mission-control/MapPinGlyph'
@@ -451,10 +453,20 @@ export default function BetaMissionControl() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCiv, activePanel, currentList.length, activeIndex, levelPath.length])
 
-  // Civ wheel data — until indicator pipeline produces a 0–10 score
-  // per civ domain, civ_current is empty {} and the polygon is
-  // simply not rendered at all (per Drop 2 spec).
-  const civCurrent = {}
+  // Civ wheel data — fed by the indicator rollup. useCivDomainScores
+  // loads headline indicators across all 7 domains and produces a
+  // 0..10 score per domain. Domains with insufficient coverage return
+  // null and the wheel renders no vertex for them.
+  const { scores: civScores } = useCivDomainScores()
+  const civCurrent = useMemo(() => {
+    const out = {}
+    if (civScores) {
+      for (const k of CIV_KEYS) {
+        if (civScores[k] != null) out[k] = civScores[k]
+      }
+    }
+    return out
+  }, [civScores])
   const civHorizons = useMemo(
     () => Object.fromEntries(CIV_KEYS.map(k => [k, 10])),
     []
@@ -621,6 +633,10 @@ export default function BetaMissionControl() {
                 onCentreClick: handleCivCentreClick,
                 placementKey:  civPlacement,
                 walkers:       civWalkers,
+                // Polygon — only meaningful at the top level; at sub-
+                // levels wheelKeys are sub-domain ids with no scores.
+                current:       levelPath.length === 0 ? civCurrent : {},
+                horizons:      levelPath.length === 0 ? civHorizons : {},
               }}
             />
           </div>
@@ -748,12 +764,12 @@ export default function BetaMissionControl() {
         onClose={closePanel}
         eyebrow="CIVILISATIONAL · WORLD VIEW"
         title="The state of the world right now"
+        actions={[
+          { label: 'CLOSE', onClick: closePanel },
+        ]}
         dark
       >
-        <p>The seven civilisational domains, with current global state and Horizon Future for each. Click any domain or subdomain to see what's happening there: actors, contributions, gap signals, horizon goals being worked on.</p>
-        <div className="mc-panel-build-edge">
-          Building in progress. The full World View, with interactive civ wheel, drill-down per domain, and indicator detail with sources, renders here as the data sourcing layer fills in.
-        </div>
+        <WorldViewMissionPanel />
       </Panel>
 
       <Panel

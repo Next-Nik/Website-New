@@ -387,6 +387,8 @@ function CivWheel({
   onCentreClick,   // () => void
   placementKey = null,
   walkers = {},
+  current = {},    // { [key]: 0..10 score from rollup, or undefined for unscored }
+  horizons = {},   // { [key]: 0..10 horizon (always 10 for civ) }
   dark = true,
 }) {
   // Domains may not yet be loaded — fall back to labels for display
@@ -623,6 +625,42 @@ function CivWheel({
         strokeWidth="1"
         strokeDasharray="3 3"
       />
+
+      {/* Current-state polygon — rotates with the wheel. Vertices at
+          (score/10) * RADIUS along each spoke. Domains without a score
+          (current[key] == null) get a vertex at the centre, which makes
+          the polygon "collapse" toward unscored spokes. We only render
+          the polygon when at least 3 domains are scored — fewer than 3
+          can't form a meaningful shape. */}
+      {(() => {
+        const scoredCount = keys.reduce((n, k) => n + (current[k] != null ? 1 : 0), 0)
+        if (scoredCount < 3) return null
+        const points = keys.map((k, i) => {
+          const score = current[k]
+          const horizon = horizons[k] ?? 10
+          const ratio = (score != null && horizon > 0) ? Math.min(score / horizon, 1) : 0
+          const r = ratio * RADIUS
+          const baseAngle = angleFor(i, count)
+          const rotRad = (displayRot * Math.PI) / 180
+          const a = baseAngle + rotRad
+          return `${(CX + r * Math.cos(a)).toFixed(1)},${(CY + r * Math.sin(a)).toFixed(1)}`
+        }).join(' ')
+        return (
+          <polygon
+            points={points}
+            fill={GOLD}
+            fillOpacity="0.06"
+            stroke={GOLD}
+            strokeWidth="1.25"
+            strokeOpacity="0.55"
+            strokeLinejoin="round"
+            style={{
+              opacity: bloomed ? 1 : bloomT,
+              pointerEvents: 'none',
+            }}
+          />
+        )
+      })()}
 
       {/* Spokes — rotate with displayRot. During bloom, spokes grow
           from the centre outward, ending at the same bloom-position

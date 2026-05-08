@@ -56,7 +56,7 @@ export function useDomainIndicators(domainSlug, focusId = null) {
         'id, domain_id, subdomain_slug, lens_slugs, name, unit, tier, ' +
         'source_name, source_url, native_resolution, refresh_cadence, ' +
         'direction_preferred, methodology_note, headline_order, ' +
-        'tagged_principles'
+        'tagged_principles, target_value, floor_value, rollup_weight'
       )
       .eq('domain_id', domainSlug)
       .eq('status', 'active')
@@ -102,7 +102,7 @@ export async function fetchAllIndicators(domainSlug, focusId = null) {
       'id, domain_id, subdomain_slug, lens_slugs, name, unit, tier, ' +
       'source_name, source_url, endpoint_url, native_resolution, ' +
       'refresh_cadence, direction_preferred, methodology_note, ' +
-      'tagged_principles'
+      'tagged_principles, target_value, floor_value, rollup_weight'
     )
     .eq('domain_id', domainSlug)
     .eq('status', 'active')
@@ -291,4 +291,101 @@ export async function fetchPriorValue(indicatorId, focusId) {
   const { data, error } = await query.maybeSingle()
   if (error || !data) return null
   return data
+}
+
+// ── Public: useCivDomainScores ──────────────────────────────────────────────
+//
+// Loads headline indicators for all seven civilisational domains in
+// parallel, computes a 0–10 rollup score per domain, and returns a
+// keyed object suitable for feeding into the civ wheel as `civCurrent`.
+//
+// Returns:
+//   {
+//     scores:   { [civWheelKey]: number | null },  // e.g. { nature: 4.2, vision: null }
+//     details:  { [civWheelKey]: { contributing, total, fresh, scored } },
+//     loading:  boolean,
+//     error:    Error | null,
+//     reload:   () => Promise<void>,
+//   }
+//
+// Maps the catalog's domain_id ('nature', 'human-being', etc.) to the
+// civ wheel's key ('nature', 'human', etc.).
+
+import { computeDomainScore } from '../util/domainScore'
+
+const CIV_DOMAIN_TO_WHEEL_KEY = {
+  'human-being':     'human',
+  'society':         'society',
+  'nature':          'nature',
+  'technology':      'tech',
+  'finance-economy': 'finance',
+  'legacy':          'legacy',
+  'vision':          'vision',
+}
+
+const ALL_CIV_DOMAINS = Object.keys(CIV_DOMAIN_TO_WHEEL_KEY)
+
+export function useCivDomainScores() {
+  const [scores, setScores]   = useState({})
+  const [details, setDetails] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [error, setError]     = useState(null)
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      // 1. Load all headline indicators across all 7 civ domains in
+      //    a single round-trip.
+      const { data: catalog, error: catalogErr } = await supabase
+        .from('nextus_domain_indicators')
+        .select(
+          'id, domain_id, subdomain_slug, lens_slugs, name, unit, tier, ' +
+          'source_name, source_url, native_resolution, refresh_cadence, ' +
+          'direction_preferred, methodology_note, headline_order, ' +
+          'tagged_principles, target_value, floor_value, rollup_weight'
+        )
+        .in('domain_id', ALL_CIV_DOMAINS)
+        .eq('status', 'active')
+        .eq('is_headline', true)
+        .order('headline_order', { ascending: true })
+
+      if (catalogErr) throw catalogErr
+
+      // 2. Resolve current values — planetary focus only for the wheel.
+      const resolved = await Promise.all(
+        (catalog || []).map(ind => resolveCurrentValue(ind, null))
+      )
+
+      // 3. Group by domain and compute per-domain rollup.
+      const byDomain = {}
+      for (const ind of resolved) {
+        const d = ind.domain_id
+        if (!byDomain[d]) byDomain[d] = []
+        byDomain[d].push(ind)
+      }
+
+      const nextScores  = {}
+      const nextDetails = {}
+      for (const d of ALL_CIV_DOMAINS) {
+        const key = CIV_DOMAIN_TO_WHEEL_KEY[d]
+        const list = byDomain[d] || []
+        const result = computeDomainScore(list)
+        nextScores[key]  = result.score
+        nextDetails[key] = result
+      }
+      setScores(nextScores)
+      setDetails(nextDetails)
+      setLoading(false)
+    } catch (err) {
+      setError(err)
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    load()
+  }, [load])
+
+  return { scores, details, loading, error, reload: load }
 }
