@@ -49,6 +49,8 @@ import TargetSprintMissionPanel   from '../components/mission-control/TargetSpri
 import HorizonPracticeMissionPanel from '../components/mission-control/HorizonPracticeMissionPanel'
 import PurposePieceMissionPanel   from '../components/mission-control/PurposePieceMissionPanel'
 import HorizonStateMissionPanel   from '../components/mission-control/HorizonStateMissionPanel'
+import ProfileMissionPanel        from '../components/mission-control/ProfileMissionPanel'
+import SettingsMissionPanel       from '../components/mission-control/SettingsMissionPanel'
 
 import HorizonStateGauge   from '../components/mission-control/HorizonStateGauge'
 import MapPinGlyph         from '../components/mission-control/MapPinGlyph'
@@ -773,15 +775,15 @@ export default function BetaMissionControl() {
         eyebrow="YOU · PROFILE"
         title="What others see of you on NextUs"
         actions={[
-          { label: 'EDIT PROFILE', primary: true,
+          { label: 'EDIT FULL PROFILE →', primary: true,
             onClick: () => navigate('/beta/profile/edit') },
           { label: 'CLOSE', onClick: closePanel },
         ]}
       >
-        <p>Your public face on the platform. Your I Am statements, your fit, what you're working on, how others can reach you. You control what's visible.</p>
-        <div className="mc-panel-build-edge">
-          Building in progress. Full profile editor, visibility controls per field, and public preview wire up at /beta/profile/edit.
-        </div>
+        <ProfileMissionPanel
+          user={data.user}
+          onNavigate={navigate}
+        />
       </Panel>
 
       <Panel
@@ -822,12 +824,15 @@ export default function BetaMissionControl() {
         open={activePanel === 'settings'}
         onClose={closePanel}
         eyebrow="SYSTEM · SETTINGS"
-        title="Account & preferences"
+        title="Account &amp; preferences"
+        actions={[
+          { label: 'CLOSE', onClick: closePanel },
+        ]}
       >
-        <p>Your account, your privacy, your notifications, your data. Quiet controls.</p>
-        <div className="mc-panel-build-edge">
-          Building in progress. Full settings panel wires up when the surface is wired.
-        </div>
+        <SettingsMissionPanel
+          user={data.user}
+          onNavigate={navigate}
+        />
       </Panel>
     </div>
   )
