@@ -31,7 +31,7 @@
 const DYM = {
   // Size — width as % of the substrate container.
   // 100 = same width as container. >100 bleeds wider. <100 sits inside.
-  sizeDesktop: 120,   // % width on desktop / tablet
+  sizeDesktop: 50,   // % width on desktop / tablet
   sizeMobile:  140,   // % width on phones (≤640px)
 
   // Position offset from centre. 0 = perfectly centred.
