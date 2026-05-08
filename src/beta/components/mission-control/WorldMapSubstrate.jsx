@@ -5,15 +5,15 @@
 //   Layer 1 (back):  Star map — celestial chart, faint
 //   Layer 2 (front): Fuller's Dymaxion projection
 //
-// Both SVGs ship with DARK fills on transparent backgrounds.
+// Both SVGs ship with DARK content on transparent backgrounds.
 //   • Light stage: render as-is (dark on parchment), low opacity
-//   • Dark stage:  filter:invert(1) flips dark to light (white on ink)
+//   • Dark stage:  filter:invert(1) flips dark to light
 //
-// No mix-blend-modes. Plain opacity. Predictable across browsers.
+// No mix-blend-modes. Plain opacity. Predictable everywhere.
 //
 // Parallax: scroll-driven, two speeds.
-//   • Star map → 0.2x scroll (slowest, deepest)
-//   • Dymaxion → 0.4x scroll
+//   • Star map → STAR.parallax (slowest, deepest)
+//   • Dymaxion → DYM.parallax
 //   • Foreground (rails, wheel, cards) → 1.0x normal
 //
 // Honors prefers-reduced-motion: no parallax for those users.
@@ -31,7 +31,7 @@
 const DYM = {
   // Size — width as % of the substrate container.
   // 100 = same width as container. >100 bleeds wider. <100 sits inside.
-  sizeDesktop: 120,
+  sizeDesktop: 50,
   sizeMobile:  140,
 
   // Position offset from centre. 0 = perfectly centred.
@@ -61,7 +61,7 @@ const STAR = {
   offsetX: 0,
   offsetY: 0,
 
-  // Opacity. Star map ships with dark fills.
+  // Opacity. SVG ships with dark content on transparent.
   // Light stage = dark stars on parchment.
   // Dark stage = filter inverts to light stars on ink.
   opacityLight: 0.10,
@@ -164,7 +164,7 @@ function buildCSS() {
 }
 
 /* ─── Star map (back layer) ──────────────────────────── */
-/* SVG has dark fills on transparent. No filter on light. */
+/* SVG has dark content on transparent. Renders directly on light. */
 .mc-substrate-stars {
   position: absolute;
   top: 50%;
@@ -182,7 +182,7 @@ function buildCSS() {
   pointer-events: none;
 }
 
-/* Dark stage: invert dark fills to light */
+/* Dark stage: invert dark content to light */
 [data-stage="dark"] .mc-substrate-stars {
   opacity: ${STAR.opacityDark};
   filter: invert(1);
