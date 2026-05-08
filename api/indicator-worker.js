@@ -13,10 +13,18 @@
 //   5. Returns { status, httpStatus, rowsWritten, message }
 //
 // Module 11 ships three real fetchers for the Nature pilot acceptance
-// criteria: NOAA Mauna Loa CO₂, USGS Earthquakes, OpenAQ PM2.5. The
-// remaining indicators have stub handlers that log "not-implemented" so
-// the cron continues running cleanly while individual sources are
-// implemented one by one.
+// criteria: NOAA Mauna Loa CO₂, USGS Earthquakes, OpenAQ PM2.5.
+//
+// Module 11.2 (Drop B-3, Human Being) adds:
+//   - World Bank WDI: handles every World Bank indicator the catalog
+//     points to, dispatched by the indicator code embedded in the
+//     endpoint_url. Six Human Being indicators come online with this
+//     single handler.
+//
+// Catalog rows whose source_name is not in the registry below fall
+// through to handleNotImplemented and the cron logs them as
+// 'not-implemented' on every run. The catalog row stays in place,
+// surfacing the gap honestly rather than removing the row.
 //
 // Survival rule: a failing fetch must not flip is_current on prior good
 // data. That guarantees stale data over no data.
@@ -31,7 +39,8 @@ const HANDLERS = {
   'NOAA Global Monitoring Laboratory': handleNoaaGml,
   'USGS Earthquake Hazards':           handleUsgsQuakes,
   'OpenAQ':                            handleOpenAq,
-  // The rest fall through to handleNotImplemented.
+  'World Bank WDI':                    handleWorldBankWdi,
+  // Anything else falls through to handleNotImplemented.
 }
 
 // ── Public entry: fetchIndicator ─────────────────────────────
@@ -385,5 +394,138 @@ async function handleOpenAq(indicator, supabase) {
     httpStatus: response.status,
     rowsWritten: 1,
     message: `mean ${mean.toFixed(2)} µg/m³ across ${numericValues.length} stations in ${Date.now() - start}ms`,
+  }
+}
+
+// ── Handler: World Bank WDI ──────────────────────────────────
+// Generic World Development Indicators handler. Works for any indicator
+// whose catalog endpoint_url points at api.worldbank.org/v2.
+//
+// Endpoint shape:
+//   https://api.worldbank.org/v2/country/{country}/indicator/{code}?format=json&per_page=N
+//
+// Response shape (V2 JSON):
+//   [
+//     { page, pages, per_page, total, sourceid, lastupdated },
+//     [
+//       { indicator: {id, value}, country: {id, value}, countryiso3code,
+//         date: "2023", value: 73.5, unit, obs_status, decimal },
+//       ... most-recent-first
+//     ]
+//   ]
+//
+// Many series have nulls for the most recent year(s) (data not yet
+// reported). We walk forward through the rows and pick the most recent
+// non-null value, recording observed_at as 1 January of that year UTC.
+// Planetary scope only — focus_id stays null. The country code in the
+// URL determines the geographic scope; the catalog uses WLD (world
+// aggregate) for headline indicators.
+
+async function handleWorldBankWdi(indicator, supabase) {
+  const start = Date.now()
+  const url = indicator.endpoint_url
+  if (!url) {
+    return { status: 'failed', message: 'missing endpoint_url' }
+  }
+
+  let response
+  try {
+    response = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      redirect: 'follow',
+    })
+  } catch (err) {
+    return { status: 'failed', message: `network: ${err.message}` }
+  }
+  if (!response.ok) {
+    return {
+      status: 'failed',
+      httpStatus: response.status,
+      message: `non-2xx from World Bank WDI`,
+    }
+  }
+  let payload
+  try {
+    payload = await response.json()
+  } catch (err) {
+    return { status: 'failed', message: `json parse: ${err.message}` }
+  }
+
+  // V2 returns [meta, rows]. Defensive against shape drift.
+  if (!Array.isArray(payload) || payload.length < 2 || !Array.isArray(payload[1])) {
+    return { status: 'failed', message: 'unexpected World Bank payload shape' }
+  }
+
+  const rows = payload[1]
+  if (rows.length === 0) {
+    return { status: 'failed', message: 'World Bank returned no rows' }
+  }
+
+  // Rows arrive most-recent-first by default. Walk forward, pick first
+  // row with a numeric value. Some recent years are null because data
+  // takes time to be reported.
+  let latest = null
+  for (const row of rows) {
+    if (row && row.value != null && Number.isFinite(Number(row.value))) {
+      latest = row
+      break
+    }
+  }
+
+  if (!latest) {
+    return {
+      status: 'failed',
+      message: 'World Bank rows present but all values null (no observations yet)',
+    }
+  }
+
+  const yearStr = String(latest.date || '').trim()
+  const year = parseInt(yearStr, 10)
+  if (!Number.isFinite(year) || year < 1900 || year > 2100) {
+    return { status: 'failed', message: `unparseable date "${yearStr}"` }
+  }
+  const observedAt = new Date(Date.UTC(year, 0, 1)).toISOString()
+
+  const indicatorCode =
+    (latest.indicator && latest.indicator.id) ||
+    extractCodeFromUrl(url) ||
+    'wdi'
+  const country =
+    (latest.countryiso3code) ||
+    (latest.country && latest.country.id) ||
+    'WLD'
+
+  const result = await writeValue(supabase, indicator.id, null, {
+    value_numeric:    Number(latest.value),
+    observed_at:      observedAt,
+    source_record_id: `wdi-${indicatorCode}-${country}-${year}`,
+    confidence:       'high',
+  })
+
+  if (!result.ok) {
+    return {
+      status: 'failed',
+      httpStatus: response.status,
+      message: `write failed: ${result.error?.message || 'unknown'}`,
+    }
+  }
+
+  return {
+    status: 'ok',
+    httpStatus: response.status,
+    rowsWritten: 1,
+    message: `${latest.value} (observed ${year}, ${country}) in ${Date.now() - start}ms`,
+  }
+}
+
+// Pull the World Bank indicator code out of an endpoint URL — useful for
+// the source_record_id when the response payload is malformed but the URL
+// is known.
+function extractCodeFromUrl(url) {
+  try {
+    const m = url.match(/\/indicator\/([^?\/]+)/i)
+    return m ? m[1] : null
+  } catch {
+    return null
   }
 }
