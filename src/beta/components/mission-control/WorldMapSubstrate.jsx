@@ -5,9 +5,11 @@
 //   Layer 1 (back):  Star map — celestial chart, faint
 //   Layer 2 (front): Fuller's Dymaxion projection
 //
-// Plain opacity, no blend modes. Each SVG has a transparent
-// background; layers stack independently. Predictable across
-// browsers and devices.
+// Both SVGs ship with DARK fills on transparent backgrounds.
+//   • Light stage: render as-is (dark on parchment), low opacity
+//   • Dark stage:  filter:invert(1) flips dark to light (white on ink)
+//
+// No mix-blend-modes. Plain opacity. Predictable across browsers.
 //
 // Parallax: scroll-driven, two speeds.
 //   • Star map → 0.2x scroll (slowest, deepest)
@@ -22,62 +24,56 @@
 // ║                       TUNING KNOBS                        ║
 // ║                                                           ║
 // ║  Edit these values to change size, position, opacity, and ║
-// ║  parallax speed for both substrate layers. The CSS below  ║
-// ║  reads from these constants — do NOT edit the CSS rules   ║
-// ║  by hand. Change the numbers here and the rest follows.   ║
+// ║  parallax speed for both substrate layers.                ║
 // ╚═══════════════════════════════════════════════════════════╝
 
 // ─── DYMAXION (front layer, the world map) ───
 const DYM = {
   // Size — width as % of the substrate container.
   // 100 = same width as container. >100 bleeds wider. <100 sits inside.
-  sizeDesktop: 50,   // % width on desktop / tablet
-  sizeMobile:  140,   // % width on phones (≤640px)
+  sizeDesktop: 120,
+  sizeMobile:  140,
 
   // Position offset from centre. 0 = perfectly centred.
-  // Positive offsetY pushes the map DOWN. Negative pushes UP.
-  // Positive offsetX pushes RIGHT. Negative pushes LEFT.
-  offsetX: 0,         // px horizontal offset
-  offsetY: 0,         // px vertical offset
+  // Positive offsetY pushes DOWN, negative pushes UP.
+  // Positive offsetX pushes RIGHT, negative pushes LEFT.
+  offsetX: 0,
+  offsetY: 0,
 
   // Opacity (0.0 transparent → 1.0 fully visible).
-  opacityLight: 0.15, // on parchment / light stage
-  opacityDark:  0.25, // on ink / dark stage (after invert)
+  opacityLight: 0.15,
+  opacityDark:  0.25,
 
   // Parallax — fraction of scroll distance the layer moves.
-  // 0 = locked in place. 1 = scrolls with content normally.
-  // Lower = appears further back / slower.
+  // 0 = locked. 1 = scrolls with content. Lower = appears deeper.
   parallax: 0.4,
 }
 
 // ─── STAR MAP (back layer, constellations) ───
 const STAR = {
   // Size — bounded by max/min width in pixels.
-  // (Star map is circular and fixed-aspect, so we cap absolute size
-  // rather than use % of container.)
-  maxWidthDesktop: 1200,  // px upper bound on desktop
-  minWidthDesktop: 600,   // px lower bound on desktop
-  maxWidthMobile:  700,   // px upper bound on mobile
-  minWidthMobile:  400,   // px lower bound on mobile
+  maxWidthDesktop: 1200,
+  minWidthDesktop: 600,
+  maxWidthMobile:  700,
+  minWidthMobile:  400,
 
   // Position offset from centre.
   offsetX: 0,
   offsetY: 0,
 
-  // Opacity. Star-map source is white-on-transparent.
-  // On light stage we invert to dark-on-transparent.
-  opacityLight: 0.10, // on parchment (after invert)
-  opacityDark:  0.20, // on ink (no invert needed)
+  // Opacity. Star map ships with dark fills.
+  // Light stage = dark stars on parchment.
+  // Dark stage = filter inverts to light stars on ink.
+  opacityLight: 0.10,
+  opacityDark:  0.20,
 
-  // Parallax — should be lower than DYM.parallax so stars feel
-  // further away than the world.
+  // Parallax — should be lower than DYM.parallax so stars feel deeper.
   parallax: 0.2,
 }
 
 
 // ─────────────────────────────────────────────────────────────
-// Component implementation below. Don't edit unless you're
-// changing the structure.
+// Implementation. Don't edit unless changing structure.
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useRef } from 'react'
@@ -96,13 +92,13 @@ export default function WorldMapSubstrate() {
     const update = () => {
       const y = lastScrollY
       if (starRef.current) {
-        const dy = (STAR.offsetY) + (y * STAR.parallax)
+        const dy = STAR.offsetY + (y * STAR.parallax)
         const dx = STAR.offsetX
         starRef.current.style.transform =
           `translate3d(calc(-50% + ${dx}px), calc(-50% + ${dy}px), 0)`
       }
       if (dymRef.current) {
-        const dy = (DYM.offsetY) + (y * DYM.parallax)
+        const dy = DYM.offsetY + (y * DYM.parallax)
         const dx = DYM.offsetX
         dymRef.current.style.transform =
           `translate3d(calc(-50% + ${dx}px), calc(-50% + ${dy}px), 0)`
@@ -126,7 +122,6 @@ export default function WorldMapSubstrate() {
     }
   }, [])
 
-  // Initial position before parallax kicks in
   const initialStarTransform =
     `translate(calc(-50% + ${STAR.offsetX}px), calc(-50% + ${STAR.offsetY}px))`
   const initialDymTransform =
@@ -155,7 +150,6 @@ export default function WorldMapSubstrate() {
   )
 }
 
-// CSS built from TUNING constants
 function buildCSS() {
   return `
 .mc-substrate {
@@ -170,6 +164,7 @@ function buildCSS() {
 }
 
 /* ─── Star map (back layer) ──────────────────────────── */
+/* SVG has dark fills on transparent. No filter on light. */
 .mc-substrate-stars {
   position: absolute;
   top: 50%;
@@ -179,9 +174,7 @@ function buildCSS() {
   max-width: ${STAR.maxWidthDesktop}px;
   min-width: ${STAR.minWidthDesktop}px;
 
-  /* Light stage: invert white-source to dark-on-transparent */
   opacity: ${STAR.opacityLight};
-  filter: invert(1);
 
   will-change: transform;
   backface-visibility: hidden;
@@ -189,10 +182,10 @@ function buildCSS() {
   pointer-events: none;
 }
 
-/* Dark stage: white stars on ink, no invert */
+/* Dark stage: invert dark fills to light */
 [data-stage="dark"] .mc-substrate-stars {
   opacity: ${STAR.opacityDark};
-  filter: none;
+  filter: invert(1);
 }
 
 /* ─── Dymaxion (front layer) ─────────────────────────── */
@@ -204,7 +197,6 @@ function buildCSS() {
   height: auto;
   max-width: none;
 
-  /* Light stage: dark continents on parchment */
   opacity: ${DYM.opacityLight};
 
   will-change: transform;
@@ -213,7 +205,6 @@ function buildCSS() {
   pointer-events: none;
 }
 
-/* Dark stage: invert dark continents to light */
 [data-stage="dark"] .mc-substrate-img {
   opacity: ${DYM.opacityDark};
   filter: invert(1);
