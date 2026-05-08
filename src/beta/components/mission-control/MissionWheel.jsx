@@ -1,42 +1,41 @@
 // ─────────────────────────────────────────────────────────────
 // MissionWheel.jsx
 //
-// The v4 cockpit instrument. Replaces the v3 GlanceWheel +
-// WorldWheel pair with a single component that renders either
-// the personal seven-domain wheel or the civilisational seven-
-// domain wheel, depending on `kind`.
+// Two-mode wheel. The self-side wheel is unchanged from the v4
+// cockpit instrument: heptagon ring, current-state polygon
+// normalised to each spoke's horizon, sprint glow, walker cluster.
 //
-// Centerpiece behaviours (v4 spec):
-//   • Heptagon ring with seven labelled spokes
-//   • Current-state polygon, normalised to each spoke's horizon
-//     so the user aims at their own horizon, not a platform ceiling
-//     (Self Wheel renormalisation principle, locked)
-//   • Empty-state: dashed polygon with small centre marker when
-//     no current scores have flowed yet
-//   • Sprint glow: a pulsing dot at the active sprint's vertex
-//     (personal wheel only)
-//   • Placement marker: a pulsing ring outside the placement spoke
-//     (civ wheel only)
-//   • Walker cluster: a cluster of dots with "N walking" label,
-//     concentrated on the active sprint or placement spoke. RENDERS
-//     ONLY WHEN walkers[focusKey] > 0. Empty by default — wire-up
-//     point lives in BetaMissionControl when contributor-density
-//     queries are built.
+// The civ-side wheel is a different beast as of this drop — it
+// borrows the full Heptagon state machine from
+// /components/domain-explorer/Heptagon (intro spin, bloom-on-mount,
+// click-to-feature rotation, drill-down animation, centre-orb
+// click, keyboard arrows) but renders in MissionWheel's flat
+// aesthetic — thin spokes, small vertex tip dots, FONT_SC labels
+// outside at the spoke tips, dashed outer ring, no orb-style
+// vertex circles, no current-state polygon.
 //
-// Props:
+// The civ wheel is fed a `domains` array (each item: { id, name,
+// horizonGoal, description, subDomains }) and a centreLabel and
+// emits onSelect / onLand / onDrillDown / onCentreClick callbacks.
+// Stepping arrows and the rest of the planet-side composition live
+// in BetaMissionControl, not here.
+//
+// Common props (both modes):
 //   kind:        'personal' | 'civ'
-//   labels:      [string×7]   — DISPLAYED labels in spoke order
-//   keys:        [string×7]   — KEY identifiers in spoke order
-//   horizons:    Object<key, number>   — user's horizon target (personal) or 10 (civ)
-//   current:     Object<key, number|null>   — current score; null means unset
-//   activeKey:   string | null   — sprint glow target (personal)
-//   placementKey:string | null   — placement marker target (civ)
-//   walkers:     Object<key, number>   — cluster counts; empty {} means none rendered
-//   isEmpty:     boolean   — force the dashed empty-polygon state
-//   dark:        boolean   — render against ink background (civ stage)
+//   labels:      [string×N]
+//   keys:        [string×N]
+//   dark:        boolean
+//
+// Self-only props:
+//   horizons, current, activeKey, walkers, isEmpty
+//
+// Civ-only props (when kind === 'civ'):
+//   domains, activeIndex, centreLabel, bloom, busyLock,
+//   onSelect, onLand, onDrillDown, onCentreClick,
+//   placementKey, walkers
 // ─────────────────────────────────────────────────────────────
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import {
   GOLD, GOLD_DK, GOLD_LT, GOLD_RULE,
   BG_CARD, BG_INK,
@@ -44,22 +43,42 @@ import {
   FONT_SC,
 } from './tokens'
 
+// ─── Shared geometry ─────────────────────────────────────────
 const N = 7
-// Square symmetric viewBox so the heptagon center aligns with the
-// SVG element's geometric center. Heptagon is drawn at (190, 170);
-// viewBox spans (0, -20) to (380, 360), centered on (190, 170).
-// Width/height must match the viewBox so the SVG renders square
-// inside the wheel-stage container (which is aspect-ratio: 1/1).
 const SVG_W = 380
 const SVG_H = 380
 const SVG_VIEWBOX = '0 -20 380 380'
-const FACTOR = 0.62  // how much of the inner box the heptagon fills
 
-function angleFor(i) { return (Math.PI * 2 * i) / N - Math.PI / 2 }
+// Heptagon centre
+const CX = 190
+const CY = 170
+const RADIUS = 99
 
-// Vertex colour by ratio-of-horizon (current / horizon). The user's
-// own horizon is the spoke's maximum, so the same ratio means the
-// same colour regardless of where their horizon is set.
+function angleFor(i, count = N) {
+  return (Math.PI * 2 * i) / count - Math.PI / 2
+}
+
+// Position of a spoke tip, given the wheel's current rotation in degrees
+function getTipPos(i, rotationDeg = 0, count = N, r = RADIUS) {
+  const baseAngle = angleFor(i, count) // radians, no rotation
+  const rotRad = (rotationDeg * Math.PI) / 180
+  const a = baseAngle + rotRad
+  return { x: CX + r * Math.cos(a), y: CY + r * Math.sin(a), angle: a }
+}
+
+// Rotation in DEGREES needed to bring index i to the top spoke,
+// taking the shortest path from currentRot.
+function getRotationToTop(index, currentRot, count = N) {
+  const raw = -(index * (360 / count))
+  const diff = ((raw - (currentRot % 360)) + 540) % 360 - 180
+  return currentRot + diff
+}
+
+function easeInOut(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+}
+
+// ─── Self-only helpers (unchanged from v4) ───────────────────
 function tierColor(current, horizon) {
   if (horizon === 0 || current == null || current === 0) return GOLD_DK
   const ratio = current / horizon
@@ -68,10 +87,9 @@ function tierColor(current, horizon) {
   return GOLD_LT
 }
 
-// Label position keyed off spoke number (1..7). Lifted directly from
-// the v4 mockup so the seven labels never collide with the heptagon
-// vertices regardless of horizon configuration.
-function labelPositionFor(idx, tipX, tipY) {
+// Static label position for the self wheel — these never rotate,
+// so they're tuned per spoke number to never collide.
+function selfLabelPositionFor(idx, tipX, tipY) {
   const spokeNum = idx + 1
   const GAP = 12
   const ABOVE_GAP = 18
@@ -87,40 +105,55 @@ function labelPositionFor(idx, tipX, tipY) {
   }
 }
 
-/**
- * @param {Object} props
- * @param {'personal'|'civ'} props.kind
- * @param {string[]} props.labels
- * @param {string[]} props.keys
- * @param {Object<string, number>} [props.horizons]
- * @param {Object<string, number|null>} [props.current]
- * @param {string|null} [props.activeKey]
- * @param {string|null} [props.placementKey]
- * @param {Object<string, number>} [props.walkers]
- * @param {boolean} [props.isEmpty]
- * @param {boolean} [props.dark]
- */
-export default function MissionWheel({
-  kind,
+// Civ wheel labels rotate with the spokes, so position is computed
+// from the tip's actual angle. Anchor flips based on which side of
+// the wheel the tip is on.
+function civLabelPosFor(tipX, tipY, angleRad) {
+  const GAP = 14
+  // Unit vector pointing outward from centre along the spoke
+  const ux = Math.cos(angleRad)
+  const uy = Math.sin(angleRad)
+  const x = tipX + ux * GAP
+  const y = tipY + uy * GAP + 4 // +4 so vertical centring of small caps reads
+  // Anchor: middle if tip is near top/bottom, start/end based on side
+  let anchor = 'middle'
+  if (ux > 0.2) anchor = 'start'
+  else if (ux < -0.2) anchor = 'end'
+  return { x, y, anchor }
+}
+
+// ─── Drill-down animation timings (civ only) ─────────────────
+const T_PULL    = 240
+const T_BREATHE = 280
+const INTRO_SPIN_DEG_PER_SEC = 35
+const INTRO_SPIN_DURATION_MS = 4000
+const BLOOM_DURATION_MS      = 1600
+
+// ─── ENTRY ───────────────────────────────────────────────────
+
+export default function MissionWheel(props) {
+  if (props.kind === 'civ') return <CivWheel {...props} />
+  return <SelfWheel {...props} />
+}
+
+// ═════════════════════════════════════════════════════════════
+// SELF WHEEL — preserved verbatim from v4 (only minor refactor of
+// the helpers above; behaviour unchanged).
+// ═════════════════════════════════════════════════════════════
+function SelfWheel({
   labels,
   keys,
   horizons = {},
   current = {},
   activeKey = null,
-  placementKey = null,
   walkers = {},
   isEmpty = false,
   dark = false,
 }) {
-  // Heptagon center pinned to (190, 170) in viewBox coords. The
-  // viewBox is symmetric around this point ('0 -20 380 380').
-  const cx = 190
-  const cy = 170
-  const maxR = 99  // ~ min(SVG_W, SVG_H) * FACTOR / 2 with old proportions; preserved
+  const cx = CX
+  const cy = CY
+  const maxR = RADIUS
 
-  // For empty state, treat horizons as a uniform 10 so spokes still
-  // render full length. The polygon is replaced with a small dashed
-  // centre marker rather than a degenerate zero-area shape.
   const hasAnyCurrent = useMemo(() => {
     if (isEmpty) return false
     return keys.some(k => current[k] != null)
@@ -133,7 +166,6 @@ export default function MissionWheel({
 
   const showEmpty = !hasAnyCurrent
 
-  // Vertex coords
   const verts = useMemo(() => {
     return keys.map((k, i) => {
       const h = renderHorizons[k] || 10
@@ -150,7 +182,6 @@ export default function MissionWheel({
     })
   }, [keys, renderHorizons, current, showEmpty, cx, cy, maxR])
 
-  // Outer ring + spoke tips
   const ringPts = useMemo(() => {
     const pts = []
     for (let i = 0; i < N; i++) {
@@ -174,9 +205,8 @@ export default function MissionWheel({
       height={SVG_H}
       viewBox={SVG_VIEWBOX}
       style={{ display: 'block', overflow: 'visible' }}
-      aria-label={kind === 'personal' ? 'Your seven domains' : 'The seven civilisational domains'}
+      aria-label="Your seven domains"
     >
-      {/* Outer ring */}
       <polygon
         points={ringPts}
         fill="none"
@@ -185,7 +215,6 @@ export default function MissionWheel({
         strokeDasharray="3 3"
       />
 
-      {/* Spokes */}
       {Array.from({ length: N }).map((_, i) => {
         const a = angleFor(i)
         const tx = cx + maxR * Math.cos(a)
@@ -202,15 +231,12 @@ export default function MissionWheel({
         )
       })}
 
-      {/* Labels */}
       {labels.map((txt, i) => {
         const a = angleFor(i)
         const tipX = cx + maxR * Math.cos(a)
         const tipY = cy + maxR * Math.sin(a)
-        const pos = labelPositionFor(i, tipX, tipY)
+        const pos = selfLabelPositionFor(i, tipX, tipY)
         const isActive = activeKey && keys[i] === activeKey
-        const isPlacement = placementKey && keys[i] === placementKey
-        const active = isActive || isPlacement
         return (
           <text
             key={`label-${i}`}
@@ -221,8 +247,8 @@ export default function MissionWheel({
               fontFamily: FONT_SC,
               fontSize: 10.5,
               letterSpacing: '0.18em',
-              fill: active ? labelActiveFill : labelFill,
-              fontWeight: active ? 600 : 400,
+              fill: isActive ? labelActiveFill : labelFill,
+              fontWeight: isActive ? 600 : 400,
             }}
           >
             {txt}
@@ -230,7 +256,6 @@ export default function MissionWheel({
         )
       })}
 
-      {/* Polygon — empty state vs. populated */}
       {showEmpty ? (
         <circle
           cx={cx}
@@ -264,87 +289,23 @@ export default function MissionWheel({
         </>
       )}
 
-      {/* Sprint glow — pulsing gold halo at the active sprint vertex,
-          with a solid inner dot so the focal point reads even when
-          the halo is at min radius. With the polygon now outline-only,
-          the glow needs to carry more weight as the focus signal. */}
       {!showEmpty && activeKey && (() => {
         const idx = keys.indexOf(activeKey)
         if (idx < 0) return null
         const v = verts[idx]
         return (
           <g>
-            {/* Solid inner dot — always visible, locks the focal point */}
-            <circle
-              cx={v.x} cy={v.y}
-              r={4}
-              fill={GOLD}
-            />
-            {/* Pulsing halo — breathes outward */}
-            <circle
-              cx={v.x} cy={v.y}
-              r={8}
-              fill={GOLD}
-              opacity="0.5"
-            >
-              <animate
-                attributeName="r"
-                values="6;11;6"
-                dur="2.5s"
-                repeatCount="indefinite"
-              />
-              <animate
-                attributeName="opacity"
-                values="0.5;0.85;0.5"
-                dur="2.5s"
-                repeatCount="indefinite"
-              />
+            <circle cx={v.x} cy={v.y} r={4} fill={GOLD} />
+            <circle cx={v.x} cy={v.y} r={8} fill={GOLD} opacity="0.5">
+              <animate attributeName="r" values="6;11;6" dur="2.5s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.5;0.85;0.5" dur="2.5s" repeatCount="indefinite" />
             </circle>
           </g>
         )
       })()}
 
-      {/* Placement marker — pulsing ring outside the placement spoke tip */}
-      {placementKey && (() => {
-        const idx = keys.indexOf(placementKey)
-        if (idx < 0) return null
-        const a = angleFor(idx)
-        const px = cx + maxR * 1.08 * Math.cos(a)
-        const py = cy + maxR * 1.08 * Math.sin(a)
-        return (
-          <g>
-            <circle cx={px} cy={py} r={6} fill={GOLD} />
-            <circle
-              cx={px} cy={py}
-              r={11}
-              fill="none"
-              stroke={GOLD}
-              strokeWidth="1.2"
-              opacity="0.6"
-            >
-              <animate
-                attributeName="r"
-                values="11;14;11"
-                dur="3s"
-                repeatCount="indefinite"
-              />
-              <animate
-                attributeName="opacity"
-                values="0.4;0.7;0.4"
-                dur="3s"
-                repeatCount="indefinite"
-              />
-            </circle>
-          </g>
-        )
-      })()}
-
-      {/* Walker cluster — concentrates on the active spoke (sprint or
-          placement). RENDERS ONLY WHEN walkers[focusKey] > 0. Empty
-          by default until contributor-density queries are wired in
-          BetaMissionControl. No demo numbers, no zero-state label. */}
       {(() => {
-        const focusKey = activeKey || placementKey
+        const focusKey = activeKey
         if (!focusKey) return null
         const count = walkers[focusKey] || 0
         if (count <= 0) return null
@@ -375,8 +336,6 @@ export default function MissionWheel({
           )
         }
 
-        // Count label: perpendicular to spoke direction, never collides
-        // with the spoke label which sits above/below the tip.
         const perpAngle = a + Math.PI / 2
         const sideOffset = 24
         const labelX = ccx + sideOffset * Math.cos(perpAngle)
@@ -405,6 +364,524 @@ export default function MissionWheel({
           </g>
         )
       })()}
+    </svg>
+  )
+}
+
+// ═════════════════════════════════════════════════════════════
+// CIV WHEEL — Heptagon's behaviour set in MissionWheel's flat
+// aesthetic. Stateful internally for animation; navigation state
+// is owned by the parent (BetaMissionControl).
+// ═════════════════════════════════════════════════════════════
+function CivWheel({
+  labels,
+  keys,
+  domains,         // [{ id, name, horizonGoal, description, subDomains }]
+  activeIndex,     // number | null   — the featured spoke
+  centreLabel,     // string | null   — label inside centre orb
+  bloom = false,   // when true, run the bloom-on-mount animation
+  busyLock = false,// when true, ignore clicks (e.g. while page is mid-transition)
+  onSelect,        // (i) => void
+  onLand,          // (i) => void
+  onDrillDown,     // (i) => void
+  onCentreClick,   // () => void
+  placementKey = null,
+  walkers = {},
+  dark = true,
+}) {
+  // Domains may not yet be loaded — fall back to labels for display
+  // so the wheel still renders during initial fetch.
+  const displayLabels = useMemo(() => {
+    if (Array.isArray(domains) && domains.length === labels.length) {
+      return domains.map(d => (d?.name ? d.name.toUpperCase() : ''))
+    }
+    return labels
+  }, [domains, labels])
+
+  const count = displayLabels.length || N
+
+  // Phase: 'spinning' → 'landing' → 'settled' → ('navigating' → 'settled')
+  //        ('drilling' → 'breathing') terminates by emitting onDrillDown.
+  // After re-mount on a new level, phase resets to 'spinning' so the
+  // wheel re-introduces its new domain set.
+  const [phase,        setPhase]        = useState('spinning')
+  const [displayRot,   setDisplayRot]   = useState(0)
+  const [nodeStates,   setNodeStates]   = useState(null)
+  const [bloomT,       setBloomT]       = useState(0)
+  const [bloomed,      setBloomed]      = useState(!bloom)
+
+  const rotRef          = useRef(0)
+  const targetRotRef    = useRef(null)
+  const landingIdxRef   = useRef(null)
+  const drillIdxRef     = useRef(null)
+  const animRef         = useRef(null)
+  const lastTimeRef     = useRef(null)
+  const spinStartRef    = useRef(Date.now())
+  const drillStartRef   = useRef(null)
+  const breatheStartRef = useRef(null)
+
+  const bloomStartRef   = useRef(null)
+  const bloomRafRef     = useRef(null)
+
+  // Bloom on mount (or whenever bloom flips on)
+  useEffect(() => {
+    if (!bloom || bloomed) return
+    setBloomT(0)
+    bloomStartRef.current = null
+    cancelAnimationFrame(bloomRafRef.current)
+    function tick(ts) {
+      if (!bloomStartRef.current) bloomStartRef.current = ts
+      const t = Math.min((ts - bloomStartRef.current) / BLOOM_DURATION_MS, 1)
+      setBloomT(easeInOut(t))
+      if (t < 1) {
+        bloomRafRef.current = requestAnimationFrame(tick)
+      } else {
+        setBloomed(true)
+      }
+    }
+    bloomRafRef.current = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(bloomRafRef.current)
+  }, [bloom, bloomed])
+
+  // Reset state machine whenever the domain set changes (drill-down
+  // / drill-up replaces the seven shown spokes).
+  useEffect(() => {
+    if (!count) return
+    rotRef.current = 0
+    targetRotRef.current = null
+    drillIdxRef.current = null
+    drillStartRef.current = null
+    breatheStartRef.current = null
+    setNodeStates(null)
+    landingIdxRef.current = Math.floor(Math.random() * count)
+    spinStartRef.current = Date.now()
+    lastTimeRef.current = null
+    setPhase('spinning')
+    setDisplayRot(0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [count, domains])
+
+  // External activeIndex changes (e.g. via below-wheel arrows) →
+  // rotate to that spoke if we're already past the spinning phase.
+  useEffect(() => {
+    if ((phase === 'settled' || phase === 'navigating') && activeIndex !== null && activeIndex !== undefined) {
+      targetRotRef.current = getRotationToTop(activeIndex, rotRef.current, count)
+      setPhase('navigating')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeIndex])
+
+  const cancelSpinAndSelect = useCallback((index) => {
+    landingIdxRef.current = index
+    targetRotRef.current = getRotationToTop(index, rotRef.current, count)
+    setPhase('landing')
+    onSelect?.(index)
+  }, [onSelect, count])
+
+  // RAF loop
+  useEffect(() => {
+    function animate(time) {
+      if (lastTimeRef.current === null) lastTimeRef.current = time
+      const dt = Math.min((time - lastTimeRef.current) / 1000, 0.05)
+      lastTimeRef.current = time
+
+      if (phase === 'spinning') {
+        const elapsed = Date.now() - spinStartRef.current
+        rotRef.current += INTRO_SPIN_DEG_PER_SEC * dt
+        setDisplayRot(rotRef.current)
+        if (elapsed >= INTRO_SPIN_DURATION_MS) {
+          targetRotRef.current = getRotationToTop(landingIdxRef.current, rotRef.current, count)
+          setPhase('landing')
+          onLand?.(landingIdxRef.current)
+        }
+      }
+
+      else if (phase === 'landing' || phase === 'navigating') {
+        const diff = (targetRotRef.current ?? rotRef.current) - rotRef.current
+        if (Math.abs(diff) < 0.2) {
+          rotRef.current = targetRotRef.current ?? rotRef.current
+          setDisplayRot(rotRef.current)
+          setPhase('settled')
+        } else {
+          rotRef.current += diff * Math.min(1, dt * (phase === 'navigating' ? 4.5 : 3.5))
+          setDisplayRot(rotRef.current)
+        }
+      }
+
+      else if (phase === 'drilling') {
+        if (!drillStartRef.current) drillStartRef.current = time
+        const t = Math.min((time - drillStartRef.current) / T_PULL, 1)
+        const te = easeInOut(t)
+        const idx = drillIdxRef.current
+        const tp = getTipPos(idx, rotRef.current, count)
+
+        setNodeStates(Array.from({ length: count }, (_, i) => {
+          if (i === idx) {
+            return { sc: 1 + te * 0.6, op: 1, ox: (CX - tp.x) * te, oy: (CY - tp.y) * te }
+          }
+          const p = getTipPos(i, rotRef.current, count)
+          return { sc: 1 - te * 0.4, op: 1 - te, ox: (p.x - CX) * 0.45 * te, oy: (p.y - CY) * 0.45 * te }
+        }))
+
+        if (t >= 1) {
+          breatheStartRef.current = time
+          setPhase('breathing')
+        }
+      }
+
+      else if (phase === 'breathing') {
+        if (time - breatheStartRef.current >= T_BREATHE) {
+          const idx = drillIdxRef.current
+          drillIdxRef.current = null
+          onDrillDown?.(idx)
+        }
+      }
+
+      animRef.current = requestAnimationFrame(animate)
+    }
+
+    animRef.current = requestAnimationFrame(animate)
+    return () => {
+      cancelAnimationFrame(animRef.current)
+      lastTimeRef.current = null
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, count])
+
+  function handleNodeClick(i) {
+    if (busyLock) return
+    if (phase === 'spinning') { cancelSpinAndSelect(i); return }
+    if (phase !== 'settled') return
+    onSelect?.(i)
+    if (domains?.[i]?.subDomains?.length > 0) {
+      drillIdxRef.current = i
+      drillStartRef.current = null
+      setPhase('drilling')
+    }
+  }
+
+  function handleCentreClick() {
+    if (busyLock) return
+    if (phase !== 'settled' && phase !== 'spinning') return
+    onCentreClick?.()
+  }
+
+  const isSpinning = phase === 'spinning' || phase === 'landing'
+  const busy       = phase !== 'settled'
+
+  // Outer ring polygon (dashed, decorative — never rotates)
+  const ringPts = useMemo(() => {
+    const pts = []
+    for (let i = 0; i < count; i++) {
+      const a = angleFor(i, count)
+      pts.push(`${CX + RADIUS * Math.cos(a)},${CY + RADIUS * Math.sin(a)}`)
+    }
+    return pts.join(' ')
+  }, [count])
+
+  const ringStroke = dark ? 'rgba(200, 146, 42, 0.30)' : 'rgba(200, 146, 42, 0.20)'
+  const spokeStroke = dark ? 'rgba(200, 146, 42, 0.45)' : 'rgba(200, 146, 42, 0.30)'
+  const labelFill = dark ? TEXT_WHITE_META : TEXT_META
+  const labelActiveFill = dark ? GOLD_LT : GOLD_DK
+  const centreFill = GOLD
+  const centreStroke = dark ? 'rgba(200, 146, 42, 0.6)' : 'rgba(168, 114, 26, 0.7)'
+  const centreTextFill = dark ? '#0F1523' : '#FFFFFF' // ink on gold reads on either stage
+
+  // Centre orb sized to fit the longest centre label that can appear.
+  // FONT_SC at 11px with 0.18em letter-spacing → ~7px per character avg.
+  // We size to the displayed text + a margin, clamped to a sensible range.
+  const centreLabelLines = useMemo(() => {
+    if (!centreLabel) return []
+    return centreLabel.toUpperCase().split(' ')
+  }, [centreLabel])
+
+  const centreFontSize = 10.5
+  const centreLineHeight = 1.25
+  const centreRadius = useMemo(() => {
+    if (!centreLabelLines.length) return 22
+    const longest = Math.max(...centreLabelLines.map(l => l.length))
+    // Cormorant SC at 10.5px with 0.18em letter-spacing ≈ 8.2px per char
+    const halfW = (longest * 8.2) / 2 + 8
+    const halfH = (centreLabelLines.length * centreFontSize * centreLineHeight) / 2 + 8
+    const raw = Math.max(halfW, halfH)
+    return Math.min(42, Math.max(22, raw))
+  }, [centreLabelLines])
+
+  return (
+    <svg
+      width={SVG_W}
+      height={SVG_H}
+      viewBox={SVG_VIEWBOX}
+      style={{ display: 'block', overflow: 'visible' }}
+      aria-label="The seven civilisational domains"
+    >
+      {/* Outer dashed ring — decorative, fixed orientation */}
+      <polygon
+        points={ringPts}
+        fill="none"
+        stroke={ringStroke}
+        strokeWidth="1"
+        strokeDasharray="3 3"
+      />
+
+      {/* Spokes — rotate with displayRot. During bloom, spokes grow
+          from the centre outward, ending at the same bloom-position
+          as the tip dot so the line and dot stay visually attached. */}
+      {Array.from({ length: count }, (_, i) => {
+        const p = getTipPos(i, displayRot, count)
+        const sx = bloomed ? p.x : (CX + (p.x - CX) * bloomT)
+        const sy = bloomed ? p.y : (CY + (p.y - CY) * bloomT)
+        return (
+          <line
+            key={`spoke-${i}`}
+            x1={CX} y1={CY}
+            x2={sx} y2={sy}
+            stroke={spokeStroke}
+            strokeWidth="1"
+            style={{
+              opacity: bloomed ? 1 : bloomT,
+            }}
+          />
+        )
+      })}
+
+      {/* Vertex tip dots + labels (rotate together with spokes) */}
+      {displayLabels.map((labelText, i) => {
+        const p        = getTipPos(i, displayRot, count)
+        const ns       = nodeStates?.[i]
+        const isActive = !busy && i === activeIndex
+        const isPlacement = placementKey && keys[i] === placementKey
+
+        // Bloom: tips travel from centre outward
+        const bloomedX = CX + (p.x - CX) * bloomT
+        const bloomedY = CY + (p.y - CY) * bloomT
+        const tipX = bloomed ? p.x : bloomedX
+        const tipY = bloomed ? p.y : bloomedY
+
+        // Drill-down node deformation. Compose translate + scale-around-tip
+        // as a single SVG transform string. To scale around the tip, we
+        // use translate(tip) scale(s) translate(-tip).
+        let groupTransform = ''
+        let groupOpacity = bloomed ? 1 : bloomT
+        if (ns) {
+          groupOpacity = ns.op
+          groupTransform =
+            `translate(${ns.ox}, ${ns.oy}) ` +
+            `translate(${tipX}, ${tipY}) ` +
+            `scale(${ns.sc}) ` +
+            `translate(${-tipX}, ${-tipY})`
+        }
+
+        const labelPos = civLabelPosFor(tipX, tipY, p.angle)
+
+        const tipR = isActive ? 4.5 : 3
+        const tipFill = isActive ? GOLD_LT : 'rgba(200,146,42,0.65)'
+
+        return (
+          <g
+            key={`node-${i}`}
+            transform={groupTransform}
+            opacity={groupOpacity}
+            onClick={() => handleNodeClick(i)}
+            role="button"
+            tabIndex={busy ? -1 : 0}
+            aria-label={`Domain: ${labelText}`}
+            style={{
+              cursor: busy || busyLock ? 'default' : 'pointer',
+            }}
+            onKeyDown={e => e.key === 'Enter' && handleNodeClick(i)}
+          >
+            {/* Generous invisible hit target */}
+            <circle
+              cx={tipX} cy={tipY} r={18}
+              fill="transparent"
+              style={{ pointerEvents: 'auto' }}
+            />
+            {/* Visible tip dot */}
+            <circle
+              cx={tipX} cy={tipY}
+              r={tipR}
+              fill={tipFill}
+              style={{ pointerEvents: 'none' }}
+            />
+            {/* Active-state pulsing halo */}
+            {isActive && (
+              <circle cx={tipX} cy={tipY} r={8} fill={GOLD} opacity="0.4" style={{ pointerEvents: 'none' }}>
+                <animate attributeName="r" values="6;11;6" dur="2.5s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.35;0.7;0.35" dur="2.5s" repeatCount="indefinite" />
+              </circle>
+            )}
+            {/* Label */}
+            <text
+              x={labelPos.x}
+              y={labelPos.y}
+              textAnchor={labelPos.anchor}
+              style={{
+                fontFamily: FONT_SC,
+                fontSize: 10.5,
+                letterSpacing: '0.18em',
+                fill: isActive || isPlacement ? labelActiveFill : labelFill,
+                fontWeight: isActive || isPlacement ? 600 : 400,
+                pointerEvents: 'none',
+                userSelect: 'none',
+              }}
+            >
+              {labelText}
+            </text>
+          </g>
+        )
+      })}
+
+      {/* Placement marker — pulsing ring outside placement spoke tip,
+          (only when keys provided and placementKey present). Stays
+          attached to its spoke as the wheel rotates. */}
+      {placementKey && keys && (() => {
+        const idx = keys.indexOf(placementKey)
+        if (idx < 0) return null
+        const p = getTipPos(idx, displayRot, count, RADIUS * 1.10)
+        return (
+          <g style={{ pointerEvents: 'none' }}>
+            <circle cx={p.x} cy={p.y} r={6} fill={GOLD} />
+            <circle cx={p.x} cy={p.y} r={11} fill="none" stroke={GOLD} strokeWidth="1.2" opacity="0.6">
+              <animate attributeName="r" values="11;14;11" dur="3s" repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.4;0.7;0.4" dur="3s" repeatCount="indefinite" />
+            </circle>
+          </g>
+        )
+      })()}
+
+      {/* Walker cluster — concentrates on placement spoke if present */}
+      {placementKey && (() => {
+        const focusKey = placementKey
+        const cnt = walkers[focusKey] || 0
+        if (cnt <= 0) return null
+        const idx = keys.indexOf(focusKey)
+        if (idx < 0) return null
+        const p = getTipPos(idx, displayRot, count, RADIUS * 1.40)
+        const a = p.angle
+
+        const dotsToShow = Math.min(cnt, 8)
+        const clusterRadius = 14
+        const dots = []
+        for (let j = 0; j < dotsToShow; j++) {
+          const aa = (Math.PI * 2 * j) / dotsToShow + (idx * 0.4)
+          const wob = 0.6 + 0.4 * ((j * 37) % 100) / 100
+          const dx = p.x + clusterRadius * Math.cos(aa) * wob
+          const dy = p.y + clusterRadius * Math.sin(aa) * wob
+          dots.push(
+            <circle
+              key={`walker-${j}`}
+              cx={dx.toFixed(1)}
+              cy={dy.toFixed(1)}
+              r={2}
+              fill={GOLD_LT}
+              opacity="0.7"
+            />
+          )
+        }
+
+        const perpAngle = a + Math.PI / 2
+        const sideOffset = 24
+        const labelX = p.x + sideOffset * Math.cos(perpAngle)
+        const labelY = p.y + sideOffset * Math.sin(perpAngle) + 3
+        const labelAnchor =
+          Math.cos(perpAngle) >= 0.2  ? 'start' :
+          Math.cos(perpAngle) <= -0.2 ? 'end' :
+                                        'middle'
+        return (
+          <g style={{ pointerEvents: 'none' }}>
+            {dots}
+            <text
+              x={labelX.toFixed(1)}
+              y={labelY.toFixed(1)}
+              textAnchor={labelAnchor}
+              style={{
+                fontFamily: FONT_SC,
+                fontSize: 9,
+                letterSpacing: '0.12em',
+                fill: GOLD_LT,
+              }}
+            >
+              {cnt} walking
+            </text>
+          </g>
+        )
+      })()}
+
+      {/* Centre orb — flat gold disc with text inside */}
+      <g
+        onClick={handleCentreClick}
+        role="button"
+        tabIndex={0}
+        aria-label={centreLabel ? `${centreLabel} — centre` : 'Centre'}
+        onKeyDown={e => e.key === 'Enter' && handleCentreClick()}
+        style={{
+          cursor: onCentreClick ? 'pointer' : 'default',
+          opacity: bloomed ? 1 : bloomT,
+        }}
+      >
+        {/* Subtle breathing halo just outside the disc */}
+        <circle
+          cx={CX} cy={CY}
+          r={centreRadius + 4}
+          fill="none"
+          stroke="rgba(200,146,42,0.22)"
+          strokeWidth="1"
+          style={{ pointerEvents: 'none' }}
+        >
+          <animate
+            attributeName="r"
+            values={`${centreRadius + 3};${centreRadius + 7};${centreRadius + 3}`}
+            dur="3.2s"
+            repeatCount="indefinite"
+          />
+          <animate
+            attributeName="stroke-opacity"
+            values="0.20;0.05;0.20"
+            dur="3.2s"
+            repeatCount="indefinite"
+          />
+        </circle>
+        {/* The disc itself */}
+        <circle
+          cx={CX} cy={CY}
+          r={centreRadius}
+          fill={centreFill}
+          stroke={centreStroke}
+          strokeWidth="1"
+        />
+        {/* Label inside */}
+        {centreLabel && (
+          <text
+            x={CX} y={CY}
+            textAnchor="middle"
+            dominantBaseline="middle"
+            style={{
+              fontFamily: FONT_SC,
+              fontSize: centreFontSize,
+              letterSpacing: '0.18em',
+              fill: centreTextFill,
+              fontWeight: 500,
+              pointerEvents: 'none',
+              userSelect: 'none',
+            }}
+          >
+            {centreLabelLines.map((word, wi) => (
+              <tspan
+                key={wi}
+                x={CX}
+                dy={
+                  wi === 0
+                    ? `${-((centreLabelLines.length - 1) * centreLineHeight) / 2}em`
+                    : `${centreLineHeight}em`
+                }
+              >
+                {word}
+              </tspan>
+            ))}
+          </text>
+        )}
+      </g>
     </svg>
   )
 }
