@@ -31,7 +31,7 @@
 const DYM = {
   // Size — width as % of the substrate container.
   // 100 = same width as container. >100 bleeds wider. <100 sits inside.
-  sizeDesktop: 50,
+  sizeDesktop: 55,
   sizeMobile:  140,
 
   // Position offset from centre. 0 = perfectly centred.
@@ -64,8 +64,8 @@ const STAR = {
   // Opacity. SVG ships with dark content on transparent.
   // Light stage = dark stars on parchment.
   // Dark stage = filter inverts to light stars on ink.
-  opacityLight: 0.10,
-  opacityDark:  0.20,
+  opacityLight: 0.02,
+  opacityDark:  0.06,
 
   // Parallax — should be lower than DYM.parallax so stars feel deeper.
   parallax: 0.2,
