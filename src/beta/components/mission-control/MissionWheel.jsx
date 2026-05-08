@@ -245,49 +245,62 @@ export default function MissionWheel({
         <>
           <polygon
             points={verts.map(v => `${v.x},${v.y}`).join(' ')}
-            fill="rgba(200,146,42,0.16)"
+            fill="none"
             stroke={GOLD}
-            strokeWidth="1.5"
+            strokeWidth="1.25"
+            strokeOpacity="0.7"
             strokeLinejoin="round"
           />
           {verts.map(v => (
             <circle
               key={`vert-${v.i}`}
               cx={v.x} cy={v.y}
-              r={4}
+              r={2.5}
               fill={v.color}
               stroke={vertStroke}
-              strokeWidth="1.5"
+              strokeWidth="1"
             />
           ))}
         </>
       )}
 
-      {/* Sprint glow — pulsing gold dot at the active sprint vertex */}
+      {/* Sprint glow — pulsing gold halo at the active sprint vertex,
+          with a solid inner dot so the focal point reads even when
+          the halo is at min radius. With the polygon now outline-only,
+          the glow needs to carry more weight as the focus signal. */}
       {!showEmpty && activeKey && (() => {
         const idx = keys.indexOf(activeKey)
         if (idx < 0) return null
         const v = verts[idx]
         return (
-          <circle
-            cx={v.x} cy={v.y}
-            r={6}
-            fill={GOLD}
-            opacity="0.5"
-          >
-            <animate
-              attributeName="r"
-              values="5;8;5"
-              dur="2.5s"
-              repeatCount="indefinite"
+          <g>
+            {/* Solid inner dot — always visible, locks the focal point */}
+            <circle
+              cx={v.x} cy={v.y}
+              r={4}
+              fill={GOLD}
             />
-            <animate
-              attributeName="opacity"
-              values="0.4;0.75;0.4"
-              dur="2.5s"
-              repeatCount="indefinite"
-            />
-          </circle>
+            {/* Pulsing halo — breathes outward */}
+            <circle
+              cx={v.x} cy={v.y}
+              r={8}
+              fill={GOLD}
+              opacity="0.5"
+            >
+              <animate
+                attributeName="r"
+                values="6;11;6"
+                dur="2.5s"
+                repeatCount="indefinite"
+              />
+              <animate
+                attributeName="opacity"
+                values="0.5;0.85;0.5"
+                dur="2.5s"
+                repeatCount="indefinite"
+              />
+            </circle>
+          </g>
         )
       })()}
 
