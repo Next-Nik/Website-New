@@ -109,7 +109,7 @@ const SUBSTRATE_CSS = `
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 100%;
+  width: 50%;
   height: auto;
   max-width: 1200px;
   min-width: 600px;
