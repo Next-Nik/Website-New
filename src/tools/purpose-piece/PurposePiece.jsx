@@ -311,7 +311,7 @@ function MirrorPanel({ mirrorText, onRevealed }) {
 // Renders the Phase 4 JSON output from generateProfile.
 // The backend may return this as structured JSON or as HTML. We handle both —
 // preferring structured because it's cleaner and lets us control typography.
-function ProfileCard({ profile, civilisationalStatement, horizonGoal }) {
+export function ProfileCard({ profile, civilisationalStatement, horizonGoal }) {
   if (!profile) return null
 
   // If backend sent HTML, render it carefully
@@ -405,7 +405,7 @@ function ProfileCard({ profile, civilisationalStatement, horizonGoal }) {
 //              visible. A dedicated transmit-submission flow is a future
 //              build; the domain page is the architecturally-correct
 //              destination either way.
-function PlacementCard({ placement, session, onChooseReadiness }) {
+export function PlacementCard({ placement, session, onChooseReadiness }) {
   const suggested = placement?.suggested_readiness || 'join'
   const [chosen, setChosen] = useState(suggested)
 

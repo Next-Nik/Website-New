@@ -24,7 +24,7 @@ function useIsMobile() {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const DOMAINS = [
+export const DOMAINS = [
   { id: 'path',          label: 'Path',          question: 'Am I walking my path — or just walking?',                    fractal: 'Vision' },
   { id: 'spark',         label: 'Spark',         question: "When did I last feel genuinely alive — and what's been costing me that?",           fractal: 'Human Being' },
   { id: 'body',          label: 'Body',          question: "Am I honouring this instrument — or running it into the ground?",                  fractal: 'Nature' },
@@ -46,7 +46,7 @@ import { SCALE_POINTS, TIER_MAP, LABEL_MAP, SIGNATURE_MAP, getScoreColor, HORIZO
 
 // Domain step stages — drives node visual state
 // 0 = not started, 1 = avatar done, 2 = score done, 3 = complete
-function getDomainStage(data) {
+export function getDomainStage(data) {
   if (!data) return 0
   if (data.horizonScore !== undefined && data.horizonText) return 3
   if (data.currentScore !== undefined) return 2
@@ -152,7 +152,7 @@ function getRotationToTop(index, currentRot) {
   return currentRot + diff
 }
 
-function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreClick, triggerSpin = 0 }) {
+export function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreClick, triggerSpin = 0 }) {
   const [phase,      setPhase]      = useState('spinning')
   const [displayRot, setDisplayRot] = useState(0)
   const rotRef      = useRef(0)
@@ -609,7 +609,7 @@ function LockBtn({ onClick, label }) {
 
 // ─── Domain Step — full 3-step conversation flow ──────────────────────────────
 
-function DomainStep({ domain, existingData, onComplete, onUpdate }) {
+export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
   // Step within this domain: 'avatar' | 'score' | 'horizon' | 'done'
   const initStep = () => {
     if (!existingData) return 'avatar'
@@ -1167,7 +1167,7 @@ function DomainStep({ domain, existingData, onComplete, onUpdate }) {
 
 // ─── Results Card ─────────────────────────────────────────────────────────────
 
-function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
+export function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
   const [horizonText,   setHorizonText]   = useState(() => {
     try { return localStorage.getItem('lifeos_map_horizon_locked') || '' } catch { return '' }
   })
@@ -1510,7 +1510,7 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, ac
   )
 }
 
-function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, userId }) {
+export function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, userId }) {
   const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
   const body  = { fontFamily: "'Lora', Georgia, serif" }
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }

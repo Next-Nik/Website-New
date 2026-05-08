@@ -43,25 +43,22 @@ import WheelStage         from '../components/mission-control/WheelStage'
 import SideRail           from '../components/mission-control/SideRail'
 import Tile               from '../components/mission-control/Tile'
 import Panel              from '../components/mission-control/Panel'
-import CivDomainPanel     from '../components/mission-control/CivDomainPanel'
+import CivDomainPanel             from '../components/mission-control/CivDomainPanel'
+import MapMissionPanel            from '../components/mission-control/MapMissionPanel'
+import TargetSprintMissionPanel   from '../components/mission-control/TargetSprintMissionPanel'
+import HorizonPracticeMissionPanel from '../components/mission-control/HorizonPracticeMissionPanel'
+import PurposePieceMissionPanel   from '../components/mission-control/PurposePieceMissionPanel'
+import HorizonStateMissionPanel   from '../components/mission-control/HorizonStateMissionPanel'
 
 import HorizonStateGauge   from '../components/mission-control/HorizonStateGauge'
 import MapPinGlyph         from '../components/mission-control/MapPinGlyph'
 import PurposePieceGlyph   from '../components/mission-control/PurposePieceGlyph'
 import TargetSprintGlyph   from '../components/mission-control/TargetSprintGlyph'
-import TargetSprintSlider  from '../components/mission-control/TargetSprintSlider'
 
 import useMissionControlData from '../components/mission-control/useMissionControlData'
 import { BG_PARCHMENT, BG_INK } from '../components/mission-control/tokens'
 
 import { fetchDomains, STATIC_DOMAINS, TOP_LEVEL_GOAL } from '../../components/domain-explorer/data'
-
-// Horizon State daily ritual — embedded in the slider panel
-import {
-  BaselineCard,
-  useHorizonStateData,
-  writeSummary as writeHorizonStateSummary,
-} from '../../tools/horizon-state/HorizonState'
 
 // ─── Spoke order matters. These two arrays are the canonical
 //     order on Mission Control. The labels are what render on the
@@ -636,7 +633,10 @@ export default function BetaMissionControl() {
           { label: 'CLOSE', onClick: closePanel },
         ]}
       >
-        <HorizonStateSlider user={data.user} />
+        <HorizonStateMissionPanel
+          user={data.user}
+          onNavigate={navigate}
+        />
       </Panel>
 
       <Panel
@@ -650,7 +650,7 @@ export default function BetaMissionControl() {
           { label: 'CLOSE', onClick: closePanel },
         ]}
       >
-        <TargetSprintSlider
+        <TargetSprintMissionPanel
           user={data.user}
           sprintData={data.sprintData}
           onNavigate={navigate}
@@ -663,15 +663,15 @@ export default function BetaMissionControl() {
         eyebrow="DAILY ANCHORS · HORIZON PRACTICE"
         title="What you're tending to today"
         actions={[
-          { label: 'OPEN PRACTICE', primary: true,
+          { label: 'OPEN PRACTICE →', primary: true,
             onClick: () => navigate('/tools/horizon-practice') },
-          { label: 'LATER', onClick: closePanel },
+          { label: 'CLOSE', onClick: closePanel },
         ]}
       >
-        <p>Practices are short daily things, five minutes or ten, that hold the work between sprint days. The I Am statements you wrote in The Map anchor the practice from underneath.</p>
-        <div className="mc-panel-build-edge">
-          Building in progress. Full practice library and daily check-in flow open at /tools/horizon-practice.
-        </div>
+        <HorizonPracticeMissionPanel
+          user={data.user}
+          onNavigate={navigate}
+        />
       </Panel>
 
       <Panel
@@ -735,16 +735,15 @@ export default function BetaMissionControl() {
         eyebrow="YOUR FIT · PURPOSE PIECE"
         title={!isUnplaced ? placement.split(' · ').map(s => s.toLowerCase()).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' · ') : 'Find where you fit.'}
         actions={[
-          { label: !isUnplaced ? 'REVISIT YOUR FIT' : 'BEGIN', primary: true,
+          { label: !isUnplaced ? 'REVISIT YOUR FIT →' : 'BEGIN PURPOSE PIECE →', primary: true,
             onClick: () => navigate('/tools/purpose-piece') },
-          { label: 'LATER', onClick: closePanel },
+          { label: 'CLOSE', onClick: closePanel },
         ]}
-        dark
       >
-        <p>Where you fit in building the future of the planet. Archetype, civilisational domain, scale. About an hour to do well; you can revisit and adjust as the work moves.</p>
-        <div className="mc-panel-build-edge">
-          Building in progress. Full Purpose Piece editor, archetype browser, and scale-shift flow open at /tools/purpose-piece.
-        </div>
+        <PurposePieceMissionPanel
+          purposeData={data.purposeData}
+          onNavigate={navigate}
+        />
       </Panel>
 
       <Panel
@@ -753,18 +752,15 @@ export default function BetaMissionControl() {
         eyebrow="FOUNDATION · THE MAP"
         title="Your seven domains"
         actions={[
-          { label: placedCount === 7 ? 'REVISIT A DOMAIN' : 'CONTINUE THE AUDIT', primary: true,
+          { label: placedCount === 7 ? 'REVISIT A DOMAIN' : 'OPEN THE MAP →', primary: true,
             onClick: () => navigate('/tools/map') },
           { label: 'CLOSE', onClick: closePanel },
         ]}
       >
-        <p>The Map is where you wrote your I Am statements and set your Horizon scores across the seven personal domains. Real work, typically a week or more if done well, one domain at a time. You revisit it when something shifts.</p>
-        <p style={{ marginTop: 12, fontSize: 14 }}>
-          {placedCount} of 7 domains audited.
-        </p>
-        <div className="mc-panel-build-edge">
-          Building in progress. Full Map flow, domain detail editor, and I Am statement revision open at /tools/map.
-        </div>
+        <MapMissionPanel
+          user={data.user}
+          onNavigate={navigate}
+        />
       </Panel>
 
       <Panel
@@ -855,26 +851,3 @@ const STAGE_CSS = `
   }
 }
 `
-
-// ─── HorizonStateSlider ───────────────────────────────────────
-function HorizonStateSlider({ user }) {
-  const { audioUrl, audioLoading, audioError, sessions, lifeIaStatement, reload } = useHorizonStateData(user)
-
-  async function handleAfterComplete(afterData, beforeData, updatedSessions) {
-    await writeHorizonStateSummary(user, updatedSessions, afterData, beforeData)
-    reload()
-  }
-
-  return (
-    <BaselineCard
-      compact
-      user={user}
-      audioUrl={audioUrl}
-      audioLoading={audioLoading}
-      audioError={audioError}
-      sessions={sessions}
-      lifeIaStatement={lifeIaStatement}
-      onAfterComplete={handleAfterComplete}
-    />
-  )
-}

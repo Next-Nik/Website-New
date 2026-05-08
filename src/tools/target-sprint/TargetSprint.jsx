@@ -12,7 +12,7 @@ import { DebriefPanel } from '../../components/DebriefPanel'
 
 const SS_KEY = 'tg_session_v2'
 
-const DOMAINS = [
+export const DOMAINS = [
   { id: 'path',          label: 'Path',          description: "Your contribution, calling, and the work you're here to do. Not your job title — the thread of purpose running beneath whatever you're currently doing. Life's mission.",              question: "Am I walking my path — or just walking?" },
   { id: 'spark',         label: 'Spark',         description: 'The animating fire. The things that make you feel genuinely alive — not just occupied. When Spark is low, everything else runs on fumes.', question: "When did I last feel genuinely alive — and what's been costing me that?" },
   { id: 'body',          label: 'Body',          description: 'Your physical instrument. The vessel through which everything else operates — and the one thing you cannot outsource, replace, or defer indefinitely.',   question: 'Am I honouring this instrument — or running it into the ground?' },
@@ -540,7 +540,7 @@ function StepStrip({ domainId, domainData, activeStep, onStepClick }) {
 
 // ─── Accomplishment Tally ─────────────────────────────────────────────────────
 
-function AccomplishmentTally({ domains, domainData, onCheck }) {
+export function AccomplishmentTally({ domains, domainData, onCheck }) {
   const [celebration, setCelebration] = useState(null) // { text, type } — shows briefly on completion
 
   function handleCheck(domainId, type, milestoneIdx, taskIdx, checked) {
