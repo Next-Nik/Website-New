@@ -71,6 +71,45 @@ const STAR = {
   parallax: 0.2,
 }
 
+// ─── HALO (soft fade between star map and Dymaxion) ───
+// A radial gradient div sits between the star map (back) and the
+// Dymaxion (front). It locally fades the star map within the
+// Dymaxion's footprint so the world map stands out without
+// erasing any of the actual star map.
+//
+// The halo follows the Dymaxion's parallax (same scroll speed)
+// so the fade region travels with the world map.
+const HALO = {
+  // Size — width as % of the substrate container. Match or slightly
+  // exceed DYM.sizeDesktop so the fade extends just past the world
+  // map's silhouette. Too small and the world map's edges still sit
+  // on stars; too large and the halo eats too much of the star map.
+  sizeDesktop: 70,
+  sizeMobile:  160,
+
+  // Position offset from centre — should match DYM.offset to follow
+  // the world map.
+  offsetX: 0,
+  offsetY: 0,
+
+  // Intensity — how strongly the halo fades the star map at center.
+  //   0 = no halo (star map fully visible behind world map)
+  //   1 = full parchment/ink at center (star map invisible behind world map)
+  // Lower values are subtler. Tune to taste.
+  intensityLight: 0.85,
+  intensityDark:  0.85,
+
+  // Softness — how quickly the halo falls off to transparent at the
+  // edge. Expressed as the inner-radius % at which the gradient
+  // starts to fade. Higher = harder edge, lower = softer falloff.
+  //   60 = solid for inner 60%, fades over outer 40%
+  //   30 = solid only inner 30%, long soft falloff
+  softness: 35,
+
+  // Parallax — match DYM.parallax so halo travels with world map.
+  parallax: 0.4,
+}
+
 
 // ─────────────────────────────────────────────────────────────
 // Implementation. Don't edit unless changing structure.
@@ -80,6 +119,7 @@ import { useEffect, useRef } from 'react'
 
 export default function WorldMapSubstrate() {
   const starRef = useRef(null)
+  const haloRef = useRef(null)
   const dymRef  = useRef(null)
 
   useEffect(() => {
@@ -101,6 +141,12 @@ export default function WorldMapSubstrate() {
         const dy = DYM.offsetY + (y * DYM.parallax)
         const dx = DYM.offsetX
         dymRef.current.style.transform =
+          `translate3d(calc(-50% + ${dx}px), calc(-50% + ${dy}px), 0)`
+      }
+      if (haloRef.current) {
+        const dy = HALO.offsetY + (y * HALO.parallax)
+        const dx = HALO.offsetX
+        haloRef.current.style.transform =
           `translate3d(calc(-50% + ${dx}px), calc(-50% + ${dy}px), 0)`
       }
       ticking = false
@@ -126,6 +172,8 @@ export default function WorldMapSubstrate() {
     `translate(calc(-50% + ${STAR.offsetX}px), calc(-50% + ${STAR.offsetY}px))`
   const initialDymTransform =
     `translate(calc(-50% + ${DYM.offsetX}px), calc(-50% + ${DYM.offsetY}px))`
+  const initialHaloTransform =
+    `translate(calc(-50% + ${HALO.offsetX}px), calc(-50% + ${HALO.offsetY}px))`
 
   return (
     <div className="mc-substrate" aria-hidden="true">
@@ -137,6 +185,16 @@ export default function WorldMapSubstrate() {
         alt=""
         className="mc-substrate-stars"
         style={{ transform: initialStarTransform }}
+      />
+
+      {/* Halo: soft radial fade between star map and Dymaxion.
+          Locally fades the star map within the world map's
+          footprint without erasing it. Travels with the
+          Dymaxion via shared parallax speed. */}
+      <div
+        ref={haloRef}
+        className="mc-substrate-halo"
+        style={{ transform: initialHaloTransform }}
       />
 
       <img
@@ -188,6 +246,39 @@ function buildCSS() {
   filter: invert(1);
 }
 
+/* ─── Halo (mid layer) ───────────────────────────────── */
+/* Radial gradient div sitting between stars and Dymaxion.
+   Soft circular fade from parchment (centre) to transparent
+   (edge). Erases the star map locally so the world map
+   stands out, without altering the star map asset itself. */
+.mc-substrate-halo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: ${HALO.sizeDesktop}%;
+  aspect-ratio: 1 / 1;
+  background: radial-gradient(
+    circle at center,
+    rgba(250, 250, 247, ${HALO.intensityLight}) 0%,
+    rgba(250, 250, 247, ${HALO.intensityLight}) ${HALO.softness}%,
+    rgba(250, 250, 247, 0) 100%
+  );
+  border-radius: 50%;
+
+  will-change: transform;
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+
+[data-stage="dark"] .mc-substrate-halo {
+  background: radial-gradient(
+    circle at center,
+    rgba(15, 21, 35, ${HALO.intensityDark}) 0%,
+    rgba(15, 21, 35, ${HALO.intensityDark}) ${HALO.softness}%,
+    rgba(15, 21, 35, 0) 100%
+  );
+}
+
 /* ─── Dymaxion (front layer) ─────────────────────────── */
 .mc-substrate-img {
   position: absolute;
@@ -216,6 +307,9 @@ function buildCSS() {
     max-width: ${STAR.maxWidthMobile}px;
     min-width: ${STAR.minWidthMobile}px;
   }
+  .mc-substrate-halo {
+    width: ${HALO.sizeMobile}%;
+  }
   .mc-substrate-img {
     width: ${DYM.sizeMobile}%;
   }
@@ -223,6 +317,7 @@ function buildCSS() {
 
 @media (prefers-reduced-motion: reduce) {
   .mc-substrate-stars,
+  .mc-substrate-halo,
   .mc-substrate-img {
     will-change: auto;
   }

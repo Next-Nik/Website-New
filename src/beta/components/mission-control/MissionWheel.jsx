@@ -45,9 +45,14 @@ import {
 } from './tokens'
 
 const N = 7
+// Square symmetric viewBox so the heptagon center aligns with the
+// SVG element's geometric center. Heptagon is drawn at (190, 170);
+// viewBox spans (0, -20) to (380, 360), centered on (190, 170).
+// Width/height must match the viewBox so the SVG renders square
+// inside the wheel-stage container (which is aspect-ratio: 1/1).
 const SVG_W = 380
-const SVG_H = 320
-const SVG_VIEWBOX = `-30 -10 ${SVG_W} ${SVG_H}`
+const SVG_H = 380
+const SVG_VIEWBOX = '0 -20 380 380'
 const FACTOR = 0.62  // how much of the inner box the heptagon fills
 
 function angleFor(i) { return (Math.PI * 2 * i) / N - Math.PI / 2 }
@@ -107,9 +112,11 @@ export default function MissionWheel({
   isEmpty = false,
   dark = false,
 }) {
-  const cx = SVG_W / 2
-  const cy = SVG_H / 2 + 10
-  const maxR = Math.min(SVG_W, SVG_H) / 2 * FACTOR
+  // Heptagon center pinned to (190, 170) in viewBox coords. The
+  // viewBox is symmetric around this point ('0 -20 380 380').
+  const cx = 190
+  const cy = 170
+  const maxR = 99  // ~ min(SVG_W, SVG_H) * FACTOR / 2 with old proportions; preserved
 
   // For empty state, treat horizons as a uniform 10 so spokes still
   // render full length. The polygon is replaced with a small dashed
