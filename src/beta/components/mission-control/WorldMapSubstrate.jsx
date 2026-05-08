@@ -64,8 +64,8 @@ const STAR = {
   // Opacity. SVG ships with dark content on transparent.
   // Light stage = dark stars on parchment.
   // Dark stage = filter inverts to light stars on ink.
-  opacityLight: 0.02,
-  opacityDark:  0.06,
+  opacityLight: 0.04,
+  opacityDark:  0.04,
 
   // Parallax — should be lower than DYM.parallax so stars feel deeper.
   parallax: 0.2,
