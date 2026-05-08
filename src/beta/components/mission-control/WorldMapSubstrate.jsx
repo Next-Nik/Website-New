@@ -1,88 +1,85 @@
 // ─────────────────────────────────────────────────────────────
 // WorldMapSubstrate.jsx
 //
-// Fuller's Dymaxion Map sits as a fixed-position substrate
-// behind the wheel. The image renders at its natural size and
-// is sized + positioned via transform — never cropped.
+// Two-layer cosmic-and-terrestrial substrate behind the wheel:
 //
-// ╭─────────────────────────────────────────────────────────╮
-// │  EDIT KNOBS — change these to tune size and placement.  │
-// ╰─────────────────────────────────────────────────────────╯
+//   Layer 1 (back, slowest):  Star map — constellations with
+//                             celestial grid. SVG, very low opacity.
+//                             Says "this lives in the cosmos."
 //
-//   FDM_WIDTH_PX       — base width in pixels. The image's height
-//                        scales automatically to preserve aspect
-//                        ratio. Larger number = bigger map.
-//   FDM_OFFSET_X_PX    — horizontal nudge from centre, in pixels.
-//                        0 = centred. Positive = right, negative = left.
-//   FDM_OFFSET_Y_PX    — vertical nudge from centre, in pixels.
-//                        0 = centred. Positive = down, negative = up.
-//   FDM_PARALLAX_PX    — how far it drifts as page scrolls, in px.
-//                        Set to 0 to disable parallax.
-//   FDM_OPACITY        — visibility. 0 = invisible, 1 = solid.
+//   Layer 2 (front, slow):    Fuller's Dymaxion projection.
+//                             SVG. Says "this lives on Earth."
+//
+// Both are circular projections — they rhyme as a pair.
+//
+// Note on theming: the star-map.svg ships with white fills (designed
+// for dark backgrounds). On light stage we use filter:invert(1) to
+// render it as dark-on-transparent. On dark stage no filter needed.
+// The Dymaxion is the inverse: dark fills, inverted on dark stage.
+//
+// Parallax: scroll-driven, two speeds.
+//   • Star map:   moves at 0.2x scroll speed (slowest, deepest)
+//   • Dymaxion:   moves at 0.4x scroll speed
+//   • Foreground: 1.0x (normal)
+//
+// Implementation: requestAnimationFrame-throttled scroll listener
+// updates transform: translate3d() on each layer for GPU compositing.
+// Honors prefers-reduced-motion: parallax disabled when set.
 // ─────────────────────────────────────────────────────────────
 
-const FDM_DESKTOP = {
-  WIDTH_PX:     500,    // base width — change this to resize
-  OFFSET_X_PX:  0,      // horizontal nudge from centre
-  OFFSET_Y_PX:  50,      // vertical nudge from centre
-  PARALLAX_PX:  60,     // drift range across the page
-  OPACITY:      0.22,
-}
-
-const FDM_MOBILE = {
-  WIDTH_PX:     340,
-  OFFSET_X_PX:  0,
-  OFFSET_Y_PX:  0,
-  PARALLAX_PX:  40,
-  OPACITY:      0.18,
-}
-
-// ─────────────────────────────────────────────────────────────
+import { useEffect, useRef } from 'react'
 
 export default function WorldMapSubstrate() {
+  const starRef = useRef(null)
+  const dymRef  = useRef(null)
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reduceMotion) return
+
+    let ticking = false
+    let lastScrollY = 0
+
+    const update = () => {
+      const y = lastScrollY
+      if (starRef.current) {
+        starRef.current.style.transform = `translate3d(-50%, calc(-50% + ${y * 0.2}px), 0)`
+      }
+      if (dymRef.current) {
+        dymRef.current.style.transform = `translate3d(-50%, calc(-50% + ${y * 0.4}px), 0)`
+      }
+      ticking = false
+    }
+
+    const onScroll = () => {
+      lastScrollY = window.scrollY
+      if (!ticking) {
+        window.requestAnimationFrame(update)
+        ticking = true
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true })
+    update()
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
+
   return (
-    <div
-      className="mc-substrate"
-      aria-hidden="true"
-      ref={el => {
-        if (!el) return
-        function applyConfig() {
-          const isMobile = window.matchMedia('(max-width: 640px)').matches
-          const cfg = isMobile ? FDM_MOBILE : FDM_DESKTOP
-
-          const maxScroll = Math.max(
-            document.documentElement.scrollHeight - window.innerHeight,
-            1
-          )
-          const progress = Math.min(
-            Math.max(window.scrollY / maxScroll, 0),
-            1
-          )
-          const driftPx = cfg.PARALLAX_PX
-            ? -cfg.PARALLAX_PX / 2 + progress * cfg.PARALLAX_PX
-            : 0
-          const totalY = cfg.OFFSET_Y_PX + driftPx
-
-          const img = el.querySelector('.mc-substrate-img')
-          if (img) {
-            img.style.width = cfg.WIDTH_PX + 'px'
-            // translate(-50%, -50%) centres the image on the
-            // anchor point; OFFSET_X / OFFSET_Y nudge from centre.
-            img.style.transform =
-              'translate(' +
-                'calc(-50% + ' + cfg.OFFSET_X_PX + 'px), ' +
-                'calc(-50% + ' + totalY + 'px)' +
-              ')'
-            img.style.opacity = cfg.OPACITY
-          }
-        }
-        window.addEventListener('scroll', applyConfig, { passive: true })
-        window.addEventListener('resize', applyConfig, { passive: true })
-        applyConfig()
-      }}
-    >
+    <div className="mc-substrate" aria-hidden="true">
       <style>{SUBSTRATE_CSS}</style>
+
       <img
+        ref={starRef}
+        src="/star-map.svg"
+        alt=""
+        className="mc-substrate-stars"
+      />
+
+      <img
+        ref={dymRef}
         src="/dymaxion-substrate.svg"
         alt=""
         className="mc-substrate-img"
@@ -93,30 +90,98 @@ export default function WorldMapSubstrate() {
 
 const SUBSTRATE_CSS = `
 .mc-substrate {
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   pointer-events: none;
   overflow: hidden;
   z-index: 0;
 }
 
-.mc-substrate-img {
-  /* Anchor at viewport centre. Width is set via JS knob; height
-     is auto so aspect ratio is preserved. The image renders at
-     its natural shape and is never cropped. */
+/* ─── Star map (back layer) ─────────────────────────────────── */
+/* Source SVG has white fills. Light stage: invert to dark.
+   Dark stage: keep white. */
+
+.mc-substrate-stars {
   position: absolute;
   top: 50%;
   left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
   height: auto;
+  max-width: 1200px;
+  min-width: 600px;
 
-  filter: sepia(0.25) hue-rotate(-12deg) saturate(0.6);
+  /* Light stage: invert white → dark, very faint */
+  opacity: 0.05;
+  filter: invert(1);
 
-  will-change: transform, opacity;
+  will-change: transform;
+  backface-visibility: hidden;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Dark stage: white stars on ink, no invert needed */
+[data-stage="dark"] .mc-substrate-stars {
+  opacity: 0.12;
+  filter: none;
+}
+
+/* ─── Dymaxion (front layer) ────────────────────────────────── */
+
+.mc-substrate-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120%;
+  height: auto;
+  min-height: 120%;
+  max-width: none;
+
+  opacity: 0.10;
+  mix-blend-mode: multiply;
+
+  will-change: transform;
+  backface-visibility: hidden;
   user-select: none;
   pointer-events: none;
 }
 
 [data-stage="dark"] .mc-substrate-img {
-  filter: invert(1) sepia(0.25) hue-rotate(-12deg) saturate(0.6);
+  opacity: 0.18;
+  mix-blend-mode: screen;
+  filter: invert(1);
+}
+
+/* ─── Mobile ────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .mc-substrate-stars {
+    opacity: 0.04;
+    max-width: 700px;
+    min-width: 400px;
+  }
+  [data-stage="dark"] .mc-substrate-stars {
+    opacity: 0.10;
+  }
+
+  .mc-substrate-img {
+    width: 140%;
+    opacity: 0.08;
+  }
+  [data-stage="dark"] .mc-substrate-img {
+    opacity: 0.14;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mc-substrate-stars,
+  .mc-substrate-img {
+    will-change: auto;
+  }
 }
 `
