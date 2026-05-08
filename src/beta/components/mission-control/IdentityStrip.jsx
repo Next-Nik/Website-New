@@ -91,6 +91,7 @@ export default function IdentityStrip({
             </button>
           )}
         </div>
+        <div className="mc-identity-spacer" aria-hidden="true" />
       </div>
     </header>
   )
@@ -180,7 +181,7 @@ const STRIP_CSS = `
 
 .mc-identity-bar {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 1fr auto 1fr;
   align-items: baseline;
   gap: 24px;
   padding: 8px 28px 14px;
