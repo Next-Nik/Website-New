@@ -14,7 +14,7 @@
 //                               time; we fetch all sources of truth
 //                               and resolve at the page layer)
 //   target_sprint_sessions    — active sprints
-//   horizon_practice_sessions — most recent practice
+//   horizon_practice_checkins — most recent practice check-in
 //   horizon_state_summary     — practice cadence
 //   contributor_profiles_beta — display name, contributor metadata
 //
@@ -48,7 +48,7 @@ export default function useMissionControlData() {
     mapResults:     null,   // most recent map_results row (full Map session)
     purposeData:    null,   // FULL purpose_piece_results row (all source-of-truth columns)
     sprintData:     null,   // array of active sprint sessions
-    practiceData:   null,   // most recent horizon_practice_sessions row
+    practiceData:   null,   // most recent horizon_practice_checkins row
     foundationData: null,   // horizon_state_summary row
     loading:        true,
     error:          null,
@@ -105,19 +105,30 @@ export default function useMissionControlData() {
             .limit(1)
             .maybeSingle(),
 
+          // Active sprints. The original beta planned three slots
+          // (Personal/Relational/Civilisational, slot_index 0/1/2),
+          // but the Target Sprint page never sets slot_index when
+          // creating a sprint — every row in production has a null
+          // slot_index. So we cannot filter on it. Accept anything
+          // with status in ['started','active'], ordered most recent
+          // first so the panel's index 0 is the primary sprint.
           supabase
             .from('target_sprint_sessions')
             .select('id, domains, domain_data, target_date, status, slot_index, created_at')
             .eq('user_id', user.id)
-            .not('slot_index', 'is', null)
-            .in('slot_index', [0, 1, 2])
-            .in('status', ['started', 'active']),
+            .in('status', ['started', 'active'])
+            .order('updated_at', { ascending: false }),
 
+          // Most recent practice check-in. The page writes to
+          // horizon_practice_checkins (along with _setup, _skills,
+          // _loops). An earlier version of this hook queried a stale
+          // table name (horizon_practice_sessions) which silently
+          // returned null for all users. Use the real table.
           supabase
-            .from('horizon_practice_sessions')
-            .select('focus, skill, today, identity_anchor, session_date')
+            .from('horizon_practice_checkins')
+            .select('id, check_date, thoughts, emotions, actions, created_at')
             .eq('user_id', user.id)
-            .order('session_date', { ascending: false })
+            .order('check_date', { ascending: false })
             .limit(1)
             .maybeSingle(),
 

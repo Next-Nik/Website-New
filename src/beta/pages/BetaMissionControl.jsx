@@ -108,19 +108,33 @@ Seven domains. Horizon goals at every level. A shared destination — so that th
 function buildScoreMap(mapRows, mapResults) {
   const horizons = {}
   const current = {}
+  // Source 1 — horizon_profile rows. Column is `domain`, not `domain_key`.
+  // (An earlier version of this helper read `row.domain_key`, which silently
+  // skipped every row.)
   for (const row of (mapRows || [])) {
-    if (!row?.domain_key) continue
-    horizons[row.domain_key] = row.horizon_score ?? null
-    current[row.domain_key]  = row.current_score ?? null
+    const k = row?.domain
+    if (!k) continue
+    if (row.horizon_score != null) horizons[k] = row.horizon_score
+    if (row.current_score != null) current[k]  = row.current_score
   }
-  // Fallback: pull anything missing from the Map session blob.
-  if (mapResults && typeof mapResults === 'object') {
+  // Source 2 — fall back to the latest map_results session blob. The data
+  // hook returns the FULL row, and per-domain scores live at
+  //   mapResults.session.domainData[domainId].currentScore / .horizonScore
+  // Older sessions used `mapResults.session.currentScores[domainId]` and
+  // `mapResults.session.horizonScores[domainId]` mirrors. Walk both.
+  const session = mapResults?.session
+  if (session && typeof session === 'object') {
+    const domainData = session.domainData || {}
+    const currentScores = session.currentScores || {}
+    const horizonScores = session.horizonScores || {}
     for (const k of SELF_KEYS) {
-      if (current[k] == null && mapResults[k]?.current != null) {
-        current[k] = mapResults[k].current
+      if (current[k] == null) {
+        if (domainData[k]?.currentScore != null) current[k] = domainData[k].currentScore
+        else if (currentScores[k] != null)        current[k] = currentScores[k]
       }
-      if (horizons[k] == null && mapResults[k]?.horizon != null) {
-        horizons[k] = mapResults[k].horizon
+      if (horizons[k] == null) {
+        if (domainData[k]?.horizonScore != null) horizons[k] = domainData[k].horizonScore
+        else if (horizonScores[k] != null)        horizons[k] = horizonScores[k]
       }
     }
   }
@@ -142,9 +156,35 @@ function activeSprintKey(sprintData) {
 
 function formatPlacement(purposeData) {
   if (!purposeData) return null
-  const arch = purposeData.archetype
-  const dom  = purposeData.civ_domain || purposeData.domain
-  const scl  = purposeData.scale
+  // Walk all source-of-truth fields. The row has gone through three
+  // writer eras and any of them may carry the data:
+  //   v10+   top-level archetype/domain/scale string columns
+  //   v9-ish profile column with archetype/domain/scale fields
+  //   pre-v9 session.tentative.{archetype.archetype, domain.domain, scale.scale}
+  // Some rows also have session.archetype etc. directly. Try every path
+  // in order; first hit wins.
+  const arch =
+    purposeData.archetype ||
+    purposeData.profile?.archetype ||
+    purposeData.session?.archetype ||
+    purposeData.session?.tentative?.archetype?.archetype ||
+    purposeData.session?.p4Profile?.archetype ||
+    null
+  const dom =
+    purposeData.civ_domain ||
+    purposeData.domain ||
+    purposeData.profile?.domain ||
+    purposeData.session?.domain ||
+    purposeData.session?.tentative?.domain?.domain ||
+    purposeData.session?.p4Profile?.domain ||
+    null
+  const scl =
+    purposeData.scale ||
+    purposeData.profile?.scale ||
+    purposeData.session?.scale ||
+    purposeData.session?.tentative?.scale?.scale ||
+    purposeData.session?.p4Profile?.scale ||
+    null
   if (!arch && !dom && !scl) return null
   const parts = []
   if (arch) parts.push(arch.toUpperCase())
@@ -158,7 +198,6 @@ function formatPlacement(purposeData) {
 // key. Map all known shapes onto the civ wheel keys.
 function civPlacementKey(purposeData) {
   if (!purposeData) return null
-  const slug = (purposeData.civ_domain_slug || purposeData.domain_slug || '').toLowerCase()
   const slugMap = {
     'human-being':       'human',
     'nature':            'nature',
@@ -177,12 +216,28 @@ function civPlacementKey(purposeData) {
     'LEGACY':          'legacy',
     'VISION':          'vision',
   }
+  // Try slug fields (v10 era and beta-era). Then walk all source-of-truth
+  // fields for the domain label string and try slug + label maps.
+  const slug = (purposeData.civ_domain_slug || purposeData.domain_slug || '').toLowerCase()
   if (slug && slugMap[slug]) return slugMap[slug]
-  const raw = (purposeData.civ_domain || purposeData.domain || '').toString()
-  if (raw) {
-    const norm = raw.trim().toUpperCase()
+
+  const candidates = [
+    purposeData.civ_domain,
+    purposeData.domain,
+    purposeData.profile?.domain,
+    purposeData.session?.domain,
+    purposeData.session?.tentative?.domain?.domain,
+    purposeData.session?.p4Profile?.domain,
+  ]
+  for (const raw of candidates) {
+    if (!raw) continue
+    const str = raw.toString().trim()
+    if (!str) continue
+    const norm = str.toUpperCase()
     if (labelMap[norm]) return labelMap[norm]
-    if (CIV_KEYS.includes(norm.toLowerCase())) return norm.toLowerCase()
+    const lower = str.toLowerCase()
+    if (slugMap[lower]) return slugMap[lower]
+    if (CIV_KEYS.includes(lower)) return lower
   }
   return null
 }
@@ -459,7 +514,7 @@ export default function BetaMissionControl() {
     return `WEEK ${week} / 13`
   })()
 
-  const hpState = data.practiceData?.session_date ? 'RECENT' : null
+  const hpState = data.practiceData?.check_date ? 'RECENT' : null
 
   const mapAudited = countPlaced(selfCurrent)
   const mapState = mapAudited === 0
