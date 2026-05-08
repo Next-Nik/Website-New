@@ -1,30 +1,83 @@
 // ─────────────────────────────────────────────────────────────
 // WorldMapSubstrate.jsx
 //
-// Two-layer cosmic-and-terrestrial substrate behind the wheel:
+// Two-layer substrate behind the wheel.
+//   Layer 1 (back):  Star map — celestial chart, faint
+//   Layer 2 (front): Fuller's Dymaxion projection
 //
-//   Layer 1 (back, slowest):  Star map — constellations with
-//                             celestial grid. SVG, very low opacity.
-//                             Says "this lives in the cosmos."
-//
-//   Layer 2 (front, slow):    Fuller's Dymaxion projection.
-//                             SVG. Says "this lives on Earth."
-//
-// Both are circular projections — they rhyme as a pair.
-//
-// Note on theming: the star-map.svg ships with white fills (designed
-// for dark backgrounds). On light stage we use filter:invert(1) to
-// render it as dark-on-transparent. On dark stage no filter needed.
-// The Dymaxion is the inverse: dark fills, inverted on dark stage.
+// Plain opacity, no blend modes. Each SVG has a transparent
+// background; layers stack independently. Predictable across
+// browsers and devices.
 //
 // Parallax: scroll-driven, two speeds.
-//   • Star map:   moves at 0.2x scroll speed (slowest, deepest)
-//   • Dymaxion:   moves at 0.4x scroll speed
-//   • Foreground: 1.0x (normal)
+//   • Star map → 0.2x scroll (slowest, deepest)
+//   • Dymaxion → 0.4x scroll
+//   • Foreground (rails, wheel, cards) → 1.0x normal
 //
-// Implementation: requestAnimationFrame-throttled scroll listener
-// updates transform: translate3d() on each layer for GPU compositing.
-// Honors prefers-reduced-motion: parallax disabled when set.
+// Honors prefers-reduced-motion: no parallax for those users.
+// ─────────────────────────────────────────────────────────────
+
+
+// ╔═══════════════════════════════════════════════════════════╗
+// ║                       TUNING KNOBS                        ║
+// ║                                                           ║
+// ║  Edit these values to change size, position, opacity, and ║
+// ║  parallax speed for both substrate layers. The CSS below  ║
+// ║  reads from these constants — do NOT edit the CSS rules   ║
+// ║  by hand. Change the numbers here and the rest follows.   ║
+// ╚═══════════════════════════════════════════════════════════╝
+
+// ─── DYMAXION (front layer, the world map) ───
+const DYM = {
+  // Size — width as % of the substrate container.
+  // 100 = same width as container. >100 bleeds wider. <100 sits inside.
+  sizeDesktop: 120,   // % width on desktop / tablet
+  sizeMobile:  140,   // % width on phones (≤640px)
+
+  // Position offset from centre. 0 = perfectly centred.
+  // Positive offsetY pushes the map DOWN. Negative pushes UP.
+  // Positive offsetX pushes RIGHT. Negative pushes LEFT.
+  offsetX: 0,         // px horizontal offset
+  offsetY: 0,         // px vertical offset
+
+  // Opacity (0.0 transparent → 1.0 fully visible).
+  opacityLight: 0.15, // on parchment / light stage
+  opacityDark:  0.25, // on ink / dark stage (after invert)
+
+  // Parallax — fraction of scroll distance the layer moves.
+  // 0 = locked in place. 1 = scrolls with content normally.
+  // Lower = appears further back / slower.
+  parallax: 0.4,
+}
+
+// ─── STAR MAP (back layer, constellations) ───
+const STAR = {
+  // Size — bounded by max/min width in pixels.
+  // (Star map is circular and fixed-aspect, so we cap absolute size
+  // rather than use % of container.)
+  maxWidthDesktop: 1200,  // px upper bound on desktop
+  minWidthDesktop: 600,   // px lower bound on desktop
+  maxWidthMobile:  700,   // px upper bound on mobile
+  minWidthMobile:  400,   // px lower bound on mobile
+
+  // Position offset from centre.
+  offsetX: 0,
+  offsetY: 0,
+
+  // Opacity. Star-map source is white-on-transparent.
+  // On light stage we invert to dark-on-transparent.
+  opacityLight: 0.10, // on parchment (after invert)
+  opacityDark:  0.20, // on ink (no invert needed)
+
+  // Parallax — should be lower than DYM.parallax so stars feel
+  // further away than the world.
+  parallax: 0.2,
+}
+
+
+// ─────────────────────────────────────────────────────────────
+// Component implementation below. Don't edit unless you're
+// changing the structure.
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useRef } from 'react'
@@ -43,10 +96,16 @@ export default function WorldMapSubstrate() {
     const update = () => {
       const y = lastScrollY
       if (starRef.current) {
-        starRef.current.style.transform = `translate3d(-50%, calc(-50% + ${y * 0.2}px), 0)`
+        const dy = (STAR.offsetY) + (y * STAR.parallax)
+        const dx = STAR.offsetX
+        starRef.current.style.transform =
+          `translate3d(calc(-50% + ${dx}px), calc(-50% + ${dy}px), 0)`
       }
       if (dymRef.current) {
-        dymRef.current.style.transform = `translate3d(-50%, calc(-50% + ${y * 0.4}px), 0)`
+        const dy = (DYM.offsetY) + (y * DYM.parallax)
+        const dx = DYM.offsetX
+        dymRef.current.style.transform =
+          `translate3d(calc(-50% + ${dx}px), calc(-50% + ${dy}px), 0)`
       }
       ticking = false
     }
@@ -67,15 +126,22 @@ export default function WorldMapSubstrate() {
     }
   }, [])
 
+  // Initial position before parallax kicks in
+  const initialStarTransform =
+    `translate(calc(-50% + ${STAR.offsetX}px), calc(-50% + ${STAR.offsetY}px))`
+  const initialDymTransform =
+    `translate(calc(-50% + ${DYM.offsetX}px), calc(-50% + ${DYM.offsetY}px))`
+
   return (
     <div className="mc-substrate" aria-hidden="true">
-      <style>{SUBSTRATE_CSS}</style>
+      <style>{buildCSS()}</style>
 
       <img
         ref={starRef}
         src="/star-map.svg"
         alt=""
         className="mc-substrate-stars"
+        style={{ transform: initialStarTransform }}
       />
 
       <img
@@ -83,12 +149,15 @@ export default function WorldMapSubstrate() {
         src="/dymaxion-substrate.svg"
         alt=""
         className="mc-substrate-img"
+        style={{ transform: initialDymTransform }}
       />
     </div>
   )
 }
 
-const SUBSTRATE_CSS = `
+// CSS built from TUNING constants
+function buildCSS() {
+  return `
 .mc-substrate {
   position: absolute;
   top: 0;
@@ -100,22 +169,18 @@ const SUBSTRATE_CSS = `
   z-index: 0;
 }
 
-/* ─── Star map (back layer) ─────────────────────────────────── */
-/* Source SVG has white fills. Light stage: invert to dark.
-   Dark stage: keep white. */
-
+/* ─── Star map (back layer) ──────────────────────────── */
 .mc-substrate-stars {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 50%;
+  width: 100%;
   height: auto;
-  max-width: 1200px;
-  min-width: 600px;
+  max-width: ${STAR.maxWidthDesktop}px;
+  min-width: ${STAR.minWidthDesktop}px;
 
-  /* Light stage: invert white → dark, very faint */
-  opacity: 0.05;
+  /* Light stage: invert white-source to dark-on-transparent */
+  opacity: ${STAR.opacityLight};
   filter: invert(1);
 
   will-change: transform;
@@ -124,26 +189,23 @@ const SUBSTRATE_CSS = `
   pointer-events: none;
 }
 
-/* Dark stage: white stars on ink, no invert needed */
+/* Dark stage: white stars on ink, no invert */
 [data-stage="dark"] .mc-substrate-stars {
-  opacity: 0.12;
+  opacity: ${STAR.opacityDark};
   filter: none;
 }
 
-/* ─── Dymaxion (front layer) ────────────────────────────────── */
-
+/* ─── Dymaxion (front layer) ─────────────────────────── */
 .mc-substrate-img {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 120%;
+  width: ${DYM.sizeDesktop}%;
   height: auto;
-  min-height: 50%;
   max-width: none;
 
-  opacity: 0.10;
-  mix-blend-mode: multiply;
+  /* Light stage: dark continents on parchment */
+  opacity: ${DYM.opacityLight};
 
   will-change: transform;
   backface-visibility: hidden;
@@ -151,30 +213,20 @@ const SUBSTRATE_CSS = `
   pointer-events: none;
 }
 
+/* Dark stage: invert dark continents to light */
 [data-stage="dark"] .mc-substrate-img {
-  opacity: 0.18;
-  mix-blend-mode: screen;
+  opacity: ${DYM.opacityDark};
   filter: invert(1);
 }
 
-/* ─── Mobile ────────────────────────────────────────────────── */
-
+/* ─── Mobile ─────────────────────────────────────────── */
 @media (max-width: 640px) {
   .mc-substrate-stars {
-    opacity: 0.04;
-    max-width: 700px;
-    min-width: 400px;
+    max-width: ${STAR.maxWidthMobile}px;
+    min-width: ${STAR.minWidthMobile}px;
   }
-  [data-stage="dark"] .mc-substrate-stars {
-    opacity: 0.10;
-  }
-
   .mc-substrate-img {
-    width: 140%;
-    opacity: 0.08;
-  }
-  [data-stage="dark"] .mc-substrate-img {
-    opacity: 0.14;
+    width: ${DYM.sizeMobile}%;
   }
 }
 
@@ -185,3 +237,4 @@ const SUBSTRATE_CSS = `
   }
 }
 `
+}
