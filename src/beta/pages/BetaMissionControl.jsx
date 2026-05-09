@@ -44,6 +44,7 @@ import SideRail           from '../components/mission-control/SideRail'
 import Tile               from '../components/mission-control/Tile'
 import Panel              from '../components/mission-control/Panel'
 import CivDomainPanel             from '../components/mission-control/CivDomainPanel'
+import SelfDomainPanel            from '../components/mission-control/SelfDomainPanel'
 import MapMissionPanel            from '../components/mission-control/MapMissionPanel'
 import TargetSprintMissionPanel   from '../components/mission-control/TargetSprintMissionPanel'
 import HorizonPracticeMissionPanel from '../components/mission-control/HorizonPracticeMissionPanel'
@@ -63,6 +64,7 @@ import useMissionControlData from '../components/mission-control/useMissionContr
 import { BG_PARCHMENT, BG_INK } from '../components/mission-control/tokens'
 
 import { fetchDomains, STATIC_DOMAINS, TOP_LEVEL_GOAL } from '../../components/domain-explorer/data'
+import { SELF_DOMAINS, SELF_TOP_GOAL } from '../../components/self-explorer/selfData'
 
 // ─── Spoke order matters. These two arrays are the canonical
 //     order on Mission Control. The labels are what render on the
@@ -147,6 +149,56 @@ function buildScoreMap(mapRows, mapResults) {
 
 function countPlaced(current) {
   return SELF_KEYS.reduce((n, k) => n + (current[k] != null ? 1 : 0), 0)
+}
+
+// Build the per-domain detail lookup the SelfDomainPanel reads.
+// Keyed by SELF_KEYS (which match SELF_DOMAINS[i].id). Falls back
+// through the same source layering as buildScoreMap, but additionally
+// captures the user's own horizon_goal language and their I am / I do
+// statement when present on horizon_profile.
+function buildSelfDomainDetail(mapRows, mapResults) {
+  const out = {}
+  for (const k of SELF_KEYS) out[k] = { current: null, horizon: null, horizonGoal: null, iaStatement: null }
+
+  // Source 1 — horizon_profile rows
+  for (const row of (mapRows || [])) {
+    const k = row?.domain
+    if (!k || !out[k]) continue
+    if (row.current_score != null) out[k].current     = row.current_score
+    if (row.horizon_score != null) out[k].horizon     = row.horizon_score
+    if (row.horizon_goal)          out[k].horizonGoal = row.horizon_goal
+    if (row.ia_statement)          out[k].iaStatement = row.ia_statement
+  }
+
+  // Source 2 — map_results session blob fallback
+  const session = mapResults?.session
+  if (session && typeof session === 'object') {
+    const domainData    = session.domainData    || {}
+    const currentScores = session.currentScores || {}
+    const horizonScores = session.horizonScores || {}
+    const horizonGoals  = session.horizonGoals  || {}
+    const iaStatements  = session.iaStatements  || session.ia_statements || {}
+    for (const k of SELF_KEYS) {
+      if (out[k].current == null) {
+        if (domainData[k]?.currentScore != null)   out[k].current = domainData[k].currentScore
+        else if (currentScores[k] != null)         out[k].current = currentScores[k]
+      }
+      if (out[k].horizon == null) {
+        if (domainData[k]?.horizonScore != null)   out[k].horizon = domainData[k].horizonScore
+        else if (horizonScores[k] != null)         out[k].horizon = horizonScores[k]
+      }
+      if (!out[k].horizonGoal) {
+        if (domainData[k]?.horizonGoal)            out[k].horizonGoal = domainData[k].horizonGoal
+        else if (horizonGoals[k])                  out[k].horizonGoal = horizonGoals[k]
+      }
+      if (!out[k].iaStatement) {
+        if (domainData[k]?.iaStatement)            out[k].iaStatement = domainData[k].iaStatement
+        else if (iaStatements[k])                  out[k].iaStatement = iaStatements[k]
+      }
+    }
+  }
+
+  return out
 }
 
 function activeSprintKey(sprintData) {
@@ -259,6 +311,10 @@ export default function BetaMissionControl() {
     () => buildScoreMap(data.mapData, data.mapResults),
     [data.mapData, data.mapResults]
   )
+  const selfDomainDetail = useMemo(
+    () => buildSelfDomainDetail(data.mapData, data.mapResults),
+    [data.mapData, data.mapResults]
+  )
   const placedCount = countPlaced(selfCurrent)
   const sprintKey = activeSprintKey(data.sprintData)
 
@@ -291,6 +347,14 @@ export default function BetaMissionControl() {
   const [showOverview,    setShowOverview]    = useState(true)
   const [bloomCiv,        setBloomCiv]        = useState(false)
   const landedIndexRef = useRef(0)
+
+  // ── Self navigation state
+  // selfActiveIndex: which domain is featured below the personal wheel.
+  //   null = idle (overview shown). 0..6 = a domain selected.
+  // selfShowOverview: top-level idle copy ("A Life Fully Expressed")
+  //   shown when no domain has been picked yet.
+  const [selfActiveIndex,  setSelfActiveIndex]  = useState(null)
+  const [selfShowOverview, setSelfShowOverview] = useState(true)
 
   // Trigger civ wheel bloom the first time we flip to civ
   useEffect(() => {
@@ -421,6 +485,26 @@ export default function BetaMissionControl() {
       ? domainTree[levelPath[0].index]?.id
       : selectedItem?.id
     navigate(`/nextus/actors${rootDomainId ? `?domain=${rootDomainId}` : ''}`)
+  }
+
+  // ── Self callbacks. SELF_KEYS at index i pairs with SELF_DOMAINS at
+  // the same index — both arrays are in canonical wheel-spoke order.
+  const handleSelfSelect = (i) => {
+    if (i == null || i < 0 || i >= SELF_DOMAINS.length) return
+    setSelfActiveIndex(i)
+    setSelfShowOverview(false)
+  }
+  const handleSelfPrev = () => {
+    const len = SELF_DOMAINS.length
+    if (!len) return
+    setSelfActiveIndex(prev => prev === null ? 0 : (prev - 1 + len) % len)
+    setSelfShowOverview(false)
+  }
+  const handleSelfNext = () => {
+    const len = SELF_DOMAINS.length
+    if (!len) return
+    setSelfActiveIndex(prev => prev === null ? 0 : (prev + 1) % len)
+    setSelfShowOverview(false)
   }
 
   // Keyboard arrows on the civ side step domains (left/right).
@@ -616,9 +700,10 @@ export default function BetaMissionControl() {
                 keys:      SELF_KEYS,
                 horizons:  selfHorizons,
                 current:   selfCurrent,
-                activeKey: sprintKey,
+                activeKey: selfActiveIndex !== null ? SELF_KEYS[selfActiveIndex] : sprintKey,
                 walkers:   personalWalkers,
                 isEmpty:   placedCount === 0,
+                onSelect:  handleSelfSelect,
               }}
               civProps={{
                 labels:        wheelLabels,
@@ -668,10 +753,24 @@ export default function BetaMissionControl() {
 
         </div>
 
-        {/* SCROLL-BELOW — civ side gets the slim domain panel.
-            Self side gets nothing for now; both action cards have
-            been removed (the prompts live in tile/panel surfaces
-            instead). */}
+        {/* SCROLL-BELOW — civ side gets the slim civ-domain panel.
+            Self side now gets its parchment-mode counterpart, fed
+            with the user's actual Map data per domain. */}
+        {!isCiv && (
+          <SelfDomainPanel
+            currentList={SELF_DOMAINS}
+            selectedItem={selfActiveIndex !== null ? SELF_DOMAINS[selfActiveIndex] : null}
+            showOverview={selfShowOverview && selfActiveIndex === null}
+            topLevelGoal={SELF_TOP_GOAL}
+            userScores={selfDomainDetail}
+            onSelect={handleSelfSelect}
+            onPrev={handleSelfPrev}
+            onNext={handleSelfNext}
+            onOpenMap={() => openPersonalPanel('map')}
+            onOpenSprint={() => openPersonalPanel('target-sprint')}
+            onOpenPractice={() => openPersonalPanel('horizon-practice')}
+          />
+        )}
         {isCiv && (
           <CivDomainPanel
             levelPath={levelPath}

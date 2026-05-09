@@ -149,6 +149,7 @@ function SelfWheel({
   walkers = {},
   isEmpty = false,
   dark = false,
+  onSelect,        // (i) => void  — optional. When provided, labels and tip dots become clickable.
 }) {
   const cx = CX
   const cy = CY
@@ -226,7 +227,24 @@ function SelfWheel({
               stroke={spokeStroke}
               strokeWidth="1"
             />
-            <circle cx={tx} cy={ty} r={3} fill="rgba(200,146,42,0.5)" />
+            {/* Hit target — invisible larger circle behind the visible tip
+                so taps on a small dot are forgiving. Only renders when
+                onSelect is wired. */}
+            {onSelect && (
+              <circle
+                cx={tx} cy={ty} r={14}
+                fill="transparent"
+                style={{ cursor: 'pointer' }}
+                onClick={() => onSelect(i)}
+              >
+                <title>{labels[i]}</title>
+              </circle>
+            )}
+            <circle
+              cx={tx} cy={ty} r={3}
+              fill="rgba(200,146,42,0.5)"
+              style={onSelect ? { cursor: 'pointer', pointerEvents: 'none' } : undefined}
+            />
           </g>
         )
       })}
@@ -243,12 +261,15 @@ function SelfWheel({
             x={pos.x}
             y={pos.y}
             textAnchor={pos.anchor}
+            onClick={onSelect ? () => onSelect(i) : undefined}
             style={{
               fontFamily: FONT_SC,
               fontSize: 10.5,
               letterSpacing: '0.18em',
               fill: isActive ? labelActiveFill : labelFill,
               fontWeight: isActive ? 600 : 400,
+              cursor: onSelect ? 'pointer' : undefined,
+              userSelect: 'none',
             }}
           >
             {txt}
