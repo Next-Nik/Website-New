@@ -24,7 +24,16 @@
 //   currentList:  [domain, ...]   the seven SELF_DOMAINS
 //   selectedItem: domain | null   the currently featured domain
 //   showOverview: boolean         top-level idle
-//   topLevelGoal: string          SELF_TOP_GOAL
+//   topLevelGoal: string          SELF_TOP_GOAL (canonical fallback)
+//   lifeHorizon:  string | null   user's own life-level horizon goal
+//                                 (mapResults.horizon_goal_user, falling
+//                                 back to horizon_goal_system, then to
+//                                 mapData.life_horizon_draft). When
+//                                 present, displaces the canonical goal.
+//   lifeIa:       string | null   user's own life-level I am statement
+//                                 (mapResults.life_ia_statement). No
+//                                 canonical fallback — IA is by definition
+//                                 the user's own words.
 //   userScores:   { [domainId]: { current, horizon, horizonGoal, iaStatement } }
 //                 keyed by domain.id (path / spark / body / finances /
 //                 connection / inner_game / signal)
@@ -34,6 +43,7 @@
 //   onOpenMap:       () => void   call to action — open The Map
 //   onOpenSprint:    () => void   call to action — start a sprint
 //   onOpenPractice:  () => void   call to action — Horizon Practice
+//   onOpenHorizonState: () => void  call to action — set IA via Horizon State
 // ─────────────────────────────────────────────────────────────
 
 import {
@@ -41,12 +51,16 @@ import {
   TEXT_INK, TEXT_META, TEXT_FAINT,
   FONT_DISPLAY, FONT_SC, FONT_BODY,
 } from './tokens'
+import SelfDomainResources from './SelfDomainResources'
+import { getCuratedFor, scoreToBand } from '../../constants/selfResources'
 
 export default function SelfDomainPanel({
   currentList = [],
   selectedItem = null,
   showOverview = false,
   topLevelGoal = '',
+  lifeHorizon = null,
+  lifeIa = null,
   userScores = {},
   onSelect,
   onPrev,
@@ -54,6 +68,7 @@ export default function SelfDomainPanel({
   onOpenMap,
   onOpenSprint,
   onOpenPractice,
+  onOpenHorizonState,
 }) {
   const isOverview = showOverview && !selectedItem
   const itemForDisplay = selectedItem
@@ -103,34 +118,72 @@ export default function SelfDomainPanel({
       {/* Body — overview or domain */}
       <div className="mc-self-body">
 
-        {isOverview && (
-          <div className="mc-self-overview">
-            <h2 className="mc-self-title">A Life Fully Expressed</h2>
-            <div className="mc-self-rule" />
-            <p className="mc-self-body-text">
-              Seven domains. Each one a real territory in the life you are actually living. The Map measures where you are and where you are headed in each. Mission Control is where you can see them together, and step into any one to read the ground.
-            </p>
-            <p className="mc-self-body-text">
-              Tap a domain on the wheel above, or pick one below.
-            </p>
-            {topLevelGoal && (
-              <p className="mc-self-goal">{topLevelGoal}</p>
-            )}
-            <ul className="mc-self-chips">
-              {currentList.map((d, i) => (
-                <li key={d.id || i}>
-                  <button
-                    type="button"
-                    className="mc-self-chip"
-                    onClick={() => onSelect?.(i)}
-                  >
-                    {d.name}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {isOverview && (() => {
+          // Resolve display values. The user's own words always take
+          // precedence; canonical falls back only if nothing user-specific.
+          const hasLifeHorizon = !!(lifeHorizon && String(lifeHorizon).trim())
+          const hasLifeIa      = !!(lifeIa      && String(lifeIa).trim())
+          const showCanonical  = !hasLifeHorizon  // canonical only when the user has not authored their own
+          return (
+            <div className="mc-self-overview">
+              <p className="mc-self-eyebrow">YOUR LIFE</p>
+              <h2 className="mc-self-title">
+                {hasLifeHorizon ? 'Your Horizon' : 'A Life Fully Expressed'}
+              </h2>
+              <div className="mc-self-rule" />
+
+              {hasLifeHorizon ? (
+                <p className="mc-self-life-horizon">{lifeHorizon}</p>
+              ) : (
+                <>
+                  <p className="mc-self-body-text">
+                    Seven domains. Each one a real territory in the life you are actually living. The Map measures where you are and where you are headed in each, and asks you to write the horizon you are aiming at in your own words.
+                  </p>
+                  {showCanonical && topLevelGoal && (
+                    <p className="mc-self-goal">{topLevelGoal}</p>
+                  )}
+                  {onOpenMap && (
+                    <p className="mc-self-empty-text" style={{ marginTop: 8 }}>
+                      Open The Map to write yours.
+                    </p>
+                  )}
+                </>
+              )}
+
+              {hasLifeIa && (
+                <div className="mc-self-ia-block">
+                  <p className="mc-self-section-label">I AM</p>
+                  <p className="mc-self-ia-statement">{lifeIa}</p>
+                </div>
+              )}
+              {!hasLifeIa && hasLifeHorizon && onOpenHorizonState && (
+                <div className="mc-self-ia-block mc-self-ia-empty">
+                  <p className="mc-self-section-label">I AM</p>
+                  <p className="mc-self-empty-text">
+                    Your I am statement will appear here once you have set it. Open Horizon State to write yours.
+                  </p>
+                </div>
+              )}
+
+              <p className="mc-self-section-label" style={{ marginTop: 24 }}>
+                THE SEVEN DOMAINS
+              </p>
+              <ul className="mc-self-chips">
+                {currentList.map((d, i) => (
+                  <li key={d.id || i}>
+                    <button
+                      type="button"
+                      className="mc-self-chip"
+                      onClick={() => onSelect?.(i)}
+                    >
+                      {d.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        })()}
 
         {!isOverview && itemForDisplay && (
           <div className="mc-self-domain">
@@ -222,6 +275,24 @@ export default function SelfDomainPanel({
                 </button>
               )}
             </div>
+
+            {/* Resources for this domain — Layer A (curated) is wired
+                via getCuratedFor; Layer B (web) is unwired in step 2 and
+                comes online in step 4. */}
+            {(() => {
+              const band = scoreToBand(userScore?.current)
+              const curated = getCuratedFor(itemForDisplay.id, band)
+              return (
+                <SelfDomainResources
+                  domain={itemForDisplay}
+                  currentScore={userScore?.current}
+                  horizonScore={userScore?.horizon}
+                  curated={curated}
+                  webResults={null}
+                  webStatus="unwired"
+                />
+              )
+            })()}
           </div>
         )}
 
@@ -359,6 +430,50 @@ const PANEL_CSS = `
   color: ${GOLD_DK};
   margin: 18px 0 14px;
   line-height: 1.5;
+}
+
+/* Eyebrow above the life-overview title */
+.mc-self-eyebrow {
+  font-family: ${FONT_SC};
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  color: ${GOLD_DK};
+  margin: 0 0 6px;
+}
+
+/* The user's own life-level horizon goal — the centrepiece of overview
+   when present. Larger and warmer than a per-domain horizon line so the
+   home base reads as the home base. */
+.mc-self-life-horizon {
+  font-family: ${FONT_DISPLAY};
+  font-size: 22px;
+  font-style: italic;
+  font-weight: 400;
+  color: ${TEXT_INK};
+  line-height: 1.45;
+  margin: 14px 0 6px;
+}
+
+/* I am statement block — appears under the life horizon goal in overview,
+   and as a soft empty-state pointer at Horizon State when not yet authored. */
+.mc-self-ia-block {
+  margin: 22px 0 6px;
+  padding: 14px 18px;
+  background: ${GOLD_FAINT};
+  border-radius: 14px;
+  border: 1px solid ${GOLD_RULE};
+}
+.mc-self-ia-block.mc-self-ia-empty {
+  background: transparent;
+  border: 1px dashed ${GOLD_RULE};
+}
+.mc-self-ia-statement {
+  font-family: ${FONT_BODY};
+  font-size: 16px;
+  font-style: italic;
+  color: ${TEXT_INK};
+  line-height: 1.55;
+  margin: 6px 0 0;
 }
 
 /* Real Map readout — current vs horizon */
@@ -502,6 +617,8 @@ button.mc-self-chip:hover {
   }
   .mc-self-title { font-size: 24px; }
   .mc-self-horizon { font-size: 15px; }
+  .mc-self-life-horizon { font-size: 19px; }
+  .mc-self-ia-statement { font-size: 15px; }
   .mc-self-body-text { font-size: 14px; }
   .mc-self-stepper {
     gap: 10px;

@@ -315,6 +315,18 @@ export default function BetaMissionControl() {
     () => buildSelfDomainDetail(data.mapData, data.mapResults),
     [data.mapData, data.mapResults]
   )
+  // Life-level horizon goal and I am statement. The user's own words always
+  // win — canonical SELF_TOP_GOAL is a fallback the panel applies only when
+  // nothing user-specific is present. IA has no canonical fallback by design.
+  const lifeHorizon = useMemo(() => {
+    return (
+      data.mapResults?.horizon_goal_user ||
+      data.mapResults?.horizon_goal_system ||
+      data.mapData?.life_horizon_draft ||
+      null
+    )
+  }, [data.mapResults, data.mapData])
+  const lifeIa = data.mapResults?.life_ia_statement || null
   const placedCount = countPlaced(selfCurrent)
   const sprintKey = activeSprintKey(data.sprintData)
 
@@ -505,6 +517,13 @@ export default function BetaMissionControl() {
     if (!len) return
     setSelfActiveIndex(prev => prev === null ? 0 : (prev + 1) % len)
     setSelfShowOverview(false)
+  }
+  // Tapping the centre of the personal wheel returns the user to their
+  // life-level overview — the home base — regardless of which domain
+  // they were in. Hard switch, matches the existing wheel feel.
+  const handleSelfCentreClick = () => {
+    setSelfActiveIndex(null)
+    setSelfShowOverview(true)
   }
 
   // Keyboard arrows on the civ side step domains (left/right).
@@ -704,6 +723,7 @@ export default function BetaMissionControl() {
                 walkers:   personalWalkers,
                 isEmpty:   placedCount === 0,
                 onSelect:  handleSelfSelect,
+                onCentreClick: handleSelfCentreClick,
               }}
               civProps={{
                 labels:        wheelLabels,
@@ -762,6 +782,8 @@ export default function BetaMissionControl() {
             selectedItem={selfActiveIndex !== null ? SELF_DOMAINS[selfActiveIndex] : null}
             showOverview={selfShowOverview && selfActiveIndex === null}
             topLevelGoal={SELF_TOP_GOAL}
+            lifeHorizon={lifeHorizon}
+            lifeIa={lifeIa}
             userScores={selfDomainDetail}
             onSelect={handleSelfSelect}
             onPrev={handleSelfPrev}
@@ -769,6 +791,7 @@ export default function BetaMissionControl() {
             onOpenMap={() => openPersonalPanel('map')}
             onOpenSprint={() => openPersonalPanel('target-sprint')}
             onOpenPractice={() => openPersonalPanel('horizon-practice')}
+            onOpenHorizonState={() => openPersonalPanel('horizon-state')}
           />
         )}
         {isCiv && (

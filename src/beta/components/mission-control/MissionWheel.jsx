@@ -150,6 +150,7 @@ function SelfWheel({
   isEmpty = false,
   dark = false,
   onSelect,        // (i) => void  — optional. When provided, labels and tip dots become clickable.
+  onCentreClick,   // () => void   — optional. When provided, an invisible centre hit target returns the user to overview.
 }) {
   const cx = CX
   const cy = CY
@@ -385,6 +386,24 @@ function SelfWheel({
           </g>
         )
       })()}
+
+      {/* Centre hit target — invisible, returns to overview when clicked.
+          Only renders when onCentreClick is wired. Sits above all other
+          layers but is transparent, so it does not change the look of the
+          wheel; it just gives the centre a forgiving 24px tap zone. */}
+      {onCentreClick && (
+        <circle
+          cx={cx}
+          cy={cy}
+          r={24}
+          fill="transparent"
+          style={{ cursor: 'pointer' }}
+          onClick={onCentreClick}
+          aria-label="Return to your life overview"
+        >
+          <title>Your life overview</title>
+        </circle>
+      )}
     </svg>
   )
 }
