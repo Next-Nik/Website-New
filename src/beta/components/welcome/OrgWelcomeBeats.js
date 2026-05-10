@@ -2,27 +2,30 @@
 // OrgWelcomeBeats.js
 //
 // Beat data for the org-side welcome narrative. Mirrors the
-// Kin welcome's structure (Act 1 internal → Act 2 civ → Act 3
-// convergence → closing) but with an organisation as the worked
+// Kin welcome's structure with an organisation as the worked
 // example.
 //
 // The example: HEARTH LAB — a small applied-research lab working
 // on neighbourhood-scale food systems. Composite. Not a real org.
-// Edit the names, copy, and scores freely; the structure does the
-// load-bearing work.
 //
-// Seven org-coherence dimensions (the org's "personal" side):
+// Seven org-coherence dimensions (the org's internal map):
 //   Purpose · Practice · People · Resources · Reach · Reflection · Renewal
 //
-// Seven civ domains (the same ones as the individual flow):
-//   Human · Society · Nature · Tech · Finance · Legacy · Vision
+// May 2026 alignment update:
+//   - Archetype beat removed. Archetype isn't surfaced anywhere on
+//     the platform today; the intro shouldn't promise a tool that
+//     doesn't exist.
+//   - World View beat added. The state-of-the-world surface is the
+//     biggest new thing the platform offers an org placing itself
+//     in a civ domain.
+//   - "Mission" language replaced with "Offering" to match the
+//     vocabulary an org actually uses on their manage page.
+//   - "The Org Map" mentioned softly — described as the frame
+//     rather than as a tool the org has already used. When The
+//     Org Map exists, this language becomes literal; for now it's
+//     a way of looking, not an instrument.
 //
-// May 2026 update — domain colour identity:
-//   Civ domain colours sourced from /constants/domainColors.js.
-//   Org-coherence dimensions (purpose, practice, etc.) inherit the
-//   same seven palette by index — Purpose takes Path's maroon,
-//   Practice takes Spark's orange, and so on. This is provisional;
-//   if Org Coherence ever earns its own locked palette, swap here.
+// 10 beats: Act 1 (3) + Act 2 (4) + Act 3 (2) + Closing (1).
 // ─────────────────────────────────────────────────────────────
 
 import { CIV_COLORS, DOMAIN_COLORS, SELF_KEYS_ORDERED } from '../../../constants/domainColors'
@@ -32,8 +35,8 @@ export const SELF_LABELS = ['Purpose', 'Practice', 'People', 'Resources', 'Reach
 export const SELF_KEYS   = ['purpose', 'practice', 'people', 'resources', 'reach', 'reflection', 'renewal']
 
 // Hearth Lab's coherence scores. Same shape as Kin's: middling-to-good
-// with two clear weak spots. They have strong practice and reach (good at
-// the work, known in their niche) but Resources is fragile and Renewal
+// with two clear weak spots. Strong practice and reach (good at the
+// work, known in their niche) but Resources is fragile and Renewal
 // is non-existent (everyone's tired).
 export const HEARTH_HORIZONS = {
   purpose: 8, practice: 7, people: 7, resources: 7,
@@ -57,14 +60,9 @@ export const CIV_DOMAINS = [
 export const HEARTH_CIV_PRIMARY = 'society'
 export const HEARTH_CIV_ENGAGED = ['nature', 'human-being']
 
-// Domain-coloured vertex helper. Org dimensions don't have their
-// own locked palette; we map by index to the seven personal-domain
-// colours so the wheel speaks the same colour language as everywhere
-// else. Provisional — see header comment.
-//
-// Signature kept (current, horizon) for backwards compatibility, with
-// the third argument carrying the dimension key. Without a key we
-// fall back to gold so the wheel still renders rather than breaking.
+// Domain-coloured vertex helper. Org dimensions map by index to the
+// seven personal-domain colours so the wheel speaks the same colour
+// language as everywhere else. Provisional — see header comment.
 const ORG_KEY_TO_SELF_KEY = {
   purpose:    SELF_KEYS_ORDERED[0],   // path     — maroon
   practice:   SELF_KEYS_ORDERED[1],   // spark    — orange
@@ -85,13 +83,13 @@ export function getTierColor(current, horizon, key) {
 // ─── Headers per act ───────────────────────────────────────
 export const HEADERS = {
   internal: {
-    eyebrow: 'The Org Map · Hearth Lab from the inside',
+    eyebrow: 'Inside the lab · Hearth Lab from the inside',
     meet: 'Meet',
     name: 'Hearth Lab',
     tagline: 'A small applied-research lab in Lisbon, working on neighbourhood food systems. Six people. Five years in. Doing real work, but stretched thin and not always sure where the work is going.',
   },
   external: {
-    eyebrow: 'The Purpose Piece · Hearth Lab in the larger picture',
+    eyebrow: 'In the picture · Hearth Lab in the larger world',
     meet: 'Out in the world',
     name: 'Hearth Lab',
     tagline: "Hearth Lab wants the work to land where it matters, not just where it's easy. The Purpose Piece places the lab in something larger — at the scale and scope that fits.",
@@ -104,8 +102,9 @@ export const ACT3_HEADER = {
   name: 'Hearth Lab',
 }
 
-// ─── The 10-beat sequence ──────────────────────────────────
+// ─── The beat sequence ─────────────────────────────────────
 export const BEATS = [
+
   // ─── Act 1 — Internal Hearth Lab (parchment) ───
   {
     id: 'internal-wheel',
@@ -118,7 +117,7 @@ export const BEATS = [
     content: {
       kind: 'simple',
       label: 'Where Hearth Lab is now',
-      body: `The Org Map shows where the lab actually stands. <span class="accent">Renewal is the lowest — the team is worn out.</span> Resources are thin. Reflection happens in fits and starts. Purpose, Practice and Reach are holding the org up: people know what they're doing, the work is good, and the right people know about it.`,
+      body: `An organisation has seven dimensions of coherence too — different from a person's, but recognisably the same shape. <span class="accent">Renewal is the lowest — the team is worn out.</span> Resources are thin. Reflection happens in fits and starts. Purpose, Practice and Reach are holding the lab up: they know what they're doing, the work is good, and the right people know about it.`,
     },
   },
   {
@@ -130,6 +129,7 @@ export const BEATS = [
       body: `Steady funding so the team isn't always six months from broke. A weekly rhythm that includes rest, not just delivery. Clearer reflection — what worked, what didn't, what's next. <span class="accent">Not bigger. Just less fragile, and more itself.</span>`,
     },
   },
+
   // ─── Act 2 — External Hearth Lab (DARK theme) ───
   {
     id: 'external-wheel-spin',
@@ -142,7 +142,7 @@ export const BEATS = [
     content: {
       kind: 'simple',
       label: 'The domain',
-      body: `Based on Hearth Lab's responses, the Purpose Piece placed the lab in <span class="accent">Society</span> — the work of how people live together, organise, and feed each other.`,
+      body: `The Purpose Piece tool reads Hearth Lab's responses and places the lab in <span class="accent">Society</span> — the work of how people live together, organise, and feed each other. Seven civilisational domains; this is the one the lab's work points toward.`,
     },
   },
   {
@@ -155,12 +155,12 @@ export const BEATS = [
     },
   },
   {
-    id: 'external-archetype',
+    id: 'external-world-view',
     act: 2, header: 'external', wheel: 'civ', wheelMode: 'scale-zoom', dark: true,
     content: {
       kind: 'simple',
-      label: 'The archetype',
-      body: `Hearth Lab's archetype is <span class="accent">Anchor</span> — the org-shape that holds a place where the work happens. People come, the work is done, the place stays. Anchors don't scale. They hold.`,
+      label: 'The state of the world',
+      body: `<span class="accent">World View</span> opens the planetary picture for the domain Hearth Lab works in. Live data on the conditions an org's work is meant to affect — and honest gaps where the data isn't yet there. Hearth Lab can see what's holding, what's failing, and what other orgs are already attending to.`,
     },
   },
   {
@@ -169,9 +169,10 @@ export const BEATS = [
     content: {
       kind: 'simple',
       label: 'What that placement gives Hearth Lab',
-      body: `This places Hearth Lab in front of the people, funders, and adjacent orgs working on the same shape of problem at the same scale — surfacing connections that fit, instead of generic ones that don't.`,
+      body: `Placement puts Hearth Lab in front of the people, funders, and adjacent orgs working on the same shape of problem at the same scale — surfacing aligned offerings, needs, and contributors instead of generic ones. <span class="accent">From "we need help" to "here are the people who fit."</span>`,
     },
   },
+
   // ─── Act 3 — Convergence (parchment, no wheel) ───
   {
     id: 'act3-convergence',
@@ -189,13 +190,14 @@ export const BEATS = [
         },
         {
           label: 'On the external side',
-          eyebrow: 'Mission · Open · accepting',
+          eyebrow: 'Offering · Open kitchen · monthly',
           body: 'Hosting one open kitchen night a month for adjacent orgs. People show up, eat, swap notes. No agenda.',
           meta: 'Scale · Neighbourhood · Frequency · Monthly',
         },
       ],
     },
   },
+
   // ─── Closing ───
   {
     id: 'closing',
@@ -204,7 +206,7 @@ export const BEATS = [
       kind: 'closing',
       handoff: "Hearth Lab is in the picture — placed, connected,<br/>with a clear next move on each side.",
       headline: 'Your turn.',
-      subheadline: "Bring <span class=\"accent\">your organisation</span> in?",
+      subheadline: 'Bring <span class="accent">your organisation</span> in?',
     },
   },
 ]
@@ -212,7 +214,6 @@ export const BEATS = [
 // ─── Pre-packaged wheel data for the overlay ───────────────
 // Hearth Lab's org welcome uses the same scale rings as the
 // individual flow (lit at neighbourhood). No override needed today.
-// If org-side scale ever needs different rings, set scaleRings here.
 export const HEARTH_SELF_DATA = {
   labels:   SELF_LABELS,
   keys:     SELF_KEYS,

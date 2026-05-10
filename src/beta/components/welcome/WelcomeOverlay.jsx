@@ -19,6 +19,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import WelcomeWheel from './WelcomeWheel'
+import WorldMapSubstrate from '../mission-control/WorldMapSubstrate'
 
 // ─── Beat content renderers ────────────────────────────────
 function BeatContent({ content }) {
@@ -261,8 +262,10 @@ export default function WelcomeOverlay({
   const cardClass = `overlay-card${beat.dark ? ' dark' : ''}`
 
   return (
-    <div className="welcome-root">
+    <div className="welcome-root" data-stage={beat.dark ? 'dark' : 'light'}>
       <style>{WELCOME_CSS}</style>
+
+      <WorldMapSubstrate />
 
       <TopNavStrip
         onSignIn={handleSignIn}
@@ -345,6 +348,10 @@ const WELCOME_CSS = `
   line-height: 1.65;
   overflow: hidden;
   z-index: 1;
+  transition: background 0.9s ease-out;
+}
+.welcome-root[data-stage="dark"] {
+  background: var(--bg-ink);
 }
 
 /* Top nav strip — Sign in (real skip) + Skip ahead (narrative skip) */
@@ -383,6 +390,7 @@ const WELCOME_CSS = `
   align-items: center;
   justify-content: center;
   padding: 64px 24px 24px;
+  z-index: 2;
 }
 
 .overlay-card {

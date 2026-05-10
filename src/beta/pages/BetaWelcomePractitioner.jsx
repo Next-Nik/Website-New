@@ -1,19 +1,12 @@
 // ─────────────────────────────────────────────────────────────
-// BetaOrgWelcome — /beta/welcome/org
+// BetaWelcomePractitioner — /beta/welcome/practitioner
 //
-// The org intro. Reached from the starter at /beta/welcome via
-// the "I represent an organisation" choice.
+// The practitioner intro. Reached from the starter at /beta/welcome
+// via the "I offer work others might want" choice.
 //
-// Same overlay engine, different beats, different closing path:
-// the Kin intro lands at /login because logging in completes
-// the journey. The org intro lands at a "bring your org in"
-// onboarding path which doesn't yet exist — for now it routes
-// to a placeholder that captures interest while the flow is
-// built.
-//
-// On completion the overlay sets the nextus.welcomeSeen flag —
-// same flag as the Kin path. Anyone who has seen any intro is
-// considered acquainted with the platform's first impression.
+// Same engine, different protagonist, different closing path. The
+// practitioner onboarding flow doesn't exist yet; this lands at a
+// placeholder for now, replaced when Phase 2 ships.
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect } from 'react'
@@ -21,19 +14,16 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import WelcomeOverlay from '../components/welcome/WelcomeOverlay'
 import {
   BEATS, HEADERS, ACT3_HEADER,
-  HEARTH_SELF_DATA, HEARTH_CIV_DATA,
-} from '../components/welcome/OrgWelcomeBeats'
+  ASHA_SELF_DATA, ASHA_CIV_DATA,
+} from '../components/welcome/PractitionerWelcomeBeats'
 import { useAuth } from '../../hooks/useAuth'
 import { WELCOME_SEEN_KEY } from './BetaWelcomeSelf'
 
-export default function BetaOrgWelcome() {
+export default function BetaWelcomePractitioner() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const { user, loading } = useAuth()
-  // Default landing target after the intro. Until the org
-  // onboarding flow exists, we send the visitor to a placeholder
-  // queue page (Phase 2 will replace this with the real flow).
-  const returnTo = params.get('return') || '/beta/welcome/org-next'
+  const returnTo = params.get('return') || '/beta/welcome/practitioner-next'
 
   useEffect(() => {
     if (!loading && user) {
@@ -61,11 +51,11 @@ export default function BetaOrgWelcome() {
       beats={BEATS}
       headers={HEADERS}
       act3Header={ACT3_HEADER}
-      selfData={HEARTH_SELF_DATA}
-      civData={HEARTH_CIV_DATA}
+      selfData={ASHA_SELF_DATA}
+      civData={ASHA_CIV_DATA}
       returnTo={returnTo}
       onDismiss={handleDismiss}
-      closingCta="Bring your organisation in →"
+      closingCta="Bring your work in →"
     />
   )
 }

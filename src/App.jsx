@@ -62,7 +62,11 @@ import { WatchPage }              from './pages/Watch'
 // ── Beta pages (Section 7 of NextUs Beta Build Architecture v1.2) ──
 // Open access during the build. Walk the new flow at /beta/dashboard.
 import BetaMissionControl         from './beta/pages/BetaMissionControl'
-import BetaWelcome                from './beta/pages/BetaWelcome'
+import BetaWelcomeStart           from './beta/pages/BetaWelcomeStart'
+import BetaWelcomeSelf            from './beta/pages/BetaWelcomeSelf'
+import BetaOrgWelcome             from './beta/pages/BetaOrgWelcome'
+import BetaWelcomePractitioner    from './beta/pages/BetaWelcomePractitioner'
+import BetaWelcomeNext            from './beta/pages/BetaWelcomeNext'
 import BetaIntroGate              from './beta/components/BetaIntroGate'
 import BetaProfileEdit            from './beta/pages/BetaProfileEdit'
 import { BetaPublicProfile }      from './beta/pages/BetaPublicProfile'
@@ -157,9 +161,14 @@ function AppInner() {
         <Route path="/tools/horizon-practice"    element={<HorizonPracticePage />} />
 
         {/* ── Beta — open access during the build. /beta lands on Mission Control. ── */}
-        <Route path="/beta"                      element={<Navigate to="/beta/dashboard" replace />} />
-        <Route path="/beta/welcome"              element={<BetaWelcome />} />
-        <Route path="/beta/dashboard"            element={<BetaIntroGate><BetaMissionControl /></BetaIntroGate>} />
+        <Route path="/beta"                              element={<Navigate to="/beta/dashboard" replace />} />
+        <Route path="/beta/welcome"                      element={<BetaWelcomeStart />} />
+        <Route path="/beta/welcome/self"                 element={<BetaWelcomeSelf />} />
+        <Route path="/beta/welcome/org"                  element={<BetaOrgWelcome />} />
+        <Route path="/beta/welcome/practitioner"         element={<BetaWelcomePractitioner />} />
+        <Route path="/beta/welcome/org-next"             element={<BetaWelcomeNext />} />
+        <Route path="/beta/welcome/practitioner-next"    element={<BetaWelcomeNext />} />
+        <Route path="/beta/dashboard"                    element={<BetaIntroGate><BetaMissionControl /></BetaIntroGate>} />
         <Route path="/beta/profile/edit"         element={<BetaProfileEdit />} />
         <Route path="/beta/profile/:id"          element={<BetaPublicProfile />} />
         <Route path="/beta/feed"                 element={<BetaFeedPage />} />
