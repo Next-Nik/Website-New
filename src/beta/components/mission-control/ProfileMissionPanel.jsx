@@ -44,6 +44,19 @@ function formatDate(iso) {
   } catch { return null }
 }
 
+function formatRegion(code) {
+  switch (code) {
+    case 'US': return 'United States'
+    case 'UK': return 'United Kingdom'
+    case 'EU': return 'Europe (EU)'
+    case 'CA': return 'Canada'
+    case 'AU': return 'Australia'
+    case 'NZ': return 'New Zealand'
+    case 'OTHER': return 'Somewhere else'
+    default: return code || ''
+  }
+}
+
 export default function ProfileMissionPanel({ user, onNavigate }) {
   const [horizonSelf,   setHorizonSelf]   = useState(user?.user_metadata?.horizon_self || '')
   const [editing,       setEditing]       = useState(false)
@@ -51,6 +64,15 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
   const [savingPulse,   setSavingPulse]   = useState(false)
   const [userRow,       setUserRow]       = useState(null)
   const [loaded,        setLoaded]        = useState(false)
+
+  // Optional location. Free text plus a routing region. Used by the
+  // Resources Engine to surface region-appropriate crisis-band
+  // pointers; never used elsewhere, never required.
+  const [location,        setLocation]        = useState('')
+  const [region,          setRegion]          = useState('')
+  const [editingLocation, setEditingLocation] = useState(false)
+  const [savingLocation,  setSavingLocation]  = useState(false)
+  const [locationPulse,   setLocationPulse]   = useState(false)
 
   const isFounder = user?.user_metadata?.role === 'founder'
   const userId    = user?.id
@@ -63,12 +85,14 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
     let cancelled = false
     supabase
       .from('users')
-      .select('email, beta_group, beta_access, created_at, first_name, last_name')
+      .select('email, beta_group, beta_access, created_at, first_name, last_name, location, region')
       .eq('id', userId)
       .maybeSingle()
       .then(({ data }) => {
         if (cancelled) return
         setUserRow(data || null)
+        setLocation(data?.location || '')
+        setRegion(data?.region || '')
         setLoaded(true)
       })
     return () => { cancelled = true }
@@ -83,6 +107,31 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
     } finally {
       setSaving(false)
       setTimeout(() => setSavingPulse(false), 250)
+    }
+  }
+
+  async function saveLocation() {
+    if (!userId) return
+    setSavingLocation(true)
+    setLocationPulse(true)
+    try {
+      const trimmed = (location || '').trim().slice(0, 120)
+      const validRegions = ['US','UK','EU','CA','AU','NZ','OTHER']
+      const normalisedRegion = validRegions.includes(region) ? region : null
+      await supabase
+        .from('users')
+        .update({
+          location: trimmed || null,
+          region:   normalisedRegion,
+        })
+        .eq('id', userId)
+      setUserRow(prev => prev ? { ...prev, location: trimmed || null, region: normalisedRegion } : prev)
+      setLocation(trimmed)
+      setRegion(normalisedRegion || '')
+      setEditingLocation(false)
+    } finally {
+      setSavingLocation(false)
+      setTimeout(() => setLocationPulse(false), 250)
     }
   }
 
@@ -309,6 +358,201 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
               }}
             >
               {horizonSelf ? 'EDIT STATEMENT →' : 'ADD STATEMENT →'}
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Location — optional. Free text + region routing. Used only to
+          surface region-appropriate crisis-band resources; never shown
+          on the public profile, never used elsewhere. */}
+      <div style={{
+        background: 'rgba(200, 146, 42, 0.04)',
+        border: `1px solid ${GOLD_RULE}`,
+        borderRadius: 14,
+        padding: '14px 16px',
+        marginBottom: 14,
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 8,
+        }}>
+          <div style={{
+            fontFamily: FONT_SC,
+            fontSize: 9.5,
+            letterSpacing: '0.18em',
+            color: TEXT_FAINT,
+          }}>
+            LOCATION
+          </div>
+          <div style={{
+            fontFamily: FONT_SC,
+            fontSize: 9,
+            letterSpacing: '0.18em',
+            color: locationPulse ? GOLD : 'transparent',
+            transition: 'color 0.25s ease',
+          }}>
+            SAVED
+          </div>
+        </div>
+        {editingLocation ? (
+          <>
+            <input
+              type="text"
+              value={location}
+              onChange={e => setLocation(e.target.value)}
+              maxLength={120}
+              autoFocus
+              placeholder="City, country, or how you'd describe where you are"
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                fontFamily: FONT_BODY,
+                fontSize: 14,
+                color: TEXT_INK,
+                background: '#FFFFFF',
+                border: `1px solid ${GOLD_RULE}`,
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              onFocus={e => { e.target.style.borderColor = GOLD }}
+              onBlur={e => { e.target.style.borderColor = GOLD_RULE }}
+            />
+            <div style={{ marginTop: 10 }}>
+              <div style={{
+                fontFamily: FONT_SC,
+                fontSize: 9,
+                letterSpacing: '0.18em',
+                color: TEXT_FAINT,
+                marginBottom: 6,
+              }}>
+                REGION (FOR LOCAL RESOURCES)
+              </div>
+              <select
+                value={region || ''}
+                onChange={e => setRegion(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '10px 12px',
+                  fontFamily: FONT_BODY,
+                  fontSize: 14,
+                  color: region ? TEXT_INK : TEXT_FAINT,
+                  background: '#FFFFFF',
+                  border: `1px solid ${GOLD_RULE}`,
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  appearance: 'none',
+                  backgroundImage: `linear-gradient(45deg, transparent 50%, ${GOLD_DK} 50%), linear-gradient(135deg, ${GOLD_DK} 50%, transparent 50%)`,
+                  backgroundPosition: 'calc(100% - 18px) calc(50% - 2px), calc(100% - 13px) calc(50% - 2px)',
+                  backgroundSize: '5px 5px, 5px 5px',
+                  backgroundRepeat: 'no-repeat',
+                }}
+              >
+                <option value="">Prefer not to say</option>
+                <option value="US">United States</option>
+                <option value="UK">United Kingdom</option>
+                <option value="EU">Europe (EU)</option>
+                <option value="CA">Canada</option>
+                <option value="AU">Australia</option>
+                <option value="NZ">New Zealand</option>
+                <option value="OTHER">Somewhere else</option>
+              </select>
+            </div>
+            <p style={{
+              fontFamily: FONT_BODY,
+              fontSize: 12,
+              fontStyle: 'italic',
+              color: TEXT_FAINT,
+              margin: '10px 0 0',
+              lineHeight: 1.5,
+            }}>
+              Optional. Used only to surface region-appropriate resources when you need them. Not shown on your public profile.
+            </p>
+            <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+              <button
+                onClick={saveLocation}
+                disabled={savingLocation}
+                style={{
+                  background: GOLD,
+                  border: `1px solid ${GOLD}`,
+                  color: '#0F1523',
+                  padding: '8px 16px',
+                  fontFamily: FONT_SC,
+                  fontSize: 11,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  cursor: savingLocation ? 'default' : 'pointer',
+                  borderRadius: 40,
+                  opacity: savingLocation ? 0.6 : 1,
+                }}
+              >
+                {savingLocation ? 'Saving…' : 'Save'}
+              </button>
+              <button
+                onClick={() => {
+                  setLocation(userRow?.location || '')
+                  setRegion(userRow?.region || '')
+                  setEditingLocation(false)
+                }}
+                style={{
+                  background: 'transparent',
+                  border: `1px solid ${GOLD_RULE}`,
+                  color: TEXT_META,
+                  padding: '8px 16px',
+                  fontFamily: FONT_SC,
+                  fontSize: 11,
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  cursor: 'pointer',
+                  borderRadius: 40,
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            {(userRow?.location || userRow?.region) ? (
+              <p style={{
+                fontFamily: FONT_BODY,
+                fontSize: 14,
+                color: TEXT_INK,
+                lineHeight: 1.55,
+                margin: '0 0 8px',
+              }}>
+                {userRow?.location}
+                {userRow?.location && userRow?.region ? ' · ' : ''}
+                {userRow?.region ? formatRegion(userRow.region) : ''}
+              </p>
+            ) : (
+              <p style={{
+                fontFamily: FONT_BODY,
+                fontSize: 13.5,
+                color: TEXT_FAINT,
+                margin: '0 0 8px',
+                fontStyle: 'italic',
+              }}>
+                Optional. Used only to surface region-appropriate resources when you need them.
+              </p>
+            )}
+            <button
+              onClick={() => setEditingLocation(true)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: GOLD_DK,
+                padding: 0,
+                fontFamily: FONT_SC,
+                fontSize: 10.5,
+                letterSpacing: '0.18em',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+              }}
+            >
+              {(userRow?.location || userRow?.region) ? 'EDIT LOCATION →' : 'ADD LOCATION →'}
             </button>
           </>
         )}
