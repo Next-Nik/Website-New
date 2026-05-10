@@ -62,6 +62,8 @@ import { WatchPage }              from './pages/Watch'
 // ── Beta pages (Section 7 of NextUs Beta Build Architecture v1.2) ──
 // Open access during the build. Walk the new flow at /beta/dashboard.
 import BetaMissionControl         from './beta/pages/BetaMissionControl'
+import BetaWelcome                from './beta/pages/BetaWelcome'
+import BetaIntroGate              from './beta/components/BetaIntroGate'
 import BetaProfileEdit            from './beta/pages/BetaProfileEdit'
 import { BetaPublicProfile }      from './beta/pages/BetaPublicProfile'
 import { BetaFeedPage }           from './beta/pages/BetaFeed'
@@ -156,7 +158,8 @@ function AppInner() {
 
         {/* ── Beta — open access during the build. /beta lands on Mission Control. ── */}
         <Route path="/beta"                      element={<Navigate to="/beta/dashboard" replace />} />
-        <Route path="/beta/dashboard"            element={<BetaMissionControl />} />
+        <Route path="/beta/welcome"              element={<BetaWelcome />} />
+        <Route path="/beta/dashboard"            element={<BetaIntroGate><BetaMissionControl /></BetaIntroGate>} />
         <Route path="/beta/profile/edit"         element={<BetaProfileEdit />} />
         <Route path="/beta/profile/:id"          element={<BetaPublicProfile />} />
         <Route path="/beta/feed"                 element={<BetaFeedPage />} />
