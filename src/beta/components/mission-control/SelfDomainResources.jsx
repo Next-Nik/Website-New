@@ -33,6 +33,10 @@
 //                                     rather than an empty state.
 //   webStatus:  'idle' | 'loading' | 'ready' | 'error' | 'unwired'
 //                                     'unwired' is the step-2 default.
+//   webReason:  string | null         when webStatus === 'ready' and webResults
+//                                     is empty, this distinguishes between
+//                                     'no-quality-matches' (real empty) and
+//                                     'unconfigured' (key not set in env).
 //   onShowMore: () => void           optional. Triggers a Layer B fetch.
 // ─────────────────────────────────────────────────────────────
 
@@ -51,6 +55,7 @@ export default function SelfDomainResources({
   curated = [],
   webResults = null,
   webStatus = 'unwired',
+  webReason = null,
   onShowMore,
 }) {
   if (!domain) return null
@@ -170,7 +175,13 @@ export default function SelfDomainResources({
           </ul>
         )}
 
-        {webStatus === 'ready' && !hasWeb && (
+        {webStatus === 'ready' && !hasWeb && webReason === 'unconfigured' && (
+          <div className="mc-self-resources-empty mc-self-resources-empty-soft">
+            <p>Web sourcing has not been configured for this environment yet.</p>
+          </div>
+        )}
+
+        {webStatus === 'ready' && !hasWeb && webReason !== 'unconfigured' && (
           <div className="mc-self-resources-empty mc-self-resources-empty-soft">
             <p>The search did not turn up anything that cleared the source filters this time.</p>
           </div>

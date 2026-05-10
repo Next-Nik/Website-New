@@ -46,6 +46,7 @@
 //   onOpenHorizonState: () => void  call to action — set IA via Horizon State
 // ─────────────────────────────────────────────────────────────
 
+import { useState, useCallback } from 'react'
 import {
   GOLD, GOLD_DK, GOLD_LT, GOLD_RULE, GOLD_FAINT, GOLD_HOVER,
   TEXT_INK, TEXT_META, TEXT_FAINT,
@@ -74,6 +75,58 @@ export default function SelfDomainPanel({
   const itemForDisplay = selectedItem
   const userScore = itemForDisplay ? (userScores[itemForDisplay.id] || null) : null
   const isPlaced = !!(userScore && userScore.current != null)
+
+  // ── Layer B web-search state, keyed by domain id ──────────────
+  // Keeping state per-domain means flipping between domains preserves
+  // what was already loaded, and the "Show more from the web" button
+  // does not need to re-trigger a fetch on every domain switch.
+  const [webByDomain, setWebByDomain] = useState({})
+  // Each entry: { status: 'idle'|'loading'|'ready'|'error', results: Resource[] }
+
+  const currentDomainId = itemForDisplay?.id || null
+  const currentBand     = scoreToBand(userScore?.current)
+  const currentWebEntry = currentDomainId ? webByDomain[currentDomainId] : null
+  const webStatus       = currentWebEntry?.status || 'idle'
+  const webResults      = currentWebEntry?.results || null
+  const webReason       = currentWebEntry?.reason || null
+
+  const fetchWebResources = useCallback(async (domainId, band) => {
+    if (!domainId) return
+    setWebByDomain(prev => ({
+      ...prev,
+      [domainId]: { status: 'loading', results: null },
+    }))
+    try {
+      const params = new URLSearchParams({ domain: domainId })
+      if (band) params.set('band', band)
+      const r = await fetch('/api/self-resources-search?' + params.toString(), {
+        headers: { 'Accept': 'application/json' },
+      })
+      if (!r.ok) throw new Error('http-' + r.status)
+      const data = await r.json()
+      // The API returns 200 with reason='unconfigured' when no key is set;
+      // surface that as a distinct empty state rather than an error.
+      const resultsArr = Array.isArray(data?.results) ? data.results : []
+      setWebByDomain(prev => ({
+        ...prev,
+        [domainId]: {
+          status: 'ready',
+          results: resultsArr,
+          reason: data?.reason || null,
+        },
+      }))
+    } catch (e) {
+      setWebByDomain(prev => ({
+        ...prev,
+        [domainId]: { status: 'error', results: null },
+      }))
+    }
+  }, [])
+
+  const handleShowMore = useCallback(() => {
+    if (!currentDomainId) return
+    fetchWebResources(currentDomainId, currentBand)
+  }, [currentDomainId, currentBand, fetchWebResources])
 
   return (
     <div className="mc-self-panel">
@@ -277,8 +330,10 @@ export default function SelfDomainPanel({
             </div>
 
             {/* Resources for this domain — Layer A (curated) is wired
-                via getCuratedFor; Layer B (web) is unwired in step 2 and
-                comes online in step 4. */}
+                via getCuratedFor; Layer B (web) is wired via the
+                /api/self-resources-search proxy. The web zone starts in
+                'idle' and the user opts in by clicking "Show more from
+                the web". */}
             {(() => {
               const band = scoreToBand(userScore?.current)
               const curated = getCuratedFor(itemForDisplay.id, band)
@@ -288,8 +343,10 @@ export default function SelfDomainPanel({
                   currentScore={userScore?.current}
                   horizonScore={userScore?.horizon}
                   curated={curated}
-                  webResults={null}
-                  webStatus="unwired"
+                  webResults={webResults}
+                  webStatus={webStatus}
+                  webReason={webReason}
+                  onShowMore={handleShowMore}
                 />
               )
             })()}
