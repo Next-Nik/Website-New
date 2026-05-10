@@ -16,7 +16,16 @@
 //
 // Seven civ domains (the same ones as the individual flow):
 //   Human · Society · Nature · Tech · Finance · Legacy · Vision
+//
+// May 2026 update — domain colour identity:
+//   Civ domain colours sourced from /constants/domainColors.js.
+//   Org-coherence dimensions (purpose, practice, etc.) inherit the
+//   same seven palette by index — Purpose takes Path's maroon,
+//   Practice takes Spark's orange, and so on. This is provisional;
+//   if Org Coherence ever earns its own locked palette, swap here.
 // ─────────────────────────────────────────────────────────────
+
+import { CIV_COLORS, DOMAIN_COLORS, SELF_KEYS_ORDERED } from '../../../constants/domainColors'
 
 // Org-coherence labels — the seven dimensions on the "personal" wheel
 export const SELF_LABELS = ['Purpose', 'Practice', 'People', 'Resources', 'Reach', 'Reflection', 'Renewal']
@@ -36,26 +45,41 @@ export const HEARTH_CURRENT  = {
 }
 
 export const CIV_DOMAINS = [
-  { slug: 'human-being',     label: 'Human',    color: '#2A6B9E' },
-  { slug: 'society',         label: 'Society',  color: '#6B2A9E' },
-  { slug: 'nature',          label: 'Nature',   color: '#2A6B3A' },
-  { slug: 'technology',      label: 'Tech',     color: '#8A6B2A' },
-  { slug: 'finance-economy', label: 'Finance',  color: '#6B3A2A' },
-  { slug: 'legacy',          label: 'Legacy',   color: '#4A6B2A' },
-  { slug: 'vision',          label: 'Vision',   color: '#2A4A6B' },
+  { slug: 'human-being',     label: 'Human',    color: CIV_COLORS.human_being.base },
+  { slug: 'society',         label: 'Society',  color: CIV_COLORS.society.base },
+  { slug: 'nature',          label: 'Nature',   color: CIV_COLORS.nature.base },
+  { slug: 'technology',      label: 'Tech',     color: CIV_COLORS.technology.base },
+  { slug: 'finance-economy', label: 'Finance',  color: CIV_COLORS.finance_economy.base },
+  { slug: 'legacy',          label: 'Legacy',   color: CIV_COLORS.legacy.base },
+  { slug: 'vision',          label: 'Vision',   color: CIV_COLORS.vision.base },
 ]
 
 export const HEARTH_CIV_PRIMARY = 'society'
 export const HEARTH_CIV_ENGAGED = ['nature', 'human-being']
 
-export function getTierColor(current, horizon) {
-  if (current == null || !horizon) return 'rgba(200,146,42,0.5)'
-  const ratio = current / horizon
-  if (ratio >= 0.9) return '#3B6B9E'
-  if (ratio >= 0.7) return '#5A8AB8'
-  if (ratio >= 0.5) return '#8A8070'
-  if (ratio >= 0.3) return '#8A7030'
-  return '#8A3030'
+// Domain-coloured vertex helper. Org dimensions don't have their
+// own locked palette; we map by index to the seven personal-domain
+// colours so the wheel speaks the same colour language as everywhere
+// else. Provisional — see header comment.
+//
+// Signature kept (current, horizon) for backwards compatibility, with
+// the third argument carrying the dimension key. Without a key we
+// fall back to gold so the wheel still renders rather than breaking.
+const ORG_KEY_TO_SELF_KEY = {
+  purpose:    SELF_KEYS_ORDERED[0],   // path     — maroon
+  practice:   SELF_KEYS_ORDERED[1],   // spark    — orange
+  people:     SELF_KEYS_ORDERED[2],   // body     — green
+  resources:  SELF_KEYS_ORDERED[3],   // finances — yellow
+  reach:      SELF_KEYS_ORDERED[4],   // connection — red
+  reflection: SELF_KEYS_ORDERED[5],   // inner_game — blue
+  renewal:    SELF_KEYS_ORDERED[6],   // signal   — purple
+}
+
+export function getTierColor(current, horizon, key) {
+  if (key && ORG_KEY_TO_SELF_KEY[key]) {
+    return DOMAIN_COLORS[ORG_KEY_TO_SELF_KEY[key]].base
+  }
+  return 'rgba(200,146,42,0.5)'
 }
 
 // ─── Headers per act ───────────────────────────────────────

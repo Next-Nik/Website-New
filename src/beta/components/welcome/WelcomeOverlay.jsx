@@ -407,7 +407,14 @@ const WELCOME_CSS = `
 }
 
 .overlay-card.dark {
-  background: var(--bg-ink);
+  /* Soft ink ground — same warm-cool layered background as DarkSection.
+     A gold radial in the upper-left and a cool blue glow in the lower-
+     right give the surface depth without disturbing the meditative
+     pacing of the welcome beats. */
+  background:
+    radial-gradient(ellipse 60% 40% at 18% 12%, rgba(200, 146, 42, 0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 36% at 82% 88%, rgba(74, 100, 168, 0.16) 0%, transparent 70%),
+    linear-gradient(180deg, #1A2030 0%, #131826 55%, #0F1523 100%);
   color: var(--text-white);
   border-color: rgba(200, 146, 42, 0.28);
 }

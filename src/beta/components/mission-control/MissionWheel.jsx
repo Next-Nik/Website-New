@@ -1,24 +1,28 @@
 // ─────────────────────────────────────────────────────────────
 // MissionWheel.jsx
 //
-// Two-mode wheel. The self-side wheel is unchanged from the v4
-// cockpit instrument: heptagon ring, current-state polygon
-// normalised to each spoke's horizon, sprint glow, walker cluster.
+// Two-mode wheel. The self-side wheel renders the user's seven
+// personal domains; the civ-side wheel renders the seven NextUs
+// civilisational domains and the drill-down state machine.
 //
-// The civ-side wheel is a different beast as of this drop — it
-// borrows the full Heptagon state machine from
-// /components/domain-explorer/Heptagon (intro spin, bloom-on-mount,
-// click-to-feature rotation, drill-down animation, centre-orb
-// click, keyboard arrows) but renders in MissionWheel's flat
-// aesthetic — thin spokes, small vertex tip dots, FONT_SC labels
-// outside at the spoke tips, dashed outer ring, no orb-style
-// vertex circles, no current-state polygon.
+// May 2026 update — domain colour identity:
+//   • Labels on both wheels now use their domain colour (light
+//     stop on parchment, dark stop on ink). The active label uses
+//     the deeper saturated stop.
+//   • Self-side placement-vertex dots carry domain colour. The
+//     polygon they form stays GOLD — the user's life as a single
+//     through-line shape, regardless of which tier each spoke
+//     reads at.
+//   • Civ-side tip dots carry domain colour. The active-state
+//     ring around the focused tip and the centre-orb stay GOLD.
+//   • Tier (Scale) colour reading is dropped from the wheels.
+//     Position on the spoke gives fluency; colour gives identity.
+//     Scale Colours retain their job in lists, badges, and
+//     analytical views elsewhere.
 //
-// The civ wheel is fed a `domains` array (each item: { id, name,
-// horizonGoal, description, subDomains }) and a centreLabel and
-// emits onSelect / onLand / onDrillDown / onCentreClick callbacks.
-// Stepping arrows and the rest of the planet-side composition live
-// in BetaMissionControl, not here.
+// The civ-side state machine (intro spin → bloom → settled →
+// navigating, plus drill-down) is preserved verbatim from v4 —
+// only the colour layer is swapped.
 //
 // Common props (both modes):
 //   kind:        'personal' | 'civ'
@@ -42,6 +46,7 @@ import {
   TEXT_META, TEXT_WHITE_META, TEXT_FAINT, TEXT_WHITE_FAINT,
   FONT_SC,
 } from './tokens'
+import { selfColor, civColor } from '../../../constants/domainColors'
 
 // ─── Shared geometry ─────────────────────────────────────────
 const N = 7
@@ -78,14 +83,11 @@ function easeInOut(t) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
 }
 
-// ─── Self-only helpers (unchanged from v4) ───────────────────
-function tierColor(current, horizon) {
-  if (horizon === 0 || current == null || current === 0) return GOLD_DK
-  const ratio = current / horizon
-  if (ratio < 0.45) return GOLD_DK
-  if (ratio < 0.75) return GOLD
-  return GOLD_LT
-}
+// ─── Self-only helpers ───────────────────────────────────────
+// NOTE: tierColor() removed in May 2026 — wheel vertex dots now
+// carry domain colour identity, not a Scale (tier) reading.
+// Fluency is read from spoke position; identity from dot colour.
+// Scale Colours live on elsewhere in lists and badges.
 
 // Static label position for the self wheel — these never rotate,
 // so they're tuned per spoke number to never collide.
@@ -179,7 +181,9 @@ function SelfWheel({
         i, key: k,
         x: cx + r * Math.cos(a),
         y: cy + r * Math.sin(a),
-        color: tierColor(c, h),
+        // Domain colour replaces tier colour. Position gives fluency;
+        // colour gives identity.
+        color: selfColor(k).base,
       }
     })
   }, [keys, renderHorizons, current, showEmpty, cx, cy, maxR])
@@ -256,6 +260,11 @@ function SelfWheel({
         const tipY = cy + maxR * Math.sin(a)
         const pos = selfLabelPositionFor(i, tipX, tipY)
         const isActive = activeKey && keys[i] === activeKey
+        const dc = selfColor(keys[i])
+        // Light surface uses .light stop, dark surface uses .dark stop.
+        const baseFill = dark ? dc.dark : dc.light
+        // The active label deepens to the saturated base — same hue, more weight.
+        const activeFill = dc.base
         return (
           <text
             key={`label-${i}`}
@@ -265,12 +274,13 @@ function SelfWheel({
             onClick={onSelect ? () => onSelect(i) : undefined}
             style={{
               fontFamily: FONT_SC,
-              fontSize: 10.5,
+              fontSize: 13,
               letterSpacing: '0.18em',
-              fill: isActive ? labelActiveFill : labelFill,
-              fontWeight: isActive ? 600 : 400,
+              fill: isActive ? activeFill : baseFill,
+              fontWeight: isActive ? 700 : 600,
               cursor: onSelect ? 'pointer' : undefined,
               userSelect: 'none',
+              textTransform: 'uppercase',
             }}
           >
             {txt}
@@ -752,8 +762,14 @@ function CivWheel({
 
         const labelPos = civLabelPosFor(tipX, tipY, p.angle)
 
+        // Civ tip dot: domain colour. Active state lifts to base, otherwise
+        // sits at the dark stop so it reads on the ink ground without
+        // shouting. Pulsing halo around the active tip stays GOLD.
+        const dc = civColor(keys[i])
         const tipR = isActive ? 4.5 : 3
-        const tipFill = isActive ? GOLD_LT : 'rgba(200,146,42,0.65)'
+        const tipFill = isActive ? dc.base : (dark ? dc.dark : dc.light)
+        const baseLabelFill = dark ? dc.dark : dc.light
+        const activeLabelFill = dc.base
 
         return (
           <g
@@ -775,33 +791,34 @@ function CivWheel({
               fill="transparent"
               style={{ pointerEvents: 'auto' }}
             />
-            {/* Visible tip dot */}
+            {/* Visible tip dot — domain colour */}
             <circle
               cx={tipX} cy={tipY}
               r={tipR}
               fill={tipFill}
               style={{ pointerEvents: 'none' }}
             />
-            {/* Active-state pulsing halo */}
+            {/* Active-state pulsing halo — STAYS GOLD (Horizon-shared aim) */}
             {isActive && (
               <circle cx={tipX} cy={tipY} r={8} fill={GOLD} opacity="0.4" style={{ pointerEvents: 'none' }}>
                 <animate attributeName="r" values="6;11;6" dur="2.5s" repeatCount="indefinite" />
                 <animate attributeName="opacity" values="0.35;0.7;0.35" dur="2.5s" repeatCount="indefinite" />
               </circle>
             )}
-            {/* Label */}
+            {/* Label — domain colour */}
             <text
               x={labelPos.x}
               y={labelPos.y}
               textAnchor={labelPos.anchor}
               style={{
                 fontFamily: FONT_SC,
-                fontSize: 10.5,
+                fontSize: 13,
                 letterSpacing: '0.18em',
-                fill: isActive || isPlacement ? labelActiveFill : labelFill,
-                fontWeight: isActive || isPlacement ? 600 : 400,
+                fill: isActive || isPlacement ? activeLabelFill : baseLabelFill,
+                fontWeight: isActive || isPlacement ? 700 : 600,
                 pointerEvents: 'none',
                 userSelect: 'none',
+                textTransform: 'uppercase',
               }}
             >
               {labelText}

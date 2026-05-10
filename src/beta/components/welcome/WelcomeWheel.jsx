@@ -13,6 +13,13 @@
 // Data is passed via props so the same component renders any
 // narrative — Kin's individual welcome, Hearth Lab's org welcome,
 // future practitioner / group flows.
+//
+// May 2026 update — domain colour identity:
+//   Vertex dots on the self wheel now carry domain colour. The
+//   tierColor callback is invoked with (current, horizon, key) so
+//   the data layer can return a domain colour rather than a Scale
+//   reading. Civ tip dots already used domain colour from
+//   CIV_DOMAINS[i].color, now sourced from the locked palette.
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useRef } from 'react'
@@ -87,7 +94,9 @@ function renderSelfWheel(svg, mode, timers, selfData) {
     const ratio = Math.min(c / h, 1)
     const a = angleFor(i)
     const r = ratio * maxR
-    return { i, x: cx + r * Math.cos(a), y: cy + r * Math.sin(a), color: tierColor(c, h) }
+    // Pass the domain key as the third arg — the data layer returns
+    // a domain colour. Position on the spoke gives fluency.
+    return { i, x: cx + r * Math.cos(a), y: cy + r * Math.sin(a), color: tierColor(c, h, k) }
   })
 
   if (mode === 'static') {

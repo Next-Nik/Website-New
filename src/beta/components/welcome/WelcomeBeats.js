@@ -7,7 +7,15 @@
 // WelcomeOverlay; structural copy lives here untouched).
 //
 // 10 beats: Act 1 (3) + Act 2 (5) + Act 3 (1) + Closing (1).
+//
+// May 2026 update — domain colour identity:
+//   Civ domain colours sourced from /constants/domainColors.js
+//   so the Welcome wheel speaks the same colour language as
+//   Mission Control. The ad-hoc getTierColor helper now returns
+//   the domain colour for the wheel vertex (same as elsewhere).
 // ─────────────────────────────────────────────────────────────
+
+import { CIV_COLORS, selfColor } from '../../../constants/domainColors'
 
 // Kin's wheel data — middle-of-the-range, "good not great"
 export const SELF_LABELS = ['Path', 'Spark', 'Body', 'Finances', 'Connection', 'Inner Game', 'Signal']
@@ -22,28 +30,41 @@ export const KIN_CURRENT  = {
   connection: 4, inner_game: 5, signal: 4,
 }
 
+// Civilisational domains — colour from the locked palette via
+// /constants/domainColors.js. Self → NextUs fractal mappings:
+//   human-being     ← Spark (orange)
+//   society         ← Connection (red)
+//   nature          ← Body (green)
+//   technology      ← Signal (purple)
+//   finance-economy ← Finances (yellow)
+//   legacy          ← Inner Game (blue)
+//   vision          ← Path (maroon)
 export const CIV_DOMAINS = [
-  { slug: 'human-being',     label: 'Human',    color: '#2A6B9E' },
-  { slug: 'society',         label: 'Society',  color: '#6B2A9E' },
-  { slug: 'nature',          label: 'Nature',   color: '#2A6B3A' },
-  { slug: 'technology',      label: 'Tech',     color: '#8A6B2A' },
-  { slug: 'finance-economy', label: 'Finance',  color: '#6B3A2A' },
-  { slug: 'legacy',          label: 'Legacy',   color: '#4A6B2A' },
-  { slug: 'vision',          label: 'Vision',   color: '#2A4A6B' },
+  { slug: 'human-being',     label: 'Human',    color: CIV_COLORS.human_being.base },
+  { slug: 'society',         label: 'Society',  color: CIV_COLORS.society.base },
+  { slug: 'nature',          label: 'Nature',   color: CIV_COLORS.nature.base },
+  { slug: 'technology',      label: 'Tech',     color: CIV_COLORS.technology.base },
+  { slug: 'finance-economy', label: 'Finance',  color: CIV_COLORS.finance_economy.base },
+  { slug: 'legacy',          label: 'Legacy',   color: CIV_COLORS.legacy.base },
+  { slug: 'vision',          label: 'Vision',   color: CIV_COLORS.vision.base },
 ]
 
 export const KIN_CIV_PRIMARY = 'society'
 export const KIN_CIV_ENGAGED = ['human-being', 'legacy']
 
-// Tier colour for self-wheel vertices, by ratio of current/horizon
-export function getTierColor(current, horizon) {
-  if (current == null || !horizon) return 'rgba(200,146,42,0.5)'
-  const ratio = current / horizon
-  if (ratio >= 0.9) return '#3B6B9E'
-  if (ratio >= 0.7) return '#5A8AB8'
-  if (ratio >= 0.5) return '#8A8070'
-  if (ratio >= 0.3) return '#8A7030'
-  return '#8A3030'
+// Domain-coloured vertex helper. Signature kept (current, horizon)
+// for backwards compatibility with the wheel's vertex calls — but
+// the inputs are now ignored in favour of the domain key, which is
+// passed through the third argument when available. When called
+// without a key (legacy two-arg signature) we fall back to gold so
+// the wheel still renders rather than breaking.
+//
+// In practice the wheel calls keys.map((k, i) => tierColor(c, h, k))
+// when this is provided; the renderer in WelcomeWheel.jsx is updated
+// to pass the key as a third argument.
+export function getTierColor(current, horizon, key) {
+  if (key) return selfColor(key).base
+  return 'rgba(200,146,42,0.5)'
 }
 
 // ─── Headers per act ───────────────────────────────────────

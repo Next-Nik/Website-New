@@ -5,6 +5,13 @@
 // the user's seven personal-dimension scores at a glance. Click
 // expands the WorldView (or whatever opener wraps it).
 //
+// May 2026 update — domain colour identity:
+//   Vertex dots now carry domain colour rather than a tier (Scale)
+//   reading. Position on the spoke gives fluency (close to Horizon
+//   = far from centre); colour gives identity (which domain). The
+//   polygon fill and stroke stay GOLD — the user's life as one
+//   through-line shape.
+//
 // Props:
 //   dimensions: Array<{ key: string, label: string }>
 //   horizons:   Object<dimensionKey, number>   // user's horizon-target per dimension
@@ -14,20 +21,11 @@
 
 import { useMemo } from 'react'
 import { GOLD } from './tokens'
+import { selfColor } from '../../../constants/domainColors'
 
 const N = 7
 
 function angleFor(i) { return (Math.PI * 2 * i) / N - Math.PI / 2 }
-
-function tierColor(current, horizon) {
-  if (current == null || !horizon) return 'rgba(200,146,42,0.5)'
-  const ratio = current / horizon
-  if (ratio >= 0.9) return '#3B6B9E'
-  if (ratio >= 0.7) return '#5A8AB8'
-  if (ratio >= 0.5) return '#8A8070'
-  if (ratio >= 0.3) return '#8A7030'
-  return '#8A3030'
-}
 
 /**
  * @param {Object} props
@@ -56,7 +54,8 @@ export default function GlanceWheel({ dimensions, horizons = {}, current = {}, s
       const ratio = (c != null && h) ? Math.min(c / h, 1) : 0
       const r = ratio * maxR
       poly.push(`${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`)
-      colors.push(tierColor(c, h))
+      // Domain colour replaces tier colour.
+      colors.push(dim ? selfColor(dim.key).base : 'rgba(200,146,42,0.5)')
     }
     return { ringPts: ring.join(' '), polyPts: poly.join(' '), vertColors: colors, hasData: any }
   }, [dimensions, horizons, current, cx, cy, maxR])

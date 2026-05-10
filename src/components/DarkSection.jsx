@@ -98,6 +98,19 @@ export function NeedleDivider({ direction = 'into-dark', topColor = '#FAFAF7', b
 //
 // Shadow: cast by the dark section onto the light sections above and below.
 // The dark section is in front — its edges bleed shadow onto the background behind.
+//
+// May 2026 update — soft ink ground:
+//   The dark surface is no longer flat #0F1523. It's a warm-cool
+//   gradient (#1A2030 at top → #131826 → #0F1523 at base) plus two
+//   subtle ambient glows: a gold radial in the upper-left and a
+//   cool blue glow in the lower-right. Same conceptual ink, with
+//   depth — the surface breathes rather than presents as a plate.
+//
+//   The arc-entry/exit dividers continue to flatten to #0F1523 at
+//   their edges, so there is no visible seam where the gradient
+//   meets the divider. Read the gradient as "the section
+//   *interior* lifts off the divider" — the arc is the threshold;
+//   the inside is the room.
 export function DarkSection({ children, topColor = '#FAFAF7', bottomColor = '#FAFAF7', style = {} }) {
   const { ref, offset } = useViewportParallax(0.14)
   return (
@@ -110,12 +123,23 @@ export function DarkSection({ children, topColor = '#FAFAF7', bottomColor = '#FA
     }}>
       {topColor !== null && <ArcEntry topColor={topColor} bottomColor="#0F1523" />}
       <section style={{
-        background: '#0F1523',
+        // Layered background:
+        //   1. A warm gold radial in the upper-left, very low alpha.
+        //   2. A cool blue glow in the lower-right, slightly higher alpha
+        //      so the depth note reads on long sections.
+        //   3. The base vertical gradient — soft #1A2030 at the top
+        //      transitioning to flat #0F1523 at the base, where the
+        //      ArcExit divider takes over.
+        background: [
+          'radial-gradient(ellipse 60% 40% at 18% 12%, rgba(200, 146, 42, 0.07) 0%, transparent 65%)',
+          'radial-gradient(ellipse 50% 36% at 82% 88%, rgba(74, 100, 168, 0.16) 0%, transparent 70%)',
+          'linear-gradient(180deg, #1A2030 0%, #131826 55%, #0F1523 100%)',
+        ].join(', '),
         padding: '96px 40px',
         position: 'relative',
         ...style,
       }}>
-        <div style={{ maxWidth: '820px', margin: '0 auto' }}>
+        <div style={{ maxWidth: '820px', margin: '0 auto', position: 'relative' }}>
           {children}
         </div>
       </section>

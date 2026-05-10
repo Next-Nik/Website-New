@@ -424,6 +424,46 @@ export default function BetaMissionControl() {
     return parentItem?.name?.toUpperCase() || 'BACK'
   }, [levelPath, parentItem])
 
+  // ── Civ breadcrumb (May 2026)
+  // Walks the levelPath against domainTree to produce a list of
+  // tappable segments above the wheel. The current level is the last
+  // segment, rendered in gold; prior segments are tappable to jump
+  // back up. At top level we still show the root crumb so the
+  // breadcrumb area doesn't appear and disappear.
+  const civCrumbs = useMemo(() => {
+    const crumbs = [{ label: 'The Planet', depth: 0 }]
+    let list = domainTree
+    for (let i = 0; i < levelPath.length; i++) {
+      const item = list[levelPath[i].index]
+      if (!item) break
+      crumbs.push({ label: item.name, depth: i + 1 })
+      list = item.subDomains || []
+    }
+    return crumbs
+  }, [levelPath, domainTree])
+
+  // Jump to a specific depth in the breadcrumb. Depth 0 = top-level
+  // (the seven civ domains), depth 1 = inside the first chosen
+  // domain, etc. Mirrors handleCivBack but pops to an arbitrary
+  // target rather than always one level.
+  const handleCivCrumb = (targetDepth) => {
+    if (targetDepth >= levelPath.length) return // already there or deeper
+    if (targetDepth === 0) {
+      setLevelPath([])
+      setActiveIndex(null)
+      setParentPanelOpen(false)
+      setShowOverview(true)
+      landedIndexRef.current = 0
+      return
+    }
+    const prevIdx = levelPath[targetDepth].index
+    setLevelPath(prev => prev.slice(0, targetDepth))
+    setActiveIndex(prevIdx)
+    setParentPanelOpen(false)
+    setShowOverview(false)
+    landedIndexRef.current = prevIdx
+  }
+
   // ── Civ wheel callbacks
   const handleCivSelect = (i) => {
     setActiveIndex(i)
@@ -712,6 +752,34 @@ export default function BetaMissionControl() {
 
           {/* CENTRE — wheel */}
           <div className="mc-centre-col">
+            {/* Civ breadcrumb — appears only on planet side. Sits above
+                the wheel; current segment in gold, prior segments are
+                tappable to jump back up the tree. Lifted from the
+                old DomainPanel breadcrumb (Cormorant SC, 17px,
+                uppercase, gold separators). */}
+            {isCiv && (
+              <nav className="mc-civ-crumbs" aria-label="Civilisational breadcrumb">
+                {civCrumbs.map((c, i) => {
+                  const isCurrent = i === civCrumbs.length - 1
+                  return (
+                    <span key={`crumb-${i}`}>
+                      {i > 0 && <span className="mc-crumb-sep">›</span>}
+                      {isCurrent ? (
+                        <span className="mc-crumb-current">{c.label}</span>
+                      ) : (
+                        <button
+                          type="button"
+                          className="mc-crumb-seg"
+                          onClick={() => handleCivCrumb(c.depth)}
+                        >
+                          {c.label}
+                        </button>
+                      )}
+                    </span>
+                  )
+                })}
+              </nav>
+            )}
             <WheelStage
               currentWheel={currentWheel}
               personalProps={{
@@ -1015,6 +1083,51 @@ const STAGE_CSS = `
   justify-content: center;
   min-height: 380px;
   padding: 0 24px;
+  flex-direction: column;
+}
+
+/* Civ breadcrumb — sits above the wheel on planet side. Pattern
+   lifted from the legacy DomainPanel: Cormorant SC, uppercase,
+   gold separators, current segment in gold. Prior segments are
+   tappable buttons that pop levelPath back to that depth. */
+.mc-civ-crumbs {
+  font-family: 'Cormorant SC', Georgia, serif;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.72);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 14px;
+  padding: 4px 12px;
+  min-height: 24px;
+}
+.mc-crumb-seg {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  color: rgba(255, 255, 255, 0.72);
+  text-transform: inherit;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+.mc-crumb-seg:hover { color: #FFFFFF; }
+.mc-crumb-sep { color: #D4A744; margin: 0 2px; }
+.mc-crumb-current { color: #D4A744; }
+
+@media (max-width: 640px) {
+  .mc-civ-crumbs {
+    font-size: 13px;
+    letter-spacing: 0.16em;
+    margin-bottom: 8px;
+  }
 }
 
 @media (min-width: 1024px) {
