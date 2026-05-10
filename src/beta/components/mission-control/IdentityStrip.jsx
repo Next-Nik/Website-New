@@ -4,13 +4,18 @@
 // Replaces TopStrip. Two horizontal bands stacked:
 //
 //   ┌─────────────────────────────────────────────┐
-//   │  NextUs                          [👤] [⚙]   │  brand bar
+//   │  NextUs ▾                          [👤] [⚙]   │  brand bar
 //   ├─────────────────────────────────────────────┤
 //   │  Nik         Architect · Vision · Civil…    │  identity bar
 //   └─────────────────────────────────────────────┘
 //
 // The brand bar holds the wordmark on the left and small Profile
-// + Settings affordances on the right (replaces the old dock).
+// + Settings affordances on the right.
+//
+// The wordmark is a dropdown trigger. Clicking it opens a small
+// menu with About, Podcast, and Work with Nik — the public-facing
+// pages that live alongside the platform but aren't surfaced
+// elsewhere in Mission Control's chrome.
 //
 // The identity bar holds the user's name on the left and their
 // fit signature centred. When unplaced, the centre reads
@@ -25,6 +30,7 @@
 //   onFindFit:    () => void  — invoked when unplaced "find your fit" clicked
 // ─────────────────────────────────────────────────────────────
 
+import { useEffect, useRef, useState } from 'react'
 import {
   GOLD, GOLD_DK, GOLD_RULE,
   TEXT_INK, TEXT_WHITE, TEXT_META, TEXT_WHITE_META,
@@ -38,6 +44,12 @@ function capitaliseName(name) {
   return name.charAt(0).toUpperCase() + name.slice(1)
 }
 
+const SITE_LINKS = [
+  { label: 'About',         href: '/about' },
+  { label: 'Podcast',       href: '/podcast' },
+  { label: 'Work with Nik', href: '/work-with-nik' },
+]
+
 export default function IdentityStrip({
   userName = 'Your name',
   placement = null,
@@ -48,13 +60,77 @@ export default function IdentityStrip({
   const displayName = capitaliseName(userName)
   const isPlaced = placement && placement !== 'PURPOSE PIECE NOT YET PLACED'
 
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef(null)
+
+  // Close on outside click and on Escape.
+  useEffect(() => {
+    if (!menuOpen) return
+    function onDocClick(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false)
+      }
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', onDocClick)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDocClick)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [menuOpen])
+
   return (
     <header className="mc-identity-strip">
       <style>{STRIP_CSS}</style>
 
       {/* BRAND BAR */}
       <div className="mc-brand-bar">
-        <div className="mc-brand">NextUs</div>
+        <div className="mc-brand-wrap" ref={menuRef}>
+          <button
+            type="button"
+            className={`mc-brand-trigger${menuOpen ? ' mc-brand-trigger--open' : ''}`}
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            aria-label="Open site menu"
+          >
+            <span className="mc-brand">NextUs</span>
+            <svg
+              className="mc-brand-caret"
+              width="9"
+              height="9"
+              viewBox="0 0 9 9"
+              fill="none"
+              aria-hidden="true"
+            >
+              <polyline
+                points="2,3 4.5,6 7,3"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+          {menuOpen && (
+            <div className="mc-brand-menu" role="menu">
+              {SITE_LINKS.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="mc-brand-menu-item"
+                  role="menuitem"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
         <div className="mc-brand-actions">
           <button
             className="mc-icon-btn"
@@ -142,6 +218,29 @@ const STRIP_CSS = `
   background: ${BG_INK};
 }
 
+.mc-brand-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.mc-brand-trigger {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: inherit;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+.mc-brand-trigger:hover .mc-brand,
+.mc-brand-trigger--open .mc-brand {
+  color: ${GOLD_DK};
+}
+
 .mc-brand {
   font-family: ${FONT_DISPLAY};
   font-size: 22px;
@@ -149,8 +248,71 @@ const STRIP_CSS = `
   color: ${TEXT_INK};
   letter-spacing: -0.005em;
   line-height: 1;
+  transition: color 0.15s ease;
 }
 [data-stage="dark"] .mc-brand { color: ${TEXT_WHITE}; }
+
+.mc-brand-caret {
+  color: ${TEXT_META};
+  transition: transform 0.18s ease, color 0.15s ease;
+  position: relative;
+  top: 1px;
+}
+.mc-brand-trigger--open .mc-brand-caret {
+  transform: rotate(180deg);
+  color: ${GOLD_DK};
+}
+[data-stage="dark"] .mc-brand-caret {
+  color: ${TEXT_WHITE_META};
+}
+[data-stage="dark"] .mc-brand-trigger--open .mc-brand-caret {
+  color: ${GOLD};
+}
+
+.mc-brand-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 180px;
+  background: ${BG_PARCHMENT};
+  border: 1px solid rgba(200, 146, 42, 0.22);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(15, 21, 35, 0.08);
+  padding: 6px 0;
+  z-index: 20;
+  animation: mcBrandMenuIn 0.15s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+[data-stage="dark"] .mc-brand-menu {
+  background: ${BG_INK};
+  border-color: rgba(200, 146, 42, 0.30);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.mc-brand-menu-item {
+  display: block;
+  padding: 10px 18px;
+  font-family: ${FONT_SC};
+  font-size: 13px;
+  letter-spacing: 0.10em;
+  color: ${TEXT_INK};
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.mc-brand-menu-item:hover {
+  background: rgba(200, 146, 42, 0.08);
+  color: ${GOLD_DK};
+}
+[data-stage="dark"] .mc-brand-menu-item { color: ${TEXT_WHITE}; }
+[data-stage="dark"] .mc-brand-menu-item:hover {
+  background: rgba(200, 146, 42, 0.12);
+  color: ${GOLD};
+}
+
+@keyframes mcBrandMenuIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 .mc-brand-actions {
   display: flex;
@@ -244,6 +406,13 @@ const STRIP_CSS = `
   .mc-icon-btn svg {
     width: 16px;
     height: 16px;
+  }
+  .mc-brand-menu {
+    min-width: 160px;
+  }
+  .mc-brand-menu-item {
+    padding: 11px 16px;
+    font-size: 12px;
   }
   .mc-identity-bar {
     grid-template-columns: 1fr;
