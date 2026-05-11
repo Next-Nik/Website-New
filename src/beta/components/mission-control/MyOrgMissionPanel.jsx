@@ -190,6 +190,8 @@ function SetupMode({ userId, onCreated }) {
         location_name:  form.location_name.trim() || null,
         profile_owner:  userId,
         domains:        [form.primary_domain],
+        status:         'live',    // self-submitted orgs go live immediately (assume good)
+        claimed:        true,      // they created it -- it's theirs
       })
     setSaving(false)
     if (error) {

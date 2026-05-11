@@ -4,7 +4,7 @@
 //   Trajectory arrow on name. Greenwashing flag when conditions met.
 // No engagement metrics. No edit affordances.
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, Link }     from 'react-router-dom'
 import { Nav }                 from '../../components/Nav'
 import { SiteFooter }          from '../../components/SiteFooter'
@@ -324,6 +324,218 @@ function OrgReceiptsStub() {
 
 // ── Main page ────────────────────────────────────────────────
 
+// ── Claim section ─────────────────────────────────────────────────────────────
+// Shown at the bottom of unclaimed org profiles. Logged-out users are
+// prompted to sign in. Logged-in users get the three-field form inline.
+
+function ClaimSection({ actor, user }) {
+  const [phase, setPhase]   = useState('idle')   // idle | form | submitting | done | already | error
+  const [role, setRole]     = useState('')
+  const [note, setNote]     = useState('')
+  const [evidence, setEvidence] = useState('')
+  const [err, setErr]       = useState(null)
+
+  // Check if this user already submitted a claim
+  useEffect(() => {
+    if (!user) return
+    supabase.from('nextus_claims')
+      .select('id, status')
+      .eq('actor_id', actor.id)
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setPhase('already')
+      })
+  }, [actor.id, user])
+
+  const handleSubmit = useCallback(async () => {
+    if (!role.trim() || !note.trim()) return
+    setPhase('submitting')
+    setErr(null)
+    const { error } = await supabase.from('nextus_claims').insert({
+      actor_id:       actor.id,
+      user_id:        user.id,
+      claimant_email: user.email,
+      role:           role.trim(),
+      note:           note.trim(),
+      evidence:       evidence.trim() || null,
+    })
+    if (error) {
+      setErr(error.code === '23505'
+        ? 'You have already submitted a claim for this organisation.'
+        : 'Something went wrong. Try again or email support@nextus.world.')
+      setPhase('error')
+      return
+    }
+    setPhase('done')
+  }, [actor.id, user, role, note, evidence])
+
+  const cs = {
+    wrap: {
+      marginTop: '80px',
+      padding: '40px',
+      background: 'rgba(200,146,42,0.04)',
+      border: '1px solid rgba(200,146,42,0.15)',
+      borderRadius: '4px',
+    },
+    eyebrow: {
+      fontFamily: "'Cormorant SC', Georgia, serif",
+      fontSize: '11px', letterSpacing: '0.22em',
+      color: 'rgba(15,21,35,0.40)', textTransform: 'uppercase',
+      marginBottom: '12px',
+    },
+    heading: {
+      fontFamily: "'Lora', Georgia, serif",
+      fontSize: '20px', fontWeight: 300,
+      color: '#0F1523', marginBottom: '8px', lineHeight: 1.3,
+    },
+    body: {
+      fontFamily: "'Lora', Georgia, serif",
+      fontSize: '15px', color: 'rgba(15,21,35,0.60)',
+      lineHeight: 1.7, marginBottom: '28px',
+    },
+    label: {
+      fontFamily: "'Cormorant SC', Georgia, serif",
+      fontSize: '11px', letterSpacing: '0.16em',
+      color: '#A8721A', textTransform: 'uppercase',
+      display: 'block', marginBottom: '6px',
+    },
+    input: {
+      width: '100%', boxSizing: 'border-box',
+      fontFamily: "'Lora', Georgia, serif", fontSize: '15px',
+      padding: '10px 14px', border: '1px solid rgba(200,146,42,0.25)',
+      borderRadius: '3px', background: '#FAFAF7',
+      color: '#0F1523', marginBottom: '20px', outline: 'none',
+    },
+    textarea: {
+      width: '100%', boxSizing: 'border-box',
+      fontFamily: "'Lora', Georgia, serif", fontSize: '15px',
+      padding: '10px 14px', border: '1px solid rgba(200,146,42,0.25)',
+      borderRadius: '3px', background: '#FAFAF7',
+      color: '#0F1523', marginBottom: '20px', outline: 'none',
+      resize: 'vertical', lineHeight: 1.6, minHeight: '90px',
+    },
+    btn: {
+      fontFamily: "'Cormorant SC', Georgia, serif",
+      fontSize: '13px', letterSpacing: '0.14em',
+      padding: '10px 28px', background: '#A8721A',
+      color: '#FAFAF7', border: 'none', borderRadius: '3px',
+      cursor: 'pointer',
+    },
+    signIn: {
+      fontFamily: "'Lora', Georgia, serif",
+      fontSize: '15px', color: '#A8721A',
+      textDecoration: 'underline', textUnderlineOffset: '3px',
+      cursor: 'pointer', background: 'none', border: 'none', padding: 0,
+    },
+  }
+
+  // Don't show if org is already claimed
+  if (actor.claimed || actor.profile_owner) return null
+
+  if (phase === 'done') {
+    return (
+      <div style={cs.wrap}>
+        <div style={cs.eyebrow}>Claim submitted</div>
+        <h3 style={cs.heading}>We have your request.</h3>
+        <p style={cs.body}>
+          You will hear from us directly — not a system email, a real message.
+          We review every claim and usually respond within a day or two.
+        </p>
+      </div>
+    )
+  }
+
+  if (phase === 'already') {
+    return (
+      <div style={cs.wrap}>
+        <div style={cs.eyebrow}>Claim pending</div>
+        <p style={cs.body}>
+          You have already submitted a claim for this organisation.
+          We will be in touch soon.
+        </p>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div style={cs.wrap}>
+        <div style={cs.eyebrow}>Is this yours?</div>
+        <h3 style={cs.heading}>Claim this profile</h3>
+        <p style={cs.body}>
+          If you represent {actor.name}, you can take over this profile,
+          keep it up to date, and manage your organisation's presence on NextUs.
+        </p>
+        <a href={`/login?redirect=${encodeURIComponent(`/org/${actor.id}`)}`}
+          style={{ ...cs.btn, display: 'inline-block', textDecoration: 'none' }}>
+          Sign in to claim
+        </a>
+      </div>
+    )
+  }
+
+  return (
+    <div style={cs.wrap}>
+      <div style={cs.eyebrow}>Is this yours?</div>
+      <h3 style={cs.heading}>Claim this profile</h3>
+      <p style={cs.body}>
+        If you represent {actor.name}, tell us who you are and why you
+        are the right person to manage this profile. We review every claim
+        personally and respond directly.
+      </p>
+
+      {phase === 'form' || phase === 'submitting' || phase === 'error' ? (
+        <>
+          <label style={cs.label}>Your role at {actor.name} *</label>
+          <input
+            style={cs.input}
+            placeholder="e.g. Executive Director, Head of Comms, Co-founder"
+            value={role}
+            onChange={e => setRole(e.target.value)}
+            disabled={phase === 'submitting'}
+          />
+
+          <label style={cs.label}>Why are you the right person to manage this? *</label>
+          <textarea
+            style={cs.textarea}
+            placeholder="A sentence or two is enough."
+            value={note}
+            onChange={e => setNote(e.target.value)}
+            disabled={phase === 'submitting'}
+          />
+
+          <label style={cs.label}>A link that connects you to the org (optional)</label>
+          <input
+            style={{ ...cs.input, marginBottom: '28px' }}
+            placeholder="Staff page, LinkedIn, bio — anything public"
+            value={evidence}
+            onChange={e => setEvidence(e.target.value)}
+            disabled={phase === 'submitting'}
+          />
+
+          {err && (
+            <p style={{ ...cs.body, color: '#8A3030', marginBottom: '16px' }}>{err}</p>
+          )}
+
+          <button
+            style={{ ...cs.btn, opacity: (!role.trim() || !note.trim() || phase === 'submitting') ? 0.5 : 1 }}
+            disabled={!role.trim() || !note.trim() || phase === 'submitting'}
+            onClick={handleSubmit}
+          >
+            {phase === 'submitting' ? 'Submitting…' : 'Submit claim'}
+          </button>
+        </>
+      ) : (
+        <button style={cs.btn} onClick={() => setPhase('form')}>
+          Claim this profile →
+        </button>
+      )}
+    </div>
+  )
+}
+
+
 export function BetaOrgPublicPage() {
   const { id }   = useParams()
   const { user } = useAuth()
@@ -453,6 +665,8 @@ export function BetaOrgPublicPage() {
         )}
 
         <OrgReceiptsStub />
+
+        <ClaimSection actor={actor} user={user} />
 
       </div>
 

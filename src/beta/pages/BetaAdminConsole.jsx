@@ -464,6 +464,51 @@ const EMPTY_ACTOR_FORM = {
   alignment_score: '', winning: false, data_source: '',
 }
 
+
+// ── ResolverNote ──────────────────────────────────────────────────────────────
+// Nik's message back to the claimant. Two buttons: Approve + Decline.
+// The note is optional but encouraged -- it becomes the welcome message.
+
+function ResolverNote({ claimId, onResolve }) {
+  const [note, setNote] = useState('')
+  const [expanded, setExpanded] = useState(false)
+
+  if (!expanded) {
+    return (
+      <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+        <Btn small onClick={() => setExpanded(true)}>Approve</Btn>
+        <Btn small variant="danger" onClick={() => onResolve(false, '')}>Decline</Btn>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ marginTop: '16px' }}>
+      <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '6px' }}>
+        Your message to them (optional but encouraged)
+      </div>
+      <textarea
+        value={note}
+        onChange={e => setNote(e.target.value)}
+        rows={4}
+        placeholder={"Welcome — great to have you in. Feel free to update anything on the profile and reach out if you need a hand at support@nextus.world."}
+        style={{
+          width: '100%', boxSizing: 'border-box',
+          fontFamily: "'Lora', Georgia, serif", fontSize: '14px',
+          padding: '10px 14px', border: '1px solid rgba(200,146,42,0.25)',
+          borderRadius: '3px', background: '#FAFAF7', color: '#0F1523',
+          marginBottom: '12px', outline: 'none', resize: 'vertical', lineHeight: 1.6,
+        }}
+      />
+      <div style={{ display: 'flex', gap: '8px' }}>
+        <Btn small onClick={() => onResolve(true, note)}>Approve + send message</Btn>
+        <Btn small variant="danger" onClick={() => onResolve(false, note)}>Decline + send message</Btn>
+        <Btn small onClick={() => setExpanded(false)}>Cancel</Btn>
+      </div>
+    </div>
+  )
+}
+
 function ActorsTab({ toast }) {
   const [actors, setActors]     = useState([])
   const [loading, setLoading]   = useState(false)
@@ -620,14 +665,22 @@ function ActorsTab({ toast }) {
     fetchActors()
   }
 
-  async function resolveClaim(claimId, actorId, approved) {
+  async function resolveClaim(claimId, actorId, approved, resolverNote = '') {
     if (approved) {
-      await supabase.from('nextus_actors').update({ claimed: true, verified: true }).eq('id', actorId)
-      await supabase.from('nextus_claims').update({ status: 'verified', resolved_at: new Date().toISOString() }).eq('id', claimId)
-      toast('Claim approved')
+      await supabase.from('nextus_actors').update({ claimed: true, verified: true, status: 'live' }).eq('id', actorId)
+      await supabase.from('nextus_claims').update({
+        status: 'verified',
+        resolved_at: new Date().toISOString(),
+        resolver_note: resolverNote.trim() || null,
+      }).eq('id', claimId)
+      toast('Claim approved — they are in.')
     } else {
-      await supabase.from('nextus_claims').update({ status: 'rejected', resolved_at: new Date().toISOString() }).eq('id', claimId)
-      toast('Claim rejected')
+      await supabase.from('nextus_claims').update({
+        status: 'rejected',
+        resolved_at: new Date().toISOString(),
+        resolver_note: resolverNote.trim() || null,
+      }).eq('id', claimId)
+      toast('Claim declined.')
     }
     fetchClaims()
   }
@@ -854,25 +907,41 @@ function ActorsTab({ toast }) {
           {!loading && claims.length === 0 && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No pending claims.</p>}
           {claims.map(c => (
             <Card key={c.id}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
-                <div>
-                  <div style={{ ...body, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>
-                    {c.nextus_actors?.name}
-                  </div>
-                  <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
-                    Claimed by: {c.claimant_email || c.user_id}
-                  </div>
-                  {c.evidence && (
-                    <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.6 }}>
-                      {c.evidence}
-                    </div>
-                  )}
-                </div>
-                <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
-                  <Btn small onClick={() => resolveClaim(c.id, c.actor_id, true)}>Approve</Btn>
-                  <Btn small variant="danger" onClick={() => resolveClaim(c.id, c.actor_id, false)}>Reject</Btn>
-                </div>
+              {/* Org name + claimant */}
+              <div style={{ ...body, fontSize: '17px', color: '#0F1523', marginBottom: '4px', fontWeight: 500 }}>
+                {c.nextus_actors?.name}
               </div>
+              <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.50)', marginBottom: '16px' }}>
+                {c.claimant_email || c.user_id}
+                {c.submitted_at && <span style={{ marginLeft: '12px' }}>{new Date(c.submitted_at).toLocaleDateString()}</span>}
+              </div>
+
+              {/* Role */}
+              {c.role && (
+                <div style={{ marginBottom: '12px' }}>
+                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Their role</div>
+                  <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>{c.role}</div>
+                </div>
+              )}
+
+              {/* Note */}
+              {c.note && (
+                <div style={{ marginBottom: '12px' }}>
+                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Their message</div>
+                  <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, fontStyle: 'italic' }}>{c.note}</div>
+                </div>
+              )}
+
+              {/* Evidence link */}
+              {c.evidence && (
+                <div style={{ marginBottom: '16px' }}>
+                  <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Evidence</div>
+                  <a href={c.evidence} target="_blank" rel="noreferrer" style={{ ...body, fontSize: '14px', color: gold }}>{c.evidence}</a>
+                </div>
+              )}
+
+              {/* Resolver note -- Nik's message back */}
+              <ResolverNote claimId={c.id} onResolve={(approved) => resolveClaim(c.id, c.actor_id, approved)} />
             </Card>
           ))}
         </div>
