@@ -17,7 +17,7 @@ import {
   Field, Label, Hint, TextInput, TextArea, SelectInput, LinkList,
   COMMON_EMPTY, SCALE_OPTIONS, SHARED_OPENER, SHARED_CLOSER,
   BODY, SC, SERIF, GOLD, DARK, PARCH, cleanLinks,
-} from './shared'
+} from './shared.jsx'
 
 const FORMATION_TYPES = [
   { value: '',           label: '— What kind of formation? —' },

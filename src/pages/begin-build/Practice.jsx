@@ -18,7 +18,7 @@ import {
   PageShell, PageHeader, Beats, PreFormLine, CloserAndSubmit,
   Field, Label, Hint, TextInput, TextArea, SelectInput, LinkList,
   COMMON_EMPTY, SHARED_OPENER, cleanLinks,
-} from './shared'
+} from './shared.jsx'
 
 const EMPTY = {
   ...COMMON_EMPTY,
