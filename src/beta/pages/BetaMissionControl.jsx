@@ -298,13 +298,74 @@ function civPlacementKey(purposeData) {
   return null
 }
 
+// ─── ScopePlaceholder ────────────────────────────────────────
+//
+// Renders when activeScope is 'practice' or 'org'. These scopes are
+// togglable in Step B of the brief — they appear in the pole bar —
+// but their working surfaces (the practitioner slate, the org
+// management slate) land in Step C. Until then, clicking the scope
+// shows a calm, honest placeholder rather than a broken-feeling
+// silence.
+//
+// The placeholder is not a marketing page or a sign-up prompt; the
+// user has already opted in. It is a "we have not built this part
+// yet, here is what is coming" statement, treating the user as the
+// adult they are.
+function ScopePlaceholder({ scope }) {
+  const label = scope === 'practice' ? 'My Practice' : 'My Org'
+  const body = scope === 'practice'
+    ? 'Your practitioner working room is being built. The brief specifies the placement fields, the offering shape, and the inbound contribution interest the room will surface. Setup, including a URL-paste shortcut that pre-fills your placement from a page you already have on the web, lands in the next drop.'
+    : 'Your organisation working room is being built. The brief specifies the six tabs from Module 6 wrapped into the Mission Control surface, plus setup with the same URL-paste shortcut. It lands in the next drop.'
+
+  return (
+    <div className="mc-scope-placeholder">
+      <div className="mc-scope-placeholder-inner">
+        <p className="mc-scope-placeholder-eyebrow">{label.toUpperCase()}</p>
+        <h2 className="mc-scope-placeholder-title">Coming soon</h2>
+        <div className="mc-scope-placeholder-rule" />
+        <p className="mc-scope-placeholder-body">{body}</p>
+      </div>
+    </div>
+  )
+}
+
 export default function BetaMissionControl() {
   const navigate = useNavigate()
   const data = useMissionControlData()
   const [activePanel, setActivePanel] = useState(null)
-  const [currentWheel, setCurrentWheel] = useState('personal')
+
+  // Scope state — the canonical id of the active Mission Control
+  // scope. One of: 'self' | 'planet' | 'practice' | 'org'. The
+  // legacy two-state `currentWheel` is derived from this so any
+  // surrounding logic that still uses it keeps working in Step B;
+  // Step C will eliminate it entirely.
+  const [activeScope, setActiveScope] = useState('self')
+  const currentWheel = activeScope === 'planet' ? 'civ' : 'personal'
 
   const isCiv = currentWheel === 'civ'
+
+  // The user's active Mission Control scopes from the users table.
+  // Default to ['self','planet'] until the row loads — this prevents
+  // a flicker between "no scopes" and "two scopes" for legitimate
+  // users on the legacy default.
+  const availableScopes = useMemo(() => {
+    const fromRow = data.userRow?.mission_control_scopes
+    if (Array.isArray(fromRow) && fromRow.length > 0) return fromRow
+    return ['self', 'planet']
+  }, [data.userRow])
+
+  // If the user's saved scope set somehow excludes the currently
+  // active scope (e.g. they just deactivated My Practice while it
+  // was selected), fall back to the first available scope.
+  useEffect(() => {
+    if (!availableScopes.includes(activeScope)) {
+      setActiveScope(availableScopes[0])
+    }
+  }, [availableScopes, activeScope])
+
+  function handleScopeSelect(scopeId) {
+    setActiveScope(scopeId)
+  }
 
   // Personal wheel data
   const { horizons: selfHorizons, current: selfCurrent } = useMemo(
@@ -647,11 +708,11 @@ export default function BetaMissionControl() {
   // Tapping a right-rail tile flips to civ AND opens the panel.
   // Tapping a left-rail tile flips to personal AND opens the panel.
   const openPersonalPanel = (key) => {
-    setCurrentWheel('personal')
+    setActiveScope('self')
     setActivePanel(key)
   }
   const openCivPanel = (key) => {
-    setCurrentWheel('civ')
+    setActiveScope('planet')
     setActivePanel(key)
   }
 
@@ -702,13 +763,15 @@ export default function BetaMissionControl() {
       />
 
       <PoleHeader
-        active={isCiv ? 'civ' : 'self'}
-        onSelectSelf={() => setCurrentWheel('personal')}
-        onSelectCiv={() => setCurrentWheel('civ')}
+        active={activeScope}
+        scopes={availableScopes}
+        onSelect={handleScopeSelect}
       />
 
       <main className="mc-body">
 
+        {(activeScope === 'self' || activeScope === 'planet') && (
+        <>
         <div className="mc-grid">
 
           {/* LEFT RAIL — My Life */}
@@ -880,6 +943,12 @@ export default function BetaMissionControl() {
             onContribute={handleCivContribute}
             busy={false}
           />
+        )}
+        </>
+        )}
+
+        {(activeScope === 'practice' || activeScope === 'org') && (
+          <ScopePlaceholder scope={activeScope} />
         )}
       </main>
 
@@ -1160,5 +1229,53 @@ const STAGE_CSS = `
     gap: 6px;
     padding: 12px 8px 8px;
   }
+}
+
+/* ScopePlaceholder — shown when activeScope is 'practice' or 'org'.
+   Calm, generous whitespace, no marketing tone. */
+.mc-scope-placeholder {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+}
+.mc-scope-placeholder-inner {
+  max-width: 560px;
+  text-align: left;
+}
+.mc-scope-placeholder-eyebrow {
+  font-family: 'Cormorant SC', Georgia, serif;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: #A8721A;
+  margin: 0 0 10px;
+}
+.mc-scope-placeholder-title {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 32px;
+  font-weight: 500;
+  color: #0F1523;
+  margin: 0 0 14px;
+  letter-spacing: -0.005em;
+}
+.mc-scope-placeholder-rule {
+  width: 40px;
+  height: 1px;
+  background: #A8721A;
+  margin: 14px 0 18px;
+}
+.mc-scope-placeholder-body {
+  font-family: 'Lora', Georgia, serif;
+  font-size: 15.5px;
+  line-height: 1.65;
+  color: #555;
+  margin: 0;
+}
+@media (max-width: 640px) {
+  .mc-scope-placeholder { padding: 36px 16px; }
+  .mc-scope-placeholder-title { font-size: 26px; }
 }
 `

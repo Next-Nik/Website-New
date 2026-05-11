@@ -50,6 +50,7 @@ export default function useMissionControlData() {
     sprintData:     null,   // array of active sprint sessions
     practiceData:   null,   // most recent horizon_practice_checkins row
     foundationData: null,   // horizon_state_summary row
+    userRow:        null,   // the users-table row (mission_control_scopes, etc.)
     loading:        true,
     error:          null,
   })
@@ -73,6 +74,7 @@ export default function useMissionControlData() {
           sprintRes,
           practiceRes,
           foundationRes,
+          userRowRes,
         ] = await Promise.all([
           supabase
             .from('contributor_profiles_beta')
@@ -137,6 +139,16 @@ export default function useMissionControlData() {
             .select('sessions_total, sessions_week, streak_days, avg_delta, last_session_at')
             .eq('user_id', user.id)
             .maybeSingle(),
+
+          // The users row: Mission Control scope visibility, plus
+          // location/region (from migration 028) so other surfaces in
+          // Mission Control can read them in one round-trip rather
+          // than re-querying.
+          supabase
+            .from('users')
+            .select('mission_control_scopes, location, region')
+            .eq('id', user.id)
+            .maybeSingle(),
         ])
 
         if (cancelled) return
@@ -144,12 +156,13 @@ export default function useMissionControlData() {
         const firstError =
           profileRes.error || mapRes.error || mapResultsRes.error ||
           purposeRes.error || sprintRes.error || practiceRes.error ||
-          foundationRes.error
+          foundationRes.error || userRowRes.error
 
         if (firstError) {
           setState({
             profile: null, mapData: null, mapResults: null, purposeData: null,
             sprintData: null, practiceData: null, foundationData: null,
+            userRow: null,
             loading: false, error: firstError,
           })
           return
@@ -163,6 +176,7 @@ export default function useMissionControlData() {
           sprintData:     sprintRes.data || [],
           practiceData:   practiceRes.data || null,
           foundationData: foundationRes.data || null,
+          userRow:        userRowRes.data || null,
           loading:        false,
           error:          null,
         })
@@ -171,6 +185,7 @@ export default function useMissionControlData() {
           setState({
             profile: null, mapData: null, mapResults: null, purposeData: null,
             sprintData: null, practiceData: null, foundationData: null,
+            userRow: null,
             loading: false, error: err,
           })
         }

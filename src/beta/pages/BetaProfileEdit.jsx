@@ -82,6 +82,14 @@ export default function BetaProfileEdit() {
   const [profileError, setProfileError] = useState(null)
   const [principleAlignment, setPrincipleAlignment] = useState([])
 
+  // Mission Control scopes — read from users.mission_control_scopes.
+  // Default is ['self','planet']. UI toggles write the new set back to
+  // the same column. The user cannot deactivate their last scope; the
+  // UI prevents it (the DB constraint catches it as a backstop).
+  const [scopes, setScopes] = useState(['self', 'planet'])
+  const [scopesLoaded, setScopesLoaded] = useState(false)
+  const [scopesSaving, setScopesSaving] = useState(null)  // id currently saving
+
   const userId = user?.id
 
   const loadProfile = useCallback(async () => {
@@ -158,6 +166,50 @@ export default function BetaProfileEdit() {
       cancelled = true
     }
   }, [userId])
+
+  // Load Mission Control scopes from users table.
+  useEffect(() => {
+    if (!userId) return
+    let cancelled = false
+    ;(async () => {
+      const { data, error } = await supabase
+        .from('users')
+        .select('mission_control_scopes')
+        .eq('id', userId)
+        .maybeSingle()
+      if (cancelled) return
+      if (!error && Array.isArray(data?.mission_control_scopes) && data.mission_control_scopes.length > 0) {
+        setScopes(data.mission_control_scopes)
+      }
+      // If error, or empty, or no row: keep the default ['self','planet'].
+      setScopesLoaded(true)
+    })()
+    return () => { cancelled = true }
+  }, [userId])
+
+  // Toggle one scope. The user cannot deactivate their last scope —
+  // attempting to do so is a no-op (the UI dims the checkbox; this is
+  // the defensive backstop). Otherwise: optimistic update, write,
+  // revert on failure.
+  async function toggleScope(scopeId) {
+    if (!userId) return
+    const isActive = scopes.includes(scopeId)
+    if (isActive && scopes.length <= 1) return  // refuse to drop the last scope
+    const next = isActive
+      ? scopes.filter(id => id !== scopeId)
+      : [...scopes, scopeId]
+    setScopes(next)
+    setScopesSaving(scopeId)
+    const { error } = await supabase
+      .from('users')
+      .update({ mission_control_scopes: next })
+      .eq('id', userId)
+    setScopesSaving(null)
+    if (error) {
+      // Revert on failure.
+      setScopes(scopes)
+    }
+  }
 
   async function saveProfileField(column, value) {
     if (!userId) return
@@ -258,6 +310,18 @@ export default function BetaProfileEdit() {
             />
           </FieldColumn>
         </Row>
+      </Section>
+
+      {/* Mission Control scopes — which scales of life Mission Control
+          surfaces for this user. Per the Scopes & Onboarding brief,
+          Section 4. */}
+      <Section eyebrow="Mission Control scopes" title="What Mission Control shows you">
+        <ScopeSettings
+          scopes={scopes}
+          loaded={scopesLoaded}
+          saving={scopesSaving}
+          onToggle={toggleScope}
+        />
       </Section>
 
       {/* Three free-text statements, each with its own visibility toggle. */}
@@ -655,5 +719,129 @@ function FooterMeta() {
       Free-text fields save when you click away. Selections save when you press
       Save. Visibility changes are instant.
     </p>
+  )
+}
+
+// ─── ScopeSettings ───────────────────────────────────────────
+//
+// Renders the four Mission Control scope toggles. Per the brief,
+// Section 4.1. The user can deactivate scopes they do not want to
+// see, but cannot deactivate their last scope (Mission Control
+// without a scope is meaningless).
+//
+// Props:
+//   scopes:   string[]              — current active scope ids
+//   loaded:   boolean               — true once the initial fetch resolves
+//   saving:   string | null         — scope id currently being saved (or null)
+//   onToggle: (scopeId) => void
+function ScopeSettings({ scopes, loaded, saving, onToggle }) {
+  const items = [
+    { id: 'self',     label: 'My Life',     helper: 'Your personal working room. The seven Self domains, your horizon, your Map.' },
+    { id: 'planet',   label: 'The Planet',  helper: 'The civilisational view. The seven NextUs domains and where humanity is heading.' },
+    { id: 'practice', label: 'My Practice', helper: 'Your room as a practitioner. Your placement, your offerings, who is reaching out. Setup arrives when you toggle this on.' },
+    { id: 'org',      label: 'My Org',      helper: 'Your organisation\'s working room. The six tabs of org management inside Mission Control. Setup arrives when you toggle this on.' },
+  ]
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <p style={{
+        fontFamily: "'Lora', Georgia, serif",
+        fontSize: '14px',
+        fontStyle: 'italic',
+        color: '#777',
+        margin: '0 0 6px',
+        lineHeight: 1.55,
+      }}>
+        Mission Control can show up to four scales of your life. Most users keep My Life and The Planet on. Toggle the others on if you run those rooms too. You can change this any time.
+      </p>
+
+      {items.map((item) => {
+        const active = scopes.includes(item.id)
+        const isLast = active && scopes.length === 1
+        const isSaving = saving === item.id
+
+        return (
+          <label
+            key={item.id}
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '14px',
+              padding: '14px 16px',
+              border: '1px solid rgba(200, 146, 42, 0.30)',
+              borderRadius: '14px',
+              background: active ? 'rgba(200, 146, 42, 0.06)' : 'transparent',
+              cursor: isLast ? 'not-allowed' : 'pointer',
+              opacity: !loaded ? 0.55 : (isLast ? 0.85 : 1),
+              transition: 'background 0.18s ease, opacity 0.18s ease',
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={active}
+              disabled={!loaded || isLast || isSaving}
+              onChange={() => onToggle(item.id)}
+              style={{
+                marginTop: '3px',
+                width: '16px',
+                height: '16px',
+                accentColor: '#A8721A',
+                cursor: isLast ? 'not-allowed' : 'pointer',
+                flexShrink: 0,
+              }}
+            />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: '10px',
+                marginBottom: '4px',
+                flexWrap: 'wrap',
+              }}>
+                <span style={{
+                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  fontSize: '17px',
+                  fontWeight: 500,
+                  color: '#0F1523',
+                }}>
+                  {item.label}
+                </span>
+                {isLast && (
+                  <span style={{
+                    fontFamily: "'Cormorant SC', Georgia, serif",
+                    fontSize: '9.5px',
+                    letterSpacing: '0.18em',
+                    color: '#999',
+                    textTransform: 'uppercase',
+                  }}>
+                    Cannot turn off the last scope
+                  </span>
+                )}
+                {isSaving && (
+                  <span style={{
+                    fontFamily: "'Cormorant SC', Georgia, serif",
+                    fontSize: '9.5px',
+                    letterSpacing: '0.18em',
+                    color: '#A8721A',
+                    textTransform: 'uppercase',
+                  }}>
+                    Saving…
+                  </span>
+                )}
+              </div>
+              <p style={{
+                fontFamily: "'Lora', Georgia, serif",
+                fontSize: '13.5px',
+                color: '#666',
+                margin: 0,
+                lineHeight: 1.5,
+              }}>
+                {item.helper}
+              </p>
+            </div>
+          </label>
+        )
+      })}
+    </div>
   )
 }
