@@ -34,7 +34,9 @@
 // ──────────────────────────────────────────────────────────────
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+
+import { supabase } from '../../hooks/useSupabase'
 
 import IdentityStrip      from '../components/mission-control/IdentityStrip'
 import PoleHeader         from '../components/mission-control/PoleHeader'
@@ -333,6 +335,7 @@ function ScopePlaceholder({ scope }) {
 
 export default function BetaMissionControl() {
   const navigate = useNavigate()
+  const location = useLocation()
   const data = useMissionControlData()
   const [activePanel, setActivePanel] = useState(null)
 
@@ -346,15 +349,144 @@ export default function BetaMissionControl() {
 
   const isCiv = currentWheel === 'civ'
 
+  // Scope-arming — handoff from the practitioner / org welcome flows.
+  // Per the Scopes & Onboarding brief, Section 6.1, the welcome flows
+  // land the user on /beta/dashboard?scope=practice (merge) or
+  // ?scope=org (overwrite to org-only per Section 3.2). This effect
+  // resolves that handoff once, on first authenticated load:
+  //
+  //   1. Wait for the user row to be available (we need the existing
+  //      scope array to merge against).
+  //   2. Decide the new array: merge 'practice' into the existing
+  //      scopes for the practitioner path; overwrite to ['org'] for
+  //      the org path.
+  //   3. If the new array differs from what's already saved, write
+  //      it to users.mission_control_scopes.
+  //   4. Activate the requested scope so the user lands in the right
+  //      working room.
+  //   5. Strip the query param so reloads don't re-fire the handoff.
+  //
+  // `armingScope` carries the requested scope through the moment
+  // between "we just wrote to the DB" and "userRow refresh has the
+  // new array" — without it, the fallback effect below would yank
+  // activeScope back to 'self' because availableScopes hasn't caught
+  // up yet.
+  const [armingScope, setArmingScope] = useState(null)
+  const armingHandledRef = useRef(false)
+
+  useEffect(() => {
+    if (armingHandledRef.current) return
+    if (!data.user || data.loading) return
+
+    const params = new URLSearchParams(location.search)
+    const requested = params.get('scope')
+    if (requested !== 'practice' && requested !== 'org') return
+
+    armingHandledRef.current = true
+
+    const existing = Array.isArray(data.userRow?.mission_control_scopes)
+      ? data.userRow.mission_control_scopes
+      : ['self', 'planet']
+
+    // Merge for practice (preserve whatever's already on the row).
+    //
+    // Org arming is subtler. The brief says new org signups land with
+    // org-only by default (Section 3.2 — personal scales off). But it
+    // also says everything is changeable from Scope Settings. We split
+    // the difference by behaviour: an established user (any scope
+    // beyond the legacy ['self','planet'] default) gets a merge,
+    // preserving what they've already opted into. A fresh user — still
+    // on the default pair — gets the overwrite the brief specifies.
+    // This way an established practitioner who taps an org welcome
+    // link out of curiosity doesn't lose their existing setup.
+    const isLegacyDefault =
+      existing.length === 2 &&
+      existing.includes('self') &&
+      existing.includes('planet')
+
+    let next
+    if (requested === 'practice') {
+      next = existing.includes('practice') ? existing : [...existing, 'practice']
+    } else if (isLegacyDefault) {
+      next = ['org']
+    } else {
+      next = existing.includes('org') ? existing : [...existing, 'org']
+    }
+
+    setArmingScope(requested)
+    setActiveScope(requested)
+
+    // Strip the ?scope= param so a reload doesn't re-arm. Replace,
+    // not push — the dashboard should not appear twice in history.
+    const cleaned = new URLSearchParams(location.search)
+    cleaned.delete('scope')
+    const cleanedSearch = cleaned.toString()
+    navigate(
+      `${location.pathname}${cleanedSearch ? `?${cleanedSearch}` : ''}${location.hash || ''}`,
+      { replace: true },
+    )
+
+    // Persist if the array actually changed. Same-array writes are
+    // skipped to avoid a needless round-trip.
+    const sameArray =
+      existing.length === next.length &&
+      existing.every((id, i) => id === next[i])
+    if (sameArray) return
+
+    supabase
+      .from('users')
+      .update({ mission_control_scopes: next })
+      .eq('id', data.user.id)
+      .then(({ error }) => {
+        if (error) {
+          // Soft fail. The user is already in the right scope for
+          // this session; on next reload the saved array will reflect
+          // whatever was on the row, and Scope Settings remains the
+          // canonical way to fix it.
+          // eslint-disable-next-line no-console
+          console.warn('[mission-control] scope arming write failed:', error)
+        }
+      })
+  }, [data.user, data.userRow, data.loading, location, navigate])
+
   // The user's active Mission Control scopes from the users table.
   // Default to ['self','planet'] until the row loads — this prevents
   // a flicker between "no scopes" and "two scopes" for legitimate
   // users on the legacy default.
+  //
+  // While arming is in flight (the userRow may not yet reflect the
+  // write), we layer the armingScope on top so the fallback effect
+  // below doesn't yank activeScope back to a stale value.
   const availableScopes = useMemo(() => {
     const fromRow = data.userRow?.mission_control_scopes
-    if (Array.isArray(fromRow) && fromRow.length > 0) return fromRow
-    return ['self', 'planet']
-  }, [data.userRow])
+    const base = (Array.isArray(fromRow) && fromRow.length > 0)
+      ? fromRow
+      : ['self', 'planet']
+    if (!armingScope) return base
+    if (base.includes(armingScope)) return base
+    // Org arming on the legacy default ['self','planet'] overwrites to
+    // org-only (per the brief). Any other base — including a base that
+    // already contains org — gets a merge instead, preserving what the
+    // user has already opted into.
+    if (armingScope === 'org') {
+      const isLegacyDefault =
+        base.length === 2 && base.includes('self') && base.includes('planet')
+      if (isLegacyDefault) return ['org']
+    }
+    return [...base, armingScope]
+  }, [data.userRow, armingScope])
+
+  // Once the userRow catches up with the arming write, the armingScope
+  // override is no longer needed. Clearing it lets the live array take
+  // over as the source of truth.
+  useEffect(() => {
+    if (!armingScope) return
+    const fromRow = data.userRow?.mission_control_scopes
+    if (!Array.isArray(fromRow)) return
+    if (armingScope === 'org' ? fromRow.includes('org') : fromRow.includes(armingScope)) {
+      setArmingScope(null)
+    }
+  }, [armingScope, data.userRow])
 
   // If the user's saved scope set somehow excludes the currently
   // active scope (e.g. they just deactivated My Practice while it

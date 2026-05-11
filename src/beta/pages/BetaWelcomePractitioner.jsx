@@ -4,9 +4,19 @@
 // The practitioner intro. Reached from the starter at /beta/welcome
 // via the "I offer work others might want" choice.
 //
-// Same engine, different protagonist, different closing path. The
-// practitioner onboarding flow doesn't exist yet; this lands at a
-// placeholder for now, replaced when Phase 2 ships.
+// Default returnTo lands the visitor on the dashboard with the
+// practice scope pre-armed (?scope=practice). On arrival, Mission
+// Control merges 'practice' into the user's mission_control_scopes
+// (preserving anything already there) and activates the My Practice
+// surface — which is itself the setup flow until the required fields
+// are filled.
+//
+// The pre-auth case still walks through /login (with this returnTo
+// passed as ?redirect=), so the scope handoff fires regardless of
+// whether the visitor signs in fresh or was already logged in.
+//
+// BetaWelcomeNext is retained as a not-yet-authed fallback for
+// visitors who arrive without going through the welcome route.
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect } from 'react'
@@ -23,7 +33,7 @@ export default function BetaWelcomePractitioner() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const { user, loading } = useAuth()
-  const returnTo = params.get('return') || '/beta/welcome/practitioner-next'
+  const returnTo = params.get('return') || '/beta/dashboard?scope=practice'
 
   useEffect(() => {
     if (!loading && user) {
@@ -43,7 +53,7 @@ export default function BetaWelcomePractitioner() {
 
   function handleDismiss() {
     markSeen()
-    navigate(returnTo)
+    navigate(`/login?redirect=${encodeURIComponent(returnTo)}`)
   }
 
   return (

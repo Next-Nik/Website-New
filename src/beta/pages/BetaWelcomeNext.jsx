@@ -1,18 +1,17 @@
 // ─────────────────────────────────────────────────────────────
 // BetaWelcomeNext — /beta/welcome/org-next, /beta/welcome/practitioner-next
 //
-// Holding page for org and practitioner intros until Phase 2
-// builds the actual onboarding flows. Captures interest with a
-// short note from Nik and a simple email-capture so people who
-// arrive can be told when the path opens.
+// Dormant fallback page. As of the Scopes & Onboarding C3 drop,
+// the practitioner and org welcome flows route directly to the
+// dashboard with a ?scope= handoff param. This page is retained
+// as a backup for any path that still resolves here — direct
+// links, deep returnTo overrides, or older bookmarks — so those
+// visitors land on something coherent rather than a 404.
 //
 // The page reads the URL to figure out which path the visitor
-// came down (org or practitioner) and speaks accordingly.
-//
-// Replaced by the real onboarding pages when Phase 2 ships;
-// /beta/welcome/org-next and /beta/welcome/practitioner-next
-// become the entry to the actual form flow rather than this
-// placeholder.
+// came down (org or practitioner) and speaks accordingly. It
+// captures interest via email so anyone who lands here can be
+// reached when the next iteration of these flows ships.
 // ─────────────────────────────────────────────────────────────
 
 import { useState } from 'react'
