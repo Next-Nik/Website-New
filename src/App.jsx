@@ -84,6 +84,11 @@ import BetaPracticeContribute     from './beta/pages/BetaPracticeContribute'
 import { BetaInvitationPage }     from './beta/pages/BetaInvitation'
 import { BetaInvitationIndexPage } from './beta/pages/BetaInvitationIndex'
 
+// ── Begin / Build ────────────────────────────────────────────────
+import { BeginBuildOrgPage }      from './pages/begin-build/Org'
+import { BeginBuildPracticePage } from './pages/begin-build/Practice'
+import { BeginBuildGroupPage }    from './pages/begin-build/Group'
+
 // ── Tools ─────────────────────────────────────────────────────
 import { NorthStarPage }                           from './tools/orienteering/Orienteering'
 import { MapPage }                                 from './tools/map/Map'
@@ -204,6 +209,11 @@ function AppInner() {
         <Route path="/beta/practice/:slug"               element={<Navigate to="/practice/:slug" replace />} />
         <Route path="/beta/invitation"                   element={<Navigate to="/invitation" replace />} />
         <Route path="/beta/invitation/:slug"             element={<Navigate to="/invitation/:slug" replace />} />
+
+        {/* ── Begin / Build — maker registration ── */}
+        <Route path="/begin/build/org"      element={<BeginBuildOrgPage />} />
+        <Route path="/begin/build/practice" element={<BeginBuildPracticePage />} />
+        <Route path="/begin/build/group"    element={<BeginBuildGroupPage />} />
 
         {/* ── Legacy redirects — clean once confirmed dead ── */}
         <Route path="/life-os"             element={<Navigate to="/nextus-self" replace />} />

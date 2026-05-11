@@ -12,8 +12,8 @@
 //   5. Success state links to /beta and /beta/nominate.
 //   6. No em dashes in personal-tone copy.
 
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { SiteFooter } from '../../components/SiteFooter'
 import { supabase } from '../../hooks/useSupabase'
@@ -115,11 +115,35 @@ const EMPTY = {
 
 export function BetaNominatePage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [form, setForm]     = useState(EMPTY)
   const [saving, setSaving] = useState(false)
   const [done, setDone]     = useState(false)
   const [error, setError]   = useState(null)
   const [nominatedId, setNominatedId] = useState(null)
+
+  // Prefill from /begin/build/org if we arrived with state. The shape comes
+  // from BeginBuildOrgPage.submit(): it maps the universal seven onto our
+  // EMPTY shape where field names align, and packs the rest under
+  // _begin_build for richer rendering later. We pull what we know.
+  useEffect(() => {
+    const prefill = location.state?.prefill
+    if (!prefill) return
+    setForm(f => ({
+      ...f,
+      name:            prefill.name             ?? f.name,
+      website:         prefill.website          ?? f.website,
+      why:             prefill.why              ?? f.why,
+      nominator_name:  prefill.nominator_name   ?? f.nominator_name,
+      nominator_email: prefill.nominator_email  ?? f.nominator_email,
+      location_name:   prefill.location_name    ?? f.location_name,
+      scale:           prefill.scale            ?? f.scale,
+    }))
+    // Clear state so a back/forward navigation doesn't re-prefill on top
+    // of edits the user has made.
+    navigate(location.pathname + location.search, { replace: true, state: null })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function set(field, value) { setForm(f => ({ ...f, [field]: value })) }
 
@@ -222,7 +246,7 @@ export function BetaNominatePage() {
 
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '32px' }}>
             {nominatedId && (
-              <button onClick={() => navigate(`/org/${nominatedId}/manage`)}
+              <button onClick={() => navigate(`/beta/org/${nominatedId}/manage`)}
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: 'none', background: '#C8922A', color: '#FFFFFF', cursor: 'pointer' }}>
                 Manage this profile
               </button>
