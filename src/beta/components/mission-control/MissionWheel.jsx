@@ -409,9 +409,9 @@ function SelfWheel({
           fill="transparent"
           style={{ cursor: 'pointer' }}
           onClick={onCentreClick}
-          aria-label="Return to your life overview"
+          aria-label="Return to my life overview"
         >
-          <title>Your life overview</title>
+          <title>My life overview</title>
         </circle>
       )}
     </svg>

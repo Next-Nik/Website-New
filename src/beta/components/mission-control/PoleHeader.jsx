@@ -3,9 +3,9 @@
 //
 // Centred two-pole header. Reads:
 //
-//     ‹  Your Life | The Planet  ›
+//     ‹  My Life | The Planet  ›
 //
-// "Your Life" and "The Planet" sit centre-stage, separated by a
+// "My Life" and "The Planet" sit centre-stage, separated by a
 // thin gold vertical rule. Flanking arrows ‹ › are the pole
 // switcher — left arrow flips to Self, right arrow flips to Civ.
 // Tapping either label also flips. Active pole gets a thin gold
@@ -44,7 +44,7 @@ export default function PoleHeader({
           type="button"
           className="mc-pole-arrow mc-pole-arrow-left"
           onClick={onSelectSelf}
-          aria-label="Switch to Your Life"
+          aria-label="Switch to My Life"
           disabled={isSelf}
         >
           ‹
@@ -55,7 +55,7 @@ export default function PoleHeader({
           className={`mc-pole mc-pole-self ${isSelf ? 'mc-pole-active' : ''}`}
           onClick={onSelectSelf}
         >
-          Your Life
+          My Life
         </button>
 
         <span className="mc-pole-divider" aria-hidden="true" />

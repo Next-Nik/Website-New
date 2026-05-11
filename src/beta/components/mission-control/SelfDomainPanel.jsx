@@ -150,7 +150,7 @@ export default function SelfDomainPanel({
           )}
           {!isOverview && itemForDisplay && (
             <span className="mc-self-stepper-eyebrow">
-              YOUR LIFE
+              MY LIFE
               <span className="mc-self-stepper-divider">·</span>
               {itemForDisplay.name?.toUpperCase()}
             </span>
@@ -179,9 +179,9 @@ export default function SelfDomainPanel({
           const showCanonical  = !hasLifeHorizon  // canonical only when the user has not authored their own
           return (
             <div className="mc-self-overview">
-              <p className="mc-self-eyebrow">YOUR LIFE</p>
+              <p className="mc-self-eyebrow">MY LIFE</p>
               <h2 className="mc-self-title">
-                {hasLifeHorizon ? 'Your Horizon' : 'A Life Fully Expressed'}
+                {hasLifeHorizon ? 'My Horizon' : 'A Life Fully Expressed'}
               </h2>
               <div className="mc-self-rule" />
 

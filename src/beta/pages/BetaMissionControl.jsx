@@ -16,7 +16,7 @@
 //   ├─────────────────────────────────────────────────────┤
 //   │  Nik     Architect · Vision · Civilisational        │  IdentityStrip — identity bar
 //   ├─────────────────────────────────────────────────────┤
-//   │       ‹  Your Life | The Planet  ›                  │  PoleHeader (centred)
+//   │       ‹  My Life | The Planet  ›                    │  PoleHeader (centred)
 //   ├──────┬───────────────────────────────────────┬──────┤
 //   │ Map  │                                       │ Plac │
 //   │ HS   │       MissionWheel over Dymaxion      │ WV   │
@@ -711,7 +711,7 @@ export default function BetaMissionControl() {
 
         <div className="mc-grid">
 
-          {/* LEFT RAIL — Your Life */}
+          {/* LEFT RAIL — My Life */}
           <SideRail side="left">
             <Tile
               glyph={<MapPinGlyph />}
