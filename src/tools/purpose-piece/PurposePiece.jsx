@@ -823,7 +823,7 @@ export function PurposePiecePage() {
         updated_at:               new Date().toISOString(),
       }
       Object.keys(cp).forEach(k => cp[k] === null && delete cp[k])
-      await supabase.from('contributor_profiles').upsert(cp, { onConflict: 'id' })
+      await supabase.from('contributor_profiles_beta').upsert(cp, { onConflict: 'id' })
 
       // Write coordinates to North Star so they flow into other tools
       try {

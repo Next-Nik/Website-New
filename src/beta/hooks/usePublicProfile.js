@@ -50,7 +50,7 @@ export function usePublicProfile(userId) {
           // purpose_piece_results — archetype, civ domain, scale
           supabase
             .from('purpose_piece_results')
-            .select('profile, session, completed_at, status')
+            .select('profile, session, archetype, domain_id, scale, civilisational_statement, completed_at, status')
             .eq('user_id', userId)
             .eq('status', 'complete')
             .order('updated_at', { ascending: false })
@@ -134,7 +134,13 @@ export function usePublicProfile(userId) {
         // Purpose piece result
         const purpose = purposeRes.data
         const purposeProfile = purpose?.profile || {}
+        // v10 writes top-level columns; v9 wrote to session.tentative — read both
         const purposeSession = purpose?.session?.tentative || {}
+        const purposeArchetype = purpose?.archetype || purposeSession?.archetype?.archetype || null
+        const purposeSecondary = purposeSession?.archetype?.secondary || null
+        const purposeDomain    = purpose?.domain_id || purposeSession?.domain?.domain || null
+        const purposeScale     = purpose?.scale || purposeSession?.scale?.scale || null
+        const purposeStatement = purpose?.civilisational_statement || purposeProfile?.civilisational_statement || null
 
         if (!cancelled) {
           setData({
@@ -147,11 +153,11 @@ export function usePublicProfile(userId) {
             activeSprints: publicSprints.filter(s => s.status === 'active').slice(0, 3),
             completedSprints: publicSprints.filter(s => s.status === 'complete'),
             purpose: {
-              archetype: purposeSession?.archetype?.archetype || null,
-              secondary: purposeSession?.archetype?.secondary || null,
-              domain: purposeSession?.domain?.domain || null,
-              scale: purposeSession?.scale?.scale || null,
-              statement: purposeProfile?.civilisational_statement || null,
+              archetype: purposeArchetype,
+              secondary: purposeSecondary,
+              domain:    purposeDomain,
+              scale:     purposeScale,
+              statement: purposeStatement,
             },
             principleTaggings: principlesRes.data || [],
           })

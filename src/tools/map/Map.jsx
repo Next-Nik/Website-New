@@ -2268,6 +2268,33 @@ export function MapPage() {
         try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'map') } catch {}
         try { await supabase.from('north_star_notes').insert(notes.map(n => ({ user_id: user.id, ...n }))) } catch {}
       }
+
+      // Write all 7 domains to horizon_profile so Target Sprint, feed,
+      // public profile, and _north-star.js can all read from one source.
+      const DOMAIN_KEYS = ['path','spark','body','finances','connection','inner_game','signal']
+      const profileRows = DOMAIN_KEYS
+        .map(key => {
+          const d = allData[key]
+          if (!d || d.currentScore === undefined) return null
+          return {
+            user_id:          user.id,
+            domain:           key,
+            current_score:    d.currentScore,
+            horizon_score:    d.horizonScore ?? null,
+            horizon_goal:     d.horizonText  ?? null,
+            ia_statement:     d.ia_statement ?? null,
+            avatar_statement: d.avatarFinal  ?? null,
+            source:           'map',
+            last_updated:     new Date().toISOString(),
+          }
+        })
+        .filter(Boolean)
+      if (profileRows.length) {
+        try {
+          await supabase.from('horizon_profile')
+            .upsert(profileRows, { onConflict: 'user_id,domain' })
+        } catch {}
+      }
     } catch {}
   }
 
