@@ -11,6 +11,7 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
+import { supabase } from '../hooks/useSupabase'
 import { ROUTES } from '../constants/routes'
 
 const body = { fontFamily: "'Lora', Georgia, serif" }
@@ -147,10 +148,16 @@ export function CheckoutPage() {
   async function grantDirectAccess() {
     setStatus('processing')
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (!token) throw new Error('Not authenticated.')
       const res = await fetch(ROUTES.api.grantBetaAccess, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, promoCode, ref }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ promoCode, ref }),
       })
       const data = await res.json()
       if (!res.ok) {

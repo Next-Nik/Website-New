@@ -4,8 +4,12 @@
 //   - Beta codes (BETA50, BETACORE75, FRIEND) — known set, welcome type: 'beta'
 //   - NextCore codes (personal per-user codes) — validated via Stripe, welcome type: 'nextcore'
 //
-// POST body: { userId, promoCode, ref? }
+// POST body: { promoCode, ref? }
+// Auth:      Authorization: Bearer <supabase_access_token> (required)
 // Returns:   { success: true, welcomeType: 'beta'|'nextcore' } or { error: string }
+//
+// SECURITY: userId is derived server-side from the verified session token.
+// The client never supplies userId — any body-supplied userId is ignored.
 
 const Stripe = require('stripe')
 const { createClient } = require('@supabase/supabase-js')
@@ -86,9 +90,17 @@ async function validateNextCoreCode(code) {
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { userId, promoCode, ref } = req.body
+  // Derive userId from the verified session token — never trust client-supplied userId
+  const authHeader = req.headers['authorization'] ?? ''
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null
+  if (!token) return res.status(401).json({ error: 'Missing authorization token' })
 
-  if (!userId)    return res.status(400).json({ error: 'Missing userId' })
+  const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+  if (authError || !user) return res.status(401).json({ error: 'Invalid or expired session' })
+
+  const userId = user.id
+  const { promoCode, ref } = req.body
+
   if (!promoCode) return res.status(400).json({ error: 'Missing promoCode' })
 
   const code = promoCode.toUpperCase()
