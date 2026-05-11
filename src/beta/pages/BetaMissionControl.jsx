@@ -46,6 +46,7 @@ import Panel              from '../components/mission-control/Panel'
 import CivDomainPanel             from '../components/mission-control/CivDomainPanel'
 import SelfDomainPanel            from '../components/mission-control/SelfDomainPanel'
 import MyPracticeMissionPanel     from '../components/mission-control/MyPracticeMissionPanel'
+import MyOrgMissionPanel          from '../components/mission-control/MyOrgMissionPanel'
 import MapMissionPanel            from '../components/mission-control/MapMissionPanel'
 import TargetSprintMissionPanel   from '../components/mission-control/TargetSprintMissionPanel'
 import HorizonPracticeMissionPanel from '../components/mission-control/HorizonPracticeMissionPanel'
@@ -953,7 +954,7 @@ export default function BetaMissionControl() {
         )}
 
         {activeScope === 'org' && (
-          <ScopePlaceholder scope={activeScope} />
+          <MyOrgMissionPanel userId={data.user?.id} />
         )}
       </main>
 
