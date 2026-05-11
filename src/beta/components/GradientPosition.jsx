@@ -139,7 +139,7 @@ export function GradientPosition({ position, trajectory, actorName, compact }) {
       {flagged && (
         <div style={{ marginTop: compact ? '8px' : '10px' }}>
           <a
-            href="/beta/domain/technology?lens=transition-accountability"
+            href="/domain/technology?lens=transition-accountability"
             style={{
               display: 'inline-flex',
               alignItems: 'center',

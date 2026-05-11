@@ -34,7 +34,7 @@ function InvitationListCard({ invitation }) {
 
   return (
     <Link
-      to={`/beta/invitation/${invitation.slug}`}
+      to={`/invitation/${invitation.slug}`}
       style={{ textDecoration: 'none', display: 'block' }}
     >
       <div style={{

@@ -33,7 +33,7 @@ export default function BetaWelcomePractitioner() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const { user, loading } = useAuth()
-  const returnTo = params.get('return') || '/beta/dashboard?scope=practice'
+  const returnTo = params.get('return') || '/dashboard?scope=practice'
 
   useEffect(() => {
     if (!loading && user) {

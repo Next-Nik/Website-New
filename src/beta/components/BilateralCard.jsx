@@ -223,7 +223,7 @@ export function BilateralCard({
 
         <div style={{ display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: '6px' }}>
           {partyAId ? (
-            <Link to={`/beta/profile/${partyAId}`} style={{
+            <Link to={`/profile/${partyAId}`} style={{
               ...body, fontSize: '15px', fontWeight: 400, color: dark,
               textDecoration: 'none', borderBottom: '1px dotted rgba(15,21,35,0.20)',
             }}>
@@ -237,7 +237,7 @@ export function BilateralCard({
 
           {partyBId ? (
             <Link
-              to={partyBIsOrg ? `/beta/org/${partyBId}` : `/beta/profile/${partyBId}`}
+              to={partyBIsOrg ? `/org/${partyBId}` : `/profile/${partyBId}`}
               style={{
                 ...body, fontSize: '15px', fontWeight: 400, color: dark,
                 textDecoration: 'none', borderBottom: '1px dotted rgba(15,21,35,0.20)',

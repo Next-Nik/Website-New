@@ -26,6 +26,25 @@ export const ROUTES = {
   privacy:        '/privacy',
   terms:          '/terms',
   admin:          '/admin',
+
+  // ── Platform (formerly /beta/*) ───────────────────────────
+  missionControl:   '/dashboard',
+  welcome:          '/welcome',
+  welcomeSelf:      '/welcome/self',
+  welcomeOrg:       '/welcome/org',
+  welcomePractitioner: '/welcome/practitioner',
+  profileEdit:      '/profile/edit',
+  publicProfile:    '/profile',        // + /:id
+  feed:             '/feed',
+  contribution:     '/contribution',
+  org:              '/org',            // + /:slug
+  betaMap:          '/map',
+  betaAdmin:        '/admin',
+  nominate:         '/nominate',
+  domain:           '/domain',         // + /:slug
+  practices:        '/practices',
+  practice:         '/practice',       // + /:slug
+  invitation:       '/invitation',     // + /:slug
   faq:            '/faq',
   nextUsPlace:    '/nextus/place',
   contentEditor:  '/content-editor',

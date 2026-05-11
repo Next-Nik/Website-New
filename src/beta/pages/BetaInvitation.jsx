@@ -81,7 +81,7 @@ function InvitationActorCard({ actor, side }) {
         <div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <Link
-              to={`/beta/org/${actor.id}`}
+              to={`/org/${actor.id}`}
               style={{
                 ...body,
                 fontSize: '17px',
@@ -111,7 +111,7 @@ function InvitationActorCard({ actor, side }) {
         </div>
 
         <Link
-          to={`/beta/org/${actor.id}`}
+          to={`/org/${actor.id}`}
           style={{
             ...sc,
             fontSize: '11px',
@@ -188,7 +188,7 @@ function NotFound() {
         <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.45)', lineHeight: 1.75 }}>
           This invitation does not exist or has been archived.
         </p>
-        <Link to="/beta/invitation" style={{
+        <Link to="/invitation" style={{
           ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold,
           textDecoration: 'none', display: 'inline-block', marginTop: '20px',
         }}>
@@ -312,14 +312,14 @@ export function BetaInvitationPage() {
 
         {/* Domain breadcrumb */}
         <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap' }}>
-          <Link to="/beta/invitation" style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.45)', textDecoration: 'none' }}>
+          <Link to="/invitation" style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.45)', textDecoration: 'none' }}>
             Invitations
           </Link>
           {primaryDomain && (
             <>
               <span style={{ color: 'rgba(200,146,42,0.40)' }}>/</span>
               <Link
-                to={`/beta/domain/${primaryDomain}`}
+                to={`/domain/${primaryDomain}`}
                 style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, textDecoration: 'none' }}
               >
                 {CIV_DOMAIN_LABEL[primaryDomain] || primaryDomain}
@@ -561,7 +561,7 @@ export function BetaInvitationPage() {
                 {regenerativeActors.map(actor => (
                   <Link
                     key={actor.id}
-                    to={`/beta/org/${actor.id}`}
+                    to={`/org/${actor.id}`}
                     style={{
                       ...body,
                       fontSize: '15px',
@@ -599,7 +599,7 @@ export function BetaInvitationPage() {
               {domains.map(d => (
                 <Link
                   key={d}
-                  to={`/beta/domain/${d}`}
+                  to={`/domain/${d}`}
                   style={{
                     ...sc,
                     fontSize: '12px',
@@ -628,7 +628,7 @@ export function BetaInvitationPage() {
           {/* Back link */}
           <div style={{ marginTop: '24px' }}>
             <Link
-              to="/beta/invitation"
+              to="/invitation"
               style={{
                 ...sc,
                 fontSize: '12px',

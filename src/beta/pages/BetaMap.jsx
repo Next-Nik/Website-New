@@ -136,7 +136,7 @@ function primarySubdomain(actor) {
 // orgPath — navigate to the beta org page.
 // Uses actor.slug if present (Module 6+), otherwise actor.id.
 function orgPath(actor) {
-  return `/beta/org/${actor.slug || actor.id}`
+  return `/org/${actor.slug || actor.id}`
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -741,7 +741,7 @@ export function BetaMapPage() {
               </p>
             </div>
             <button
-              onClick={() => navigate('/beta/nominate')}
+              onClick={() => navigate('/nominate')}
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '10px 18px', borderRadius: '40px', border: `1px solid rgba(200,146,42,0.35)`, background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer', whiteSpace: 'nowrap' }}
             >
               Nominate an actor

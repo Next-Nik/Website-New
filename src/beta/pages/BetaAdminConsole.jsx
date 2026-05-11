@@ -3034,7 +3034,7 @@ export function BetaAdminConsolePage() {
 
   useEffect(() => {
     if (!loading && (!user || !isFounder(user))) {
-      navigate('/beta/dashboard')
+      navigate('/dashboard')
     }
   }, [user, loading, navigate])
 

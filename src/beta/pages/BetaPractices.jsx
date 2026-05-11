@@ -268,7 +268,7 @@ function EmptyState({ filtersActive, isSignedIn }) {
         {PRACTICES_EMPTY_STATE_COPY}
       </p>
       {isSignedIn ? (
-        <Link to="/beta/practice/contribute"
+        <Link to="/practice/contribute"
           style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#FFFFFF', background: '#0F1523', padding: '12px 28px', borderRadius: '40px', textDecoration: 'none', display: 'inline-block', fontWeight: 600 }}>
           Contribute a practice
         </Link>
@@ -372,7 +372,7 @@ export default function BetaPractices() {
         {user && (
           <div style={{ marginBottom: '24px' }}>
             <Link
-              to="/beta/practice/contribute"
+              to="/practice/contribute"
               style={{
                 ...sc, fontSize: '12px', letterSpacing: '0.16em',
                 color: '#A8721A', background: 'rgba(200,146,42,0.06)',

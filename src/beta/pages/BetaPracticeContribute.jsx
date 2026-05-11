@@ -321,7 +321,7 @@ export default function BetaPracticeContribute() {
           </p>
 
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to={`/beta/practice/${savedSlug}`}
+            <Link to={`/practice/${savedSlug}`}
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#FFFFFF', background: '#0F1523', padding: '11px 24px', borderRadius: '40px', textDecoration: 'none', fontWeight: 600 }}>
               View the practice
             </Link>
@@ -329,7 +329,7 @@ export default function BetaPracticeContribute() {
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.40)', borderRadius: '40px', padding: '11px 24px', cursor: 'pointer' }}>
               Contribute another
             </button>
-            <Link to="/beta/practices"
+            <Link to="/practices"
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', padding: '11px 14px' }}>
               Back to practices
             </Link>
@@ -386,7 +386,7 @@ export default function BetaPracticeContribute() {
 
         {/* Back link */}
         <div style={{ marginBottom: '20px' }}>
-          <Link to="/beta/practices"
+          <Link to="/practices"
             style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
             ← All practices
           </Link>

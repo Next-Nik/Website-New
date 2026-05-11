@@ -126,7 +126,7 @@ function TopNavStrip({ onSignIn, onSkipAhead, dark }) {
  * @property {Object} selfData          Wheel data for kind='self' beats (labels, keys, horizons, current, tierColor).
  * @property {Object} civData           Wheel data for kind='civ' beats (domains, primarySlug, optional scaleRings).
  * @property {() => void} [onDismiss]   Called when the user finishes or skips. Defaults to navigating to /login.
- * @property {string} [returnTo]        Where to send the user after sign-in. Default '/beta/dashboard'.
+ * @property {string} [returnTo]        Where to send the user after sign-in. Default '/dashboard'.
  * @property {string} [closingCta]      Closing-beat button label. Default "Sign in to begin".
  */
 
@@ -144,7 +144,7 @@ export default function WelcomeOverlay({
   selfData,
   civData,
   onDismiss,
-  returnTo = '/beta/dashboard',
+  returnTo = '/dashboard',
   closingCta = 'Sign in to begin',
 }) {
   const navigate = useNavigate()

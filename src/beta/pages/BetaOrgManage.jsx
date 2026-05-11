@@ -154,7 +154,7 @@ function ProfileTab({ actor, onSave, toast }) {
 
         <div style={{ display: 'flex', gap: '12px' }}>
           <Btn onClick={save} disabled={saving} variant="solid">{saving ? 'Saving…' : 'Save profile'}</Btn>
-          <Link to={`/beta/org/${actor.id}`} target="_blank"
+          <Link to={`/org/${actor.id}`} target="_blank"
             style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.25)', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
             View public profile →
           </Link>
@@ -520,7 +520,7 @@ function ContributorMatchCard({ match }) {
           {match.best_need && <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', marginTop: '6px' }}>Matches your need: {match.best_need.title}</p>}
           {match.availability && <p style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>{match.availability}</p>}
         </div>
-        <a href={`/beta/profile/${match.user_id}`} style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', padding: '8px 16px', borderRadius: '40px', flexShrink: 0, border: '1.5px solid rgba(200,146,42,0.60)', background: 'rgba(200,146,42,0.04)', color: gold, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+        <a href={`/profile/${match.user_id}`} style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', padding: '8px 16px', borderRadius: '40px', flexShrink: 0, border: '1.5px solid rgba(200,146,42,0.60)', background: 'rgba(200,146,42,0.04)', color: gold, textDecoration: 'none', whiteSpace: 'nowrap' }}>
           View profile →
         </a>
       </div>
@@ -628,7 +628,7 @@ export function BetaOrgManagePage() {
     if (authLoading || loading) return
     if (!user) { navigate('/login'); return }
     if (actor && actor.profile_owner !== user.id) {
-      navigate(`/beta/org/${id}`)
+      navigate(`/org/${id}`)
     }
   }, [user, authLoading, actor, loading])
 
@@ -665,7 +665,7 @@ export function BetaOrgManagePage() {
 
       <div className="beta-manage-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 120px' }}>
 
-        <button onClick={() => navigate(`/beta/org/${id}`)}
+        <button onClick={() => navigate(`/org/${id}`)}
           style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '32px', padding: 0 }}>
           {'\u2190'} {actor.name}
         </button>

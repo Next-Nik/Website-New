@@ -306,7 +306,7 @@ export function PrincipleIndex({ linkBuilder }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
       {PRINCIPLE_SLUGS.map((s) => {
         const p = PRINCIPLES[s]
-        const href = linkBuilder ? linkBuilder({ slug: s }) : `/beta/principles/${s}`
+        const href = linkBuilder ? linkBuilder({ slug: s }) : `/principles/${s}`
         return (
           <a
             key={s}

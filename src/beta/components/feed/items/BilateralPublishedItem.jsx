@@ -11,14 +11,14 @@ export function BilateralPublishedItem({ item }) {
 
   // Resolve party B href — could be a user or an actor (org)
   const partyBHref = partyB?.kind === 'org'
-    ? (partyB.id ? `/beta/org/${partyB.id}` : null)
-    : (partyB?.id ? `/beta/profile/${partyB.id}` : null)
+    ? (partyB.id ? `/org/${partyB.id}` : null)
+    : (partyB?.id ? `/profile/${partyB.id}` : null)
 
   return (
     <FeedItemShell
       eyebrow="Bilateral published"
       actorName={partyA?.display_name || 'Someone'}
-      actorHref={partyA?.id ? `/beta/profile/${partyA.id}` : null}
+      actorHref={partyA?.id ? `/profile/${partyA.id}` : null}
       secondaryName={partyB?.display_name || partyB?.name || 'someone'}
       secondaryHref={partyBHref}
       timestamp={timestamp}

@@ -392,10 +392,10 @@ function RoomMode({ actor, otherActors }) {
 
       {/* Card 4 — Manage link. */}
       <div className="mo-manage-link-row">
-        <Link to={`/beta/org/${actor.id}/manage`} className="mo-manage-link">
+        <Link to={`/org/${actor.id}/manage`} className="mo-manage-link">
           Open full manager →
         </Link>
-        <Link to={`/beta/org/${actor.id}`} className="mo-public-link" target="_blank" rel="noopener noreferrer">
+        <Link to={`/org/${actor.id}`} className="mo-public-link" target="_blank" rel="noopener noreferrer">
           View public page →
         </Link>
       </div>
@@ -409,7 +409,7 @@ function RoomMode({ actor, otherActors }) {
           <ul className="mo-other-orgs-list">
             {otherActors.map(o => (
               <li key={o.id}>
-                <Link to={`/beta/org/${o.id}/manage`} className="mo-other-orgs-link">
+                <Link to={`/org/${o.id}/manage`} className="mo-other-orgs-link">
                   {o.name} →
                 </Link>
               </li>

@@ -12,7 +12,7 @@
 //
 // Usage in App.jsx:
 //   <Route
-//     path="/beta/dashboard"
+//     path="/dashboard"
 //     element={
 //       <BetaIntroGate>
 //         <BetaMissionControl />
@@ -51,7 +51,7 @@ export default function BetaIntroGate({ children }) {
   const returnTo = location.pathname + (location.search || '')
   return (
     <Navigate
-      to={`/beta/welcome?return=${encodeURIComponent(returnTo)}`}
+      to={`/welcome?return=${encodeURIComponent(returnTo)}`}
       replace
     />
   )

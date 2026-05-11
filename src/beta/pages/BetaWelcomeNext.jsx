@@ -121,7 +121,7 @@ export default function BetaWelcomeNext() {
           <button
             type="button"
             className="next-back"
-            onClick={() => navigate('/beta/welcome')}
+            onClick={() => navigate('/welcome')}
           >
             ← Back to start
           </button>

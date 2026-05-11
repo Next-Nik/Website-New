@@ -1189,7 +1189,7 @@ export default function BetaMissionControl() {
         title="What others see of you on NextUs"
         actions={[
           { label: 'EDIT FULL PROFILE →', primary: true,
-            onClick: () => navigate('/beta/profile/edit') },
+            onClick: () => navigate('/profile/edit') },
           { label: 'CLOSE', onClick: closePanel },
         ]}
       >

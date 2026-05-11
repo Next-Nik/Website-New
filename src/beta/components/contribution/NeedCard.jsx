@@ -126,7 +126,7 @@ export default function NeedCard({
         <div style={{ flex: 1, minWidth: 0 }}>
           {need.actor_slug ? (
             <Link
-              to={`/beta/org/${need.actor_slug}`}
+              to={`/org/${need.actor_slug}`}
               style={{
                 ...sc,
                 fontSize: '14px',

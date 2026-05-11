@@ -124,7 +124,7 @@ function OrgIdentityStrip({ actor, focusName, primaryDomain, principalTier, isOw
           </a>
         )}
         {isOwner && (
-          <Link to={`/beta/org/${actor.id}/manage`}
+          <Link to={`/org/${actor.id}/manage`}
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', textDecoration: 'none' }}>
             Manage
           </Link>

@@ -40,7 +40,7 @@ export default function PracticeCard({ practice }) {
 
   return (
     <Link
-      to={`/beta/practice/${practice.slug}`}
+      to={`/practice/${practice.slug}`}
       style={{
         display: 'block',
         textDecoration: 'none',

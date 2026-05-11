@@ -368,7 +368,7 @@ export default function BetaPracticeDetail() {
           <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '24px' }}>
             This practice may have been withdrawn, or the link is mistyped.
           </p>
-          <Link to="/beta/practices"
+          <Link to="/practices"
             style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none' }}>
             Back to practices
           </Link>
@@ -408,7 +408,7 @@ export default function BetaPracticeDetail() {
 
         {/* Back link */}
         <div style={{ marginBottom: '24px' }}>
-          <Link to="/beta/practices"
+          <Link to="/practices"
             style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
             ← All practices
           </Link>

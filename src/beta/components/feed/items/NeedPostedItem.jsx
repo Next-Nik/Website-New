@@ -14,7 +14,7 @@ export function NeedPostedItem({ item }) {
     <FeedItemShell
       eyebrow="Need posted"
       actorName={actor.name || actor.display_name || 'An organisation'}
-      actorHref={actor.id ? `/beta/org/${actor.id}` : null}
+      actorHref={actor.id ? `/org/${actor.id}` : null}
       timestamp={timestamp}
       accentColor={isInPerson ? '#A8721A' : 'rgba(200,146,42,0.50)'}
     >

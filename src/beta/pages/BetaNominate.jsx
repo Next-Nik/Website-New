@@ -222,7 +222,7 @@ export function BetaNominatePage() {
 
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '32px' }}>
             {nominatedId && (
-              <button onClick={() => navigate(`/beta/org/${nominatedId}/manage`)}
+              <button onClick={() => navigate(`/org/${nominatedId}/manage`)}
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: 'none', background: '#C8922A', color: '#FFFFFF', cursor: 'pointer' }}>
                 Manage this profile
               </button>

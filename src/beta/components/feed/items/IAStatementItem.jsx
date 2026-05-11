@@ -17,7 +17,7 @@ export function IAStatementItem({ item }) {
     <FeedItemShell
       eyebrow="I am"
       actorName={actor.display_name || 'A contributor'}
-      actorHref={actor.id ? `/beta/profile/${actor.id}` : null}
+      actorHref={actor.id ? `/profile/${actor.id}` : null}
       timestamp={timestamp}
     >
       <div style={{

@@ -447,7 +447,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
           QUIET CONTROLS
         </div>
         <button
-          onClick={() => onNavigate('/beta/profile/edit')}
+          onClick={() => onNavigate('/profile/edit')}
           style={{
             background: 'transparent',
             border: 'none',

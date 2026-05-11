@@ -35,7 +35,7 @@ export function SprintLaunchedItem({ item }) {
     <FeedItemShell
       eyebrow="Sprint launched"
       actorName={actor.display_name || 'A contributor'}
-      actorHref={actor.id ? `/beta/profile/${actor.id}` : null}
+      actorHref={actor.id ? `/profile/${actor.id}` : null}
       timestamp={timestamp}
     >
       <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.75)', lineHeight: 1.65, margin: 0 }}>

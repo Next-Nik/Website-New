@@ -49,10 +49,10 @@ const SITE_SECTIONS = [
   {
     heading: 'Explore',
     links: [
-      { label: 'The Feed',          href: '/beta/feed' },
+      { label: 'The Feed',          href: '/feed' },
       { label: 'Domains',           href: '/nextus' },
       { label: 'Orgs & Individuals', href: '/nextus/actors' },
-      { label: 'Add org or Indiv',  href: '/beta/nominate' },
+      { label: 'Add org or Indiv',  href: '/nominate' },
     ],
   },
   {

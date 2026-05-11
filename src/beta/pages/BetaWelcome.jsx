@@ -34,7 +34,7 @@ export default function BetaWelcome() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const { user, loading } = useAuth()
-  const returnTo = params.get('return') || '/beta/dashboard'
+  const returnTo = params.get('return') || '/dashboard'
 
   // Already signed in? Skip the intro and go to the dashboard.
   useEffect(() => {

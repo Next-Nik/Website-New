@@ -134,7 +134,7 @@ function IdentityBar({ user, profile, focusName, loading }) {
       {/* Right: view public profile */}
       {user && (
         <Link
-          to={`/beta/profile/${user.id}`}
+          to={`/profile/${user.id}`}
           style={{
             ...sc,
             fontSize: '13px',
@@ -286,9 +286,9 @@ function getTierColor(n) {
 
 function BetaFooter() {
   const links = [
-    { to: '/beta/feed',         label: 'Feed' },
-    { to: '/beta/contribution', label: 'Contribute' },
-    { to: '/beta/practices',    label: 'Practices' },
+    { to: '/feed',         label: 'Feed' },
+    { to: '/contribution', label: 'Contribute' },
+    { to: '/practices',    label: 'Practices' },
   ]
 
   return (

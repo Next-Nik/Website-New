@@ -227,7 +227,7 @@ export default function BetaProfileEdit() {
 
   function openPublicProfile() {
     if (!userId) return
-    window.open(`/beta/profile/${userId}`, '_blank', 'noopener,noreferrer')
+    window.open(`/profile/${userId}`, '_blank', 'noopener,noreferrer')
   }
 
   if (authLoading || profileLoading) {

@@ -24,7 +24,7 @@ export function PracticeContributedItem({ item }) {
     <FeedItemShell
       eyebrow="Practice contributed"
       actorName={actor.display_name || 'A contributor'}
-      actorHref={actor.id ? `/beta/profile/${actor.id}` : null}
+      actorHref={actor.id ? `/profile/${actor.id}` : null}
       timestamp={timestamp}
       accentColor={domainColor || gold}
     >
@@ -34,7 +34,7 @@ export function PracticeContributedItem({ item }) {
 
       {/* Practice title — link to the practice detail page */}
       {practice?.slug ? (
-        <Link to={`/beta/practice/${practice.slug}`} style={{
+        <Link to={`/practice/${practice.slug}`} style={{
           ...body,
           fontSize: '17px',
           fontWeight: 400,

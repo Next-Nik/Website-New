@@ -21,7 +21,7 @@ export function SprintCompletedItem({ item }) {
     <FeedItemShell
       eyebrow="Sprint completed"
       actorName={actor.display_name || 'A contributor'}
-      actorHref={actor.id ? `/beta/profile/${actor.id}` : null}
+      actorHref={actor.id ? `/profile/${actor.id}` : null}
       timestamp={timestamp}
       accentColor="#2D6A4F"
     >

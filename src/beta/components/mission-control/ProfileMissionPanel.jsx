@@ -142,7 +142,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
 
   function openPublicProfile() {
     if (!userId) return
-    window.open(`/beta/profile/${userId}`, '_blank', 'noopener,noreferrer')
+    window.open(`/profile/${userId}`, '_blank', 'noopener,noreferrer')
   }
 
   if (!user) {
@@ -728,7 +728,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
           YOU · ON THE PLATFORM
         </div>
         <button
-          onClick={() => onNavigate('/beta/profile/edit')}
+          onClick={() => onNavigate('/profile/edit')}
           style={{
             background: 'transparent',
             border: 'none',

@@ -85,7 +85,7 @@ export default function ContributorSignalsList({
           This territory is still being measured. If you are doing work
           here, you can{' '}
           <a
-            href="/beta/signals/new"
+            href="/signals/new"
             style={{
               color: '#A8721A',
               textDecoration: 'underline',

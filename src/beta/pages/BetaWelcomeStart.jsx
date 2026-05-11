@@ -38,7 +38,7 @@ export default function BetaWelcomeStart() {
   // Already signed in? You don't need a first impression.
   useEffect(() => {
     if (!loading && user) {
-      navigate('/beta/dashboard', { replace: true })
+      navigate('/dashboard', { replace: true })
     }
   }, [loading, user, navigate])
 
@@ -58,21 +58,21 @@ export default function BetaWelcomeStart() {
       eyebrow:'For yourself',
       title:  "I'm here for me.",
       blurb:  "A clearer life, a clearer purpose, daily anchors that hold. Your seven domains, your direction.",
-      href:   '/beta/welcome/self',
+      href:   '/welcome/self',
     },
     {
       key:    'org',
       eyebrow:'For your organisation',
       title:  'I represent an organisation.',
       blurb:  "Get placed in the civilisational picture. Surface the people, partners and contributors who match what you do.",
-      href:   '/beta/welcome/org',
+      href:   '/welcome/org',
     },
     {
       key:    'practitioner',
       eyebrow:'For your craft',
       title:  'I offer work others might want.',
       blurb:  "Coach, therapist, facilitator, consultant. Make your offering visible to the people most likely to be served by it.",
-      href:   '/beta/welcome/practitioner',
+      href:   '/welcome/practitioner',
     },
   ]
 

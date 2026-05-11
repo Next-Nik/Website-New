@@ -39,7 +39,7 @@ export default function BetaOrgWelcome() {
   // Default landing target after the intro. The dashboard reads
   // ?scope=org on arrival and writes the user's scope array, then
   // activates the My Org surface (which holds its own setup flow).
-  const returnTo = params.get('return') || '/beta/dashboard?scope=org'
+  const returnTo = params.get('return') || '/dashboard?scope=org'
 
   useEffect(() => {
     if (!loading && user) {

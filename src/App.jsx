@@ -145,7 +145,7 @@ function AppInner() {
         <Route path="/support"         element={<SupportResourcesPage />} />
         <Route path="/faq"             element={<FAQPage />} />
         <Route path="/profile"         element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard"       element={<DashboardPage />} />
+        <Route path="/dashboard"       element={<BetaIntroGate><BetaMissionControl /></BetaIntroGate>} />
         <Route path="/tools"           element={<ToolsPage />} />
         <Route path="/content-editor"  element={<ContentEditorPage />} />
         <Route path="/watch"           element={<WatchPage />} />
@@ -160,36 +160,57 @@ function AppInner() {
         <Route path="/tools/target-sprint"       element={<TargetSprintPage />} />
         <Route path="/tools/horizon-practice"    element={<HorizonPracticePage />} />
 
-        {/* ── Beta — open access during the build. /beta lands on Mission Control. ── */}
-        <Route path="/beta"                              element={<Navigate to="/beta/dashboard" replace />} />
-        <Route path="/beta/welcome"                      element={<BetaWelcomeStart />} />
-        <Route path="/beta/welcome/self"                 element={<BetaWelcomeSelf />} />
-        <Route path="/beta/welcome/org"                  element={<BetaOrgWelcome />} />
-        <Route path="/beta/welcome/practitioner"         element={<BetaWelcomePractitioner />} />
-        <Route path="/beta/welcome/org-next"             element={<BetaWelcomeNext />} />
-        <Route path="/beta/welcome/practitioner-next"    element={<BetaWelcomeNext />} />
-        <Route path="/beta/dashboard"                    element={<BetaIntroGate><BetaMissionControl /></BetaIntroGate>} />
-        <Route path="/beta/profile/edit"         element={<BetaProfileEdit />} />
-        <Route path="/beta/profile/:id"          element={<BetaPublicProfile />} />
-        <Route path="/beta/feed"                 element={<BetaFeedPage />} />
-        <Route path="/beta/contribution"         element={<BetaContribution />} />
-        <Route path="/beta/org/:slug"            element={<BetaOrgPublicPage />} />
-        <Route path="/beta/org/:slug/manage"     element={<BetaOrgManagePage />} />
-        <Route path="/beta/map"                  element={<BetaMapPage />} />
-        <Route path="/beta/admin"                element={<BetaAdminConsolePage />} />
-        <Route path="/beta/nominate"             element={<BetaNominatePage />} />
-        <Route path="/beta/domain/:slug"         element={<BetaDomainPage />} />
-        <Route path="/beta/practices"            element={<BetaPractices />} />
-        <Route path="/beta/practices/new"        element={<BetaPracticeContribute />} />
-        <Route path="/beta/practice/:slug"       element={<BetaPracticeDetail />} />
-        <Route path="/beta/invitation"           element={<BetaInvitationIndexPage />} />
-        <Route path="/beta/invitation/:slug"     element={<BetaInvitationPage />} />
+        {/* ── Platform routes (beta prefix retired) ── */}
+        <Route path="/welcome"                      element={<BetaWelcomeStart />} />
+        <Route path="/welcome/self"                 element={<BetaWelcomeSelf />} />
+        <Route path="/welcome/org"                  element={<BetaOrgWelcome />} />
+        <Route path="/welcome/practitioner"         element={<BetaWelcomePractitioner />} />
+        <Route path="/welcome/org-next"             element={<BetaWelcomeNext />} />
+        <Route path="/welcome/practitioner-next"    element={<BetaWelcomeNext />} />
+        <Route path="/profile/edit"                 element={<BetaProfileEdit />} />
+        <Route path="/profile/:id"                  element={<BetaPublicProfile />} />
+        <Route path="/feed"                         element={<BetaFeedPage />} />
+        <Route path="/contribution"                 element={<BetaContribution />} />
+        <Route path="/org/:slug"                    element={<BetaOrgPublicPage />} />
+        <Route path="/org/:slug/manage"             element={<BetaOrgManagePage />} />
+        <Route path="/map"                          element={<BetaMapPage />} />
+        <Route path="/nominate"                     element={<BetaNominatePage />} />
+        <Route path="/domain/:slug"                 element={<BetaDomainPage />} />
+        <Route path="/practices"                    element={<BetaPractices />} />
+        <Route path="/practices/new"                element={<BetaPracticeContribute />} />
+        <Route path="/practice/:slug"               element={<BetaPracticeDetail />} />
+        <Route path="/invitation"                   element={<BetaInvitationIndexPage />} />
+        <Route path="/invitation/:slug"             element={<BetaInvitationPage />} />
+
+        {/* ── /beta/* redirects — preserve old links ── */}
+        <Route path="/beta"                              element={<Navigate to="/dashboard" replace />} />
+        <Route path="/beta/dashboard"                    element={<Navigate to="/dashboard" replace />} />
+        <Route path="/beta/welcome"                      element={<Navigate to="/welcome" replace />} />
+        <Route path="/beta/welcome/self"                 element={<Navigate to="/welcome/self" replace />} />
+        <Route path="/beta/welcome/org"                  element={<Navigate to="/welcome/org" replace />} />
+        <Route path="/beta/welcome/practitioner"         element={<Navigate to="/welcome/practitioner" replace />} />
+        <Route path="/beta/profile/edit"                 element={<Navigate to="/profile/edit" replace />} />
+        <Route path="/beta/profile/:id"                  element={<Navigate to="/profile/:id" replace />} />
+        <Route path="/beta/feed"                         element={<Navigate to="/feed" replace />} />
+        <Route path="/beta/contribution"                 element={<Navigate to="/contribution" replace />} />
+        <Route path="/beta/org/:slug/manage"             element={<Navigate to="/org/:slug/manage" replace />} />
+        <Route path="/beta/org/:slug"                    element={<Navigate to="/org/:slug" replace />} />
+        <Route path="/beta/map"                          element={<Navigate to="/map" replace />} />
+        <Route path="/beta/admin"                        element={<Navigate to="/admin" replace />} />
+        <Route path="/beta/nominate"                     element={<Navigate to="/nominate" replace />} />
+        <Route path="/beta/domain/:slug"                 element={<Navigate to="/domain/:slug" replace />} />
+        <Route path="/beta/practices"                    element={<Navigate to="/practices" replace />} />
+        <Route path="/beta/practices/new"                element={<Navigate to="/practices/new" replace />} />
+        <Route path="/beta/practice/:slug"               element={<Navigate to="/practice/:slug" replace />} />
+        <Route path="/beta/invitation"                   element={<Navigate to="/invitation" replace />} />
+        <Route path="/beta/invitation/:slug"             element={<Navigate to="/invitation/:slug" replace />} />
 
         {/* ── Legacy redirects — clean once confirmed dead ── */}
         <Route path="/life-os"             element={<Navigate to="/nextus-self" replace />} />
 
         {/* ── Admin ── */}
-        <Route path="/admin"           element={<AdminConsolePage />} />
+        <Route path="/admin"           element={<BetaAdminConsolePage />} />
+        {/* Legacy admin console — redirected to unified admin */}
         <Route path="/join/:slug"      element={<GroupJoinPage />} />
         <Route path="/auth/callback"   element={<AuthCallbackPage />} />
 
