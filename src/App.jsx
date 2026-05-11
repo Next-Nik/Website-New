@@ -49,9 +49,7 @@ import { PrivacyPage, TermsPage } from './pages/Legal'
 import { SupportResourcesPage } from './pages/SupportResources'
 import { FAQPage }               from './pages/FAQ'
 import { ProfilePage }            from './pages/Profile'
-import { DashboardPage }          from './pages/Dashboard'
 import { ContentEditorPage }      from './pages/ContentEditor'
-import { AdminConsolePage }       from './pages/AdminConsole'
 import { GroupJoinPage }          from './pages/GroupJoin'
 import { ToolsPage }              from './pages/Tools'
 import { PricingPage }            from './pages/Pricing'
@@ -220,7 +218,6 @@ function AppInner() {
 
         {/* ── Admin ── */}
         <Route path="/admin"           element={<BetaAdminConsolePage />} />
-        {/* Legacy admin console — redirected to unified admin */}
         <Route path="/join/:slug"      element={<GroupJoinPage />} />
         <Route path="/auth/callback"   element={<AuthCallbackPage />} />
 

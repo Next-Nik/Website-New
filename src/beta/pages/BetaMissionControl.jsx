@@ -302,19 +302,7 @@ function civPlacementKey(purposeData) {
   return null
 }
 
-// ─── ScopePlaceholder ────────────────────────────────────────
-//
-// Renders when activeScope is 'practice' or 'org'. These scopes are
-// togglable in Step B of the brief — they appear in the pole bar —
-// but their working surfaces (the practitioner slate, the org
-// management slate) land in Step C. Until then, clicking the scope
-// shows a calm, honest placeholder rather than a broken-feeling
-// silence.
-//
-// The placeholder is not a marketing page or a sign-up prompt; the
-// user has already opted in. It is a "we have not built this part
-// yet, here is what is coming" statement, treating the user as the
-// adult they are.
+
 function ScopePlaceholder({ scope }) {
   const label = scope === 'practice' ? 'My Practice' : 'My Org'
   const body = scope === 'practice'

@@ -102,7 +102,7 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
     let cancelled = false
     async function load() {
       try {
-        const [setupRes, checkinsRes, skillsRes, mapRes, sprintRes] = await Promise.all([
+        const [setupRes, checkinsRes, skillsRes, mapRes, profileRes, sprintRes] = await Promise.all([
           supabase
             .from('horizon_practice_setup')
             .select('*')
@@ -132,6 +132,10 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
             .limit(1)
             .maybeSingle(),
           supabase
+            .from('horizon_profile')
+            .select('domain, ia_statement')
+            .eq('user_id', user.id),
+          supabase
             .from('target_sprint_sessions')
             .select('domains, status')
             .eq('user_id', user.id)
@@ -154,10 +158,15 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
           const focusDomains = Object.entries(dd)
             .filter(([_, d]) => d?.horizonScore != null)
             .map(([id]) => id)
+          // Build ia_statement lookup from horizon_profile rows
+          const iaByDomain = {}
+          for (const row of (profileRes?.data || [])) {
+            if (row.domain && row.ia_statement) iaByDomain[row.domain] = row.ia_statement
+          }
           const domainsForUI = {}
           for (const [id, d] of Object.entries(dd)) {
             domainsForUI[id] = {
-              iaStatement: d?.horizonText || null,
+              iaStatement: iaByDomain[id] || null,
               currentScore: d?.currentScore ?? null,
               horizonScore: d?.horizonScore ?? null,
             }
