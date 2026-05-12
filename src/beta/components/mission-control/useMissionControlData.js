@@ -153,30 +153,27 @@ export default function useMissionControlData() {
 
         if (cancelled) return
 
-        const firstError =
-          profileRes.error || mapRes.error || mapResultsRes.error ||
-          purposeRes.error || sprintRes.error || practiceRes.error ||
-          foundationRes.error || userRowRes.error
-
-        if (firstError) {
-          setState({
-            profile: null, mapData: null, mapResults: null, purposeData: null,
-            sprintData: null, practiceData: null, foundationData: null,
-            userRow: null,
-            loading: false, error: firstError,
-          })
-          return
+        // Per-query error handling. A failure on any single query
+        // (e.g. missing column, RLS, transient network) should NOT
+        // nuke the other seven. Log each failure and continue with
+        // null for that field. The dashboard surfaces what it can.
+        const pick = (res, fallback) => {
+          if (res?.error) {
+            console.warn('[useMissionControlData] query error:', res.error.message || res.error)
+            return fallback
+          }
+          return res?.data ?? fallback
         }
 
         setState({
-          profile:        profileRes.data || null,
-          mapData:        mapRes.data || [],
-          mapResults:     mapResultsRes.data || null,
-          purposeData:    purposeRes.data || null,    // FULL ROW
-          sprintData:     sprintRes.data || [],
-          practiceData:   practiceRes.data || null,
-          foundationData: foundationRes.data || null,
-          userRow:        userRowRes.data || null,
+          profile:        pick(profileRes,    null),
+          mapData:        pick(mapRes,        []),
+          mapResults:     pick(mapResultsRes, null),
+          purposeData:    pick(purposeRes,    null),
+          sprintData:     pick(sprintRes,     []),
+          practiceData:   pick(practiceRes,   null),
+          foundationData: pick(foundationRes, null),
+          userRow:        pick(userRowRes,    null),
           loading:        false,
           error:          null,
         })
