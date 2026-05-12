@@ -297,12 +297,15 @@ function SelfWheel({
         style={{ pointerEvents: 'none' }}
       />
 
-      {/* ── Everything below rotates as a unit ── */}
+      {/* ── Rotating group: geometry only (spokes, dots, polygon).
+          Labels and walker text live OUTSIDE this group so SVG's
+          transform does not rotate the glyphs — same pattern as
+          CivWheel, which has done this correctly from the start. ── */}
       <g transform={`rotate(${displayRot} ${cx} ${cy})`}>
 
-        {/* Spokes + tip dots */}
+        {/* Spokes + tip dots — positions at rot=0; <g> rotation handles placement */}
         {Array.from({ length: N }).map((_, i) => {
-          const p = getTipPos(i, 0)  // rotation is handled by the <g> wrapper
+          const p = getTipPos(i, 0)
           return (
             <g key={`spoke-${i}`}>
               <line
@@ -326,49 +329,7 @@ function SelfWheel({
                 fill="rgba(200,146,42,0.5)"
                 style={{ pointerEvents: 'none' }}
               />
-              {/* Generous tip hit target */}
-              {onSelect && (
-                <circle
-                  cx={p.x} cy={p.y} r={14}
-                  fill="transparent"
-                  style={{ cursor: 'pointer', pointerEvents: 'none' }}
-                >
-                  <title>{labels[i]}</title>
-                </circle>
-              )}
             </g>
-          )
-        })}
-
-        {/* Labels — rotate with the wheel, using angle-based positioning */}
-        {labels.map((txt, i) => {
-          const p = getTipPos(i, 0)
-          const pos = civLabelPosFor(p.x, p.y, p.angle)
-          const isActive = activeKey && keys[i] === activeKey
-          const dc = selfColor(keys[i])
-          const baseFill   = dark ? dc.dark : dc.light
-          const activeFill = dc.base
-          return (
-            <text
-              key={`label-${i}`}
-              x={pos.x}
-              y={pos.y}
-              textAnchor={pos.anchor}
-              onClick={onSelect ? () => onSelect(i) : undefined}
-              style={{
-                fontFamily: FONT_SC,
-                fontSize: 13,
-                letterSpacing: '0.18em',
-                fill: isActive ? activeFill : baseFill,
-                fontWeight: isActive ? 700 : 600,
-                cursor: onSelect ? 'pointer' : undefined,
-                userSelect: 'none',
-                textTransform: 'uppercase',
-                pointerEvents: onSelect ? 'auto' : 'none',
-              }}
-            >
-              {txt}
-            </text>
           )
         })}
 
@@ -414,7 +375,7 @@ function SelfWheel({
           </>
         )}
 
-        {/* Active domain ring — pulses on the score dot of the active spoke */}
+        {/* Active domain ring — on the score dot */}
         {!showEmpty && activeKey && (() => {
           const idx = keys.indexOf(activeKey)
           if (idx < 0) return null
@@ -430,7 +391,7 @@ function SelfWheel({
           )
         })()}
 
-        {/* Walker cluster — sits beyond the active spoke tip */}
+        {/* Walker dots — fine to rotate with the group */}
         {(() => {
           const focusKey = activeKey
           if (!focusKey) return null
@@ -458,30 +419,89 @@ function SelfWheel({
               />
             )
           }
-          const perpAngle = p.angle + Math.PI / 2
-          const labelX = ccx + 24 * Math.cos(perpAngle)
-          const labelY = ccy + 24 * Math.sin(perpAngle) + 3
-          const labelAnchor =
-            Math.cos(perpAngle) >= 0.2  ? 'start' :
-            Math.cos(perpAngle) <= -0.2 ? 'end' :
-                                          'middle'
-          return (
-            <g style={{ pointerEvents: 'none' }}>
-              {dots}
-              <text
-                x={labelX.toFixed(1)}
-                y={labelY.toFixed(1)}
-                textAnchor={labelAnchor}
-                style={{ fontFamily: FONT_SC, fontSize: 9, letterSpacing: '0.12em', fill: walkerLabelFill }}
-              >
-                {count} walking
-              </text>
-            </g>
-          )
+          return <g style={{ pointerEvents: 'none' }}>{dots}</g>
         })()}
 
       </g>
       {/* ── End rotating group ── */}
+
+      {/* ── Labels and hit targets — outside the rotating group.
+          Tip positions computed with displayRot baked in so labels
+          follow their spokes but the text glyphs stay upright.
+          Same pattern as CivWheel. ── */}
+      {labels.map((txt, i) => {
+        const p = getTipPos(i, displayRot)  // actual rotated position
+        const pos = civLabelPosFor(p.x, p.y, p.angle)
+        const isActive = activeKey && keys[i] === activeKey
+        const dc = selfColor(keys[i])
+        const baseFill   = dark ? dc.dark : dc.light
+        const activeFill = dc.base
+        return (
+          <g key={`label-${i}`}>
+            {/* Invisible hit target at the tip — generous tap zone */}
+            {onSelect && (
+              <circle
+                cx={p.x} cy={p.y} r={18}
+                fill="transparent"
+                style={{ cursor: 'pointer' }}
+                onClick={() => onSelect(i)}
+              >
+                <title>{labels[i]}</title>
+              </circle>
+            )}
+            <text
+              x={pos.x}
+              y={pos.y}
+              textAnchor={pos.anchor}
+              onClick={onSelect ? () => onSelect(i) : undefined}
+              style={{
+                fontFamily: FONT_SC,
+                fontSize: 13,
+                letterSpacing: '0.18em',
+                fill: isActive ? activeFill : baseFill,
+                fontWeight: isActive ? 700 : 600,
+                cursor: onSelect ? 'pointer' : undefined,
+                userSelect: 'none',
+                textTransform: 'uppercase',
+                pointerEvents: onSelect ? 'auto' : 'none',
+              }}
+            >
+              {txt}
+            </text>
+          </g>
+        )
+      })}
+
+      {/* Walker label — outside rotating group so text stays upright */}
+      {(() => {
+        const focusKey = activeKey
+        if (!focusKey) return null
+        const count = walkers[focusKey] || 0
+        if (count <= 0) return null
+        const idx = keys.indexOf(focusKey)
+        if (idx < 0) return null
+        const p = getTipPos(idx, displayRot)  // rotated position
+        const clusterR = maxR * 1.40
+        const ccx = cx + clusterR * Math.cos(p.angle)
+        const ccy = cy + clusterR * Math.sin(p.angle)
+        const perpAngle = p.angle + Math.PI / 2
+        const labelX = ccx + 24 * Math.cos(perpAngle)
+        const labelY = ccy + 24 * Math.sin(perpAngle) + 3
+        const labelAnchor =
+          Math.cos(perpAngle) >= 0.2  ? 'start' :
+          Math.cos(perpAngle) <= -0.2 ? 'end' :
+                                        'middle'
+        return (
+          <text
+            x={labelX.toFixed(1)}
+            y={labelY.toFixed(1)}
+            textAnchor={labelAnchor}
+            style={{ fontFamily: FONT_SC, fontSize: 9, letterSpacing: '0.12em', fill: walkerLabelFill, pointerEvents: 'none' }}
+          >
+            {count} walking
+          </text>
+        )
+      })()}
 
       {/* Centre orb — fixed, not part of the rotating group.
           Fades in on cursor proximity and whenever a domain is featured.
