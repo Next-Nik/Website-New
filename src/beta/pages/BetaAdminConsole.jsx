@@ -3,18 +3,30 @@
 // Module 9: Admin Console port for /beta/admin.
 // Source: src/pages/AdminConsole.jsx (untouched).
 //
+// Patch (May 2026): "Extract" tab renamed to "Add". The tool contributes
+// actors to the ecosystem; the prior "extract" framing read as the opposite
+// of the platform's regenerative stance. Function renamed ExtractTab → AddTab,
+// internal state extracting/extractErr → adding/addErr, button label
+// "Extract" → "Read site". Provenance: ProposalCard gains a "Source (optional)"
+// field; saveSelected writes user-entered data_source if present, falls back
+// to "Admin add (beta): <label>" otherwise. /api/org-extract endpoint URL
+// preserved (rename pending its own deploy coordination). The jsonb markers
+// extracted_at and input_mode:'admin_extract_beta' preserved as-is to keep
+// historical row data lineage intact. The historical notes below describe
+// the original Module 9 build (ExtractTab → AddTab applies throughout).
+//
 // What changed from the original:
 //   1. Import path updates (Nav, useAuth, useSupabase, routes use beta paths).
 //   2. Inline PLANET_DOMAINS_EX / SELF_DOMAINS_EX / DOMAIN_LIST replaced with
 //      imports from src/beta/constants/.
-//   3. ExtractTab — ProposalCard updated for four-dimensional placement display
+//   3. AddTab — ProposalCard updated for four-dimensional placement display
 //      (domains[], subdomains[], fields[], lenses[], problem_chains[],
 //      platform_principles[]). API single-value fallback: if domains[] is
 //      absent, treat domain_id as domains[0].
-//   4. ExtractTab — save payload writes new four-dim columns.
+//   4. AddTab — save payload writes new four-dim columns.
 //   5. ActorsTab save flow — HorizonFloorAdmissionCheck modal inserted before
 //      final write. Writes horizon_floor_status to actor.
-//   6. ExtractTab save flow — same HorizonFloorAdmissionCheck inserted.
+//   6. AddTab save flow — same HorizonFloorAdmissionCheck inserted.
 //   7. NominationsTab approve flow — HorizonFloorAdmissionCheck inserted.
 //   8. BetaNominate link updated to /beta/nominate.
 //
@@ -67,7 +79,7 @@ const SUBDOMAIN_MAP = {
   'vision':          [['vis-imagination','Imagination'],['vis-philosophy','Philosophy & Worldview'],['vis-leadership','Leadership'],['vis-coordination','Coordination'],['vis-foresight','Foresight']],
 }
 
-// Extract-specific domain lists
+// Add-specific domain lists
 const PLANET_DOMAINS_EX = DOMAIN_LIST
 const SELF_DOMAINS_EX = [
   { value: 'path',       label: 'Path' },
@@ -236,7 +248,7 @@ function HorizonFloorModal({ domainSlug, contextLabel, onResolve, onCancel }) {
 
 // ── Tab navigation ────────────────────────────────────────────
 
-const TABS = ['Now', 'Platform', 'Actors', 'Extract', 'Place', 'Nominations', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
+const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Place', 'Nominations', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
 
 function TabBar({ active, setActive }) {
   return (
@@ -1269,6 +1281,20 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
                 lineHeight:1.6, boxSizing:'border-box' }} />
           </div>
 
+          {/* Source — provenance for seeding (optional, free-text).
+              Format suggestion: "podcast | Episode 47 — Guest Name | https://..." */}
+          <div>
+            <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px',
+              letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Source (optional)</label>
+            <input type="text" value={proposal.data_source || ''}
+              onChange={e => set('data_source', e.target.value)}
+              placeholder="e.g. podcast | Episode 47 — Guest Name | https://..."
+              style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'14px', color:'#0F1523',
+                padding:'9px 14px', borderRadius:'8px',
+                border:'1.5px solid rgba(200,146,42,0.35)', background:'#FFFFFF',
+                outline:'none', width:'100%', boxSizing:'border-box' }} />
+          </div>
+
           <div>
             <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px',
               letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Impact summary</label>
@@ -1300,10 +1326,10 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
   )
 }
 
-function ExtractTab({ toast }) {
-  const [input,      setInput]      = useState('')
-  const [extracting, setExtracting] = useState(false)
-  const [extractErr, setExtractErr] = useState(null)
+function AddTab({ toast }) {
+  const [input,    setInput]    = useState('')
+  const [adding,   setAdding]   = useState(false)
+  const [addErr,   setAddErr]   = useState(null)
   const [proposals,  setProposals]  = useState([])
   const [checked,    setChecked]    = useState([])
   const [saving,     setSaving]     = useState(false)
@@ -1314,23 +1340,24 @@ function ExtractTab({ toast }) {
   const [floorActive, setFloorActive] = useState(null) // current { proposal, index }
   const [savedNow,    setSavedNow]    = useState([])   // accumulated saved records
 
-  async function extract() {
+  async function readSite() {
     if (!input.trim()) return
-    setExtracting(true); setExtractErr(null); setProposals([]); setChecked([]); setSaved([])
+    setAdding(true); setAddErr(null); setProposals([]); setChecked([]); setSaved([])
     try {
+      // Endpoint name preserved as /api/org-extract; rename pending its own deploy coordination.
       const res = await fetch('/api/org-extract', {
         method:'POST', headers:{ 'Content-Type':'application/json' },
         body: JSON.stringify({ input: input.trim() }),
       })
       const data = await res.json()
-      if (data.error) { setExtractErr(data.message || 'Extraction failed.'); return }
+      if (data.error) { setAddErr(data.message || 'Could not read the site.'); return }
       const results = data.results || []
       setProposals(results)
       setChecked(results.map(() => true))
     } catch {
-      setExtractErr('Could not reach extraction service.')
+      setAddErr('Could not reach the reading service.')
     } finally {
-      setExtracting(false)
+      setAdding(false)
     }
   }
 
@@ -1387,7 +1414,9 @@ function ExtractTab({ toast }) {
       horizon_floor_status: floorStatus,
       seeded_by:       'nextus',
       vetting_status:  'approved',
-      data_source:     `Admin extract (beta): ${proposal.label}`,
+      data_source:     proposal.data_source?.trim()
+                         ? proposal.data_source.trim()
+                         : `Admin add (beta): ${proposal.label}`,
       alignment_reasoning: {
         hal_signals:     proposal.hal_signals,
         sfp_patterns:    proposal.sfp_patterns,
@@ -1432,7 +1461,7 @@ function ExtractTab({ toast }) {
   }
 
   function reset() {
-    setInput(''); setProposals([]); setChecked([]); setSaved([]); setExtractErr(null)
+    setInput(''); setProposals([]); setChecked([]); setSaved([]); setAddErr(null)
     setFloorQueue([]); setFloorActive(null); setSavedNow([])
   }
 
@@ -1451,10 +1480,10 @@ function ExtractTab({ toast }) {
       )}
 
       <h2 style={{ ...body, fontSize:'22px', fontWeight:300, color:'#0F1523', marginBottom:'8px' }}>
-        AI Extract
+        Add to the ecosystem
       </h2>
       <p style={{ ...body, fontSize:'14px', color:'rgba(15,21,35,0.55)', lineHeight:1.65, marginBottom:'28px' }}>
-        Paste a URL, description, or raw HTML. The engine identifies up to three distinct actor records
+        Paste a URL, description, or raw HTML. The engine reads the source and proposes up to three distinct actor records
         (Planet, Self, and Practitioner) each assessed independently. Tick the ones you want, edit any field,
         then place all selected directly onto the map.
         Four-dimensional placement (domains, subdomains, lenses, problem chains, platform principles)
@@ -1480,7 +1509,7 @@ function ExtractTab({ toast }) {
           <button onClick={reset}
             style={{ ...sc, fontSize:'13px', letterSpacing:'0.12em', color:'rgba(15,21,35,0.55)',
               background:'none', border:'none', cursor:'pointer', marginTop:'12px', padding:0 }}>
-            Extract another
+            Add another
           </button>
         </div>
       )}
@@ -1496,20 +1525,20 @@ function ExtractTab({ toast }) {
                 lineHeight:1.65, boxSizing:'border-box' }} />
           </div>
 
-          {extractErr && (
+          {addErr && (
             <div style={{ background:'rgba(138,48,48,0.05)', border:'1px solid rgba(138,48,48,0.28)',
               borderRadius:'8px', padding:'10px 14px', marginBottom:'14px' }}>
-              <p style={{ ...body, fontSize:'14px', color:'#8A3030', margin:0 }}>{extractErr}</p>
+              <p style={{ ...body, fontSize:'14px', color:'#8A3030', margin:0 }}>{addErr}</p>
             </div>
           )}
 
           <div style={{ display:'flex', alignItems:'center', gap:'16px', marginBottom:'32px' }}>
-            <button onClick={extract} disabled={extracting || !input.trim()}
+            <button onClick={readSite} disabled={adding || !input.trim()}
               style={{ ...sc, fontSize:'14px', letterSpacing:'0.16em',
                 padding:'12px 30px', borderRadius:'40px', border:'none',
-                background: extracting || !input.trim() ? 'rgba(200,146,42,0.30)' : '#C8922A',
-                color:'#FFFFFF', cursor: extracting || !input.trim() ? 'not-allowed' : 'pointer' }}>
-              {extracting ? 'Reading...' : 'Extract'}
+                background: adding || !input.trim() ? 'rgba(200,146,42,0.30)' : '#C8922A',
+                color:'#FFFFFF', cursor: adding || !input.trim() ? 'not-allowed' : 'pointer' }}>
+              {adding ? 'Reading...' : 'Read site'}
             </button>
             {proposals.length > 0 && (
               <button onClick={reset}
@@ -3131,7 +3160,7 @@ export function BetaAdminConsolePage() {
         {tab === 'Now'           && <NowTab />}
         {tab === 'Platform'      && <PlatformTab />}
         {tab === 'Actors'        && <ActorsTab       toast={showToast} />}
-        {tab === 'Extract'       && <ExtractTab      toast={showToast} />}
+        {tab === 'Add'           && <AddTab          toast={showToast} />}
         {tab === 'Place'         && <PlaceTab        toast={showToast} />}
         {tab === 'Nominations'   && <NominationsTab  toast={showToast} />}
         {tab === 'Domain Data'   && <DomainDataTab   toast={showToast} />}
