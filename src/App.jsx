@@ -236,7 +236,6 @@ function AppInner() {
   )
 }
 
-export default 
 // ── Legacy redirect helpers that preserve route params ──
 function LegacyOrgRedirect() {
   const { id } = useParams()
@@ -251,7 +250,7 @@ function LegacyContributorRedirect() {
   return <Navigate to={`/profile/${id}`} replace />
 }
 
-function App() {
+export default function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
