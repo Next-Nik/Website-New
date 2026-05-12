@@ -89,24 +89,6 @@ function easeInOut(t) {
 // Fluency is read from spoke position; identity from dot colour.
 // Scale Colours live on elsewhere in lists and badges.
 
-// Static label position for the self wheel — these never rotate,
-// so they're tuned per spoke number to never collide.
-function selfLabelPositionFor(idx, tipX, tipY) {
-  const spokeNum = idx + 1
-  const GAP = 12
-  const ABOVE_GAP = 18
-  switch (spokeNum) {
-    case 1: return { x: tipX, y: tipY - ABOVE_GAP, anchor: 'middle' }
-    case 2: return { x: tipX + GAP, y: tipY - 4, anchor: 'start' }
-    case 3: return { x: tipX + GAP, y: tipY - 6, anchor: 'start' }
-    case 4: return { x: tipX + GAP, y: tipY + 14, anchor: 'start' }
-    case 5: return { x: tipX - GAP, y: tipY + 14, anchor: 'end' }
-    case 6: return { x: tipX - GAP, y: tipY - 6, anchor: 'end' }
-    case 7: return { x: tipX - GAP, y: tipY - 4, anchor: 'end' }
-    default: return { x: tipX, y: tipY, anchor: 'middle' }
-  }
-}
-
 // Civ wheel labels rotate with the spokes, so position is computed
 // from the tip's actual angle. Anchor flips based on which side of
 // the wheel the tip is on.
@@ -139,8 +121,20 @@ export default function MissionWheel(props) {
 }
 
 // ═════════════════════════════════════════════════════════════
-// SELF WHEEL — preserved verbatim from v4 (only minor refactor of
-// the helpers above; behaviour unchanged).
+// SELF WHEEL — May 2026 rotation update.
+//
+// Rotation infrastructure ported from CivWheel (simplified):
+//   • No intro spin, no bloom, no drill-down — personal wheel
+//     starts settled and stays settled.
+//   • Two phases: 'navigating' (easing toward target) → 'settled'.
+//   • activeKey change → rotate that spoke to the top.
+//   • activeKey null → return to 0° (neutral resting position).
+//   • Everything that spins sits inside a <g transform="rotate(...)">
+//     wrapper: spokes, tip dots, score polygon, vertex dots,
+//     active ring, walker cluster, labels.
+//   • Labels now use civLabelPosFor (angle-based) so they travel
+//     with their spoke rather than staying at a static offset.
+//   • Outer dashed ring and centre orb stay fixed (don't rotate).
 // ═════════════════════════════════════════════════════════════
 function SelfWheel({
   labels,
@@ -151,13 +145,90 @@ function SelfWheel({
   walkers = {},
   isEmpty = false,
   dark = false,
-  onSelect,        // (i) => void  — optional. When provided, labels and tip dots become clickable.
-  onCentreClick,   // () => void   — optional. When provided, an invisible centre hit target returns the user to overview.
+  onSelect,
+  onCentreClick,
 }) {
   const cx = CX
   const cy = CY
   const maxR = RADIUS
 
+  // ── Rotation state ───────────────────────────────────────────
+  const [phase,      setPhase]      = useState('settled')
+  const [displayRot, setDisplayRot] = useState(0)
+  const rotRef       = useRef(0)
+  const targetRotRef = useRef(null)
+  const animRef      = useRef(null)
+  const lastTimeRef  = useRef(null)
+
+  // When activeKey changes, compute the rotation needed to bring
+  // that spoke to the top. null → return to 0°.
+  useEffect(() => {
+    const idx = activeKey != null ? keys.indexOf(activeKey) : -1
+    const target = idx >= 0
+      ? getRotationToTop(idx, rotRef.current, N)
+      : getRotationToTop(0, rotRef.current - (rotRef.current % 360) - 360, N) // snap to nearest 0°
+    // Simpler: for null, just target 0 via the short path.
+    const targetAngle = idx >= 0
+      ? getRotationToTop(idx, rotRef.current, N)
+      : (() => {
+          // Shortest path back to 0°
+          const cur = rotRef.current % 360
+          const diff = ((0 - cur) + 540) % 360 - 180
+          return rotRef.current + diff
+        })()
+    targetRotRef.current = targetAngle
+    setPhase('navigating')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeKey])
+
+  // RAF loop — only runs during 'navigating'
+  useEffect(() => {
+    if (phase !== 'navigating') return
+    function animate(time) {
+      if (lastTimeRef.current === null) lastTimeRef.current = time
+      const dt = Math.min((time - lastTimeRef.current) / 1000, 0.05)
+      lastTimeRef.current = time
+      const diff = (targetRotRef.current ?? rotRef.current) - rotRef.current
+      if (Math.abs(diff) < 0.15) {
+        rotRef.current = targetRotRef.current ?? rotRef.current
+        setDisplayRot(rotRef.current)
+        setPhase('settled')
+      } else {
+        rotRef.current += diff * Math.min(1, dt * 4.5)
+        setDisplayRot(rotRef.current)
+        animRef.current = requestAnimationFrame(animate)
+      }
+    }
+    lastTimeRef.current = null
+    animRef.current = requestAnimationFrame(animate)
+    return () => {
+      cancelAnimationFrame(animRef.current)
+      lastTimeRef.current = null
+    }
+  }, [phase])
+
+  // ── Centre orb proximity ─────────────────────────────────────
+  const ORB_PROXIMITY = 120
+  const svgRef = useRef(null)
+  const [orbOpacity, setOrbOpacity] = useState(0)
+  const orbTarget = activeKey != null ? 1 : orbOpacity
+
+  const handleMouseMove = useCallback((e) => {
+    if (!svgRef.current) return
+    const rect = svgRef.current.getBoundingClientRect()
+    const vbW = 380, vbH = 380, vbMinY = -20
+    const svgX = ((e.clientX - rect.left) / rect.width)  * vbW
+    const svgY = ((e.clientY - rect.top)  / rect.height) * vbH + vbMinY
+    const dist = Math.sqrt((svgX - cx) ** 2 + (svgY - cy) ** 2)
+    const raw = 1 - Math.max(0, dist - ORB_PROXIMITY / 2) / (ORB_PROXIMITY / 2)
+    setOrbOpacity(Math.max(0, Math.min(1, raw)))
+  }, [cx, cy])
+
+  const handleMouseLeave = useCallback(() => {
+    setOrbOpacity(0)
+  }, [])
+
+  // ── Data ─────────────────────────────────────────────────────
   const hasAnyCurrent = useMemo(() => {
     if (isEmpty) return false
     return keys.some(k => current[k] != null)
@@ -170,24 +241,26 @@ function SelfWheel({
 
   const showEmpty = !hasAnyCurrent
 
+  // Score polygon vertices — rotate with displayRot
   const verts = useMemo(() => {
     return keys.map((k, i) => {
       const h = renderHorizons[k] || 10
       const c = showEmpty ? 0 : (current[k] ?? 0)
       const ratio = h === 0 ? 0 : Math.min(c / h, 1)
-      const a = angleFor(i)
+      const baseAngle = angleFor(i)
+      const rotRad = (displayRot * Math.PI) / 180
+      const a = baseAngle + rotRad
       const r = ratio * maxR
       return {
         i, key: k,
         x: cx + r * Math.cos(a),
         y: cy + r * Math.sin(a),
-        // Domain colour replaces tier colour. Position gives fluency;
-        // colour gives identity.
         color: selfColor(k).base,
       }
     })
-  }, [keys, renderHorizons, current, showEmpty, cx, cy, maxR])
+  }, [keys, renderHorizons, current, showEmpty, cx, cy, maxR, displayRot])
 
+  // Outer fixed ring (decorative, never rotates)
   const ringPts = useMemo(() => {
     const pts = []
     for (let i = 0; i < N; i++) {
@@ -197,242 +270,253 @@ function SelfWheel({
     return pts.join(' ')
   }, [cx, cy, maxR])
 
-  const ringStroke = dark ? 'rgba(200, 146, 42, 0.30)' : 'rgba(200, 146, 42, 0.20)'
+  const ringStroke  = dark ? 'rgba(200, 146, 42, 0.30)' : 'rgba(200, 146, 42, 0.20)'
   const spokeStroke = dark ? 'rgba(200, 146, 42, 0.45)' : 'rgba(200, 146, 42, 0.30)'
-  const labelFill = dark ? TEXT_WHITE_META : TEXT_META
-  const labelActiveFill = dark ? GOLD_LT : GOLD_DK
-  const vertStroke = dark ? BG_INK : BG_CARD
+  const vertStroke     = dark ? BG_INK : BG_CARD
   const walkerLabelFill = dark ? GOLD_LT : GOLD_DK
-  const walkerDotFill = dark ? GOLD_LT : GOLD_DK
+  const walkerDotFill   = dark ? GOLD_LT : GOLD_DK
 
   return (
     <svg
+      ref={svgRef}
       width={SVG_W}
       height={SVG_H}
       viewBox={SVG_VIEWBOX}
       style={{ display: 'block', overflow: 'visible' }}
       aria-label="Your seven domains"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
+      {/* Fixed outer dashed ring — orientation never changes */}
       <polygon
         points={ringPts}
         fill="none"
         stroke={ringStroke}
         strokeWidth="1"
         strokeDasharray="3 3"
+        style={{ pointerEvents: 'none' }}
       />
 
-      {Array.from({ length: N }).map((_, i) => {
-        const a = angleFor(i)
-        const tx = cx + maxR * Math.cos(a)
-        const ty = cy + maxR * Math.sin(a)
-        return (
-          <g key={`spoke-${i}`}>
-            <line
-              x1={cx} y1={cy} x2={tx} y2={ty}
-              stroke={spokeStroke}
-              strokeWidth="1"
-              style={{ pointerEvents: 'none' }}
-            />
-            {/* Invisible wide overlay makes the full spoke shaft a hit target */}
-            {onSelect && (
+      {/* ── Everything below rotates as a unit ── */}
+      <g transform={`rotate(${displayRot} ${cx} ${cy})`}>
+
+        {/* Spokes + tip dots */}
+        {Array.from({ length: N }).map((_, i) => {
+          const p = getTipPos(i, 0)  // rotation is handled by the <g> wrapper
+          return (
+            <g key={`spoke-${i}`}>
               <line
-                x1={cx} y1={cy} x2={tx} y2={ty}
-                stroke="transparent"
-                strokeWidth="18"
-                style={{ cursor: 'pointer' }}
-                onClick={() => onSelect(i)}
-              />
-            )}
-            {/* Hit target — invisible larger circle behind the visible tip
-                so taps on a small dot are forgiving. Only renders when
-                onSelect is wired. */}
-            {onSelect && (
-              <circle
-                cx={tx} cy={ty} r={14}
-                fill="transparent"
-                style={{ cursor: 'pointer', pointerEvents: 'none' }}
-              >
-                <title>{labels[i]}</title>
-              </circle>
-            )}
-            <circle
-              cx={tx} cy={ty} r={3}
-              fill="rgba(200,146,42,0.5)"
-              style={{ pointerEvents: 'none' }}
-            />
-          </g>
-        )
-      })}
-
-      {labels.map((txt, i) => {
-        const a = angleFor(i)
-        const tipX = cx + maxR * Math.cos(a)
-        const tipY = cy + maxR * Math.sin(a)
-        const pos = selfLabelPositionFor(i, tipX, tipY)
-        const isActive = activeKey && keys[i] === activeKey
-        const dc = selfColor(keys[i])
-        // Light surface uses .light stop, dark surface uses .dark stop.
-        const baseFill = dark ? dc.dark : dc.light
-        // The active label deepens to the saturated base — same hue, more weight.
-        const activeFill = dc.base
-        return (
-          <text
-            key={`label-${i}`}
-            x={pos.x}
-            y={pos.y}
-            textAnchor={pos.anchor}
-            onClick={onSelect ? () => onSelect(i) : undefined}
-            style={{
-              fontFamily: FONT_SC,
-              fontSize: 13,
-              letterSpacing: '0.18em',
-              fill: isActive ? activeFill : baseFill,
-              fontWeight: isActive ? 700 : 600,
-              cursor: onSelect ? 'pointer' : undefined,
-              userSelect: 'none',
-              textTransform: 'uppercase',
-            }}
-          >
-            {txt}
-          </text>
-        )
-      })}
-
-      {showEmpty ? (
-        <circle
-          cx={cx}
-          cy={cy}
-          r={6}
-          fill="rgba(200,146,42,0.10)"
-          stroke="rgba(200,146,42,0.40)"
-          strokeWidth="1"
-          strokeDasharray="3 3"
-        />
-      ) : (
-        <>
-          <polygon
-            points={verts.map(v => `${v.x},${v.y}`).join(' ')}
-            fill="none"
-            stroke={GOLD}
-            strokeWidth="1.25"
-            strokeOpacity="0.7"
-            strokeLinejoin="round"
-          />
-          {verts.map(v => (
-            <g
-              key={`vert-${v.i}`}
-              onClick={onSelect ? () => onSelect(v.i) : undefined}
-              style={onSelect ? { cursor: 'pointer' } : undefined}
-            >
-              {/* Invisible generous hit target around the score dot */}
-              {onSelect && (
-                <circle cx={v.x} cy={v.y} r={12} fill="transparent" />
-              )}
-              <circle
-                cx={v.x} cy={v.y}
-                r={2.5}
-                fill={v.color}
-                stroke={vertStroke}
+                x1={cx} y1={cy} x2={p.x} y2={p.y}
+                stroke={spokeStroke}
                 strokeWidth="1"
                 style={{ pointerEvents: 'none' }}
               />
+              {/* Wide invisible overlay — full spoke shaft is a hit target */}
+              {onSelect && (
+                <line
+                  x1={cx} y1={cy} x2={p.x} y2={p.y}
+                  stroke="transparent"
+                  strokeWidth="18"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => onSelect(i)}
+                />
+              )}
+              <circle
+                cx={p.x} cy={p.y} r={3}
+                fill="rgba(200,146,42,0.5)"
+                style={{ pointerEvents: 'none' }}
+              />
+              {/* Generous tip hit target */}
+              {onSelect && (
+                <circle
+                  cx={p.x} cy={p.y} r={14}
+                  fill="transparent"
+                  style={{ cursor: 'pointer', pointerEvents: 'none' }}
+                >
+                  <title>{labels[i]}</title>
+                </circle>
+              )}
             </g>
-          ))}
-        </>
-      )}
-
-      {!showEmpty && activeKey && (() => {
-        const idx = keys.indexOf(activeKey)
-        if (idx < 0) return null
-        const v = verts[idx]
-        return (
-          <g>
-            <circle cx={v.x} cy={v.y} r={4} fill={GOLD} />
-            <circle cx={v.x} cy={v.y} r={8} fill={GOLD} opacity="0.5">
-              <animate attributeName="r" values="6;11;6" dur="2.5s" repeatCount="indefinite" />
-              <animate attributeName="opacity" values="0.5;0.85;0.5" dur="2.5s" repeatCount="indefinite" />
-            </circle>
-          </g>
-        )
-      })()}
-
-      {(() => {
-        const focusKey = activeKey
-        if (!focusKey) return null
-        const count = walkers[focusKey] || 0
-        if (count <= 0) return null
-        const idx = keys.indexOf(focusKey)
-        if (idx < 0) return null
-
-        const a = angleFor(idx)
-        const clusterR = maxR * 1.40
-        const ccx = cx + clusterR * Math.cos(a)
-        const ccy = cy + clusterR * Math.sin(a)
-        const dotsToShow = Math.min(count, 8)
-        const clusterRadius = 14
-        const dots = []
-        for (let j = 0; j < dotsToShow; j++) {
-          const aa = (Math.PI * 2 * j) / dotsToShow + (idx * 0.4)
-          const wob = 0.6 + 0.4 * ((j * 37) % 100) / 100
-          const dx = ccx + clusterRadius * Math.cos(aa) * wob
-          const dy = ccy + clusterRadius * Math.sin(aa) * wob
-          dots.push(
-            <circle
-              key={`walker-${j}`}
-              cx={dx.toFixed(1)}
-              cy={dy.toFixed(1)}
-              r={2}
-              fill={walkerDotFill}
-              opacity="0.7"
-            />
           )
-        }
+        })}
 
-        const perpAngle = a + Math.PI / 2
-        const sideOffset = 24
-        const labelX = ccx + sideOffset * Math.cos(perpAngle)
-        const labelY = ccy + sideOffset * Math.sin(perpAngle) + 3
-        const labelAnchor =
-          Math.cos(perpAngle) >= 0.2  ? 'start' :
-          Math.cos(perpAngle) <= -0.2 ? 'end' :
-                                        'middle'
-
-        return (
-          <g>
-            {dots}
+        {/* Labels — rotate with the wheel, using angle-based positioning */}
+        {labels.map((txt, i) => {
+          const p = getTipPos(i, 0)
+          const pos = civLabelPosFor(p.x, p.y, p.angle)
+          const isActive = activeKey && keys[i] === activeKey
+          const dc = selfColor(keys[i])
+          const baseFill   = dark ? dc.dark : dc.light
+          const activeFill = dc.base
+          return (
             <text
-              x={labelX.toFixed(1)}
-              y={labelY.toFixed(1)}
-              textAnchor={labelAnchor}
+              key={`label-${i}`}
+              x={pos.x}
+              y={pos.y}
+              textAnchor={pos.anchor}
+              onClick={onSelect ? () => onSelect(i) : undefined}
               style={{
                 fontFamily: FONT_SC,
-                fontSize: 9,
-                letterSpacing: '0.12em',
-                fill: walkerLabelFill,
+                fontSize: 13,
+                letterSpacing: '0.18em',
+                fill: isActive ? activeFill : baseFill,
+                fontWeight: isActive ? 700 : 600,
+                cursor: onSelect ? 'pointer' : undefined,
+                userSelect: 'none',
+                textTransform: 'uppercase',
+                pointerEvents: onSelect ? 'auto' : 'none',
               }}
             >
-              {count} walking
+              {txt}
             </text>
-          </g>
-        )
-      })()}
+          )
+        })}
 
-      {/* Centre hit target — invisible, returns to overview when clicked.
-          Only renders when onCentreClick is wired. Sits above all other
-          layers but is transparent, so it does not change the look of the
-          wheel; it just gives the centre a forgiving 24px tap zone. */}
+        {/* Score polygon + vertex dots */}
+        {showEmpty ? (
+          <circle
+            cx={cx} cy={cy} r={6}
+            fill="rgba(200,146,42,0.10)"
+            stroke="rgba(200,146,42,0.40)"
+            strokeWidth="1"
+            strokeDasharray="3 3"
+            style={{ pointerEvents: 'none' }}
+          />
+        ) : (
+          <>
+            <polygon
+              points={verts.map(v => `${v.x},${v.y}`).join(' ')}
+              fill="none"
+              stroke={GOLD}
+              strokeWidth="1.25"
+              strokeOpacity="0.7"
+              strokeLinejoin="round"
+              style={{ pointerEvents: 'none' }}
+            />
+            {verts.map(v => (
+              <g
+                key={`vert-${v.i}`}
+                onClick={onSelect ? () => onSelect(v.i) : undefined}
+                style={onSelect ? { cursor: 'pointer' } : undefined}
+              >
+                {onSelect && (
+                  <circle cx={v.x} cy={v.y} r={12} fill="transparent" />
+                )}
+                <circle
+                  cx={v.x} cy={v.y} r={2.5}
+                  fill={v.color}
+                  stroke={vertStroke}
+                  strokeWidth="1"
+                  style={{ pointerEvents: 'none' }}
+                />
+              </g>
+            ))}
+          </>
+        )}
+
+        {/* Active domain ring — pulses on the score dot of the active spoke */}
+        {!showEmpty && activeKey && (() => {
+          const idx = keys.indexOf(activeKey)
+          if (idx < 0) return null
+          const v = verts[idx]
+          return (
+            <g style={{ pointerEvents: 'none' }}>
+              <circle cx={v.x} cy={v.y} r={4} fill={GOLD} />
+              <circle cx={v.x} cy={v.y} r={8} fill={GOLD} opacity="0.5">
+                <animate attributeName="r" values="6;11;6" dur="2.5s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.5;0.85;0.5" dur="2.5s" repeatCount="indefinite" />
+              </circle>
+            </g>
+          )
+        })()}
+
+        {/* Walker cluster — sits beyond the active spoke tip */}
+        {(() => {
+          const focusKey = activeKey
+          if (!focusKey) return null
+          const count = walkers[focusKey] || 0
+          if (count <= 0) return null
+          const idx = keys.indexOf(focusKey)
+          if (idx < 0) return null
+          const p = getTipPos(idx, 0)
+          const clusterR = maxR * 1.40
+          const ccx = cx + clusterR * Math.cos(p.angle)
+          const ccy = cy + clusterR * Math.sin(p.angle)
+          const dotsToShow = Math.min(count, 8)
+          const dots = []
+          for (let j = 0; j < dotsToShow; j++) {
+            const aa = (Math.PI * 2 * j) / dotsToShow + (idx * 0.4)
+            const wob = 0.6 + 0.4 * ((j * 37) % 100) / 100
+            dots.push(
+              <circle
+                key={`walker-${j}`}
+                cx={(ccx + 14 * Math.cos(aa) * wob).toFixed(1)}
+                cy={(ccy + 14 * Math.sin(aa) * wob).toFixed(1)}
+                r={2}
+                fill={walkerDotFill}
+                opacity="0.7"
+              />
+            )
+          }
+          const perpAngle = p.angle + Math.PI / 2
+          const labelX = ccx + 24 * Math.cos(perpAngle)
+          const labelY = ccy + 24 * Math.sin(perpAngle) + 3
+          const labelAnchor =
+            Math.cos(perpAngle) >= 0.2  ? 'start' :
+            Math.cos(perpAngle) <= -0.2 ? 'end' :
+                                          'middle'
+          return (
+            <g style={{ pointerEvents: 'none' }}>
+              {dots}
+              <text
+                x={labelX.toFixed(1)}
+                y={labelY.toFixed(1)}
+                textAnchor={labelAnchor}
+                style={{ fontFamily: FONT_SC, fontSize: 9, letterSpacing: '0.12em', fill: walkerLabelFill }}
+              >
+                {count} walking
+              </text>
+            </g>
+          )
+        })()}
+
+      </g>
+      {/* ── End rotating group ── */}
+
+      {/* Centre orb — fixed, not part of the rotating group.
+          Fades in on cursor proximity and whenever a domain is featured.
+          Signals "click to return to overview." */}
       {onCentreClick && (
-        <circle
-          cx={cx}
-          cy={cy}
-          r={24}
-          fill="transparent"
-          style={{ cursor: 'pointer' }}
+        <g
           onClick={onCentreClick}
+          style={{ cursor: 'pointer' }}
           aria-label="Return to my life overview"
         >
-          <title>My life overview</title>
-        </circle>
+          <circle
+            cx={cx} cy={cy} r={32}
+            fill="none"
+            stroke="rgba(200,146,42,0.22)"
+            strokeWidth="1"
+            style={{ opacity: orbTarget, transition: 'opacity 0.35s ease', pointerEvents: 'none' }}
+          >
+            <animate attributeName="r" values="28;34;28" dur="3.2s" repeatCount="indefinite" />
+            <animate attributeName="stroke-opacity" values="0.18;0.05;0.18" dur="3.2s" repeatCount="indefinite" />
+          </circle>
+          <circle
+            cx={cx} cy={cy} r={22}
+            fill={GOLD}
+            stroke={dark ? 'rgba(200,146,42,0.6)' : 'rgba(168,114,26,0.7)'}
+            strokeWidth="1"
+            style={{ opacity: orbTarget, transition: 'opacity 0.35s ease', pointerEvents: 'none' }}
+          />
+          <circle
+            cx={cx} cy={cy} r={30}
+            fill="transparent"
+            style={{ pointerEvents: 'auto' }}
+          >
+            <title>My life overview</title>
+          </circle>
+        </g>
       )}
     </svg>
   )
