@@ -17,8 +17,6 @@ export function Nav({ activePath }) {
 
   const links = [
     { to: '/',              label: 'Home',          key: 'home'          },
-    { to: '/nextus-self',   label: 'NextUs Self',   key: 'nextus-self'   },
-    { to: '/nextus',        label: 'NextUs',        key: 'nextus'        },
     { to: '/about',         label: 'About',         key: 'about'         },
     { to: '/work-with-nik', label: 'Work with Nik', key: 'work-with-nik' },
     { to: '/podcast',       label: 'Podcast',       key: 'podcast'       },
@@ -118,7 +116,7 @@ export function Nav({ activePath }) {
         <div className="nav-mobile-menu">
           {/* NextUs Self section */}
           <div className="nav-mobile-section">
-            <Link to="/nextus-self" onClick={closeMobile} className="nav-mobile-link nav-mobile-link--heading">
+            <Link to="/" onClick={closeMobile} className="nav-mobile-link nav-mobile-link--heading">
               <span>Horizon Suite</span>
               <span style={{ ...body, fontSize: '14px',
                 color: 'rgba(15,21,35,0.55)', fontWeight: 400, letterSpacing: 0 }}>

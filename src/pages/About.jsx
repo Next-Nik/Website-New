@@ -84,7 +84,7 @@ export function AboutPage() {
               The tools can be used independently. But they are designed to stack — each one building
               on what the last revealed. Vision first. Then embodied action. Then the methodologies,
               practices, and support —{' '}
-              <a href="/nextus-self" style={{ ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(168,114,26,0.35)' }}>
+              <a href="/" style={{ ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(168,114,26,0.35)' }}>
                 from people, practitioners, and organisations around the world
               </a>
               {' '}— that are yours to choose freely, held by the scaffold the Suite provides.
@@ -99,7 +99,7 @@ export function AboutPage() {
             </P>
 
             <div style={{ marginTop: '32px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-              <a href="/nextus-self" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(168,114,26,0.35)', paddingBottom: '2px' }}>
+              <a href="/" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(168,114,26,0.35)', paddingBottom: '2px' }}>
                 NextUs Self →
               </a>
               <a href="/tools/north-star" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.20)', paddingBottom: '2px' }}>
@@ -156,10 +156,10 @@ export function AboutPage() {
             </P>
 
             <div style={{ marginTop: '32px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-              <a href="/nextus" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(168,114,26,0.35)', paddingBottom: '2px' }}>
+              <a href="/" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(168,114,26,0.35)', paddingBottom: '2px' }}>
                 NextUs →
               </a>
-              <a href="/nextus/actors" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.20)', paddingBottom: '2px' }}>
+              <a href="/feed" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.20)', paddingBottom: '2px' }}>
                 Who's doing the work →
               </a>
             </div>
@@ -167,19 +167,22 @@ export function AboutPage() {
         </div>
       </div>
 
-      {/* ── FRACTAL BRIDGE — dark section ── */}
+      {/* ── FRACTAL PREMISE — dark section ── */}
       <DarkSection>
-        <DarkEyebrow>The fractal</DarkEyebrow>
-        <DarkHeading>The same architecture. Two scales.</DarkHeading>
+        <DarkEyebrow>The premise</DarkEyebrow>
+        <DarkHeading>What you build in yourself, you contribute to the world.</DarkHeading>
         <DarkBody>
-          What you build in yourself maps directly onto what humanity is trying to build collectively.
-          The seven domains of your life are the same seven domains civilisation is working on.
-          The personal and the civilisational are not separate projects. They are the same work,
-          at different scales.
+          The personal and the civilisational are not separate projects. Every domain you build
+          in yourself maps directly to a domain humanity is trying to build together. This is not
+          metaphor — it is the architecture of the platform.
         </DarkBody>
-        <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
-          <DarkSolidButton href="/nextus-self">NextUs Self →</DarkSolidButton>
-          <DarkGhostButton href="/nextus">NextUs →</DarkGhostButton>
+        <DarkBody>
+          The seven domains of your life are the same seven domains civilisation is working on.
+          The same work, at different scales. The wheel at every level.
+        </DarkBody>
+        <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginTop: '12px' }}>
+          <DarkSolidButton href="/">Enter the platform →</DarkSolidButton>
+          <DarkGhostButton href="/work-with-nik">Work with Nik →</DarkGhostButton>
         </div>
       </DarkSection>
 

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom'
 import { useEffect, Component } from 'react'
 import { BottomTabs } from './components/BottomTabs'
 import { TermsAcceptanceModal } from './components/TermsAcceptanceModal'
@@ -122,21 +122,23 @@ function AppInner() {
       <ScrollToTop />
       <Routes>
         {/* ── Site pages ── */}
-        <Route path="/"                element={<HomePage />} />
+        <Route path="/"                element={<BetaIntroGate><BetaMissionControl /></BetaIntroGate>} />
         <Route path="/index"           element={<Navigate to="/" replace />} />
+        <Route path="/home"            element={<Navigate to="/" replace />} />
         <Route path="/about"           element={<AboutPage />} />
-        <Route path="/nextus-self"     element={<NextUsSelfPage />} />
-        <Route path="/nextus"                        element={<NextUsPage />} />
-        <Route path="/nextus/actors"                 element={<NextUsActorsPage />} />
-        <Route path="/nextus/actors/:id"             element={<NextUsActorPage />} />
-        <Route path="/nextus/actors/:id/manage"      element={<NextUsActorManagePage />} />
-        <Route path="/nextus/actors/:id/needs/new"   element={<NextUsNeedNewPage />} />
-        <Route path="/nextus/map"                    element={<NextUsMapPage />} />
-        <Route path="/nextus/nominate"               element={<NextUsNominatePage />} />
-        <Route path="/nextus/place"                  element={<NextUsPlacePage />} />
-        <Route path="/nextus/contributors/:id"       element={<NextUsContributorPage />} />
-        <Route path="/nextus/contributors"           element={<NextUsContributorsPage />} />
-        <Route path="/nextus/focus/:slug"            element={<NextUsFocusPage />} />
+        {/* ── Legacy NextUs routes → redirect to new platform paths ── */}
+        <Route path="/nextus-self"                   element={<Navigate to="/welcome/self" replace />} />
+        <Route path="/nextus"                        element={<Navigate to="/" replace />} />
+        <Route path="/nextus/actors"                 element={<Navigate to="/feed" replace />} />
+        <Route path="/nextus/actors/:id"             element={<LegacyOrgRedirect />} />
+        <Route path="/nextus/actors/:id/manage"      element={<LegacyOrgManageRedirect />} />
+        <Route path="/nextus/actors/:id/needs/new"   element={<Navigate to="/contribution" replace />} />
+        <Route path="/nextus/map"                    element={<Navigate to="/map" replace />} />
+        <Route path="/nextus/nominate"               element={<Navigate to="/nominate" replace />} />
+        <Route path="/nextus/place"                  element={<Navigate to="/welcome/org" replace />} />
+        <Route path="/nextus/contributors/:id"       element={<LegacyContributorRedirect />} />
+        <Route path="/nextus/contributors"           element={<Navigate to="/feed" replace />} />
+        <Route path="/nextus/focus/:slug"            element={<Navigate to="/" replace />} />
         <Route path="/domain/:slug"                  element={<DomainPage />} />
         <Route path="/work-with-nik"   element={<WorkWithNikPage />} />
         <Route path="/podcast"         element={<PodcastPage />} />
@@ -234,7 +236,22 @@ function AppInner() {
   )
 }
 
-export default function App() {
+export default 
+// ── Legacy redirect helpers that preserve route params ──
+function LegacyOrgRedirect() {
+  const { id } = useParams()
+  return <Navigate to={`/org/${id}`} replace />
+}
+function LegacyOrgManageRedirect() {
+  const { id } = useParams()
+  return <Navigate to={`/org/${id}/manage`} replace />
+}
+function LegacyContributorRedirect() {
+  const { id } = useParams()
+  return <Navigate to={`/profile/${id}`} replace />
+}
+
+function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
