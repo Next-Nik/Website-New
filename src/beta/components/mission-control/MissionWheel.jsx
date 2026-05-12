@@ -503,34 +503,42 @@ function SelfWheel({
         )
       })()}
 
-      {/* Centre orb — fixed, not part of the rotating group.
-          Fades in on cursor proximity and whenever a domain is featured.
-          Signals "click to return to overview." */}
+      {/* Centre orb — soft golden glow, not a solid disc.
+          Fades in on cursor proximity and when a domain is featured.
+          Brief: "soft golden orb ... visually signals click me to go back."
+          Three layers for depth: wide outer bloom, mid haze, tight core. */}
       {onCentreClick && (
         <g
           onClick={onCentreClick}
           style={{ cursor: 'pointer' }}
           aria-label="Return to my life overview"
         >
+          {/* Outer bloom — wide, very soft */}
           <circle
-            cx={cx} cy={cy} r={32}
-            fill="none"
-            stroke="rgba(200,146,42,0.22)"
-            strokeWidth="1"
-            style={{ opacity: orbTarget, transition: 'opacity 0.35s ease', pointerEvents: 'none' }}
+            cx={cx} cy={cy} r={48}
+            fill="rgba(200,146,42,0.07)"
+            style={{ opacity: orbTarget, transition: 'opacity 0.4s ease', pointerEvents: 'none' }}
           >
-            <animate attributeName="r" values="28;34;28" dur="3.2s" repeatCount="indefinite" />
-            <animate attributeName="stroke-opacity" values="0.18;0.05;0.18" dur="3.2s" repeatCount="indefinite" />
+            <animate attributeName="r" values="44;52;44" dur="3.6s" repeatCount="indefinite" />
+            <animate attributeName="fill-opacity" values="0.07;0.04;0.07" dur="3.6s" repeatCount="indefinite" />
           </circle>
+          {/* Mid haze */}
           <circle
-            cx={cx} cy={cy} r={22}
-            fill={GOLD}
-            stroke={dark ? 'rgba(200,146,42,0.6)' : 'rgba(168,114,26,0.7)'}
-            strokeWidth="1"
-            style={{ opacity: orbTarget, transition: 'opacity 0.35s ease', pointerEvents: 'none' }}
+            cx={cx} cy={cy} r={28}
+            fill="rgba(200,146,42,0.15)"
+            style={{ opacity: orbTarget, transition: 'opacity 0.4s ease', pointerEvents: 'none' }}
           />
+          {/* Tight core — still soft, not solid */}
           <circle
-            cx={cx} cy={cy} r={30}
+            cx={cx} cy={cy} r={14}
+            fill="rgba(200,146,42,0.35)"
+            stroke="rgba(200,146,42,0.5)"
+            strokeWidth="1"
+            style={{ opacity: orbTarget, transition: 'opacity 0.4s ease', pointerEvents: 'none' }}
+          />
+          {/* Hit zone */}
+          <circle
+            cx={cx} cy={cy} r={40}
             fill="transparent"
             style={{ pointerEvents: 'auto' }}
           >
