@@ -231,7 +231,18 @@ function SelfWheel({
               x1={cx} y1={cy} x2={tx} y2={ty}
               stroke={spokeStroke}
               strokeWidth="1"
+              style={{ pointerEvents: 'none' }}
             />
+            {/* Invisible wide overlay makes the full spoke shaft a hit target */}
+            {onSelect && (
+              <line
+                x1={cx} y1={cy} x2={tx} y2={ty}
+                stroke="transparent"
+                strokeWidth="18"
+                style={{ cursor: 'pointer' }}
+                onClick={() => onSelect(i)}
+              />
+            )}
             {/* Hit target — invisible larger circle behind the visible tip
                 so taps on a small dot are forgiving. Only renders when
                 onSelect is wired. */}
@@ -239,8 +250,7 @@ function SelfWheel({
               <circle
                 cx={tx} cy={ty} r={14}
                 fill="transparent"
-                style={{ cursor: 'pointer' }}
-                onClick={() => onSelect(i)}
+                style={{ cursor: 'pointer', pointerEvents: 'none' }}
               >
                 <title>{labels[i]}</title>
               </circle>
@@ -248,7 +258,7 @@ function SelfWheel({
             <circle
               cx={tx} cy={ty} r={3}
               fill="rgba(200,146,42,0.5)"
-              style={onSelect ? { cursor: 'pointer', pointerEvents: 'none' } : undefined}
+              style={{ pointerEvents: 'none' }}
             />
           </g>
         )
@@ -309,14 +319,24 @@ function SelfWheel({
             strokeLinejoin="round"
           />
           {verts.map(v => (
-            <circle
+            <g
               key={`vert-${v.i}`}
-              cx={v.x} cy={v.y}
-              r={2.5}
-              fill={v.color}
-              stroke={vertStroke}
-              strokeWidth="1"
-            />
+              onClick={onSelect ? () => onSelect(v.i) : undefined}
+              style={onSelect ? { cursor: 'pointer' } : undefined}
+            >
+              {/* Invisible generous hit target around the score dot */}
+              {onSelect && (
+                <circle cx={v.x} cy={v.y} r={12} fill="transparent" />
+              )}
+              <circle
+                cx={v.x} cy={v.y}
+                r={2.5}
+                fill={v.color}
+                stroke={vertStroke}
+                strokeWidth="1"
+                style={{ pointerEvents: 'none' }}
+              />
+            </g>
           ))}
         </>
       )}

@@ -63,6 +63,7 @@ export default function SelfDomainPanel({
   lifeHorizon = null,
   lifeIa = null,
   userScores = {},
+  activeSprintDomainKey = null,
   onSelect,
   onPrev,
   onNext,
@@ -309,15 +310,19 @@ export default function SelfDomainPanel({
                   Open The Map
                 </button>
               )}
-              {isPlaced && onOpenSprint && (
-                <button
-                  type="button"
-                  className="mc-self-btn mc-self-btn-primary"
-                  onClick={onOpenSprint}
-                >
-                  Start a Target Sprint here
-                </button>
-              )}
+              {isPlaced && onOpenSprint && (() => {
+                const hasActiveSprint = activeSprintDomainKey != null &&
+                  itemForDisplay?.id === activeSprintDomainKey
+                return (
+                  <button
+                    type="button"
+                    className="mc-self-btn mc-self-btn-primary"
+                    onClick={onOpenSprint}
+                  >
+                    {hasActiveSprint ? 'Active Sprint' : 'Start a Target Sprint here'}
+                  </button>
+                )
+              })()}
               {onOpenPractice && (
                 <button
                   type="button"

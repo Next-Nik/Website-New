@@ -487,6 +487,19 @@ export default function BetaMissionControl() {
 
   function handleScopeSelect(scopeId) {
     setActiveScope(scopeId)
+    // Switching TO self: return the personal wheel to its neutral overview.
+    if (scopeId === 'self') {
+      setSelfActiveIndex(null)
+      setSelfShowOverview(true)
+    }
+    // Switching TO planet: return the civ wheel to its top-level overview.
+    if (scopeId === 'planet') {
+      setLevelPath([])
+      setActiveIndex(null)
+      setParentPanelOpen(false)
+      setShowOverview(true)
+      landedIndexRef.current = 0
+    }
   }
 
   // Personal wheel data
@@ -1038,6 +1051,7 @@ export default function BetaMissionControl() {
             lifeHorizon={lifeHorizon}
             lifeIa={lifeIa}
             userScores={selfDomainDetail}
+            activeSprintDomainKey={sprintKey}
             onSelect={handleSelfSelect}
             onPrev={handleSelfPrev}
             onNext={handleSelfNext}
