@@ -33,7 +33,7 @@ export function SiteFooter() {
           </div>
         </div>
         <div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', marginBottom: '28px' }} />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', marginBottom: '14px' }}>
           <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
             {'\u00A9'} 2026 NextUs {'·'} Nik Wood
           </span>
@@ -45,6 +45,9 @@ export function SiteFooter() {
             <a href="/terms" style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>Terms</a>
           </div>
         </div>
+        <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '12px', color: 'rgba(15,21,35,0.40)', margin: 0, lineHeight: 1.5 }}>
+          By using NextUs you agree to our <a href="/terms" style={{ color: 'rgba(15,21,35,0.55)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>Terms</a> and <a href="/privacy" style={{ color: 'rgba(15,21,35,0.55)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>Privacy</a>.
+        </p>
       </div>
     </footer>
   )

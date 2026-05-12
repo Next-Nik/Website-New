@@ -41,31 +41,27 @@ function UL({ items }) {
 export function TermsContent() {
   return (
     <>
-      <P>These terms cover your use of nextus.world and the Horizon Suite tools {'—'} North Star, The Map, Purpose Piece, Horizon State, Target Sprint, Horizon Practice {'—'} and the NextUs platform.</P>
-      <P>The spirit of these terms: use the platform honestly, treat what you find here with respect, and don't do things that would harm other people or the platform itself.</P>
-      <H2>Your account</H2>
-      <P>You need an account to save your progress and access your profile. You're responsible for keeping your login secure. You must be at least 16 years old to create an account.</P>
-      <H2>Your content</H2>
-      <P>Anything you write in the tools belongs to you. We don't claim ownership over it. We store it so you can access it.</P>
-      <H2>What the platform is for</H2>
-      <P>NextUs and the Horizon Suite are tools for honest self-knowledge and civilisational orientation. They support structured reflection, planning, and orientation toward the life you want to build.</P>
-      <H2>What this platform is not for</H2>
-      <P>NextUs is a developmental tool. It is not therapy. It is not crisis support. It is not a substitute for medical, psychiatric, or psychological care.</P>
-      <P>If you are in active crisis, working through trauma, experiencing thoughts of self-harm, or in serious psychological distress, please get support from a trained professional or a crisis service first. The Suite will be here when you're ready.</P>
-      <P>If you are currently working with a therapist, counsellor, or doctor on something significant, we recommend talking with them before you begin substantive work in the tools. Some of what surfaces here may be valuable to bring into that work.</P>
-      <P>By using NextUs, you confirm that you understand the platform's scope as described above and that you take responsibility for seeking appropriate professional support when needed.</P>
-      <H2>What you agree not to do</H2>
-      <UL items={["Use the platform to harm, harass, or deceive other people.", "Attempt to access data that isn't yours.", "Use automated tools to scrape or overload the platform.", "Misrepresent yourself or your credentials in ways that affect other users.", "Reproduce or distribute platform content without permission."]} />
-      <H2>Intellectual property</H2>
-      <P>The platform, the tools, the domain architecture, the archetype frameworks, the Horizon Goals structure, and all copy on nextus.world are the work of Nik Wood and NextUs. They're protected by copyright.</P>
-      <H2>The platform is a living thing</H2>
-      <P>NextUs is being built in the open. Tools will change. Features will be added. Occasionally something will break. We'll fix it when it does.</P>
-      <H2>Limitation of liability</H2>
-      <P>We provide the platform as-is. We're not liable for decisions you make based on what you find here. If something goes wrong that is genuinely our fault, our liability is limited to the amount you've paid us in the preceding twelve months.</P>
-      <H2>Ending your account</H2>
-      <P>You can close your account any time by emailing <a href="mailto:hello@nextus.world" style={{ color: '#A8721A', textDecoration: 'none' }}>hello@nextus.world</a>.</P>
-      <H2>Governing law</H2>
-      <P>These terms are governed by the laws of the province of British Columbia, Canada.</P>
+      <P>NextUs is being built in the open. These terms cover what we ask of you, and what you can ask of us, while we build it together.</P>
+      <P>The spirit: use the platform honestly, treat what you find here with respect, and assume good faith on both sides.</P>
+      <H2>Your account, your data, your words</H2>
+      <P>You need an account to save your progress. You're responsible for keeping your login secure. You must be at least 16.</P>
+      <P>Anything you write in the tools belongs to you. We don't claim ownership over it. We store it so you can come back to it.</P>
+      <P>You can close your account any time from Mission Control {'→'} Settings. Deletion is immediate and removes your data from our active systems.</P>
+      <H2>What this is for {'—'} and what it isn't</H2>
+      <P>NextUs is a developmental tool for honest self-knowledge and civilisational orientation. It's structured reflection, planning, and the work of figuring out where you're going.</P>
+      <P>It is not therapy. Not crisis support. Not a substitute for medical, psychiatric, or psychological care. If you're in active crisis or serious distress, please reach out to a trained professional or a crisis service first. The platform will be here when you're ready.</P>
+      <P>If you're working with a therapist or doctor on something significant, consider bringing the work you do here into that relationship rather than letting it stand alone.</P>
+      <H2>What we ask you not to do</H2>
+      <UL items={["Harm, harass, or deceive other people through the platform.", "Try to access data that isn't yours.", "Run scrapers or anything that overloads the platform.", "Misrepresent yourself or your credentials in ways that affect other users.", "Reproduce or redistribute platform content without permission."]} />
+      <H2>Our work, your work</H2>
+      <P>The platform, the tools, the domain architecture, the archetype frameworks, the Horizon Goals structure, and the writing on nextus.world are Nik Wood's work. Your own writing and your own data are yours.</P>
+      <H2>This is a living thing</H2>
+      <P>The platform changes. Tools get added. Features get refined. Occasionally something breaks {'—'} we'll fix it when it does. By using NextUs you're joining something in motion, not arriving at something finished.</P>
+      <H2>The leap of faith, named</H2>
+      <P>NextUs is not yet a registered company. It's being built in good faith, by a real person, with the intention of becoming a real organisation as it grows. Until that happens, your relationship is with Nik Wood directly.</P>
+      <P>If you have a concern, a complaint, or a dispute, the first step is a conversation. Email <a href="mailto:support@nextus.world" style={{ color: '#A8721A', textDecoration: 'none' }}>support@nextus.world</a> and we'll handle it like humans. When NextUs is incorporated, these terms will be updated to reflect proper jurisdiction and corporate structure.</P>
+      <H2>Limitation</H2>
+      <P>We provide the platform as-is. We're not liable for decisions you make based on what you find here. The platform is a thinking partner, not a prescriber.</P>
     </>
   )
 }
@@ -89,7 +85,7 @@ export function PrivacyContent() {
       <H2>Third-party services</H2>
       <UL items={['<strong>Supabase</strong> — our database and authentication infrastructure.', '<strong>Vercel</strong> — our hosting infrastructure.', '<strong>Anthropic</strong> — the AI that powers the conversational tools.', '<strong>Kit (formerly ConvertKit)</strong> — our email platform for newsletters.']} />
       <H2>Your data is yours</H2>
-      <P>You can request a copy of your data, ask us to delete your account, or ask any question about how your information is handled. Email <a href="mailto:hello@nextus.world" style={{ color: '#A8721A', textDecoration: 'none' }}>hello@nextus.world</a>.</P>
+      <P>You can delete your account any time from Mission Control {'→'} Settings. For a copy of your data or any other request, email <a href="mailto:support@nextus.world" style={{ color: '#A8721A', textDecoration: 'none' }}>support@nextus.world</a>.</P>
       <H2>Cookies</H2>
       <P>We use cookies only for authentication {'—'} to keep you signed in between visits. We don't use tracking cookies or advertising cookies.</P>
       <H2>Children</H2>

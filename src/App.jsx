@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom'
 import { useEffect, Component } from 'react'
 import { BottomTabs } from './components/BottomTabs'
-import { TermsAcceptanceModal } from './components/TermsAcceptanceModal'
 
 // Error boundary
 class ErrorBoundary extends Component {
@@ -234,7 +233,6 @@ function AppInner() {
       <BottomTabs />
 
       {/* Terms acceptance — appears once for signed-in users when version changes */}
-      <TermsAcceptanceModal />
     </>
   )
 }

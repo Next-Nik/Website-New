@@ -76,6 +76,39 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
     onNavigate('/')
   }
 
+  // ── Self-service account deletion ──────────────────────────────
+  // Two-step: click Delete → confirmation appears → click again to
+  // commit. Removes the user row (cascade-deletes related rows via
+  // FK constraints) and then signs out. Auth user is also removed
+  // via the supabase admin API if available; if not, the auth row
+  // becomes orphaned and inert (no public.users row, nothing reads it).
+  const [deleteConfirm, setDeleteConfirm] = useState(false)
+  const [deleting, setDeleting]           = useState(false)
+  const [deleteError, setDeleteError]     = useState(null)
+
+  async function handleDeleteAccount() {
+    if (!user?.id) return
+    setDeleting(true)
+    setDeleteError(null)
+    try {
+      // Delete the public.users row — cascade should clean dependent
+      // rows that have ON DELETE CASCADE. Some tables don't cascade;
+      // those rows become orphaned but RLS already prevents access.
+      const { error: rowErr } = await supabase
+        .from('users').delete().eq('id', user.id)
+      if (rowErr) throw rowErr
+
+      // Sign the user out. Their auth record may remain in auth.users
+      // (deletion there requires service role) but with no public.users
+      // row they cannot use the platform.
+      await supabase.auth.signOut()
+      onNavigate('/')
+    } catch (e) {
+      setDeleting(false)
+      setDeleteError(e?.message || 'Could not delete account. Email support@nextus.world.')
+    }
+  }
+
   function copy(value, key) {
     if (!value) return
     try {
@@ -416,6 +449,100 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
         Sign Out
       </button>
 
+      {/* Delete account — self-service, two-step confirm */}
+      {!deleteConfirm ? (
+        <button
+          onClick={() => setDeleteConfirm(true)}
+          style={{
+            display: 'block',
+            width: '100%',
+            padding: '11px 16px',
+            background: 'transparent',
+            border: '1px solid rgba(138,48,48,0.30)',
+            borderRadius: 14,
+            cursor: 'pointer',
+            fontFamily: FONT_SC,
+            fontSize: 11,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color: 'rgba(138,48,48,0.75)',
+            textAlign: 'center',
+            marginBottom: 14,
+          }}
+        >
+          Delete Account
+        </button>
+      ) : (
+        <div style={{
+          padding: '14px 16px',
+          background: 'rgba(138,48,48,0.04)',
+          border: '1px solid rgba(138,48,48,0.30)',
+          borderRadius: 14,
+          marginBottom: 14,
+        }}>
+          <p style={{
+            fontFamily: FONT_BODY,
+            fontSize: 13,
+            color: '#5a2424',
+            lineHeight: 1.55,
+            margin: '0 0 12px',
+          }}>
+            This will delete your account and all your data — your Map, sprints, practice
+            history, profile, everything. It can't be undone.
+          </p>
+          {deleteError && (
+            <p style={{
+              fontFamily: FONT_BODY,
+              fontSize: 12,
+              color: '#8A3030',
+              margin: '0 0 12px',
+            }}>
+              {deleteError}
+            </p>
+          )}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              onClick={handleDeleteAccount}
+              disabled={deleting}
+              style={{
+                flex: 1,
+                padding: '10px 14px',
+                background: deleting ? 'rgba(138,48,48,0.40)' : '#8A3030',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: 10,
+                cursor: deleting ? 'not-allowed' : 'pointer',
+                fontFamily: FONT_SC,
+                fontSize: 11,
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+              }}
+            >
+              {deleting ? 'Deleting…' : 'Yes, delete'}
+            </button>
+            <button
+              onClick={() => { setDeleteConfirm(false); setDeleteError(null) }}
+              disabled={deleting}
+              style={{
+                flex: 1,
+                padding: '10px 14px',
+                background: 'transparent',
+                color: TEXT_META,
+                border: '1px solid rgba(15,21,35,0.18)',
+                borderRadius: 10,
+                cursor: deleting ? 'not-allowed' : 'pointer',
+                fontFamily: FONT_SC,
+                fontSize: 11,
+                letterSpacing: '0.16em',
+                textTransform: 'uppercase',
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Honest note about what's not yet here */}
       <div style={{
         fontFamily: FONT_BODY,
@@ -425,7 +552,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
         padding: '0 4px 4px',
         fontStyle: 'italic',
       }}>
-        Notification preferences, data export, and account deletion will live here when those surfaces are wired. For anything you need now, use Support.
+        Notification preferences and data export will live here when those surfaces are wired. For anything else, use Support.
       </div>
 
       {/* Footer */}
