@@ -73,6 +73,7 @@ import BetaContribution           from './beta/pages/BetaContribution'
 import { BetaOrgPublicPage }      from './beta/pages/BetaOrgPublic'
 import { BetaOrgManagePage }      from './beta/pages/BetaOrgManage'
 import { BetaMapPage }            from './beta/pages/BetaMap'
+import { NextMarketPage }         from './beta/pages/NextMarket'
 import { BetaAdminConsolePage }   from './beta/pages/BetaAdminConsole'
 import { BetaNominatePage }       from './beta/pages/BetaNominate'
 import { BetaDomainPage }         from './beta/pages/BetaDomain'
@@ -179,6 +180,8 @@ function AppInner() {
         <Route path="/org/:slug"                    element={<BetaOrgPublicPage />} />
         <Route path="/org/:slug/manage"             element={<BetaOrgManagePage />} />
         <Route path="/map"                          element={<BetaMapPage />} />
+        <Route path="/nextmarket"                   element={<NextMarketPage />} />
+        <Route path="/alternatives"                 element={<Navigate to="/nextmarket" replace />} />
         <Route path="/nominate"                     element={<BetaNominatePage />} />
         <Route path="/domain/:slug"                 element={<BetaDomainPage />} />
         <Route path="/practices"                    element={<BetaPractices />} />

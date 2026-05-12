@@ -17,6 +17,7 @@ export function Nav({ activePath }) {
 
   const links = [
     { to: '/',              label: 'Home',          key: 'home'          },
+    { to: '/nextmarket',    label: 'NextMarket',    key: 'nextmarket'    },
     { to: '/about',         label: 'About',         key: 'about'         },
     { to: '/work-with-nik', label: 'Work with Nik', key: 'work-with-nik' },
     { to: '/podcast',       label: 'Podcast',       key: 'podcast'       },
