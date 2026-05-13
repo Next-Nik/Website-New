@@ -985,7 +985,7 @@ export default function BetaMissionControl() {
                 keys:      SELF_KEYS,
                 horizons:  selfHorizons,
                 current:   selfCurrent,
-                activeKey: selfActiveIndex !== null ? SELF_KEYS[selfActiveIndex] : sprintKey,
+                activeKey: selfActiveIndex !== null ? SELF_KEYS[selfActiveIndex] : null,
                 walkers:   personalWalkers,
                 isEmpty:   placedCount === 0,
                 onSelect:  handleSelfSelect,
