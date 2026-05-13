@@ -398,8 +398,8 @@ export function ProfileCard({ profile, civilisationalStatement, horizonGoal }) {
 // with the backend's suggested path pre-selected but not forced.
 //
 // Routes on confirm:
-//   join     → /nextus/contributors?pp_archetype=X&pp_domain=Y&pp_scale=Z
-//   start    → /nextus/place (organisation/practitioner placement)
+//   join     → /feed?pp_archetype=X&pp_domain=Y&pp_scale=Z
+//   start    → /welcome/org (organisation/practitioner placement)
 //   transmit → /domain/:slug — the user's civilisational domain page,
 //              where the horizon goal and actors in that territory are
 //              visible. A dedicated transmit-submission flow is a future
@@ -1012,9 +1012,9 @@ export function PurposePiecePage() {
       if (domainSlug) p.set('pp_domain', domainSlug)
       if (scale)     p.set('pp_scale', scale)
       p.set('pp_from', 'purpose-piece')
-      navigate(`/nextus/contributors?${p.toString()}`)
+      navigate(`/feed?${p.toString()}`)
     } else if (path === 'start') {
-      navigate('/nextus/place')
+      navigate('/welcome/org')
     } else if (path === 'transmit') {
       // Transmit submission flow doesn't exist yet. Best honest destination:
       // the user's domain page, where they can see the domain's Horizon Goal,
