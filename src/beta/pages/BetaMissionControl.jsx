@@ -68,6 +68,7 @@ import useMissionControlData from '../components/mission-control/useMissionContr
 import { BG_PARCHMENT, BG_INK } from '../components/mission-control/tokens'
 
 import { fetchDomains, STATIC_DOMAINS, TOP_LEVEL_GOAL } from '../../components/domain-explorer/data'
+import { CURRENT_STATE } from '../../components/domain-explorer/currentState'
 import { SELF_DOMAINS, SELF_TOP_GOAL } from '../../components/self-explorer/selfData'
 
 // ─── Spoke order matters. These two arrays are the canonical
@@ -106,11 +107,14 @@ function orderTopLevel(domains) {
 }
 
 // Body for the top-level overview that the slimmed CivDomainPanel renders.
-const OVERVIEW_BODY = `The Overview Effect is what astronauts report when they first see Earth from space — a sudden, irreversible recognition of the whole. The boundaries dissolve. The fragmentation that seemed inevitable from inside it becomes obviously contingent from outside it.
+// Title is set separately in CivDomainPanel: "Our Planet · The Overview Effect"
+const OVERVIEW_BODY = `Seven civilisational domains. A Horizon Goal for each — what a thriving version of this domain would actually look like, written in plain language. A live score for where we are right now, drawn from indicators most people have never seen in one place. The gap between the two is the work.
 
-From that vantage point, a question becomes possible that is very hard to ask from inside the noise: what are we actually building toward?
+This view exists because the question "what are we actually building toward, together" has no answer most people can point to. Most of the data that could answer it sits in separate dashboards, journals, and reports — never assembled into a single picture, never connected to the people already doing the work.
 
-Seven domains. Horizon goals at every level. A shared destination — so that the people already doing the work can find each other, aim at something worth building, and compound their effort rather than scatter it.`
+We do not claim the picture is complete. We claim it is the first attempt to put it on one page, name the gap honestly, and make it possible for anyone to find their place in it.
+
+Pick a domain. The state of it. The goal for it. The actors already in motion. Where you might plant your own flag.`
 
 // ─── Helpers (preserved from prior version) ──────────────────
 
@@ -796,7 +800,7 @@ export default function BetaMissionControl() {
   // loads headline indicators across all 7 domains and produces a
   // 0..10 score per domain. Domains with insufficient coverage return
   // null and the wheel renders no vertex for them.
-  const { scores: civScores } = useCivDomainScores()
+  const { scores: civScores, details: civDetails } = useCivDomainScores()
   const civCurrent = useMemo(() => {
     const out = {}
     if (civScores) {
@@ -1071,6 +1075,9 @@ export default function BetaMissionControl() {
             showOverview={showOverview && levelPath.length === 0}
             topLevelGoal={TOP_LEVEL_GOAL}
             overviewBody={OVERVIEW_BODY}
+            civScores={civScores}
+            civDetails={civDetails}
+            currentStateData={CURRENT_STATE}
             onSelect={handleCivSelect}
             onDrillDown={handleCivDrillDown}
             onBack={handleCivBack}

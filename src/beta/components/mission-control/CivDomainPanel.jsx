@@ -55,6 +55,9 @@ export default function CivDomainPanel({
   showOverview = false,
   topLevelGoal = '',
   overviewBody = '',
+  civScores = {},
+  civDetails = {},
+  currentStateData = {},
   onSelect,
   onDrillDown,
   onBack,
@@ -67,23 +70,57 @@ export default function CivDomainPanel({
   const showParentPanel = parentPanelOpen && parentItem
   const showDomainPanel = !isOverview && !showParentPanel && selectedItem
   const itemForDisplay  = showParentPanel ? parentItem : selectedItem
-  const breadcrumb      = ['NextUs', ...levelPath.map((_, i) => '·')] // visual placeholder; full breadcrumb below
+
+  // Resolve current-state data for the featured domain.
+  // civScores uses wheel keys ('human', 'finance', 'tech', etc.)
+  // CURRENT_STATE uses domain ids ('human-being', 'finance-economy', 'technology')
+  // domain data uses ids too — so we use itemForDisplay.id to look up CURRENT_STATE,
+  // and the wheel key map to look up civScores.
+  const DOMAIN_ID_TO_WHEEL_KEY = {
+    'human-being':     'human',
+    'society':         'society',
+    'nature':          'nature',
+    'technology':      'tech',
+    'finance-economy': 'finance',
+    'legacy':          'legacy',
+    'vision':          'vision',
+  }
+  const domainId      = itemForDisplay?.id
+  const wheelKey      = domainId ? DOMAIN_ID_TO_WHEEL_KEY[domainId] : null
+  const liveScore     = wheelKey != null ? (civScores?.[wheelKey] ?? null) : null
+  const liveDetail    = wheelKey != null ? (civDetails?.[wheelKey] ?? null) : null
+  const stateData     = domainId ? (currentStateData?.[domainId] ?? null) : null
+
+  // Score band label
+  function scoreBand(s) {
+    if (s == null) return null
+    if (s < 3)   return 'Critical'
+    if (s < 5)   return 'At risk'
+    if (s < 6.5) return 'Developing'
+    if (s < 8)   return 'Progressing'
+    return 'Strong'
+  }
+
+  // Trend glyph
+  function trendGlyph(t) {
+    if (t === 'up')   return '↑'
+    if (t === 'down') return '↓'
+    return '→'
+  }
+  function trendColor(t) {
+    if (t === 'up')   return 'rgba(100,200,120,0.9)'
+    if (t === 'down') return 'rgba(220,80,80,0.85)'
+    return 'rgba(200,146,42,0.6)'
+  }
 
   return (
     <div className="mc-civ-panel">
       <style>{PANEL_CSS}</style>
 
-      {/* Stepper bar — below-wheel arrows + level/back affordance */}
+      {/* Stepper bar */}
       <div className="mc-civ-stepper">
-        <button
-          type="button"
-          className="mc-civ-arrow"
-          onClick={onPrev}
-          disabled={busy || isOverview}
-          aria-label="Previous domain"
-        >
-          ‹
-        </button>
+        <button type="button" className="mc-civ-arrow" onClick={onPrev}
+          disabled={busy || isOverview} aria-label="Previous domain">‹</button>
 
         <div className="mc-civ-stepper-mid">
           {levelPath.length > 0 && (
@@ -91,9 +128,7 @@ export default function CivDomainPanel({
               ← {parentItem?.name ? parentItem.name.toUpperCase() : 'BACK'}
             </button>
           )}
-          {isOverview && (
-            <span className="mc-civ-stepper-hint">SELECT A DOMAIN</span>
-          )}
+          {isOverview && <span className="mc-civ-stepper-hint">SELECT A DOMAIN</span>}
           {!isOverview && itemForDisplay && (
             <span className="mc-civ-stepper-eyebrow">
               {levelPath.length === 0 ? 'OUR PLANET' : (parentItem?.name?.toUpperCase() || 'LEVEL')}
@@ -103,39 +138,27 @@ export default function CivDomainPanel({
           )}
         </div>
 
-        <button
-          type="button"
-          className="mc-civ-arrow"
-          onClick={onNext}
-          disabled={busy || isOverview}
-          aria-label="Next domain"
-        >
-          ›
-        </button>
+        <button type="button" className="mc-civ-arrow" onClick={onNext}
+          disabled={busy || isOverview} aria-label="Next domain">›</button>
       </div>
 
-      {/* Body — overview, parent, or domain */}
+      {/* Body */}
       <div className="mc-civ-body">
 
         {isOverview && (
           <div className="mc-civ-overview">
+            <p className="mc-civ-overview-eyebrow">OUR PLANET</p>
             <h2 className="mc-civ-title">The Overview Effect</h2>
             <div className="mc-civ-rule" />
             {overviewBody.split('\n\n').map((para, i) => (
               <p key={i} className="mc-civ-body-text">{para}</p>
             ))}
-            {topLevelGoal && (
-              <p className="mc-civ-goal">{topLevelGoal}</p>
-            )}
+            {topLevelGoal && <p className="mc-civ-goal">{topLevelGoal}</p>}
             <ul className="mc-civ-chips">
               {currentList.map((d, i) => (
                 <li key={d.id || i}>
-                  <button
-                    type="button"
-                    className="mc-civ-chip"
-                    onClick={() => onSelect?.(i)}
-                    disabled={busy}
-                  >
+                  <button type="button" className="mc-civ-chip"
+                    onClick={() => onSelect?.(i)} disabled={busy}>
                     {d.name}
                   </button>
                 </li>
@@ -146,38 +169,95 @@ export default function CivDomainPanel({
 
         {(showParentPanel || showDomainPanel) && itemForDisplay && (
           <div className="mc-civ-domain">
-            <h2 className="mc-civ-title">{itemForDisplay.name}</h2>
+
+            {/* ── Header: name + live score ── */}
+            <div className="mc-civ-domain-header">
+              <h2 className="mc-civ-title">{itemForDisplay.name}</h2>
+              {liveScore != null && (
+                <div className="mc-civ-score-badge">
+                  <span className="mc-civ-score-num">{liveScore.toFixed(1)}</span>
+                  <span className="mc-civ-score-denom">&thinsp;/&thinsp;10</span>
+                  <span className="mc-civ-score-band">{scoreBand(liveScore)}</span>
+                </div>
+              )}
+            </div>
+
+            {/* ── Horizon goal (the target) ── */}
             {itemForDisplay.horizonGoal && (
-              <p className="mc-civ-horizon">{itemForDisplay.horizonGoal}</p>
+              <div className="mc-civ-horizon-block">
+                <span className="mc-civ-horizon-label">HORIZON</span>
+                <p className="mc-civ-horizon">{itemForDisplay.horizonGoal}</p>
+              </div>
             )}
+
             <div className="mc-civ-rule" />
-            {itemForDisplay.description && (
+
+            {/* ── Where we are now: narrative + indicators ── */}
+            {stateData && (
+              <div className="mc-civ-state-block">
+                <p className="mc-civ-section-label">WHERE WE ARE NOW</p>
+                {stateData.narrative && (
+                  <p className="mc-civ-body-text">{stateData.narrative}</p>
+                )}
+
+                {/* Live indicator breakdown from DB — preferred over static */}
+                {liveDetail?.scored?.length > 0 ? (
+                  <ul className="mc-civ-indicators">
+                    {liveDetail.scored.map((ind, i) => (
+                      <li key={i} className="mc-civ-indicator-row">
+                        <span className="mc-civ-indicator-name">{ind.name}</span>
+                        <span className="mc-civ-indicator-score">
+                          {ind.score.toFixed(1)}<span className="mc-civ-indicator-denom">/10</span>
+                        </span>
+                      </li>
+                    ))}
+                    {liveDetail.contributing < liveDetail.total && (
+                      <li className="mc-civ-indicator-gap">
+                        {liveDetail.total - liveDetail.contributing} indicator{liveDetail.total - liveDetail.contributing !== 1 ? 's' : ''} not yet scored
+                      </li>
+                    )}
+                  </ul>
+                ) : stateData.indicators?.length > 0 ? (
+                  /* Fall back to qualitative indicators from currentState.js */
+                  <ul className="mc-civ-indicators">
+                    {stateData.indicators.map((ind, i) => (
+                      <li key={i} className="mc-civ-indicator-row">
+                        <span className="mc-civ-indicator-name">{ind.label}</span>
+                        <span className="mc-civ-indicator-value">
+                          <span style={{ color: trendColor(ind.trend), marginRight: 4 }}>
+                            {trendGlyph(ind.trend)}
+                          </span>
+                          {ind.value}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+
+                {/* Gap signal */}
+                {stateData.gapSignal && stateData.gapReason && (
+                  <div className="mc-civ-gap-signal">
+                    <span className="mc-civ-gap-label">GAP</span>
+                    <span className="mc-civ-gap-reason">{stateData.gapReason}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!stateData && itemForDisplay.description && (
               <p className="mc-civ-body-text">{itemForDisplay.description}</p>
             )}
 
+            {/* ── Sub-domains ── */}
             {Array.isArray(itemForDisplay.subDomains) && itemForDisplay.subDomains.length > 0 && (
               <>
                 <p className="mc-civ-section-label">SUB-DOMAINS</p>
                 <ul className="mc-civ-chips">
                   {itemForDisplay.subDomains.map((sd, i) => (
                     <li key={sd.id || i}>
-                      <button
-                        type="button"
-                        className="mc-civ-chip"
-                        onClick={() => {
-                          if (showDomainPanel) {
-                            // We're showing the selected domain — clicking
-                            // a sub-domain chip means descend into this
-                            // domain and land on sub-index i.
-                            onDrillDown?.(undefined, i)
-                          } else {
-                            // Parent-panel mode — sub-domain selection at
-                            // current level.
-                            onSelect?.(i)
-                          }
-                        }}
-                        disabled={busy}
-                      >
+                      <button type="button" className="mc-civ-chip"
+                        onClick={() => showDomainPanel ? onDrillDown?.(undefined, i) : onSelect?.(i)}
+                        disabled={busy}>
                         {sd.name}
                       </button>
                     </li>
@@ -186,26 +266,20 @@ export default function CivDomainPanel({
               </>
             )}
 
+            {/* ── Actions ── */}
             <div className="mc-civ-actions">
               {showDomainPanel && Array.isArray(itemForDisplay.subDomains) && itemForDisplay.subDomains.length > 0 && (
-                <button
-                  type="button"
-                  className="mc-civ-btn mc-civ-btn-primary"
-                  onClick={() => onDrillDown?.()}
-                  disabled={busy}
-                >
+                <button type="button" className="mc-civ-btn mc-civ-btn-primary"
+                  onClick={() => onDrillDown?.()} disabled={busy}>
                   Explore sub-domains →
                 </button>
               )}
-              <button
-                type="button"
-                className="mc-civ-btn mc-civ-btn-ghost"
-                onClick={onContribute}
-                disabled={busy}
-              >
+              <button type="button" className="mc-civ-btn mc-civ-btn-ghost"
+                onClick={onContribute} disabled={busy}>
                 See actors in this domain
               </button>
             </div>
+
           </div>
         )}
 
@@ -301,6 +375,155 @@ const PANEL_CSS = `
 .mc-civ-body {
   padding: 22px 0 0;
 }
+
+/* Domain header — name + live score side by side */
+.mc-civ-domain-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+.mc-civ-domain-header .mc-civ-title {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+/* Live score badge */
+.mc-civ-score-badge {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  flex-shrink: 0;
+  padding-top: 4px;
+}
+.mc-civ-score-num {
+  font-family: ${FONT_DISPLAY};
+  font-size: 28px;
+  font-weight: 400;
+  color: ${GOLD_LT};
+  line-height: 1;
+}
+.mc-civ-score-denom {
+  font-family: ${FONT_SC};
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: rgba(200,146,42,0.5);
+}
+.mc-civ-score-band {
+  font-family: ${FONT_SC};
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: rgba(200,146,42,0.55);
+  text-transform: uppercase;
+  margin-left: 6px;
+  align-self: center;
+}
+
+/* Horizon block */
+.mc-civ-horizon-block {
+  margin: 8px 0 4px;
+}
+.mc-civ-horizon-label {
+  font-family: ${FONT_SC};
+  font-size: 8.5px;
+  letter-spacing: 0.22em;
+  color: rgba(200,146,42,0.45);
+  display: block;
+  margin-bottom: 3px;
+}
+
+/* Where we are now */
+.mc-civ-state-block {
+  margin: 12px 0 10px;
+}
+.mc-civ-indicators {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.mc-civ-indicator-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
+  background: rgba(200,146,42,0.05);
+  border: 1px solid rgba(200,146,42,0.12);
+  border-radius: 3px;
+}
+.mc-civ-indicator-name {
+  font-family: ${FONT_SC};
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: ${TEXT_WHITE_META};
+  text-transform: uppercase;
+}
+.mc-civ-indicator-score {
+  font-family: ${FONT_DISPLAY};
+  font-size: 15px;
+  font-weight: 400;
+  color: ${GOLD_LT};
+  flex-shrink: 0;
+}
+.mc-civ-indicator-denom {
+  font-family: ${FONT_SC};
+  font-size: 9px;
+  color: rgba(200,146,42,0.45);
+  margin-left: 1px;
+}
+.mc-civ-indicator-value {
+  font-family: ${FONT_SC};
+  font-size: 10.5px;
+  letter-spacing: 0.10em;
+  color: ${TEXT_WHITE_META};
+  flex-shrink: 0;
+}
+.mc-civ-indicator-gap {
+  font-family: ${FONT_SC};
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: ${TEXT_WHITE_FAINT};
+  text-transform: uppercase;
+  padding: 3px 10px;
+  text-align: right;
+}
+.mc-civ-gap-signal {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 6px 10px;
+  background: rgba(220,80,80,0.06);
+  border: 1px solid rgba(220,80,80,0.18);
+  border-radius: 3px;
+}
+.mc-civ-gap-label {
+  font-family: ${FONT_SC};
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  color: rgba(220,100,100,0.8);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.mc-civ-gap-reason {
+  font-family: ${FONT_SC};
+  font-size: 9.5px;
+  letter-spacing: 0.10em;
+  color: rgba(220,130,130,0.75);
+}
+
+.mc-civ-overview-eyebrow {
+  font-family: ${FONT_SC};
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: ${GOLD_LT};
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
 .mc-civ-title {
   font-family: ${FONT_DISPLAY};
   font-size: 32px;
