@@ -103,9 +103,9 @@ export default function IdentityStrip({
 
       {/* BRAND BAR */}
       <div className="mc-brand-bar">
-        <div className="mc-brand-wordmark">
-          <span className="mc-brand">NextUs</span>
-        </div>
+        <a href="/" className="mc-brand-wordmark" aria-label="NextUs home">
+          <img src="/logo_nav.png" alt="NextUs" className="mc-brand-logo" />
+        </a>
         <div className="mc-brand-actions">
           <div className="mc-menu-wrap" ref={menuRef}>
             <button
@@ -241,17 +241,24 @@ const STRIP_CSS = `
   display: inline-flex;
   align-items: center;
   line-height: 1;
+  text-decoration: none;
+  outline: none;
+}
+.mc-brand-wordmark:focus-visible {
+  outline: 2px solid ${GOLD};
+  outline-offset: 4px;
+  border-radius: 2px;
 }
 
-.mc-brand {
-  font-family: ${FONT_DISPLAY};
-  font-size: 22px;
-  font-weight: 500;
-  color: ${TEXT_INK};
-  letter-spacing: -0.005em;
-  line-height: 1;
+.mc-brand-logo {
+  height: 32px;
+  width: auto;
+  display: block;
+  transition: opacity 160ms ease;
 }
-[data-stage="dark"] .mc-brand { color: ${TEXT_WHITE}; }
+.mc-brand-wordmark:hover .mc-brand-logo {
+  opacity: 0.82;
+}
 
 .mc-menu-wrap {
   position: relative;
@@ -421,8 +428,8 @@ const STRIP_CSS = `
   .mc-brand-bar {
     padding: 12px 16px 8px;
   }
-  .mc-brand {
-    font-size: 18px;
+  .mc-brand-logo {
+    height: 28px;
   }
   .mc-icon-btn svg {
     width: 16px;

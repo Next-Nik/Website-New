@@ -289,10 +289,11 @@ function SelfWheel({
   return (
     <svg
       ref={svgRef}
-      width={SVG_W}
-      height={SVG_H}
+      width="100%"
+      height="100%"
       viewBox={SVG_VIEWBOX}
-      style={{ display: 'block', overflow: 'visible' }}
+      preserveAspectRatio="xMidYMid meet"
+      style={{ display: 'block', overflow: 'visible'}}
       aria-label="Your seven domains"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -828,10 +829,11 @@ function CivWheel({
 
   return (
     <svg
-      width={SVG_W}
-      height={SVG_H}
+      width="100%"
+      height="100%"
       viewBox={SVG_VIEWBOX}
-      style={{ display: 'block', overflow: 'visible' }}
+      preserveAspectRatio="xMidYMid meet"
+      style={{ display: 'block', overflow: 'visible'}}
       aria-label="The seven civilisational domains"
     >
       {/* Outer dashed ring — rotates with spokes so tips stay at corners */}

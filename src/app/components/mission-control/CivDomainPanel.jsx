@@ -639,5 +639,14 @@ const PANEL_CSS = `
   .mc-civ-stepper {
     gap: 10px;
   }
+  /* Score badge — shrink on mobile, keep beside title */
+  .mc-civ-score-num { font-size: 22px; }
+  .mc-civ-score-denom { font-size: 9px; }
+  .mc-civ-score-band { font-size: 8px; margin-left: 4px; }
+  .mc-civ-domain-header { gap: 10px; }
+  /* Indicator rows — tighter on mobile */
+  .mc-civ-indicator-row { padding: 4px 8px; }
+  .mc-civ-indicator-name { font-size: 9px; letter-spacing: 0.12em; }
+  .mc-civ-indicator-score { font-size: 13px; }
 }
 `
