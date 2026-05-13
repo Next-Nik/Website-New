@@ -153,9 +153,18 @@ function SelfWheel({
   const maxR = RADIUS
 
   // ── Rotation state ───────────────────────────────────────────
+  // Initialise to a random spoke so no domain is privileged at top
+  // on mount — same behaviour as the civ wheel. The random angle is
+  // computed once and baked into the ref; subsequent activeKey changes
+  // navigate from wherever the wheel landed.
+  const initialRot = useMemo(() => {
+    const randomIdx = Math.floor(Math.random() * N)
+    return getRotationToTop(randomIdx, 0, N)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   const [phase,      setPhase]      = useState('settled')
-  const [displayRot, setDisplayRot] = useState(0)
-  const rotRef       = useRef(0)
+  const [displayRot, setDisplayRot] = useState(initialRot)
+  const rotRef       = useRef(initialRot)
   const targetRotRef = useRef(null)
   const animRef      = useRef(null)
   const lastTimeRef  = useRef(null)
@@ -241,15 +250,14 @@ function SelfWheel({
 
   const showEmpty = !hasAnyCurrent
 
-  // Score polygon vertices — rotate with displayRot
+  // Score polygon vertices — unrotated coords; the rotating <g> handles placement.
+  // (displayRot must NOT be baked in here — the group transform would double-rotate.)
   const verts = useMemo(() => {
     return keys.map((k, i) => {
       const h = renderHorizons[k] || 10
       const c = showEmpty ? 0 : (current[k] ?? 0)
       const ratio = h === 0 ? 0 : Math.min(c / h, 1)
-      const baseAngle = angleFor(i)
-      const rotRad = (displayRot * Math.PI) / 180
-      const a = baseAngle + rotRad
+      const a = angleFor(i)   // unrotated — group transform rotates the group
       const r = ratio * maxR
       return {
         i, key: k,
@@ -258,7 +266,7 @@ function SelfWheel({
         color: selfColor(k).base,
       }
     })
-  }, [keys, renderHorizons, current, showEmpty, cx, cy, maxR, displayRot])
+  }, [keys, renderHorizons, current, showEmpty, cx, cy, maxR])
 
   // Outer fixed ring (decorative, never rotates)
   const ringPts = useMemo(() => {
