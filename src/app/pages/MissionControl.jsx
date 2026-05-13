@@ -57,6 +57,7 @@ import HorizonStateMissionPanel   from '../components/mission-control/HorizonSta
 import ProfileMissionPanel        from '../components/mission-control/ProfileMissionPanel'
 import SettingsMissionPanel       from '../components/mission-control/SettingsMissionPanel'
 import WorldViewMissionPanel      from '../components/mission-control/WorldViewMissionPanel'
+import AddOverlay                 from '../components/AddOverlay'
 import { useCivDomainScores }     from '../hooks/useDomainIndicators'
 
 import HorizonStateGauge   from '../components/mission-control/HorizonStateGauge'
@@ -330,6 +331,11 @@ export default function MissionControl() {
   const location = useLocation()
   const data = useMissionControlData()
   const [activePanel, setActivePanel] = useState(null)
+
+  // Universal Add overlay — mounted from the right-rail ADD tile. The
+  // overlay component is reusable; Module 16 will mount it from other
+  // surfaces (Domain, Feed, Profile, Org, Practice, Map, Invitation).
+  const [addOverlayOpen, setAddOverlayOpen] = useState(false)
 
   // Scope state — the canonical id of the active Mission Control
   // scope. One of: 'self' | 'planet' | 'practice' | 'org'. The
@@ -1039,6 +1045,13 @@ export default function MissionControl() {
               onClick={() => openCivPanel('missions')}
               title="Planet Sprint — quests offered by orgs"
             />
+            <Tile
+              glyph="＋"
+              label="ADD"
+              state={null}
+              onClick={() => setAddOverlayOpen(true)}
+              title="Add to the ecosystem"
+            />
           </SideRail>
 
         </div>
@@ -1256,6 +1269,13 @@ export default function MissionControl() {
           onNavigate={navigate}
         />
       </Panel>
+
+      {/* Universal Add overlay. Triggered by the ADD tile on the right rail.
+          Reusable across the platform (Module 16 mounts it elsewhere). */}
+      <AddOverlay
+        open={addOverlayOpen}
+        onClose={() => setAddOverlayOpen(false)}
+      />
     </div>
   )
 }
