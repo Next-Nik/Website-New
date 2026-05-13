@@ -27,8 +27,8 @@ export const ROUTES = {
   terms:          '/terms',
   admin:          '/admin',
 
-  // ── Platform (formerly /beta/*) ───────────────────────────
-  missionControl:   '/dashboard',
+  // ── Platform ──────────────────────────────────────────────
+  missionControl:   '/',
   welcome:          '/welcome',
   welcomeSelf:      '/welcome/self',
   welcomeOrg:       '/welcome/org',
