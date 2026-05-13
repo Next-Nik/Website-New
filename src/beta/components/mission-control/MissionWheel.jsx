@@ -169,18 +169,20 @@ function SelfWheel({
   const animRef      = useRef(null)
   const lastTimeRef  = useRef(null)
 
-  // When activeKey changes, compute the rotation needed to bring
-  // that spoke to the top. null → return to 0°.
+  const hasMountedRef = useRef(false)
+
+  // When activeKey changes, rotate the chosen spoke to the top.
+  // Skip the effect on first mount when activeKey is null — the random
+  // start position is already correct and we don't want to navigate away.
   useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true
+      if (activeKey == null) return  // nothing to do on mount with no selection
+    }
     const idx = activeKey != null ? keys.indexOf(activeKey) : -1
-    const target = idx >= 0
-      ? getRotationToTop(idx, rotRef.current, N)
-      : getRotationToTop(0, rotRef.current - (rotRef.current % 360) - 360, N) // snap to nearest 0°
-    // Simpler: for null, just target 0 via the short path.
     const targetAngle = idx >= 0
       ? getRotationToTop(idx, rotRef.current, N)
       : (() => {
-          // Shortest path back to 0°
           const cur = rotRef.current % 360
           const diff = ((0 - cur) + 540) % 360 - 180
           return rotRef.current + diff
@@ -268,15 +270,15 @@ function SelfWheel({
     })
   }, [keys, renderHorizons, current, showEmpty, cx, cy, maxR])
 
-  // Outer fixed ring (decorative, never rotates)
+  // Outer ring polygon — rotates with the spokes so tips stay at corners
   const ringPts = useMemo(() => {
     const pts = []
     for (let i = 0; i < N; i++) {
-      const a = angleFor(i)
+      const a = angleFor(i) + (displayRot * Math.PI) / 180
       pts.push(`${cx + maxR * Math.cos(a)},${cy + maxR * Math.sin(a)}`)
     }
     return pts.join(' ')
-  }, [cx, cy, maxR])
+  }, [cx, cy, maxR, displayRot])
 
   const ringStroke  = dark ? 'rgba(200, 146, 42, 0.30)' : 'rgba(200, 146, 42, 0.20)'
   const spokeStroke = dark ? 'rgba(200, 146, 42, 0.45)' : 'rgba(200, 146, 42, 0.30)'
@@ -295,7 +297,7 @@ function SelfWheel({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
-      {/* Fixed outer dashed ring — orientation never changes */}
+      {/* Outer dashed ring — rotates with spokes so tips stay at corners */}
       <polygon
         points={ringPts}
         fill="none"
@@ -635,8 +637,13 @@ function CivWheel({
     return () => cancelAnimationFrame(bloomRafRef.current)
   }, [bloom, bloomed])
 
+  // Track whether this is the very first mount so we only spin once.
+  const hasSpunRef = useRef(false)
+
   // Reset state machine whenever the domain set changes (drill-down
-  // / drill-up replaces the seven shown spokes).
+  // / drill-up replaces the seven shown spokes). First mount gets
+  // the full intro spin; subsequent domain-set swaps skip it and
+  // settle immediately at a random position.
   useEffect(() => {
     if (!count) return
     rotRef.current = 0
@@ -648,8 +655,21 @@ function CivWheel({
     landingIdxRef.current = Math.floor(Math.random() * count)
     spinStartRef.current = Date.now()
     lastTimeRef.current = null
-    setPhase('spinning')
-    setDisplayRot(0)
+
+    if (!hasSpunRef.current) {
+      // First mount — run the intro spin
+      hasSpunRef.current = true
+      setPhase('spinning')
+      setDisplayRot(0)
+    } else {
+      // Drill-in / drill-up — skip spin, land immediately
+      const targetAngle = getRotationToTop(landingIdxRef.current, 0, count)
+      rotRef.current = targetAngle
+      targetRotRef.current = targetAngle
+      setDisplayRot(targetAngle)
+      setPhase('settled')
+      onLand?.(landingIdxRef.current)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [count, domains])
 
@@ -743,13 +763,20 @@ function CivWheel({
   function handleNodeClick(i) {
     if (busyLock) return
     if (phase === 'spinning') { cancelSpinAndSelect(i); return }
-    if (phase !== 'settled') return
-    onSelect?.(i)
-    if (domains?.[i]?.subDomains?.length > 0) {
-      drillIdxRef.current = i
-      drillStartRef.current = null
-      setPhase('drilling')
+    // Allow clicks during navigating — just redirect to the new target
+    if (phase === 'navigating' || phase === 'settled') {
+      onSelect?.(i)
+      if (domains?.[i]?.subDomains?.length > 0) {
+        drillIdxRef.current = i
+        drillStartRef.current = null
+        setPhase('drilling')
+      } else {
+        targetRotRef.current = getRotationToTop(i, rotRef.current, count)
+        setPhase('navigating')
+      }
+      return
     }
+    if (phase !== 'settled') return
   }
 
   function handleCentreClick() {
@@ -761,15 +788,15 @@ function CivWheel({
   const isSpinning = phase === 'spinning' || phase === 'landing'
   const busy       = phase !== 'settled'
 
-  // Outer ring polygon (dashed, decorative — never rotates)
+  // Outer ring polygon — rotates with the spokes so tips stay at corners
   const ringPts = useMemo(() => {
     const pts = []
     for (let i = 0; i < count; i++) {
-      const a = angleFor(i, count)
+      const a = angleFor(i, count) + (displayRot * Math.PI) / 180
       pts.push(`${CX + RADIUS * Math.cos(a)},${CY + RADIUS * Math.sin(a)}`)
     }
     return pts.join(' ')
-  }, [count])
+  }, [count, displayRot])
 
   const ringStroke = dark ? 'rgba(200, 146, 42, 0.30)' : 'rgba(200, 146, 42, 0.20)'
   const spokeStroke = dark ? 'rgba(200, 146, 42, 0.45)' : 'rgba(200, 146, 42, 0.30)'
@@ -807,7 +834,7 @@ function CivWheel({
       style={{ display: 'block', overflow: 'visible' }}
       aria-label="The seven civilisational domains"
     >
-      {/* Outer dashed ring — decorative, fixed orientation */}
+      {/* Outer dashed ring — rotates with spokes so tips stay at corners */}
       <polygon
         points={ringPts}
         fill="none"
