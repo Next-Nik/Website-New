@@ -972,6 +972,17 @@ function CivWheel({
                 <animate attributeName="opacity" values="0.35;0.7;0.35" dur="2.5s" repeatCount="indefinite" />
               </circle>
             )}
+            {/* Invisible hit rect covering the label text area */}
+            <rect
+              x={labelPos.anchor === 'start'  ? labelPos.x - 4  :
+                 labelPos.anchor === 'end'    ? labelPos.x - 80 :
+                                               labelPos.x - 42}
+              y={labelPos.y - 14}
+              width={84}
+              height={20}
+              fill="transparent"
+              style={{ pointerEvents: 'auto' }}
+            />
             {/* Label — domain colour */}
             <text
               x={labelPos.x}
