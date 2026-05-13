@@ -27,27 +27,12 @@ class ErrorBoundary extends Component {
 }
 
 // ── Site pages ────────────────────────────────────────────────
-import { HomePage }               from './pages/Home'
 import { AboutPage }              from './pages/About'
-import { NextUsSelfPage }         from './pages/NextUsSelf'
-import { NextUsPage }             from './pages/NextUs'
-import { NextUsActorsPage }       from './pages/NextUsActors'
-import { NextUsActorPage }        from './pages/NextUsActor'
-import { NextUsActorManagePage }  from './pages/NextUsActorManage'
-import { NextUsNeedNewPage }      from './pages/NextUsNeedNew'
-import { NextUsMapPage }          from './pages/NextUsMap'
-import { NextUsNominatePage }     from './pages/NextUsNominate'
-import { NextUsPlacePage }        from './pages/NextUsPlace'
-import { NextUsContributorPage }  from './pages/NextUsContributor'
-import { NextUsContributorsPage } from './pages/NextUsContributors'
-import { NextUsFocusPage }        from './pages/NextUsFocus'
-import { DomainPage }             from './pages/Domain'
 import { WorkWithNikPage, PodcastPage } from './pages/WorkAndPodcast'
 import { LoginPage }              from './pages/Login'
 import { PrivacyPage, TermsPage } from './pages/Legal'
 import { SupportResourcesPage } from './pages/SupportResources'
 import { FAQPage }               from './pages/FAQ'
-import { ProfilePage }            from './pages/Profile'
 import { ContentEditorPage }      from './pages/ContentEditor'
 import { GroupJoinPage }          from './pages/GroupJoin'
 import { ToolsPage }              from './pages/Tools'
@@ -56,31 +41,32 @@ import { CheckoutPage }          from './pages/Checkout'
 import { AuthCallbackPage }       from './pages/AuthCallback'
 import { WatchPage }              from './pages/Watch'
 
-// ── Beta pages (Section 7 of NextUs Beta Build Architecture v1.2) ──
-// Open access during the build. Walk the new flow at /beta/dashboard.
-import BetaMissionControl         from './beta/pages/BetaMissionControl'
-import BetaWelcomeStart           from './beta/pages/BetaWelcomeStart'
-import BetaWelcomeSelf            from './beta/pages/BetaWelcomeSelf'
-import BetaOrgWelcome             from './beta/pages/BetaOrgWelcome'
-import BetaWelcomePractitioner    from './beta/pages/BetaWelcomePractitioner'
-import BetaWelcomeNext            from './beta/pages/BetaWelcomeNext'
-import BetaIntroGate              from './beta/components/BetaIntroGate'
-import BetaProfileEdit            from './beta/pages/BetaProfileEdit'
-import { BetaPublicProfile }      from './beta/pages/BetaPublicProfile'
-import { BetaFeedPage }           from './beta/pages/BetaFeed'
-import BetaContribution           from './beta/pages/BetaContribution'
-import { BetaOrgPublicPage }      from './beta/pages/BetaOrgPublic'
-import { BetaOrgManagePage }      from './beta/pages/BetaOrgManage'
-import { BetaMapPage }            from './beta/pages/BetaMap'
-import { NextMarketPage }         from './beta/pages/NextMarket'
-import { BetaAdminConsolePage }   from './beta/pages/BetaAdminConsole'
-import { BetaNominatePage }       from './beta/pages/BetaNominate'
-import { BetaDomainPage }         from './beta/pages/BetaDomain'
-import BetaPractices              from './beta/pages/BetaPractices'
-import BetaPracticeDetail         from './beta/pages/BetaPracticeDetail'
-import BetaPracticeContribute     from './beta/pages/BetaPracticeContribute'
-import { BetaInvitationPage }     from './beta/pages/BetaInvitation'
-import { BetaInvitationIndexPage } from './beta/pages/BetaInvitationIndex'
+// ── Main app pages ──
+// The live NextUs application. Mission Control, Welcome flows,
+// profiles, organisations, the Atlas (map / domain / actors / practices).
+import MissionControl         from './app/pages/MissionControl'
+import WelcomeStart           from './app/pages/WelcomeStart'
+import WelcomeSelf            from './app/pages/WelcomeSelf'
+import OrgWelcome             from './app/pages/OrgWelcome'
+import WelcomePractitioner    from './app/pages/WelcomePractitioner'
+import WelcomeNext            from './app/pages/WelcomeNext'
+import IntroGate              from './app/components/IntroGate'
+import ProfileEdit            from './app/pages/ProfileEdit'
+import { PublicProfile }      from './app/pages/PublicProfile'
+import { FeedPage }           from './app/pages/Feed'
+import Contribution           from './app/pages/Contribution'
+import { OrgPublicPage }      from './app/pages/OrgPublic'
+import { OrgManagePage }      from './app/pages/OrgManage'
+import { MapPage as PlanetMapPage } from './app/pages/Map'
+import { NextMarketPage }         from './app/pages/NextMarket'
+import { AdminConsolePage }   from './app/pages/AdminConsole'
+import { NominatePage }       from './app/pages/Nominate'
+import { DomainPage } from './app/pages/Domain'
+import Practices              from './app/pages/Practices'
+import PracticeDetail         from './app/pages/PracticeDetail'
+import PracticeContribute     from './app/pages/PracticeContribute'
+import { InvitationPage }     from './app/pages/Invitation'
+import { InvitationIndexPage } from './app/pages/InvitationIndex'
 
 // ── Begin / Build ────────────────────────────────────────────────
 import { BeginBuildOrgPage }      from './pages/begin-build/Org'
@@ -122,7 +108,7 @@ function AppInner() {
       <ScrollToTop />
       <Routes>
         {/* ── Site pages ── */}
-        <Route path="/"                element={<BetaIntroGate><BetaMissionControl /></BetaIntroGate>} />
+        <Route path="/"                element={<IntroGate><MissionControl /></IntroGate>} />
         <Route path="/index"           element={<Navigate to="/" replace />} />
         <Route path="/home"            element={<Navigate to="/" replace />} />
         <Route path="/about"           element={<AboutPage />} />
@@ -139,7 +125,6 @@ function AppInner() {
         <Route path="/nextus/contributors/:id"       element={<LegacyContributorRedirect />} />
         <Route path="/nextus/contributors"           element={<Navigate to="/feed" replace />} />
         <Route path="/nextus/focus/:slug"            element={<Navigate to="/" replace />} />
-        <Route path="/domain/:slug"                  element={<DomainPage />} />
         <Route path="/work-with-nik"   element={<WorkWithNikPage />} />
         <Route path="/podcast"         element={<PodcastPage />} />
         <Route path="/pricing"         element={<PricingPage />} />
@@ -149,8 +134,8 @@ function AppInner() {
         <Route path="/terms"           element={<TermsPage />} />
         <Route path="/support"         element={<SupportResourcesPage />} />
         <Route path="/faq"             element={<FAQPage />} />
-        <Route path="/profile"         element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard"       element={<BetaIntroGate><BetaMissionControl /></BetaIntroGate>} />
+        <Route path="/profile"         element={<Navigate to="/" replace />} />
+        <Route path="/dashboard"       element={<Navigate to="/" replace />} />
         <Route path="/tools"           element={<ToolsPage />} />
         <Route path="/content-editor"  element={<ContentEditorPage />} />
         <Route path="/watch"           element={<WatchPage />} />
@@ -166,32 +151,32 @@ function AppInner() {
         <Route path="/tools/horizon-practice"    element={<HorizonPracticePage />} />
 
         {/* ── Platform routes (beta prefix retired) ── */}
-        <Route path="/welcome"                      element={<BetaWelcomeStart />} />
-        <Route path="/welcome/self"                 element={<BetaWelcomeSelf />} />
-        <Route path="/welcome/org"                  element={<BetaOrgWelcome />} />
-        <Route path="/welcome/practitioner"         element={<BetaWelcomePractitioner />} />
-        <Route path="/welcome/org-next"             element={<BetaWelcomeNext />} />
-        <Route path="/welcome/practitioner-next"    element={<BetaWelcomeNext />} />
-        <Route path="/profile/edit"                 element={<BetaProfileEdit />} />
-        <Route path="/profile/:id"                  element={<BetaPublicProfile />} />
-        <Route path="/feed"                         element={<BetaFeedPage />} />
-        <Route path="/contribution"                 element={<BetaContribution />} />
-        <Route path="/org/:slug"                    element={<BetaOrgPublicPage />} />
-        <Route path="/org/:slug/manage"             element={<BetaOrgManagePage />} />
-        <Route path="/map"                          element={<BetaMapPage />} />
+        <Route path="/welcome"                      element={<WelcomeStart />} />
+        <Route path="/welcome/self"                 element={<WelcomeSelf />} />
+        <Route path="/welcome/org"                  element={<OrgWelcome />} />
+        <Route path="/welcome/practitioner"         element={<WelcomePractitioner />} />
+        <Route path="/welcome/org-next"             element={<WelcomeNext />} />
+        <Route path="/welcome/practitioner-next"    element={<WelcomeNext />} />
+        <Route path="/profile/edit"                 element={<ProfileEdit />} />
+        <Route path="/profile/:id"                  element={<PublicProfile />} />
+        <Route path="/feed"                         element={<FeedPage />} />
+        <Route path="/contribution"                 element={<Contribution />} />
+        <Route path="/org/:slug"                    element={<OrgPublicPage />} />
+        <Route path="/org/:slug/manage"             element={<OrgManagePage />} />
+        <Route path="/map"                          element={<PlanetMapPage />} />
         <Route path="/nextmarket"                   element={<NextMarketPage />} />
         <Route path="/alternatives"                 element={<Navigate to="/nextmarket" replace />} />
-        <Route path="/nominate"                     element={<BetaNominatePage />} />
-        <Route path="/domain/:slug"                 element={<BetaDomainPage />} />
-        <Route path="/practices"                    element={<BetaPractices />} />
-        <Route path="/practices/new"                element={<BetaPracticeContribute />} />
-        <Route path="/practice/:slug"               element={<BetaPracticeDetail />} />
-        <Route path="/invitation"                   element={<BetaInvitationIndexPage />} />
-        <Route path="/invitation/:slug"             element={<BetaInvitationPage />} />
+        <Route path="/nominate"                     element={<NominatePage />} />
+        <Route path="/domain/:slug"                 element={<DomainPage />} />
+        <Route path="/practices"                    element={<Practices />} />
+        <Route path="/practices/new"                element={<PracticeContribute />} />
+        <Route path="/practice/:slug"               element={<PracticeDetail />} />
+        <Route path="/invitation"                   element={<InvitationIndexPage />} />
+        <Route path="/invitation/:slug"             element={<InvitationPage />} />
 
         {/* ── /beta/* redirects — preserve old links ── */}
-        <Route path="/beta"                              element={<Navigate to="/dashboard" replace />} />
-        <Route path="/beta/dashboard"                    element={<Navigate to="/dashboard" replace />} />
+        <Route path="/beta"                              element={<Navigate to="/" replace />} />
+        <Route path="/beta/dashboard"                    element={<Navigate to="/" replace />} />
         <Route path="/beta/welcome"                      element={<Navigate to="/welcome" replace />} />
         <Route path="/beta/welcome/self"                 element={<Navigate to="/welcome/self" replace />} />
         <Route path="/beta/welcome/org"                  element={<Navigate to="/welcome/org" replace />} />
@@ -221,7 +206,7 @@ function AppInner() {
         <Route path="/life-os"             element={<Navigate to="/nextus-self" replace />} />
 
         {/* ── Admin ── */}
-        <Route path="/admin"           element={<BetaAdminConsolePage />} />
+        <Route path="/admin"           element={<AdminConsolePage />} />
         <Route path="/join/:slug"      element={<GroupJoinPage />} />
         <Route path="/auth/callback"   element={<AuthCallbackPage />} />
 
