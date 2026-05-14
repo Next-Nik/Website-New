@@ -61,6 +61,7 @@ import { MapPage as PlanetMapPage } from './app/pages/Map'
 import { NextMarketPage }         from './app/pages/NextMarket'
 import { AdminConsolePage }   from './app/pages/AdminConsole'
 import { NominatePage }       from './app/pages/Nominate'
+import { AddPage }            from './app/pages/Add'
 import { DomainPage } from './app/pages/Domain'
 import Practices              from './app/pages/Practices'
 import PracticeDetail         from './app/pages/PracticeDetail'
@@ -172,7 +173,8 @@ function AppInner() {
         <Route path="/map"                          element={<PlanetMapPage />} />
         <Route path="/nextmarket"                   element={<NextMarketPage />} />
         <Route path="/alternatives"                 element={<Navigate to="/nextmarket" replace />} />
-        <Route path="/nominate"                     element={<NominatePage />} />
+        <Route path="/nominate"                     element={<Navigate to="/add" replace />} />
+        <Route path="/add"                          element={<AddPage />} />
         <Route path="/domain/:slug"                 element={<DomainPage />} />
         <Route path="/practices"                    element={<Practices />} />
         <Route path="/practices/new"                element={<PracticeContribute />} />

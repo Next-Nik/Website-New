@@ -248,7 +248,7 @@ function HorizonFloorModal({ domainSlug, contextLabel, onResolve, onCancel }) {
 
 // ── Tab navigation ────────────────────────────────────────────
 
-const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Place', 'Nominations', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
+const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Place', 'Flags', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
 
 function TabBar({ active, setActive }) {
   return (
@@ -1767,133 +1767,185 @@ function PlaceTab({ toast }) {
   )
 }
 
-// ── NOMINATIONS TAB ───────────────────────────────────────────
-// Beta change: approve flow runs HorizonFloorAdmissionCheck.
+// ── FLAGS TAB ─────────────────────────────────────────────────
+// Replaces Nominations tab. Trust is the default — entries go live
+// immediately on /add. This queue shows community flags, not submissions.
+//
+// Flag levels:
+//   1 Spam        — stays live, queue only
+//   2 Misplaced   — stays live, queue only
+//   3 Misleading  — stays live, queue only
+//   4 Harmful     — auto-hidden by DB trigger, restore/keep here
 
-function NominationsTab({ toast }) {
-  const [nominations, setNominations] = useState([])
-  const [loading, setLoading]         = useState(true)
-  const [filter, setFilter]           = useState('nominated')
-  const [floorPending, setFloorPending] = useState(null) // actor to approve
+const FLAG_CFG = {
+  1: { label: 'Spam',       color: '#8A3030', bg: 'rgba(138,48,48,0.06)',  border: 'rgba(138,48,48,0.20)',  urgent: false },
+  2: { label: 'Misplaced',  color: '#8A6020', bg: 'rgba(200,146,42,0.06)', border: 'rgba(200,146,42,0.25)', urgent: false },
+  3: { label: 'Misleading', color: '#8A6020', bg: 'rgba(200,146,42,0.06)', border: 'rgba(200,146,42,0.25)', urgent: false },
+  4: { label: 'Harmful',    color: '#8A3030', bg: 'rgba(138,48,48,0.08)',  border: 'rgba(138,48,48,0.30)',  urgent: true  },
+}
+
+function FlagBadge({ level }) {
+  const cfg = FLAG_CFG[level] || FLAG_CFG[3]
+  return (
+    <span style={{
+      ...sc, fontSize: '11px', letterSpacing: '0.12em',
+      padding: '2px 8px', borderRadius: '40px',
+      color: cfg.color, background: cfg.bg, border: `1px solid ${cfg.border}`,
+    }}>
+      {cfg.urgent ? '⚠ ' : ''}{cfg.label}
+    </span>
+  )
+}
+
+function FlagsTab({ toast }) {
+  const [flags,   setFlags]   = useState([])
+  const [loading, setLoading] = useState(true)
+  const [filter,  setFilter]  = useState('open')
 
   async function load() {
     setLoading(true)
-    let q = supabase.from('nextus_actors').select('*').eq('seeded_by', 'community').order('created_at', { ascending: false }).limit(100)
-    const { data } = await q
-    let results = data || []
-    if (filter === 'nominated') results = results.filter(a => !a.claimed && !a.verified && a.vetting_status !== 'rejected')
-    if (filter === 'approved')  results = results.filter(a => a.claimed || a.verified)
-    if (filter === 'rejected')  results = results.filter(a => a.vetting_status === 'rejected')
-    setNominations(results)
+    const { data } = await supabase
+      .from('nextus_flags')
+      .select('*, actor:nextus_actors(id, name, slug, type, domain_id, domains, location_name, website, status)')
+      .eq('status', filter)
+      .order('flag_level', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(100)
+    setFlags(data || [])
     setLoading(false)
   }
 
   useEffect(() => { load() }, [filter])
 
-  function initiateApprove(actor) {
-    // Show HorizonFloor check before approving
-    setFloorPending(actor)
-  }
-
-  async function commitApprove(actor, floorStatus) {
-    const { error } = await supabase.from('nextus_actors').update({
-      seeded_by:            'nextus',
-      vetting_status:       'approved',
-      horizon_floor_status: floorStatus,
-    }).eq('id', actor.id)
-    if (error) { toast('Error approving'); setFloorPending(null); return }
-    toast(`${actor.name} approved and now live`)
-    setFloorPending(null)
+  async function dismiss(flag) {
+    await supabase.from('nextus_flags')
+      .update({ status: 'dismissed', resolved_at: new Date().toISOString() })
+      .eq('id', flag.id)
+    toast('Flag dismissed')
     load()
   }
 
-  async function reject(actor) {
-    const reason = window.prompt(`Reason for rejecting "${actor.name}" (optional):`)
-    if (reason === null) return
-    const { error } = await supabase.from('nextus_actors').update({
-      vetting_status: 'rejected',
-      data_source: actor.data_source
-        ? actor.data_source + (reason ? ` | Rejected: ${reason}` : ' | Rejected')
-        : reason ? `Rejected: ${reason}` : 'Rejected',
-    }).eq('id', actor.id)
-    if (error) { toast('Error rejecting'); return }
-    toast(`${actor.name} rejected`)
+  async function resolve(flag) {
+    await supabase.from('nextus_flags')
+      .update({ status: 'resolved', resolved_at: new Date().toISOString() })
+      .eq('id', flag.id)
+    toast('Flag resolved')
     load()
+  }
+
+  async function restoreActor(flag) {
+    await supabase.from('nextus_actors').update({ status: 'live' }).eq('id', flag.actor_id)
+    await resolve(flag)
+    toast(`${flag.actor?.name || 'Actor'} restored to live`)
+  }
+
+  async function suspendActor(flag) {
+    await supabase.from('nextus_actors').update({ status: 'suspended' }).eq('id', flag.actor_id)
+    await resolve(flag)
+    toast(`${flag.actor?.name || 'Actor'} suspended`)
   }
 
   const domainLabel = id => DOMAIN_LIST.find(d => d.value === id)?.label || id
 
   return (
     <div>
-      {floorPending && (
-        <HorizonFloorModal
-          domainSlug={(floorPending.domains?.[0] || floorPending.domain_id) || 'nature'}
-          contextLabel={`${floorPending.name}`}
-          onResolve={async ({ status }) => {
-            await commitApprove(floorPending, status)
-          }}
-          onCancel={() => setFloorPending(null)}
-        />
-      )}
-
-      <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
-        {[['nominated','Pending'], ['approved','Approved'], ['rejected','Rejected']].map(([val, label]) => (
-          <Btn key={val} small variant={filter === val ? 'primary' : 'ghost'} onClick={() => setFilter(val)}>{label}</Btn>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+        {[['open','Open'], ['resolved','Resolved'], ['dismissed','Dismissed']].map(([val, label]) => (
+          <Btn key={val} small variant={filter === val ? 'primary' : 'ghost'}
+            onClick={() => setFilter(val)}>{label}</Btn>
         ))}
         <Btn small variant="ghost" onClick={load}>Refresh</Btn>
       </div>
 
-      {filter === 'nominated' && (
-        <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '20px', lineHeight: 1.6, maxWidth: '560px' }}>
-          Review each nomination. Approve if the work is genuinely aimed at the Horizon Goal for their domain and scale, and the nominator's description is honest. Reject if the fit is not right.
-          Approving runs a Horizon Floor check first.
+      {filter === 'open' && (
+        <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)',
+          marginBottom: '20px', lineHeight: 1.6, maxWidth: '560px' }}>
+          Flags from the community. Level 4 (Harmful) entries are auto-hidden pending review.
+          Dismiss if the flag is not valid. Resolve once you have taken action.
         </div>
       )}
 
       {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
-      {!loading && nominations.length === 0 && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No {filter} nominations.</p>}
+      {!loading && flags.length === 0 && (
+        <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No {filter} flags.</p>
+      )}
 
-      {nominations.map(a => (
-        <Card key={a.id} style={{ borderLeft: '3px solid rgba(200,146,42,0.40)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                <span style={{ ...body, fontSize: '18px', color: '#0F1523' }}>{a.name}</span>
-                <Badge label={a.type} />
-                {a.scale && <Badge label={a.scale} color="rgba(15,21,35,0.55)" />}
-                {/* Four-dim: show primary domain */}
-                {(a.domains?.[0] || a.domain_id) && (
-                  <Badge label={domainLabel(a.domains?.[0] || a.domain_id)} color="#2A4A8A" />
+      {flags.map(flag => {
+        const actor     = flag.actor
+        const isHarmful = flag.flag_level === 4
+        const isHidden  = actor?.status === 'suspended'
+
+        return (
+          <Card key={flag.id} style={{
+            borderLeft: isHarmful
+              ? '3px solid rgba(138,48,48,0.50)'
+              : '3px solid rgba(200,146,42,0.30)',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between',
+              alignItems: 'flex-start', gap: '16px' }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px',
+                  marginBottom: '8px', flexWrap: 'wrap' }}>
+                  <FlagBadge level={flag.flag_level} />
+                  {actor && <span style={{ ...body, fontSize: '17px', color: '#0F1523' }}>{actor.name}</span>}
+                  {actor?.type && <Badge label={actor.type} />}
+                  {isHidden && <Badge label="hidden" color="#8A3030" />}
+                  {(actor?.domains?.[0] || actor?.domain_id) && (
+                    <Badge label={domainLabel(actor.domains?.[0] || actor.domain_id)} color="#2A4A8A" />
+                  )}
+                </div>
+                {actor?.location_name && (
+                  <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
+                    {actor.location_name}
+                  </div>
                 )}
+                {actor?.website && (
+                  <div style={{ marginBottom: '8px' }}>
+                    <a href={actor.website} target="_blank" rel="noopener noreferrer"
+                      style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold }}>
+                      {actor.website}
+                    </a>
+                  </div>
+                )}
+                {flag.reason && (
+                  <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)',
+                    borderRadius: '8px', padding: '10px 12px', marginBottom: '8px' }}>
+                    <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Reason</p>
+                    <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
+                      {flag.reason}
+                    </p>
+                  </div>
+                )}
+                <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.45)', margin: 0 }}>
+                  Flagged {new Date(flag.created_at).toLocaleDateString('en-GB',
+                    { day: 'numeric', month: 'long', year: 'numeric' })}
+                </p>
               </div>
-              {a.location_name && <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>{a.location_name}</div>}
-              {a.website && <div style={{ marginBottom: '8px' }}><a href={a.website} target="_blank" rel="noopener noreferrer" style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold }}>{a.website}</a></div>}
-              {a.description && (
-                <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', padding: '12px 14px', marginBottom: '8px' }}>
-                  <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold, marginBottom: '6px' }}>Why they belong</p>
-                  <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>{a.description}</p>
+
+              {filter === 'open' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
+                  {isHarmful && isHidden && (
+                    <>
+                      <Btn small onClick={() => restoreActor(flag)}>Restore</Btn>
+                      <Btn small variant="danger" onClick={() => suspendActor(flag)}>Keep hidden</Btn>
+                    </>
+                  )}
+                  {!isHarmful && <Btn small onClick={() => resolve(flag)}>Resolve</Btn>}
+                  <Btn small variant="ghost" onClick={() => dismiss(flag)}>Dismiss</Btn>
+                  {actor && (
+                    <a href={`/org/${actor.slug || actor.id}`} target="_blank" rel="noopener noreferrer"
+                      style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold,
+                        textAlign: 'center', textDecoration: 'none' }}>
+                      View entry
+                    </a>
+                  )}
                 </div>
               )}
-              {a.data_source && <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>Source: {a.data_source}</p>}
-              <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>Submitted: {new Date(a.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+              {filter !== 'open' && <Badge label={filter} color="rgba(15,21,35,0.45)" />}
             </div>
-            {filter === 'nominated' && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
-                <Btn small onClick={() => initiateApprove(a)}>Approve</Btn>
-                <Btn small variant="danger" onClick={() => reject(a)}>Reject</Btn>
-              </div>
-            )}
-            {filter === 'approved' && (
-              <div style={{ flexShrink: 0 }}>
-                <a href={'/nextus/actors/' + a.id} target="_blank" rel="noopener noreferrer" style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold }}>View live</a>
-              </div>
-            )}
-            {filter === 'rejected' && (
-              <div style={{ flexShrink: 0 }}><Badge label="rejected" color="#8A3030" /></div>
-            )}
-          </div>
-        </Card>
-      ))}
+          </Card>
+        )
+      })}
     </div>
   )
 }
@@ -3162,7 +3214,7 @@ export function AdminConsolePage() {
         {tab === 'Actors'        && <ActorsTab       toast={showToast} />}
         {tab === 'Add'           && <AddTab          toast={showToast} />}
         {tab === 'Place'         && <PlaceTab        toast={showToast} />}
-        {tab === 'Nominations'   && <NominationsTab  toast={showToast} />}
+        {tab === 'Flags'         && <FlagsTab        toast={showToast} />}
         {tab === 'Domain Data'   && <DomainDataTab   toast={showToast} />}
         {tab === 'Indicators'    && <IndicatorsTab   toast={showToast} />}
         {tab === 'Subdomains'    && <SubdomainsTab   toast={showToast} />}
