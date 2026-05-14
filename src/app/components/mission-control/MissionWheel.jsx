@@ -317,6 +317,14 @@ function SelfWheel({
         {/* Spokes + tip dots — positions at rot=0; <g> rotation handles placement */}
         {Array.from({ length: N }).map((_, i) => {
           const p = getTipPos(i, 0)
+          // Unit vectors along and perpendicular to the spoke (for notch geometry)
+          const dx = p.x - cx
+          const dy = p.y - cy
+          const len = Math.sqrt(dx * dx + dy * dy) || 1
+          const ux = dx / len   // along-spoke unit
+          const uy = dy / len
+          const px = -uy        // perpendicular unit (rotated 90°)
+          const py = ux
           return (
             <g key={`spoke-${i}`}>
               <line
@@ -325,6 +333,27 @@ function SelfWheel({
                 strokeWidth="1"
                 style={{ pointerEvents: 'none' }}
               />
+              {/* Scale notches — 10 major (1..10) + 9 half (0.5, 1.5, ... 9.5).
+                  Subtle gold rule perpendicular to the spoke; reference, not focus. */}
+              {Array.from({ length: 19 }).map((_, n) => {
+                const score = (n + 1) * 0.5       // 0.5, 1.0, 1.5, ... 9.5, 10.0
+                const isMajor = Number.isInteger(score)
+                const r = (score / 10) * maxR
+                const tx = cx + ux * r
+                const ty = cy + uy * r
+                const halfLen = isMajor ? 2.5 : 1.25
+                return (
+                  <line
+                    key={`notch-${i}-${n}`}
+                    x1={tx - px * halfLen} y1={ty - py * halfLen}
+                    x2={tx + px * halfLen} y2={ty + py * halfLen}
+                    stroke={spokeStroke}
+                    strokeWidth={isMajor ? 1 : 0.75}
+                    strokeOpacity={isMajor ? 0.7 : 0.4}
+                    style={{ pointerEvents: 'none' }}
+                  />
+                )
+              })}
               {/* Wide invisible overlay — full spoke shaft is a hit target */}
               {onSelect && (
                 <line
@@ -780,15 +809,16 @@ function CivWheel({
     if (phase !== 'settled') return
   }
 
-  // Select-only handler — used by the score-polygon vertex dots.
-  // Vertex dots represent "where we are now" on the domain; clicking
-  // one should open the explainer panel, NOT drill down into the
-  // sub-domain level. Drilling stays on spoke-tip dots and labels.
+  // Select-only handler — used by the score-polygon vertex dots
+  // ("Position" nodes — where we are now). Clicking one opens the
+  // explainer panel, NOT drill, AND signals the panel to focus on
+  // the indicator-level evidence section rather than the goal
+  // unpacking. Drilling stays on spoke-tip dots and labels.
   function handleVertexClick(i) {
     if (busyLock) return
     if (phase === 'spinning') { cancelSpinAndSelect(i); return }
     if (phase === 'navigating' || phase === 'settled') {
-      onSelect?.(i)
+      onSelect?.(i, 'position')
       // Rotate the chosen spoke to the top, but never drill.
       targetRotRef.current = getRotationToTop(i, rotRef.current, count)
       setPhase('navigating')
@@ -956,17 +986,46 @@ function CivWheel({
         const p = getTipPos(i, displayRot, count)
         const sx = bloomed ? p.x : (CX + (p.x - CX) * bloomT)
         const sy = bloomed ? p.y : (CY + (p.y - CY) * bloomT)
+        // Unit vectors along and perpendicular to the spoke (for notches)
+        const dx = p.x - CX
+        const dy = p.y - CY
+        const len = Math.sqrt(dx * dx + dy * dy) || 1
+        const ux = dx / len
+        const uy = dy / len
+        const px = -uy
+        const py = ux
         return (
-          <line
-            key={`spoke-${i}`}
-            x1={CX} y1={CY}
-            x2={sx} y2={sy}
-            stroke={spokeStroke}
-            strokeWidth="1"
-            style={{
-              opacity: bloomed ? 1 : bloomT,
-            }}
-          />
+          <g key={`spoke-${i}`}>
+            <line
+              x1={CX} y1={CY}
+              x2={sx} y2={sy}
+              stroke={spokeStroke}
+              strokeWidth="1"
+              style={{ opacity: bloomed ? 1 : bloomT }}
+            />
+            {/* Scale notches — 10 major + 9 half marks per spoke.
+                Only render when bloom is complete so they don't appear
+                mid-animation. */}
+            {bloomed && Array.from({ length: 19 }).map((_, n) => {
+              const score = (n + 1) * 0.5
+              const isMajor = Number.isInteger(score)
+              const r = (score / 10) * RADIUS
+              const tx = CX + ux * r
+              const ty = CY + uy * r
+              const halfLen = isMajor ? 2.5 : 1.25
+              return (
+                <line
+                  key={`notch-${i}-${n}`}
+                  x1={tx - px * halfLen} y1={ty - py * halfLen}
+                  x2={tx + px * halfLen} y2={ty + py * halfLen}
+                  stroke={spokeStroke}
+                  strokeWidth={isMajor ? 1 : 0.75}
+                  strokeOpacity={isMajor ? 0.7 : 0.4}
+                  style={{ pointerEvents: 'none' }}
+                />
+              )
+            })}
+          </g>
         )
       })}
 

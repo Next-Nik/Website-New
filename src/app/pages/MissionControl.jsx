@@ -564,6 +564,10 @@ export default function MissionControl() {
   const [parentPanelOpen, setParentPanelOpen] = useState(false)
   const [showOverview,    setShowOverview]    = useState(true)
   const [bloomCiv,        setBloomCiv]        = useState(false)
+  // panelAnchor — set by clicks on Position nodes ("where we are now"
+  // vertex dots) so the panel knows to focus on the indicator
+  // breakdown rather than the goal unpacking. Reset after consumed.
+  const [panelAnchor,     setPanelAnchor]     = useState(null)
   const landedIndexRef = useRef(0)
 
   // ── Self navigation state
@@ -671,10 +675,14 @@ export default function MissionControl() {
   }
 
   // ── Civ wheel callbacks
-  const handleCivSelect = (i) => {
+  // anchor: 'position' when fired from a Position vertex click; null otherwise.
+  // Used by the panel to focus on the indicator breakdown rather than the
+  // goal unpacking when the user clicks "where we are now."
+  const handleCivSelect = (i, anchor = null) => {
     setActiveIndex(i)
     setShowOverview(false)
     setParentPanelOpen(false)
+    setPanelAnchor(anchor)
   }
   const handleCivLand = (i) => {
     landedIndexRef.current = i
@@ -1094,6 +1102,8 @@ export default function MissionControl() {
             civScores={civScores}
             civDetails={civDetails}
             currentStateData={CURRENT_STATE}
+            panelAnchor={panelAnchor}
+            onAnchorConsumed={() => setPanelAnchor(null)}
             onSelect={handleCivSelect}
             onDrillDown={handleCivDrillDown}
             onBack={handleCivBack}

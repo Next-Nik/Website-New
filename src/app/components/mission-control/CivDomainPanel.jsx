@@ -40,7 +40,7 @@
 //   busy:         boolean         disable controls while wheel mid-transition
 // ─────────────────────────────────────────────────────────────
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   GOLD, GOLD_DK, GOLD_LT, GOLD_RULE,
   TEXT_WHITE, TEXT_WHITE_META, TEXT_WHITE_FAINT,
@@ -75,6 +75,8 @@ export default function CivDomainPanel({
   civScores = {},
   civDetails = {},
   currentStateData = {},
+  panelAnchor = null,
+  onAnchorConsumed,
   onSelect,
   onDrillDown,
   onBack,
@@ -113,6 +115,25 @@ export default function CivDomainPanel({
   // panel doesn't overwhelm on first glance. Reset when domain changes.
   const [whyOpen, setWhyOpen] = useState(false)
   useEffect(() => { setWhyOpen(false) }, [domainId])
+
+  // Position-anchor scrolling. When a user clicks a Position node
+  // (a "where we are now" vertex dot on the wheel), MissionControl
+  // sets panelAnchor='position' so this panel knows to focus on the
+  // indicator-level evidence rather than the goal unpacking at the
+  // top. After scrolling, we tell the parent to clear the anchor so
+  // re-renders don't keep re-scrolling.
+  const stateBlockRef = useRef(null)
+  useEffect(() => {
+    if (panelAnchor === 'position' && stateBlockRef.current) {
+      // Defer to next frame so the panel has rendered its new content
+      // before we scroll. Smooth so it reads as a deliberate move.
+      const id = requestAnimationFrame(() => {
+        stateBlockRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        if (onAnchorConsumed) onAnchorConsumed()
+      })
+      return () => cancelAnimationFrame(id)
+    }
+  }, [panelAnchor, domainId, onAnchorConsumed])
 
   // Score band label
   // Score band label — use the same vocabulary as the personal side.
@@ -231,7 +252,7 @@ export default function CivDomainPanel({
 
             {/* ── Where we are now: narrative + indicators ── */}
             {stateData && (
-              <div className="mc-civ-state-block">
+              <div ref={stateBlockRef} className="mc-civ-state-block">
                 <p className="mc-civ-section-label">WHERE WE ARE NOW</p>
                 {stateData.narrative && (
                   <p className="mc-civ-body-text">{stateData.narrative}</p>
