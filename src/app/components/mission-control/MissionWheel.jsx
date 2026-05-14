@@ -913,10 +913,7 @@ function CivWheel({
               style={{ pointerEvents: 'none' }}
             />
             {/* Clickable domain-coloured vertex dots — open the explainer,
-                never drill (drilling stays on tips and labels).
-                Sized as the visual focus of "where we are now" — these are
-                the planet-side equivalent of the personal wheel's score
-                polygon vertices. */}
+                never drill (drilling stays on tips and labels). */}
             {civVerts.map(v => v.score != null && (
               <g
                 key={`civ-vert-${v.i}`}
@@ -924,22 +921,13 @@ function CivWheel({
                 style={{ cursor: busy || busyLock ? 'default' : 'pointer' }}
               >
                 {/* Generous invisible hit zone */}
-                <circle cx={v.x} cy={v.y} r={14} fill="transparent" />
-                {/* Soft outer ring — clickable affordance */}
+                <circle cx={v.x} cy={v.y} r={12} fill="transparent" />
+                {/* Visible coloured dot */}
                 <circle
-                  cx={v.x} cy={v.y} r={6}
-                  fill="none"
-                  stroke={v.color}
-                  strokeWidth="1"
-                  strokeOpacity="0.4"
-                  style={{ pointerEvents: 'none' }}
-                />
-                {/* Visible coloured dot — the "you are here" mark */}
-                <circle
-                  cx={v.x} cy={v.y} r={4}
+                  cx={v.x} cy={v.y} r={3.5}
                   fill={v.color}
                   stroke={dark ? '#0F1523' : '#FAFAF7'}
-                  strokeWidth="1.5"
+                  strokeWidth="1"
                   style={{ pointerEvents: 'none' }}
                 />
               </g>
