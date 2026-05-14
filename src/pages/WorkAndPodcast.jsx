@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Nav } from '../components/Nav'
 import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkGhostButton } from '../components/DarkSection'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
-import { ScalePanel } from '../components/ScalePanel'
+import { HorizonScaleModal } from '../components/HorizonScaleModal'
 import { SiteFooter } from '../components/SiteFooter'
 
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -130,6 +130,7 @@ function CalendlyEmbed() {
 }
 
 export function WorkWithNikPage() {
+  const [scaleOpen, setScaleOpen] = useState(false)
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
       <style>{`@media (max-width: 640px) { .wap-main { padding-left: 24px !important; padding-right: 24px !important; } .wap-dark { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
@@ -284,7 +285,7 @@ export function WorkWithNikPage() {
         </div>
       </div>
 
-      <ScalePanel side="right" />
+      <HorizonScaleModal open={scaleOpen} onClose={() => setScaleOpen(false)} system="self" />
       <ToolCompassPanel />
       <SiteFooter />
     </div>

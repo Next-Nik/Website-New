@@ -6,7 +6,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
 import { AccessGate } from '../../components/AccessGate'
 import { supabase } from '../../hooks/useSupabase'
-import { ScalePanel } from '../../components/ScalePanel'
+import { HorizonScaleModal, SCALE_LINK_STYLE } from '../../components/HorizonScaleModal'
 import { DebriefPanel } from '../../components/DebriefPanel'
 import { CrisisRedirectCard } from '../../components/CrisisRedirectCard'
 
@@ -2043,6 +2043,7 @@ export function MapPage() {
   const [mapData,      setMapData]      = useState(null)
   const [crisisGate,   setCrisisGate]   = useState(null)
   const [thinking,     setThinking]     = useState(false)
+  const [scaleOpen,    setScaleOpen]    = useState(false)
   const [sessionId,    setSessionId]    = useState(null)
   const [showWelcome,  setShowWelcome]  = useState(() => {
     try {
@@ -2313,8 +2314,12 @@ export function MapPage() {
         forceOpen={threadPanelOpen}
       />
 
-      {/* Right — scale reference */}
-      <ScalePanel side="right" />
+      {/* Scale reference modal */}
+      <HorizonScaleModal
+        open={scaleOpen}
+        onClose={() => setScaleOpen(false)}
+        system="self"
+      />
 
       <div className="tool-wrap">
 
