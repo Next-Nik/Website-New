@@ -92,17 +92,52 @@ function easeInOut(t) {
 // Civ wheel labels rotate with the spokes, so position is computed
 // from the tip's actual angle. Anchor flips based on which side of
 // the wheel the tip is on.
-function civLabelPosFor(tipX, tipY, angleRad) {
+//
+// Long-label exception:
+//   Labels at or above LONG_LABEL_THRESHOLD characters that land on a
+//   side spoke (more horizontal than vertical) get their anchor FLIPPED
+//   so the text reads INWARD from the tip instead of outward. A right-
+//   side label is anchored `end` at its position so its text extends
+//   leftward back toward the centre — staying inside the viewBox and
+//   clear of the side rails.
+//
+//   Short labels and pole-spoke labels keep the original outward
+//   placement unchanged.
+//
+//   Because at most a small number of labels qualify at any rotation
+//   (typically 0-2 of the 7), the inward-reading labels don't pile
+//   up at centre the way v2 did.
+//
+//   The label arg is optional. If not provided, the function returns
+//   the original short-label placement.
+const LONG_LABEL_THRESHOLD = 11   // chars — HUMAN BEING (11) qualifies;
+                                  //         INNER GAME / CONNECTION (10) don't.
+function civLabelPosFor(tipX, tipY, angleRad, label) {
   const GAP = 14
   // Unit vector pointing outward from centre along the spoke
   const ux = Math.cos(angleRad)
   const uy = Math.sin(angleRad)
+
+  const isLong = label && label.length >= LONG_LABEL_THRESHOLD
+  const isSide = Math.abs(ux) > Math.abs(uy)
+  const flip   = isLong && isSide
+
   const x = tipX + ux * GAP
   const y = tipY + uy * GAP + 4 // +4 so vertical centring of small caps reads
-  // Anchor: middle if tip is near top/bottom, start/end based on side
+
+  // Anchor:
+  //   Short labels and pole spokes: middle if tip is near top/bottom,
+  //     start/end by side (text extends outward). Original behaviour.
+  //   Long labels on side spokes: anchor is INVERTED so text reads
+  //     inward from the tip, keeping the full label inside the viewBox.
   let anchor = 'middle'
-  if (ux > 0.2) anchor = 'start'
-  else if (ux < -0.2) anchor = 'end'
+  if (flip) {
+    if (ux > 0)      anchor = 'end'   // right-side long label, text reads leftward
+    else             anchor = 'start' // left-side long label, text reads rightward
+  } else {
+    if (ux > 0.2)       anchor = 'start'
+    else if (ux < -0.2) anchor = 'end'
+  }
   return { x, y, anchor }
 }
 
@@ -471,7 +506,7 @@ function SelfWheel({
           Same pattern as CivWheel. ── */}
       {labels.map((txt, i) => {
         const p = getTipPos(i, displayRot)  // actual rotated position
-        const pos = civLabelPosFor(p.x, p.y, p.angle)
+        const pos = civLabelPosFor(p.x, p.y, p.angle, txt)
         const isActive = activeKey && keys[i] === activeKey
         const dc = selfColor(keys[i])
         const baseFill   = dark ? dc.dark : dc.light
@@ -1060,7 +1095,7 @@ function CivWheel({
             `translate(${-tipX}, ${-tipY})`
         }
 
-        const labelPos = civLabelPosFor(tipX, tipY, p.angle)
+        const labelPos = civLabelPosFor(tipX, tipY, p.angle, labelText)
 
         // Civ tip dot: domain colour. Active state lifts to the saturated
         // base on parchment; on dark we stay at the lighter stop because
