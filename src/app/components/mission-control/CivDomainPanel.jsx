@@ -40,11 +40,28 @@
 //   busy:         boolean         disable controls while wheel mid-transition
 // ─────────────────────────────────────────────────────────────
 
+import { useState, useEffect } from 'react'
 import {
   GOLD, GOLD_DK, GOLD_LT, GOLD_RULE,
   TEXT_WHITE, TEXT_WHITE_META, TEXT_WHITE_FAINT,
   FONT_DISPLAY, FONT_SC, FONT_BODY,
 } from './tokens'
+import { HORIZON_DECOMPOSITIONS } from '../../constants/horizonDecompositions'
+
+// Convert markdown **bold** to <strong> while escaping any other HTML.
+// Used to render the `how_we_measure` paragraphs which lead with bolded
+// indicator names from the canonical doc.
+function renderInlineBold(text) {
+  if (!text) return ''
+  // Escape HTML special characters
+  const esc = String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+  // Convert **...** to <strong>...</strong>
+  return esc.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+}
 
 export default function CivDomainPanel({
   levelPath = [],
@@ -90,7 +107,14 @@ export default function CivDomainPanel({
   const liveScore     = wheelKey != null ? (civScores?.[wheelKey] ?? null) : null
   const liveDetail    = wheelKey != null ? (civDetails?.[wheelKey] ?? null) : null
   const stateData     = domainId ? (currentStateData?.[domainId] ?? null) : null
+  const decomp        = domainId ? (HORIZON_DECOMPOSITIONS?.[domainId] ?? null) : null
 
+  // Expandable "Why these indicators" — collapsed by default so the
+  // panel doesn't overwhelm on first glance. Reset when domain changes.
+  const [whyOpen, setWhyOpen] = useState(false)
+  useEffect(() => { setWhyOpen(false) }, [domainId])
+
+  // Score band label
   // Score band label
   function scoreBand(s) {
     if (s == null) return null
@@ -190,6 +214,15 @@ export default function CivDomainPanel({
               </div>
             )}
 
+            {/* ── Horizon unpacking — what the goal actually describes ── */}
+            {decomp?.unpacking && (
+              <div className="mc-civ-unpacking">
+                {decomp.unpacking.split('\n\n').map((para, i) => (
+                  <p key={i} className="mc-civ-unpacking-text">{para}</p>
+                ))}
+              </div>
+            )}
+
             <div className="mc-civ-rule" />
 
             {/* ── Where we are now: narrative + indicators ── */}
@@ -233,6 +266,46 @@ export default function CivDomainPanel({
                     ))}
                   </ul>
                 ) : null}
+
+                {/* Why these indicators — expandable reasoning */}
+                {(decomp?.how_we_measure || decomp?.not_measuring) && (
+                  <div className="mc-civ-why-block">
+                    <button
+                      type="button"
+                      className="mc-civ-why-toggle"
+                      onClick={() => setWhyOpen(v => !v)}
+                      aria-expanded={whyOpen}
+                    >
+                      <span className="mc-civ-why-toggle-text">
+                        {whyOpen ? 'Hide the reasoning' : 'Why these indicators?'}
+                      </span>
+                      <span className="mc-civ-why-toggle-glyph">
+                        {whyOpen ? '−' : '+'}
+                      </span>
+                    </button>
+                    {whyOpen && (
+                      <div className="mc-civ-why-body">
+                        {decomp.how_we_measure && (
+                          <div className="mc-civ-why-section">
+                            <p className="mc-civ-why-heading">How we measure it</p>
+                            {decomp.how_we_measure.split('\n\n').map((para, i) => (
+                              <p key={i} className="mc-civ-why-text"
+                                 dangerouslySetInnerHTML={{ __html: renderInlineBold(para) }} />
+                            ))}
+                          </div>
+                        )}
+                        {decomp.not_measuring && (
+                          <div className="mc-civ-why-section">
+                            <p className="mc-civ-why-heading">What we are not measuring</p>
+                            {decomp.not_measuring.split('\n\n').map((para, i) => (
+                              <p key={i} className="mc-civ-why-text">{para}</p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Gap signal */}
                 {stateData.gapSignal && stateData.gapReason && (
@@ -431,6 +504,92 @@ const PANEL_CSS = `
   color: rgba(200,146,42,0.45);
   display: block;
   margin-bottom: 3px;
+}
+
+/* Horizon unpacking — what the goal actually describes */
+.mc-civ-unpacking {
+  margin: 6px 0 4px;
+}
+.mc-civ-unpacking-text {
+  font-family: ${FONT_BODY};
+  font-size: 15px;
+  line-height: 1.65;
+  color: ${TEXT_WHITE_META};
+  margin: 0 0 10px;
+}
+.mc-civ-unpacking-text:last-child {
+  margin-bottom: 0;
+}
+
+/* Why these indicators — expandable reasoning */
+.mc-civ-why-block {
+  margin-top: 12px;
+}
+.mc-civ-why-toggle {
+  background: transparent;
+  border: 1px solid rgba(200, 146, 42, 0.20);
+  border-radius: 3px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+.mc-civ-why-toggle:hover {
+  background: rgba(200, 146, 42, 0.05);
+  border-color: rgba(200, 146, 42, 0.35);
+}
+.mc-civ-why-toggle-text {
+  font-family: ${FONT_SC};
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: ${GOLD_LT};
+  text-transform: uppercase;
+}
+.mc-civ-why-toggle-glyph {
+  font-family: ${FONT_DISPLAY};
+  font-size: 16px;
+  font-weight: 300;
+  color: ${GOLD_LT};
+  line-height: 1;
+  margin-left: 8px;
+}
+.mc-civ-why-body {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: rgba(200, 146, 42, 0.04);
+  border: 1px solid rgba(200, 146, 42, 0.12);
+  border-radius: 3px;
+}
+.mc-civ-why-section {
+  margin-bottom: 14px;
+}
+.mc-civ-why-section:last-child {
+  margin-bottom: 0;
+}
+.mc-civ-why-heading {
+  font-family: ${FONT_SC};
+  font-size: 9px;
+  letter-spacing: 0.20em;
+  color: ${GOLD_LT};
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+.mc-civ-why-text {
+  font-family: ${FONT_BODY};
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: ${TEXT_WHITE_META};
+  margin: 0 0 8px;
+}
+.mc-civ-why-text:last-child {
+  margin-bottom: 0;
+}
+.mc-civ-why-text strong {
+  color: ${TEXT_WHITE};
+  font-weight: 600;
 }
 
 /* Where we are now */
@@ -648,5 +807,9 @@ const PANEL_CSS = `
   .mc-civ-indicator-row { padding: 4px 8px; }
   .mc-civ-indicator-name { font-size: 9px; letter-spacing: 0.12em; }
   .mc-civ-indicator-score { font-size: 13px; }
+  /* Unpacking text — slightly smaller on mobile */
+  .mc-civ-unpacking-text { font-size: 14px; }
+  .mc-civ-why-text { font-size: 13px; }
+  .mc-civ-why-toggle { padding: 7px 10px; }
 }
 `
