@@ -78,7 +78,7 @@ import { SELF_DOMAINS, SELF_TOP_GOAL } from '../../components/self-explorer/self
 const SELF_LABELS = ['PATH', 'SPARK', 'BODY', 'FINANCES', 'CONNECTION', 'INNER GAME', 'SIGNAL']
 const SELF_KEYS   = ['path', 'spark', 'body', 'finances', 'connection', 'inner_game', 'signal']
 
-const CIV_LABELS  = ['VISION', 'HUMAN', 'NATURE', 'FINANCE', 'TECH', 'LEGACY', 'SOCIETY']
+const CIV_LABELS  = ['VISION', 'HUMAN', 'NATURE', 'ECONOMY', 'TECH', 'LEGACY', 'SOCIETY']
 const CIV_KEYS    = ['vision', 'human', 'nature', 'finance', 'tech', 'legacy', 'society']
 
 // Map domain id (as it comes from data.js / Supabase) to the civ

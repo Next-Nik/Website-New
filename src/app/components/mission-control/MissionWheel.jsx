@@ -496,7 +496,7 @@ function SelfWheel({
               onClick={onSelect ? () => onSelect(i) : undefined}
               style={{
                 fontFamily: FONT_SC,
-                fontSize: 13,
+                fontSize: 15,
                 letterSpacing: '0.18em',
                 fill: isActive ? activeFill : baseFill,
                 fontWeight: isActive ? 700 : 600,
@@ -1120,7 +1120,7 @@ function CivWheel({
               textAnchor={labelPos.anchor}
               style={{
                 fontFamily: FONT_SC,
-                fontSize: 13,
+                fontSize: 15,
                 letterSpacing: '0.18em',
                 fill: isActive || isPlacement ? activeLabelFill : baseLabelFill,
                 fontWeight: isActive || isPlacement ? 700 : 600,

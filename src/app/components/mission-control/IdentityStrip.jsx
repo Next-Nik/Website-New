@@ -385,10 +385,11 @@ const STRIP_CSS = `
 
 .mc-identity-name {
   font-family: ${FONT_DISPLAY};
-  font-size: 28px;
+  font-size: 34px;
   font-weight: 500;
   color: ${TEXT_INK};
   line-height: 1;
+  letter-spacing: -0.005em;
 }
 [data-stage="dark"] .mc-identity-name { color: ${TEXT_WHITE}; }
 
@@ -449,12 +450,12 @@ const STRIP_CSS = `
     text-align: left;
   }
   .mc-identity-name {
-    font-size: 24px;
+    font-size: 30px;
   }
   .mc-identity-fit {
     text-align: left;
-    font-size: 10px;
-    letter-spacing: 0.14em;
+    font-size: 11px;
+    letter-spacing: 0.16em;
   }
   .mc-fit-invite {
     font-size: 14px;

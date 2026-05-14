@@ -103,6 +103,12 @@ function ComingSoon({ name }) {
 }
 
 function AppInner() {
+  const { pathname } = useLocation()
+  // Mission Control owns the whole viewport — hide the bottom tabs there.
+  // The hamburger menu in the brand bar exposes every destination the
+  // tab bar would, and the rail tiles cover the personal-side tools.
+  const hideBottomTabs = pathname === '/'
+
   return (
     <>
       <ScrollToTop />
@@ -214,8 +220,10 @@ function AppInner() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
-      {/* Mobile bottom tabs — hidden on desktop via CSS */}
-      <BottomTabs />
+      {/* Mobile bottom tabs — hidden on Mission Control where the brand
+          bar menu and rail tiles already cover navigation. Hidden on
+          desktop via CSS. */}
+      {!hideBottomTabs && <BottomTabs />}
 
       {/* Terms acceptance — appears once for signed-in users when version changes */}
     </>
