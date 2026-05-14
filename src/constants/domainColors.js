@@ -104,13 +104,13 @@ export const DOMAIN_COLORS = {
 // the World side reads as the same territory at different scales.
 
 export const CIV_COLORS = {
-  vision:           DOMAIN_COLORS.path,         // Path → Vision
-  human_being:      DOMAIN_COLORS.spark,        // Spark → Human Being
-  nature:           DOMAIN_COLORS.body,         // Body → Nature
-  finance_economy:  DOMAIN_COLORS.finances,     // Finances → Finance & Economy
-  society:          DOMAIN_COLORS.connection,   // Connection → Society
-  legacy:           DOMAIN_COLORS.inner_game,   // Inner Game → Legacy
-  technology:       DOMAIN_COLORS.signal,       // Signal → Technology
+  vision:    DOMAIN_COLORS.path,         // Path → Vision
+  human:     DOMAIN_COLORS.spark,        // Spark → Human Being
+  nature:    DOMAIN_COLORS.body,         // Body → Nature
+  finance:   DOMAIN_COLORS.finances,     // Finances → Finance & Economy
+  society:   DOMAIN_COLORS.connection,   // Connection → Society
+  legacy:    DOMAIN_COLORS.inner_game,   // Inner Game → Legacy
+  tech:      DOMAIN_COLORS.signal,       // Signal → Technology
 }
 
 // Convenience getters. Both fall back to gold if the key is unknown,
@@ -144,5 +144,5 @@ export const SELF_KEYS_ORDERED = [
 ]
 
 export const CIV_KEYS_ORDERED = [
-  'vision', 'human_being', 'nature', 'finance_economy', 'society', 'legacy', 'technology',
+  'vision', 'human', 'nature', 'finance', 'society', 'legacy', 'tech',
 ]

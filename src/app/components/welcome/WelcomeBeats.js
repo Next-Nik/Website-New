@@ -40,11 +40,11 @@ export const KIN_CURRENT  = {
 // Civilisational domains — colour from the locked palette via
 // /constants/domainColors.js.
 export const CIV_DOMAINS = [
-  { slug: 'human-being',     label: 'Human',    color: CIV_COLORS.human_being.base },
+  { slug: 'human-being',     label: 'Human',    color: CIV_COLORS.human.base },
   { slug: 'society',         label: 'Society',  color: CIV_COLORS.society.base },
   { slug: 'nature',          label: 'Nature',   color: CIV_COLORS.nature.base },
-  { slug: 'technology',      label: 'Tech',     color: CIV_COLORS.technology.base },
-  { slug: 'finance-economy', label: 'Finance',  color: CIV_COLORS.finance_economy.base },
+  { slug: 'technology',      label: 'Tech',     color: CIV_COLORS.tech.base },
+  { slug: 'finance-economy', label: 'Finance',  color: CIV_COLORS.finance.base },
   { slug: 'legacy',          label: 'Legacy',   color: CIV_COLORS.legacy.base },
   { slug: 'vision',          label: 'Vision',   color: CIV_COLORS.vision.base },
 ]

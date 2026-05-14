@@ -931,11 +931,12 @@ function CivWheel({
 
         return (
           <g style={{ opacity: bloomed ? 1 : bloomT }}>
-            {/* Polygon — soft gold tint, behind vertex dots */}
+            {/* Polygon — gold stroke only, no fill, so the coloured
+                Position dots read against the dark background. Matches
+                the Self wheel treatment. */}
             <polygon
               points={polyPoints}
-              fill={GOLD}
-              fillOpacity="0.06"
+              fill="none"
               stroke={GOLD}
               strokeWidth="1.25"
               strokeOpacity="0.55"
