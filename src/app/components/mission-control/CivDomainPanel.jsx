@@ -115,14 +115,18 @@ export default function CivDomainPanel({
   useEffect(() => { setWhyOpen(false) }, [domainId])
 
   // Score band label
-  // Score band label
+  // Score band label — use the same vocabulary as the personal side.
+  // Five tiers, thresholds matching scoreToBand() in selfResources.js:
+  //   crisis (<3) · friction (3-5) · plateau (5-6.5) · capable (6.5-8) · fluent (≥8)
+  // This is the "where we are now" scale shared across both surfaces of
+  // NextUs — personal AND planetary.
   function scoreBand(s) {
     if (s == null) return null
-    if (s < 3)   return 'Critical'
-    if (s < 5)   return 'At risk'
-    if (s < 6.5) return 'Developing'
-    if (s < 8)   return 'Progressing'
-    return 'Strong'
+    if (s < 3)   return 'Crisis'
+    if (s < 5)   return 'Friction'
+    if (s < 6.5) return 'Plateau'
+    if (s < 8)   return 'Capable'
+    return 'Fluent'
   }
 
   // Trend glyph

@@ -108,43 +108,59 @@ export default function IndicatorCard({ indicator, focusName, className }) {
         {indicator.name}
       </span>
 
-      {/* Number row: large value + direction arrow */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'baseline',
-          gap: '10px',
-          minHeight: '54px',
-        }}
-      >
-        <span
+      {/* Value row — branch on whether this is a numeric or qualitative indicator.
+          Qualitative (context) indicators have a long text body and need
+          body-type rendering, not the 48px display number treatment. */}
+      {hasValue && indicator.value?.numeric == null && indicator.value?.text ? (
+        <div
           style={{
-            ...display,
-            fontSize: 'clamp(34px, 5vw, 48px)',
-            fontWeight: 300,
-            lineHeight: 1,
-            color: hasValue ? '#0F1523' : 'rgba(15, 21, 35, 0.35)',
+            ...body,
+            fontSize: '14px',
+            lineHeight: 1.55,
+            color: 'rgba(15, 21, 35, 0.78)',
+            marginTop: '2px',
           }}
         >
-          {hasValue ? numberDisplay.value : '—'}
-        </span>
-        {hasValue && numberDisplay.unit && (
+          {indicator.value.text}
+        </div>
+      ) : (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'baseline',
+            gap: '10px',
+            minHeight: '54px',
+          }}
+        >
           <span
             style={{
-              ...sc,
-              fontSize: '14px',
-              letterSpacing: '0.04em',
-              color: 'rgba(15, 21, 35, 0.55)',
-              fontWeight: 600,
+              ...display,
+              fontSize: 'clamp(34px, 5vw, 48px)',
+              fontWeight: 300,
+              lineHeight: 1,
+              color: hasValue ? '#0F1523' : 'rgba(15, 21, 35, 0.35)',
             }}
           >
-            {numberDisplay.unit}
+            {hasValue ? numberDisplay.value : '—'}
           </span>
-        )}
-        {hasValue && (
-          <DirectionArrow direction={direction} colour={COLOUR[tone]} />
-        )}
-      </div>
+          {hasValue && numberDisplay.unit && (
+            <span
+              style={{
+                ...sc,
+                fontSize: '14px',
+                letterSpacing: '0.04em',
+                color: 'rgba(15, 21, 35, 0.55)',
+                fontWeight: 600,
+              }}
+            >
+              {numberDisplay.unit}
+            </span>
+          )}
+          {hasValue && (
+            <DirectionArrow direction={direction} colour={COLOUR[tone]} />
+          )}
+        </div>
+      )}
 
       {/* Trend text */}
       {trendPhrase && (
