@@ -1,19 +1,20 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
+import { TIER_MAP as FLAME_TIER, LABEL_MAP as FLAME_LABEL } from '../constants/horizonScale'
 
 // ─── Colour scale — cool ember to blazing scarf gold ─────────────────────────
 
 // ─── Horizon Scale labels — 0.5 increments ───────────────────────────────────
-// Three named anchor labels:
-//   0  = Really Struggling
-//   5  = "Fine"   (the air-quoted "fine" you say when you're not really fine)
-//   10 = My Absolute Best
-// All other values show the numeric value itself rather than a copywritten label.
-// Visual props (color / glow / scale) preserve the current slider's expression
+// Three named anchor labels drawn from the locked Horizon Scale:
+//   0  = Complete Reset
+//   5  = The Pass/Fail Mark
+//   10 = Best in the World
+// All other values show the numeric value itself rather than a label.
+// Visual props (color / glow / scale) preserve the flame's expression
 // across the range; only the labels are restricted to the three anchor points.
 const FLAME_SCALE = {
-  0:    { color: '#4B5563', glow: 'rgba(75,85,99,0.10)',    scale: 0.42, label: 'Really Struggling' },
+  0:    { color: '#4B5563', glow: 'rgba(75,85,99,0.10)',    scale: 0.42, label: 'Complete Reset' },
   0.5:  { color: '#5C6675', glow: 'rgba(92,102,117,0.12)',  scale: 0.47, label: '' },
   1:    { color: '#6B7280', glow: 'rgba(107,114,128,0.14)', scale: 0.52, label: '' },
   1.5:  { color: '#7A7A72', glow: 'rgba(122,122,114,0.16)', scale: 0.57, label: '' },
@@ -23,7 +24,7 @@ const FLAME_SCALE = {
   3.5:  { color: '#AA8A42', glow: 'rgba(170,138,66,0.30)',  scale: 0.77, label: '' },
   4:    { color: '#B8923A', glow: 'rgba(184,146,58,0.33)',  scale: 0.80, label: '' },
   4.5:  { color: '#C09A30', glow: 'rgba(192,154,48,0.36)',  scale: 0.82, label: '' },
-  5:    { color: '#A8721A', glow: 'rgba(200,146,42,0.38)',  scale: 0.84, label: '"Fine"' },
+  5:    { color: '#A8721A', glow: 'rgba(200,146,42,0.38)',  scale: 0.84, label: 'The Pass/Fail Mark' },
   5.5:  { color: '#C4821A', glow: 'rgba(196,130,26,0.42)',  scale: 0.87, label: '' },
   6:    { color: '#D4821A', glow: 'rgba(212,130,26,0.46)',  scale: 0.89, label: '' },
   6.5:  { color: '#CC7818', glow: 'rgba(204,120,24,0.50)',  scale: 0.91, label: '' },
@@ -33,7 +34,7 @@ const FLAME_SCALE = {
   8.5:  { color: '#B85010', glow: 'rgba(184,80,16,0.66)',   scale: 0.99, label: '' },
   9:    { color: '#A8721A', glow: 'rgba(168,114,26,0.70)',  scale: 1.01, label: '' },
   9.5:  { color: '#C8922A', glow: 'rgba(200,146,42,0.76)', scale: 1.04, label: '' },
-  10:   { color: '#C8922A', glow: 'rgba(200,146,42,0.82)', scale: 1.08, label: 'My Absolute Best' },
+  10:   { color: '#C8922A', glow: 'rgba(200,146,42,0.82)', scale: 1.08, label: 'Best in the World' },
 }
 
 // Numeric display helper for non-anchor values. Renders integers without a
@@ -170,25 +171,34 @@ function useIsMobile() {
   return mobile
 }
 
+// Scale notches — all 21 stops in display order (top = 10, bottom = 0)
+const SCALE_NOTCHES = [
+  10, 9.5, 9, 8.5, 8, 7.5, 7, 6.5, 6, 5.5,
+  5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1, 0.5, 0
+]
+
 export function FlameSlider({ value, onChange, ghostValue = null }) {
   const trackRef  = useRef(null)
   const dragging  = useRef(false)
   const lastValue = useRef(value)
   const isMobile  = useIsMobile()
-  const TRACK_H   = isMobile ? 180 : 300
+
+  // Taller track so 21 notches have breathing room
+  // Each notch gets ~24px on desktop, ~17px on mobile
+  const TRACK_H = isMobile ? 360 : 480
 
   function haptic(v) {
     if (!navigator.vibrate) return
-    if (v === 0 || v === 10) navigator.vibrate([12, 40, 12])      // boundary pulse
-    else if (v === 5)        navigator.vibrate(8)                  // midpoint
-    else                     navigator.vibrate(4)                  // standard tick
+    if (v === 0 || v === 10) navigator.vibrate([12, 40, 12])
+    else if (v === 5)        navigator.vibrate(8)
+    else                     navigator.vibrate(4)
   }
 
   function posToValue(clientY) {
     const rect = trackRef.current?.getBoundingClientRect()
     if (!rect) return value
-    const pct  = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height))
-    const raw  = 10 - pct * 10
+    const pct = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height))
+    const raw = 10 - pct * 10
     return Math.round(raw * 2) / 2
   }
 
@@ -222,92 +232,209 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
     }
   }, [onChange])
 
-  // Prevent page scroll when touching the track directly
   useEffect(() => {
     const el = trackRef.current
     if (!el) return
-    function preventScroll(e) {
-      if (dragging.current) e.preventDefault()
-    }
+    function preventScroll(e) { if (dragging.current) e.preventDefault() }
     el.addEventListener('touchmove', preventScroll, { passive: false })
     return () => el.removeEventListener('touchmove', preventScroll)
   }, [])
 
   const pct = v => 100 - (v / 10) * 100
 
+  const { color } = getFlameProps(value)
+  const tier      = FLAME_TIER[value]
+  const label     = FLAME_LABEL[value]
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
-      <div
-        ref={trackRef}
-        onMouseDown={onDown}
-        onTouchStart={onDown}
-        style={{
-          position: 'relative', width: '56px', height: `${TRACK_H}px`,
-          cursor: 'pointer',
-          // Larger touch target without visual change
-          padding: '0 20px',
-          margin: '0 -20px',
-          touchAction: 'none',
-        }}
-      >
-        {/* Track */}
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0' }}>
+
+      {/* ── Scale + track + flame, side by side ── */}
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0' }}>
+
+        {/* Left column: scale labels */}
         <div style={{
-          position: 'absolute', left: '50%', transform: 'translateX(-50%)',
-          top: 0, bottom: 0, width: '10px', borderRadius: '5px',
-          background: 'rgba(200,146,42,0.1)', overflow: 'hidden',
+          display: 'flex', flexDirection: 'column',
+          justifyContent: 'space-between',
+          height: `${TRACK_H}px`,
+          paddingRight: '10px',
+          pointerEvents: 'none',
+          userSelect: 'none',
         }}>
+          {SCALE_NOTCHES.map(n => {
+            const isActive   = n === value
+            const isWhole    = Number.isInteger(n)
+            const isAnchor   = n === 0 || n === 5 || n === 10
+            const isTheLine  = n === 5
+
+            return (
+              <div key={n} style={{
+                display: 'flex', alignItems: 'center', gap: '6px',
+                justifyContent: 'flex-end',
+                height: `${TRACK_H / 20}px`,
+                opacity: isActive ? 1 : isAnchor ? 0.55 : isWhole ? 0.35 : 0.2,
+                transition: 'opacity 0.15s ease',
+              }}>
+                {/* Tier label — always shown for whole numbers, always shown when active */}
+                {(isWhole || isActive) && (
+                  <span style={{
+                    fontFamily: "'Cormorant SC', Georgia, serif",
+                    fontSize: isActive ? (isMobile ? '0.625rem' : '0.6875rem') : (isMobile ? '0.5rem' : '0.5625rem'),
+                    letterSpacing: '0.1em',
+                    color: isActive ? color : isTheLine ? 'rgba(200,146,42,0.7)' : 'rgba(15,21,35,0.45)',
+                    whiteSpace: 'nowrap',
+                    fontWeight: isActive ? 600 : 400,
+                    transition: 'color 0.2s ease, font-size 0.15s ease',
+                  }}>
+                    {FLAME_TIER[n]}
+                  </span>
+                )}
+                {/* Tick mark */}
+                <div style={{
+                  width: isActive ? '14px' : isAnchor ? '10px' : isWhole ? '7px' : '4px',
+                  height: isTheLine ? '2px' : '1px',
+                  background: isActive
+                    ? color
+                    : isTheLine
+                      ? 'rgba(200,146,42,0.5)'
+                      : 'rgba(15,21,35,0.25)',
+                  borderRadius: '1px',
+                  transition: 'width 0.15s ease, background 0.2s ease',
+                  flexShrink: 0,
+                }} />
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Centre: track + flame */}
+        <div
+          ref={trackRef}
+          onMouseDown={onDown}
+          onTouchStart={onDown}
+          style={{
+            position: 'relative', width: '56px', height: `${TRACK_H}px`,
+            cursor: 'pointer',
+            padding: '0 20px',
+            margin: '0 -20px',
+            touchAction: 'none',
+            flexShrink: 0,
+          }}
+        >
+          {/* Track fill */}
           <div style={{
-            position: 'absolute', bottom: 0, left: 0, right: 0,
-            height: `${(value / 10) * 100}%`,
-            background: 'linear-gradient(to top, #4B5563 0%, #8B7355 22%, #B8923A 42%, #C8922A 58%, #C8721A 73%, #A8721A 87%, #C8922A 100%)',
-            borderRadius: '5px',
-            transition: 'height 0.1s ease',
-          }} />
-        </div>
+            position: 'absolute', left: '50%', transform: 'translateX(-50%)',
+            top: 0, bottom: 0, width: '10px', borderRadius: '5px',
+            background: 'rgba(200,146,42,0.08)', overflow: 'hidden',
+          }}>
+            <div style={{
+              position: 'absolute', bottom: 0, left: 0, right: 0,
+              height: `${(value / 10) * 100}%`,
+              background: 'linear-gradient(to top, #4B5563 0%, #8B7355 22%, #B8923A 42%, #C8922A 58%, #C8721A 73%, #A8721A 87%, #C8922A 100%)',
+              borderRadius: '5px',
+              transition: 'height 0.1s ease',
+            }} />
+          </div>
 
-        {/* The Line tick */}
-        <div style={{
-          position: 'absolute', left: 'calc(50% + 7px)',
-          top: '50%', transform: 'translateY(-50%)',
-          display: 'flex', alignItems: 'center', gap: '4px', pointerEvents: 'none',
-        }}>
-          <div style={{ width: '12px', height: '1.5px', background: 'rgba(200,146,42,0.45)', borderRadius: '1px' }} />
-          <span style={{ fontFamily: "'Cormorant SC',Georgia,serif", fontSize: '0.4375rem', letterSpacing: '0.14em', color: 'rgba(200,146,42,0.5)', whiteSpace: 'nowrap' }}>The Line</span>
-        </div>
+          {/* Ghost flame */}
+          {ghostValue !== null && (
+            <div style={{
+              position: 'absolute', left: '50%',
+              top: `${pct(ghostValue)}%`,
+              transform: 'translate(-50%, -50%)',
+              pointerEvents: 'none',
+            }}>
+              <FlameGlyph value={ghostValue} size={36} ghost />
+            </div>
+          )}
 
-        {/* Ghost flame */}
-        {ghostValue !== null && (
+          {/* Live flame */}
           <div style={{
             position: 'absolute', left: '50%',
-            top: `${pct(ghostValue)}%`,
+            top: `${pct(value)}%`,
             transform: 'translate(-50%, -50%)',
             pointerEvents: 'none',
+            transition: dragging.current ? 'none' : 'top 0.1s ease',
           }}>
-            <FlameGlyph value={ghostValue} size={36} ghost />
+            <FlameGlyph value={value} size={isMobile ? 56 : 72} />
           </div>
-        )}
+        </div>
 
-        {/* Live flame */}
+        {/* Right column: descriptive label for active value */}
         <div style={{
-          position: 'absolute', left: '50%',
-          top: `${pct(value)}%`,
-          transform: 'translate(-50%, -50%)',
+          display: 'flex', flexDirection: 'column',
+          justifyContent: 'space-between',
+          height: `${TRACK_H}px`,
+          paddingLeft: '12px',
           pointerEvents: 'none',
-          transition: dragging.current ? 'none' : 'top 0.1s ease',
+          userSelect: 'none',
         }}>
-          <FlameGlyph value={value} size={72} />
+          {SCALE_NOTCHES.map(n => {
+            const isActive = n === value
+            return (
+              <div key={n} style={{
+                height: `${TRACK_H / 20}px`,
+                display: 'flex', alignItems: 'center',
+                opacity: isActive ? 1 : 0,
+                transition: 'opacity 0.15s ease',
+              }}>
+                {isActive && (
+                  <span style={{
+                    fontFamily: "'Lora', Georgia, serif",
+                    fontSize: isMobile ? '0.6875rem' : '0.8125rem',
+                    fontStyle: 'italic',
+                    color: 'rgba(15,21,35,0.6)',
+                    whiteSpace: 'nowrap',
+                    maxWidth: isMobile ? '110px' : '160px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
+                    {label}
+                  </span>
+                )}
+              </div>
+            )
+          })}
         </div>
       </div>
 
-      {/* Label — anchor copy at 0/5/10, numeric value elsewhere */}
+      {/* Score + tier display below — large, clear, always visible */}
       <div style={{
-        fontFamily: "'Lora', Georgia, serif",
-        fontSize: '1.3125rem',
-        color: getFlameProps(value).color,
-        transition: 'color 0.4s ease',
-        textAlign: 'center', minHeight: '20px',
+        marginTop: '20px',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
       }}>
-        {getFlameProps(value).label || formatScaleValue(value)}
+        <span style={{
+          fontFamily: "'Cormorant SC', Georgia, serif",
+          fontSize: isMobile ? '2rem' : '2.5rem',
+          fontWeight: 600,
+          color,
+          lineHeight: 1,
+          transition: 'color 0.3s ease',
+        }}>
+          {formatScaleValue(value)}
+        </span>
+        <span style={{
+          fontFamily: "'Cormorant SC', Georgia, serif",
+          fontSize: isMobile ? '0.6875rem' : '0.8125rem',
+          letterSpacing: '0.14em',
+          color,
+          opacity: 0.8,
+          transition: 'color 0.3s ease',
+        }}>
+          {tier}
+        </span>
+        <span style={{
+          fontFamily: "'Lora', Georgia, serif",
+          fontSize: isMobile ? '0.875rem' : '1rem',
+          fontStyle: 'italic',
+          color: 'rgba(15,21,35,0.55)',
+          textAlign: 'center',
+          maxWidth: isMobile ? '200px' : '260px',
+          lineHeight: 1.5,
+          transition: 'opacity 0.2s ease',
+        }}>
+          {label}
+        </span>
       </div>
     </div>
   )
