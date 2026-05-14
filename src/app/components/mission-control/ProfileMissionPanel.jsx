@@ -147,9 +147,52 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
 
   if (!user) {
     return (
-      <div style={{ padding: '8px 0' }}>
-        <p style={{ fontFamily: FONT_BODY, fontSize: 14, color: TEXT_META }}>
-          You're signed out.
+      <div style={{ padding: '4px 0 8px' }}>
+        <p style={{
+          fontFamily: FONT_BODY,
+          fontSize: 15,
+          lineHeight: 1.55,
+          color: TEXT_INK,
+          margin: '0 0 14px',
+        }}>
+          You're not signed in yet.
+        </p>
+        <p style={{
+          fontFamily: FONT_BODY,
+          fontSize: 14,
+          lineHeight: 1.55,
+          color: TEXT_META,
+          margin: '0 0 18px',
+        }}>
+          Sign in to claim your place on the map, save your Horizon profile, and connect with the people and organisations doing work that matters to you.
+        </p>
+        <a
+          href="/login"
+          style={{
+            display: 'inline-block',
+            padding: '10px 18px',
+            background: GOLD,
+            color: '#FAFAF7',
+            fontFamily: FONT_SC,
+            fontSize: 12,
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            textDecoration: 'none',
+            borderRadius: 2,
+            transition: 'background 160ms ease',
+          }}
+          onMouseEnter={e => e.currentTarget.style.background = GOLD_DK}
+          onMouseLeave={e => e.currentTarget.style.background = GOLD}
+        >
+          Sign in →
+        </a>
+        <p style={{
+          fontFamily: FONT_BODY,
+          fontSize: 13,
+          color: TEXT_FAINT,
+          margin: '14px 0 0',
+        }}>
+          New here? Signing in creates your account.
         </p>
       </div>
     )

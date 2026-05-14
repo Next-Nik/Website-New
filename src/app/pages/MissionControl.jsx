@@ -826,7 +826,7 @@ export default function MissionControl() {
   const civWalkers = {}
 
   // Identity strings.
-  const rawName  = data.profile?.display_name || data.user?.email?.split('@')[0] || 'Your name'
+  const rawName  = data.profile?.display_name || data.user?.email?.split('@')[0] || (data.user ? 'Your name' : 'Welcome')
   const userName = rawName
 
   // Placement: internal sentinel for control flow + display variant.
@@ -904,7 +904,10 @@ export default function MissionControl() {
         placement={displayPlacement}
         onProfile={() => setActivePanel('profile')}
         onSettings={() => setActivePanel('settings')}
-        onFindFit={() => openCivPanel('purpose-piece')}
+        onFindFit={() => {
+          if (!data.user) { navigate('/login'); return }
+          openCivPanel('purpose-piece')
+        }}
       />
 
       <PoleHeader
@@ -1207,11 +1210,15 @@ export default function MissionControl() {
       <Panel
         open={activePanel === 'profile'}
         onClose={closePanel}
-        eyebrow="YOU · PROFILE"
-        title="What others see of you on NextUs"
-        actions={[
+        eyebrow={data.user ? 'YOU · PROFILE' : 'YOU · SIGN IN'}
+        title={data.user ? 'What others see of you on NextUs' : 'Sign in to NextUs'}
+        actions={data.user ? [
           { label: 'EDIT FULL PROFILE →', primary: true,
             onClick: () => navigate('/profile/edit') },
+          { label: 'CLOSE', onClick: closePanel },
+        ] : [
+          { label: 'SIGN IN →', primary: true,
+            onClick: () => navigate('/login') },
           { label: 'CLOSE', onClick: closePanel },
         ]}
       >
