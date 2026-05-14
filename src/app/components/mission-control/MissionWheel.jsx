@@ -780,6 +780,21 @@ function CivWheel({
     if (phase !== 'settled') return
   }
 
+  // Select-only handler — used by the score-polygon vertex dots.
+  // Vertex dots represent "where we are now" on the domain; clicking
+  // one should open the explainer panel, NOT drill down into the
+  // sub-domain level. Drilling stays on spoke-tip dots and labels.
+  function handleVertexClick(i) {
+    if (busyLock) return
+    if (phase === 'spinning') { cancelSpinAndSelect(i); return }
+    if (phase === 'navigating' || phase === 'settled') {
+      onSelect?.(i)
+      // Rotate the chosen spoke to the top, but never drill.
+      targetRotRef.current = getRotationToTop(i, rotRef.current, count)
+      setPhase('navigating')
+    }
+  }
+
   function handleCentreClick() {
     if (busyLock) return
     if (phase !== 'settled' && phase !== 'spinning') return
@@ -897,11 +912,12 @@ function CivWheel({
               strokeLinejoin="round"
               style={{ pointerEvents: 'none' }}
             />
-            {/* Clickable domain-coloured vertex dots */}
+            {/* Clickable domain-coloured vertex dots — open the explainer,
+                never drill (drilling stays on tips and labels). */}
             {civVerts.map(v => v.score != null && (
               <g
                 key={`civ-vert-${v.i}`}
-                onClick={() => !busy && !busyLock && handleNodeClick(v.i)}
+                onClick={() => !busy && !busyLock && handleVertexClick(v.i)}
                 style={{ cursor: busy || busyLock ? 'default' : 'pointer' }}
               >
                 {/* Generous invisible hit zone */}

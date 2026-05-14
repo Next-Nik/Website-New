@@ -433,47 +433,54 @@ function notifyCivSubscribers(snapshot) {
 }
 
 async function loadCivScoresOnce() {
-  // 1. Load all headline indicators across all 7 civ domains in
-  //    a single round-trip.
-  const { data: catalog, error: catalogErr } = await supabase
-    .from('nextus_domain_indicators')
-    .select(
-      'id, domain_id, subdomain_slug, lens_slugs, name, unit, tier, ' +
-      'source_name, source_url, native_resolution, refresh_cadence, ' +
-      'direction_preferred, methodology_note, headline_order, ' +
-      'tagged_principles, target_value, floor_value, rollup_weight'
-    )
-    .in('domain_id', ALL_CIV_DOMAINS)
-    .eq('status', 'active')
-    .eq('is_headline', true)
-    .order('headline_order', { ascending: true })
+  // ONE QUERY. Reads the most recent daily snapshot from
+  // nextus_domain_scores_daily, written by the
+  // /api/compute-daily-snapshot cron (03:30 UTC daily).
+  //
+  // Fallback policy: if today's snapshot hasn't been written yet
+  // (cron hasn't run, or failed), the most recent snapshot is
+  // used regardless of date. The wheel is always instant; data
+  // can lag at most one day on cron failure. Manual refresh
+  // available via POST /api/compute-daily-snapshot with the
+  // x-cron-secret header.
+  const { data: row, error } = await supabase
+    .from('nextus_domain_scores_daily')
+    .select('snapshot_date, vision, human, nature, finance, tech, legacy, society, details_json, computed_at')
+    .order('snapshot_date', { ascending: false })
+    .limit(1)
+    .maybeSingle()
 
-  if (catalogErr) throw catalogErr
+  if (error) throw error
 
-  // 2. Resolve current values — planetary focus only for the wheel.
-  const resolved = await Promise.all(
-    (catalog || []).map(ind => resolveCurrentValue(ind, null))
-  )
-
-  // 3. Group by domain and compute per-domain rollup.
-  const byDomain = {}
-  for (const ind of resolved) {
-    const d = ind.domain_id
-    if (!byDomain[d]) byDomain[d] = []
-    byDomain[d].push(ind)
+  // No snapshot yet — return empty scores. The first run of the
+  // cron will populate, and the wheel renders an empty polygon
+  // in the meantime.
+  if (!row) {
+    return {
+      scores: {},
+      details: {},
+      fetchedAt: Date.now(),
+      snapshotDate: null,
+    }
   }
 
-  const nextScores  = {}
-  const nextDetails = {}
-  for (const d of ALL_CIV_DOMAINS) {
-    const key = CIV_DOMAIN_TO_WHEEL_KEY[d]
-    const list = byDomain[d] || []
-    const result = computeDomainScore(list)
-    nextScores[key]  = result.score
-    nextDetails[key] = result
+  const scores = {
+    vision:  row.vision,
+    human:   row.human,
+    nature:  row.nature,
+    finance: row.finance,
+    tech:    row.tech,
+    legacy:  row.legacy,
+    society: row.society,
   }
+  const details = row.details_json || {}
 
-  return { scores: nextScores, details: nextDetails, fetchedAt: Date.now() }
+  return {
+    scores,
+    details,
+    fetchedAt: Date.now(),
+    snapshotDate: row.snapshot_date,
+  }
 }
 
 async function ensureCivScores(forceRefresh = false) {
