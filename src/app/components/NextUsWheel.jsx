@@ -22,7 +22,7 @@ export const CIV_DOMAINS = [
   { slug: 'society',         label: 'Society',          shortLabel: 'Society', color: '#6B2A9E' },
   { slug: 'nature',          label: 'Nature',           shortLabel: 'Nature',  color: '#2A6B3A' },
   { slug: 'technology',      label: 'Technology',       shortLabel: 'Tech',    color: '#8A6B2A' },
-  { slug: 'finance-economy', label: 'Finance & Economy',shortLabel: 'Finance', color: '#6B3A2A' },
+  { slug: 'finance-economy', label: 'Economy',shortLabel: 'Finance', color: '#6B3A2A' },
   { slug: 'legacy',          label: 'Legacy',           shortLabel: 'Legacy',  color: '#4A6B2A' },
   { slug: 'vision',          label: 'Vision',           shortLabel: 'Vision',  color: '#2A4A6B' },
 ]

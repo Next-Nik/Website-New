@@ -40,7 +40,7 @@ const DOMAINS = [
   { slug: 'society',         name: 'Society',            short: 'How we live together.' },
   { slug: 'nature',          name: 'Nature',             short: 'The living world and our place inside it.' },
   { slug: 'technology',      name: 'Technology',         short: 'What we build, and whether it remembers what it is for.' },
-  { slug: 'finance-economy', name: 'Finance & Economy',  short: 'How value moves — what gets rewarded, what gets abandoned.' },
+  { slug: 'finance-economy', name: 'Economy',  short: 'How value moves — what gets rewarded, what gets abandoned.' },
   { slug: 'legacy',          name: 'Legacy',             short: 'What we leave for those who come after us.' },
   { slug: 'vision',          name: 'Vision',             short: 'Where we are going. Collective imagination, shared direction.' },
 ]

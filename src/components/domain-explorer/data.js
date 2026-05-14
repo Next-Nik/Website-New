@@ -1,7 +1,7 @@
 // data.js — fetches from Supabase, falls back to static data
 
 export const TOP_LEVEL_GOAL =
-  "A thriving planet and a thriving humanity — where all life flourishes, and we are proud of the part we played.";
+  "A thriving planet and a thriving humanity, where all life flourishes, and we are proud of the part we played.";
 
 function placeholders(prefix, depth) {
   if (depth === 0) return [];
@@ -60,7 +60,7 @@ export const STATIC_DOMAINS = [
       sub("tech-energy","Energy","Clean energy is abundant, accessible, and equitably distributed.","The systems through which civilisation generates and moves energy."),
       sub("tech-frontier","Frontier & Emerging Technology","What we are building next is governed by wisdom, not just capability.","The technologies at the edge of current knowledge — with the highest potential and the highest risk."),
     ]},
-  { id: "finance-economy", name: "Finance & Economy",
+  { id: "finance-economy", name: "Economy",
     horizonGoal: "Resources flow toward what sustains and generates life — rewarding care, contribution, and long-term thinking.",
     description: "How humanity creates, moves, and allocates the resources that sustain life. The economy is not a natural phenomenon. It is a design. It can be redesigned.",
     subDomains: [

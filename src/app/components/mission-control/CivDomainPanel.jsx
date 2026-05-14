@@ -47,6 +47,7 @@ import {
   FONT_DISPLAY, FONT_SC, FONT_BODY,
 } from './tokens'
 import { HORIZON_DECOMPOSITIONS } from '../../constants/horizonDecompositions'
+import { HorizonScaleModal, SCALE_LINK_STYLE } from '../../../components/HorizonScaleModal'
 
 // Convert markdown **bold** to <strong> while escaping any other HTML.
 // Used to render the `how_we_measure` paragraphs which lead with bolded
@@ -71,7 +72,9 @@ export default function CivDomainPanel({
   parentPanelOpen = false,
   showOverview = false,
   topLevelGoal = '',
-  overviewBody = '',
+  overviewHorizon = '',
+  overviewState = '',
+  overviewNext = '',
   civScores = {},
   civDetails = {},
   currentStateData = {},
@@ -114,6 +117,10 @@ export default function CivDomainPanel({
   // Expandable "Why these indicators" — collapsed by default so the
   // panel doesn't overwhelm on first glance. Reset when domain changes.
   const [whyOpen, setWhyOpen] = useState(false)
+  // Planetary scale modal — opened by inline "scale" link in the overview
+  // "Where we are now" section. Renders the Horizon Scale with the planet
+  // (civilisational) descriptors.
+  const [scaleOpen, setScaleOpen] = useState(false)
   useEffect(() => { setWhyOpen(false) }, [domainId])
 
   // Position-anchor scrolling. When a user clicks a Position node
@@ -197,12 +204,63 @@ export default function CivDomainPanel({
         {isOverview && (
           <div className="mc-civ-overview">
             <p className="mc-civ-overview-eyebrow">OUR PLANET</p>
-            <h2 className="mc-civ-title">The Overview Effect</h2>
+            <h2 className="mc-civ-title">A thriving planet, a thriving humanity</h2>
             <div className="mc-civ-rule" />
-            {overviewBody.split('\n\n').map((para, i) => (
-              <p key={i} className="mc-civ-body-text">{para}</p>
-            ))}
-            {topLevelGoal && <p className="mc-civ-goal">{topLevelGoal}</p>}
+
+            {/* ── THE NEXTUS HORIZON ─────────────────────────── */}
+            {overviewHorizon && (
+              <div className="mc-civ-overview-section">
+                <p className="mc-civ-section-label">THE NEXTUS HORIZON</p>
+                {topLevelGoal && (
+                  <p className="mc-civ-horizon">{`"${topLevelGoal}"`}</p>
+                )}
+                {overviewHorizon.split('\n\n').map((para, i) => (
+                  <p key={`h-${i}`} className="mc-civ-body-text">{para}</p>
+                ))}
+              </div>
+            )}
+
+            {/* ── WHERE WE ARE NOW ────────────────────────────
+                First paragraph may contain {SCALE_LINK} — split on it
+                and render an inline button that opens the planet scale
+                modal. Subsequent paragraphs are plain text. */}
+            {overviewState && (
+              <div className="mc-civ-overview-section">
+                <p className="mc-civ-section-label">WHERE WE ARE NOW</p>
+                {overviewState.split('\n\n').map((para, i) => {
+                  if (para.includes('{SCALE_LINK}')) {
+                    const [before, after] = para.split('{SCALE_LINK}')
+                    return (
+                      <p key={`s-${i}`} className="mc-civ-body-text">
+                        {before}
+                        <button
+                          type="button"
+                          onClick={() => setScaleOpen(true)}
+                          style={SCALE_LINK_STYLE}
+                        >
+                          scale
+                        </button>
+                        {after}
+                      </p>
+                    )
+                  }
+                  return (
+                    <p key={`s-${i}`} className="mc-civ-body-text">{para}</p>
+                  )
+                })}
+              </div>
+            )}
+
+            {/* ── WHAT YOU CAN DO HERE ────────────────────────── */}
+            {overviewNext && (
+              <div className="mc-civ-overview-section">
+                <p className="mc-civ-section-label">WHAT YOU CAN DO HERE</p>
+                {overviewNext.split('\n\n').map((para, i) => (
+                  <p key={`n-${i}`} className="mc-civ-body-text">{para}</p>
+                ))}
+              </div>
+            )}
+
             <ul className="mc-civ-chips">
               {currentList.map((d, i) => (
                 <li key={d.id || i}>
@@ -215,6 +273,13 @@ export default function CivDomainPanel({
             </ul>
           </div>
         )}
+
+        {/* Planet-scale modal — opens from the inline "scale" link above */}
+        <HorizonScaleModal
+          open={scaleOpen}
+          onClose={() => setScaleOpen(false)}
+          system="planet"
+        />
 
         {(showParentPanel || showDomainPanel) && itemForDisplay && (
           <div className="mc-civ-domain">
@@ -701,57 +766,91 @@ const PANEL_CSS = `
 
 .mc-civ-overview-eyebrow {
   font-family: ${FONT_SC};
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 600;
   letter-spacing: 0.22em;
   color: ${GOLD_LT};
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   text-transform: uppercase;
 }
 
 .mc-civ-title {
   font-family: ${FONT_DISPLAY};
-  font-size: 32px;
-  font-weight: 500;
-  margin: 0 0 8px;
+  font-size: 36px;
+  font-weight: 600;
+  margin: 0 0 10px;
   letter-spacing: -0.005em;
   color: ${TEXT_WHITE};
+  line-height: 1.1;
 }
 .mc-civ-horizon {
   font-family: ${FONT_BODY};
-  font-size: 16px;
+  font-size: 17px;
   font-style: italic;
   color: ${GOLD_LT};
-  margin: 0 0 14px;
-  line-height: 1.45;
+  margin: 0 0 16px;
+  line-height: 1.5;
 }
 .mc-civ-rule {
   width: 40px;
   height: 1px;
   background: ${GOLD};
-  margin: 14px 0 16px;
+  margin: 14px 0 18px;
 }
 .mc-civ-body-text {
   font-family: ${FONT_BODY};
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 16px;
+  line-height: 1.65;
   margin: 0 0 14px;
   color: ${TEXT_WHITE_META};
 }
 .mc-civ-goal {
   font-family: ${FONT_BODY};
-  font-size: 16px;
+  font-size: 17px;
   font-style: italic;
   color: ${GOLD_LT};
   margin: 18px 0 14px;
   line-height: 1.5;
 }
 
+.mc-civ-overview-section {
+  margin: 22px 0 0;
+}
+.mc-civ-overview-section:first-of-type {
+  margin-top: 14px;
+}
+
 .mc-civ-section-label {
   font-family: ${FONT_SC};
-  font-size: 10px;
+  font-size: 11px;
+  font-weight: 600;
   letter-spacing: 0.22em;
   color: ${GOLD_LT};
-  margin: 18px 0 10px;
+  margin: 18px 0 12px;
+}
+
+/* Mobile — typography up across the panel for screen legibility */
+@media (max-width: 720px) {
+  .mc-civ-title {
+    font-size: 32px;
+    font-weight: 700;
+  }
+  .mc-civ-body-text {
+    font-size: 17px;
+    line-height: 1.6;
+  }
+  .mc-civ-horizon {
+    font-size: 18px;
+    line-height: 1.55;
+  }
+  .mc-civ-goal {
+    font-size: 18px;
+  }
+  .mc-civ-section-label,
+  .mc-civ-overview-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.20em;
+  }
 }
 
 /* Domain chips */

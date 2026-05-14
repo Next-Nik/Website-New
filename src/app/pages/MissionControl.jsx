@@ -107,15 +107,27 @@ function orderTopLevel(domains) {
   return ordered.length === CIV_KEYS.length ? ordered : domains
 }
 
-// Body for the top-level overview that the slimmed CivDomainPanel renders.
-// Title is set separately in CivDomainPanel: "Our Planet · The Overview Effect"
-const OVERVIEW_BODY = `Seven civilisational domains. A Horizon Goal for each — what a thriving version of this domain would actually look like, written in plain language. A live score for where we are right now, drawn from indicators most people have never seen in one place. The gap between the two is the work.
+// ─── Overview Body Sections ─────────────────────────────────
+// The overview is the planet-level mirror of a domain panel.
+// Three sections, parallel structure to per-domain panels:
+//
+//   1. NextUs Horizon — the unified vision across all seven domains.
+//   2. Where we are now — the honest planetary state.
+//   3. What you can do here — how a visitor moves from reading to acting.
+//
+// OVERVIEW_STATE uses the token {SCALE_LINK} where the inline scale
+// link should appear. CivDomainPanel renders this as a button that
+// opens the planet-scale modal.
 
-This view exists because the question "what are we actually building toward, together" has no answer most people can point to. Most of the data that could answer it sits in separate dashboards, journals, and reports — never assembled into a single picture, never connected to the people already doing the work.
+const OVERVIEW_HORIZON = `That's the vision, that's the aim, that is what NextUs is for. A thriving humanity on a thriving planet, every life carrying a real chance to develop fully, every domain of civilisation serving what life needs.
 
-We do not claim the picture is complete. We claim it is the first attempt to put it on one page, name the gap honestly, and make it possible for anyone to find their place in it.
+The seven domains are not seven separate causes. They are one picture, viewed from seven angles. Vision is what we are choosing. Human Being is who we are becoming. Nature is what holds us. Society is how we relate. Economy is how value moves. Technology is what we are building. Legacy is what survives us. When any one of them fails, the others bend under the weight.`
 
-Pick a domain. The state of it. The goal for it. The actors already in motion. Where you might plant your own flag.`
+const OVERVIEW_STATE = `No domain currently reads above 6.2 out of 10 on our {SCALE_LINK}. Most sit in Friction. Society, Vision, Legacy, and Nature are below 4. The numbers come from indicators most people have never seen in one place — atmospheric CO₂, the Doomsday Clock, climate finance flows, biodiversity, democracy quality, refugee counts, AI incidents. They are not predictions. They are the read of where humanity stands today, on the scale of the goals we say we want.
+
+It is not a comfortable picture. It is also not a final one. The map exists so the gap between where we are and where we are trying to go becomes something we can navigate, together, instead of carrying alone.`
+
+const OVERVIEW_NEXT = `Pick a domain. Read its Horizon — what a thriving version actually looks like. See where we are now in that domain, and which indicators are doing the worst of the lifting. Find the actors already in motion. Place yourself: an organisation, a practice, a contribution, a question. The map is meant to be lived in, not just read.`
 
 // ─── Helpers (preserved from prior version) ──────────────────
 
@@ -274,10 +286,14 @@ function civPlacementKey(purposeData) {
   }
   const labelMap = {
     'HUMAN BEING':     'human',
+    'HUMAN':           'human',
     'NATURE':          'nature',
     'SOCIETY':         'society',
     'TECHNOLOGY':      'tech',
+    'TECH':            'tech',
+    'ECONOMY':         'finance',
     'FINANCE & ECONOMY':'finance',
+    'FINANCE':         'finance',
     'LEGACY':          'legacy',
     'VISION':          'vision',
   }
@@ -1098,7 +1114,9 @@ export default function MissionControl() {
             parentPanelOpen={parentPanelOpen}
             showOverview={showOverview && levelPath.length === 0}
             topLevelGoal={TOP_LEVEL_GOAL}
-            overviewBody={OVERVIEW_BODY}
+            overviewHorizon={OVERVIEW_HORIZON}
+            overviewState={OVERVIEW_STATE}
+            overviewNext={OVERVIEW_NEXT}
             civScores={civScores}
             civDetails={civDetails}
             currentStateData={CURRENT_STATE}

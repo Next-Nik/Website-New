@@ -56,7 +56,7 @@ const CIV_DOMAIN_DISPLAY = [
   { id: 'vision',          label: 'Vision' },
   { id: 'human-being',     label: 'Human Being' },
   { id: 'nature',          label: 'Nature' },
-  { id: 'finance-economy', label: 'Finance & Economy' },
+  { id: 'finance-economy', label: 'Economy' },
   { id: 'technology',      label: 'Technology' },
   { id: 'legacy',          label: 'Legacy' },
   { id: 'society',         label: 'Society' },

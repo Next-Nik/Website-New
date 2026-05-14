@@ -292,7 +292,7 @@ function CollaborationCardFields({ payload, onChange, locked }) {
   const CIV_DOMAINS = [
     { value: 'human-being', label: 'Human Being' }, { value: 'society', label: 'Society' },
     { value: 'nature', label: 'Nature' }, { value: 'technology', label: 'Technology' },
-    { value: 'finance-economy', label: 'Finance and Economy' }, { value: 'legacy', label: 'Legacy' },
+    { value: 'finance-economy', label: 'Economy' }, { value: 'legacy', label: 'Legacy' },
     { value: 'vision', label: 'Vision' },
   ]
   function toggleDomain(slug) {

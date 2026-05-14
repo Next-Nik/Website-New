@@ -49,7 +49,7 @@ const DOMAIN_LABEL = {
   'society':         'Society',
   'nature':          'Nature',
   'technology':      'Technology',
-  'finance-economy': 'Finance & Economy',
+  'finance-economy': 'Economy',
   'legacy':          'Legacy',
   'vision':          'Vision',
 }

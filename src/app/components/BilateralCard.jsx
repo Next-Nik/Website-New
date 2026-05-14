@@ -21,7 +21,7 @@ const SELF_DOMAIN_LABEL = {
 
 const CIV_DOMAIN_LABEL = {
   'human-being': 'Human Being', 'society': 'Society', 'nature': 'Nature',
-  'technology': 'Technology', 'finance-economy': 'Finance and Economy',
+  'technology': 'Technology', 'finance-economy': 'Economy',
   'legacy': 'Legacy', 'vision': 'Vision',
 }
 

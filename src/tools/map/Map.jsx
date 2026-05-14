@@ -28,7 +28,7 @@ export const DOMAINS = [
   { id: 'path',          label: 'Path',          question: 'Am I walking my path — or just walking?',                    fractal: 'Vision' },
   { id: 'spark',         label: 'Spark',         question: "When did I last feel genuinely alive — and what's been costing me that?",           fractal: 'Human Being' },
   { id: 'body',          label: 'Body',          question: "Am I honouring this instrument — or running it into the ground?",                  fractal: 'Nature' },
-  { id: 'finances',      label: 'Finances',      question: 'Do I have the agency to act on what matters?',              fractal: 'Finance & Economy' },
+  { id: 'finances',      label: 'Finances',      question: 'Do I have the agency to act on what matters?',              fractal: 'Economy' },
   { id: 'connection', label: 'Connection', question: "Am I truly known by anyone — and am I truly knowing them?",                        fractal: 'Society' },
   { id: 'inner_game',    label: 'Inner Game',    question: "What story about myself is quietly running the room — and is that story still true?", fractal: 'Legacy' },
   { id: 'signal',    label: 'Signal',    question: "Is what I'm broadcasting aligned with who I actually am?", fractal: 'Technology' },

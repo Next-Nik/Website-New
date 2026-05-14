@@ -496,7 +496,7 @@ function SelfWheel({
               onClick={onSelect ? () => onSelect(i) : undefined}
               style={{
                 fontFamily: FONT_SC,
-                fontSize: 15,
+                fontSize: 17,
                 letterSpacing: '0.18em',
                 fill: isActive ? activeFill : baseFill,
                 fontWeight: isActive ? 700 : 600,
@@ -860,16 +860,16 @@ function CivWheel({
     return centreLabel.toUpperCase().split(' ')
   }, [centreLabel])
 
-  const centreFontSize = 10.5
+  const centreFontSize = 12
   const centreLineHeight = 1.25
   const centreRadius = useMemo(() => {
     if (!centreLabelLines.length) return 22
     const longest = Math.max(...centreLabelLines.map(l => l.length))
-    // Cormorant SC at 10.5px with 0.18em letter-spacing ≈ 8.2px per char
-    const halfW = (longest * 8.2) / 2 + 8
-    const halfH = (centreLabelLines.length * centreFontSize * centreLineHeight) / 2 + 8
+    // Cormorant SC at 12px with 0.18em letter-spacing ≈ 9.4px per char
+    const halfW = (longest * 9.4) / 2 + 10
+    const halfH = (centreLabelLines.length * centreFontSize * centreLineHeight) / 2 + 10
     const raw = Math.max(halfW, halfH)
-    return Math.min(42, Math.max(22, raw))
+    return Math.min(48, Math.max(26, raw))
   }, [centreLabelLines])
 
   return (
@@ -1126,7 +1126,7 @@ function CivWheel({
               textAnchor={labelPos.anchor}
               style={{
                 fontFamily: FONT_SC,
-                fontSize: 15,
+                fontSize: 17,
                 letterSpacing: '0.18em',
                 fill: isActive || isPlacement ? activeLabelFill : baseLabelFill,
                 fontWeight: isActive || isPlacement ? 700 : 600,

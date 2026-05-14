@@ -63,11 +63,11 @@ export const HORIZON_FLOOR = {
 
   'finance-economy': {
     slug: 'finance-economy',
-    label: 'Finance & Economy',
+    label: 'Economy',
     horizonGoal:
       'An economy in which everyone has enough to act on what matters, contribution is freely chosen rather than coerced, and the living systems that make all exchange possible are counted, sustained, and restored.',
     explainer:
-      'Finance & Economy\u2019s Horizon is a future in which the system of exchange \u2014 capital, currency, commerce, instruments, livelihoods, commons \u2014 serves the social Horizon directly. It commits to economic structures in which no person lacks what they need to function, in which capital flows toward what heals and regenerates, and in which value is measured by its contribution to shared life rather than by accumulation alone. The wound this Horizon heals is the long pattern of economic concentration that has produced planetary inequality on a scale unprecedented in human history, and the parallel pattern of measuring growth without accounting for what growth has cost. The platform\u2019s stance: visions, actors, and rhetoric that frame the concentration of planetary resources in the hands of a tiny minority as legitimate, or the resulting deprivation of the many as inevitable, deserved, or beyond intervention, are incompatible with this Horizon and are not hosted here.',
+      'Economy\u2019s Horizon is a future in which the system of exchange \u2014 capital, currency, commerce, instruments, livelihoods, commons \u2014 serves the social Horizon directly. It commits to economic structures in which no person lacks what they need to function, in which capital flows toward what heals and regenerates, and in which value is measured by its contribution to shared life rather than by accumulation alone. The wound this Horizon heals is the long pattern of economic concentration that has produced planetary inequality on a scale unprecedented in human history, and the parallel pattern of measuring growth without accounting for what growth has cost. The platform\u2019s stance: visions, actors, and rhetoric that frame the concentration of planetary resources in the hands of a tiny minority as legitimate, or the resulting deprivation of the many as inevitable, deserved, or beyond intervention, are incompatible with this Horizon and are not hosted here.',
   },
 
   'legacy': {

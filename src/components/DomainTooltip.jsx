@@ -33,7 +33,7 @@ export const NEXTUS_TIPS = {
 
 export const NEXTUS_LABEL_MAP = {
   'Human Being': 'human-being', 'Society': 'society', 'Nature': 'nature',
-  'Technology': 'technology', 'Finance & Economy': 'finance-economy',
+  'Technology': 'technology', 'Economy': 'finance-economy',
   'Legacy': 'legacy', 'Vision': 'vision',
 }
 

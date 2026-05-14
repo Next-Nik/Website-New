@@ -83,7 +83,7 @@ const FAQS = [
       },
       {
         q: 'What is the fractal?',
-        a: 'The seven domains of the Horizon Suite map directly onto the seven domains of NextUs. Path maps to Vision. Spark to Human Being. Body to Nature. Finances to Finance and Economy. Connection to Society. Inner Game to Legacy. Signal to Technology. The same physics, operating at different scales. Personal navigation and civilisational navigation are not two separate projects.',
+        a: 'The seven domains of the Horizon Suite map directly onto the seven domains of NextUs. Path maps to Vision. Spark to Human Being. Body to Nature. Finances to Economy. Connection to Society. Inner Game to Legacy. Signal to Technology. The same physics, operating at different scales. Personal navigation and civilisational navigation are not two separate projects.',
       },
       {
         q: 'Is this connected to coaching with Nik?',

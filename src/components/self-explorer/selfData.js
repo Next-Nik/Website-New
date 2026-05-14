@@ -13,7 +13,7 @@ export const FRACTAL_MAP = {
   path:       { civilisational: 'Vision',            label: 'Path → Vision' },
   spark:      { civilisational: 'Human Being',       label: 'Spark → Human Being' },
   body:       { civilisational: 'Nature',            label: 'Body → Nature' },
-  finances:   { civilisational: 'Finance & Economy', label: 'Finances → Finance & Economy' },
+  finances:   { civilisational: 'Economy', label: 'Finances → Economy' },
   connection: { civilisational: 'Society',           label: 'Connection → Society' },
   inner_game: { civilisational: 'Legacy',            label: 'Inner Game → Legacy' },
   signal:     { civilisational: 'Technology',        label: 'Signal → Technology' },
@@ -85,7 +85,7 @@ export const SELF_DOMAINS = [
     horizonGoal: "I have the agency to act on what matters to me.",
     description: "Do you have the charge to act? This is about agency, not wealth. Financial stress costs more than money — it costs cognitive bandwidth, relationship capacity, and the ability to take the risks that matter.",
     lifeMission: "Do I have the agency to act on what matters?",
-    civilisational: 'Finance & Economy',
+    civilisational: 'Economy',
     subDomains: [
       approach('fin-agency',       'Agency',       'My financial position gives me genuine freedom of movement.',  'The practical capacity to act. Not rich — free enough to make the choices that matter.'),
       approach('fin-income',       'Income',       'My income reflects the value I bring and supports the life I want.', 'The flow of money in. How it is generated, what it is tied to, whether it is sustainable.'),

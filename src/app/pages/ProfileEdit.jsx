@@ -34,7 +34,7 @@ const CIV_DOMAIN_OPTIONS = [
   { value: 'society',         label: 'Society' },
   { value: 'nature',          label: 'Nature' },
   { value: 'technology',      label: 'Technology' },
-  { value: 'finance-economy', label: 'Finance & Economy' },
+  { value: 'finance-economy', label: 'Economy' },
   { value: 'legacy',          label: 'Legacy' },
   { value: 'vision',          label: 'Vision' },
 ]

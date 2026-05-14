@@ -405,7 +405,7 @@ const FOCUS_DOMAINS = [
   { id: 'society',         label: 'Society',           goal: 'Humanity knows how to be human together — and every individual is better for it.' },
   { id: 'nature',          label: 'Nature',            goal: 'Ecosystems are thriving and we are living in harmony with the planet.' },
   { id: 'technology',      label: 'Technology',        goal: 'Our creations support and amplify life.' },
-  { id: 'finance-economy', label: 'Finance & Economy', goal: 'Resources flow toward what sustains and generates life — rewarding care, contribution, and long-term thinking.' },
+  { id: 'finance-economy', label: 'Economy', goal: 'Resources flow toward what sustains and generates life — rewarding care, contribution, and long-term thinking.' },
   { id: 'legacy',          label: 'Legacy',            goal: 'We are ancestors worth having.' },
   { id: 'vision',          label: 'Vision',            goal: 'Into the unknown. On purpose. Together.' },
 ]

@@ -22,7 +22,7 @@ const CIV_DOMAIN_LABEL = {
   'society':        'Society',
   'nature':         'Nature',
   'technology':     'Technology',
-  'finance-economy':'Finance and Economy',
+  'finance-economy':'Economy',
   'legacy':         'Legacy',
   'vision':         'Vision',
 }
