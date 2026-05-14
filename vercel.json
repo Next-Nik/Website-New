@@ -9,12 +9,17 @@
     {
       "path": "/api/indicator-cron",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/compute-daily-snapshot",
+      "schedule": "30 3 * * *"
     }
   ],
   "functions": {
     "api/integrity-cron.js":            { "maxDuration": 60 },
     "api/indicator-cron.js":            { "maxDuration": 60 },
     "api/indicator-worker.js":          { "maxDuration": 60 },
+    "api/compute-daily-snapshot.js":    { "maxDuration": 30 },
     "api/nextus-match.js":              { "maxDuration": 15 },
     "api/org-extract.js":               { "maxDuration": 60 },
     "api/map-chat.js":                  { "maxDuration": 60 },
@@ -57,6 +62,7 @@
     { "source": "/api/org-extract",                         "destination": "/api/org-extract" },
     { "source": "/api/debrief-chat",                        "destination": "/api/debrief-chat" },
     { "source": "/api/integrity-cron",                      "destination": "/api/integrity-cron" },
+    { "source": "/api/compute-daily-snapshot",               "destination": "/api/compute-daily-snapshot" },
     { "source": "/api/podcast-feed",                        "destination": "/api/podcast-feed" },
     { "source": "/(.*)",                                    "destination": "/index.html" }
   ]
