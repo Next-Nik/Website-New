@@ -92,14 +92,54 @@ function easeInOut(t) {
 // Civ wheel labels rotate with the spokes, so position is computed
 // from the tip's actual angle. Anchor flips based on which side of
 // the wheel the tip is on.
+//
+// Placement rule (May 2026 update):
+// Labels are placed with a radial component (outward along the spoke)
+// AND a tangential component (perpendicular to the spoke) that scales
+// with how horizontal the spoke is. Horizontal-ish labels are pulled
+// inward and pushed toward the closer pole (away from the rails AND
+// away from their own spoke node). Vertical-ish labels (near top and
+// bottom of the wheel) keep the original outward placement — they
+// don't collide with rails or nodes.
+//
+// `horizontal` = |ux|, smoothly weighted by curve to soften diagonals.
 function civLabelPosFor(tipX, tipY, angleRad) {
-  const GAP = 14
-  // Unit vector pointing outward from centre along the spoke
+  // Unit vector pointing outward from centre along the spoke.
   const ux = Math.cos(angleRad)
   const uy = Math.sin(angleRad)
-  const x = tipX + ux * GAP
-  const y = tipY + uy * GAP + 4 // +4 so vertical centring of small caps reads
-  // Anchor: middle if tip is near top/bottom, start/end based on side
+
+  // Horizontality of the spoke: 0 at pure top/bottom, 1 at pure sides.
+  // Squaring softens diagonals so they're only partially affected.
+  const horizontal = ux * ux  // |ux|² — 0..1, weighted toward sides
+
+  // Radial offset (outward along spoke).
+  // Vertical spokes: full 14px outward (unchanged from prior behaviour).
+  // Horizontal spokes: pulled inward to 4px outward — clears the rails.
+  const radialBase = 14
+  const radialPull = 10  // how much we shrink radial on side labels
+  const radial = radialBase - radialPull * horizontal
+
+  // Tangential offset (perpendicular to spoke).
+  // Vertical spokes: 0 — no sideways nudge needed.
+  // Horizontal spokes: 12px, pushed toward the closer pole of the wheel
+  // (negative when upper half so label moves up; positive when lower half
+  // so label moves down). uy < 0 means upper hemisphere in screen coords.
+  const tangentMax = 12
+  const poleDir    = uy >= 0 ? 1 : -1  // +1 down, -1 up
+  const tangent    = tangentMax * horizontal * poleDir
+
+  // Tangent vector is perpendicular to (ux, uy): conventionally (-uy, ux).
+  // We pick the perpendicular that points toward the pole on the same side.
+  // Since |ux| collapses the sign on the sides, just project tangent onto y.
+  const px = 0           // x of tangent contribution — kept at 0; we don't
+                         // want side labels drifting laterally past the rail
+                         // edge. All tangent motion is vertical.
+  const py = tangent
+
+  const x = tipX + ux * radial + px
+  const y = tipY + uy * radial + py + 4 // +4 so vertical centring of small caps reads
+
+  // Anchor: middle if tip is near top/bottom, start/end based on side.
   let anchor = 'middle'
   if (ux > 0.2) anchor = 'start'
   else if (ux < -0.2) anchor = 'end'
