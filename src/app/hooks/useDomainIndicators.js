@@ -405,7 +405,139 @@ const CIV_DOMAIN_TO_WHEEL_KEY = {
 
 const ALL_CIV_DOMAINS = Object.keys(CIV_DOMAIN_TO_WHEEL_KEY)
 
+// ── Civ scores cache ────────────────────────────────────────────
+// Module-level cache for the planetary domain scores. The fan-out
+// resolves ~35 indicator values across 7 domains; doing that on every
+// mount adds ~1-2s of perceived latency on slower connections.
+//
+// Cache shape:
+//   { scores, details, fetchedAt }  — fetchedAt is a ms timestamp
+//
+// Cache lifetime: CIV_CACHE_TTL_MS. After expiry, the next mount
+// triggers a refresh. Cache is shared across all components that
+// call useCivDomainScores() within the same session, so the wheel,
+// the World View panel, and any other consumer share one fetch.
+//
+// In-flight dedup: if a fetch is already in progress, subsequent
+// mounts await the same promise rather than firing a new fetch.
+
+const CIV_CACHE_TTL_MS = 10 * 60 * 1000  // 10 minutes
+let civCache = null
+let civInFlight = null
+const civSubscribers = new Set()
+
+function notifyCivSubscribers(snapshot) {
+  for (const fn of civSubscribers) {
+    try { fn(snapshot) } catch { /* swallow */ }
+  }
+}
+
+async function loadCivScoresOnce() {
+  // 1. Load all headline indicators across all 7 civ domains in
+  //    a single round-trip.
+  const { data: catalog, error: catalogErr } = await supabase
+    .from('nextus_domain_indicators')
+    .select(
+      'id, domain_id, subdomain_slug, lens_slugs, name, unit, tier, ' +
+      'source_name, source_url, native_resolution, refresh_cadence, ' +
+      'direction_preferred, methodology_note, headline_order, ' +
+      'tagged_principles, target_value, floor_value, rollup_weight'
+    )
+    .in('domain_id', ALL_CIV_DOMAINS)
+    .eq('status', 'active')
+    .eq('is_headline', true)
+    .order('headline_order', { ascending: true })
+
+  if (catalogErr) throw catalogErr
+
+  // 2. Resolve current values — planetary focus only for the wheel.
+  const resolved = await Promise.all(
+    (catalog || []).map(ind => resolveCurrentValue(ind, null))
+  )
+
+  // 3. Group by domain and compute per-domain rollup.
+  const byDomain = {}
+  for (const ind of resolved) {
+    const d = ind.domain_id
+    if (!byDomain[d]) byDomain[d] = []
+    byDomain[d].push(ind)
+  }
+
+  const nextScores  = {}
+  const nextDetails = {}
+  for (const d of ALL_CIV_DOMAINS) {
+    const key = CIV_DOMAIN_TO_WHEEL_KEY[d]
+    const list = byDomain[d] || []
+    const result = computeDomainScore(list)
+    nextScores[key]  = result.score
+    nextDetails[key] = result
+  }
+
+  return { scores: nextScores, details: nextDetails, fetchedAt: Date.now() }
+}
+
+async function ensureCivScores(forceRefresh = false) {
+  // Fresh cache hit
+  if (!forceRefresh && civCache && (Date.now() - civCache.fetchedAt) < CIV_CACHE_TTL_MS) {
+    return civCache
+  }
+  // Fetch in flight — dedup
+  if (civInFlight) return civInFlight
+
+  civInFlight = (async () => {
+    try {
+      const snapshot = await loadCivScoresOnce()
+      civCache = snapshot
+      notifyCivSubscribers(snapshot)
+      return snapshot
+    } finally {
+      civInFlight = null
+    }
+  })()
+  return civInFlight
+}
+
 export function useCivDomainScores() {
+  // Seed state from cache if present — first paint is instant when
+  // cache is warm. Otherwise we start in a loading state.
+  const [scores, setScores]   = useState(civCache?.scores  || {})
+  const [details, setDetails] = useState(civCache?.details || {})
+  const [loading, setLoading] = useState(!civCache)
+  const [error, setError]     = useState(null)
+
+  const load = useCallback(async (forceRefresh = false) => {
+    setError(null)
+    if (forceRefresh || !civCache) setLoading(true)
+    try {
+      const snapshot = await ensureCivScores(forceRefresh)
+      setScores(snapshot.scores)
+      setDetails(snapshot.details)
+      setLoading(false)
+    } catch (err) {
+      setError(err)
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    // Subscribe to cache refreshes from other components
+    const onRefresh = (snapshot) => {
+      setScores(snapshot.scores)
+      setDetails(snapshot.details)
+      setLoading(false)
+    }
+    civSubscribers.add(onRefresh)
+    load()
+    return () => { civSubscribers.delete(onRefresh) }
+  }, [load])
+
+  return { scores, details, loading, error, reload: () => load(true) }
+}
+
+// ── Legacy single-mount loader, retained for reference ───────────
+// (The cached version above replaces it; keeping the symbol export
+// removed so callers must use the cached hook.)
+function _civDomainScoresLegacyUnused() {
   const [scores, setScores]   = useState({})
   const [details, setDetails] = useState({})
   const [loading, setLoading] = useState(true)

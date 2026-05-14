@@ -851,33 +851,85 @@ function CivWheel({
           the polygon "collapse" toward unscored spokes. We only render
           the polygon when at least 3 domains are scored — fewer than 3
           can't form a meaningful shape. */}
+      {/* Current-state polygon + vertex dots — same node structure as
+          the Self wheel. Vertices at (score/10) * RADIUS along each
+          spoke, coloured by domain, clickable, with a pulsing active
+          ring on the featured domain. Only renders when at least 3
+          domains are scored. */}
       {(() => {
         const scoredCount = keys.reduce((n, k) => n + (current[k] != null ? 1 : 0), 0)
         if (scoredCount < 3) return null
-        const points = keys.map((k, i) => {
+
+        // Compute vertex positions and metadata once
+        const civVerts = keys.map((k, i) => {
           const score = current[k]
           const horizon = horizons[k] ?? 10
           const ratio = (score != null && horizon > 0) ? Math.min(score / horizon, 1) : 0
-          const r = ratio * RADIUS
+          // Minimum visible radius — keep the vertex outside the centre
+          // orb so low-scoring domains don't disappear behind it.
+          const minR = centreRadius + 8
+          const r = score == null ? 0 : Math.max(minR, ratio * RADIUS)
           const baseAngle = angleFor(i, count)
           const rotRad = (displayRot * Math.PI) / 180
           const a = baseAngle + rotRad
-          return `${(CX + r * Math.cos(a)).toFixed(1)},${(CY + r * Math.sin(a)).toFixed(1)}`
-        }).join(' ')
+          return {
+            i,
+            key: k,
+            score,
+            x: CX + r * Math.cos(a),
+            y: CY + r * Math.sin(a),
+            color: civColor(k),
+          }
+        })
+
+        const polyPoints = civVerts.map(v => `${v.x.toFixed(1)},${v.y.toFixed(1)}`).join(' ')
+
         return (
-          <polygon
-            points={points}
-            fill={GOLD}
-            fillOpacity="0.06"
-            stroke={GOLD}
-            strokeWidth="1.25"
-            strokeOpacity="0.55"
-            strokeLinejoin="round"
-            style={{
-              opacity: bloomed ? 1 : bloomT,
-              pointerEvents: 'none',
-            }}
-          />
+          <g style={{ opacity: bloomed ? 1 : bloomT }}>
+            {/* Polygon — soft gold tint, behind vertex dots */}
+            <polygon
+              points={polyPoints}
+              fill={GOLD}
+              fillOpacity="0.06"
+              stroke={GOLD}
+              strokeWidth="1.25"
+              strokeOpacity="0.55"
+              strokeLinejoin="round"
+              style={{ pointerEvents: 'none' }}
+            />
+            {/* Clickable domain-coloured vertex dots */}
+            {civVerts.map(v => v.score != null && (
+              <g
+                key={`civ-vert-${v.i}`}
+                onClick={() => !busy && !busyLock && handleNodeClick(v.i)}
+                style={{ cursor: busy || busyLock ? 'default' : 'pointer' }}
+              >
+                {/* Generous invisible hit zone */}
+                <circle cx={v.x} cy={v.y} r={12} fill="transparent" />
+                {/* Visible coloured dot */}
+                <circle
+                  cx={v.x} cy={v.y} r={3.5}
+                  fill={v.color}
+                  stroke={dark ? '#0F1523' : '#FAFAF7'}
+                  strokeWidth="1"
+                  style={{ pointerEvents: 'none' }}
+                />
+              </g>
+            ))}
+            {/* Active domain ring — pulsing, on the featured spoke's score vertex */}
+            {activeIndex != null && civVerts[activeIndex] && civVerts[activeIndex].score != null && (() => {
+              const v = civVerts[activeIndex]
+              return (
+                <g style={{ pointerEvents: 'none' }}>
+                  <circle cx={v.x} cy={v.y} r={5} fill={GOLD} />
+                  <circle cx={v.x} cy={v.y} r={9} fill={GOLD} opacity="0.5">
+                    <animate attributeName="r" values="7;12;7" dur="2.5s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.5;0.85;0.5" dur="2.5s" repeatCount="indefinite" />
+                  </circle>
+                </g>
+              )
+            })()}
+          </g>
         )
       })()}
 
