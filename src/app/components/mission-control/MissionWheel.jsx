@@ -923,7 +923,10 @@ function CivWheel({
             score,
             x: CX + r * Math.cos(a),
             y: CY + r * Math.sin(a),
-            color: civColor(k),
+            // civColor returns an object {base, light, dark, ...}. Pick
+            // the stop that reads on the current stage: dark for the
+            // ink ground, light for parchment.
+            color: dark ? civColor(k).dark : civColor(k).light,
           }
         })
 
@@ -1059,14 +1062,17 @@ function CivWheel({
 
         const labelPos = civLabelPosFor(tipX, tipY, p.angle)
 
-        // Civ tip dot: domain colour. Active state lifts to base, otherwise
-        // sits at the dark stop so it reads on the ink ground without
-        // shouting. Pulsing halo around the active tip stays GOLD.
+        // Civ tip dot: domain colour. Active state lifts to the saturated
+        // base on parchment; on dark we stay at the lighter stop because
+        // base is the deep-saturation version, which goes invisible on
+        // ink. Pulsing halo around the active tip stays GOLD regardless.
         const dc = civColor(keys[i])
         const tipR = isActive ? 4.5 : 3
-        const tipFill = isActive ? dc.base : (dark ? dc.dark : dc.light)
+        const tipFill = isActive
+          ? (dark ? dc.dark : dc.base)
+          : (dark ? dc.dark : dc.light)
         const baseLabelFill = dark ? dc.dark : dc.light
-        const activeLabelFill = dc.base
+        const activeLabelFill = dark ? dc.dark : dc.base
 
         return (
           <g
