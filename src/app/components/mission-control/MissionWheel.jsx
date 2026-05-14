@@ -92,61 +92,17 @@ function easeInOut(t) {
 // Civ wheel labels rotate with the spokes, so position is computed
 // from the tip's actual angle. Anchor flips based on which side of
 // the wheel the tip is on.
-//
-// Placement rule (May 2026 — v3):
-//
-// Top/bottom spokes (|ux| ≤ |uy|, i.e. more vertical than horizontal):
-// label reads outward from the tip, centred. Original behaviour.
-//
-// Side spokes (|ux| > |uy|, i.e. more horizontal than vertical):
-// label anchor is FLIPPED so the text reads INWARD from the tip. A
-// right-side label is anchored `end` at the tip, so its text extends
-// leftward back toward the centre. This keeps the entire label inside
-// the SVG's viewBox — and therefore inside the centre column of the
-// page, away from the rails.
-//
-// Side labels are also pushed perpendicular to the spoke (toward the
-// closer pole of the wheel) so they don't sit on top of the spoke
-// node or cross the wheel polygon.
-//
-// The SVG has overflow:visible, which means anything drawn outside
-// the viewBox renders into adjacent DOM space (i.e. into the rails).
-// Keeping labels inside the viewBox is the actual constraint.
 function civLabelPosFor(tipX, tipY, angleRad) {
-  // Unit vector pointing outward from centre along the spoke.
+  const GAP = 14
+  // Unit vector pointing outward from centre along the spoke
   const ux = Math.cos(angleRad)
   const uy = Math.sin(angleRad)
-
-  // Side test: more horizontal than vertical.
-  const isSide = Math.abs(ux) > Math.abs(uy)
-
-  // Radial offset (outward along the spoke).
-  // Vertical spokes: +14 outward (label sits just past the tip).
-  // Side spokes: +2 (label anchor sits essentially AT the tip; the
-  //   anchor flip makes the text extend inward from there).
-  const radial = isSide ? 2 : 14
-
-  // Tangential offset (perpendicular to the spoke, on the y axis).
-  // Only applied to side spokes, where the inward-reading label needs
-  // to be lifted off the spoke line to avoid overlapping the node or
-  // crossing the wheel polygon.
-  // Sign: upper-side labels go up (negative y), lower-side labels go
-  // down (positive y). Magnitude 16px.
-  const tangentMax = 16
-  const poleDir = uy >= 0 ? 1 : -1
-  const tangent = isSide ? (tangentMax * poleDir) : 0
-
-  const x = tipX + ux * radial
-  const y = tipY + uy * radial + tangent + 4
-
-  // Anchor flip on side spokes — text reads inward.
-  // - Right side (ux > 0): anchor `end`, text extends leftward.
-  // - Left side  (ux < 0): anchor `start`, text extends rightward.
-  // - Top/bottom: anchor `middle`, text reads outward, centred.
+  const x = tipX + ux * GAP
+  const y = tipY + uy * GAP + 4 // +4 so vertical centring of small caps reads
+  // Anchor: middle if tip is near top/bottom, start/end based on side
   let anchor = 'middle'
-  if (isSide) {
-    anchor = ux > 0 ? 'end' : 'start'
-  }
+  if (ux > 0.2) anchor = 'start'
+  else if (ux < -0.2) anchor = 'end'
   return { x, y, anchor }
 }
 
