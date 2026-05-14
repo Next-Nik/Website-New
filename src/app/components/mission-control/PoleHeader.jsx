@@ -195,7 +195,7 @@ const POLES_CSS = `
   padding: 4px 0;
   font-family: ${FONT_DISPLAY};
   font-size: 22px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   color: ${TEXT_META};
   transition: color 0.2s ease;

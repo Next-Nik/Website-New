@@ -1,5 +1,19 @@
 /* ─── NextUs Design System ─────────────────────────────────── */
 
+/* ─── Self-hosted Lora Bold ─────────────────────────────────── */
+/* Google Fonts doesn't reliably serve Lora 700 for all subsets, */
+/* and on mobile the regular 400/600 reads thin. We self-host    */
+/* the bold so mobile chrome can lean on it confidently.         */
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/Lora-Bold.woff2') format('woff2'),
+       url('/fonts/Lora-Bold.woff')  format('woff'),
+       url('/fonts/Lora-Bold.ttf')   format('truetype');
+}
+
 :root {
   --bg:           #FAFAF7;
   --gold-dk:      #A8721A;

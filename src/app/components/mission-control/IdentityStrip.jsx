@@ -386,7 +386,7 @@ const STRIP_CSS = `
 .mc-identity-name {
   font-family: ${FONT_DISPLAY};
   font-size: 34px;
-  font-weight: 500;
+  font-weight: 600;
   color: ${TEXT_INK};
   line-height: 1;
   letter-spacing: -0.005em;
@@ -397,6 +397,7 @@ const STRIP_CSS = `
   text-align: center;
   font-family: ${FONT_SC};
   font-size: 11px;
+  font-weight: 600;
   letter-spacing: 0.18em;
   color: ${TEXT_META};
 }
@@ -451,6 +452,7 @@ const STRIP_CSS = `
   }
   .mc-identity-name {
     font-size: 30px;
+    font-weight: 700;
   }
   .mc-identity-fit {
     text-align: left;
