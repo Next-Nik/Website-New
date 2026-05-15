@@ -73,9 +73,14 @@ const LABEL_COLORS = {
 }
 
 const EMPTY_FORM = {
-  name: '', type: 'organisation', website: '', primary_domain: '',
+  name: '', type: 'organisation', tagline: '', image_url: '',
+  website: '', primary_domain: '',
   secondary_domains: [], scale: '', location_name: '',
   platform_principles: [], description: '',
+  // AI-extracted aux data (saved into actor_links / actor_press after insert)
+  _aiLinks: [], _aiPress: [],
+  // AI-proposed relationships (resolved during submit)
+  relationships: [],
 }
 
 // ── Primitives ─────────────────────────────────────────────────
@@ -183,6 +188,16 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
           {proposal.type || 'organisation'}
         </span>
         <span style={{ ...body, fontSize: '15px', color: dark }}>{proposal.name}</span>
+        {proposal.alignment_score != null && (
+          <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.40)', marginLeft: 'auto' }}>
+            Score {proposal.alignment_score}
+          </span>
+        )}
+      </div>
+
+      {checked && (
+        <div style={{ display: 'grid', gap: '10px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <div>
               <FieldLabel>Name</FieldLabel>
               <TextInput value={proposal.name} onChange={v => onChange('name', v)} placeholder="Name" />
@@ -213,6 +228,36 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
                 background: '#FFFFFF', outline: 'none', width: '100%',
                 resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box' }} />
           </div>
+
+          {/* Relationship + signal counts — these go in automatically with the save */}
+          {(proposal.relationships?.length > 0 || proposal.links?.length > 0 || proposal.press?.length > 0) && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', paddingTop: '4px' }}>
+              {proposal.relationships?.map((r, idx) => (
+                <span key={idx} style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+                  color: 'rgba(15,21,35,0.55)', background: 'rgba(200,146,42,0.06)',
+                  border: '1px solid rgba(200,146,42,0.20)',
+                  borderRadius: '40px', padding: '2px 9px' }}>
+                  {r.relationship_type === 'parent_child' ? 'child of ' : r.relationship_type + ' '}{r.to_name}
+                </span>
+              ))}
+              {proposal.links?.length > 0 && (
+                <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+                  color: 'rgba(15,21,35,0.55)', background: 'rgba(42,107,58,0.06)',
+                  border: '1px solid rgba(42,107,58,0.20)',
+                  borderRadius: '40px', padding: '2px 9px' }}>
+                  {proposal.links.length} link{proposal.links.length !== 1 ? 's' : ''}
+                </span>
+              )}
+              {proposal.press?.length > 0 && (
+                <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+                  color: 'rgba(15,21,35,0.55)', background: 'rgba(42,74,138,0.06)',
+                  border: '1px solid rgba(42,74,138,0.20)',
+                  borderRadius: '40px', padding: '2px 9px' }}>
+                  {proposal.press.length} press mention{proposal.press.length !== 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -308,15 +353,22 @@ export function AddPage() {
         ...f,
         name:           primary.name           || f.name,
         type:           primary.type           || f.type,
+        tagline:        primary.tagline        || f.tagline,
+        image_url:      primary.image_url      || f.image_url,
         website:        primary.website        || aiUrl,
         primary_domain: primary.domains?.[0]   || primary.domain_id || f.primary_domain,
         scale:          primary.scale          || f.scale,
         location_name:  primary.location_name  || f.location_name,
         description:    primary.description    || f.description,
+        // Stash auxiliary data for save phase — saved into actor_links and actor_press
+        _aiLinks:       primary.links          || [],
+        _aiPress:       primary.press          || [],
+        // Stash relationships so primary can have parent/child resolved
+        relationships:  primary.relationships  || [],
       }))
       setAiUsed(true)
 
-      // Remaining results become extra proposal cards
+      // Remaining results become extra proposal cards (carrying their own links/press/relationships)
       if (results.length > 1) {
         setExtras(results.slice(1))
         setExtraChecked(results.slice(1).map(() => true))
@@ -358,6 +410,8 @@ export function AddPage() {
       name:                (data.name || '').trim(),
       type:                data.type || form.type || 'organisation',
       track:               data.track || null,
+      tagline:             (data.tagline || '').trim() || null,
+      image_url:           (data.image_url || '').trim() || null,
       domain_id:           domains[0] || null,
       domains,
       subdomains:          data.subdomains      || [],
@@ -380,6 +434,7 @@ export function AddPage() {
       represented_by_adder: represents,
       vetting_status:      'approved',
       status:              'live',
+      lifecycle_status:    data.lifecycle_status || 'active',
       data_source:         aiUrl.trim() ? `community | ${aiUrl.trim()}` : 'community | manual',
       alignment_reasoning: data.hal_signals ? {
         hal_signals:     data.hal_signals,
@@ -393,6 +448,33 @@ export function AddPage() {
     }
   }
 
+  // ── Save extracted links/press for an actor ──────────────────
+  async function saveAuxiliaryData(actorId, data) {
+    // Links
+    if (Array.isArray(data.links) && data.links.length > 0) {
+      const rows = data.links.map((l, idx) => ({
+        actor_id:   actorId,
+        link_type:  l.link_type,
+        url:        l.url,
+        label:      l.label || null,
+        sort_order: idx,
+      }))
+      await supabase.from('actor_links').insert(rows)
+    }
+    // Press
+    if (Array.isArray(data.press) && data.press.length > 0) {
+      const rows = data.press.map((p, idx) => ({
+        actor_id:     actorId,
+        publication:  p.publication,
+        url:          p.url          || null,
+        title:        p.title        || null,
+        published_at: p.published_at || null,
+        sort_order:   idx,
+      }))
+      await supabase.from('actor_press').insert(rows)
+    }
+  }
+
   // ── Submit ───────────────────────────────────────────────────
   async function submit(e) {
     e.preventDefault()
@@ -401,12 +483,24 @@ export function AddPage() {
 
     setSaving(true); setError(null)
     const results = []
+    const nameToId = {}  // for resolving relationship references
 
     // Save primary form record
     const { data: primary, error: pErr } = await supabase
       .from('nextus_actors').insert(buildPayload(form)).select('id, name, slug').single()
     if (pErr) { setError('Error saving: ' + pErr.message); setSaving(false); return }
     results.push({ id: primary.id, slug: primary.slug, name: form.name, label: 'Primary' })
+    nameToId[form.name.trim().toLowerCase()] = primary.id
+
+    // Save aux data for primary (from AI-populated form, if any)
+    if (extras.length > 0 || aiUsed) {
+      // Primary form may have aux data carried over from AI fill — save it
+      const primaryAux = {
+        links: form._aiLinks  || [],
+        press: form._aiPress  || [],
+      }
+      await saveAuxiliaryData(primary.id, primaryAux)
+    }
 
     // Save any ticked extras
     for (let i = 0; i < extras.length; i++) {
@@ -417,6 +511,45 @@ export function AddPage() {
         .from('nextus_actors').insert(buildPayload(ex, true)).select('id, name, slug').single()
       if (!eErr && saved) {
         results.push({ id: saved.id, slug: saved.slug, name: ex.name, label: ex.label || 'Additional' })
+        nameToId[ex.name.trim().toLowerCase()] = saved.id
+        await saveAuxiliaryData(saved.id, ex)
+      }
+    }
+
+    // Resolve and write parent/child/partner relationships proposed by AI
+    // Only relationships where BOTH sides exist in this batch are written.
+    const allActors = [
+      { name: form.name, data: form, id: primary.id },
+      ...extras
+        .map((ex, i) => extraChecked[i] && nameToId[ex.name?.trim().toLowerCase()]
+          ? { name: ex.name, data: ex, id: nameToId[ex.name.trim().toLowerCase()] }
+          : null)
+        .filter(Boolean),
+    ]
+
+    for (const actor of allActors) {
+      const rels = actor.data.relationships || []
+      for (const rel of rels) {
+        const targetId = nameToId[rel.to_name?.trim().toLowerCase()]
+        if (!targetId) continue
+        // For parent_child, child's actor_id points to parent via parent_id column
+        if (rel.relationship_type === 'parent_child') {
+          await supabase.from('nextus_actors')
+            .update({ parent_id: targetId })
+            .eq('id', actor.id)
+        } else {
+          // member_of, partner — go into nextus_relationships, auto-confirmed
+          // since both parties are being created together by the same user
+          await supabase.from('nextus_relationships').insert({
+            actor_id:          actor.id,
+            related_actor_id:  targetId,
+            relationship_type: rel.relationship_type,
+            status:            'confirmed',
+            initiated_by:      user.id,
+            confirmed_by:      user.id,
+            confirmed_at:      new Date().toISOString(),
+          })
+        }
       }
     }
 
@@ -785,3 +918,6 @@ export function AddPage() {
       </div>
       <style>{`@keyframes add-spin { to { transform: rotate(360deg); } }`}</style>
       <SiteFooter />
+    </div>
+  )
+}

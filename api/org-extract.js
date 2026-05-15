@@ -1,5 +1,24 @@
 // api/org-extract.js
-// ── NextUs Multi-Record Placement Extraction ──────────────────────────────
+//
+// NextUs Atlas — actor identification and placement extraction.
+//
+// Reads a URL, HTML source, or text description and returns an array of
+// distinct actor records suitable for placement on the Atlas. No hardcoded
+// label model — the AI proposes any distinct entity found in the source,
+// whether it's a person, organisation, place, programme, podcast, or project.
+//
+// Response shape per record:
+// {
+//   name, type, tagline, description, image_url,
+//   domains[], scale, location_name, website,
+//   alignment_score, placement_tier, hal_signals[], sfp_patterns[],
+//   confidence, score_reasoning,
+//   links[]:    [{ link_type, url, label }],
+//   press[]:    [{ publication, url?, title?, published_at? }],
+//   relationships[]: [{ to_name, relationship_type }]
+// }
+//
+// Output is JSON only, validated and shape-enforced before return.
 
 const Anthropic = require('@anthropic-ai/sdk')
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -11,167 +30,237 @@ function detectMode(input) {
   return 'text'
 }
 
-// Known entity context — used when the engine hits access walls on subpages
-const KNOWN_ENTITIES = `
-──────────────────────────────────────────────────────────────────────────────
-KNOWN ENTITY: NEXTUS.WORLD
-──────────────────────────────────────────────────────────────────────────────
+// ── Known entity context ──────────────────────────────────────────────────────
+// Authoritative ground truth for entities the AI can't reliably crawl.
+// Used when the source URL matches a known domain. Hand-curated to keep
+// the seeding pass honest about complex multi-entity sites.
 
-If the source URL is from nextus.world or the description references NextUs, use this verified context:
+const KNOWN_ENTITIES = {
+  'nextus.world': `
+NEXTUS — VERIFIED CONTEXT
 
-PLANET ENTRY — NextUs
-- Civilisational coordination platform. Living map of where humanity is trying to go across seven domains at every scale.
-- Domain: Vision (primary). Operates across all seven: Human Being, Society, Nature, Technology, Finance & Economy, Legacy, Vision.
-- Scale: Global. Website: nextus.world
-- Mission: "A perceptual layer. A living map of where humanity is trying to go — so that the people already doing the work can find each other, aim at something worth building, and compound their effort rather than scatter it."
-- HAL conditions strongly evidenced: Horizon Orientation, System Signal Reading, Open Signal Architecture, Structural Integrity, Mission Coherence, Coherence Across Domains, Legible Destination, Governing Clarity, Shared Horizon
-- SFP patterns active (early-stage platform): Scale Illusion, Complexity Capture, Abstraction Capture
-- Score: 8. Rationale: Clear civilisational purpose, systematic architecture, honest about early-stage limitations.
+This site holds three distinct actor records that must all be returned:
 
-SELF ENTRY — NextUs Self (the Horizon Suite)
-- Personal development tool suite: Horizon State, Purpose Piece, The Map, Target Sprint, Horizon Practice.
-- Each tool built for a specific stage of individual development: nervous system regulation through to civilisational contribution.
-- Domain: Path (primary). Touches all seven self domains.
-- Scale: Global. Type: programme.
-- HAL conditions evidenced: Horizon Orientation, Evidence-Based Self-Assessment, Coherence Across Domains, Growth Edge Operation, Integrated Competence, Governing Clarity, Authored Narrative
-- SFP patterns: Metric Substitution, Abstraction Capture, Scale Illusion
-- Score: 8.
+1. NextUs (organisation)
+   - Civilisational coordination platform. A living map of where humanity is
+     trying to go across seven domains at every scale.
+   - Domain: vision (primary). Operates across all seven civilisational domains.
+   - Type: organisation. Scale: global.
+   - Score: 8. Exemplar early-stage platform with systematic architecture.
+   - Children: The Horizon Suite, NextUs Podcast, NextUs Atlas (sub-projects)
 
-PRACTITIONER ENTRY — Nik Wood
-- Individual coaching practice. 25+ years working one-on-one with people.
-- Founder of NextUs. Life coach, systems architect, futurist.
-- One-on-one work for people ready to move — not just understand.
-- Client testimonials include: "Nik really is a champion of your greatness. He helped me learn about who I was at the core of my being." / "I'm 63 years old and just met myself for the first time working with Nik." / "Working with Nik definitely changed my life."
-- Domain: Inner Game (primary). Also strong in Path, Signal.
-- Scale: Local (one-on-one). Scale notes: Podcast and platform reach global but core practice is individual.
-- Type: practitioner. Location: Mexico City, Mexico.
-- HAL conditions evidenced: Genuine Contact, Adversity Integration, Authored Narrative, Mission Coherence, Growth Edge Operation, Inhabited Integrity, Emotional Granularity, Mentalisation Capacity, Relational Architecture, Recursive Learning, Transpersonal Commitment
-- SFP patterns: minimal — practitioner work with direct client feedback loops resists most SFPs
-- Score: 9. Rationale: 25-year track record with direct client outcomes. Testimonials evidence genuine transformation across multiple life domains. Field-setting methodology that informed the platform tools. Exemplar-level practitioner.
-- Confidence: 90%
+2. The Horizon Suite (programme)
+   - Personal development tool suite: Horizon State, Purpose Piece, The Map,
+     Target Sprint, Horizon Practice.
+   - Built for nervous system regulation through civilisational contribution.
+   - Domain: path (primary). Touches all seven personal domains.
+   - Type: programme. Scale: global.
+   - Score: 8. Parent: NextUs.
 
-If the source is nextus.world or any subpage thereof, use this context directly. Do not penalise for inability to access subpages — the verified context above is authoritative.
-`
+3. Nik Wood (practitioner)
+   - Founder of NextUs. 25+ years one-on-one coaching practice.
+   - Life coach, systems architect, futurist.
+   - Domain: inner-game (primary). Also strong in path, signal.
+   - Type: practitioner. Scale: local (1:1 practice). Location: Mexico City, Mexico.
+   - Score: 9. Parent: NextUs.
 
-const SYSTEM_PROMPT = `You are the NextUs multi-record placement assessment engine.
+The hierarchy is: NextUs is the umbrella. Nik Wood and The Horizon Suite
+sit underneath it. Both are real, distinct actors.
+`,
+}
 
-NextUs has two tracks:
-- NextUs Planet: civilisational coordination. Seven domains — Human Being, Society, Nature, Technology, Finance & Economy, Legacy, Vision. Organisations, projects, and movements working toward Horizon Goals at civilisational scale.
-- NextUs Self: personal development. Practitioners, coaches, facilitators, therapists, retreat operators, and programmes helping individuals across seven personal domains — Path, Spark, Body, Finances, Connection, Inner Game, Signal.
+function getKnownContext(input) {
+  for (const [domain, context] of Object.entries(KNOWN_ENTITIES)) {
+    if (input.toLowerCase().includes(domain)) return context
+  }
+  return ''
+}
 
-──────────────────────────────────────────────────────────────────────────────
-YOUR PRIMARY TASK: IDENTIFY ALL DISTINCT ACTOR RECORDS
-──────────────────────────────────────────────────────────────────────────────
+// ── System prompt ─────────────────────────────────────────────────────────────
 
-Read the source material and identify EVERY distinct entity that belongs on the NextUs map. You must actively look for ALL THREE of the following, and generate a separate record for each one that exists:
+const SYSTEM_PROMPT = `You are the NextUs Atlas placement extraction engine.
 
-RECORD TYPE 1 — PLANET ENTRY
-Does this organisation/platform/project operate at civilisational scale toward a Horizon Goal?
-Look for: coordination infrastructure, systemic change work, civilisational vision, domain-level impact.
-If yes → generate a Planet record with track: "planet".
-
-RECORD TYPE 2 — SELF ENTRY
-Does this organisation/platform have a personal development layer — tools, programmes, or a methodology serving individual growth?
-Look for: coaching tools, self-development programmes, personal navigation systems, individual transformation frameworks, tool suites.
-This is SEPARATE from the Planet record even if it's the same organisation.
-If yes → generate a Self record with track: "self".
-
-RECORD TYPE 3 — PRACTITIONER ENTRY
-Is there a named individual — founder, coach, facilitator, therapist, or practitioner — whose personal coaching or facilitation work is distinct from any platform they've built?
-Look for: named individuals, coaching practices, one-on-one work, facilitation, years of practice, personal client work.
-If yes → generate a Practitioner record with type: "practitioner", track: "self".
-
-CRITICAL RULES:
-- Generate ALL records that exist. Do not collapse multiple entities into one.
-- A platform with a civilisational layer AND a personal development layer AND a named founder generates THREE records.
-- Each record is assessed independently. Do not average scores across records.
-- If you cannot access a specific subpage, use whatever context is available from the main site. Do NOT penalise the score for your own access limitations. If verified context is provided, use it.
-- Only omit a record type if there is genuinely no evidence for it in the source material.
+The Atlas is a living map of actors working toward civilisational Horizon Goals.
+Your job is to read source material (a URL, HTML, or text description) and
+identify EVERY distinct actor that belongs on the map.
 
 ──────────────────────────────────────────────────────────────────────────────
-CONCRETE EXAMPLE — nextus.world generates THREE records
+WHAT COUNTS AS A DISTINCT ACTOR
 ──────────────────────────────────────────────────────────────────────────────
 
-[
-  { "label": "Planet", "name": "NextUs", "track": "planet", "domain_id": "vision", "type": "organisation" },
-  { "label": "Self", "name": "NextUs Self", "track": "self", "domain_id": "path", "type": "programme" },
-  { "label": "Practitioner", "name": "Nik Wood", "track": "self", "domain_id": "inner-game", "type": "practitioner" }
-]
+An actor is any entity with its own identity, purpose, and audience. Look
+carefully for ALL of these patterns in the source:
 
-Collapsing these into one record with dual_placement: true is WRONG. They are three separate entities.
+- A named individual whose personal practice, coaching, or work is distinct
+- An organisation, company, non-profit, or collective
+- A podcast that has its own brand and audience (separate from its host)
+- A programme, course, methodology, or tool suite with its own identity
+- A physical place (retreat centre, coworking space, land project)
+- A project, initiative, or campaign with its own scope
+- A group, network, or community
 
-──────────────────────────────────────────────────────────────────────────────
-THE ALIGNMENT SCORE (0–9)
-──────────────────────────────────────────────────────────────────────────────
+One source can yield MULTIPLE distinct actors. A coach's website may surface:
+- The coach (practitioner)
+- Their podcast (programme)
+- Their retreat venue (place)
+- A coaching practice they run with a partner (programme)
 
-0 — Actively, knowingly causing harm at scale.
-1 — Systematic harm as the primary operating model.
-2 — Significant net negative trajectory.
-3–4 — Active harm in specific dimensions alongside neutral or positive work elsewhere.
-5 — The Line. Below = more harm than good.
-6 — Net positive but contested. Direction toward but structural failure patterns meaningfully active.
-7 — Floor for full placement. Clear alignment. HAL conditions demonstrably operative.
-8 — Strong alignment. Demonstrable movement toward Horizon Goal.
-9 — Exemplar. Field-setting.
-(10 is conferred by the field over time — never assigned by the platform)
-
-Placement tiers:
-- 0–4: pattern_instance
-- 5–6: contested
-- 7–8: qualified
-- 9: exemplar
+Generate a separate record for each. Do not collapse multiple entities into one.
+Do not assume only one actor per source.
 
 ──────────────────────────────────────────────────────────────────────────────
-HAL CONDITIONS (Horizon Alignment Library)
+ACTOR TYPES (use the exact string)
 ──────────────────────────────────────────────────────────────────────────────
 
-Accurate Signal Read, Active Maintenance, Adaptable Identity, Adaptive Capacity, Adversarial Integration, Adversity Integration, Aesthetic Cultivation, Anti-Fragile Positioning, Asymmetric Opportunity Recognition, Authored Narrative, Awe Access, Belief Calibration, Coherence Across Domains, Committed Exploration, Compound Orientation, Conflict Source Diagnosis, Costly Signal Discipline, Creative Third Alternative, Declarative Commitment, Default Future Visibility, Deliberate Simplicity, Dymaxion Leverage, Ecological Navigation, Economic Signal Literacy, Efficiency Toward Sufficiency, Elevated Perspective, Embodied Intelligence, Emotional Granularity, Environmental Competence, Equanimity Leadership, Eustress Cycling, Evidence-Based Self-Assessment, Fresh Listening, Genuine Contact, Genuine Play, Governing Clarity, Growth Edge Operation, Horizon Orientation, Independent Verification, Influence Focus, Inhabited Integrity, Integrated Competence, Interest Visibility, Intrinsic Engagement Loop, Legible Destination, Liminal Pause, Load Intelligence, Meaning Anchoring, Mentalisation Capacity, Minimum Viable Stability, Mission Coherence, Mutual Need, Nervous System Alignment, Open Signal Architecture, Optionality Preservation, Order of Operations, Past Completion, Perceived Agency, Peripheral Vision, Potential Calibration, Pre-Articulate Vision, Productive Friction, Proportional Commitment, Recursive Learning, Relational Architecture, Resonant Engagement, Shared Horizon, Situated Perspective, Sleep Architecture Integrity, Solution Space Entry, Strategic Self-Disruption, Structural Honesty, Structural Integrity, System Signal Reading, Systemic Attribution, Tension Awareness, Threshold Identification, Threshold Passage Willingness, Transpersonal Commitment, Unconditional Ground, Unified Financial Lens, Value Restoration Practice, Value–Spend Alignment, Vision Embodiment
+organisation   — formal entity with structure (company, non-profit, collective)
+project        — a bounded initiative or campaign
+practitioner   — a named individual doing personal practice work
+programme      — a methodology, course, tool suite, or repeatable offering
+place          — a physical location with its own character (retreat, coworking)
+group          — a network or community without formal organisational structure
+resource       — a tool, dataset, or piece of infrastructure others build on
 
 ──────────────────────────────────────────────────────────────────────────────
-STRUCTURAL FAILURE PATTERNS
+DOMAINS (use the exact slug)
 ──────────────────────────────────────────────────────────────────────────────
 
-Metric Substitution, Novelty Normalisation, Optimism Displacement, Survivorship Distortion, Epistemic Retreat, Abstraction Capture, Premature Closure, Narrative Inertia, Information Cascades, Social Proof Cascade, Legibility Inversion, Scale Illusion, Governance Capture, Complexity Capture, Sunk Cost Lock-In, Incentive–Outcome Divergence, Lifecycle Externalisation, Partial Solution Entrenchment, Solution Replication Lock, Isomorphic Mimicry, Harm Laundering, Accountability Diffusion, Feedback Loop Severing, Competitive Debasement, Threshold Forestalling, Short-Termism Ratchet, Value Erosion by Attrition, Defensive Equilibrium, Adversarial Co-evolution, Consensus Gravity, Coordination Void, Proxy War Displacement, Expert Capture, Trust Erosion Spiral, Knowledge Silo Formation, Narrative Monopoly, Representation Mismatch, Legitimacy Without Efficacy, Capability–Deployment Lag, Mission Drift by Funding Gravity, The Prevention Paradox, Activity–Trajectory Mismatch, Access Stratification, Horizon Collapse, Motivation Consumption, Speed–Depth Trade-off Collapse, Invisible Infrastructure Decay, Monoculture Fragility, Extraction–Regeneration Imbalance, Crisis Dependency, Positive Feedback Overshoot, Identity Rigidity, Boundary Rigidity, Specialisation Blindness, Drift Anhedonia, Missionary Postponement, Legacy Capture, Path Plurality, Borrowed Aliveness, Scarcity Inheritance, Virtue Exemption, Performance Connection, Avoidance Architecture, Passion Perfectionism, Functional Bypass, Proximity Substitution, Echo Architecture, Relational Martyrdom, Capability–Worth Conflation
+Civilisational (planet track):
+  human-being, society, nature, technology, finance-economy, legacy, vision
+
+Personal (self track):
+  path, spark, body, finances, connection, inner-game, signal
+
+An actor can hold multiple domains. List the primary domain first.
+Classify by IMPACT, not feedstock or means. What problem does this actor
+solve? What change are they trying to create? That is the domain.
 
 ──────────────────────────────────────────────────────────────────────────────
-DOMAINS
+LINKS — EXTRACT STRUCTURED LINKS
 ──────────────────────────────────────────────────────────────────────────────
 
-Planet domains (domain_id values):
-human-being, society, nature, technology, finance-economy, legacy, vision
+Look for these link types in the source. Return only those that are present.
 
-Self domains (domain_id values):
-path, spark, body, finances, connection, inner-game, signal
+Type values (use exact strings):
+  website            — main public website
+  podcast_rss        — podcast RSS feed URL if discoverable
+  podcast_apple      — Apple Podcasts link
+  podcast_spotify    — Spotify show link
+  youtube_channel    — YouTube channel URL
+  youtube_video      — specific YouTube video
+  vimeo              — Vimeo channel or video
+  substack           — Substack publication URL
+  newsletter         — generic newsletter signup URL
+  instagram          — Instagram profile URL
+  twitter            — X/Twitter profile URL
+  tiktok             — TikTok profile URL
+  facebook           — Facebook page URL
+  linkedin           — LinkedIn profile or company page
+  medium             — Medium publication
+  github             — GitHub profile or org
+  book               — link to a published book (Amazon, publisher)
+  other              — anything else worth linking
+
+Each link: { "link_type": "...", "url": "...", "label": "optional override" }
+
+──────────────────────────────────────────────────────────────────────────────
+PRESS — "AS SEEN IN" MENTIONS
+──────────────────────────────────────────────────────────────────────────────
+
+If the source contains press mentions ("As seen in", "Featured in", media
+logos with publication names), extract them as structured records.
+
+Each press item: { "publication": "BBC", "url": "...", "title": "...", "published_at": "YYYY-MM-DD" }
+
+Only publication is required. Others are nice-to-have if discoverable.
+
+──────────────────────────────────────────────────────────────────────────────
+RELATIONSHIPS — PARENT / CHILD / PARTNER
+──────────────────────────────────────────────────────────────────────────────
+
+When you propose multiple actors from one source, identify their relationships.
+
+relationship_type values:
+  parent_child       — one actor is structurally contained in another
+                       (UNEP inside UN; a podcast inside its host's umbrella)
+  member_of          — one actor is a member or participant in another
+  partner            — peer relationship, neither contains the other
+                       (a coaching practice run by spouses)
+
+Each relationship: { "to_name": "name of related actor", "relationship_type": "..." }
+
+The relationship is recorded on the FROM actor's record. Example:
+  Brothers In Depth (podcast, child) has relationship → { to_name: "James Mattingley", relationship_type: "parent_child" }
+
+──────────────────────────────────────────────────────────────────────────────
+IMAGE
+──────────────────────────────────────────────────────────────────────────────
+
+Return image_url with the most appropriate single anchor image for the actor:
+  - logo for organisations
+  - portrait for practitioners
+  - hero image for places
+Only return a URL you saw in the source. Don't invent.
+
+──────────────────────────────────────────────────────────────────────────────
+ALIGNMENT SCORE (0–9)
+──────────────────────────────────────────────────────────────────────────────
+
+0  — Actively, knowingly causing harm at scale
+1  — Systematic harm as the primary operating model
+2  — Significant net negative trajectory
+3-4— Active harm in some dimensions alongside positive work elsewhere
+5  — The Line. Below = more harm than good
+6  — Net positive but contested
+7  — Clear alignment, HAL conditions operative
+8  — Strong alignment, demonstrable movement toward Horizon Goal
+9  — Exemplar, field-setting
+
+Tiers:
+  0–4: pattern_instance
+  5–6: contested
+  7–8: qualified
+  9:   exemplar
 
 ──────────────────────────────────────────────────────────────────────────────
 OUTPUT FORMAT
 ──────────────────────────────────────────────────────────────────────────────
 
-Respond ONLY with valid JSON. No markdown. No preamble.
+Respond ONLY with valid JSON. No markdown, no preamble, no explanation.
 
-Return an array of 1–3 objects:
+Return an array of 1-6 actor objects. Use this exact shape:
 
-{
-  "label": "Planet | Self | Practitioner",
-  "name": "string",
-  "type": "organisation | project | practitioner | programme | resource",
-  "track": "planet | self",
-  "domain_id": "string",
-  "subdomain_id": "string or null",
-  "scale": "local | municipal | regional | national | international | global",
-  "scale_notes": "string or null",
-  "location_name": "string or null",
-  "website": "string or null",
-  "description": "string — 2–3 sentences specific to THIS entry's role",
-  "impact_summary": "string or null",
-  "hal_signals": ["array"],
-  "sfp_patterns": ["array"],
-  "alignment_score": integer 0–9,
-  "placement_tier": "pattern_instance | contested | qualified | exemplar",
-  "score_reasoning": "string — 2–3 sentences on THIS entry's score",
-  "confidence": integer 0–100,
-  "confidence_note": "string"
-}`
+[
+  {
+    "name": "string",
+    "type": "organisation | project | practitioner | programme | place | group | resource",
+    "tagline": "string or null — short one-liner",
+    "description": "string — 2-3 sentences in third person, evidence-based",
+    "image_url": "string or null — single anchor image URL from source",
+    "domains": ["primary-domain-slug", "secondary-slug", ...],
+    "scale": "local | municipal | regional | national | international | global",
+    "location_name": "string or null",
+    "website": "string or null",
+    "alignment_score": 0-9,
+    "placement_tier": "pattern_instance | contested | qualified | exemplar",
+    "hal_signals": ["array of HAL condition names"],
+    "sfp_patterns": ["array of structural failure patterns"],
+    "confidence": 0-100,
+    "score_reasoning": "string — 2 sentences",
+    "links": [
+      { "link_type": "podcast_rss", "url": "...", "label": "optional" },
+      { "link_type": "youtube_channel", "url": "..." }
+    ],
+    "press": [
+      { "publication": "BBC", "url": "...", "title": "...", "published_at": "..." }
+    ],
+    "relationships": [
+      { "to_name": "Other Actor Name", "relationship_type": "parent_child" }
+    ]
+  }
+]
+
+If a field is empty, omit it or return [] for arrays. Do not invent data.
+`
 
 function stripHtml(html) {
   return html
@@ -180,7 +269,7 @@ function stripHtml(html) {
     .replace(/<[^>]+>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
-    .slice(0, 8000)
+    .slice(0, 12000)
 }
 
 function safeJson(text) {
@@ -196,17 +285,48 @@ function safeJson(text) {
   return null
 }
 
-function enforceTier(record) {
+const ALLOWED_TYPES = ['organisation', 'project', 'practitioner', 'programme', 'place', 'group', 'resource']
+const ALLOWED_LINK_TYPES = [
+  'website', 'podcast_rss', 'podcast_apple', 'podcast_spotify',
+  'youtube_channel', 'youtube_video', 'vimeo',
+  'substack', 'newsletter',
+  'instagram', 'twitter', 'tiktok', 'facebook', 'linkedin', 'medium', 'github',
+  'book', 'other',
+]
+const ALLOWED_REL_TYPES = ['parent_child', 'member_of', 'partner']
+
+function enforceShape(record) {
+  // Required fields with defaults
+  record.type            = ALLOWED_TYPES.includes(record.type) ? record.type : 'organisation'
+  record.domains         = Array.isArray(record.domains) ? record.domains.filter(Boolean) : []
+  // Back-compat for old single-value callers
+  if (!record.domains.length && record.domain_id) record.domains = [record.domain_id]
+  record.domain_id       = record.domains[0] || null
+
+  record.hal_signals     = Array.isArray(record.hal_signals)  ? record.hal_signals  : []
+  record.sfp_patterns    = Array.isArray(record.sfp_patterns) ? record.sfp_patterns : []
+
+  // Structured arrays — validate items
+  record.links = Array.isArray(record.links) ? record.links.filter(l =>
+    l && l.url && ALLOWED_LINK_TYPES.includes(l.link_type)
+  ) : []
+
+  record.press = Array.isArray(record.press) ? record.press.filter(p =>
+    p && p.publication
+  ) : []
+
+  record.relationships = Array.isArray(record.relationships) ? record.relationships.filter(r =>
+    r && r.to_name && ALLOWED_REL_TYPES.includes(r.relationship_type)
+  ) : []
+
+  // Tier from score
   const s = record.alignment_score ?? 0
-  if (s <= 4)      record.placement_tier = 'pattern_instance'
+  if      (s <= 4) record.placement_tier = 'pattern_instance'
   else if (s <= 6) record.placement_tier = 'contested'
   else if (s <= 8) record.placement_tier = 'qualified'
   else             record.placement_tier = 'exemplar'
-  return record
-}
 
-function isNextUsUrl(input) {
-  return /nextus\.world/i.test(input)
+  return record
 }
 
 module.exports = async function handler(req, res) {
@@ -214,23 +334,21 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   if (req.method === 'OPTIONS') return res.status(200).end()
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
+  if (req.method !== 'POST')    return res.status(405).json({ error: 'Method not allowed' })
 
   const { input } = req.body || {}
   if (!input?.trim()) return res.status(400).json({ error: 'input is required' })
 
-  const mode = detectMode(input)
-  let content = input.trim()
-
-  // Inject known entity context for nextus.world
-  const knownContext = isNextUsUrl(content) ? KNOWN_ENTITIES : ''
+  const mode         = detectMode(input)
+  const knownContext = getKnownContext(input)
+  let content        = input.trim()
 
   if (mode === 'html') {
     content = `[HTML source provided]\n\n${stripHtml(input)}\n\n${knownContext}`
   } else if (mode === 'url') {
-    content = `[URL provided: ${input.trim()}]\n\nRead this URL. Identify ALL distinct NextUs actor records — look specifically for: (1) a civilisational/Planet layer, (2) a personal development/Self layer, (3) a named individual practitioner or founder. Generate a separate record for each. Do not collapse them.\n\n${knownContext}`
+    content = `[URL provided: ${input.trim()}]\n\nRead this URL. Identify ALL distinct actors — look for: the main organisation/practitioner, any podcasts with their own brand, any retreat or physical places, any programmes with their own identity, any partner-run practices. Generate a separate record for each. Extract structured links (podcast RSS, YouTube, Substack, social), press mentions ("as seen in"), the most appropriate image, and any parent/child relationships between the actors you propose.\n\n${knownContext}`
   } else {
-    content = `[Description provided]\n\n${input.trim()}\n\nIdentify ALL distinct NextUs actor records. Look specifically for: (1) a civilisational/Planet layer, (2) a personal development/Self layer, (3) a named individual practitioner or founder.\n\n${knownContext}`
+    content = `[Description provided]\n\n${input.trim()}\n\nIdentify ALL distinct actors and their relationships.\n\n${knownContext}`
   }
 
   const tools = mode === 'url' ? [{ type: 'web_search_20250305', name: 'web_search' }] : undefined
@@ -238,7 +356,7 @@ module.exports = async function handler(req, res) {
   try {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 4000,
+      max_tokens: 6000,
       system: SYSTEM_PROMPT,
       tools,
       messages: [{ role: 'user', content }],
@@ -253,14 +371,14 @@ module.exports = async function handler(req, res) {
 
     if (!parsed) {
       return res.status(200).json({
-        error: 'parse_failed',
-        raw: rawText.slice(0, 500),
-        message: 'Could not parse assessment. Try pasting a description instead of a URL.',
+        error:   'parse_failed',
+        raw:     rawText.slice(0, 500),
+        message: 'Could not parse extraction output. Try pasting a description instead of a URL.',
       })
     }
 
     if (!Array.isArray(parsed)) parsed = [parsed]
-    const results = parsed.slice(0, 3).map(enforceTier)
+    const results = parsed.slice(0, 6).map(enforceShape)
 
     return res.status(200).json({ results, mode })
 
