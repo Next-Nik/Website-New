@@ -258,6 +258,25 @@ button {
   text-decoration: none;
 }
 
+.nav-search-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(15, 21, 35, 0.55);
+  text-decoration: none;
+  transition: color 0.2s, background 0.2s;
+  flex-shrink: 0;
+}
+
+.nav-search-icon:hover {
+  color: #A8721A;
+  background: rgba(200, 146, 42, 0.06);
+  text-decoration: none;
+}
+
 /* ─── Page shell (below nav) ────────────────────────────────── */
 
 .page-shell {

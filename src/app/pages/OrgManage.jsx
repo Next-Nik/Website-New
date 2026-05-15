@@ -23,6 +23,9 @@ import { GeocodeBtn } from '../components/GeocodeBtn'
 import { OrgDomainsTab } from '../components/OrgDomainsTab'
 import { OrgNeedsTab } from '../components/OrgNeedsTab'
 import { PrincipleStrip } from '../components/PrincipleStrip'
+import { VoiceTab } from '../components/manage/VoiceTab'
+import { CoordinationTab } from '../components/manage/CoordinationTab'
+import { LinksTab } from '../components/manage/LinksTab'
 
 // ── Chip multi-select ────────────────────────────────────────
 
@@ -586,8 +589,11 @@ function MatchesTab({ actorId, toast }) {
 
 const TABS = [
   { key: 'profile',       label: 'Profile' },
-  { key: 'offerings',     label: 'Offerings' },
+  { key: 'voice',         label: 'Voice' },
+  { key: 'coordination',  label: 'Offers & Needs' },
+  { key: 'links',         label: 'Links & Press' },
   { key: 'domains',       label: 'Domains' },
+  { key: 'offerings',     label: 'Offerings' },
   { key: 'matches',       label: 'Matches' },
   { key: 'contributions', label: 'Contributions' },
   { key: 'needs',         label: 'Needs' },
@@ -704,6 +710,9 @@ export function OrgManagePage() {
         </div>
 
         {activeTab === 'profile'       && <ProfileTab       actor={actor} onSave={reloadActor} toast={showToast} />}
+        {activeTab === 'voice'         && <VoiceTab         actor={actor} onSave={reloadActor} toast={showToast} />}
+        {activeTab === 'coordination'  && <CoordinationTab  actorId={id} toast={showToast} />}
+        {activeTab === 'links'         && <LinksTab         actorId={id} toast={showToast} />}
         {activeTab === 'offerings'     && <OfferingsTab     actorId={id} toast={showToast} />}
         {activeTab === 'domains'       && <OrgDomainsTab    actorId={id} toast={showToast} />}
         {activeTab === 'matches'       && <MatchesTab       actorId={id} toast={showToast} />}

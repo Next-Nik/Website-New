@@ -81,8 +81,16 @@ export function Nav({ activePath }) {
             </button>
           </div>
 
-          {/* Right — profile dot / sign in + hamburger */}
+          {/* Right — search + profile dot / sign in + hamburger */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {user && (
+              <Link to="/search" className="nav-search-icon" title="Search the Atlas" onClick={closeMobile}>
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+                  <circle cx="7.5" cy="7.5" r="5.5" stroke="currentColor" strokeWidth="1.5"/>
+                  <line x1="11.5" y1="11.5" x2="15.5" y2="15.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                </svg>
+              </Link>
+            )}
             {user ? (
               <Link to="/dashboard" className="nav-profile-dot" title="Your profile" onClick={closeMobile}>
                 {initial}

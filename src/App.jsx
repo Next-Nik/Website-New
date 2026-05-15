@@ -62,6 +62,8 @@ import { NextMarketPage }         from './app/pages/NextMarket'
 import { AdminConsolePage }   from './app/pages/AdminConsole'
 import { NominatePage }       from './app/pages/Nominate'
 import { AddPage }            from './app/pages/Add'
+import { ClaimPage }          from './app/pages/Claim'
+import { SearchPage }         from './app/pages/Search'
 import { DomainPage } from './app/pages/Domain'
 import Practices              from './app/pages/Practices'
 import PracticeDetail         from './app/pages/PracticeDetail'
@@ -170,6 +172,8 @@ function AppInner() {
         <Route path="/contribution"                 element={<Contribution />} />
         <Route path="/org/:slug"                    element={<OrgPublicPage />} />
         <Route path="/org/:slug/manage"             element={<OrgManagePage />} />
+        <Route path="/org/:slug/claim"              element={<ClaimPage />} />
+        <Route path="/search"                       element={<SearchPage />} />
         <Route path="/map"                          element={<PlanetMapPage />} />
         <Route path="/nextmarket"                   element={<NextMarketPage />} />
         <Route path="/alternatives"                 element={<Navigate to="/nextmarket" replace />} />
