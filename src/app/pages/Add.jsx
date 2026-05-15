@@ -176,18 +176,13 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {checked && <span style={{ color: '#FFFFFF', fontSize: '12px', lineHeight: 1 }}>✓</span>}
         </button>
-        <LabelBadge label={proposal.label} />
+        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
+          color: gold, background: 'rgba(200,146,42,0.08)',
+          border: '1px solid rgba(200,146,42,0.25)',
+          padding: '2px 10px', borderRadius: '40px' }}>
+          {proposal.type || 'organisation'}
+        </span>
         <span style={{ ...body, fontSize: '15px', color: dark }}>{proposal.name}</span>
-        {proposal.alignment_score != null && (
-          <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.40)', marginLeft: 'auto' }}>
-            Score {proposal.alignment_score}
-          </span>
-        )}
-      </div>
-
-      {checked && (
-        <div style={{ display: 'grid', gap: '10px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
             <div>
               <FieldLabel>Name</FieldLabel>
               <TextInput value={proposal.name} onChange={v => onChange('name', v)} placeholder="Name" />
@@ -518,23 +513,38 @@ export function AddPage() {
             Paste a URL and we'll read the site and fill in the form below.
             You review and edit before anything goes live.
           </p>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <input type="url" value={aiUrl}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <textarea value={aiUrl}
               onChange={e => setAiUrl(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && readSite()}
-              placeholder="https://..."
-              style={{ ...body, fontSize: '15px', color: dark, padding: '10px 14px',
+              rows={3}
+              placeholder={'Paste a URL — https://example.com\nOr paste raw page source — <!DOCTYPE html>...\nOr describe the organisation in plain text'}
+              style={{ ...body, fontSize: '14px', color: dark, padding: '10px 14px',
                 borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.28)',
-                background: parch, outline: 'none', flex: 1 }}
+                background: parch, outline: 'none', width: '100%',
+                resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box' }}
             />
-            <button onClick={readSite} disabled={reading || !aiUrl.trim()}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
-                padding: '10px 20px', borderRadius: '40px', border: 'none',
-                background: reading || !aiUrl.trim() ? 'rgba(200,146,42,0.25)' : '#C8922A',
-                color: '#FFFFFF', whiteSpace: 'nowrap',
-                cursor: reading || !aiUrl.trim() ? 'not-allowed' : 'pointer' }}>
-              {reading ? 'Reading...' : 'Read site'}
-            </button>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={readSite} disabled={reading || !aiUrl.trim()}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
+                  padding: '10px 22px', borderRadius: '40px', border: 'none',
+                  background: reading || !aiUrl.trim() ? 'rgba(200,146,42,0.25)' : '#C8922A',
+                  color: '#FFFFFF', whiteSpace: 'nowrap',
+                  cursor: reading || !aiUrl.trim() ? 'not-allowed' : 'pointer' }}>
+                {reading ? (
+                  <>
+                    <span style={{
+                      display: 'inline-block', width: '12px', height: '12px',
+                      border: '2px solid rgba(255,255,255,0.4)',
+                      borderTopColor: '#FFFFFF',
+                      borderRadius: '50%',
+                      animation: 'add-spin 0.7s linear infinite',
+                      marginRight: '6px', verticalAlign: 'middle',
+                    }} />
+                    Reading...
+                  </>
+                ) : 'Read site'}
+              </button>
+            </div>
           </div>
           {readErr && (
             <p style={{ ...body, fontSize: '13px', color: '#8A3030', marginTop: '8px', marginBottom: 0 }}>
@@ -558,7 +568,7 @@ export function AddPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {[
               { val: false, label: "I'm adding this to the ecosystem",
-                hint: "I don't represent this organisation. NextUs holds the entry in trust until they claim it." },
+                hint: "I don't represent this organisation. NextUs holds the entry in trust until claimed." },
               { val: true, label: 'I represent this organisation',
                 hint: "I'm adding my own entry. I'll be the owner and can manage it directly." },
             ].map(opt => (
@@ -773,7 +783,5 @@ export function AddPage() {
           </p>
         </form>
       </div>
+      <style>{`@keyframes add-spin { to { transform: rotate(360deg); } }`}</style>
       <SiteFooter />
-    </div>
-  )
-}
