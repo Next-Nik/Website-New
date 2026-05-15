@@ -351,7 +351,7 @@ export default function MissionControl() {
   // Universal Add overlay — mounted from the right-rail ADD tile. The
   // overlay component is reusable; Module 16 will mount it from other
   // surfaces (Domain, Feed, Profile, Org, Practice, Map, Invitation).
-  const [addOverlayOpen, setAddOverlayOpen] = useState(false)
+  // (Add overlay replaced by direct navigation to /add)
 
   // Scope state — the canonical id of the active Mission Control
   // scope. One of: 'self' | 'planet' | 'practice' | 'org'. The
@@ -1076,7 +1076,7 @@ export default function MissionControl() {
               glyph="＋"
               label="ADD"
               state={null}
-              onClick={() => setAddOverlayOpen(true)}
+              onClick={() => navigate('/add')}
               title="Add to the ecosystem"
             />
           </SideRail>
@@ -1305,12 +1305,6 @@ export default function MissionControl() {
         />
       </Panel>
 
-      {/* Universal Add overlay. Triggered by the ADD tile on the right rail.
-          Reusable across the platform (Module 16 mounts it elsewhere). */}
-      <AddOverlay
-        open={addOverlayOpen}
-        onClose={() => setAddOverlayOpen(false)}
-      />
     </div>
   )
 }
