@@ -63,6 +63,7 @@ import { useCivDomainScores }     from '../hooks/useDomainIndicators'
 import HorizonStateGauge   from '../components/mission-control/HorizonStateGauge'
 import MapPinGlyph         from '../components/mission-control/MapPinGlyph'
 import PurposePieceGlyph   from '../components/mission-control/PurposePieceGlyph'
+import SearchGlyph         from '../components/mission-control/SearchGlyph'
 import TargetSprintGlyph   from '../components/mission-control/TargetSprintGlyph'
 
 import useMissionControlData from '../components/mission-control/useMissionControlData'
@@ -1071,6 +1072,13 @@ export default function MissionControl() {
               state={planetSprintState}
               onClick={() => openCivPanel('missions')}
               title="Planet Sprint — quests offered by orgs"
+            />
+            <Tile
+              glyph={<SearchGlyph />}
+              label="SEARCH"
+              state={null}
+              onClick={() => navigate('/search')}
+              title="Search the Atlas"
             />
             <Tile
               glyph="＋"

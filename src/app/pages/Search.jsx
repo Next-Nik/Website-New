@@ -18,6 +18,7 @@ import { Nav } from '../../components/Nav'
 import { SiteFooter } from '../../components/SiteFooter'
 import { supabase } from '../../hooks/useSupabase'
 import { CIV_DOMAINS } from '../components/NextUsWheel'
+import { ShareButton } from '../components/ShareButton'
 
 const body  = { fontFamily: "'Lora', Georgia, serif" }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
@@ -264,7 +265,18 @@ export function SearchPage() {
     <div style={{ background: parch, minHeight: '100vh' }}>
       <Nav />
       <div style={{ maxWidth: '760px', margin: '0 auto',
-        padding: '96px 24px 120px' }}>
+        padding: '96px 24px 120px', position: 'relative' }}>
+
+        {/* Share button — top right, only when there's something to share */}
+        {(query.trim() || hasFilters) && (
+          <div style={{ position: 'absolute', top: '96px', right: '24px', zIndex: 2 }}>
+            <ShareButton
+              url={typeof window !== 'undefined' ? window.location.href : null}
+              title="NextUs Atlas Search"
+              text={`Atlas search results${query.trim() ? ` for "${query.trim()}"` : ''}`}
+            />
+          </div>
+        )}
 
         {/* Header */}
         <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',

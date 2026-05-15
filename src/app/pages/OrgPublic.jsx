@@ -34,6 +34,7 @@ import {
   PLACEMENT_TIER,
 } from '../components/OrgShared'
 import { DOMAIN_COLORS } from '../constants/domains'
+import { ShareButton } from '../components/ShareButton'
 
 // ── Design utilities ─────────────────────────────────────────
 
@@ -683,7 +684,20 @@ export function OrgPublicPage() {
       <div className="org-public-container" style={{
         maxWidth: '680px', margin: '0 auto',
         padding: 'clamp(96px, 12vw, 128px) clamp(20px, 5vw, 48px) 160px',
+        position: 'relative',
       }}>
+
+        {/* Share button — top-right corner of the content area */}
+        <div style={{ position: 'absolute',
+          top: 'clamp(96px, 12vw, 128px)',
+          right: 'clamp(20px, 5vw, 48px)',
+          zIndex: 2 }}>
+          <ShareButton
+            url={typeof window !== 'undefined' ? window.location.href : null}
+            title={actor.name}
+            text={actor.tagline || actor.description}
+          />
+        </div>
 
         {/* Claim banner — only on unclaimed wards */}
         <ClaimBanner actor={actor} user={user} />

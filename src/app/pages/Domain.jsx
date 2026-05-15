@@ -4,6 +4,7 @@ import { Layout } from '../components/Layout'
 import { supabase } from '../../hooks/useSupabase'
 import { GapSignalBadge } from '../components/GapSignalBadge'
 import { CIV_DOMAINS } from '../constants/domains'
+import { ShareButton } from '../components/ShareButton'
 
 // ─────────────────────────────────────────────────────────────
 // Domain — Module 11 stub with Module 14 integration point.
@@ -74,7 +75,17 @@ export function DomainPage() {
 
   return (
     <Layout>
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '72px 32px 80px' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '72px 32px 80px',
+        position: 'relative' }}>
+
+        {/* Share button — top right */}
+        <div style={{ position: 'absolute', top: '72px', right: '32px', zIndex: 2 }}>
+          <ShareButton
+            url={typeof window !== 'undefined' ? window.location.href : null}
+            title={`${domain.label} — NextUs Atlas`}
+            text={`Actors and activity in the ${domain.label} domain on the NextUs Atlas`}
+          />
+        </div>
 
         {/* Header */}
         <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: goldDark, display: 'block', marginBottom: '10px' }}>
