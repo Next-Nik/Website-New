@@ -94,3 +94,32 @@ export function getPlanetDomainColor(domainKey) {
   const domain = PLANET_DOMAINS.find(d => d.key === domainKey)
   return domain?.color ?? '#C8922A'
 }
+
+// ─────────────────────────────────────────────────────────────
+// Modal compatibility exports
+//
+// HorizonScaleModal expects label/signature maps keyed by score
+// (matching the self-scale shape). Derived from PLANET_SCALE so
+// they stay in sync if PLANET_SCALE changes.
+// ─────────────────────────────────────────────────────────────
+
+export const PLANET_LABEL_MAP = Object.fromEntries(
+  PLANET_SCALE.map(s => [s.score, s.label])
+)
+
+export const PLANET_SIGNATURE_MAP = Object.fromEntries(
+  PLANET_SCALE.map(s => [s.score, s.description])
+)
+
+export const PLANET_INTRO = {
+  eyebrow:  'Atlas',
+  title:    'The Civilisational Horizon Scale',
+  subtitle: 'Actor alignment · 1–10',
+  body: [
+    'Each Atlas actor is scored against this scale, expressing how their work aligns with the Horizon Goal for their domain. Above 5 means net positive — building toward the goal. Below 5 means net negative — actively working against it.',
+    'The scale is honest about both directions. Pattern-instance entries (low scores) belong on the Atlas as much as exemplars, because the map must show the whole field.',
+  ],
+  aboveLine: { label: 'Building',     note: 'above 5 — net contribution toward the Horizon Goal' },
+  belowLine: { label: 'Pattern',      note: 'below 5 — patterns of harm that the field needs to recognise' },
+  footer:    'A low score is not a verdict on the actor. It is an honest reading of impact relative to the Horizon Goal of their domain.',
+}
