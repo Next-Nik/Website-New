@@ -46,15 +46,18 @@ export function Nav({ activePath }) {
 
           {/* Desktop centre — nav links + Tools pill */}
           <div className="nav-centre" style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-            <ul className="nav-links" style={{ margin: 0, padding: 0 }}>
-              {links.map(l => (
-                <li key={l.key}>
-                  <Link to={l.to} className={isActive(l.key) ? 'active' : ''}>
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {/* Marketing links — hidden when logged in */}
+            {!user && (
+              <ul className="nav-links" style={{ margin: 0, padding: 0 }}>
+                {links.map(l => (
+                  <li key={l.key}>
+                    <Link to={l.to} className={isActive(l.key) ? 'active' : ''}>
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
 
             {/* Tools pill — deliberately outside nav-links ul */}
             <button
@@ -140,8 +143,8 @@ export function Nav({ activePath }) {
 
           <div className="nav-mobile-divider" />
 
-          {/* Remaining links */}
-          {links.filter(l => l.key !== 'nextus-self').map(l => (
+          {/* Remaining links — hidden when logged in */}
+          {!user && links.filter(l => l.key !== 'nextus-self').map(l => (
             <Link key={l.key} to={l.to} onClick={closeMobile} className="nav-mobile-link">
               {l.label}
             </Link>
