@@ -1,132 +1,253 @@
-// src/beta/pages/OrgPublic.jsx
-// Module 6: read-only public org profile at /beta/org/:id
-// Module 13 update: GradientPosition rendered in identity strip when set.
-//   Trajectory arrow on name. Greenwashing flag when conditions met.
-// No engagement metrics. No edit affordances.
+// src/app/pages/OrgPublic.jsx
+//
+// Public Atlas profile page.
+//
+// Two-layer model:
+//   EVIDENCE LAYER — always present, observable signals
+//     identity (name, type, tagline, location, image)
+//     description (AI-drafted, third-person)
+//     domain placement
+//     links (website, podcast, socials, etc.)
+//     press mentions ("as seen in")
+//     embedded media (podcast feed, YouTube channel)
+//     relationships (parent, children, partners)
+//     provenance badge
+//
+//   VOICE LAYER — only present when claimed
+//     mission_statement (first-person)
+//     working_on_now (current focus)
+//     offers (what they bring)
+//     needs (what they're looking for)
+//
+// Wards (community/NextUs-seeded, unclaimed) show only evidence with a
+// prominent claim CTA. Claimed profiles show both layers.
 
-import { useState, useEffect, useCallback } from 'react'
-import { useParams, Link }     from 'react-router-dom'
-import { Nav }                 from '../../components/Nav'
-import { SiteFooter }          from '../../components/SiteFooter'
-import { supabase }            from '../../hooks/useSupabase'
-import { useAuth }             from '../../hooks/useAuth'
+import { useState, useEffect } from 'react'
+import { useParams, Link } from 'react-router-dom'
+import { Nav } from '../../components/Nav'
+import { SiteFooter } from '../../components/SiteFooter'
+import { supabase } from '../../hooks/useSupabase'
+import { useAuth } from '../../hooks/useAuth'
 import {
   body, sc, gold, dark, parch,
   DOMAIN_LABEL, SCALE_LABEL,
-  OFFERING_TYPES, CONTRIBUTION_MODES, ACCESS_TYPES,
   PLACEMENT_TIER,
 } from '../components/OrgShared'
-import { PrincipleStrip }      from '../components/PrincipleStrip'
-import { DOMAIN_COLORS }       from '../constants/domains'
-import { GradientPosition, TrajectoryArrow } from '../components/GradientPosition'  // Module 13
+import { DOMAIN_COLORS } from '../constants/domains'
 
-// ── Small utilities ──────────────────────────────────────────
+// ── Design utilities ─────────────────────────────────────────
 
 function Eyebrow({ children, style = {} }) {
   return (
-    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: 'rgba(15,21,35,0.40)', textTransform: 'uppercase', marginBottom: '20px', ...style }}>
+    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
+      color: 'rgba(15,21,35,0.40)', textTransform: 'uppercase',
+      marginBottom: '18px', ...style }}>
       {children}
     </div>
   )
 }
 
 function Rule() {
-  return <div style={{ height: '1px', background: 'rgba(200,146,42,0.10)', margin: '56px 0' }} />
+  return <div style={{ height: '1px',
+    background: 'rgba(200,146,42,0.10)', margin: '52px 0' }} />
 }
 
 function NotFound() {
   return (
     <div style={{ background: parch, minHeight: '100vh' }}>
-      <Nav activePath="nextus" />
+      <Nav />
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '160px 24px', textAlign: 'center' }}>
-        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.45)', lineHeight: 1.75 }}>
-          This organisation profile does not exist or is not publicly visible.
+        <p style={{ ...body, fontSize: '17px', fontWeight: 300,
+          color: 'rgba(15,21,35,0.45)', lineHeight: 1.75 }}>
+          This profile does not exist or is not publicly visible.
         </p>
       </div>
     </div>
   )
 }
 
-// ── Identity strip (Module 13 updated) ──────────────────────
+// ── Link type renderers ──────────────────────────────────────
 
-function OrgIdentityStrip({ actor, focusName, primaryDomain, principalTier, isOwner }) {
+const LINK_LABELS = {
+  website:         'Website',
+  podcast_rss:     'Podcast',
+  podcast_apple:   'Apple Podcasts',
+  podcast_spotify: 'Spotify',
+  youtube_channel: 'YouTube',
+  youtube_video:   'YouTube',
+  vimeo:           'Vimeo',
+  substack:        'Substack',
+  newsletter:      'Newsletter',
+  instagram:       'Instagram',
+  twitter:         'X',
+  tiktok:          'TikTok',
+  facebook:        'Facebook',
+  linkedin:        'LinkedIn',
+  medium:          'Medium',
+  github:          'GitHub',
+  book:            'Book',
+  other:           'Link',
+}
+
+// Display priority for links (lower = shown first)
+const LINK_PRIORITY = {
+  website: 0, podcast_rss: 1, podcast_apple: 2, podcast_spotify: 3,
+  youtube_channel: 4, substack: 5, newsletter: 6,
+  book: 7,
+  instagram: 8, linkedin: 9, twitter: 10, facebook: 11, tiktok: 12,
+  vimeo: 13, medium: 14, github: 15,
+  youtube_video: 16, other: 99,
+}
+
+// ── Identity strip ───────────────────────────────────────────
+
+function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
   const domainColor = DOMAIN_COLORS[primaryDomain] || gold
-  const tierConfig  = PLACEMENT_TIER[principalTier]
+  const tierConfig  = PLACEMENT_TIER?.[principalTier]
 
   return (
-    <div style={{ marginBottom: '64px' }}>
-      {/* Domain tag */}
-      {primaryDomain && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-          <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: domainColor, flexShrink: 0 }} />
-          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: 'rgba(15,21,35,0.50)', textTransform: 'uppercase' }}>
-            {DOMAIN_LABEL[primaryDomain]}
-          </span>
-          {actor.scale && (
-            <>
-              <span style={{ color: 'rgba(200,146,42,0.30)', fontSize: '12px' }}>·</span>
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.40)' }}>
-                {SCALE_LABEL[actor.scale] || actor.scale}
+    <div style={{ marginBottom: '52px' }}>
+      <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start',
+        flexWrap: 'wrap' }}>
+
+        {/* Image */}
+        {actor.image_url && (
+          <div style={{ flexShrink: 0 }}>
+            <img src={actor.image_url} alt={actor.name}
+              style={{ width: '120px', height: '120px', objectFit: 'cover',
+                borderRadius: '12px',
+                border: '1px solid rgba(200,146,42,0.20)' }} />
+          </div>
+        )}
+
+        {/* Identity content */}
+        <div style={{ flex: 1, minWidth: '260px' }}>
+
+          {/* Domain + scale eyebrow */}
+          {primaryDomain && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px',
+              marginBottom: '16px' }}>
+              <div style={{ width: '8px', height: '8px', borderRadius: '50%',
+                background: domainColor, flexShrink: 0 }} />
+              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em',
+                color: 'rgba(15,21,35,0.50)', textTransform: 'uppercase' }}>
+                {DOMAIN_LABEL[primaryDomain] || primaryDomain}
               </span>
-            </>
+              {actor.scale && (
+                <>
+                  <span style={{ color: 'rgba(200,146,42,0.30)', fontSize: '12px' }}>·</span>
+                  <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em',
+                    color: 'rgba(15,21,35,0.40)' }}>
+                    {SCALE_LABEL?.[actor.scale] || actor.scale}
+                  </span>
+                </>
+              )}
+              {actor.type && (
+                <>
+                  <span style={{ color: 'rgba(200,146,42,0.30)', fontSize: '12px' }}>·</span>
+                  <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em',
+                    color: 'rgba(15,21,35,0.40)' }}>
+                    {actor.type.charAt(0).toUpperCase() + actor.type.slice(1)}
+                  </span>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Name */}
+          <h1 style={{ ...body, fontSize: 'clamp(30px, 5vw, 48px)', fontWeight: 300,
+            color: dark, lineHeight: 1.06, letterSpacing: '-0.01em',
+            margin: '0 0 10px' }}>
+            {actor.name}
+          </h1>
+
+          {/* Tagline */}
+          {actor.tagline && (
+            <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.65)',
+              lineHeight: 1.5, margin: '0 0 16px',
+              fontStyle: 'italic' }}>
+              {actor.tagline}
+            </p>
+          )}
+
+          {/* Location */}
+          {actor.location_name && (
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
+              color: 'rgba(15,21,35,0.45)', marginBottom: '16px',
+              textTransform: 'uppercase' }}>
+              {actor.location_name}
+            </div>
+          )}
+
+          {/* Placement tier badge */}
+          {tierConfig && (
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px',
+              padding: '5px 12px', background: tierConfig.bg,
+              border: `1px solid ${tierConfig.color}30`, borderRadius: '4px',
+              marginBottom: '16px' }}>
+              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
+                color: tierConfig.color }}>
+                {tierConfig.label}
+              </span>
+            </div>
+          )}
+
+          {/* Manage link for owner */}
+          {isOwner && (
+            <div style={{ marginTop: '8px' }}>
+              <Link to={`/org/${actor.slug || actor.id}/manage`}
+                style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
+                  color: 'rgba(15,21,35,0.55)', textDecoration: 'none',
+                  padding: '6px 14px', borderRadius: '40px',
+                  border: '1px solid rgba(200,146,42,0.30)',
+                  background: 'rgba(200,146,42,0.04)' }}>
+                Manage profile
+              </Link>
+            </div>
           )}
         </div>
-      )}
+      </div>
+    </div>
+  )
+}
 
-      {/* Name + trajectory arrow (Module 13) */}
-      <h1 style={{ ...body, fontSize: 'clamp(32px, 5vw, 52px)', fontWeight: 300, color: dark, lineHeight: 1.06, letterSpacing: '-0.01em', margin: '0 0 12px', display: 'flex', alignItems: 'baseline', flexWrap: 'wrap', gap: '6px' }}>
-        {actor.name}
-        {actor.gradient_trajectory && (
-          <TrajectoryArrow trajectory={actor.gradient_trajectory} />
-        )}
-      </h1>
+// ── Claim banner — prominent on wards ────────────────────────
 
-      {/* Location */}
-      {(actor.location_name || focusName) && (
-        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.45)', marginBottom: '20px', textTransform: 'uppercase' }}>
-          {actor.location_name || focusName}
+function ClaimBanner({ actor, user }) {
+  if (actor.profile_owner) return null  // already claimed
+
+  return (
+    <div style={{ background: 'rgba(200,146,42,0.06)',
+      border: '1.5px solid rgba(200,146,42,0.35)',
+      borderRadius: '12px', padding: '20px 24px', marginBottom: '40px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px',
+        flexWrap: 'wrap' }}>
+        <div style={{ flex: 1, minWidth: '240px' }}>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em',
+            color: gold, marginBottom: '6px' }}>
+            HELD IN TRUST
+          </div>
+          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)',
+            lineHeight: 1.6, margin: 0 }}>
+            This profile was added by the community. NextUs holds it in trust until claimed.
+            {actor.name === 'NextUs' ? '' : ` Is this you? Claim ${actor.name} to add your voice.`}
+          </p>
         </div>
-      )}
-
-      {/* Placement tier badge */}
-      {tierConfig && (
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '5px 12px', background: tierConfig.bg, border: `1px solid ${tierConfig.color}30`, borderRadius: '4px', marginBottom: '20px' }}>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: tierConfig.color }}>
-            {tierConfig.label}
-          </span>
-        </div>
-      )}
-
-      {/* Module 13: Gradient position bar */}
-      {actor.gradient_position != null && (
-        <div style={{ marginBottom: '20px', maxWidth: '380px' }}>
-          <GradientPosition
-            position={actor.gradient_position}
-            trajectory={actor.gradient_trajectory}
-            actorName={actor.name}
-          />
-        </div>
-      )}
-
-      {/* Reach */}
-      {actor.reach && (
-        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.60)', margin: '0 0 20px' }}>
-          {actor.reach}
-        </p>
-      )}
-
-      {/* Website + manage link */}
-      <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
-        {actor.website && (
-          <a href={actor.website} target="_blank" rel="noopener noreferrer"
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, textDecoration: 'none' }}>
-            Website
-          </a>
-        )}
-        {isOwner && (
-          <Link to={`/org/${actor.id}/manage`}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', textDecoration: 'none' }}>
-            Manage
+        {user ? (
+          <Link to={`/org/${actor.slug || actor.id}/claim`}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
+              color: '#FFFFFF', background: '#C8922A',
+              padding: '10px 22px', borderRadius: '40px',
+              textDecoration: 'none', whiteSpace: 'nowrap' }}>
+            Claim this profile
+          </Link>
+        ) : (
+          <Link to="/login"
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
+              color: '#FFFFFF', background: '#C8922A',
+              padding: '10px 22px', borderRadius: '40px',
+              textDecoration: 'none', whiteSpace: 'nowrap' }}>
+            Sign in to claim
           </Link>
         )}
       </div>
@@ -134,448 +255,388 @@ function OrgIdentityStrip({ actor, focusName, primaryDomain, principalTier, isOw
   )
 }
 
-// ── Mission ──────────────────────────────────────────────────
+// ── Voice layer — Mission statement ──────────────────────────
 
-function OrgMission({ description, impactSummary }) {
-  if (!description && !impactSummary) return null
+function MissionStatement({ actor }) {
+  if (!actor.mission_statement) return null
   return (
-    <div style={{ marginBottom: '72px' }}>
+    <div>
       <Eyebrow>Mission</Eyebrow>
-      {description && (
-        <p style={{ ...body, fontSize: 'clamp(17px, 2vw, 20px)', fontWeight: 300, color: dark, lineHeight: 1.75, margin: '0 0 24px', maxWidth: '580px' }}>
-          {description}
-        </p>
-      )}
-      {impactSummary && (
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, maxWidth: '560px', margin: 0 }}>
-          {impactSummary}
-        </p>
-      )}
+      <p style={{ ...body, fontSize: '20px', color: dark, lineHeight: 1.55,
+        margin: 0, fontWeight: 300 }}>
+        {actor.mission_statement}
+      </p>
     </div>
   )
 }
 
-// ── Civilisational placement ─────────────────────────────────
+// ── Voice layer — Working on now ─────────────────────────────
 
-function OrgPlacement({ domains, subdomains, lenses, problemChains, alignmentNotes }) {
-  const hasDomains  = domains && domains.length > 0
-  const hasLenses   = lenses && lenses.length > 0
-  const hasProblems = problemChains && problemChains.length > 0
-
-  if (!hasDomains && !hasLenses && !hasProblems) return null
-
+function WorkingOnNow({ actor }) {
+  if (!actor.working_on_now) return null
   return (
-    <div style={{ marginBottom: '72px' }}>
-      <Eyebrow>Where this work belongs</Eyebrow>
-
-      {hasDomains && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
-          {domains.map((slug, i) => {
-            const color = DOMAIN_COLORS[slug] || gold
-            const note  = alignmentNotes?.[slug]
-            return (
-              <div key={slug} style={{ display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
-                <div style={{ width: '3px', background: color, borderRadius: '2px', flexShrink: 0, alignSelf: 'stretch', opacity: i === 0 ? 1 : 0.45 }} />
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: note ? '6px' : 0 }}>
-                    <span style={{ ...body, fontSize: i === 0 ? '18px' : '15px', fontWeight: 300, color: i === 0 ? dark : 'rgba(15,21,35,0.55)' }}>
-                      {DOMAIN_LABEL[slug] || slug}
-                    </span>
-                    {i === 0 && (
-                      <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: '#FFFFFF', background: color, padding: '2px 8px', borderRadius: '40px' }}>Primary</span>
-                    )}
-                  </div>
-                  {note && (
-                    <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.65, margin: 0, maxWidth: '480px' }}>
-                      {note}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      )}
-
-      {hasLenses && (
-        <div style={{ marginBottom: '16px' }}>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.35)', marginBottom: '10px' }}>Lenses</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-            {lenses.map(l => (
-              <span key={l} style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.04)', border: '1px solid rgba(15,21,35,0.10)', borderRadius: '4px', padding: '3px 9px' }}>
-                {l}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {hasProblems && (
-        <div>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.35)', marginBottom: '10px' }}>Problem addressed</div>
-          <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, margin: 0 }}>
-            {problemChains[0]}
-          </p>
-          {problemChains.length > 1 && (
-            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.45)', marginTop: '6px' }}>
-              +{problemChains.length - 1} more
-            </p>
-          )}
-        </div>
-      )}
+    <div>
+      <Eyebrow>Working on now</Eyebrow>
+      <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.78)',
+        lineHeight: 1.65, margin: 0 }}>
+        {actor.working_on_now}
+      </p>
     </div>
   )
 }
 
-// ── Offerings ────────────────────────────────────────────────
+// ── Evidence layer — Description ─────────────────────────────
 
-function OrgOfferings({ offerings }) {
-  if (!offerings || offerings.length === 0) return null
-
-  const flagship = offerings.filter(o => o.is_flagship)
-  const others   = offerings.filter(o => !o.is_flagship)
-  const sorted   = [...flagship, ...others]
-
+function Description({ actor }) {
+  if (!actor.description) return null
   return (
-    <div style={{ marginBottom: '72px' }}>
-      <Eyebrow>Offerings</Eyebrow>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {sorted.map(o => {
-          const typeLabel   = OFFERING_TYPES.find(t => t.value === o.offering_type)?.label   || o.offering_type
-          const modeLabel   = CONTRIBUTION_MODES.find(m => m.value === o.contribution_mode)?.label || o.contribution_mode
-          const accessLabel = ACCESS_TYPES.find(a => a.value === o.access_type)?.label       || o.access_type
+    <div>
+      <Eyebrow>About</Eyebrow>
+      <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.78)',
+        lineHeight: 1.7, margin: 0, whiteSpace: 'pre-wrap' }}>
+        {actor.description}
+      </p>
+    </div>
+  )
+}
 
-          return (
-            <div key={o.id} style={{ padding: '22px 24px', background: o.is_flagship ? 'rgba(200,146,42,0.04)' : '#FFFFFF', border: o.is_flagship ? '1.5px solid rgba(200,146,42,0.35)' : '1px solid rgba(200,146,42,0.14)', borderRadius: '12px' }}>
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
-                {o.is_flagship && <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', background: '#C8922A', color: '#FFFFFF', padding: '2px 10px', borderRadius: '40px' }}>Flagship</span>}
-                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold, background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '4px', padding: '2px 8px' }}>{typeLabel}</span>
-                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.45)', background: 'rgba(15,21,35,0.04)', borderRadius: '4px', padding: '2px 8px' }}>{modeLabel}</span>
-                <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.45)' }}>{accessLabel}</span>
-              </div>
-              <h3 style={{ ...body, fontSize: '18px', fontWeight: 300, color: dark, margin: '0 0 8px', lineHeight: 1.3 }}>{o.title}</h3>
-              {o.description && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.7, margin: o.url ? '0 0 10px' : 0 }}>{o.description}</p>}
-              {o.url && <a href={o.url} target="_blank" rel="noopener noreferrer" style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}>Learn more</a>}
-            </div>
-          )
-        })}
+// ── Placement ────────────────────────────────────────────────
+
+function Placement({ domains, subdomains }) {
+  if (!domains?.length) return null
+  return (
+    <div>
+      <Eyebrow>Placement</Eyebrow>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px',
+        marginBottom: subdomains?.length ? '14px' : 0 }}>
+        {domains.map(slug => (
+          <span key={slug} style={{ ...sc, fontSize: '12px', letterSpacing: '0.06em',
+            color: gold, background: 'rgba(200,146,42,0.06)',
+            border: '1px solid rgba(200,146,42,0.30)',
+            padding: '4px 11px', borderRadius: '40px' }}>
+            {DOMAIN_LABEL[slug] || slug}
+          </span>
+        ))}
       </div>
+      {subdomains?.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+          {subdomains.map(s => (
+            <span key={s} style={{ ...body, fontSize: '12px',
+              color: 'rgba(15,21,35,0.55)',
+              background: 'transparent',
+              border: '1px solid rgba(200,146,42,0.18)',
+              padding: '3px 9px', borderRadius: '40px' }}>
+              {s}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
-// ── Needs ────────────────────────────────────────────────────
+// ── Links row ────────────────────────────────────────────────
 
-function OrgNeeds({ needs }) {
-  const openNeeds = needs
-    .filter(n => n.status === 'open')
-    .sort((a, b) => {
-      if (a.medium === 'in_person' && b.medium !== 'in_person') return -1
-      if (b.medium === 'in_person' && a.medium !== 'in_person') return 1
-      return 0
-    })
+function LinksRow({ links }) {
+  if (!links?.length) return null
 
-  if (openNeeds.length === 0) return null
+  const sorted = [...links].sort((a, b) =>
+    (LINK_PRIORITY[a.link_type] ?? 99) - (LINK_PRIORITY[b.link_type] ?? 99)
+  )
 
   return (
-    <div style={{ marginBottom: '72px' }}>
-      <Eyebrow>Open needs</Eyebrow>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        {openNeeds.map(n => (
-          <div key={n.id} style={{ padding: '20px 22px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.14)', borderRadius: '12px' }}>
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.50)' }}>{n.need_type} · {n.size}</span>
-              {n.medium === 'in_person' && <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: gold, background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '4px', padding: '2px 8px' }}>In person</span>}
-              {n.time_estimate && <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.45)' }}>{n.time_estimate}</span>}
-            </div>
-            <h4 style={{ ...body, fontSize: '17px', fontWeight: 300, color: dark, margin: '0 0 6px' }}>{n.title}</h4>
-            {n.description && <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.65, margin: 0 }}>{n.description}</p>}
-          </div>
+    <div>
+      <Eyebrow>Links</Eyebrow>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+        {sorted.map(link => (
+          <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer"
+            style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em',
+              color: 'rgba(15,21,35,0.72)', textDecoration: 'none',
+              padding: '7px 14px', borderRadius: '40px',
+              border: '1px solid rgba(200,146,42,0.25)',
+              background: '#FFFFFF',
+              transition: 'all 0.15s ease' }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)'
+              e.currentTarget.style.color = gold
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = 'rgba(200,146,42,0.25)'
+              e.currentTarget.style.color = 'rgba(15,21,35,0.72)'
+            }}>
+            {link.label || LINK_LABELS[link.link_type] || link.link_type}
+          </a>
         ))}
       </div>
     </div>
   )
 }
 
-// ── Principle alignment ──────────────────────────────────────
+// ── Press strip ──────────────────────────────────────────────
 
-function OrgPrincipleAlignment({ principleTaggings }) {
-  if (!principleTaggings || principleTaggings.length === 0) return null
+function PressStrip({ press }) {
+  if (!press?.length) return null
   return (
-    <div style={{ marginBottom: '72px' }}>
-      <Eyebrow>Platform principles</Eyebrow>
-      <PrincipleStrip taggings={principleTaggings} />
+    <div>
+      <Eyebrow>Featured in</Eyebrow>
+      <p style={{ ...body, fontSize: '15px',
+        color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, margin: 0,
+        fontStyle: 'italic' }}>
+        {press.map((p, idx) => (
+          <span key={p.id}>
+            {p.url ? (
+              <a href={p.url} target="_blank" rel="noopener noreferrer"
+                style={{ color: 'rgba(15,21,35,0.72)', textDecoration: 'none',
+                  borderBottom: '1px dotted rgba(200,146,42,0.45)' }}>
+                {p.publication}
+              </a>
+            ) : (
+              <span>{p.publication}</span>
+            )}
+            {idx < press.length - 1 && <span style={{ color: 'rgba(200,146,42,0.30)' }}> · </span>}
+          </span>
+        ))}
+      </p>
     </div>
   )
 }
 
-// ── Receipts stub ────────────────────────────────────────────
+// ── Offers section ───────────────────────────────────────────
 
-function OrgReceiptsStub() {
+function OffersSection({ offers }) {
+  if (!offers?.length) return null
   return (
-    <div style={{ marginBottom: '72px' }}>
-      <Eyebrow>Contribution receipts</Eyebrow>
-      <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.40)', lineHeight: 1.75, margin: 0 }}>
-        Confirmed contributions and their outcomes will appear here.
-      </p>
+    <div>
+      <Eyebrow>What they offer</Eyebrow>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        {offers.map(offer => <OfferOrNeedCard key={offer.id} item={offer} kind="offer" />)}
+      </div>
+    </div>
+  )
+}
+
+// ── Needs section ────────────────────────────────────────────
+
+function NeedsSection({ needs }) {
+  if (!needs?.length) return null
+  return (
+    <div>
+      <Eyebrow>What they need</Eyebrow>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        {needs.map(need => <OfferOrNeedCard key={need.id} item={need} kind="need" />)}
+      </div>
+    </div>
+  )
+}
+
+// ── Offer or Need card ───────────────────────────────────────
+
+function OfferOrNeedCard({ item, kind }) {
+  const accent = kind === 'offer' ? '#2A6B3A' : '#2A4A8A'
+  const accentBg = kind === 'offer' ? 'rgba(42,107,58,0.04)' : 'rgba(42,74,138,0.04)'
+  const accentBorder = kind === 'offer' ? 'rgba(42,107,58,0.20)' : 'rgba(42,74,138,0.20)'
+
+  let locationLabel = null
+  if (item.location_mode === 'local_only') locationLabel = 'Local only'
+  else if (item.location_mode === 'specific') locationLabel = item.location_specifics || 'Specific places'
+  // 'anywhere' shows no label
+
+  return (
+    <div style={{ background: '#FFFFFF',
+      border: `1px solid ${accentBorder}`,
+      borderRadius: '10px', padding: '16px 18px' }}>
+      <h3 style={{ ...body, fontSize: '16px', fontWeight: 400,
+        color: dark, margin: '0 0 6px', lineHeight: 1.4 }}>
+        {item.title}
+      </h3>
+      {item.description && (
+        <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)',
+          lineHeight: 1.6, margin: '0 0 10px' }}>
+          {item.description}
+        </p>
+      )}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
+        <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
+          color: accent, background: accentBg,
+          border: `1px solid ${accentBorder}`,
+          padding: '2px 9px', borderRadius: '40px',
+          textTransform: 'uppercase' }}>
+          {kind === 'offer' ? 'Offer' : 'Need'}
+        </span>
+        {locationLabel && (
+          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+            color: 'rgba(15,21,35,0.55)', background: 'transparent',
+            border: '1px solid rgba(200,146,42,0.20)',
+            padding: '2px 9px', borderRadius: '40px' }}>
+            {locationLabel}
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ── Relationships section ────────────────────────────────────
+
+function RelationshipsSection({ parent, children, partners }) {
+  if (!parent && !children?.length && !partners?.length) return null
+  return (
+    <div>
+      <Eyebrow>Relationships</Eyebrow>
+
+      {parent && (
+        <div style={{ marginBottom: children?.length || partners?.length ? '18px' : 0 }}>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+            color: 'rgba(15,21,35,0.45)', marginBottom: '6px' }}>
+            PART OF
+          </div>
+          <Link to={`/org/${parent.slug || parent.id}`}
+            style={{ ...body, fontSize: '15px', color: dark,
+              textDecoration: 'none', borderBottom: '1px dotted rgba(200,146,42,0.45)' }}>
+            {parent.name}
+          </Link>
+        </div>
+      )}
+
+      {children?.length > 0 && (
+        <div style={{ marginBottom: partners?.length ? '18px' : 0 }}>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+            color: 'rgba(15,21,35,0.45)', marginBottom: '8px' }}>
+            INCLUDES
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+            {children.map(c => (
+              <Link key={c.id} to={`/org/${c.slug || c.id}`}
+                style={{ ...body, fontSize: '14px', color: dark,
+                  textDecoration: 'none', padding: '5px 12px',
+                  borderRadius: '40px',
+                  border: '1px solid rgba(200,146,42,0.25)',
+                  background: '#FFFFFF' }}>
+                {c.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {partners?.length > 0 && (
+        <div>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+            color: 'rgba(15,21,35,0.45)', marginBottom: '8px' }}>
+            PARTNERS WITH
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+            {partners.map(p => (
+              <Link key={p.id} to={`/org/${p.slug || p.id}`}
+                style={{ ...body, fontSize: '14px', color: dark,
+                  textDecoration: 'none', padding: '5px 12px',
+                  borderRadius: '40px',
+                  border: '1px solid rgba(200,146,42,0.25)',
+                  background: '#FFFFFF' }}>
+                {p.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Provenance badge ─────────────────────────────────────────
+
+function ProvenanceBadge({ actor }) {
+  let label, hint
+  if (actor.seeded_by === 'self') {
+    label = 'Self-declared'
+    hint = 'Added and managed by the actor.'
+  } else if (actor.seeded_by === 'community') {
+    label = 'Community-added'
+    hint = actor.profile_owner ? 'Added by community, claimed by the actor.' : 'Held in trust by NextUs until claimed.'
+  } else if (actor.seeded_by === 'nextus') {
+    label = 'Seeded by NextUs'
+    hint = actor.profile_owner ? 'Editorially seeded, then claimed.' : 'Editorial seed entry. Held in trust until claimed.'
+  } else {
+    return null
+  }
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '10px',
+      paddingTop: '8px' }}>
+      <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em',
+        color: 'rgba(15,21,35,0.40)', textTransform: 'uppercase' }}>
+        {label}
+      </span>
+      <span style={{ color: 'rgba(200,146,42,0.30)', fontSize: '10px' }}>·</span>
+      <span style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.40)',
+        fontStyle: 'italic' }}>
+        {hint}
+      </span>
     </div>
   )
 }
 
 // ── Main page ────────────────────────────────────────────────
 
-// ── Claim section ─────────────────────────────────────────────────────────────
-// Shown at the bottom of unclaimed org profiles. Logged-out users are
-// prompted to sign in. Logged-in users get the three-field form inline.
-
-function ClaimSection({ actor, user }) {
-  const [phase, setPhase]   = useState('idle')   // idle | form | submitting | done | already | error
-  const [role, setRole]     = useState('')
-  const [note, setNote]     = useState('')
-  const [evidence, setEvidence] = useState('')
-  const [err, setErr]       = useState(null)
-
-  // Check if this user already submitted a claim
-  useEffect(() => {
-    if (!user) return
-    supabase.from('nextus_claims')
-      .select('id, status')
-      .eq('actor_id', actor.id)
-      .eq('user_id', user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (data) setPhase('already')
-      })
-  }, [actor.id, user])
-
-  const handleSubmit = useCallback(async () => {
-    if (!role.trim() || !note.trim()) return
-    setPhase('submitting')
-    setErr(null)
-    const { error } = await supabase.from('nextus_claims').insert({
-      actor_id:       actor.id,
-      user_id:        user.id,
-      claimant_email: user.email,
-      role:           role.trim(),
-      note:           note.trim(),
-      evidence:       evidence.trim() || null,
-    })
-    if (error) {
-      setErr(error.code === '23505'
-        ? 'You have already submitted a claim for this organisation.'
-        : 'Something went wrong. Try again or email support@nextus.world.')
-      setPhase('error')
-      return
-    }
-    setPhase('done')
-  }, [actor.id, user, role, note, evidence])
-
-  const cs = {
-    wrap: {
-      marginTop: '80px',
-      padding: '40px',
-      background: 'rgba(200,146,42,0.04)',
-      border: '1px solid rgba(200,146,42,0.15)',
-      borderRadius: '4px',
-    },
-    eyebrow: {
-      fontFamily: "'Cormorant SC', Georgia, serif",
-      fontSize: '11px', letterSpacing: '0.22em',
-      color: 'rgba(15,21,35,0.40)', textTransform: 'uppercase',
-      marginBottom: '12px',
-    },
-    heading: {
-      fontFamily: "'Lora', Georgia, serif",
-      fontSize: '20px', fontWeight: 300,
-      color: '#0F1523', marginBottom: '8px', lineHeight: 1.3,
-    },
-    body: {
-      fontFamily: "'Lora', Georgia, serif",
-      fontSize: '15px', color: 'rgba(15,21,35,0.60)',
-      lineHeight: 1.7, marginBottom: '28px',
-    },
-    label: {
-      fontFamily: "'Cormorant SC', Georgia, serif",
-      fontSize: '11px', letterSpacing: '0.16em',
-      color: '#A8721A', textTransform: 'uppercase',
-      display: 'block', marginBottom: '6px',
-    },
-    input: {
-      width: '100%', boxSizing: 'border-box',
-      fontFamily: "'Lora', Georgia, serif", fontSize: '15px',
-      padding: '10px 14px', border: '1px solid rgba(200,146,42,0.25)',
-      borderRadius: '3px', background: '#FAFAF7',
-      color: '#0F1523', marginBottom: '20px', outline: 'none',
-    },
-    textarea: {
-      width: '100%', boxSizing: 'border-box',
-      fontFamily: "'Lora', Georgia, serif", fontSize: '15px',
-      padding: '10px 14px', border: '1px solid rgba(200,146,42,0.25)',
-      borderRadius: '3px', background: '#FAFAF7',
-      color: '#0F1523', marginBottom: '20px', outline: 'none',
-      resize: 'vertical', lineHeight: 1.6, minHeight: '90px',
-    },
-    btn: {
-      fontFamily: "'Cormorant SC', Georgia, serif",
-      fontSize: '13px', letterSpacing: '0.14em',
-      padding: '10px 28px', background: '#A8721A',
-      color: '#FAFAF7', border: 'none', borderRadius: '3px',
-      cursor: 'pointer',
-    },
-    signIn: {
-      fontFamily: "'Lora', Georgia, serif",
-      fontSize: '15px', color: '#A8721A',
-      textDecoration: 'underline', textUnderlineOffset: '3px',
-      cursor: 'pointer', background: 'none', border: 'none', padding: 0,
-    },
-  }
-
-  // Don't show if org is already claimed
-  if (actor.claimed || actor.profile_owner) return null
-
-  if (phase === 'done') {
-    return (
-      <div style={cs.wrap}>
-        <div style={cs.eyebrow}>Claim submitted</div>
-        <h3 style={cs.heading}>We have your request.</h3>
-        <p style={cs.body}>
-          You will hear from us directly — not a system email, a real message.
-          We review every claim and usually respond within a day or two.
-        </p>
-      </div>
-    )
-  }
-
-  if (phase === 'already') {
-    return (
-      <div style={cs.wrap}>
-        <div style={cs.eyebrow}>Claim pending</div>
-        <p style={cs.body}>
-          You have already submitted a claim for this organisation.
-          We will be in touch soon.
-        </p>
-      </div>
-    )
-  }
-
-  if (!user) {
-    return (
-      <div style={cs.wrap}>
-        <div style={cs.eyebrow}>Is this yours?</div>
-        <h3 style={cs.heading}>Claim this profile</h3>
-        <p style={cs.body}>
-          If you represent {actor.name}, you can take over this profile,
-          keep it up to date, and manage your organisation's presence on NextUs.
-        </p>
-        <a href={`/login?redirect=${encodeURIComponent(`/org/${actor.id}`)}`}
-          style={{ ...cs.btn, display: 'inline-block', textDecoration: 'none' }}>
-          Sign in to claim
-        </a>
-      </div>
-    )
-  }
-
-  return (
-    <div style={cs.wrap}>
-      <div style={cs.eyebrow}>Is this yours?</div>
-      <h3 style={cs.heading}>Claim this profile</h3>
-      <p style={cs.body}>
-        If you represent {actor.name}, tell us who you are and why you
-        are the right person to manage this profile. We review every claim
-        personally and respond directly.
-      </p>
-
-      {phase === 'form' || phase === 'submitting' || phase === 'error' ? (
-        <>
-          <label style={cs.label}>Your role at {actor.name} *</label>
-          <input
-            style={cs.input}
-            placeholder="e.g. Executive Director, Head of Comms, Co-founder"
-            value={role}
-            onChange={e => setRole(e.target.value)}
-            disabled={phase === 'submitting'}
-          />
-
-          <label style={cs.label}>Why are you the right person to manage this? *</label>
-          <textarea
-            style={cs.textarea}
-            placeholder="A sentence or two is enough."
-            value={note}
-            onChange={e => setNote(e.target.value)}
-            disabled={phase === 'submitting'}
-          />
-
-          <label style={cs.label}>A link that connects you to the org (optional)</label>
-          <input
-            style={{ ...cs.input, marginBottom: '28px' }}
-            placeholder="Staff page, LinkedIn, bio — anything public"
-            value={evidence}
-            onChange={e => setEvidence(e.target.value)}
-            disabled={phase === 'submitting'}
-          />
-
-          {err && (
-            <p style={{ ...cs.body, color: '#8A3030', marginBottom: '16px' }}>{err}</p>
-          )}
-
-          <button
-            style={{ ...cs.btn, opacity: (!role.trim() || !note.trim() || phase === 'submitting') ? 0.5 : 1 }}
-            disabled={!role.trim() || !note.trim() || phase === 'submitting'}
-            onClick={handleSubmit}
-          >
-            {phase === 'submitting' ? 'Submitting…' : 'Submit claim'}
-          </button>
-        </>
-      ) : (
-        <button style={cs.btn} onClick={() => setPhase('form')}>
-          Claim this profile →
-        </button>
-      )}
-    </div>
-  )
-}
-
-
 export function OrgPublicPage() {
-  const { id }   = useParams()
+  const { id } = useParams()
   const { user } = useAuth()
 
-  const [actor,      setActor]      = useState(null)
-  const [offerings,  setOfferings]  = useState([])
-  const [needs,      setNeeds]      = useState([])
-  const [principles, setPrinciples] = useState([])
-  const [focusName,  setFocusName]  = useState(null)
-  const [loading,    setLoading]    = useState(true)
+  const [actor, setActor]         = useState(null)
+  const [links, setLinks]         = useState([])
+  const [press, setPress]         = useState([])
+  const [offers, setOffers]       = useState([])
+  const [needs, setNeeds]         = useState([])
+  const [parent, setParent]       = useState(null)
+  const [children, setChildren]   = useState([])
+  const [partners, setPartners]   = useState([])
+  const [loading, setLoading]     = useState(true)
 
   useEffect(() => {
     async function load() {
       setLoading(true)
-      const [actorRes, offeringsRes, needsRes, principlesRes] = await Promise.all([
-        // Module 13: fetch gradient_position and gradient_trajectory
-        supabase.from('nextus_actors')
-          .select('*, focus:focus_id(id, name, type, slug)')
-          .eq('id', id)
-          .single(),
-        supabase.from('nextus_actor_offerings')
-          .select('*')
-          .eq('actor_id', id)
-          .order('is_flagship', { ascending: false })
-          .order('sort_order', { ascending: true, nullsFirst: false }),
-        supabase.from('nextus_needs')
-          .select('*')
-          .eq('actor_id', id)
-          .in('status', ['open', 'in_progress']),
-        supabase.from('principle_taggings')
-          .select('principle_slug, weight')
-          .eq('target_type', 'actor')
-          .eq('target_id', id),
+
+      // Allow slug OR id lookup
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
+      const actorQuery = supabase.from('nextus_actors').select('*')
+      const { data: actor } = isUuid
+        ? await actorQuery.eq('id', id).single()
+        : await actorQuery.eq('slug', id).single()
+
+      if (!actor) { setLoading(false); return }
+      setActor(actor)
+
+      // Parallel load auxiliary data
+      const [linksRes, pressRes, offersRes, needsRes, parentRes, childrenRes, partnersRes] = await Promise.all([
+        supabase.from('actor_links').select('*').eq('actor_id', actor.id).order('sort_order'),
+        supabase.from('actor_press').select('*').eq('actor_id', actor.id).order('sort_order'),
+        supabase.from('actor_offers').select('*').eq('actor_id', actor.id).eq('active', true).order('sort_order'),
+        supabase.from('actor_needs').select('*').eq('actor_id', actor.id).eq('active', true).order('sort_order'),
+
+        // Parent (single)
+        actor.parent_id
+          ? supabase.from('nextus_actors').select('id, slug, name').eq('id', actor.parent_id).single()
+          : Promise.resolve({ data: null }),
+
+        // Children (where this actor is parent)
+        supabase.from('nextus_actors').select('id, slug, name').eq('parent_id', actor.id).eq('status', 'live'),
+
+        // Partners via relationships table
+        supabase.from('nextus_relationships')
+          .select('related_actor_id, related:related_actor_id(id, slug, name)')
+          .eq('actor_id', actor.id)
+          .eq('relationship_type', 'partner')
+          .eq('status', 'confirmed'),
       ])
 
-      setActor(actorRes.data)
-      setOfferings(offeringsRes.data || [])
+      setLinks(linksRes.data || [])
+      setPress(pressRes.data || [])
+      setOffers(offersRes.data || [])
       setNeeds(needsRes.data || [])
-      setPrinciples(principlesRes.data || [])
-      setFocusName(actorRes.data?.focus?.name || null)
+      setParent(parentRes.data || null)
+      setChildren(childrenRes.data || [])
+      setPartners((partnersRes.data || []).map(r => r.related).filter(Boolean))
+
       setLoading(false)
     }
     load()
@@ -584,9 +645,12 @@ export function OrgPublicPage() {
   if (loading) {
     return (
       <div style={{ background: parch, minHeight: '100vh' }}>
-        <Nav activePath="nextus" />
-        <div style={{ maxWidth: '680px', margin: '0 auto', padding: '160px 24px', textAlign: 'center' }}>
-          <div className="loading" />
+        <Nav />
+        <div style={{ maxWidth: '680px', margin: '0 auto',
+          padding: '160px 24px', textAlign: 'center' }}>
+          <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.40)' }}>
+            Loading...
+          </span>
         </div>
       </div>
     )
@@ -595,78 +659,127 @@ export function OrgPublicPage() {
   if (!actor) return <NotFound />
 
   const isOwner       = user?.id === actor.profile_owner
+  const isClaimed     = !!actor.profile_owner
   const primaryDomain = (actor.domains || [])[0] || actor.domain_id || null
   const allDomains    = actor.domains || (actor.domain_id ? [actor.domain_id] : [])
 
-  const score  = actor.alignment_score
-  const tier   = score == null ? null
+  const score = actor.alignment_score
+  const tier  = score == null ? null
     : score >= 9 ? 'exemplar'
     : score >= 7 ? 'qualified'
     : score >= 5 ? 'contested'
     : 'pattern_instance'
 
-  const showNeeds = actor.needs_visible !== false && needs.length > 0
-
   return (
     <div style={{ background: parch, minHeight: '100vh' }}>
-      <Nav activePath="nextus" />
+      <Nav />
 
       <style>{`
         @media (max-width: 640px) {
-          .beta-org-public { padding-left: 20px !important; padding-right: 20px !important; }
+          .org-public-container { padding-left: 20px !important; padding-right: 20px !important; }
         }
       `}</style>
 
-      <div className="beta-org-public" style={{
-        maxWidth: '680px',
-        margin: '0 auto',
+      <div className="org-public-container" style={{
+        maxWidth: '680px', margin: '0 auto',
         padding: 'clamp(96px, 12vw, 128px) clamp(20px, 5vw, 48px) 160px',
       }}>
 
-        <OrgIdentityStrip
+        {/* Claim banner — only on unclaimed wards */}
+        <ClaimBanner actor={actor} user={user} />
+
+        {/* Identity strip — always */}
+        <IdentityStrip
           actor={actor}
-          focusName={focusName}
           primaryDomain={primaryDomain}
           principalTier={tier}
           isOwner={isOwner}
         />
 
-        <OrgMission description={actor.description} impactSummary={actor.impact_summary} />
-        {(actor.description || actor.impact_summary) && <Rule />}
+        {/* Voice layer — only when claimed */}
+        {isClaimed && actor.mission_statement && (
+          <>
+            <MissionStatement actor={actor} />
+            <Rule />
+          </>
+        )}
 
+        {/* Description (evidence) */}
+        {actor.description && (
+          <>
+            <Description actor={actor} />
+            <Rule />
+          </>
+        )}
+
+        {/* Voice layer — working on now */}
+        {isClaimed && actor.working_on_now && (
+          <>
+            <WorkingOnNow actor={actor} />
+            <Rule />
+          </>
+        )}
+
+        {/* Placement */}
         {allDomains.length > 0 && (
           <>
-            <OrgPlacement
+            <Placement
               domains={allDomains}
               subdomains={actor.subdomains || []}
-              lenses={actor.lenses || []}
-              problemChains={actor.problem_chains || []}
-              alignmentNotes={actor.domain_alignment_notes || {}}
             />
             <Rule />
           </>
         )}
 
-        <OrgOfferings offerings={offerings} />
-        {offerings.length > 0 && <Rule />}
-
-        {showNeeds && (
+        {/* Offers & needs */}
+        {offers.length > 0 && (
           <>
-            <OrgNeeds needs={needs} />
+            <OffersSection offers={offers} />
+            <Rule />
+          </>
+        )}
+        {needs.length > 0 && (
+          <>
+            <NeedsSection needs={needs} />
             <Rule />
           </>
         )}
 
-        {principles.length > 0 && (
+        {/* Links */}
+        {(links.length > 0 || actor.website) && (
           <>
-            <OrgPrincipleAlignment principleTaggings={principles} />
+            <LinksRow links={[
+              ...(actor.website && !links.find(l => l.link_type === 'website')
+                ? [{ id: 'main-site', link_type: 'website', url: actor.website }]
+                : []),
+              ...links,
+            ]} />
             <Rule />
           </>
         )}
 
-        <OrgReceiptsStub />
+        {/* Press */}
+        {press.length > 0 && (
+          <>
+            <PressStrip press={press} />
+            <Rule />
+          </>
+        )}
 
-        <ClaimSection actor={actor} user={user} />
+        {/* Relationships */}
+        {(parent || children.length > 0 || partners.length > 0) && (
+          <>
+            <RelationshipsSection
+              parent={parent}
+              children={children}
+              partners={partners}
+            />
+            <Rule />
+          </>
+        )}
+
+        {/* Provenance */}
+        <ProvenanceBadge actor={actor} />
 
       </div>
 
