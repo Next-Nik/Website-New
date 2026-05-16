@@ -66,6 +66,7 @@ export const ROUTES = {
     nextStepsTrack:          '/api/nextsteps-track',
     nextStepsPath:           '/api/nextsteps-path',
     nextStepsActorsSample:   '/api/nextsteps-actors-sample',
+    nextStepsTagActor:       '/api/nextsteps-tag-actor',
     mapChat:                 '/tools/map/api/chat',
     mapAvatarChat:           '/tools/map/api/avatar-chat',
     mapConnectionSynthesis:  '/tools/map/api/connection-synthesis',

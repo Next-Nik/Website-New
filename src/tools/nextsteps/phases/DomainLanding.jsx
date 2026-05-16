@@ -63,11 +63,16 @@ export function DomainLanding({ track, onAccept }) {
 
   async function loadActorSample() {
     try {
-      // Use the search_actors RPC (filterable by domain) if available.
+      // Pass both the primary domain AND the Track's problem_chains so
+      // the sample is chain-aware where possible.
       const res = await fetch('/api/nextsteps-actors-sample', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ domain: primaryDomain, limit: 3 }),
+        body: JSON.stringify({
+          domain: primaryDomain,
+          problem_chains: track.problem_chains || [],
+          limit: 3,
+        }),
       })
       if (res.ok) {
         const { actors: list } = await res.json()
@@ -119,12 +124,15 @@ export function DomainLanding({ track, onAccept }) {
           <div className="ns-landing-actors-loading">Finding who’s already in this work…</div>
         ) : actors.length > 0 ? (
           <ul className="ns-landing-actors">
-            {actors.map((a) => (
-              <li key={a.id} className="ns-landing-actor">
-                <div className="ns-landing-actor-name">{a.name}</div>
-                {a.tagline && <div className="ns-landing-actor-tagline">{a.tagline}</div>}
-              </li>
-            ))}
+            {actors.map((a) => {
+              const sentence = a.mission_statement || a.tagline
+              return (
+                <li key={a.id} className="ns-landing-actor">
+                  <div className="ns-landing-actor-name">{a.name}</div>
+                  {sentence && <div className="ns-landing-actor-tagline">{sentence}</div>}
+                </li>
+              )
+            })}
           </ul>
         ) : (
           <div className="ns-landing-actors-empty">

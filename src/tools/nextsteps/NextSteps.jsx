@@ -104,6 +104,7 @@ export function NextStepsPage() {
           toward_sentence: reflection.toward_sentence,
           domains: reflection.domains,
           scale: reflection.scale,
+          problem_chains: reflection.problem_chains || [],
         }),
       })
       if (!res.ok) throw new Error(`create track ${res.status}`)

@@ -177,8 +177,32 @@ For THE REFLECTION LANDING (the final turn of Phase 2 — the moment the reframe
   "toward_sentence": "The completed want, written in toward grammar. One sentence, positive form (no 'not', no 'end of', no 'reduce'). For 'mirror' branch, set to null.",
   "domains": ["domain-key", ...],
   "scale": "civ" | "self",
+  "problem_chains": ["chain-slug", ...],
   "closing": "One line — what gets said as the person enters the Domain Landing. Should land, not summarise."
 }
+
+problem_chains is the away-from bridge. The person spoke in away-from grammar; you completed it into toward; but the original away-from language is real and useful for matching them to actors who address that specific concern. Identify which problem-chains from the controlled vocabulary their concern resonated with — typically 1–3, occasionally up to 5.
+
+CONTROLLED PROBLEM-CHAIN VOCABULARY (use slugs exactly; do not invent):
+
+  biodiversity-loss        deforestation             ocean-degradation
+  climate-inaction         soil-degradation          water-scarcity
+  gendered-violence        racial-injustice          indigenous-erasure
+  authoritarianism         mass-incarceration        housing-precarity
+  loneliness               refugees-and-migration
+  mental-health-crisis     chronic-disease           addiction
+  disordered-relationship-to-food                    lost-meaning
+  wealth-concentration     poverty                   exploitative-labour
+  extractive-capitalism    financial-exclusion
+  surveillance-capitalism  ai-misuse                 misinformation
+  digital-addiction
+  intergenerational-debt   cultural-amnesia          lack-of-imagination
+  food-system-broken       education-broken          infrastructure-decay
+  energy-injustice
+
+If a person's concern doesn't fit any chain, return an empty array — never invent a slug. Better to match on domain alone than tag wrongly.
+
+For 'mirror' branch (diffuse): problem_chains MAY be empty, since there is no specific away-from to extract. If the orienting question surfaced something, tag it; otherwise leave empty.
 
 For the 'mirror' branch (diffuse), the JSON still emits but:
    - branch: "mirror"
@@ -282,6 +306,9 @@ function tryParseReflection(text) {
       if (!validBranches.includes(obj.branch)) return null;
       if (!validScales.includes(obj.scale)) return null;
       if (!Array.isArray(obj.domains)) return null;
+      // problem_chains is optional in v1 of the contract but always
+      // emitted by the v1.1 prompt — default to empty if missing.
+      if (!Array.isArray(obj.problem_chains)) obj.problem_chains = [];
       return obj;
     }
   } catch (_) {

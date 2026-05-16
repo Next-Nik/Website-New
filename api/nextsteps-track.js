@@ -68,6 +68,7 @@ module.exports = async (req, res) => {
       toward_sentence,
       domains,
       scale,
+      problem_chains,
       // branch is informational — 'reframe' or 'mirror'
       // mirror branch tracks may have toward_sentence === null
     } = req.body || {};
@@ -87,6 +88,7 @@ module.exports = async (req, res) => {
         toward_sentence: toward_sentence || null,
         domains: Array.isArray(domains) ? domains : [],
         scale: scale === 'self' ? 'self' : 'civ',
+        problem_chains: Array.isArray(problem_chains) ? problem_chains : [],
         horizon_goal,
         status: 'planning',
       })

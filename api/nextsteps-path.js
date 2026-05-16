@@ -180,30 +180,74 @@ SACRED LIMITS
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
-// Surface Atlas actors honestly placed in the Track's domain(s).
-// Interim Decision Analytics: no scoring layer yet — we surface alignment_score
-// (which exists on actors) and let the model do the developmental cut.
-async function shortlistActors(domains, scale) {
-  if (!Array.isArray(domains) || domains.length === 0) return [];
+// Surface Atlas actors honestly placed in the Track's domain(s), AND match
+// on the problem_chains the person's away-from concern resonated with.
+//
+// Strategy:
+//   1. If the Track has problem_chains, query actors with chain overlap
+//      OR domain overlap, ordered to prefer chain matches.
+//   2. Otherwise, fall back to domain-only matching (graceful — the path
+//      still works for diffuse tracks or pre-chain tagging).
+//
+// Interim Decision Analytics: still no scoring layer. We surface
+// alignment_score and let the model do the developmental cut.
+async function shortlistActors(domains, scale, problemChains) {
+  const hasDomains = Array.isArray(domains) && domains.length > 0;
+  const hasChains = Array.isArray(problemChains) && problemChains.length > 0;
 
-  // Map our civ-domain keys to the Atlas's domain_id values.
-  // The Atlas may store these as the same keys or as full names; we filter
-  // on the domains array column which holds keys.
-  const { data, error } = await supabase
+  if (!hasDomains && !hasChains) return [];
+
+  let query = supabase
     .from('nextus_actors')
     .select(
-      'id, slug, name, tagline, description, domains, scale, location_name, alignment_score, status'
+      'id, slug, name, tagline, mission_statement, description, domains, problem_chains, scale, location_name, alignment_score, status'
     )
-    .eq('status', 'live')
-    .overlaps('domains', domains)
+    .eq('status', 'live');
+
+  // Match on chain overlap OR domain overlap. PostgREST's .or() handles
+  // either-side matching. Chain matches will be reranked above domain-only
+  // matches client-side (see below) because alignment_score sort cannot
+  // distinguish them.
+  if (hasChains && hasDomains) {
+    const chainFilter = `problem_chains.ov.{${problemChains.join(',')}}`;
+    const domainFilter = `domains.ov.{${domains.join(',')}}`;
+    query = query.or(`${chainFilter},${domainFilter}`);
+  } else if (hasChains) {
+    query = query.overlaps('problem_chains', problemChains);
+  } else {
+    query = query.overlaps('domains', domains);
+  }
+
+  const { data, error } = await query
     .order('alignment_score', { ascending: false, nullsFirst: false })
-    .limit(8);
+    .limit(16);
 
   if (error) {
     console.error('NextSteps shortlistActors error:', error);
     return [];
   }
-  return data || [];
+
+  const actors = data || [];
+
+  // Re-rank: actors with chain overlap come first, then domain-only,
+  // each group internally sorted by alignment_score.
+  if (hasChains) {
+    const chainSet = new Set(problemChains);
+    const score = (a) => {
+      const myChains = a.problem_chains || [];
+      let overlap = 0;
+      for (const c of myChains) if (chainSet.has(c)) overlap++;
+      return overlap;
+    };
+    actors.sort((a, b) => {
+      const sa = score(a);
+      const sb = score(b);
+      if (sa !== sb) return sb - sa;
+      return (b.alignment_score || 0) - (a.alignment_score || 0);
+    });
+  }
+
+  return actors.slice(0, 8);
 }
 
 // Pull the person's Purpose Piece coordinates if they exist.
@@ -250,10 +294,11 @@ ${ppCoords.horizon_self ? `- Horizon Self: ${ppCoords.horizon_self}` : ''}`
 ${actors
   .map(
     (a, i) => `${i + 1}. ${a.name} (${a.slug})
-   Tagline: ${a.tagline || '—'}
-   Scale:   ${a.scale || '—'}
+   Mission:  ${a.mission_statement || a.tagline || '—'}
+   Scale:    ${a.scale || '—'}
    Location: ${a.location_name || '—'}
-   Domains:  ${(a.domains || []).join(', ')}`
+   Domains:  ${(a.domains || []).join(', ')}
+   Addresses: ${(a.problem_chains || []).join(', ') || '—'}`
   )
   .join('\n\n')}`
     : `CANDIDATE ATLAS ACTORS: none currently live in this domain. The path must rely on tool, nextmarket, or facilitated routes only. Do NOT invent an Atlas actor.`;
@@ -326,7 +371,7 @@ module.exports = async (req, res) => {
   const ppCoords = await getPurposePieceCoords(userId || track.user_id);
 
   // 3. Surface the Atlas shortlist (interim Decision Analytics)
-  const actors = await shortlistActors(track.domains, track.scale);
+  const actors = await shortlistActors(track.domains, track.scale, track.problem_chains);
 
   // 4. Generate the path
   const systemPrompt = NORTH_STAR_IDENTITY + '\n\n' + PATH_PROMPT;

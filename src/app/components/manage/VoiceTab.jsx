@@ -77,13 +77,13 @@ export function VoiceTab({ actor, onSave, toast }) {
           placeholder="Short one-liner" />
       </div>
 
-      {/* Mission statement */}
+      {/* Mission statement — invites toward grammar */}
       <div>
-        <Label>Mission statement</Label>
-        <Hint>First-person. Your words on what you're here to do. Appears prominently above your description on your profile.</Hint>
+        <Label>What you're building toward</Label>
+        <Hint>First-person, one or two sentences. The world you're working toward — not what you fight against, but the future you stand for. Appears prominently above your description on your profile.</Hint>
         <TextArea value={form.mission_statement}
           onChange={v => set('mission_statement', v)}
-          placeholder="I am here to..." rows={4} />
+          placeholder="We're working toward a world where..." rows={4} />
       </div>
 
       {/* Working on now */}
