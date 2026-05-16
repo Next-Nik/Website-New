@@ -13,20 +13,61 @@ import { useState, useRef, useEffect } from 'react'
 const OPENING =
   "Something's pulling at you. Tell me what — about the world, or about your own life. I'm listening."
 
+// localStorage key for an in-flight reflection conversation. User-scoped so
+// two people on the same device don't collide. Cleared when the reflection
+// lands and a Track is created (the durable handoff).
+const LS_KEY_PREFIX = 'nextsteps_arrival_draft_v1'
+function lsKey(userId) {
+  return userId ? `${LS_KEY_PREFIX}:${userId}` : `${LS_KEY_PREFIX}:anon`
+}
+
 export function ArrivalReflection({ user, onReflectionLanded }) {
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: OPENING },
-  ])
+  // Restore any in-flight conversation. Only the user-typed and assistant
+  // turns are persisted — the opening line is re-added on top in either case.
+  const initialDraft = (() => {
+    try {
+      const raw = localStorage.getItem(lsKey(user?.id))
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        if (parsed && Array.isArray(parsed.messages) && parsed.messages.length > 0) {
+          return parsed
+        }
+      }
+    } catch {}
+    return null
+  })()
+
+  const [messages, setMessages] = useState(
+    initialDraft?.messages || [{ role: 'assistant', content: OPENING }]
+  )
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
   const [landed, setLanded] = useState(false)
   const bottomRef = useRef(null)
   const textareaRef = useRef(null)
-  const originalConcernRef = useRef(null) // the FIRST user message — verbatim
+  const originalConcernRef = useRef(initialDraft?.originalConcern || null) // the FIRST user message — verbatim
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [messages, thinking])
+
+  // Shadow conversation state to localStorage so closing the tab mid-flow
+  // doesn't lose the user's first concern and any back-and-forth so far.
+  // Cleared when the reflection lands (handoff to the Track).
+  useEffect(() => {
+    // Don't bother persisting if all we have is the opening line.
+    if (messages.length <= 1) return
+    if (landed) return
+    try {
+      localStorage.setItem(
+        lsKey(user?.id),
+        JSON.stringify({
+          messages,
+          originalConcern: originalConcernRef.current,
+        })
+      )
+    } catch {}
+  }, [messages, user?.id, landed])
 
   function handleInput(e) {
     setInput(e.target.value)
@@ -85,6 +126,10 @@ export function ArrivalReflection({ user, onReflectionLanded }) {
         ])
         setLanded(true)
         setThinking(false)
+
+        // The reflection has landed — clear the in-flight shadow. The Track
+        // (created by the parent next) is the durable artefact from here.
+        try { localStorage.removeItem(lsKey(user?.id)) } catch {}
 
         // Small pause so the person can read the reframe before the screen
         // changes underneath them. The closing line provides the bridge

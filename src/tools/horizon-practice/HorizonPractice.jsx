@@ -297,18 +297,46 @@ function HorizonSelfTooltip() {
 
 // ─── Setup Phase ──────────────────────────────────────────────────────────────
 
+// localStorage key for Horizon Practice setup-in-progress. User-scoped so two
+// people on the same device don't collide. handleSetupComplete in the parent
+// clears this key — that's the durable handoff to the Supabase setup row.
+const SETUP_LS_KEY_PREFIX = 'hp_setup_draft_v1'
+function setupLsKey(userId) {
+  return userId ? `${SETUP_LS_KEY_PREFIX}:${userId}` : `${SETUP_LS_KEY_PREFIX}:anon`
+}
+
 function SetupPhase({ mapData, onComplete, userId }) {
-  const [step, setStep] = useState('horizon_confirm') // horizon_confirm | horizon_self | skill_suggest | skill_confirm | done
-  const [horizonConfirmed, setHorizonConfirmed] = useState(false)
-  const [horizonSelf, setHorizonSelf] = useState('')
-  const [horizonSelfDraft, setHorizonSelfDraft] = useState('')
-  const [firstSkill, setFirstSkill] = useState('')
-  const [firstSkillType, setFirstSkillType] = useState('skill')
+  // Restore any in-flight draft. This is the only persistence Setup gets
+  // before completion — the durable write is in handleSetupComplete upstream.
+  const initialDraft = (() => {
+    try {
+      const raw = localStorage.getItem(setupLsKey(userId))
+      if (raw) return JSON.parse(raw)
+    } catch {}
+    return null
+  })()
+
+  const [step, setStep] = useState(initialDraft?.step || 'horizon_confirm') // horizon_confirm | horizon_self | skill_suggest | skill_confirm | done
+  const [horizonConfirmed, setHorizonConfirmed] = useState(!!initialDraft?.horizonConfirmed)
+  const [horizonSelf, setHorizonSelf] = useState(initialDraft?.horizonSelf || '')
+  const [horizonSelfDraft, setHorizonSelfDraft] = useState(initialDraft?.horizonSelfDraft || '')
+  const [firstSkill, setFirstSkill] = useState(initialDraft?.firstSkill || '')
+  const [firstSkillType, setFirstSkillType] = useState(initialDraft?.firstSkillType || 'skill')
 
   const DOMAINS_LIST = ['Path', 'Spark', 'Body', 'Finances', 'Connection', 'Inner Game', 'Signal']
   const [customGoals, setCustomGoals] = useState(
-    DOMAINS_LIST.reduce((acc, d) => ({ ...acc, [d]: '' }), {})
+    initialDraft?.customGoals || DOMAINS_LIST.reduce((acc, d) => ({ ...acc, [d]: '' }), {})
   )
+
+  // Shadow form state to localStorage so closing the tab mid-setup doesn't
+  // wipe out the user's Horizon Self and custom-goal entries. Cleared by the
+  // parent's handleSetupComplete when the setup row lands in Supabase.
+  useEffect(() => {
+    try {
+      const snapshot = { step, horizonConfirmed, horizonSelf, horizonSelfDraft, firstSkill, firstSkillType, customGoals }
+      localStorage.setItem(setupLsKey(userId), JSON.stringify(snapshot))
+    } catch {}
+  }, [userId, step, horizonConfirmed, horizonSelf, horizonSelfDraft, firstSkill, firstSkillType, customGoals])
 
   // Build context: use Map data if available, otherwise use custom goals
   const chatContext = mapData
@@ -1411,6 +1439,9 @@ export function HorizonPracticePage() {
 
       setSetupData({ horizon_self: horizonSelf })
       if (firstSkill) setSkills([{ id: Date.now(), ...firstSkill, status: 'now' }])
+      // Setup is now persisted to Supabase — clear the localStorage shadow
+      // so a future fresh setup starts clean.
+      try { localStorage.removeItem(setupLsKey(user.id)) } catch {}
       setView('checkin')
     } catch (err) {
       console.error('Setup save error:', err)

@@ -10,7 +10,11 @@ import { DebriefPanel } from '../../components/DebriefPanel'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const SS_KEY = 'tg_session_v2'
+// LS_KEY — kept on localStorage (not sessionStorage) so setup-phase work
+// survives a tab close. For signed-in users a draft row in
+// target_sprint_sessions is the durable backing store; LS_KEY is the
+// fast restore for anonymous users and a belt-and-braces fallback otherwise.
+const LS_KEY = 'tg_session_v2'
 
 export const DOMAINS = [
   { id: 'path',          label: 'Path',          description: "Your contribution, calling, and the work you're here to do. Not your job title — the thread of purpose running beneath whatever you're currently doing. Life's mission.",              question: "Am I walking my path — or just walking?" },
@@ -1696,7 +1700,7 @@ export function TargetSprintPage() {
   const [showDebrief,      setShowDebrief]      = useState(false)
   const [showWelcome,      setShowWelcome]      = useState(() => {
     try {
-      const raw = sessionStorage.getItem(SS_KEY)
+      const raw = localStorage.getItem(LS_KEY)
       if (raw) {
         const s = JSON.parse(raw)
         if (s.phase && s.phase !== 'select') return false
@@ -1711,7 +1715,7 @@ export function TargetSprintPage() {
   // Reset loadedRef when user changes so a second user in the same session loads their data
   useEffect(() => { loadedRef.current = false }, [user?.id])
 
-  // Restore session — check Supabase first, fall back to sessionStorage
+  // Restore session — check Supabase first, fall back to localStorage
   useEffect(() => {
     if (!user || loadedRef.current) return
     loadedRef.current = true
@@ -1721,11 +1725,13 @@ export function TargetSprintPage() {
 
   async function loadSprintData() {
     try {
+      // Look for either an active sprint or a draft in setup. Drafts let a
+      // user pick up where they left off if they closed the tab mid-setup.
       const { data } = await supabase
         .from('target_sprint_sessions')
         .select('*')
         .eq('user_id', user.id)
-        .eq('status', 'active')
+        .in('status', ['active', 'draft'])
         .order('updated_at', { ascending: false })
         .limit(1)
         .maybeSingle()
@@ -1740,14 +1746,18 @@ export function TargetSprintPage() {
         setHasMapData(data.has_map_data || false)
         if (data.scores_at_start) setScores(data.scores_at_start)
         setActiveDomainId(data.active_domain_id || data.domains[0] || null)
-        setPhase('sprint')
+        // Restore to wherever they left off. session_phase is only present on
+        // ext2 writes; falls back to inferring from status for older rows.
+        const restoredPhase = data.session_phase
+          || (data.status === 'active' ? 'sprint' : 'select')
+        setPhase(restoredPhase)
         setShowWelcome(false)
         return
       }
     } catch {}
-    // Fall back to sessionStorage if no Supabase record
+    // Fall back to localStorage if no Supabase record
     try {
-      const raw = sessionStorage.getItem(SS_KEY)
+      const raw = localStorage.getItem(LS_KEY)
       if (raw) {
         const saved = JSON.parse(raw)
         if (saved.phase && saved.phase !== 'select') {
@@ -1767,15 +1777,17 @@ export function TargetSprintPage() {
     } catch {}
   }
 
-  // Persist session
+  // Persist session — localStorage shadow. Skipped only if the user genuinely
+  // hasn't started yet (select phase with nothing chosen). Once they pick a
+  // domain, the work is worth shadowing even before sprint phase begins.
   useEffect(() => {
-    if (phase === 'select') return
+    if (phase === 'select' && !selectedDomains.length) return
     try {
-      sessionStorage.setItem(SS_KEY, JSON.stringify({
+      localStorage.setItem(LS_KEY, JSON.stringify({
         phase, selectedDomains, quarterType, targetDate, endDateLabel, domainData, activeDomainId
       }))
     } catch {}
-  }, [phase, selectedDomains, domainData, activeDomainId])
+  }, [phase, selectedDomains, quarterType, targetDate, endDateLabel, domainData, activeDomainId])
 
   async function loadMapData() {
     try {
@@ -1841,14 +1853,21 @@ export function TargetSprintPage() {
 
   async function saveToSupabase() {
     if (!user?.id) return
+    // Nothing meaningful to save before a domain is chosen
+    if (!selectedDomains?.length) return
     try {
       const now = new Date().toISOString()
+      // Status reflects where the user actually is:
+      //   - 'draft'  → still picking domains / quarter / start date
+      //   - 'active' → sprint phase, real work in progress
+      // We keep the same row across phases so the friend's setup work isn't lost.
+      const status = phase === 'sprint' ? 'active' : 'draft'
       // Core — only columns confirmed present in schema (no domain_data)
       // domain_data is in ext1; if it 400s we at least preserve the session record
       const core = {
         user_id: user.id, domains: selectedDomains,
         quarter_type: quarterType, target_date: targetDate,
-        status: 'active', updated_at: now,
+        status, updated_at: now,
       }
       // ext1 adds the content columns — domain_data is the critical one
       const ext1 = { ...core, domain_data: domainData, end_date_label: endDateLabel, scores_at_start: scores, horizon_scores: horizonScores, has_map_data: hasMapData }
@@ -1879,8 +1898,9 @@ export function TargetSprintPage() {
         if (data?.id) setSessionId(data.id)
       }
 
-      // Write to North Star cross-tool memory
-      if (selectedDomains?.length) {
+      // Write to North Star cross-tool memory — only when actually active.
+      // A draft sprint shouldn't surface in other tools as "currently running".
+      if (status === 'active' && selectedDomains?.length) {
         const DOMAIN_LABELS = { path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances', connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal' }
         const domainNames = selectedDomains.map(id => DOMAIN_LABELS[id] || id).join(', ')
         await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'target-sprint')
@@ -1891,13 +1911,17 @@ export function TargetSprintPage() {
     } catch {}
   }
 
-  // Auto-save when domainData or activeDomainId changes in sprint phase
+  // Auto-save when meaningful state changes — covers both the setup phases
+  // (writes a status:'draft' row so closing the tab mid-setup doesn't lose
+  // domain selection / quarter / start date) and the active sprint phase
+  // (the original behaviour, now extended).
   useEffect(() => {
-    if (phase === 'sprint' && user?.id) {
-      const t = setTimeout(saveToSupabase, 1500)
-      return () => clearTimeout(t)
-    }
-  }, [domainData, activeDomainId])
+    if (!user?.id) return
+    if (!selectedDomains?.length) return
+    const t = setTimeout(saveToSupabase, 1500)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDomains, quarterType, targetDate, endDateLabel, domainData, activeDomainId, phase])
 
   // Cycle domains with prev/next buttons
   function handleWheelNav(dir) {
@@ -1923,7 +1947,7 @@ export function TargetSprintPage() {
   }
 
   function handleStartNewSprint() {
-    try { sessionStorage.removeItem(SS_KEY) } catch {}
+    try { localStorage.removeItem(LS_KEY) } catch {}
     setSessionId(null)
     setSelectedDomains([])
     setDomainData({})

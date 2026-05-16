@@ -666,6 +666,24 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
     if (stage === 3) onComplete(data)
   }
 
+  // ── Background autosave ─────────────────────────────────────────────────────
+  // Lock buttons are the explicit save points, but the user is also writing
+  // continuously between locks (typing drafts, exchanging chat turns). This
+  // effect debounces a save of the current in-progress state so that a closed
+  // tab mid-conversation doesn't lose work. Parent's onUpdate cascades to a
+  // map_results upsert, so this writes through to Supabase for signed-in users.
+  const firstAutosaveRef = useRef(true)
+  useEffect(() => {
+    if (firstAutosaveRef.current) { firstAutosaveRef.current = false; return }
+    const t = setTimeout(() => { onUpdate(buildData()) }, 800)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    avatarDraft, avatarMessages, avatarDoc,
+    realityDraft, scoreMsgs,
+    horizonText, horizonMsgs,
+  ])
+
   // ── Avatar step ─────────────────────────────────────────────
 
   async function sendAvatarMessage(text) {
@@ -1560,6 +1578,29 @@ export function ConnectionDomainStep({ domain, existingData, onComplete, onUpdat
     setSaveIndicator(true)
     setTimeout(() => setSaveIndicator(false), 1500)
   }
+
+  // ── Background autosave ─────────────────────────────────────────────────────
+  // Same pattern as DomainStep — debounce a save of in-progress state so the
+  // user doesn't lose mid-flow drafts and chat exchanges. Quiet (no Saved
+  // indicator) — that's reserved for explicit save events.
+  const firstAutosaveRef = useRef(true)
+  useEffect(() => {
+    if (firstAutosaveRef.current) { firstAutosaveRef.current = false; return }
+    const t = setTimeout(() => {
+      onUpdate({
+        domainId: domain.id,
+        avatarDraft, avatarFinal, avatarMessages: avatarMsgs, avatarLocked,
+        avatarDoc, subDomains, synthesis, horizonText, horizonMsgs,
+        horizonScore, horizonLocked,
+        currentScore: existingData?.currentScore,
+      })
+    }, 800)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    avatarDraft, avatarMsgs, avatarDoc,
+    subDomains, horizonText, horizonMsgs,
+  ])
 
   // ── Avatar chat ───────────────────────────────────────────────────────────
   async function sendAvatarMessage(text) {

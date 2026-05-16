@@ -658,6 +658,10 @@ export function PurposePiecePage() {
   const threadRef    = useRef(null)
   const textareaRef  = useRef(null)
   const startedRef   = useRef(false)
+  // Tracks the purpose_piece_results row id for this session, so in-progress
+  // autosaves update one row rather than inserting many. Resolved on first
+  // save (or first load) and reused thereafter.
+  const resultRowIdRef = useRef(null)
 
   // ── Auto-scroll chat ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -671,6 +675,55 @@ export function PurposePiecePage() {
       sessionStorage.setItem(SS_KEY, JSON.stringify({ session, messages, currentQLabel, isComplete, mirrorText, profile, placement, civStatement, horizonGoal }))
     } catch {}
   }, [session, messages, currentQLabel, isComplete, mirrorText, profile, placement, civStatement, horizonGoal])
+
+  // ── Mirror in-progress sessions to Supabase (signed-in users only) ────────
+  // sessionStorage handles a refresh-in-same-tab but not a closed browser or
+  // a different device. For signed-in users, debounce-save the current state
+  // to purpose_piece_results with status:'in_progress'. The completion path
+  // upgrades status to 'complete' as before.
+  useEffect(() => {
+    if (!user?.id) return
+    if (!session) return
+    if (isComplete) return // completion path handles its own write
+    const t = setTimeout(async () => {
+      try {
+        const sessForSave = { ...session, messages, currentQLabel, mirrorText, profile, placement, civStatement, horizonGoal }
+        const record = {
+          user_id:    user.id,
+          version:    'v10',
+          status:     'in_progress',
+          session:    sessForSave,
+          updated_at: new Date().toISOString(),
+        }
+        // Resolve row id once per session if we don't have one yet.
+        if (!resultRowIdRef.current) {
+          const { data: existing } = await supabase
+            .from('purpose_piece_results')
+            .select('id, status')
+            .eq('user_id', user.id)
+            .order('updated_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+          // Don't overwrite a completed row — if the only row is complete,
+          // start a new in-progress one (this is a fresh attempt).
+          if (existing?.id && existing.status !== 'complete') {
+            resultRowIdRef.current = existing.id
+          }
+        }
+        if (resultRowIdRef.current) {
+          await supabase.from('purpose_piece_results').update(record).eq('id', resultRowIdRef.current)
+        } else {
+          const { data } = await supabase.from('purpose_piece_results').insert(record).select('id').maybeSingle()
+          if (data?.id) resultRowIdRef.current = data.id
+        }
+      } catch (e) {
+        // Non-fatal — sessionStorage still holds the work for this tab.
+        console.warn('Purpose Piece in-progress save failed (non-fatal):', e)
+      }
+    }, 1500)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, session, messages, currentQLabel, isComplete])
 
   // ── The core API call ─────────────────────────────────────────────────────
   const callAPI = useCallback(async ({ message = null, sessionOverride = null }) => {
@@ -784,12 +837,21 @@ export function PurposePiecePage() {
   // ── Save complete session to Supabase (fire-and-forget) ───────────────────
   async function saveCompleteToSupabase(userId, sess) {
     try {
-      // Upsert the full session into purpose_piece_results
-      const { data: existing } = await supabase
-        .from('purpose_piece_results')
-        .select('id')
-        .eq('user_id', userId)
-        .maybeSingle()
+      // Upsert the full session into purpose_piece_results. Prefer the row id
+      // tracked by the in-progress autosave so we promote that same row to
+      // status:'complete' rather than creating a duplicate.
+      let rowId = resultRowIdRef.current
+      if (!rowId) {
+        // Fall back to looking up the most recent row for this user (any status).
+        const { data: existing } = await supabase
+          .from('purpose_piece_results')
+          .select('id')
+          .eq('user_id', userId)
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+        rowId = existing?.id || null
+      }
 
       const record = {
         user_id: userId,
@@ -804,10 +866,12 @@ export function PurposePiecePage() {
         updated_at:   new Date().toISOString(),
       }
 
-      if (existing?.id) {
-        await supabase.from('purpose_piece_results').update(record).eq('id', existing.id)
+      if (rowId) {
+        await supabase.from('purpose_piece_results').update(record).eq('id', rowId)
+        resultRowIdRef.current = rowId
       } else {
-        await supabase.from('purpose_piece_results').insert(record)
+        const { data: inserted } = await supabase.from('purpose_piece_results').insert(record).select('id').maybeSingle()
+        if (inserted?.id) resultRowIdRef.current = inserted.id
       }
 
       // Also upsert into contributor_profiles — makes the user visible on
@@ -912,7 +976,63 @@ export function PurposePiecePage() {
         }
       } catch {}
 
-      // 2. If signed in, check Supabase for a completed session
+      // 2. If signed in, check Supabase for an in-progress session first.
+      //    This catches the case where the user started on one device, closed
+      //    the tab (clearing sessionStorage), and came back — possibly on
+      //    another device. Same ball-in-its-court logic as step 1.
+      if (user?.id) {
+        try {
+          const { data } = await supabase
+            .from('purpose_piece_results')
+            .select('id, session, status')
+            .eq('user_id', user.id)
+            .eq('status', 'in_progress')
+            .order('updated_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+          if (data?.session) {
+            resultRowIdRef.current = data.id
+            const saved = data.session
+            setSession(saved)
+            setMessages(saved.messages || [])
+            setCurrentQLabel(saved.currentQLabel || null)
+            setMirrorText(saved.mirrorText || null)
+            setProfile(saved.profile || null)
+            setPlacement(saved.placement || null)
+            setCivStatement(saved.civStatement || null)
+            setHorizonGoal(saved.horizonGoal || null)
+            setInputMode('text')
+
+            const msgs = saved.messages || []
+            const last = msgs[msgs.length - 1]
+            const ballInBackendsCourt = last?.role === 'user'
+            if (ballInBackendsCourt) {
+              setThinking(true)
+              try {
+                const res = await fetch('/tools/purpose-piece/api/chat', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ message: null, session: saved }),
+                })
+                if (res.ok) {
+                  const r = await res.json()
+                  setThinking(false)
+                  await applyResponse(r)
+                } else {
+                  setThinking(false)
+                  console.warn('Continue-on-restore failed:', res.status)
+                }
+              } catch (err) {
+                setThinking(false)
+                console.warn('Continue-on-restore error:', err)
+              }
+            }
+            return
+          }
+        } catch {}
+      }
+
+      // 3. If signed in, check Supabase for a completed session
       if (user?.id) {
         try {
           const { data } = await supabase
@@ -938,7 +1058,7 @@ export function PurposePiecePage() {
         } catch {}
       }
 
-      // 3. Fresh start — fire the opening call with no message, no session
+      // 4. Fresh start — fire the opening call with no message, no session
       setThinking(true)
       try {
         const res = await fetch('/tools/purpose-piece/api/chat', {
