@@ -51,6 +51,7 @@ export const ROUTES = {
 
   // ── Tool paths ─────────────────────────────────────────────
   northStar:        '/tools/north-star',
+  nextSteps:        '/tools/nextsteps',
   map:              '/tools/map',
   horizonState:     '/tools/horizon-state',
   purposePiece:     '/tools/purpose-piece',
@@ -61,6 +62,10 @@ export const ROUTES = {
   // ── Tool API fetch paths ────────────────────────────────────
   api: {
     northStarChat:           '/tools/north-star/api/chat',
+    nextStepsChat:           '/tools/nextsteps/api/chat',
+    nextStepsTrack:          '/api/nextsteps-track',
+    nextStepsPath:           '/api/nextsteps-path',
+    nextStepsActorsSample:   '/api/nextsteps-actors-sample',
     mapChat:                 '/tools/map/api/chat',
     mapAvatarChat:           '/tools/map/api/avatar-chat',
     mapConnectionSynthesis:  '/tools/map/api/connection-synthesis',

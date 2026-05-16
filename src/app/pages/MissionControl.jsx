@@ -950,6 +950,13 @@ export default function MissionControl() {
           {/* LEFT RAIL — My Life */}
           <SideRail side="left">
             <Tile
+              glyph="✧"
+              label={<>NEXT<br/>STEPS</>}
+              state={null}
+              onClick={() => navigate('/tools/nextsteps')}
+              title="NextSteps — turn caring into a step"
+            />
+            <Tile
               glyph={<MapPinGlyph />}
               label={<>THE<br/>MAP</>}
               state={mapState}
@@ -1052,6 +1059,13 @@ export default function MissionControl() {
 
           {/* RIGHT RAIL — The Planet */}
           <SideRail side="right">
+            <Tile
+              glyph="✧"
+              label={<>NEXT<br/>STEPS</>}
+              state={null}
+              onClick={() => navigate('/tools/nextsteps')}
+              title="NextSteps — turn caring into a step"
+            />
             <Tile
               glyph={<PurposePieceGlyph />}
               label="PLACEMENT"

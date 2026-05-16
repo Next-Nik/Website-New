@@ -78,6 +78,7 @@ import { BeginBuildGroupPage }    from './pages/begin-build/Group'
 
 // ── Tools ─────────────────────────────────────────────────────
 import { NorthStarPage }                           from './tools/orienteering/Orienteering'
+import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import { MapPage }                                 from './tools/map/Map'
 import { HorizonStatePage }                        from './tools/horizon-state/HorizonState'
 import { PurposePiecePage, PurposePieceDeepPage }  from './tools/purpose-piece/PurposePiece'
@@ -151,7 +152,8 @@ function AppInner() {
 
         {/* ── Tools ── */}
         <Route path="/tools/north-star"          element={<NorthStarPage />} />
-        <Route path="/tools/orienteering"        element={<Navigate to="/tools/north-star" replace />} />
+        <Route path="/tools/orienteering"        element={<Navigate to="/tools/nextsteps" replace />} />
+        <Route path="/tools/nextsteps"           element={<NextStepsPage />} />
         <Route path="/tools/map"                 element={<MapPage />} />
         <Route path="/tools/horizon-state"       element={<HorizonStatePage />} />
         <Route path="/tools/purpose-piece"       element={<PurposePiecePage />} />

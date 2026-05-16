@@ -9,6 +9,17 @@
 
 export const TOOLS = [
   {
+    key:      'nextsteps',
+    label:    'NextSteps',
+    eyebrow:  'Start here',
+    subtitle: 'Turn caring into a step',
+    path:     '/tools/nextsteps',
+    desc:     'Where caring becomes motion. Bring what is pulling at you.',
+    hook:     'When something is gripping you and you do not know what to do with it. NextSteps takes the fire, gives it a direction, and produces your next move.',
+    anchor:   'nextsteps',
+    featured: true,  // top of the Mission Control side stack
+  },
+  {
     key:      'horizon-state',
     label:    'Horizon State',
     eyebrow:  'Ground first',
