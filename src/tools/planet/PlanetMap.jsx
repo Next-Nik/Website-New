@@ -16,6 +16,10 @@ import { PlanetDomainCard } from './PlanetDomainCard'
 import { PlanetGapSignal } from './PlanetGapSignal'
 import { ActorClaimGate } from './ActorClaimGate'
 
+function isFounder(user) {
+  return user?.user_metadata?.role === 'founder'
+}
+
 // TODO: confirm this key exists in src/constants/routes.js — add ROUTES.planetMap = '/tools/planet' if missing
 const TOOL_PATH = '/tools/planet'
 // TODO: confirm north_star_notes CHECK constraint includes 'planet-map' — add if missing
@@ -167,6 +171,7 @@ export default function PlanetMap() {
   // ─── Render ────────────────────────────────────────────────────────────────
 
   if (loading) return <LoadingShell />
+  if (!isFounder(user)) return null  // founder-only beta
 
   return (
     <div style={{ minHeight: '100vh', background: '#FAFAF7' }}>

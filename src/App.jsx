@@ -62,8 +62,6 @@ import { NextMarketPage }         from './app/pages/NextMarket'
 import { AdminConsolePage }   from './app/pages/AdminConsole'
 import { NominatePage }       from './app/pages/Nominate'
 import { AddPage }            from './app/pages/Add'
-import { ClaimPage }          from './app/pages/Claim'
-import { SearchPage }         from './app/pages/Search'
 import { DomainPage } from './app/pages/Domain'
 import Practices              from './app/pages/Practices'
 import PracticeDetail         from './app/pages/PracticeDetail'
@@ -78,12 +76,12 @@ import { BeginBuildGroupPage }    from './pages/begin-build/Group'
 
 // ── Tools ─────────────────────────────────────────────────────
 import { NorthStarPage }                           from './tools/orienteering/Orienteering'
-import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import { MapPage }                                 from './tools/map/Map'
 import { HorizonStatePage }                        from './tools/horizon-state/HorizonState'
 import { PurposePiecePage, PurposePieceDeepPage }  from './tools/purpose-piece/PurposePiece'
 import { TargetSprintPage }                        from './tools/target-sprint/TargetSprint'
 import { HorizonPracticePage }                     from './tools/horizon-practice/HorizonPractice'
+import PlanetMap                                    from './tools/planet/PlanetMap'
 
 const body = { fontFamily: "'Lora', Georgia, serif" }
 
@@ -152,14 +150,14 @@ function AppInner() {
 
         {/* ── Tools ── */}
         <Route path="/tools/north-star"          element={<NorthStarPage />} />
-        <Route path="/tools/orienteering"        element={<Navigate to="/tools/nextsteps" replace />} />
-        <Route path="/tools/nextsteps"           element={<NextStepsPage />} />
+        <Route path="/tools/orienteering"        element={<Navigate to="/tools/north-star" replace />} />
         <Route path="/tools/map"                 element={<MapPage />} />
         <Route path="/tools/horizon-state"       element={<HorizonStatePage />} />
         <Route path="/tools/purpose-piece"       element={<PurposePiecePage />} />
         <Route path="/tools/purpose-piece/deep"  element={<PurposePieceDeepPage />} />
         <Route path="/tools/target-sprint"       element={<TargetSprintPage />} />
         <Route path="/tools/horizon-practice"    element={<HorizonPracticePage />} />
+        <Route path="/tools/planet"              element={<PlanetMap />} />  {/* founder-only beta — gate inside PlanetMap */}
 
         {/* ── Platform routes (beta prefix retired) ── */}
         <Route path="/welcome"                      element={<WelcomeStart />} />
@@ -174,8 +172,6 @@ function AppInner() {
         <Route path="/contribution"                 element={<Contribution />} />
         <Route path="/org/:slug"                    element={<OrgPublicPage />} />
         <Route path="/org/:slug/manage"             element={<OrgManagePage />} />
-        <Route path="/org/:slug/claim"              element={<ClaimPage />} />
-        <Route path="/search"                       element={<SearchPage />} />
         <Route path="/map"                          element={<PlanetMapPage />} />
         <Route path="/nextmarket"                   element={<NextMarketPage />} />
         <Route path="/alternatives"                 element={<Navigate to="/nextmarket" replace />} />
