@@ -4,12 +4,16 @@ import styles from "./DomainPanel.module.css";
 import { supabase } from "../../hooks/useSupabase";
 
 // ── SCALE HIERARCHY ──────────────────────────────────────────────────────────
+// Updated for Geographic Scale Architecture v2.
+// Migration 046 retired the v1 values 'nation' and 'province' from the
+// nextus_focuses.type CHECK constraint. v2 canonical names are 'country'
+// and 'state_or_province'.
 const SCALE_LEVELS = [
-  { type: 'continent',    label: 'Continent' },
-  { type: 'nation',       label: 'Nation' },
-  { type: 'province',     label: 'Province / Territory' },
-  { type: 'city',         label: 'City' },
-  { type: 'neighbourhood',label: 'Neighbourhood' },
+  { type: 'continent',         label: 'Continent' },
+  { type: 'country',           label: 'Country' },
+  { type: 'state_or_province', label: 'State / Province / Territory' },
+  { type: 'city',              label: 'City' },
+  { type: 'neighbourhood',     label: 'Neighbourhood' },
 ]
 
 // Walk parent_id chain upward to build contributing-to breadcrumb
