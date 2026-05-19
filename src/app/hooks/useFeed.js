@@ -134,6 +134,45 @@ async function resolvePeopleFilter(viewerCtx) {
   return { userIds: viewerCtx.sprintBuddyIds || [], actorIds: [] }
 }
 
+// Watched tab — userIds and actorIds come from the user's nextus_user_watches.
+// Focuses can be watched but at v2.5b there is no Focus-level activity yet;
+// future indicator/crisis surfacing will plug in here.
+async function resolveWatchedFilter(viewerCtx) {
+  if (!viewerCtx) return { userIds: [], actorIds: [] }
+  const { data: watches } = await supabase
+    .from('nextus_user_watches')
+    .select('entity_type, entity_id')
+    .eq('user_id', viewerCtx.userId)
+
+  const userIds  = (watches || []).filter(w => w.entity_type === 'person').map(w => w.entity_id)
+  const actorIds = (watches || []).filter(w => w.entity_type === 'actor').map(w => w.entity_id)
+  return { userIds, actorIds }
+}
+
+// Curated tab — userIds and actorIds come from the user's roster slots.
+// Items are returned with a `_rosterTier` annotation that the view layer
+// can use for tier-based filtering / labelling. For v2.5c, item significance
+// classification isn't yet authored on publish, so all items from rostered
+// entities surface regardless of tier (chronological). The tier discipline
+// gets fully applied when significance classification ships.
+async function resolveCuratedFilter(viewerCtx) {
+  if (!viewerCtx) return { userIds: [], actorIds: [], tierByUser: {}, tierByActor: {} }
+  const { data: slots } = await supabase
+    .from('nextus_user_roster_slots')
+    .select('entity_type, entity_id, tier')
+    .eq('user_id', viewerCtx.userId)
+
+  const userIds  = []
+  const actorIds = []
+  const tierByUser = {}
+  const tierByActor = {}
+  for (const s of slots || []) {
+    if (s.entity_type === 'person') { userIds.push(s.entity_id); tierByUser[s.entity_id] = s.tier }
+    else if (s.entity_type === 'actor') { actorIds.push(s.entity_id); tierByActor[s.entity_id] = s.tier }
+  }
+  return { userIds, actorIds, tierByUser, tierByActor }
+}
+
 // ── Source fetchers ──────────────────────────────────────────
 // Each returns an array of normalised items, or [] if the filter is empty.
 
@@ -416,9 +455,11 @@ export function useFeed(tab, viewerCtx) {
 
     // Resolve which user-ids and actor-ids feed this tab
     let filter
-    if (tab === 'cohort')      filter = await resolveCohortFilter(viewerCtx)
-    else if (tab === 'local')  filter = await resolveLocalFilter(viewerCtx)
-    else                        filter = await resolvePeopleFilter(viewerCtx)
+    if (tab === 'cohort')       filter = await resolveCohortFilter(viewerCtx)
+    else if (tab === 'local')   filter = await resolveLocalFilter(viewerCtx)
+    else if (tab === 'watched') filter = await resolveWatchedFilter(viewerCtx)
+    else if (tab === 'curated') filter = await resolveCuratedFilter(viewerCtx)
+    else                         filter = await resolvePeopleFilter(viewerCtx)
 
     const { userIds, actorIds } = filter
 

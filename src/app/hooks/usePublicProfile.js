@@ -79,6 +79,53 @@ export function usePublicProfile(userId) {
           if (!cancelled) focusName = focus?.name || null
         }
 
+        // ── Public affiliations — Places section ──────────────────────────
+        // Read all public affiliations for this user; resolve each to its
+        // Focus row; resolve each Focus's ancestor chain via the
+        // focus_ancestors() SQL function (migration 047).
+        //
+        // RLS guarantees only `visibility = 'public'` rows are visible to a
+        // non-owner reader. We still filter explicitly to be defensive in
+        // case the reader is the owner.
+        const { data: affiliationRows } = await supabase
+          .from('nextus_user_affiliations')
+          .select('id, focus_id, relationship_type, visibility, declared_at')
+          .eq('user_id', userId)
+          .eq('visibility', 'public')
+          .order('declared_at', { ascending: true })
+
+        let affiliations = []
+        if (affiliationRows && affiliationRows.length > 0) {
+          const focusIds = Array.from(new Set(affiliationRows.map(r => r.focus_id)))
+          const { data: focuses } = await supabase
+            .from('nextus_focuses')
+            .select('id, name, type, kind, slug, parent_id')
+            .in('id', focusIds)
+          const focusMap = Object.fromEntries((focuses || []).map(f => [f.id, f]))
+
+          // Fetch ancestor chains in parallel. The RPC returns ordered rows.
+          const ancestorEntries = await Promise.all(
+            focusIds.map(async (fid) => {
+              const { data: ancs } = await supabase.rpc('focus_ancestors', { p_focus_id: fid })
+              return [fid, ancs || []]
+            })
+          )
+          const ancestorMap = Object.fromEntries(ancestorEntries)
+
+          affiliations = affiliationRows
+            .filter(r => focusMap[r.focus_id])  // drop any orphaned references
+            .map(r => ({
+              id: r.id,
+              relationship_type: r.relationship_type,
+              visibility: r.visibility,
+              declared_at: r.declared_at,
+              focus: focusMap[r.focus_id],
+              ancestors: ancestorMap[r.focus_id] || [],
+            }))
+        }
+
+        if (cancelled) return
+
         // Resolve public artefact visibility — default private, only render if public
         const { data: visibilityRows } = await supabase
           .from('artefact_visibility')
@@ -160,6 +207,7 @@ export function usePublicProfile(userId) {
               statement: purposeStatement,
             },
             principleTaggings: principlesRes.data || [],
+            affiliations,
           })
         }
       } catch (err) {

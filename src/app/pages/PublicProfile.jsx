@@ -5,8 +5,10 @@
 
 import { useParams } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
+import { useAuth } from '../../hooks/useAuth'
 import { usePublicProfile } from '../hooks/usePublicProfile'
 import { ProfileIdentityStrip }    from '../components/ProfileIdentityStrip'
+import { ProfilePlaces }           from '../components/ProfilePlaces'
 import { ProfileWheels }           from '../components/ProfileWheels'
 import { ProfileSprints }          from '../components/ProfileSprints'
 import { ProfileStands }           from '../components/ProfileStands'
@@ -14,6 +16,7 @@ import { ProfileOffering }         from '../components/ProfileOffering'
 import { ProfileNotFor }           from '../components/ProfileNotFor'
 import { ProfileSprintReceipts }   from '../components/ProfileSprintReceipts'
 import { ProfileEmpty }            from '../components/ProfileEmpty'
+import { WatchButton }             from '../components/WatchButton'
 
 const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
@@ -71,11 +74,13 @@ function NotFound() {
 
 export function PublicProfile() {
   const { id } = useParams()
+  const { user } = useAuth()
   const { data, loading, error } = usePublicProfile(id)
 
   if (loading) return <LoadingState />
   if (error || !data) return <NotFound />
 
+  const isSelf = user && user.id === id
   const {
     profile,
     focusName,
@@ -87,6 +92,7 @@ export function PublicProfile() {
     completedSprints,
     purpose,
     principleTaggings,
+    affiliations,
   } = data
 
   // Determine if profile has any visible content at all
@@ -100,7 +106,8 @@ export function PublicProfile() {
     profile.what_i_stand_for ||
     profile.count_on_me_for ||
     profile.dont_count_on_me_for ||
-    completedSprints.length > 0
+    completedSprints.length > 0 ||
+    (affiliations && affiliations.length > 0)
 
   // Primary IA statement — first public ia statement, or purpose statement
   const primaryIAStatement =
@@ -132,6 +139,16 @@ export function PublicProfile() {
           />
         ) : (
           <ProfileEmpty displayName={profile.display_name} />
+        )}
+
+        {/* Places — public affiliations with cascade breadcrumbs.
+            Sits between identity (who I am) and wheels (what state I'm in
+            across the seven). Identity is enriched by where I'm of. */}
+        {affiliations && affiliations.length > 0 && (
+          <>
+            <ProfilePlaces affiliations={affiliations} />
+            <Divider />
+          </>
         )}
 
         {/* Wheels — Self and civilisational side by side */}
@@ -174,6 +191,24 @@ export function PublicProfile() {
 
         {/* Sprint receipts */}
         <ProfileSprintReceipts completedSprints={completedSprints} />
+
+        {/* Watch button — signed-in viewer, not own profile. Quietly placed
+            at the foot of the profile; watching is a private act. */}
+        {user && !isSelf && (
+          <div style={{
+            marginTop: '48px',
+            paddingTop: '32px',
+            borderTop: '1px solid rgba(200,146,42,0.10)',
+            textAlign: 'center',
+          }}>
+            <WatchButton
+              entityType="person"
+              entityId={id}
+              entityName={profile.display_name || 'this person'}
+              size="sm"
+            />
+          </div>
+        )}
 
       </div>
     </div>

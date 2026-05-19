@@ -63,6 +63,10 @@ import { AdminConsolePage }   from './app/pages/AdminConsole'
 import { NominatePage }       from './app/pages/Nominate'
 import { AddPage }            from './app/pages/Add'
 import { DomainPage } from './app/pages/Domain'
+import { FocusProfile } from './app/pages/FocusProfile'
+import { FocusIndex } from './app/pages/FocusIndex'
+import WatchedFeed from './app/pages/WatchedFeed'
+import CuratedFeed from './app/pages/CuratedFeed'
 import Practices              from './app/pages/Practices'
 import PracticeDetail         from './app/pages/PracticeDetail'
 import PracticeContribute     from './app/pages/PracticeContribute'
@@ -132,7 +136,7 @@ function AppInner() {
         <Route path="/nextus/place"                  element={<Navigate to="/welcome/org" replace />} />
         <Route path="/nextus/contributors/:id"       element={<LegacyContributorRedirect />} />
         <Route path="/nextus/contributors"           element={<Navigate to="/feed" replace />} />
-        <Route path="/nextus/focus/:slug"            element={<Navigate to="/" replace />} />
+        <Route path="/nextus/focus/:slug"            element={<LegacyFocusRedirect />} />
         <Route path="/work-with-nik"   element={<WorkWithNikPage />} />
         <Route path="/podcast"         element={<PodcastPage />} />
         <Route path="/pricing"         element={<PricingPage />} />
@@ -178,6 +182,10 @@ function AppInner() {
         <Route path="/nominate"                     element={<Navigate to="/add" replace />} />
         <Route path="/add"                          element={<AddPage />} />
         <Route path="/domain/:slug"                 element={<DomainPage />} />
+        <Route path="/focus"                        element={<FocusIndex />} />
+        <Route path="/focus/:slug"                  element={<FocusProfile />} />
+        <Route path="/watched"                      element={<WatchedFeed />} />
+        <Route path="/curated"                      element={<CuratedFeed />} />
         <Route path="/practices"                    element={<Practices />} />
         <Route path="/practices/new"                element={<PracticeContribute />} />
         <Route path="/practice/:slug"               element={<PracticeDetail />} />
@@ -246,6 +254,10 @@ function LegacyOrgManageRedirect() {
 function LegacyContributorRedirect() {
   const { id } = useParams()
   return <Navigate to={`/profile/${id}`} replace />
+}
+function LegacyFocusRedirect() {
+  const { slug } = useParams()
+  return <Navigate to={`/focus/${slug}`} replace />
 }
 
 export default function App() {

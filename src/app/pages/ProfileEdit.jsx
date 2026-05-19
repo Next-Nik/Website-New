@@ -10,6 +10,9 @@ import MultiSelectChips from '../components/MultiSelectChips'
 import WheelsToggleSection from '../components/WheelsToggleSection'
 import PrincipleAlignmentEditor from '../components/PrincipleAlignmentEditor'
 import SprintsVisibilitySection from '../components/SprintsVisibilitySection'
+import { AffiliationManager } from '../components/AffiliationManager'
+import { WatchingSection } from '../components/WatchingSection'
+import { RosterSection } from '../components/RosterSection'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // /beta/profile/edit
@@ -310,6 +313,27 @@ export default function ProfileEdit() {
             />
           </FieldColumn>
         </Row>
+      </Section>
+
+      {/* Places — declared affiliations to countries, cities, orgs, groups,
+          and other Focuses. Each has a relationship type and a per-record
+          visibility. Cascades through the parent chain at read time. */}
+      <Section eyebrow="Places" title="Where you are of">
+        <AffiliationManager userId={userId} />
+      </Section>
+
+      {/* Watching — sphere of interest. Up to 500 watched entities,
+          private to the user. Flat list, no priority. Drives the
+          chronological Watched feed at /watched. */}
+      <Section eyebrow="Watching" title="What you keep an eye on">
+        <WatchingSection />
+      </Section>
+
+      {/* Roster — sphere of influence. 100 spoons across 4 tiers.
+          Allocations are private. Drives the curated feed weighted by tier.
+          Only watched entities can be rostered. */}
+      <Section eyebrow="Roster" title="Your attention budget">
+        <RosterSection />
       </Section>
 
       {/* Mission Control scopes — which scales of life Mission Control

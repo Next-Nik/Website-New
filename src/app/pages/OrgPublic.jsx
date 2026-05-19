@@ -35,6 +35,7 @@ import {
 } from '../components/OrgShared'
 import { DOMAIN_COLORS } from '../constants/domains'
 import { ShareButton } from '../components/ShareButton'
+import { WatchButton } from '../components/WatchButton'
 
 // ── Design utilities ─────────────────────────────────────────
 
@@ -204,6 +205,18 @@ function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
                   background: 'rgba(200,146,42,0.04)' }}>
                 Manage profile
               </Link>
+            </div>
+          )}
+
+          {/* Watch — only for signed-in non-owners. Owners don't watch their own org. */}
+          {!isOwner && (
+            <div style={{ marginTop: '12px' }}>
+              <WatchButton
+                entityType="actor"
+                entityId={actor.id}
+                entityName={actor.name}
+                size="sm"
+              />
             </div>
           )}
         </div>
