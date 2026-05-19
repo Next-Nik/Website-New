@@ -1,19 +1,15 @@
 // src/app/pages/FocusIndex.jsx
 //
-// Browseable directory of all seeded Focuses at /focus.
-// Solves the discoverability problem: without this, you'd need to know
-// a slug to reach /focus/:slug. With this, you walk down the tree.
-//
-// Renders three views:
-//   1. Top-of-tree if no parent param — planet → continents/oceans/biomes/realms
-//   2. Children of any Focus if ?parent=<id|slug>
-//   3. Search affordance for arbitrary lookups across the whole tree
+// Browseable geographic directory at /focus, organised by the seven
+// civilisational domains (multi-select chips), with per-category caps so
+// the page stays readable instead of dumping every island and ridge in
+// alphabetical order.
 
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { supabase } from '../../hooks/useSupabase'
-import { TYPE_LABEL, KIND_LABEL } from '../components/FocusSearch'
+import { TYPE_LABEL } from '../components/FocusSearch'
 
 const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body    = { fontFamily: "'Lora', Georgia, serif" }
@@ -22,37 +18,86 @@ const gold    = '#A8721A'
 const dark    = '#0F1523'
 const parch   = '#FAFAF7'
 
+const DOMAINS = [
+  { slug: 'human-being',     label: 'Human Being', color: '#2A6B9E' },
+  { slug: 'society',         label: 'Society',     color: '#6B2A9E' },
+  { slug: 'nature',          label: 'Nature',      color: '#2A6B3A' },
+  { slug: 'technology',      label: 'Technology',  color: '#8A6B2A' },
+  { slug: 'finance-economy', label: 'Economy',     color: '#6B3A2A' },
+  { slug: 'legacy',          label: 'Legacy',      color: '#4A6B2A' },
+  { slug: 'vision',          label: 'Vision',      color: '#2A4A6B' },
+]
+
+// Map Focus.kind to its primary civilisational domain(s). Multi-domain
+// possible (sacred sites are Legacy AND Society). This is editorial,
+// refined as the corpus matures.
+const KIND_TO_DOMAINS = {
+  political:    ['society'],
+  hydrological: ['nature'],
+  geological:   ['nature'],
+  ecological:   ['nature'],
+  cultural:     ['legacy', 'society'],
+  designated:   ['nature', 'legacy'],
+  disrupted:    ['human-being', 'society', 'nature'],
+  atmospheric:  ['nature', 'technology'],
+  orbital:      ['technology'],
+}
+
+function focusPassesDomainFilter(focus, selectedDomains) {
+  if (selectedDomains.size === 0) return true
+  if (!focus.kind) return true                  // anchors (planet, etc.) always visible
+  const mapped = KIND_TO_DOMAINS[focus.kind] || []
+  return mapped.some(d => selectedDomains.has(d))
+}
+
+const PER_CATEGORY_CAP = 12
+
 export function FocusIndex() {
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const parentParam = searchParams.get('parent')
 
-  const [parent, setParent]       = useState(null)        // the resolved parent Focus (if any)
-  const [children, setChildren]   = useState([])
+  const [parent, setParent]         = useState(null)
+  const [children, setChildren]     = useState([])
   const [breadcrumb, setBreadcrumb] = useState([])
-  const [loading, setLoading]     = useState(true)
-  const [query, setQuery]         = useState('')
+  const [loading, setLoading]       = useState(true)
+  const [query, setQuery]           = useState('')
   const [searchResults, setSearchResults] = useState([])
-  const [searching, setSearching] = useState(false)
+  const [searching, setSearching]   = useState(false)
 
-  // Load parent + its direct children. parentParam may be a slug or uuid;
-  // we try slug first.
+  const [selectedDomains, setSelectedDomains] = useState(new Set())
+  const [expandedTypes, setExpandedTypes] = useState(new Set())
+
+  function toggleDomain(slug) {
+    setSelectedDomains(prev => {
+      const next = new Set(prev)
+      if (next.has(slug)) next.delete(slug)
+      else next.add(slug)
+      return next
+    })
+  }
+  function clearDomains() { setSelectedDomains(new Set()) }
+  function toggleExpand(type) {
+    setExpandedTypes(prev => {
+      const next = new Set(prev)
+      if (next.has(type)) next.delete(type)
+      else next.add(type)
+      return next
+    })
+  }
+
   useEffect(() => {
     let cancelled = false
     async function load() {
       setLoading(true)
+      setExpandedTypes(new Set())
 
       if (!parentParam) {
-        // Top of tree: planet + continents + oceans + top-level biomes/realms.
-        // We list everything whose parent_id is NULL (planet) AND
-        // everything whose parent_id is Earth (continents, oceans). Plus
-        // the biomes and realms which have no parent in v2 architecture.
         const { data: rootRows } = await supabase
           .from('nextus_focuses')
           .select('id, slug, name, type, kind, parent_id')
           .is('parent_id', null)
           .order('type')
           .order('name')
-
         if (cancelled) return
         setParent(null)
         setBreadcrumb([])
@@ -61,7 +106,6 @@ export function FocusIndex() {
         return
       }
 
-      // Resolve parent (try slug, fall back to id)
       let resolvedParent = null
       const { data: bySlug } = await supabase
         .from('nextus_focuses')
@@ -79,31 +123,24 @@ export function FocusIndex() {
       }
 
       if (cancelled) return
-
       if (!resolvedParent) {
-        setParent(null)
-        setBreadcrumb([])
-        setChildren([])
-        setLoading(false)
-        return
+        setParent(null); setBreadcrumb([]); setChildren([]); setLoading(false); return
       }
 
-      // Children
       const { data: kids } = await supabase
         .from('nextus_focuses')
         .select('id, slug, name, type, kind')
         .eq('parent_id', resolvedParent.id)
         .order('type')
         .order('name')
-        .limit(1000)
+        .limit(2000)
 
-      // Breadcrumb via the RPC we shipped in 047
       const { data: ancs } = await supabase
         .rpc('focus_ancestors', { p_focus_id: resolvedParent.id })
 
       if (cancelled) return
       setParent(resolvedParent)
-      setBreadcrumb([...(ancs || [])].reverse())  // root → leaf
+      setBreadcrumb([...(ancs || [])].reverse())
       setChildren(kids || [])
       setLoading(false)
     }
@@ -111,7 +148,6 @@ export function FocusIndex() {
     return () => { cancelled = true }
   }, [parentParam])
 
-  // Free-text search across all Focuses (fires after 2+ chars, debounced)
   useEffect(() => {
     const q = query.trim()
     if (q.length < 2) { setSearchResults([]); return }
@@ -132,16 +168,16 @@ export function FocusIndex() {
     return () => { cancelled = true; clearTimeout(t) }
   }, [query])
 
-  // Group children by type for prettier rendering
-  const grouped = useMemo(() => {
+  const { filteredCount, grouped, totalCount } = useMemo(() => {
+    const filtered = children.filter(c => focusPassesDomainFilter(c, selectedDomains))
     const g = {}
-    for (const c of children) {
+    for (const c of filtered) {
       const t = c.type || 'other'
       if (!g[t]) g[t] = []
       g[t].push(c)
     }
-    return g
-  }, [children])
+    return { filteredCount: filtered.length, grouped: g, totalCount: children.length }
+  }, [children, selectedDomains])
 
   return (
     <div style={{ background: parch, minHeight: '100vh' }}>
@@ -165,7 +201,6 @@ export function FocusIndex() {
           {parent ? parent.name : 'Earth'}
         </h1>
 
-        {/* Breadcrumb */}
         {parent && breadcrumb.length > 0 && (
           <div style={{
             ...sc, fontSize: '11px', letterSpacing: '0.16em',
@@ -189,7 +224,6 @@ export function FocusIndex() {
           </div>
         )}
 
-        {/* Open this Focus's profile */}
         {parent && (
           <div style={{ marginBottom: '32px' }}>
             <Link
@@ -207,13 +241,69 @@ export function FocusIndex() {
           </div>
         )}
 
-        {/* Search across the whole tree */}
+        {/* Domain filter chips */}
+        <div style={{ marginBottom: '24px' }}>
+          <div style={{
+            ...sc, fontSize: '10.5px', letterSpacing: '0.18em',
+            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
+            marginBottom: '10px',
+          }}>
+            Filter by domain {selectedDomains.size > 0 && (
+              <button
+                type="button"
+                onClick={clearDomains}
+                style={{
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  color: gold, marginLeft: '10px',
+                  ...sc, fontSize: '10px', letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                }}
+              >
+                clear &times;
+              </button>
+            )}
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+            {DOMAINS.map(d => {
+              const active = selectedDomains.has(d.slug)
+              return (
+                <button
+                  key={d.slug}
+                  type="button"
+                  onClick={() => toggleDomain(d.slug)}
+                  style={{
+                    ...sc,
+                    fontSize: '11.5px',
+                    letterSpacing: '0.14em',
+                    textTransform: 'uppercase',
+                    color: active ? '#FFFFFF' : d.color,
+                    background: active ? d.color : 'rgba(15,21,35,0.02)',
+                    border: '1.5px solid ' + d.color,
+                    borderRadius: '20px',
+                    padding: '6px 14px',
+                    cursor: 'pointer',
+                    transition: 'all 120ms ease',
+                  }}
+                >
+                  {d.label}
+                </button>
+              )
+            })}
+          </div>
+          {selectedDomains.size > 0 && (
+            <div style={{ ...body, fontSize: '12.5px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', marginTop: '8px' }}>
+              Showing {filteredCount} of {totalCount} nested entities.
+            </div>
+          )}
+        </div>
+
+        {/* Search */}
         <div style={{ marginBottom: '32px' }}>
           <input
             type="text"
             value={query}
             onChange={e => setQuery(e.target.value)}
-            placeholder="Search any place, region, or feature…"
+            placeholder="Search any place, region, or feature&hellip;"
             style={{
               ...body, fontSize: '15px', color: dark,
               padding: '10px 16px',
@@ -246,7 +336,7 @@ export function FocusIndex() {
               {searchResults.map(r => (
                 <Link
                   key={r.id}
-                  to={`/focus/${r.slug}`}
+                  to={'/focus/' + r.slug}
                   style={{
                     display: 'flex', justifyContent: 'space-between',
                     alignItems: 'center', padding: '10px 16px',
@@ -264,14 +354,14 @@ export function FocusIndex() {
           )}
         </div>
 
-        {/* Children list, grouped by type */}
+        {/* Grouped children */}
         {loading && (
           <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
             Loading&hellip;
           </p>
         )}
 
-        {!loading && children.length === 0 && (
+        {!loading && filteredCount === 0 && (
           <div style={{
             ...body, fontSize: '15px',
             color: 'rgba(15,21,35,0.72)', fontStyle: 'italic',
@@ -280,38 +370,69 @@ export function FocusIndex() {
             border: '1px dashed rgba(200,146,42,0.35)',
             borderRadius: '8px',
           }}>
-            {parent
-              ? `Nothing is yet seeded directly under ${parent.name}. The platform's directory grows as ingest fills in.`
-              : `The directory is empty. Run the top-of-tree seed (migration 043) and the GeoNames ingest (045) to populate.`}
+            {totalCount === 0
+              ? (parent
+                  ? 'Nothing is yet seeded directly under ' + parent.name + '.'
+                  : 'The directory is empty. Run migrations 043 and 045 to seed.')
+              : 'No nested entities match the selected domain' + (selectedDomains.size > 1 ? 's' : '') + '.'}
           </div>
         )}
 
-        {!loading && children.length > 0 && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            {Object.keys(grouped).sort().map(type => (
-              <div key={type}>
-                <div style={{
-                  ...sc, fontSize: '12px', letterSpacing: '0.18em',
-                  color: gold, textTransform: 'uppercase',
-                  marginBottom: '12px',
-                }}>
-                  {TYPE_LABEL[type] || type} &middot; {grouped[type].length}
+        {!loading && filteredCount > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+            {Object.keys(grouped).sort().map(type => {
+              const all = grouped[type]
+              const expanded = expandedTypes.has(type)
+              const visible = expanded ? all : all.slice(0, PER_CATEGORY_CAP)
+              return (
+                <div key={type}>
+                  <div style={{
+                    ...sc, fontSize: '12px', letterSpacing: '0.18em',
+                    color: gold, textTransform: 'uppercase',
+                    marginBottom: '12px',
+                  }}>
+                    {TYPE_LABEL[type] || type} &middot; {all.length}
+                  </div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                    {visible.map(c => (
+                      <ChildCard key={c.id} focus={c} />
+                    ))}
+                    {!expanded && all.length > PER_CATEGORY_CAP && (
+                      <button
+                        type="button"
+                        onClick={() => toggleExpand(type)}
+                        style={{
+                          ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                          color: gold, background: 'none',
+                          border: '1px dashed rgba(200,146,42,0.45)',
+                          borderRadius: '20px',
+                          padding: '7px 14px',
+                          cursor: 'pointer', textTransform: 'uppercase',
+                        }}
+                      >
+                        Show all {all.length}
+                      </button>
+                    )}
+                    {expanded && all.length > PER_CATEGORY_CAP && (
+                      <button
+                        type="button"
+                        onClick={() => toggleExpand(type)}
+                        style={{
+                          ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                          color: 'rgba(15,21,35,0.55)', background: 'none',
+                          border: '1px dashed rgba(15,21,35,0.20)',
+                          borderRadius: '20px',
+                          padding: '7px 14px',
+                          cursor: 'pointer', textTransform: 'uppercase',
+                        }}
+                      >
+                        Show fewer
+                      </button>
+                    )}
+                  </div>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {grouped[type].slice(0, 200).map(c => (
-                    <ChildCard key={c.id} focus={c} />
-                  ))}
-                  {grouped[type].length > 200 && (
-                    <span style={{
-                      ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
-                      alignSelf: 'center', fontStyle: 'italic',
-                    }}>
-                      &hellip; and {grouped[type].length - 200} more
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
@@ -320,8 +441,6 @@ export function FocusIndex() {
 }
 
 function ChildCard({ focus }) {
-  // Each card: name links into the directory drill-down; a small chevron
-  // links to the Focus's full profile (since some users will want either).
   return (
     <div style={{
       display: 'inline-flex',
@@ -333,14 +452,14 @@ function ChildCard({ focus }) {
       background: '#FFFFFF',
     }}>
       <Link
-        to={`/focus?parent=${focus.slug}`}
+        to={'/focus?parent=' + focus.slug}
         style={{ ...body, fontSize: '14px', color: dark, textDecoration: 'none' }}
       >
         {focus.name}
       </Link>
       <Link
-        to={`/focus/${focus.slug}`}
-        title={`Open ${focus.name}'s profile`}
+        to={'/focus/' + focus.slug}
+        title={'Open ' + focus.name + "'s profile"}
         style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: gold, textDecoration: 'none', padding: '0 4px', borderLeft: '1px solid rgba(200,146,42,0.20)' }}
       >
         OPEN

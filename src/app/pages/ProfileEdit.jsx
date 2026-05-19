@@ -13,6 +13,7 @@ import SprintsVisibilitySection from '../components/SprintsVisibilitySection'
 import { AffiliationManager } from '../components/AffiliationManager'
 import { WatchingSection } from '../components/WatchingSection'
 import { RosterSection } from '../components/RosterSection'
+import { BetaShortcuts } from '../components/BetaShortcuts'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // /beta/profile/edit
@@ -288,8 +289,13 @@ export default function ProfileEdit() {
     <PageShell>
       <PageHeader onViewPublic={openPublicProfile} />
 
+      {/* Beta nav shortcuts — gated to nik@nextus.world via useBetaShortcuts.
+          Renders null for everyone else. Becomes public-ready by flipping the
+          gate in the hook or removing this component when MC dock tiles ship. */}
+      <BetaShortcuts />
+
       {/* Identity and orientation */}
-      <Section eyebrow="Identity" title="Display">
+      <Section eyebrow="Identity" title="Display" anchorId="identity">
         <Row>
           <FieldColumn label="Display name">
             <AutoSaveTextarea
@@ -318,21 +324,21 @@ export default function ProfileEdit() {
       {/* Places — declared affiliations to countries, cities, orgs, groups,
           and other Focuses. Each has a relationship type and a per-record
           visibility. Cascades through the parent chain at read time. */}
-      <Section eyebrow="Places" title="Where you are of">
+      <Section eyebrow="Places" title="Where you are of" anchorId="places">
         <AffiliationManager userId={userId} />
       </Section>
 
       {/* Watching — sphere of interest. Up to 500 watched entities,
           private to the user. Flat list, no priority. Drives the
           chronological Watched feed at /watched. */}
-      <Section eyebrow="Watching" title="What you keep an eye on">
+      <Section eyebrow="Watching" title="What you keep an eye on" anchorId="watching">
         <WatchingSection />
       </Section>
 
       {/* Roster — sphere of influence. 100 spoons across 4 tiers.
           Allocations are private. Drives the curated feed weighted by tier.
           Only watched entities can be rostered. */}
-      <Section eyebrow="Roster" title="Your attention budget">
+      <Section eyebrow="Roster" title="Your attention budget" anchorId="roster">
         <RosterSection />
       </Section>
 
@@ -550,13 +556,15 @@ function PageHeader({ onViewPublic }) {
   )
 }
 
-function Section({ eyebrow, title, children }) {
+function Section({ eyebrow, title, children, anchorId }) {
   return (
     <section
+      id={anchorId}
       style={{
         marginBottom: '40px',
         paddingBottom: '32px',
         borderBottom: '1px solid rgba(200, 146, 42, 0.20)',
+        scrollMarginTop: '88px',
       }}
     >
       <div style={{ marginBottom: '20px' }}>
