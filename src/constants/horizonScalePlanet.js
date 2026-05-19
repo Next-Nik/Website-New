@@ -94,3 +94,53 @@ export function getPlanetDomainColor(domainKey) {
   const domain = PLANET_DOMAINS.find(d => d.key === domainKey)
   return domain?.color ?? '#C8922A'
 }
+
+// ── Planet label map ──────────────────────────────────────────
+// Short descriptive label per score. Mirrors LABEL_MAP in horizonScale.js.
+// Used by HorizonScaleModal (system="planet").
+
+export const PLANET_LABEL_MAP = {
+  1:  'Systemic Collapse',
+  2:  'Acute Failure',
+  3:  'Fragile and Failing',
+  4:  'Struggling to Function',
+  5:  'Mixed — The Inflection Point',
+  6:  'Developing',
+  7:  'Functional',
+  8:  'Advancing',
+  9:  'Thriving',
+  10: 'The Horizon',
+}
+
+// ── Planet signature map ──────────────────────────────────────
+// Full energetic description per score.
+// Used by HorizonScaleModal (system="planet") on score detail.
+
+export const PLANET_SIGNATURE_MAP = {
+  1:  'Systemic collapse or near-collapse. Fundamental conditions for human or ecological life are absent or actively destroyed. Active regression.',
+  2:  'Core systems failing. Acute and widespread harm ongoing. Structural supports have broken down. Urgent intervention required.',
+  3:  'Significant dysfunction across the domain. Vulnerable to shocks. Partial systems exist but cannot absorb stress or generate improvement.',
+  4:  'Below the threshold for sustainable function. Partial and inconsistent operation. The domain is consuming more than it generates.',
+  5:  'The inflection point. Progress and regression coexist. Direction is genuinely uncertain. Everything above here tends to build. Everything below here tends to contract.',
+  6:  'A positive trend has been established, though structural gaps remain significant. The direction is right; the distance is long.',
+  7:  'Meeting baseline needs across most of the domain. Not yet generative — sustaining more than building. A stable platform for further development.',
+  8:  'Genuine progress. Systems are strengthening and compounding. Positive outcomes visible across the domain.',
+  9:  'Healthy, regenerative, and contributing to adjacent domains. This is what thriving looks like at civilisational scale.',
+  10: 'The Horizon realised. The goal this domain exists to reach. The condition that makes everything else more possible.',
+}
+
+// ── Planet intro ──────────────────────────────────────────────
+// Shown at the top of HorizonScaleModal when system="planet".
+
+export const PLANET_INTRO = {
+  eyebrow:  'NextUs · Planet Scale',
+  title:    'The Planet Scale',
+  subtitle: 'Civilisational calibration · 1–10',
+  body: [
+    'Each civilisational domain is scored against this scale. The scale has two zones separated by the inflection point at 5. Above it, a domain is building — compounding toward the Horizon. Below it, the domain is in contraction.',
+    'Below 5 is not failure. It is where the work of restoration lives. Honest assessment is the beginning of honest action.',
+  ],
+  aboveLine: { label: 'Building',     note: 'above the inflection point — developing, advancing, thriving' },
+  belowLine: { label: 'Contracting',  note: 'below the inflection point — fragile, struggling, failing' },
+  footer:    'Any score below 5 means this domain is actively generating harm or dysfunction — consuming more than it produces. The map is not the verdict. It is the starting point.',
+}
