@@ -88,7 +88,19 @@ const LINK_LABELS = {
   medium:          'Medium',
   github:          'GitHub',
   book:            'Book',
+  email:           'Email',
+  contact_form:    'Contact form',
+  calendly:        'Book a call',
+  phone:           'Phone',
   other:           'Link',
+}
+
+// Contact link types — surfaced separately as a "Get in touch" section
+const CONTACT_LINK_TYPES = new Set(['email', 'contact_form', 'calendly', 'phone'])
+
+// Display order for contact links (most direct first)
+const CONTACT_PRIORITY = {
+  email: 0, contact_form: 1, calendly: 2, phone: 3,
 }
 
 // Display priority for links (lower = shown first)
@@ -352,9 +364,11 @@ function Placement({ domains, subdomains }) {
 // ── Links row ────────────────────────────────────────────────
 
 function LinksRow({ links }) {
-  if (!links?.length) return null
+  // Filter out contact links — they have their own ContactSection
+  const nonContact = (links || []).filter(l => !CONTACT_LINK_TYPES.has(l.link_type))
+  if (!nonContact.length) return null
 
-  const sorted = [...links].sort((a, b) =>
+  const sorted = [...nonContact].sort((a, b) =>
     (LINK_PRIORITY[a.link_type] ?? 99) - (LINK_PRIORITY[b.link_type] ?? 99)
   )
 
@@ -381,6 +395,59 @@ function LinksRow({ links }) {
             {link.label || LINK_LABELS[link.link_type] || link.link_type}
           </a>
         ))}
+      </div>
+    </div>
+  )
+}
+
+// ── Contact section ──────────────────────────────────────────
+// Surfaces contact-specific links (email, contact form, Calendly, phone) as
+// a "Get in touch" section. Until in-platform messaging ships, this is the
+// primary path for users to reach an actor — especially unclaimed wards.
+
+function ContactSection({ links, actorName }) {
+  const contact = (links || []).filter(l => CONTACT_LINK_TYPES.has(l.link_type))
+  if (!contact.length) return null
+
+  const sorted = [...contact].sort((a, b) =>
+    (CONTACT_PRIORITY[a.link_type] ?? 99) - (CONTACT_PRIORITY[b.link_type] ?? 99)
+  )
+
+  return (
+    <div>
+      <Eyebrow>Get in touch</Eyebrow>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+        {sorted.map(link => {
+          // Email links: ensure mailto: prefix
+          let href = link.url
+          if (link.link_type === 'email' && !href.startsWith('mailto:')) {
+            href = 'mailto:' + href
+          } else if (link.link_type === 'phone' && !href.startsWith('tel:')) {
+            href = 'tel:' + href.replace(/[^\d+]/g, '')
+          }
+          const labelText = link.label || LINK_LABELS[link.link_type] || link.link_type
+          return (
+            <a key={link.id} href={href}
+              target={['email','phone'].includes(link.link_type) ? '_self' : '_blank'}
+              rel="noopener noreferrer"
+              style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em',
+                color: '#FFFFFF', textDecoration: 'none',
+                padding: '8px 16px', borderRadius: '40px',
+                border: '1px solid #C8922A',
+                background: '#C8922A',
+                transition: 'all 0.15s ease' }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = '#A8721A'
+                e.currentTarget.style.borderColor = '#A8721A'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = '#C8922A'
+                e.currentTarget.style.borderColor = '#C8922A'
+              }}>
+              {labelText}
+            </a>
+          )
+        })}
       </div>
     </div>
   )
@@ -772,8 +839,16 @@ export function OrgPublicPage() {
           </>
         )}
 
+        {/* Get in touch — contact links (email, contact form, calendly) */}
+        {links.some(l => CONTACT_LINK_TYPES.has(l.link_type)) && (
+          <>
+            <ContactSection links={links} actorName={actor.name} />
+            <Rule />
+          </>
+        )}
+
         {/* Links */}
-        {(links.length > 0 || actor.website) && (
+        {(links.some(l => !CONTACT_LINK_TYPES.has(l.link_type)) || actor.website) && (
           <>
             <LinksRow links={[
               ...(actor.website && !links.find(l => l.link_type === 'website')

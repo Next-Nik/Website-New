@@ -639,18 +639,19 @@ export function AddPage() {
           borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
           <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.20em',
             color: 'rgba(15,21,35,0.45)', textTransform: 'uppercase', marginBottom: '8px' }}>
-            Autofill from website — optional
+            Autofill from any source — optional
           </div>
           <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
             lineHeight: 1.55, marginBottom: '12px' }}>
-            Paste a URL and we'll read the site and fill in the form below.
+            Paste any public URL — their website, podcast, YouTube channel, Substack, LinkedIn,
+            or another platform where they show up. Or paste a description if there's no URL.
             You review and edit before anything goes live.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <textarea value={aiUrl}
               onChange={e => setAiUrl(e.target.value)}
               rows={3}
-              placeholder={'Paste a URL — https://example.com\nOr paste raw page source — <!DOCTYPE html>...\nOr describe the organisation in plain text'}
+              placeholder={'Paste any URL — https://example.com, a YouTube channel, a Substack, etc.\nOr paste raw page source — <!DOCTYPE html>...\nOr describe them in plain text'}
               style={{ ...body, fontSize: '14px', color: dark, padding: '10px 14px',
                 borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.28)',
                 background: parch, outline: 'none', width: '100%',
@@ -699,12 +700,40 @@ export function AddPage() {
             Your relationship to this entry
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {[
-              { val: false, label: "I'm adding this to the ecosystem",
-                hint: "I don't represent this organisation. NextUs holds the entry in trust until claimed." },
-              { val: true, label: 'I represent this organisation',
-                hint: "I'm adding my own entry. I'll be the owner and can manage it directly." },
-            ].map(opt => (
+            {(() => {
+              // Adapt the toggle copy to the selected actor type
+              const t = form.type
+              const isPractitioner = t === 'practitioner'
+              const isPerson       = isPractitioner
+              const targetWord     = isPractitioner ? 'practitioner' :
+                                     t === 'organisation' ? 'organisation' :
+                                     t === 'place'        ? 'place' :
+                                     t === 'programme'    ? 'programme' :
+                                     t === 'project'      ? 'project' :
+                                     t === 'group'        ? 'group' :
+                                     t === 'resource'     ? 'resource' :
+                                     'entry'
+              const selfLabel = isPractitioner
+                ? 'I am this person'
+                : t === 'organisation' ? 'I represent this organisation'
+                : t === 'place'        ? 'I run / steward this place'
+                : t === 'programme'    ? 'I run this programme'
+                : t === 'project'      ? 'I run this project'
+                : t === 'group'        ? 'I run this group'
+                : t === 'resource'     ? 'I created this resource'
+                : 'This is mine'
+              const selfHint = isPractitioner
+                ? "I'm adding my own practitioner profile. I'll own and manage it."
+                : `I'm adding my own ${targetWord}. I'll be the owner and can manage it directly.`
+              const otherLabel = "I'm adding this to the ecosystem"
+              const otherHint  = isPractitioner
+                ? `I don't represent this person. NextUs holds the entry in trust until they claim it.`
+                : `I don't run this ${targetWord}. NextUs holds the entry in trust until claimed.`
+              return [
+                { val: false, label: otherLabel, hint: otherHint },
+                { val: true,  label: selfLabel,  hint: selfHint  },
+              ]
+            })().map(opt => (
               <button key={String(opt.val)} type="button" onClick={() => setRepresents(opt.val)}
                 style={{ display: 'flex', alignItems: 'flex-start', gap: '12px',
                   padding: '13px 15px', borderRadius: '9px', cursor: 'pointer', textAlign: 'left',

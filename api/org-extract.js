@@ -99,6 +99,14 @@ carefully for ALL of these patterns in the source:
 - A project, initiative, or campaign with its own scope
 - A group, network, or community
 
+CRITICAL FRAMING for practitioner records:
+When you propose a practitioner record for a named individual, the record
+is about THEIR PUBLIC-FACING WORK — their coaching, teaching, consulting,
+analysis, journalism, etc. NOT their personal biography, family life, or
+private details. Description should focus on what they do publicly, their
+methodology, the body of work they're known for. The name identifies the
+practitioner; the content describes the practice.
+
 One source can yield MULTIPLE distinct actors. A coach's website may surface:
 - The coach (practitioner)
 - Their podcast (programme)
@@ -112,13 +120,52 @@ Do not assume only one actor per source.
 ACTOR TYPES (use the exact string)
 ──────────────────────────────────────────────────────────────────────────────
 
-organisation   — formal entity with structure (company, non-profit, collective)
-project        — a bounded initiative or campaign
-practitioner   — a named individual doing personal practice work
-programme      — a methodology, course, tool suite, or repeatable offering
-place          — a physical location with its own character (retreat, coworking)
-group          — a network or community without formal organisational structure
-resource       — a tool, dataset, or piece of infrastructure others build on
+organisation   — formal entity with structure, ongoing operations, and an
+                 organising agency that persists across staff turnover.
+                 Examples: NextUs, WWF, the ACLU, HAAB (the community/org
+                 that runs the coworking space — NOT just the building).
+                 Even community organisations and collectives belong here
+                 if they have an organising identity that persists.
+
+project        — a bounded initiative or campaign with a beginning and end,
+                 or a specific intervention with defined scope.
+                 Example: a specific climate restoration project, a documentary
+                 in production, a campaign.
+
+practitioner   — the public-facing professional work of a named individual.
+                 NOT the personal life or biography of the person — only
+                 the practice/work they put forward publicly.
+                 Examples: Preston Smiles (his coaching/teaching practice),
+                 a therapist's practice, an independent consultant.
+
+programme      — a methodology, course, retreat experience, podcast, tool suite,
+                 book series, or repeatable offering with its own identity
+                 and audience. Often nested under a practitioner or org.
+                 Examples: The Bridge Experience (Preston's workshop),
+                 Spiritual Millionaire Academy (Preston's training),
+                 The Horizon Suite (NextUs's tool suite),
+                 a podcast like Brothers In Depth or The Preston Smiles Show.
+                 Critical: podcasts are programmes, NOT organisations.
+                 Courses are programmes. Workshops are programmes.
+
+place          — a physical location whose IDENTITY is primarily about the
+                 place itself, not an organisation that runs it.
+                 Examples: a retreat venue (the venue itself, not the org
+                 running it), a sacred site, a land project, a community
+                 garden as a physical space.
+                 Boundary: if the place's identity is mostly carried by the
+                 organisation operating from it (like HAAB), use 'organisation'
+                 instead. Use 'place' when the physical character of the
+                 location is the primary identity.
+
+group          — a network or community without formal organisational
+                 structure — no staff, no formal leadership, just gathered
+                 affinity. Examples: a meetup, an informal working group,
+                 a peer collective.
+
+resource       — a tool, dataset, methodology document, or infrastructure
+                 that others build on. Different from a programme because
+                 it's not delivered through participation — it's just available.
 
 ──────────────────────────────────────────────────────────────────────────────
 DOMAINS (use the exact slug)
@@ -158,7 +205,18 @@ Type values (use exact strings):
   medium             — Medium publication
   github             — GitHub profile or org
   book               — link to a published book (Amazon, publisher)
+  email              — direct email address (use mailto: URL prefix)
+  contact_form       — URL to a contact form page (e.g. /contact)
+  calendly           — Calendly booking link or any direct scheduling URL
+  phone              — phone number (use tel: URL prefix). Skip unless obviously public/professional.
   other              — anything else worth linking
+
+CONTACT LINKS ARE IMPORTANT — extract them whenever they're discoverable.
+Look at the footer, contact pages, "get in touch" sections, sidebar/header.
+For practitioners and orgs, contact information is what enables coordination.
+If you see an email address, return it as link_type 'email' with url 'mailto:<address>'.
+If you see a contact form link, return link_type 'contact_form'.
+If you see a Calendly link (calendly.com/...), return link_type 'calendly'.
 
 Each link: { "link_type": "...", "url": "...", "label": "optional override" }
 
@@ -291,7 +349,10 @@ const ALLOWED_LINK_TYPES = [
   'youtube_channel', 'youtube_video', 'vimeo',
   'substack', 'newsletter',
   'instagram', 'twitter', 'tiktok', 'facebook', 'linkedin', 'medium', 'github',
-  'book', 'other',
+  'book',
+  // Contact-specific link types (in-platform messaging not yet built)
+  'email', 'contact_form', 'calendly', 'phone',
+  'other',
 ]
 const ALLOWED_REL_TYPES = ['parent_child', 'member_of', 'partner']
 
