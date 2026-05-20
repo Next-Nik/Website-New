@@ -58,6 +58,7 @@ import ProfileMissionPanel        from '../components/mission-control/ProfileMis
 import SettingsMissionPanel       from '../components/mission-control/SettingsMissionPanel'
 import WorldViewMissionPanel      from '../components/mission-control/WorldViewMissionPanel'
 import AddOverlay                 from '../components/AddOverlay'
+import { ActiveFocusPrompt }      from '../components/ActiveFocusPrompt'
 import { useCivDomainScores }     from '../hooks/useDomainIndicators'
 
 import HorizonStateGauge   from '../components/mission-control/HorizonStateGauge'
@@ -942,6 +943,21 @@ export default function MissionControl() {
       />
 
       <main className="mc-body">
+
+        {/* Active Focus prompt — shows the three soft questions when no focus
+            is set, or a compact summary when the user has answered. Sits
+            above the planet/self stage so it greets the user on arrival. */}
+        {data.user && (
+          <div style={{
+            maxWidth: '720px',
+            margin: '0 auto',
+            padding: '24px 24px 0',
+            width: '100%',
+            boxSizing: 'border-box',
+          }}>
+            <ActiveFocusPrompt />
+          </div>
+        )}
 
         {(activeScope === 'self' || activeScope === 'planet') && (
         <>

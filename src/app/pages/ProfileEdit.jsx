@@ -13,7 +13,6 @@ import SprintsVisibilitySection from '../components/SprintsVisibilitySection'
 import { AffiliationManager } from '../components/AffiliationManager'
 import { WatchingSection } from '../components/WatchingSection'
 import { RosterSection } from '../components/RosterSection'
-import { BetaShortcuts } from '../components/BetaShortcuts'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // /beta/profile/edit
@@ -288,11 +287,6 @@ export default function ProfileEdit() {
   return (
     <PageShell>
       <PageHeader onViewPublic={openPublicProfile} />
-
-      {/* Beta nav shortcuts — gated to nik@nextus.world via useBetaShortcuts.
-          Renders null for everyone else. Becomes public-ready by flipping the
-          gate in the hook or removing this component when MC dock tiles ship. */}
-      <BetaShortcuts />
 
       {/* Identity and orientation */}
       <Section eyebrow="Identity" title="Display" anchorId="identity">

@@ -65,6 +65,7 @@ import { AddPage }            from './app/pages/Add'
 import { DomainPage } from './app/pages/Domain'
 import { FocusProfile } from './app/pages/FocusProfile'
 import { FocusIndex } from './app/pages/FocusIndex'
+import { Explore } from './app/pages/Explore'
 import WatchedFeed from './app/pages/WatchedFeed'
 import CuratedFeed from './app/pages/CuratedFeed'
 import Practices              from './app/pages/Practices'
@@ -184,6 +185,12 @@ function AppInner() {
         <Route path="/domain/:slug"                 element={<DomainPage />} />
         <Route path="/focus"                        element={<FocusIndex />} />
         <Route path="/focus/:slug"                  element={<FocusProfile />} />
+
+        {/* /explore — the wheel-as-navigator surface */}
+        <Route path="/explore"                                          element={<Explore />} />
+        <Route path="/explore/:domain"                                   element={<Explore />} />
+        <Route path="/explore/:domain/:subdomain"                        element={<Explore />} />
+        <Route path="/explore/:domain/:subdomain/:field"                 element={<Explore />} />
         <Route path="/watched"                      element={<WatchedFeed />} />
         <Route path="/curated"                      element={<CuratedFeed />} />
         <Route path="/practices"                    element={<Practices />} />
