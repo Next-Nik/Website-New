@@ -46,7 +46,7 @@ const PARTICIPATION = [
   { slug: 'watch',  label: 'Watch quietly' },
 ]
 
-const PLACE_CAP = 3
+const PLACE_CAP = 10
 const DOMAIN_CAP = 3
 
 export function ActiveFocusPrompt({ initiallyOpen = false, bare = false }) {
