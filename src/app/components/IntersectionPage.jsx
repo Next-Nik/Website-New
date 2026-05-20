@@ -120,18 +120,17 @@ function ActorsLayer({ field, atFocus, accentColor }) {
     async function load() {
       setLoading(true)
 
-      // Find actors whose field_ids array contains this field's id
+      // Find actors whose fields slug-array contains this field's slug.
+      // Actor schema uses `fields` text[] (slugs), not `field_ids` uuids.
       let query = supabase
         .from('nextus_actors')
         .select('id, name, slug, kind, scale, focus_id, short_description, status, updated_at')
-        .contains('field_ids', [field.id])
+        .contains('fields', [field.slug])
         .eq('status', 'live')
         .order('updated_at', { ascending: false })
         .limit(200)
 
       // If we have a geographic focus, narrow to actors operating there.
-      // Future improvement: use focus_descendants RPC to cascade. For now,
-      // direct focus_id match keeps it honest about what's declared.
       if (atFocus) {
         query = query.eq('focus_id', atFocus.id)
       }
@@ -261,7 +260,7 @@ function ActivityLayer({ field, atFocus }) {
       let q = supabase
         .from('nextus_actors')
         .select('id')
-        .contains('field_ids', [field.id])
+        .contains('fields', [field.slug])
         .eq('status', 'live')
       if (atFocus) q = q.eq('focus_id', atFocus.id)
       const { data } = await q
@@ -270,7 +269,7 @@ function ActivityLayer({ field, atFocus }) {
     }
     load()
     return () => { cancelled = true }
-  }, [field.id, atFocus?.id])
+  }, [field.slug, atFocus?.id])
 
   // Build a viewerCtx-like object with the coordinate-scoped actor list so
   // useFeed can resolve its sources. We pass through cohort scaffolding from

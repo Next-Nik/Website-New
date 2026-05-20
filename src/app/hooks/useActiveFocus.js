@@ -48,7 +48,13 @@ export function useActiveFocus() {
       .eq('user_id', user.id)
       .maybeSingle()
     if (err) {
-      setError(err); setLoading(false); return
+      // Likely the table doesn't exist yet (migration 051 not run). Fall back
+      // to an empty state so the prompt still renders. The user can fill it
+      // in once the migration is applied; their save will then succeed.
+      setError(err)
+      setFocus({ ...EMPTY })
+      setLoading(false)
+      return
     }
     setFocus(data || { ...EMPTY })
     setLoading(false)

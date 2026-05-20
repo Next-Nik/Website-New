@@ -300,26 +300,43 @@ function Question1({ focus, save }) {
     let cancelled = false
     const t = setTimeout(async () => {
       setSearching(true)
-      // Earth alias matching: "world", "planet" → match Earth row
+      // Earth alias matching: "world", "planet" → also match Earth row
       const earthAliases = ['world', 'planet', 'globe', 'earth']
       const qLower = q.toLowerCase()
       const isEarthQuery = earthAliases.some(a => a.startsWith(qLower) || qLower.startsWith(a))
 
-      const { data } = await supabase
+      // Primary name search
+      const { data: nameMatches, error: nameErr } = await supabase
         .from('nextus_focuses')
         .select('id, slug, name, type')
-        .or(isEarthQuery ? `name.ilike.%${q}%,slug.eq.earth` : `name.ilike.%${q}%`)
+        .ilike('name', `%${q}%`)
         .order('type')
         .order('name')
         .limit(20)
+
+      if (nameErr) {
+        console.error('Place search failed:', nameErr)
+      }
+
+      // If the query looks like an Earth-alias, also surface Earth itself
+      let earthRow = null
+      if (isEarthQuery) {
+        const { data: e } = await supabase
+          .from('nextus_focuses')
+          .select('id, slug, name, type')
+          .eq('slug', 'earth')
+          .maybeSingle()
+        earthRow = e || null
+      }
+
       if (cancelled) return
-      // De-dup by id
-      const seen = new Set()
-      const deduped = (data || []).filter(r => {
-        if (seen.has(r.id)) return false
-        seen.add(r.id); return true
-      })
-      setResults(deduped)
+
+      const combined = [...(nameMatches || [])]
+      if (earthRow && !combined.some(r => r.id === earthRow.id)) {
+        combined.unshift(earthRow)
+      }
+
+      setResults(combined)
       setSearching(false)
     }, 240)
     return () => { cancelled = true; clearTimeout(t) }
@@ -358,13 +375,37 @@ function Question1({ focus, save }) {
 
       {picked.length < PLACE_CAP && (
         <>
-          <input
-            type="text"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="Search a place — city, country, region, or the planet…"
-            style={inputStyle}
-          />
+          <div style={{ position: 'relative', display: 'inline-block', width: '100%', maxWidth: '380px' }}>
+            <input
+              type="text"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="Search a place — city, country, region, or the planet…"
+              style={{ ...inputStyle, paddingRight: query ? '36px' : '14px' }}
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery('')}
+                aria-label="Clear search"
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'rgba(15,21,35,0.45)',
+                  fontSize: '18px',
+                  lineHeight: 1,
+                  padding: '4px 8px',
+                }}
+              >
+                ×
+              </button>
+            )}
+          </div>
           {earthSuggestion && query.trim().length === 0 && (
             <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <span style={{ ...body, fontSize: '12.5px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
@@ -421,12 +462,12 @@ function Question2({ focus, save }) {
     async function loadInDomain() {
       if (domainSlugs.length === 0) { setInDomainResults([]); return }
       setInDomainLoading(true)
-      // Filter nextus_actors by primary domain matching any selected slug.
-      // Actor's domain column is the canonical primary domain.
+      // Filter nextus_actors by domains text-array containing any selected slug.
+      // The actor schema uses `domains` (text[] of slugs), not a singular domain col.
       const { data } = await supabase
         .from('nextus_actors')
-        .select('id, slug, name, kind, domain, scale')
-        .in('domain', domainSlugs)
+        .select('id, slug, name, kind, domains, scale')
+        .overlaps('domains', domainSlugs)
         .eq('status', 'live')
         .order('name')
         .limit(60)
@@ -448,7 +489,7 @@ function Question2({ focus, save }) {
       setCrossSearching(true)
       const { data } = await supabase
         .from('nextus_actors')
-        .select('id, slug, name, kind, domain')
+        .select('id, slug, name, kind, domains')
         .ilike('name', `%${q}%`)
         .eq('status', 'live')
         .order('name')
