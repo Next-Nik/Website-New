@@ -48,9 +48,16 @@ export function resolvePurposePiece(pp) {
   return { archetype, domain, scale }
 }
 
-// True iff the user has completed Purpose Piece. Completion can be
-// signalled by either a 'complete' status or a populated completed_at
-// timestamp; older rows used one or the other.
+// True iff the user has completed Purpose Piece. Completion is signalled
+// in multiple ways across writer eras:
+//   - newer rows: status === 'complete' or a populated completed_at
+//   - older rows: neither flag was ever written, but the row carries
+//     resolvable archetype + domain + scale values
+// If all three resolve, we treat the PP as functionally complete for
+// display purposes regardless of the status flag.
 export function isPurposePieceComplete(pp) {
-  return !!(pp && (pp.status === 'complete' || pp.completed_at))
+  if (!pp) return false
+  if (pp.status === 'complete' || pp.completed_at) return true
+  const { archetype, domain, scale } = resolvePurposePiece(pp)
+  return !!(archetype && domain && scale)
 }
