@@ -58,13 +58,12 @@ import ProfileMissionPanel        from '../components/mission-control/ProfileMis
 import SettingsMissionPanel       from '../components/mission-control/SettingsMissionPanel'
 import WorldViewMissionPanel      from '../components/mission-control/WorldViewMissionPanel'
 import AddOverlay                 from '../components/AddOverlay'
-import { ActiveFocusPrompt }      from '../components/ActiveFocusPrompt'
+import FocusPanelContent          from '../components/FocusPanelContent'
 import { useActiveFocus }         from '../hooks/useActiveFocus'
 import { useCivDomainScores }     from '../hooks/useDomainIndicators'
 
 import HorizonStateGauge   from '../components/mission-control/HorizonStateGauge'
 import MapPinGlyph         from '../components/mission-control/MapPinGlyph'
-import PurposePieceGlyph   from '../components/mission-control/PurposePieceGlyph'
 import SearchGlyph         from '../components/mission-control/SearchGlyph'
 import TargetSprintGlyph   from '../components/mission-control/TargetSprintGlyph'
 
@@ -1078,13 +1077,6 @@ export default function MissionControl() {
               title="NextSteps — turn caring into a step"
             />
             <Tile
-              glyph={<PurposePieceGlyph />}
-              label="PLACEMENT"
-              state={placementState}
-              onClick={() => openCivPanel('purpose-piece')}
-              title="Placement — where you fit"
-            />
-            <Tile
               glyph="◯"
               label={<>WORLD<br/>VIEW</>}
               state={worldViewState}
@@ -1181,13 +1173,13 @@ export default function MissionControl() {
       <Panel
         open={activePanel === 'focus'}
         onClose={closePanel}
-        eyebrow="FOR NOW · MY FOCUS"
-        title="What's close to you right now?"
+        eyebrow="YOUR ANCHOR"
+        title="My Focus"
         actions={[
           { label: 'DONE', primary: true, onClick: closePanel },
         ]}
       >
-        <ActiveFocusPrompt initiallyOpen bare />
+        <FocusPanelContent />
       </Panel>
 
       <Panel
