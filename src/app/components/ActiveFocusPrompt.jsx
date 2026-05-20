@@ -49,7 +49,7 @@ const PARTICIPATION = [
 const PLACE_CAP = 3
 const DOMAIN_CAP = 3
 
-export function ActiveFocusPrompt({ initiallyOpen = false }) {
+export function ActiveFocusPrompt({ initiallyOpen = false, bare = false }) {
   const { focus, hasFocus, loading, save, clear } = useActiveFocus()
   const [open, setOpen] = useState(initiallyOpen || !hasFocus)
 
@@ -61,14 +61,14 @@ export function ActiveFocusPrompt({ initiallyOpen = false }) {
   if (loading) return null
 
   if (!open && hasFocus) {
-    return <CompactSummary focus={focus} onEdit={() => setOpen(true)} onClear={clear} />
+    return <CompactSummary focus={focus} onEdit={() => setOpen(true)} onClear={clear} bare={bare} />
   }
 
-  return <PromptOpen focus={focus} save={save} hasFocus={hasFocus} onCollapse={() => setOpen(false)} />
+  return <PromptOpen focus={focus} save={save} hasFocus={hasFocus} onCollapse={() => setOpen(false)} bare={bare} />
 }
 
 // ── Compact summary (when focus set) ──────────────────────────────────────
-function CompactSummary({ focus, onEdit, onClear }) {
+function CompactSummary({ focus, onEdit, onClear, bare = false }) {
   const [places, setPlaces] = useState([])
   const [actors, setActors] = useState([])
 
@@ -92,22 +92,28 @@ function CompactSummary({ focus, onEdit, onClear }) {
     return d ? d.label : slug
   })
 
+  const sectionStyle = bare
+    ? { marginBottom: 0, padding: 0 }
+    : {
+        marginBottom: '32px',
+        padding: '18px 22px',
+        background: 'rgba(200,146,42,0.04)',
+        border: '1px solid rgba(200,146,42,0.25)',
+        borderRadius: '10px',
+      }
+
   return (
-    <section style={{
-      marginBottom: '32px',
-      padding: '18px 22px',
-      background: 'rgba(200,146,42,0.04)',
-      border: '1px solid rgba(200,146,42,0.25)',
-      borderRadius: '10px',
-    }}>
+    <section style={sectionStyle}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '12px', flexWrap: 'wrap' }}>
-        <div style={{
-          ...sc, fontSize: '10.5px', letterSpacing: '0.20em',
-          color: GOLD, textTransform: 'uppercase',
-        }}>
-          Your focus
-        </div>
-        <div style={{ display: 'flex', gap: '14px' }}>
+        {!bare && (
+          <div style={{
+            ...sc, fontSize: '10.5px', letterSpacing: '0.20em',
+            color: GOLD, textTransform: 'uppercase',
+          }}>
+            Your focus
+          </div>
+        )}
+        <div style={{ display: 'flex', gap: '14px', marginLeft: bare ? 'auto' : 0 }}>
           <button
             type="button"
             onClick={onEdit}
@@ -203,48 +209,54 @@ function Label({ children }) {
 }
 
 // ── Prompt open ───────────────────────────────────────────────────────────
-function PromptOpen({ focus, save, hasFocus, onCollapse }) {
+function PromptOpen({ focus, save, hasFocus, onCollapse, bare = false }) {
+  const sectionStyle = bare
+    ? { marginBottom: 0, padding: 0 }
+    : {
+        marginBottom: '40px',
+        padding: '28px',
+        background: '#FFFFFF',
+        border: '1px solid rgba(200,146,42,0.30)',
+        borderRadius: '12px',
+        boxShadow: '0 1px 0 rgba(15,21,35,0.02)',
+      }
+
   return (
-    <section style={{
-      marginBottom: '40px',
-      padding: '28px',
-      background: '#FFFFFF',
-      border: '1px solid rgba(200,146,42,0.30)',
-      borderRadius: '12px',
-      boxShadow: '0 1px 0 rgba(15,21,35,0.02)',
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '20px', gap: '12px' }}>
-        <div>
-          <div style={{
-            ...sc, fontSize: '10.5px', letterSpacing: '0.20em',
-            color: GOLD, textTransform: 'uppercase', marginBottom: '4px',
-          }}>
-            For now
+    <section style={sectionStyle}>
+      {!bare && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '20px', gap: '12px' }}>
+          <div>
+            <div style={{
+              ...sc, fontSize: '10.5px', letterSpacing: '0.20em',
+              color: GOLD, textTransform: 'uppercase', marginBottom: '4px',
+            }}>
+              For now
+            </div>
+            <h2 style={{
+              ...display,
+              fontSize: 'clamp(22px, 3vw, 28px)',
+              fontWeight: 300, color: INK,
+              margin: 0, lineHeight: 1.2,
+            }}>
+              What&rsquo;s close to you right now?
+            </h2>
           </div>
-          <h2 style={{
-            ...display,
-            fontSize: 'clamp(22px, 3vw, 28px)',
-            fontWeight: 300, color: INK,
-            margin: 0, lineHeight: 1.2,
-          }}>
-            What&rsquo;s close to you right now?
-          </h2>
+          {hasFocus && (
+            <button
+              type="button"
+              onClick={onCollapse}
+              style={{
+                ...sc, fontSize: '10.5px', letterSpacing: '0.16em',
+                color: 'rgba(15,21,35,0.55)', background: 'none',
+                border: 'none', cursor: 'pointer',
+                textTransform: 'uppercase', padding: 0,
+              }}
+            >
+              Done
+            </button>
+          )}
         </div>
-        {hasFocus && (
-          <button
-            type="button"
-            onClick={onCollapse}
-            style={{
-              ...sc, fontSize: '10.5px', letterSpacing: '0.16em',
-              color: 'rgba(15,21,35,0.55)', background: 'none',
-              border: 'none', cursor: 'pointer',
-              textTransform: 'uppercase', padding: 0,
-            }}
-          >
-            Done
-          </button>
-        )}
-      </div>
+      )}
 
       <Question1 focus={focus} save={save} />
       <Question2 focus={focus} save={save} />
@@ -294,6 +306,14 @@ function Question1({ focus, save }) {
   }, [placeIds.length])
 
   // Search debounce — also matches Earth aliases
+  //
+  // Uses the search_focuses RPC (migration 053). The RPC ranks results
+  // server-side: prefix matches first, then trigram similarity, then alpha.
+  // This is essential because nextus_focuses has ~760k rows; the previous
+  // client-side `ilike '%q%' order by type, name limit 20` was timing out.
+  //
+  // Falls back gracefully to direct ilike on the table if the RPC isn't
+  // present yet (covers the first-deploy window before migration 053 lands).
   useEffect(() => {
     const q = query.trim()
     if (q.length < 2) { setResults([]); return }
@@ -305,17 +325,28 @@ function Question1({ focus, save }) {
       const qLower = q.toLowerCase()
       const isEarthQuery = earthAliases.some(a => a.startsWith(qLower) || qLower.startsWith(a))
 
-      // Primary name search
-      const { data: nameMatches, error: nameErr } = await supabase
-        .from('nextus_focuses')
-        .select('id, slug, name, type')
-        .ilike('name', `%${q}%`)
-        .order('type')
-        .order('name')
-        .limit(20)
+      // Primary name search via ranked RPC
+      let nameMatches = []
+      const { data: rpcData, error: rpcErr } = await supabase
+        .rpc('search_focuses', { p_query: q, p_limit: 20 })
 
-      if (nameErr) {
-        console.error('Place search failed:', nameErr)
+      if (rpcErr) {
+        console.warn('search_focuses RPC unavailable, falling back to ilike:', rpcErr)
+        // Fallback path — only runs if the RPC isn't deployed. Still capped
+        // and order-by-name only (no order-by-type, since type has low
+        // cardinality and hurts more than it helps on this dataset).
+        const { data: fb, error: fbErr } = await supabase
+          .from('nextus_focuses')
+          .select('id, slug, name, type')
+          .ilike('name', `${q}%`)
+          .order('name')
+          .limit(20)
+        if (fbErr) console.error('Place search fallback failed:', fbErr)
+        nameMatches = fb || []
+      } else {
+        nameMatches = (rpcData || []).map(r => ({
+          id: r.id, slug: r.slug, name: r.name, type: r.type,
+        }))
       }
 
       // If the query looks like an Earth-alias, also surface Earth itself
@@ -331,7 +362,7 @@ function Question1({ focus, save }) {
 
       if (cancelled) return
 
-      const combined = [...(nameMatches || [])]
+      const combined = [...nameMatches]
       if (earthRow && !combined.some(r => r.id === earthRow.id)) {
         combined.unshift(earthRow)
       }

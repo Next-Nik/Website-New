@@ -59,6 +59,7 @@ import SettingsMissionPanel       from '../components/mission-control/SettingsMi
 import WorldViewMissionPanel      from '../components/mission-control/WorldViewMissionPanel'
 import AddOverlay                 from '../components/AddOverlay'
 import { ActiveFocusPrompt }      from '../components/ActiveFocusPrompt'
+import { useActiveFocus }         from '../hooks/useActiveFocus'
 import { useCivDomainScores }     from '../hooks/useDomainIndicators'
 
 import HorizonStateGauge   from '../components/mission-control/HorizonStateGauge'
@@ -349,6 +350,7 @@ export default function MissionControl() {
   const location = useLocation()
   const data = useMissionControlData()
   const [activePanel, setActivePanel] = useState(null)
+  const { hasFocus: hasActiveFocus } = useActiveFocus()
 
   // Universal Add overlay — mounted from the right-rail ADD tile. The
   // overlay component is reusable; Module 16 will mount it from other
@@ -944,21 +946,6 @@ export default function MissionControl() {
 
       <main className="mc-body">
 
-        {/* Active Focus prompt — shows the three soft questions when no focus
-            is set, or a compact summary when the user has answered. Sits
-            above the planet/self stage so it greets the user on arrival. */}
-        {data.user && (
-          <div style={{
-            maxWidth: '720px',
-            margin: '0 auto',
-            padding: '24px 24px 0',
-            width: '100%',
-            boxSizing: 'border-box',
-          }}>
-            <ActiveFocusPrompt />
-          </div>
-        )}
-
         {(activeScope === 'self' || activeScope === 'planet') && (
         <>
         <div className="mc-grid">
@@ -1076,6 +1063,14 @@ export default function MissionControl() {
           {/* RIGHT RAIL — The Planet */}
           <SideRail side="right">
             <Tile
+              glyph="◎"
+              label={<>MY<br/>FOCUS</>}
+              state={null}
+              active={!!hasActiveFocus}
+              onClick={() => setActivePanel('focus')}
+              title="My Focus — places, domains, organisations you're centring on"
+            />
+            <Tile
               glyph="✧"
               label={<>NEXT<br/>STEPS</>}
               state={null}
@@ -1182,6 +1177,18 @@ export default function MissionControl() {
       </main>
 
       {/* ─── PANELS ──────────────────────────────────────────── */}
+
+      <Panel
+        open={activePanel === 'focus'}
+        onClose={closePanel}
+        eyebrow="FOR NOW · MY FOCUS"
+        title="What's close to you right now?"
+        actions={[
+          { label: 'DONE', primary: true, onClick: closePanel },
+        ]}
+      >
+        <ActiveFocusPrompt initiallyOpen bare />
+      </Panel>
 
       <Panel
         open={activePanel === 'horizon-state'}
