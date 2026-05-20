@@ -75,19 +75,32 @@ export default function FocusPanelContent() {
   // Load the user's Purpose Piece result (if any). Pull every field any
   // writer era might have populated; resolvePurposePiece() resolves the
   // right path.
+  //
+  // NOTE: this SELECT must only list columns that actually exist on
+  // purpose_piece_results. Adding a non-existent column (e.g. civ_domain,
+  // which has never been created) causes the whole query to fail and
+  // returns null — silently treating the user as if they hadn't done PP.
+  // The resolver itself safely checks pp.civ_domain etc. via optional
+  // chaining; absent fields just fall through to the next path.
   const { user } = useAuth()
   useEffect(() => {
     let cancelled = false
     async function load() {
       if (!user) { setPpLoading(false); setPurposePiece(null); return }
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('purpose_piece_results')
-        .select('session, profile, archetype, civ_domain, domain, scale, status, completed_at, updated_at')
+        .select('session, profile, archetype, domain, scale, status, completed_at, updated_at')
         .eq('user_id', user.id)
         .order('updated_at', { ascending: false })
         .limit(1)
         .maybeSingle()
       if (cancelled) return
+      if (error) {
+        // Don't swallow — a silent null here would render the "Start PP" CTA
+        // to a user who actually has completed PP, which is what the
+        // civ_domain SELECT bug was doing. Log loudly.
+        console.error('[FocusPanelContent] Failed to load purpose_piece_results:', error)
+      }
       setPurposePiece(data || null)
       setPpLoading(false)
     }

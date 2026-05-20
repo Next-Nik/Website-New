@@ -78,7 +78,7 @@ export function useActiveFocus() {
     let seeded = { ...EMPTY }
     const { data: pp } = await supabase
       .from('purpose_piece_results')
-      .select('session, profile, archetype, civ_domain, domain, scale, status, completed_at')
+      .select('session, profile, archetype, domain, scale, status, completed_at')
       .eq('user_id', user.id)
       .order('updated_at', { ascending: false })
       .limit(1)
