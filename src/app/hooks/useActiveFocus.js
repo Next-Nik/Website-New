@@ -37,6 +37,10 @@ export function useActiveFocus() {
   const [focus, setFocus] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  // True iff the user has actually saved focus at least once. Distinct from
+  // hasFocus-by-content because the load() path may seed a non-persisted
+  // suggestion (e.g. their Purpose Piece domain) before the user saves.
+  const [isPersisted, setIsPersisted] = useState(false)
 
   const load = useCallback(async () => {
     if (!user) { setFocus(null); setLoading(false); return }
@@ -48,15 +52,39 @@ export function useActiveFocus() {
       .eq('user_id', user.id)
       .maybeSingle()
     if (err) {
-      // Likely the table doesn't exist yet (migration 051 not run). Fall back
-      // to an empty state so the prompt still renders. The user can fill it
-      // in once the migration is applied; their save will then succeed.
+      // Likely the table doesn't exist yet (migration 051/054 not run). Fall
+      // back to an empty state so the prompt still renders. The user can fill
+      // it in once the migration is applied; their save will then succeed.
       setError(err)
       setFocus({ ...EMPTY })
+      setIsPersisted(false)
       setLoading(false)
       return
     }
-    setFocus(data || { ...EMPTY })
+    if (data) {
+      setFocus(data)
+      setIsPersisted(true)
+      setLoading(false)
+      return
+    }
+    // No focus row yet — first time this user is opening the prompt.
+    // Seed with their Purpose Piece domain if they've done it, so the
+    // platform feels continuous. This is purely a UI seed; nothing is
+    // written to nextus_user_focus until the user actively saves.
+    let seeded = { ...EMPTY }
+    const { data: pp } = await supabase
+      .from('purpose_piece_results')
+      .select('domain, status, completed_at')
+      .eq('user_id', user.id)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    const ppDone = pp && (pp.status === 'complete' || pp.completed_at)
+    if (ppDone && pp.domain) {
+      seeded = { ...seeded, focus_domain_slugs: [pp.domain] }
+    }
+    setFocus(seeded)
+    setIsPersisted(false)
     setLoading(false)
   }, [user])
 
@@ -90,12 +118,14 @@ export function useActiveFocus() {
       throw err
     }
     setFocus(data)
+    setIsPersisted(true)
     return data
   }, [user, focus, load])
 
   const clear = useCallback(async () => {
     if (!user) throw new Error('Not authenticated')
     setFocus({ ...EMPTY })
+    setIsPersisted(false)
     const { error: err } = await supabase
       .from('nextus_user_focus')
       .delete()
@@ -105,8 +135,11 @@ export function useActiveFocus() {
     }
   }, [user, load])
 
+  // hasFocus requires both: a saved row exists, AND it has content. The
+  // PP-seeded suggestion alone does NOT make hasFocus true — the tile
+  // shouldn't light gold until the user has actually saved.
   const hasFocus = !!(
-    focus && (
+    isPersisted && focus && (
       (focus.focus_place_ids?.length || 0) > 0 ||
       (focus.focus_domain_slugs?.length || 0) > 0 ||
       (focus.focus_actor_ids?.length || 0) > 0 ||
@@ -119,6 +152,7 @@ export function useActiveFocus() {
     loading,
     error,
     hasFocus,
+    isPersisted,
     save,
     clear,
     reload: load,
