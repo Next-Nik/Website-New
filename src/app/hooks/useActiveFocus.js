@@ -21,6 +21,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../../hooks/useSupabase'
 import { useAuth } from '../../hooks/useAuth'
+import { resolvePurposePiece, isPurposePieceComplete } from '../util/purposePiece'
 
 const EMPTY = {
   focus_place_ids:     [],
@@ -71,17 +72,22 @@ export function useActiveFocus() {
     // Seed with their Purpose Piece domain if they've done it, so the
     // platform feels continuous. This is purely a UI seed; nothing is
     // written to nextus_user_focus until the user actively saves.
+    //
+    // Pull every PP field any writer era might have populated;
+    // resolvePurposePiece walks the paths.
     let seeded = { ...EMPTY }
     const { data: pp } = await supabase
       .from('purpose_piece_results')
-      .select('domain, status, completed_at')
+      .select('session, profile, archetype, civ_domain, domain, scale, status, completed_at')
       .eq('user_id', user.id)
       .order('updated_at', { ascending: false })
       .limit(1)
       .maybeSingle()
-    const ppDone = pp && (pp.status === 'complete' || pp.completed_at)
-    if (ppDone && pp.domain) {
-      seeded = { ...seeded, focus_domain_slugs: [pp.domain] }
+    if (isPurposePieceComplete(pp)) {
+      const { domain: ppDomain } = resolvePurposePiece(pp)
+      if (ppDomain) {
+        seeded = { ...seeded, focus_domain_slugs: [ppDomain] }
+      }
     }
     setFocus(seeded)
     setIsPersisted(false)

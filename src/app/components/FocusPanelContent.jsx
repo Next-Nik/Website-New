@@ -34,6 +34,7 @@ import { useViewerContext } from '../hooks/useViewerContext'
 import { useFocusFeed } from '../hooks/useFocusFeed'
 import { ActiveFocusPrompt } from './ActiveFocusPrompt'
 import { FeedItem } from './feed/FeedItem'
+import { resolvePurposePiece, isPurposePieceComplete } from '../util/purposePiece'
 
 const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body    = { fontFamily: "'Lora', Georgia, serif" }
@@ -71,7 +72,9 @@ export default function FocusPanelContent() {
   const [ppLoading, setPpLoading] = useState(true)
   const [streamTab, setStreamTab] = useState('watched')
 
-  // Load the user's Purpose Piece result (if any)
+  // Load the user's Purpose Piece result (if any). Pull every field any
+  // writer era might have populated; resolvePurposePiece() resolves the
+  // right path.
   const { user } = useAuth()
   useEffect(() => {
     let cancelled = false
@@ -79,7 +82,7 @@ export default function FocusPanelContent() {
       if (!user) { setPpLoading(false); setPurposePiece(null); return }
       const { data } = await supabase
         .from('purpose_piece_results')
-        .select('profile, archetype, domain, scale, status, completed_at, updated_at')
+        .select('session, profile, archetype, civ_domain, domain, scale, status, completed_at, updated_at')
         .eq('user_id', user.id)
         .order('updated_at', { ascending: false })
         .limit(1)
@@ -92,7 +95,7 @@ export default function FocusPanelContent() {
     return () => { cancelled = true }
   }, [user])
 
-  const hasPurposePiece = !!(purposePiece && (purposePiece.status === 'complete' || purposePiece.completed_at))
+  const hasPurposePiece = isPurposePieceComplete(purposePiece)
 
   if (focusLoading || ppLoading) return null
 
@@ -233,10 +236,8 @@ function CombinedAnchor({ focus, pp, onEditFocus, onEditPurposePiece }) {
     PARTICIPATION_LABEL[p] || p
   )
 
-  // Purpose Piece content
-  const archetype = pp?.archetype || pp?.profile?.archetype || null
-  const ppDomain  = pp?.domain    || pp?.profile?.domain    || null
-  const ppScale   = pp?.scale     || pp?.profile?.scale     || null
+  // Purpose Piece content — resolve across all writer-era paths
+  const { archetype, domain: ppDomain, scale: ppScale } = resolvePurposePiece(pp)
   const ppDomainLabel = ppDomain
     ? (DOMAINS.find(d => d.slug === ppDomain)?.label || ppDomain)
     : null
@@ -318,9 +319,7 @@ function CombinedAnchor({ focus, pp, onEditFocus, onEditPurposePiece }) {
 // ── Solo summaries (when only one of PP/Focus is set) ────────────────────
 
 function PurposePieceSummary({ pp, onEdit }) {
-  const archetype = pp?.archetype || pp?.profile?.archetype || null
-  const ppDomain  = pp?.domain    || pp?.profile?.domain    || null
-  const ppScale   = pp?.scale     || pp?.profile?.scale     || null
+  const { archetype, domain: ppDomain, scale: ppScale } = resolvePurposePiece(pp)
   const ppDomainLabel = ppDomain
     ? (DOMAINS.find(d => d.slug === ppDomain)?.label || ppDomain)
     : null
