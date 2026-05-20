@@ -1,7 +1,12 @@
 // src/app/components/WatchButton.jsx
 //
-// Two-state watch toggle, drop-in for Focus profiles, actor pages, and
-// person profiles. Renders the InfoButton inline to explain the mechanic.
+// Two-state toggle for tuning in to an entity. Drop-in for Focus profiles,
+// actor pages, and person profiles. Renders the InfoButton inline to
+// explain the mechanic.
+//
+// User-visible vocabulary: "Tune in" / "Tuned in" / "Un-tune" on hover.
+// Internal identifiers (useWatch, WatchButton, nextus_user_watches) keep
+// their original names — the rename is UI-only.
 //
 // Props:
 //   entityType — 'focus' | 'actor' | 'person'
@@ -23,6 +28,7 @@ export function WatchButton({ entityType, entityId, entityName, size = 'md' }) {
   const { isWatching, toggle, capState, count, cap, loading } = useWatch()
   const [busy, setBusy]       = useState(false)
   const [errMsg, setErrMsg]   = useState(null)
+  const [hovered, setHovered] = useState(false)
 
   if (!user) return null  // not shown to logged-out viewers
   if (loading) return null
@@ -37,9 +43,9 @@ export function WatchButton({ entityType, entityId, entityName, size = 'md' }) {
       await toggle(entityType, entityId)
     } catch (e) {
       if (e.code === 'WATCH_CAP_REACHED') {
-        setErrMsg('Your watched list is full. Manage it from your profile.')
+        setErrMsg('Your Tuned In list is full. Manage it from your profile.')
       } else {
-        setErrMsg(e.message || 'Could not update watch.')
+        setErrMsg(e.message || 'Could not update.')
       }
     } finally {
       setBusy(false)
@@ -50,17 +56,26 @@ export function WatchButton({ entityType, entityId, entityName, size = 'md' }) {
   const padding      = size === 'sm' ? '7px 16px' : '10px 22px'
   const letterSpace  = '0.16em'
 
+  // Label logic:
+  //   - Tuned in + hover → "Un-tune {name}"  (signals the action available)
+  //   - Tuned in        → "Tuned in to {name}"
+  //   - Cap reached     → "Tuned In list full — manage"
+  //   - Default         → "Tune in to {name}"
   const label = watching
-    ? `Watching ${entityName}`
+    ? (hovered ? `Un-tune ${entityName}` : `Tuned in to ${entityName}`)
     : blockedByCap
-      ? `Watched list full — manage`
-      : `Watch ${entityName}`
+      ? `Tuned In list full — manage`
+      : `Tune in to ${entityName}`
 
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
       <button
         type="button"
         onClick={handleClick}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onFocus={() => setHovered(true)}
+        onBlur={() => setHovered(false)}
         disabled={busy}
         style={{
           ...sc,
@@ -79,19 +94,19 @@ export function WatchButton({ entityType, entityId, entityName, size = 'md' }) {
         {label}
       </button>
 
-      <InfoButton title="Watching" size={size}>
+      <InfoButton title="Tuning in" size={size}>
         <p style={{ margin: '0 0 10px' }}>
-          When you watch {entityName}, its published activity shows up in
-          your Watched feed &mdash; chronologically, with no ranking pressure
-          from anyone.
+          When you tune in to {entityName}, their published activity shows up
+          in your Tuned In feed &mdash; chronologically, with no ranking
+          pressure from anyone.
         </p>
         <p style={{ margin: '0 0 10px' }}>
-          Watching is private. Only you can see your watched list. The
-          platform doesn&rsquo;t tell {entityName}, and it doesn&rsquo;t
-          tell anyone else.
+          Tuning in is private. Only you can see who you&rsquo;re tuned in
+          to. The platform doesn&rsquo;t tell {entityName}, and it
+          doesn&rsquo;t tell anyone else.
         </p>
         <p style={{ margin: 0 }}>
-          You can watch up to {cap} entities. You&rsquo;re watching{' '}
+          You can tune in to up to {cap} entities. You&rsquo;re tuned in to{' '}
           <strong>{count}</strong> so far. The cap protects the feed from
           becoming noise.
         </p>

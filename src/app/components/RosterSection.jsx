@@ -130,12 +130,13 @@ export function RosterSection() {
           borderRadius: '8px',
           marginBottom: '20px',
         }}>
-          Your roster is empty. Start by picking one watched entity for the
-          Deep tier &mdash; the one you most want to hear from in full.
+          Your roster is empty. Start by picking one entity you&rsquo;re
+          tuned in to for the Deep tier &mdash; the one you most want to hear
+          from in full.
         </div>
       )}
 
-      {/* Pre-flight if no watches */}
+      {/* Pre-flight if not tuned in to anything yet */}
       {!roster.loading && watchCount === 0 && (
         <div style={{
           ...body,
@@ -147,9 +148,9 @@ export function RosterSection() {
           borderRadius: '8px',
           marginBottom: '20px',
         }}>
-          You can only roster entities you&rsquo;re watching. Start by
-          watching a few places, organisations, or people from their profile
-          pages.
+          You can only roster entities you&rsquo;re tuned in to. Tune in to a
+          few places, organisations, or people from their profile pages
+          first.
         </div>
       )}
 
@@ -287,7 +288,7 @@ function TierRow({ tier, roster, resolved, addingHere, onAdd, onAddCancel, watch
             {roster.free < cost
               ? `Need ${cost} spoons (you have ${roster.free} free)`
               : watchCount === 0
-                ? 'Watch entities first to roster them'
+                ? 'Tune in to entities first to roster them'
                 : ''}
           </span>
         )}
@@ -497,7 +498,7 @@ function RosterPicker({ tier, roster, watches, resolved, onCancel, onAdded }) {
         type="text"
         value={search}
         onChange={e => setSearch(e.target.value)}
-        placeholder="Search your watched list…"
+        placeholder="Search your Tuned In list…"
         style={{
           ...body,
           fontSize: '14px',
@@ -517,7 +518,7 @@ function RosterPicker({ tier, roster, watches, resolved, onCancel, onAdded }) {
         {filtered.length === 0 && (
           <div style={{ ...body, fontSize: '13.5px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', padding: '8px 4px' }}>
             {candidates.length === 0
-              ? 'All your watched entities are already in the roster.'
+              ? 'Everyone you&rsquo;re tuned in to is already in the roster.'
               : 'No matches.'}
           </div>
         )}

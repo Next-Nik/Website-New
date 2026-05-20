@@ -191,7 +191,8 @@ function AppInner() {
         <Route path="/explore/:domain"                                   element={<Explore />} />
         <Route path="/explore/:domain/:subdomain"                        element={<Explore />} />
         <Route path="/explore/:domain/:subdomain/:field"                 element={<Explore />} />
-        <Route path="/watched"                      element={<WatchedFeed />} />
+        <Route path="/tuned-in"                     element={<WatchedFeed />} />
+        <Route path="/watched"                      element={<Navigate to="/tuned-in" replace />} />
         <Route path="/curated"                      element={<CuratedFeed />} />
         <Route path="/practices"                    element={<Practices />} />
         <Route path="/practices/new"                element={<PracticeContribute />} />

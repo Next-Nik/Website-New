@@ -101,22 +101,22 @@ export function WatchingSection() {
         flexWrap: 'wrap',
       }}>
         <span>
-          Your sphere of interest &mdash; places, organisations, and people
-          you want to keep an eye on. Watching is private to you.
+          Your sphere of attention &mdash; places, organisations, and people
+          you&rsquo;re tuned in to. Private to you.
         </span>
-        <InfoButton title="The Watching list">
+        <InfoButton title="Your Tuned In list">
           <p style={{ margin: '0 0 10px' }}>
-            This is your sphere of interest &mdash; up to {cap} entities,
+            This is your sphere of attention &mdash; up to {cap} entities,
             mixed across places, organisations, and people.
           </p>
           <p style={{ margin: '0 0 10px' }}>
-            Watching is flat. There&rsquo;s no priority order, no ranking.
+            Tuning in is flat. There&rsquo;s no priority order, no ranking.
             To shape which entities surface more prominently, you&rsquo;ll
             later have a separate budget &mdash; a finite set of attention
             spoons &mdash; that&rsquo;s how the curated feed works.
           </p>
           <p style={{ margin: 0 }}>
-            For now, this list feeds the Watched feed at /watched, in
+            For now, this list feeds the Tuned In feed at /tuned-in, in
             publication order.
           </p>
         </InfoButton>
@@ -154,7 +154,7 @@ export function WatchingSection() {
 
       {error && (
         <div style={{ ...body, fontSize: '14px', color: '#A23636', marginBottom: '20px' }}>
-          Could not load your watched list. Try refreshing.
+          Could not load your Tuned In list. Try refreshing.
         </div>
       )}
 
@@ -169,8 +169,8 @@ export function WatchingSection() {
           border: '1px dashed rgba(200,146,42,0.35)',
           borderRadius: '8px',
         }}>
-          You aren&rsquo;t watching anything yet. Find a place, organisation,
-          or person and tap their Watch button to add them here.
+          You aren&rsquo;t tuned in to anything yet. Find a place, organisation,
+          or person and tap Tune in to add them here.
         </div>
       )}
 

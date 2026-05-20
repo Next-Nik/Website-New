@@ -77,9 +77,9 @@ export default function CuratedFeed() {
                 spoons to. Sorted chronologically, no algorithmic shuffle.
               </p>
               <p style={{ margin: '0 0 10px' }}>
-                The Watched feed at /watched is wider &mdash; everything
-                you watch. The Curated feed is narrower &mdash; only what
-                you&rsquo;ve actively prioritised.
+                The Tuned In feed at /tuned-in is wider &mdash; everything
+                you&rsquo;re tuned in to. The Curated feed is narrower
+                &mdash; only what you&rsquo;ve actively prioritised.
               </p>
               <p style={{ margin: 0 }}>
                 Manage your roster from Profile &rarr; Edit &rarr; Roster.

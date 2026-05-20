@@ -107,7 +107,7 @@ export function useWatch() {
     if (insErr) {
       // Surface cap error via a typed exception
       if ((insErr.message || '').includes('WATCH_CAP_REACHED')) {
-        const e = new Error('Watch list full. Remove an entry before adding another.')
+        const e = new Error('Tuned In list full. Un-tune someone before adding another.')
         e.code = 'WATCH_CAP_REACHED'
         throw e
       }

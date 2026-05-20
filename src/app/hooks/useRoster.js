@@ -103,7 +103,7 @@ export function useRoster() {
     // Ignore unique-violation; surface watch-cap error.
     if (insErr) {
       if ((insErr.message || '').includes('WATCH_CAP_REACHED')) {
-        const e = new Error('Cannot allocate spoons: your watched list is also full. Free a watch slot first.')
+        const e = new Error('Cannot allocate spoons: your Tuned In list is also full. Un-tune someone first.')
         e.code = 'WATCH_CAP_REACHED'
         throw e
       }

@@ -1,19 +1,26 @@
 // src/app/pages/WatchedFeed.jsx
 //
-// The user's Watched feed at /watched.
+// The user's Tuned In feed at /tuned-in.
+//
+// User-visible vocabulary: "Tuned In" (the feed name, the user's state),
+// "Tune in to ..." (the action verb). Internal identifiers — the file
+// name, the useFeed('watched') tab key, the nextus_user_watches table —
+// keep their original names; the rename is UI-only.
 //
 // Reuses the existing useFeed infrastructure with the 'watched' tab —
 // which resolves the user/actor filter from nextus_user_watches.
 //
 // Chronological, no engagement weighting. Same Load-More mechanic as the
-// main Feed. Empty states are watched-list-specific.
+// main Feed. Empty states are Tuned-In-list-specific.
 
 import { useNavigate } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { SiteFooter } from '../../components/SiteFooter'
 import { useViewerContext } from '../hooks/useViewerContext'
 import { useWatch } from '../hooks/useWatch'
-import { useFeed, MAX_PAGES } from '../hooks/useFeed'
+import { useFocusFeed } from '../hooks/useFocusFeed'
+import { useActiveFocus } from '../hooks/useActiveFocus'
+import { MAX_PAGES } from '../hooks/useFeed'
 import { FeedItem } from '../components/feed/FeedItem'
 import { body, sc, gold, parch } from '../components/feed/feedShared'
 import { InfoButton } from '../components/InfoButton'
@@ -23,6 +30,7 @@ const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 export default function WatchedFeed() {
   const viewerCtx = useViewerContext()
   const { count: watchCount } = useWatch()
+  const { hasFocus } = useActiveFocus()
   const {
     items,
     loading,
@@ -30,7 +38,7 @@ export default function WatchedFeed() {
     reachedEnd,
     page,
     loadMore,
-  } = useFeed('watched', viewerCtx)
+  } = useFocusFeed('watched', viewerCtx)
 
   if (!viewerCtx) {
     return <NotSignedIn />
@@ -56,7 +64,7 @@ export default function WatchedFeed() {
             textTransform: 'uppercase',
             marginBottom: '8px',
           }}>
-            Sphere of interest
+            Sphere of attention
           </div>
           <h1 style={{
             ...display,
@@ -67,7 +75,7 @@ export default function WatchedFeed() {
             marginBottom: '14px',
             lineHeight: 1.15,
           }}>
-            Watched feed
+            Tuned In
           </h1>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <p style={{
@@ -78,22 +86,38 @@ export default function WatchedFeed() {
               margin: 0,
               maxWidth: '520px',
             }}>
-              Activity from the {watchCount} entities you watch. Newest first,
-              no ranking weight, no boosted entries.
+              Activity from the {watchCount} entities you&rsquo;re tuned in to.
+              Newest first, no ranking weight, no boosted entries.
             </p>
-            <InfoButton title="The Watched feed">
+            <InfoButton title="The Tuned In feed">
               <p style={{ margin: '0 0 10px' }}>
-                The feed shows what your watched entities have published,
-                newest first. No &ldquo;for you&rdquo; ranking. No engagement
-                weighting. No ads.
+                The feed shows what the entities you&rsquo;re tuned in to have
+                published, newest first. No &ldquo;for you&rdquo; ranking. No
+                engagement weighting. No ads.
+              </p>
+              <p style={{ margin: '0 0 10px' }}>
+                Quiet means quiet. If they haven&rsquo;t published, it
+                doesn&rsquo;t surface. The feed honours the publisher&rsquo;s
+                pace.
               </p>
               <p style={{ margin: 0 }}>
-                Quiet means quiet. If a watched entity hasn&rsquo;t published,
-                it doesn&rsquo;t surface. The feed honours the publisher&rsquo;s
-                pace.
+                If you have an Active Focus set, items matching your focus
+                surface first. Nothing is hidden &mdash; sort, not filter.
               </p>
             </InfoButton>
           </div>
+          {hasFocus && (
+            <p style={{
+              ...sc,
+              fontSize: '11px',
+              letterSpacing: '0.16em',
+              color: gold,
+              textTransform: 'uppercase',
+              margin: '14px 0 0',
+            }}>
+              Sorted by your Active Focus
+            </p>
+          )}
         </header>
 
         {/* Body */}
@@ -134,11 +158,11 @@ function EmptyNoWatches() {
   return (
     <div style={{ padding: '48px 24px', textAlign: 'center', maxWidth: '480px', margin: '0 auto' }}>
       <p style={{ ...body, fontSize: '17px', color: '#0F1523', lineHeight: 1.55, margin: '0 0 14px' }}>
-        You aren&rsquo;t watching anything yet.
+        You aren&rsquo;t tuned in to anything yet.
       </p>
       <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, margin: 0 }}>
-        Open any Focus profile, actor page, or person profile and tap the
-        Watch button. The feed fills with what they publish from there.
+        Open any Focus profile, actor page, or person profile and tap
+        Tune in. The feed fills with what they publish from there.
       </p>
     </div>
   )
@@ -148,7 +172,7 @@ function EmptyQuietWatches() {
   return (
     <div style={{ padding: '48px 24px', textAlign: 'center', maxWidth: '480px', margin: '0 auto' }}>
       <p style={{ ...body, fontSize: '17px', color: '#0F1523', lineHeight: 1.55, margin: '0 0 14px' }}>
-        Your watched entities have been quiet.
+        Quiet on the channels you&rsquo;re tuned in to.
       </p>
       <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, margin: 0 }}>
         No new published activity from them recently. The feed surfaces
@@ -203,9 +227,9 @@ function NotSignedIn() {
       <Nav activePath="" />
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '160px 24px', textAlign: 'center' }}>
         <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, marginBottom: '20px' }}>
-          The watched feed is for signed-in members.
+          The Tuned In feed is for signed-in members.
         </p>
-        <button onClick={() => navigate('/login?redirect=/watched')} style={{
+        <button onClick={() => navigate('/login?redirect=/tuned-in')} style={{
           ...sc, fontSize: '13px', letterSpacing: '0.16em',
           color: gold, background: 'rgba(200,146,42,0.05)',
           border: '1px solid rgba(200,146,42,0.55)',

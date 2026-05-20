@@ -322,10 +322,10 @@ export default function ProfileEdit() {
         <AffiliationManager userId={userId} />
       </Section>
 
-      {/* Watching — sphere of interest. Up to 500 watched entities,
-          private to the user. Flat list, no priority. Drives the
-          chronological Watched feed at /watched. */}
-      <Section eyebrow="Watching" title="What you keep an eye on" anchorId="watching">
+      {/* Tuned In — sphere of attention. Up to 500 entities, private to
+          the user. Flat list, no priority. Drives the chronological
+          Tuned In feed at /tuned-in. */}
+      <Section eyebrow="Tuned In" title="What you&rsquo;re paying attention to" anchorId="tuned-in">
         <WatchingSection />
       </Section>
 
