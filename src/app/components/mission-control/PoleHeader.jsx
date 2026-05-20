@@ -3,16 +3,16 @@
 //
 // Centred N-pole header. For a default user:
 //
-//     ‹  My Life | The Planet  ›
+//     ‹  My Life | Our Planet  ›
 //
 // For a user who has activated My Practice and My Org in Scope
 // Settings:
 //
-//     ‹  My Life | My Practice | My Org | The Planet  ›
+//     ‹  My Life | My Practice | My Org | Our Planet  ›
 //
 // Up to four poles, in fixed carousel order (Section 2 of the
 // Scopes & Onboarding brief): My Life → My Practice → My Org →
-// The Planet — the zoom from individual inward to collective
+// Our Planet — the zoom from individual inward to collective
 // outward. Flanking arrows ‹ › step through the active scopes;
 // tapping a label flips directly. Active pole gets a thin gold
 // underline.
@@ -35,7 +35,7 @@
 //                                  defaults to ['self','planet'].
 //   onSelect:     (id) => void   — preferred handler; called with scope id
 //   onSelectSelf: () => void     — legacy; called when My Life is picked
-//   onSelectCiv:  () => void     — legacy; called when The Planet is picked
+//   onSelectCiv:  () => void     — legacy; called when Our Planet is picked
 // ─────────────────────────────────────────────────────────────
 
 import {
@@ -56,14 +56,14 @@ const SCOPE_LABELS = {
   self:     'My Life',
   practice: 'My Practice',
   org:      'My Org',
-  planet:   'The Planet',
+  planet:   'Our Planet',
 }
 
 const SCOPE_ARIA = {
   self:     'Switch to My Life',
   practice: 'Switch to My Practice',
   org:      'Switch to My Org',
-  planet:   'Switch to The Planet',
+  planet:   'Switch to Our Planet',
 }
 
 // Map legacy id ('civ') to canonical ('planet') so existing callers

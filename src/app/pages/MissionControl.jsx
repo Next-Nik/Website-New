@@ -16,7 +16,7 @@
 //   ├─────────────────────────────────────────────────────┤
 //   │  Nik     Architect · Vision · Civilisational        │  IdentityStrip — identity bar
 //   ├─────────────────────────────────────────────────────┤
-//   │       ‹  My Life | The Planet  ›                    │  PoleHeader (centred)
+//   │       ‹  My Life | Our Planet  ›                    │  PoleHeader (centred)
 //   ├──────┬───────────────────────────────────────┬──────┤
 //   │ Map  │                                       │ Plac │
 //   │ HS   │       MissionWheel over Dymaxion      │ WV   │
@@ -648,7 +648,7 @@ export default function MissionControl() {
   // back up. At top level we still show the root crumb so the
   // breadcrumb area doesn't appear and disappear.
   const civCrumbs = useMemo(() => {
-    const crumbs = [{ label: 'The Planet', depth: 0 }]
+    const crumbs = [{ label: 'Our Planet', depth: 0 }]
     let list = domainTree
     for (let i = 0; i < levelPath.length; i++) {
       const item = list[levelPath[i].index]
@@ -1048,7 +1048,7 @@ export default function MissionControl() {
             />
           </div>
 
-          {/* RIGHT RAIL — The Planet */}
+          {/* RIGHT RAIL — Our Planet */}
           <SideRail side="right">
             <Tile
               glyph="◎"

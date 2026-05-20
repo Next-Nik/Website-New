@@ -763,7 +763,7 @@ function FooterMeta() {
 function ScopeSettings({ scopes, loaded, saving, onToggle }) {
   const items = [
     { id: 'self',     label: 'My Life',     helper: 'Your personal working room. The seven Self domains, your horizon, your Map.' },
-    { id: 'planet',   label: 'The Planet',  helper: 'The civilisational view. The seven NextUs domains and where humanity is heading.' },
+    { id: 'planet',   label: 'Our Planet',  helper: 'The civilisational view. The seven NextUs domains and where humanity is heading.' },
     { id: 'practice', label: 'My Practice', helper: 'Your room as a practitioner. Your placement, your offerings, who is reaching out. Setup arrives when you toggle this on.' },
     { id: 'org',      label: 'My Org',      helper: 'Your organisation\'s working room. The six tabs of org management inside Mission Control. Setup arrives when you toggle this on.' },
   ]
