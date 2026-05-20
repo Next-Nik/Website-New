@@ -14,7 +14,9 @@ import { Nav } from '../../components/Nav'
 import { SiteFooter } from '../../components/SiteFooter'
 import { useViewerContext } from '../hooks/useViewerContext'
 import { useRoster } from '../hooks/useRoster'
-import { useFeed, MAX_PAGES } from '../hooks/useFeed'
+import { useFocusFeed } from '../hooks/useFocusFeed'
+import { useActiveFocus } from '../hooks/useActiveFocus'
+import { MAX_PAGES } from '../hooks/useFeed'
 import { FeedItem } from '../components/feed/FeedItem'
 import { body, sc, gold, parch } from '../components/feed/feedShared'
 import { InfoButton } from '../components/InfoButton'
@@ -24,6 +26,7 @@ const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 export default function CuratedFeed() {
   const viewerCtx = useViewerContext()
   const { slots, spent, cap } = useRoster()
+  const { hasFocus } = useActiveFocus()
   const {
     items,
     loading,
@@ -31,7 +34,7 @@ export default function CuratedFeed() {
     reachedEnd,
     page,
     loadMore,
-  } = useFeed('curated', viewerCtx)
+  } = useFocusFeed('curated', viewerCtx)
 
   if (!viewerCtx) return <NotSignedIn />
 
@@ -81,11 +84,27 @@ export default function CuratedFeed() {
                 you&rsquo;re tuned in to. The Curated feed is narrower
                 &mdash; only what you&rsquo;ve actively prioritised.
               </p>
+              <p style={{ margin: '0 0 10px' }}>
+                If you have an Active Focus set, items matching your focus
+                surface first. Nothing is hidden &mdash; sort, not filter.
+              </p>
               <p style={{ margin: 0 }}>
                 Manage your roster from Profile &rarr; Edit &rarr; Roster.
               </p>
             </InfoButton>
           </div>
+          {hasFocus && (
+            <p style={{
+              ...sc,
+              fontSize: '11px',
+              letterSpacing: '0.16em',
+              color: gold,
+              textTransform: 'uppercase',
+              margin: '14px 0 0',
+            }}>
+              Sorted by your Active Focus
+            </p>
+          )}
         </header>
 
         {loading && <Loading />}

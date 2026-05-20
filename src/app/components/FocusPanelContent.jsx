@@ -562,24 +562,42 @@ function WatchedSection() {
   )
 }
 
-// ── Curated placeholder ──────────────────────────────────────────────────
+// ── Curated section ──────────────────────────────────────────────────────
 
 function CuratedSection() {
   const navigate = useNavigate()
+  const viewerCtx = useViewerContext()
+  const { items, loading } = useFocusFeed('curated', viewerCtx)
+
   return (
     <SectionFrame
       title="Curated"
       onSeeAll={() => navigate('/curated')}
       seeAllLabel="See full Curated feed →"
     >
-      <SectionMessage>
-        Your roster&rsquo;s signal. Focus-aware ranking coming online soon.
-      </SectionMessage>
+      {loading && <SectionMessage>Loading&hellip;</SectionMessage>}
+      {!loading && (!items || items.length === 0) && (
+        <SectionMessage>
+          Your roster is empty, or no one rostered has published recently.
+          Manage your roster from Profile &rarr; Edit &rarr; Roster.
+        </SectionMessage>
+      )}
+      {!loading && items && items.length > 0 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {items.slice(0, PANEL_FEED_LIMIT).map(item => (
+            <FeedItem key={`${item.type}-${item.id}`} item={item} />
+          ))}
+        </div>
+      )}
     </SectionFrame>
   )
 }
 
 // ── Focus placeholder ────────────────────────────────────────────────────
+// The Focus feed concept — items across the platform matching your
+// places/domains/actors regardless of whether you've tuned in or rostered
+// — is not yet wired to data. The See-All link routes to FocusIndex (the
+// geographic directory at /focus), which is a related but distinct surface.
 
 function FocusSection() {
   const navigate = useNavigate()
@@ -590,8 +608,8 @@ function FocusSection() {
       seeAllLabel="Browse FocusIndex →"
     >
       <SectionMessage>
-        Anything across the platform that matches your places, domains, and
-        actors. The dedicated stream is coming online soon.
+        A dedicated feed for places, domains, and actors that match your
+        focus is in the works. For now, browse the FocusIndex directly.
       </SectionMessage>
     </SectionFrame>
   )

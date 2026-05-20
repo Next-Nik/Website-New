@@ -608,6 +608,9 @@ function CivWheel({
   onDrillDown,     // (i) => void
   onCentreClick,   // () => void
   placementKey = null,
+  focusKeys = null,    // string[] | null — slugs of civ domains the user has set
+                       // as Active Focus. Used to brighten the spoke + label so
+                       // the wheel acknowledges focus without overstating it.
   walkers = {},
   current = {},    // { [key]: 0..10 score from rollup, or undefined for unscored }
   horizons = {},   // { [key]: 0..10 horizon (always 10 for civ) }
@@ -985,7 +988,10 @@ function CivWheel({
 
       {/* Spokes — rotate with displayRot. During bloom, spokes grow
           from the centre outward, ending at the same bloom-position
-          as the tip dot so the line and dot stay visually attached. */}
+          as the tip dot so the line and dot stay visually attached.
+          Focused spokes get a domain-coloured stroke (saturated) instead
+          of the default gold; this is the wheel's primary acknowledgement
+          of the user's Active Focus. */}
       {Array.from({ length: count }, (_, i) => {
         const p = getTipPos(i, displayRot, count)
         const sx = bloomed ? p.x : (CX + (p.x - CX) * bloomT)
@@ -998,13 +1004,24 @@ function CivWheel({
         const uy = dy / len
         const px = -uy
         const py = ux
+        // Focus highlighting: substitute the default gold spokeStroke
+        // for a stroke in the domain's own colour when this spoke is
+        // among the user's Active Focus domains. The dot/label work
+        // happens further down in the labels loop.
+        const isFocusSpoke =
+          Array.isArray(focusKeys) && keys && focusKeys.includes(keys[i])
+        const dc = keys ? civColor(keys[i]) : null
+        const lineStroke = isFocusSpoke && dc
+          ? (dark ? dc.dark : dc.base)
+          : spokeStroke
+        const lineWidth = isFocusSpoke ? 1.4 : 1
         return (
           <g key={`spoke-${i}`}>
             <line
               x1={CX} y1={CY}
               x2={sx} y2={sy}
-              stroke={spokeStroke}
-              strokeWidth="1"
+              stroke={lineStroke}
+              strokeWidth={lineWidth}
               style={{ opacity: bloomed ? 1 : bloomT }}
             />
             {/* Scale notches — 10 major + 9 half marks per spoke.
@@ -1039,6 +1056,12 @@ function CivWheel({
         const ns       = nodeStates?.[i]
         const isActive = !busy && i === activeIndex
         const isPlacement = placementKey && keys[i] === placementKey
+        // isFocus: this spoke is one of the user's Active Focus civ domains.
+        // Distinct from isPlacement (which is the user's Purpose Piece "where
+        // I am") and isActive (which is the spoke they're currently looking
+        // at). A spoke can be all three. Focus is the most permissive — many
+        // may be set at once.
+        const isFocus = Array.isArray(focusKeys) && focusKeys.includes(keys[i])
 
         // Bloom: tips travel from centre outward
         const bloomedX = CX + (p.x - CX) * bloomT
@@ -1128,8 +1151,15 @@ function CivWheel({
                 fontFamily: FONT_SC,
                 fontSize: 17,
                 letterSpacing: '0.18em',
-                fill: isActive || isPlacement ? activeLabelFill : baseLabelFill,
-                fontWeight: isActive || isPlacement ? 700 : 600,
+                // Active and Placement get the saturated label; Focus is more
+                // subtle — a half-step lift, achieved by going to the
+                // active fill but keeping the lighter weight.
+                fill: isActive || isPlacement || isFocus
+                  ? activeLabelFill
+                  : baseLabelFill,
+                fontWeight: isActive || isPlacement ? 700
+                          : isFocus                 ? 650
+                          : 600,
                 pointerEvents: 'none',
                 userSelect: 'none',
                 textTransform: 'uppercase',

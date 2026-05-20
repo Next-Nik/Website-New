@@ -61,6 +61,7 @@ import AddOverlay                 from '../components/AddOverlay'
 import FocusPanelContent          from '../components/FocusPanelContent'
 import { useActiveFocus }         from '../hooks/useActiveFocus'
 import { useCivDomainScores }     from '../hooks/useDomainIndicators'
+import { resolvePurposePiece }    from '../util/purposePiece'
 
 import HorizonStateGauge   from '../components/mission-control/HorizonStateGauge'
 import MapPinGlyph         from '../components/mission-control/MapPinGlyph'
@@ -234,41 +235,14 @@ function activeSprintKey(sprintData) {
 }
 
 function formatPlacement(purposeData) {
-  if (!purposeData) return null
-  // Walk all source-of-truth fields. The row has gone through three
-  // writer eras and any of them may carry the data:
-  //   v10+   top-level archetype/domain/scale string columns
-  //   v9-ish profile column with archetype/domain/scale fields
-  //   pre-v9 session.tentative.{archetype.archetype, domain.domain, scale.scale}
-  // Some rows also have session.archetype etc. directly. Try every path
-  // in order; first hit wins.
-  const arch =
-    purposeData.archetype ||
-    purposeData.profile?.archetype ||
-    purposeData.session?.archetype ||
-    purposeData.session?.tentative?.archetype?.archetype ||
-    purposeData.session?.p4Profile?.archetype ||
-    null
-  const dom =
-    purposeData.civ_domain ||
-    purposeData.domain ||
-    purposeData.profile?.domain ||
-    purposeData.session?.domain ||
-    purposeData.session?.tentative?.domain?.domain ||
-    purposeData.session?.p4Profile?.domain ||
-    null
-  const scl =
-    purposeData.scale ||
-    purposeData.profile?.scale ||
-    purposeData.session?.scale ||
-    purposeData.session?.tentative?.scale?.scale ||
-    purposeData.session?.p4Profile?.scale ||
-    null
-  if (!arch && !dom && !scl) return null
+  // Delegates to the shared writer-era-aware resolver in
+  // src/app/util/purposePiece.js. See that file for the full path map.
+  const { archetype, domain, scale } = resolvePurposePiece(purposeData)
+  if (!archetype && !domain && !scale) return null
   const parts = []
-  if (arch) parts.push(arch.toUpperCase())
-  if (dom)  parts.push(dom.toUpperCase())
-  if (scl)  parts.push(scl.toUpperCase())
+  if (archetype) parts.push(archetype.toUpperCase())
+  if (domain)    parts.push(domain.toUpperCase())
+  if (scale)     parts.push(scale.toUpperCase())
   return parts.join(' · ')
 }
 
@@ -299,29 +273,23 @@ function civPlacementKey(purposeData) {
     'LEGACY':          'legacy',
     'VISION':          'vision',
   }
-  // Try slug fields (v10 era and beta-era). Then walk all source-of-truth
-  // fields for the domain label string and try slug + label maps.
+  // First, try explicit slug fields (v10 era and beta-era).
   const slug = (purposeData.civ_domain_slug || purposeData.domain_slug || '').toLowerCase()
   if (slug && slugMap[slug]) return slugMap[slug]
 
-  const candidates = [
-    purposeData.civ_domain,
-    purposeData.domain,
-    purposeData.profile?.domain,
-    purposeData.session?.domain,
-    purposeData.session?.tentative?.domain?.domain,
-    purposeData.session?.p4Profile?.domain,
-  ]
-  for (const raw of candidates) {
-    if (!raw) continue
-    const str = raw.toString().trim()
-    if (!str) continue
-    const norm = str.toUpperCase()
-    if (labelMap[norm]) return labelMap[norm]
-    const lower = str.toLowerCase()
-    if (slugMap[lower]) return slugMap[lower]
-    if (CIV_KEYS.includes(lower)) return lower
-  }
+  // Then ask the shared resolver for the domain — it walks every writer
+  // era's path and returns the first hit. Whatever it returns, try the
+  // label map, then the slug map, then a direct match against the wheel
+  // keys.
+  const { domain } = resolvePurposePiece(purposeData)
+  if (!domain) return null
+  const str = domain.toString().trim()
+  if (!str) return null
+  const norm = str.toUpperCase()
+  if (labelMap[norm]) return labelMap[norm]
+  const lower = str.toLowerCase()
+  if (slugMap[lower]) return slugMap[lower]
+  if (CIV_KEYS.includes(lower)) return lower
   return null
 }
 
@@ -349,7 +317,27 @@ export default function MissionControl() {
   const location = useLocation()
   const data = useMissionControlData()
   const [activePanel, setActivePanel] = useState(null)
-  const { hasFocus: hasActiveFocus } = useActiveFocus()
+  const { focus: activeFocus, hasFocus: hasActiveFocus } = useActiveFocus()
+
+  // Map the user's saved focus_domain_slugs (e.g. 'human-being',
+  // 'finance-economy') to the civ wheel's internal keys (e.g. 'human',
+  // 'finance'). The wheel uses these to brighten the matching spokes
+  // when focus is set. Memoised because it feeds an SVG render prop.
+  const civFocusKeys = useMemo(() => {
+    const slugs = activeFocus?.focus_domain_slugs
+    if (!Array.isArray(slugs) || slugs.length === 0) return null
+    const slugToWheelKey = {
+      'human-being':     'human',
+      'society':         'society',
+      'nature':          'nature',
+      'technology':      'tech',
+      'finance-economy': 'finance',
+      'legacy':          'legacy',
+      'vision':          'vision',
+    }
+    const keys = slugs.map(s => slugToWheelKey[s]).filter(Boolean)
+    return keys.length > 0 ? keys : null
+  }, [activeFocus?.focus_domain_slugs])
 
   // Universal Add overlay — mounted from the right-rail ADD tile. The
   // overlay component is reusable; Module 16 will mount it from other
@@ -1050,6 +1038,7 @@ export default function MissionControl() {
                 onDrillDown:   handleCivDrillDown,
                 onCentreClick: handleCivCentreClick,
                 placementKey:  civPlacement,
+                focusKeys:     civFocusKeys,
                 walkers:       civWalkers,
                 // Polygon — only meaningful at the top level; at sub-
                 // levels wheelKeys are sub-domain ids with no scores.

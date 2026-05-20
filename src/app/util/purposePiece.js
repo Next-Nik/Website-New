@@ -11,12 +11,8 @@
 //           or session.{archetype, domain, scale} directly
 //
 // Anywhere in the codebase that reads PP results should go through this
-// helper. The MissionControl page's formatPlacement() inlines the same
-// logic; if you change one, change the other (or refactor MC to use this).
-//
-// TODO (next session): refactor MissionControl.jsx's formatPlacement and
-// civPlacementKey to call resolvePurposePiece() instead of duplicating
-// the path-walking. Out of scope for the focus-anchor fix.
+// helper. MissionControl.jsx's formatPlacement() and civPlacementKey()
+// delegate here.
 //
 // Returns { archetype, domain, scale } with null for any field that
 // couldn't be resolved. Pass the full PP row in.
