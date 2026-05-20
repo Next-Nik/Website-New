@@ -50,25 +50,48 @@ const PLACE_CAP = 3
 const DOMAIN_CAP = 3
 
 export function ActiveFocusPrompt({ initiallyOpen = false, bare = false }) {
-  const { focus, hasFocus, loading, save, clear } = useActiveFocus()
+  const { focus, hasFocus, loading, save, clear, error } = useActiveFocus()
   const [open, setOpen] = useState(initiallyOpen || !hasFocus)
+  const [saveError, setSaveError] = useState(null)
 
   // When focus first loads, decide whether to show prompt-open or summary
   useEffect(() => {
     if (!loading) setOpen(initiallyOpen || !hasFocus)
   }, [loading, hasFocus, initiallyOpen])
 
+  // Wrap save() so we capture the error inline and surface it visibly,
+  // instead of letting it silently roll back.
+  const wrappedSave = async (patch) => {
+    setSaveError(null)
+    try {
+      const result = await save(patch)
+      return result
+    } catch (e) {
+      console.error('[ActiveFocus save failed]', e)
+      setSaveError(
+        e?.message ||
+        e?.error_description ||
+        e?.details ||
+        e?.hint ||
+        'Save failed — see browser console for details.'
+      )
+      throw e
+    }
+  }
+
+  const errToShow = saveError || (error?.message || null)
+
   if (loading) return null
 
   if (!open && hasFocus) {
-    return <CompactSummary focus={focus} onEdit={() => setOpen(true)} onClear={clear} bare={bare} />
+    return <CompactSummary focus={focus} onEdit={() => setOpen(true)} onClear={clear} bare={bare} errToShow={errToShow} />
   }
 
-  return <PromptOpen focus={focus} save={save} hasFocus={hasFocus} onCollapse={() => setOpen(false)} bare={bare} />
+  return <PromptOpen focus={focus} save={wrappedSave} hasFocus={hasFocus} onCollapse={() => setOpen(false)} bare={bare} errToShow={errToShow} />
 }
 
 // ── Compact summary (when focus set) ──────────────────────────────────────
-function CompactSummary({ focus, onEdit, onClear, bare = false }) {
+function CompactSummary({ focus, onEdit, onClear, bare = false, errToShow = null }) {
   const [places, setPlaces] = useState([])
   const [actors, setActors] = useState([])
 
@@ -209,7 +232,7 @@ function Label({ children }) {
 }
 
 // ── Prompt open ───────────────────────────────────────────────────────────
-function PromptOpen({ focus, save, hasFocus, onCollapse, bare = false }) {
+function PromptOpen({ focus, save, hasFocus, onCollapse, bare = false, errToShow = null }) {
   const sectionStyle = bare
     ? { marginBottom: 0, padding: 0 }
     : {
@@ -223,6 +246,23 @@ function PromptOpen({ focus, save, hasFocus, onCollapse, bare = false }) {
 
   return (
     <section style={sectionStyle}>
+      {errToShow && (
+        <div style={{
+          ...body,
+          fontSize: '13px',
+          color: '#8a1f1f',
+          background: 'rgba(138,31,31,0.06)',
+          border: '1px solid rgba(138,31,31,0.25)',
+          borderRadius: '6px',
+          padding: '10px 14px',
+          marginBottom: '16px',
+        }}>
+          <strong style={{ ...sc, fontSize: '10.5px', letterSpacing: '0.16em', textTransform: 'uppercase', display: 'block', marginBottom: '2px' }}>
+            Save error
+          </strong>
+          {errToShow}
+        </div>
+      )}
       {!bare && (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '20px', gap: '12px' }}>
           <div>
