@@ -1421,6 +1421,13 @@ function AuthModal() {
 //   6. North Star context (userId) passed to synthesis API
 //   7. userId prop added to ConnectionDomainStep for horizon_profile writes
 //   8. Save confirmation indicator added so user knows progress is persisted
+//   9. currentScore derived live from sub-domain averages. Previously autosave
+//      wrote back stale existingData?.currentScore captured at mount, silently
+//      overwriting freshly-computed averages.
+//  10. Horizon-reflection ChatInput now has working local state. Previously
+//      wired with value={''} and onChange={() => {}}, leaving the textarea
+//      unusable and submitting empty content on Enter (surfaced as the
+//      "Something went wrong" error in The Map / Connection).
 
 const DEFAULT_CONNECTION_SUBDOMAINS = [
   { id: 'intimate',      label: 'Romantic Partner', defaultActive: true },
@@ -1566,12 +1573,28 @@ export function ConnectionDomainStep({ domain, existingData, onComplete, onUpdat
   const completedSubDomains = activeSubDomains.filter(s => s.horizonText && s.currentScore !== undefined)
   const allActiveComplete   = activeSubDomains.length > 0 && completedSubDomains.length === activeSubDomains.length
 
+  // FIX #9: derive currentScore live from sub-domain averages so it stays
+  // in sync. Previously the autosave wrote back existingData?.currentScore,
+  // a value captured at mount, which silently overwrote freshly-computed
+  // averages and made North Star reflect against a stale score.
+  const scoredSubDomains = activeSubDomains.filter(s => s.currentScore !== undefined)
+  const currentScore = scoredSubDomains.length
+    ? Math.round((scoredSubDomains.reduce((sum, s) => sum + s.currentScore, 0) / scoredSubDomains.length) * 10) / 10
+    : existingData?.currentScore
+
+  // FIX #10: local state for the horizon-reflection chat input. The
+  // previous ChatInput was wired with value={''} and onChange={() => {}},
+  // which left the textarea permanently empty and made pressing Enter
+  // submit an empty string, surfacing as "Something went wrong" and
+  // dropping the user's reply on the floor.
+  const [horizonReplyInput, setHorizonReplyInput] = useState('')
+
   function save(overrides = {}) {
     const data = {
       domainId: domain.id,
       avatarDraft, avatarFinal, avatarMessages: avatarMsgs, avatarLocked,
       avatarDoc, subDomains, synthesis, horizonScore, horizonLocked,
-      currentScore: existingData?.currentScore,
+      currentScore,
       ...overrides,
     }
     onUpdate(data)
@@ -1592,7 +1615,7 @@ export function ConnectionDomainStep({ domain, existingData, onComplete, onUpdat
         avatarDraft, avatarFinal, avatarMessages: avatarMsgs, avatarLocked,
         avatarDoc, subDomains, synthesis, horizonText, horizonMsgs,
         horizonScore, horizonLocked,
-        currentScore: existingData?.currentScore,
+        currentScore,
       })
     }, 800)
     return () => clearTimeout(t)
@@ -1877,7 +1900,7 @@ export function ConnectionDomainStep({ domain, existingData, onComplete, onUpdat
                       try {
                         const res = await fetch('/api/map-scoring-chat', {
                           method: 'POST', headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ mode: 'horizon', domain: 'connection', avatarFinal, currentScore: existingData?.currentScore, messages: [{ role: 'user', content: msg }], horizonScore, horizonText })
+                          body: JSON.stringify({ mode: 'horizon', domain: 'connection', avatarFinal, currentScore, messages: [{ role: 'user', content: msg }], horizonScore, horizonText })
                         })
                         const data = await res.json()
                         setHorizonMsgs([{ role: 'user', content: msg }, { role: 'assistant', content: data.message, canLock: data.canLock }])
@@ -1895,16 +1918,18 @@ export function ConnectionDomainStep({ domain, existingData, onComplete, onUpdat
 
                 {horizonMsgs.length > 0 && !horizonThink && (
                   <ChatInput
-                    value={''}
-                    onChange={() => {}}
+                    value={horizonReplyInput}
+                    onChange={setHorizonReplyInput}
                     onSend={async text => {
+                      if (!text || !text.trim()) return
                       const next = [...horizonMsgs, { role: 'user', content: text }]
                       setHorizonMsgs(next)
+                      setHorizonReplyInput('')
                       setHorizonThink(true)
                       try {
                         const res = await fetch('/api/map-scoring-chat', {
                           method: 'POST', headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ mode: 'horizon', domain: 'connection', avatarFinal, currentScore: existingData?.currentScore, messages: next, horizonScore, horizonText })
+                          body: JSON.stringify({ mode: 'horizon', domain: 'connection', avatarFinal, currentScore, messages: next, horizonScore, horizonText })
                         })
                         const data = await res.json()
                         setHorizonMsgs(p => [...p, { role: 'assistant', content: data.message, canLock: data.canLock }])
