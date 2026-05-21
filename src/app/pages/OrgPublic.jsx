@@ -36,6 +36,7 @@ import {
 import { DOMAIN_COLORS } from '../constants/domains'
 import { ShareButton } from '../components/ShareButton'
 import { WatchButton } from '../components/WatchButton'
+import { MessageButton } from '../components/MessageButton'
 
 // ── Design utilities ─────────────────────────────────────────
 
@@ -220,15 +221,17 @@ function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
             </div>
           )}
 
-          {/* Watch — only for signed-in non-owners. Owners don't watch their own org. */}
+          {/* Watch + Message — only for signed-in non-owners. */}
           {!isOwner && (
-            <div style={{ marginTop: '12px' }}>
+            <div style={{ marginTop: '12px', display: 'flex', gap: '10px',
+              alignItems: 'center', flexWrap: 'wrap' }}>
               <WatchButton
                 entityType="actor"
                 entityId={actor.id}
                 entityName={actor.name}
                 size="sm"
               />
+              <MessageButton actor={actor} />
             </div>
           )}
         </div>

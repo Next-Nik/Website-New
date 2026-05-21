@@ -66,6 +66,8 @@ import { resolvePurposePiece }    from '../util/purposePiece'
 import HorizonStateGauge   from '../components/mission-control/HorizonStateGauge'
 import MapPinGlyph         from '../components/mission-control/MapPinGlyph'
 import SearchGlyph         from '../components/mission-control/SearchGlyph'
+import MessagesIcon        from '../components/mission-control/MessagesIcon'
+import MessagesMissionPanel from '../components/mission-control/MessagesMissionPanel'
 import TargetSprintGlyph   from '../components/mission-control/TargetSprintGlyph'
 
 import useMissionControlData from '../components/mission-control/useMissionControlData'
@@ -1080,6 +1082,13 @@ export default function MissionControl() {
               title="Planet Sprint — quests offered by orgs"
             />
             <Tile
+              glyph={<MessagesIcon />}
+              label="MESSAGES"
+              state={null}
+              onClick={() => setActivePanel('messages')}
+              title="Messages — your inboxes per hat"
+            />
+            <Tile
               glyph={<SearchGlyph />}
               label="SEARCH"
               state={null}
@@ -1158,6 +1167,18 @@ export default function MissionControl() {
       </main>
 
       {/* ─── PANELS ──────────────────────────────────────────── */}
+
+      <Panel
+        open={activePanel === 'messages'}
+        onClose={closePanel}
+        eyebrow="INBOX"
+        title="Messages"
+        actions={[
+          { label: 'CLOSE', onClick: closePanel },
+        ]}
+      >
+        <MessagesMissionPanel userId={data.user?.id} />
+      </Panel>
 
       <Panel
         open={activePanel === 'focus'}
