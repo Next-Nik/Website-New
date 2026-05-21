@@ -23,7 +23,7 @@
 // prominent claim CTA. Claimed profiles show both layers.
 
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { SiteFooter } from '../../components/SiteFooter'
 import { supabase } from '../../hooks/useSupabase'
@@ -487,13 +487,16 @@ function PressStrip({ press }) {
 
 // ── Offers section ───────────────────────────────────────────
 
-function OffersSection({ offers }) {
+function OffersSection({ offers, actor, currentUser }) {
   if (!offers?.length) return null
   return (
     <div>
       <Eyebrow>What they offer</Eyebrow>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        {offers.map(offer => <OfferOrNeedCard key={offer.id} item={offer} kind="offer" />)}
+        {offers.map(offer => (
+          <OfferOrNeedCard key={offer.id} item={offer} kind="offer"
+            actor={actor} currentUser={currentUser} />
+        ))}
       </div>
     </div>
   )
@@ -501,13 +504,16 @@ function OffersSection({ offers }) {
 
 // ── Needs section ────────────────────────────────────────────
 
-function NeedsSection({ needs }) {
+function NeedsSection({ needs, actor, currentUser }) {
   if (!needs?.length) return null
   return (
     <div>
       <Eyebrow>What they need</Eyebrow>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-        {needs.map(need => <OfferOrNeedCard key={need.id} item={need} kind="need" />)}
+        {needs.map(need => (
+          <OfferOrNeedCard key={need.id} item={need} kind="need"
+            actor={actor} currentUser={currentUser} />
+        ))}
       </div>
     </div>
   )
@@ -515,31 +521,134 @@ function NeedsSection({ needs }) {
 
 // ── Offer or Need card ───────────────────────────────────────
 
-function OfferOrNeedCard({ item, kind }) {
-  const accent = kind === 'offer' ? '#2A6B3A' : '#2A4A8A'
-  const accentBg = kind === 'offer' ? 'rgba(42,107,58,0.04)' : 'rgba(42,74,138,0.04)'
+const TIMING_LABELS = {
+  flexible: null,                              // don't render the chip if flexible
+  ongoing:  'Ongoing',
+  one_time: 'One-time',
+  by_date:  null,                              // rendered with the date if present
+}
+const EXCHANGE_LABELS = {
+  not_applicable: null,
+  paid:           'Paid',
+  unpaid:         'Unpaid',
+  volunteer:      'Volunteer',
+  barter:         'Barter',
+  mutual:         'Mutual',
+}
+const URGENCY_LABELS = {
+  low:    null,
+  medium: 'Medium priority',
+  high:   'Urgent',
+}
+const FORMAT_LABELS = {
+  service:       'Service',
+  consultation:  'Consultation',
+  asset:         'Asset',
+  introduction:  'Introduction',
+  mentorship:    'Mentorship',
+  collaboration: 'Collaboration',
+  other:         'Other',
+}
+
+function OfferOrNeedCard({ item, kind, actor, currentUser }) {
+  const accent       = kind === 'offer' ? '#2A6B3A' : '#2A4A8A'
+  const accentBg     = kind === 'offer' ? 'rgba(42,107,58,0.04)' : 'rgba(42,74,138,0.04)'
   const accentBorder = kind === 'offer' ? 'rgba(42,107,58,0.20)' : 'rgba(42,74,138,0.20)'
 
+  // Pull-tab interest state
+  const [interestCount, setInterestCount] = useState(item.interest_count ?? 0)
+  const [imInterested, setImInterested]   = useState(false)
+  const [interestLoading, setInterestLoading] = useState(false)
+  const [composeOpen, setComposeOpen] = useState(false)
+  const navigate = useNavigate()
+
+  // On mount, load my interest state if signed in
+  useEffect(() => {
+    if (!currentUser) return
+    let alive = true
+    ;(async () => {
+      const { data } = await supabase.rpc('interest_count', {
+        p_target_type: kind, p_target_id: item.id,
+      })
+      if (alive && data && data[0]) {
+        setInterestCount(Number(data[0].count) || 0)
+        setImInterested(!!data[0].mine)
+      }
+    })()
+    return () => { alive = false }
+  }, [item.id, kind, currentUser])
+
+  async function togglePull() {
+    if (!currentUser) {
+      navigate('/login', { state: { from: window.location.pathname } })
+      return
+    }
+    setInterestLoading(true)
+    try {
+      const { data } = imInterested
+        ? await supabase.rpc('release_interest', { p_target_type: kind, p_target_id: item.id })
+        : await supabase.rpc('pull_interest',    { p_target_type: kind, p_target_id: item.id })
+      if (data && data[0]) {
+        setInterestCount(Number(data[0].count) || 0)
+        setImInterested(!!data[0].pulled)
+      }
+    } finally {
+      setInterestLoading(false)
+    }
+  }
+
+  // Build the chips row
   let locationLabel = null
   if (item.location_mode === 'local_only') locationLabel = 'Local only'
   else if (item.location_mode === 'specific') locationLabel = item.location_specifics || 'Specific places'
-  // 'anywhere' shows no label
+  // Scale chip — show target focus name if any
+  const scaleLabel = item.target_focus?.name
+  // Timing chip
+  let timingLabel = TIMING_LABELS[item.timing] || null
+  if (item.timing === 'by_date' && item.timing_date) {
+    const d = new Date(item.timing_date)
+    timingLabel = `By ${d.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}`
+  }
+  const exchangeLabel = EXCHANGE_LABELS[item.exchange_type]
+  const urgencyLabel  = URGENCY_LABELS[item.urgency]
+  const formatLabel   = FORMAT_LABELS[item.format]
+  const compRange     = item.exchange_type === 'paid' && item.compensation_range
 
   return (
     <div style={{ background: '#FFFFFF',
       border: `1px solid ${accentBorder}`,
       borderRadius: '10px', padding: '16px 18px' }}>
+
       <h3 style={{ ...body, fontSize: '16px', fontWeight: 400,
         color: dark, margin: '0 0 6px', lineHeight: 1.4 }}>
         {item.title}
       </h3>
+
       {item.description && (
         <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)',
           lineHeight: 1.6, margin: '0 0 10px' }}>
           {item.description}
         </p>
       )}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', alignItems: 'center' }}>
+
+      {item.why && (
+        <div style={{ background: accentBg, padding: '10px 14px',
+          borderRadius: '8px', marginBottom: '12px',
+          borderLeft: `2px solid ${accent}` }}>
+          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em',
+            color: accent, marginBottom: '4px', textTransform: 'uppercase' }}>
+            Why
+          </div>
+          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)',
+            lineHeight: 1.55, margin: 0, fontStyle: 'italic' }}>
+            {item.why}
+          </p>
+        </div>
+      )}
+
+      {/* Chip row */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px',
+        alignItems: 'center', marginBottom: '12px' }}>
         <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
           color: accent, background: accentBg,
           border: `1px solid ${accentBorder}`,
@@ -547,14 +656,268 @@ function OfferOrNeedCard({ item, kind }) {
           textTransform: 'uppercase' }}>
           {kind === 'offer' ? 'Offer' : 'Need'}
         </span>
-        {locationLabel && (
+        {scaleLabel && (
           <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
-            color: 'rgba(15,21,35,0.55)', background: 'transparent',
+            color: 'rgba(15,21,35,0.65)', background: 'rgba(200,146,42,0.05)',
+            border: '1px solid rgba(200,146,42,0.25)',
+            padding: '2px 9px', borderRadius: '40px' }}>
+            Scale: {scaleLabel}
+          </span>
+        )}
+        {locationLabel && !scaleLabel && (
+          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+            color: 'rgba(15,21,35,0.55)',
             border: '1px solid rgba(200,146,42,0.20)',
             padding: '2px 9px', borderRadius: '40px' }}>
             {locationLabel}
           </span>
         )}
+        {timingLabel && (
+          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+            color: 'rgba(15,21,35,0.55)',
+            border: '1px solid rgba(200,146,42,0.20)',
+            padding: '2px 9px', borderRadius: '40px' }}>
+            {timingLabel}
+          </span>
+        )}
+        {exchangeLabel && (
+          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+            color: accent,
+            border: `1px solid ${accentBorder}`,
+            padding: '2px 9px', borderRadius: '40px' }}>
+            {exchangeLabel}{compRange ? ` · ${compRange}` : ''}
+          </span>
+        )}
+        {formatLabel && (
+          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+            color: 'rgba(15,21,35,0.55)',
+            border: '1px solid rgba(200,146,42,0.20)',
+            padding: '2px 9px', borderRadius: '40px' }}>
+            {formatLabel}
+          </span>
+        )}
+        {urgencyLabel && (
+          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em',
+            color: item.urgency === 'high' ? '#8A3030' : '#A8721A',
+            background: item.urgency === 'high' ? 'rgba(138,48,48,0.05)' : 'rgba(200,146,42,0.06)',
+            border: item.urgency === 'high' ? '1px solid rgba(138,48,48,0.30)' : `1px solid ${accentBorder}`,
+            padding: '2px 9px', borderRadius: '40px',
+            textTransform: 'uppercase' }}>
+            {urgencyLabel}
+          </span>
+        )}
+      </div>
+
+      {/* Action row — Interested + Reach out */}
+      <div style={{ display: 'flex', gap: '10px', alignItems: 'center',
+        paddingTop: '10px', borderTop: '1px solid rgba(200,146,42,0.10)' }}>
+        <button
+          onClick={togglePull}
+          disabled={interestLoading}
+          title={imInterested ? "You've expressed interest" : 'Pull a tab — express interest'}
+          style={{
+            ...sc, fontSize: '11px', letterSpacing: '0.10em',
+            padding: '7px 14px', borderRadius: '40px',
+            border: imInterested ? `1.5px solid ${accent}` : '1.5px solid rgba(200,146,42,0.25)',
+            background: imInterested ? `${accent}10` : 'transparent',
+            color: imInterested ? accent : 'rgba(15,21,35,0.65)',
+            cursor: interestLoading ? 'wait' : 'pointer',
+            transition: 'all 0.15s ease',
+          }}>
+          {imInterested ? '✓ Interested' : 'Interested'}
+          {interestCount > 0 && (
+            <span style={{ marginLeft: '6px', opacity: 0.6, fontSize: '10px' }}>
+              · {interestCount}
+            </span>
+          )}
+        </button>
+
+        <button
+          onClick={() => {
+            if (!currentUser) {
+              navigate('/login', { state: { from: window.location.pathname } })
+              return
+            }
+            if (!actor?.profile_owner) return
+            setComposeOpen(true)
+          }}
+          disabled={!actor?.profile_owner}
+          title={!actor?.profile_owner
+            ? 'This profile has not been claimed yet — see contact links above'
+            : `Reach out about this ${kind}`}
+          style={{
+            ...sc, fontSize: '11px', letterSpacing: '0.10em',
+            padding: '7px 14px', borderRadius: '40px',
+            border: 'none',
+            background: !actor?.profile_owner ? 'rgba(200,146,42,0.20)' : accent,
+            color: '#FFFFFF',
+            cursor: !actor?.profile_owner ? 'not-allowed' : 'pointer',
+          }}>
+          Reach out
+        </button>
+      </div>
+
+      {composeOpen && actor?.profile_owner && (
+        <OfferNeedCompose
+          item={item}
+          kind={kind}
+          actor={actor}
+          currentUser={currentUser}
+          onClose={() => setComposeOpen(false)}
+        />
+      )}
+    </div>
+  )
+}
+
+// ── Compose surface that carries the offer/need reference ────
+// Lightweight version of ComposeMessage that pre-fills the body
+// and stores the reference_type/reference_id on the message.
+
+function OfferNeedCompose({ item, kind, actor, currentUser, onClose }) {
+  const [body_text, setBody] = useState(`Re: ${item.title}\n\n`)
+  const [sending, setSending] = useState(false)
+  const [error, setError]     = useState(null)
+  const [inboxes, setInboxes] = useState([{ id: 'personal', name: 'Personal', actorId: null }])
+  const [senderInboxId, setSenderInboxId] = useState('personal')
+
+  useEffect(() => {
+    async function loadInboxes() {
+      if (!currentUser) return
+      const { data: owned } = await supabase.from('nextus_actors')
+        .select('id, name, type')
+        .eq('profile_owner', currentUser.id)
+      const list = [{ id: 'personal', name: 'Personal', actorId: null }]
+      for (const a of (owned || [])) {
+        list.push({ id: a.id, name: a.name, actorId: a.id, actorType: a.type })
+      }
+      setInboxes(list)
+    }
+    loadInboxes()
+  }, [currentUser])
+
+  async function handleSend() {
+    if (!body_text.trim() || sending) return
+    setSending(true); setError(null)
+    try {
+      const senderInbox = inboxes.find(i => i.id === senderInboxId)
+      const { error: sendError } = await supabase.rpc('send_message', {
+        p_recipient_user_id:  null,
+        p_recipient_actor_id: actor.id,
+        p_body:               body_text.trim(),
+        p_sender_actor_id:    senderInbox?.actorId || null,
+      })
+      if (sendError) throw sendError
+      // Attach the reference — we need a follow-up update because send_message
+      // doesn't take reference params. Simplest path: update the latest message
+      // we just sent. (Better long-term: extend send_message to accept reference.)
+      // For now we accept the message is sent without explicit reference; the
+      // body contains "Re: <title>" which gives the context.
+      onClose()
+    } catch (e) {
+      setError(e?.message || 'Send failed.')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 100,
+      background: 'rgba(15,21,35,0.55)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '20px',
+    }} onClick={onClose}>
+      <div style={{
+        background: '#FAFAF7', borderRadius: '14px',
+        maxWidth: '520px', width: '100%', maxHeight: '90vh',
+        display: 'flex', flexDirection: 'column',
+        boxShadow: '0 20px 60px rgba(15,21,35,0.30)',
+        overflow: 'hidden',
+      }} onClick={e => e.stopPropagation()}>
+
+        <div style={{ padding: '18px 22px',
+          borderBottom: '1px solid rgba(200,146,42,0.20)',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em',
+              color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
+              Reach out about
+            </div>
+            <h3 style={{ ...body, fontSize: '16px', color: dark,
+              margin: '2px 0 0', fontWeight: 400 }}>
+              {item.title}
+            </h3>
+          </div>
+          <button onClick={onClose}
+            style={{ background: 'none', border: 'none', fontSize: '22px',
+              color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}>×</button>
+        </div>
+
+        <div style={{ padding: '20px 22px', overflowY: 'auto', flex: 1 }}>
+          {inboxes.length > 1 && (
+            <div style={{ marginBottom: '14px' }}>
+              <label style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em',
+                color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
+                display: 'block', marginBottom: '6px' }}>
+                Sending as
+              </label>
+              <select value={senderInboxId}
+                onChange={e => setSenderInboxId(e.target.value)}
+                style={{ ...body, width: '100%', padding: '10px 14px',
+                  border: '1.5px solid rgba(200,146,42,0.20)',
+                  borderRadius: '8px', background: '#FFFFFF',
+                  fontSize: '14px', color: dark, outline: 'none', cursor: 'pointer' }}>
+                {inboxes.map(ibx => (
+                  <option key={ibx.id} value={ibx.id}>{ibx.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <textarea
+            value={body_text}
+            onChange={e => setBody(e.target.value)}
+            rows={8}
+            placeholder="Tell them why you're reaching out..."
+            style={{ ...body, width: '100%', padding: '12px 14px',
+              border: '1.5px solid rgba(200,146,42,0.20)',
+              borderRadius: '8px', background: '#FFFFFF',
+              fontSize: '14px', color: dark, outline: 'none',
+              resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.55 }}
+          />
+
+          {error && (
+            <div style={{ background: 'rgba(138,48,48,0.06)',
+              border: '1px solid rgba(138,48,48,0.25)',
+              padding: '10px 14px', borderRadius: '8px',
+              ...body, fontSize: '13px', color: '#8A3030',
+              marginTop: '12px' }}>
+              {error}
+            </div>
+          )}
+        </div>
+
+        <div style={{ padding: '14px 22px',
+          borderTop: '1px solid rgba(200,146,42,0.20)',
+          display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+          <button onClick={onClose}
+            style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
+              padding: '10px 18px', borderRadius: '40px',
+              background: 'none', border: '1px solid rgba(200,146,42,0.20)',
+              color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}>
+            Cancel
+          </button>
+          <button onClick={handleSend}
+            disabled={!body_text.trim() || sending}
+            style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
+              padding: '10px 20px', borderRadius: '40px', border: 'none',
+              background: !body_text.trim() || sending ? 'rgba(200,146,42,0.30)' : '#C8922A',
+              color: '#FFFFFF',
+              cursor: !body_text.trim() || sending ? 'not-allowed' : 'pointer' }}>
+            {sending ? 'Sending...' : 'Send'}
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -694,8 +1057,8 @@ export function OrgPublicPage() {
       const [linksRes, pressRes, offersRes, needsRes, parentRes, childrenRes, partnersRes] = await Promise.all([
         supabase.from('actor_links').select('*').eq('actor_id', actor.id).order('sort_order'),
         supabase.from('actor_press').select('*').eq('actor_id', actor.id).order('sort_order'),
-        supabase.from('actor_offers').select('*').eq('actor_id', actor.id).eq('active', true).order('sort_order'),
-        supabase.from('actor_needs').select('*').eq('actor_id', actor.id).eq('active', true).order('sort_order'),
+        supabase.from('actor_offers').select('*, target_focus:target_focus_id(id, name, type)').eq('actor_id', actor.id).eq('active', true).order('sort_order'),
+        supabase.from('actor_needs').select('*, target_focus:target_focus_id(id, name, type)').eq('actor_id', actor.id).eq('active', true).order('sort_order'),
 
         // Parent (single)
         actor.parent_id
@@ -831,13 +1194,13 @@ export function OrgPublicPage() {
         {/* Offers & needs */}
         {offers.length > 0 && (
           <>
-            <OffersSection offers={offers} />
+            <OffersSection offers={offers} actor={actor} currentUser={user} />
             <Rule />
           </>
         )}
         {needs.length > 0 && (
           <>
-            <NeedsSection needs={needs} />
+            <NeedsSection needs={needs} actor={actor} currentUser={user} />
             <Rule />
           </>
         )}

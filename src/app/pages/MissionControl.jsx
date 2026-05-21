@@ -68,6 +68,8 @@ import MapPinGlyph         from '../components/mission-control/MapPinGlyph'
 import SearchGlyph         from '../components/mission-control/SearchGlyph'
 import MessagesIcon        from '../components/mission-control/MessagesIcon'
 import MessagesMissionPanel from '../components/mission-control/MessagesMissionPanel'
+import InterestsIcon       from '../components/mission-control/InterestsIcon'
+import MyInterestsPanel    from '../components/mission-control/MyInterestsPanel'
 import TargetSprintGlyph   from '../components/mission-control/TargetSprintGlyph'
 
 import useMissionControlData from '../components/mission-control/useMissionControlData'
@@ -1089,6 +1091,13 @@ export default function MissionControl() {
               title="Messages — your inboxes per hat"
             />
             <Tile
+              glyph={<InterestsIcon />}
+              label={<>MY<br/>INTERESTS</>}
+              state={null}
+              onClick={() => setActivePanel('interests')}
+              title="My Interests — tabs you've pulled on offers and needs"
+            />
+            <Tile
               glyph={<SearchGlyph />}
               label="SEARCH"
               state={null}
@@ -1178,6 +1187,18 @@ export default function MissionControl() {
         ]}
       >
         <MessagesMissionPanel userId={data.user?.id} />
+      </Panel>
+
+      <Panel
+        open={activePanel === 'interests'}
+        onClose={closePanel}
+        eyebrow="YOUR PULLS"
+        title="My Interests"
+        actions={[
+          { label: 'CLOSE', onClick: closePanel },
+        ]}
+      >
+        <MyInterestsPanel userId={data.user?.id} />
       </Panel>
 
       <Panel

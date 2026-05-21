@@ -11,11 +11,45 @@ import {
   Label, Hint, Btn, TextInput, TextArea, SelectInput,
 } from '../OrgShared'
 import { CIV_DOMAINS } from '../NextUsWheel'
+import { FocusSearch } from '../FocusSearch'
 
 const LOCATION_MODES = [
   { value: 'anywhere',   label: 'Anywhere — I am open to working with anyone' },
   { value: 'specific',   label: 'Specific places — I am focused on these locations' },
   { value: 'local_only', label: 'Local only — keep this rooted in my own region' },
+]
+
+const TIMING_OPTIONS = [
+  { value: 'flexible',  label: 'Flexible — no particular timing' },
+  { value: 'ongoing',   label: 'Ongoing — this is always open' },
+  { value: 'one_time',  label: 'One-time — single engagement' },
+  { value: 'by_date',   label: 'By a date — needs to happen by a specific time' },
+]
+
+const EXCHANGE_OPTIONS = [
+  { value: 'not_applicable', label: '— not specified' },
+  { value: 'paid',           label: 'Paid' },
+  { value: 'unpaid',         label: 'Unpaid' },
+  { value: 'volunteer',      label: 'Volunteer' },
+  { value: 'barter',         label: 'Barter / trade' },
+  { value: 'mutual',         label: 'Mutual exchange' },
+]
+
+const FORMAT_OPTIONS = [
+  { value: '',              label: '— not specified' },
+  { value: 'service',       label: 'Service' },
+  { value: 'consultation',  label: 'Consultation' },
+  { value: 'asset',         label: 'Asset (deliverable)' },
+  { value: 'introduction',  label: 'Introduction' },
+  { value: 'mentorship',    label: 'Mentorship' },
+  { value: 'collaboration', label: 'Collaboration' },
+  { value: 'other',         label: 'Other' },
+]
+
+const URGENCY_OPTIONS = [
+  { value: 'low',    label: 'Low — when convenient' },
+  { value: 'medium', label: 'Medium — moderate priority' },
+  { value: 'high',   label: 'High — time-sensitive' },
 ]
 
 const EMPTY_ITEM = {
@@ -25,6 +59,16 @@ const EMPTY_ITEM = {
   domains: [],
   location_mode: 'anywhere',
   location_specifics: '',
+  // Structured fields (Phase 7)
+  why: '',
+  timing: 'flexible',
+  timing_date: '',
+  exchange_type: 'not_applicable',
+  compensation_range: '',
+  format: '',
+  urgency: 'low',
+  target_focus_id: null,
+  target_focus_name: '',   // for display only, not saved
 }
 
 // ── Edit form (used for both offers and needs) ───────────────
@@ -64,6 +108,13 @@ function ItemForm({ initial, onSave, onCancel, saving, kind }) {
       </div>
 
       <div>
+        <Label>Why (optional)</Label>
+        <Hint>The context behind this {kind}. Why does it exist? What problem does it solve? Helps people decide if it fits them.</Hint>
+        <TextArea value={form.why} onChange={v => set('why', v)}
+          rows={2} placeholder="The bigger picture..." />
+      </div>
+
+      <div>
         <Label>Domains (optional)</Label>
         <Hint>Where this {kind} surfaces. Leave empty to inherit from your profile's primary domains.</Hint>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
@@ -80,6 +131,66 @@ function ItemForm({ initial, onSave, onCancel, saving, kind }) {
               </button>
             )
           })}
+        </div>
+      </div>
+
+      <div>
+        <Label>Scale of engagement (optional)</Label>
+        <Hint>What scale is this {kind} pitched at? Pick the Focus that names the scale — your neighbourhood, your city, your country, Earth, or a specific place. Leave empty if it doesn't matter.</Hint>
+        <FocusSearch
+          value={form.target_focus_id ? { id: form.target_focus_id, name: form.target_focus_name } : null}
+          onChange={(focus) => {
+            set('target_focus_id', focus?.id || null)
+            set('target_focus_name', focus?.name || '')
+          }}
+          placeholder="Search for a place, scale, or Focus..."
+        />
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+        <div>
+          <Label>Timing</Label>
+          <SelectInput value={form.timing}
+            onChange={v => set('timing', v)}
+            options={TIMING_OPTIONS} />
+          {form.timing === 'by_date' && (
+            <div style={{ marginTop: '8px' }}>
+              <input type="date" value={form.timing_date || ''}
+                onChange={e => set('timing_date', e.target.value)}
+                style={{ ...body, padding: '8px 12px',
+                  border: '1px solid rgba(200,146,42,0.25)',
+                  borderRadius: '6px', fontSize: '13px', width: '100%',
+                  background: '#FFFFFF' }} />
+            </div>
+          )}
+        </div>
+        <div>
+          <Label>Urgency</Label>
+          <SelectInput value={form.urgency}
+            onChange={v => set('urgency', v)}
+            options={URGENCY_OPTIONS} />
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+        <div>
+          <Label>Exchange type</Label>
+          <SelectInput value={form.exchange_type}
+            onChange={v => set('exchange_type', v)}
+            options={EXCHANGE_OPTIONS} />
+          {form.exchange_type === 'paid' && (
+            <div style={{ marginTop: '8px' }}>
+              <TextInput value={form.compensation_range}
+                onChange={v => set('compensation_range', v)}
+                placeholder="Optional range, e.g. $1500-2500 / day rate" />
+            </div>
+          )}
+        </div>
+        <div>
+          <Label>Format</Label>
+          <SelectInput value={form.format}
+            onChange={v => set('format', v)}
+            options={FORMAT_OPTIONS} />
         </div>
       </div>
 
@@ -189,8 +300,14 @@ function ItemSection({ actorId, kind, toast }) {
   async function load() {
     setLoading(true)
     const { data } = await supabase.from(table)
-      .select('*').eq('actor_id', actorId).order('sort_order')
-    setItems(data || [])
+      .select('*, target_focus:target_focus_id(id, name)')
+      .eq('actor_id', actorId).order('sort_order')
+    // Flatten target_focus.name into target_focus_name for the form
+    const flattened = (data || []).map(item => ({
+      ...item,
+      target_focus_name: item.target_focus?.name || '',
+    }))
+    setItems(flattened)
     setLoading(false)
   }
   useEffect(() => { load() }, [actorId])
@@ -205,6 +322,15 @@ function ItemSection({ actorId, kind, toast }) {
       domains:            form.domains?.length ? form.domains : null,
       location_mode:      form.location_mode || 'anywhere',
       location_specifics: form.location_specifics?.trim() || null,
+      // Structured fields (Phase 7)
+      why:                form.why?.trim() || null,
+      timing:             form.timing || 'flexible',
+      timing_date:        form.timing_date || null,
+      exchange_type:      form.exchange_type || 'not_applicable',
+      compensation_range: form.compensation_range?.trim() || null,
+      format:             form.format || null,
+      urgency:            form.urgency || 'low',
+      target_focus_id:    form.target_focus_id || null,
     }
     if (form.id) {
       // Update
