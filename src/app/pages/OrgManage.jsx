@@ -26,6 +26,7 @@ import { PrincipleStrip } from '../components/PrincipleStrip'
 import { VoiceTab } from '../components/manage/VoiceTab'
 import { CoordinationTab } from '../components/manage/CoordinationTab'
 import { LinksTab } from '../components/manage/LinksTab'
+import { EventsTab } from '../components/EventsTab'
 
 // ── Chip multi-select ────────────────────────────────────────
 
@@ -594,6 +595,7 @@ const TABS = [
   { key: 'links',         label: 'Links & Press' },
   { key: 'domains',       label: 'Domains' },
   { key: 'offerings',     label: 'Offerings' },
+  { key: 'events',        label: 'Events' },
   { key: 'matches',       label: 'Matches' },
   { key: 'contributions', label: 'Contributions' },
   { key: 'needs',         label: 'Needs' },
@@ -716,6 +718,7 @@ export function OrgManagePage() {
         {activeTab === 'offerings'     && <OfferingsTab     actorId={id} toast={showToast} />}
         {activeTab === 'domains'       && <OrgDomainsTab    actorId={id} toast={showToast} />}
         {activeTab === 'matches'       && <MatchesTab       actorId={id} toast={showToast} />}
+        {activeTab === 'events'        && <EventsTab        actorId={id} actorName={actor.name} toast={showToast} />}
         {activeTab === 'contributions' && <ContributionsTab actorId={id} actorName={actor.name} toast={showToast} />}
         {activeTab === 'needs'         && <OrgNeedsTab      actorId={id} navigate={navigate} toast={showToast} />}
       </div>

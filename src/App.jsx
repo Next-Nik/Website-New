@@ -62,6 +62,8 @@ import { NextMarketPage }         from './app/pages/NextMarket'
 import { AdminConsolePage }   from './app/pages/AdminConsole'
 import { NominatePage }       from './app/pages/Nominate'
 import { AddPage }            from './app/pages/Add'
+import { EventManagePage }    from './app/pages/EventManage'
+import { EventPublicPage }    from './app/pages/EventPublic'
 import { DomainPage } from './app/pages/Domain'
 import { FocusProfile } from './app/pages/FocusProfile'
 import { FocusIndex } from './app/pages/FocusIndex'
@@ -177,6 +179,9 @@ function AppInner() {
         <Route path="/contribution"                 element={<Contribution />} />
         <Route path="/org/:slug"                    element={<OrgPublicPage />} />
         <Route path="/org/:slug/manage"             element={<OrgManagePage />} />
+        <Route path="/org/:slug/events/new"             element={<EventManagePage />} />
+        <Route path="/org/:slug/events/:eventId/edit"   element={<EventManagePage />} />
+        <Route path="/events/:id"                       element={<EventPublicPage />} />
         <Route path="/map"                          element={<PlanetMapPage />} />
         <Route path="/nextmarket"                   element={<NextMarketPage />} />
         <Route path="/alternatives"                 element={<Navigate to="/nextmarket" replace />} />

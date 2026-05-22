@@ -37,6 +37,7 @@ import { DOMAIN_COLORS } from '../constants/domains'
 import { ShareButton } from '../components/ShareButton'
 import { WatchButton } from '../components/WatchButton'
 import { MessageButton } from '../components/MessageButton'
+import { EventsSection } from '../components/EventsSection'
 
 // ── Design utilities ─────────────────────────────────────────
 
@@ -1204,6 +1205,9 @@ export function OrgPublicPage() {
             <Rule />
           </>
         )}
+
+        {/* Events — upcoming, hosted, recent past */}
+        <EventsSection actor={actor} isOwner={isOwner} />
 
         {/* Get in touch — contact links (email, contact form, calendly) */}
         {links.some(l => CONTACT_LINK_TYPES.has(l.link_type)) && (
