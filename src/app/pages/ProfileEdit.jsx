@@ -451,6 +451,15 @@ export default function ProfileEdit() {
         <SprintsVisibilitySection userId={userId} />
       </Section>
 
+      {/* Founder tools — visible only to founder accounts. Surfaces unfinished
+          or restricted tools (e.g. PlanetMap, currently founder-only beta) so
+          they're reachable for testing without typing URLs by hand. */}
+      {user?.user_metadata?.role === 'founder' && (
+        <Section eyebrow="Founder" title="Tools in development">
+          <FounderToolsLinks />
+        </Section>
+      )}
+
       <FooterMeta />
     </PageShell>
   )
@@ -727,6 +736,81 @@ function PlacementVisibilityRow({ userId }) {
         disabled={loading}
       />
     </article>
+  )
+}
+
+function FounderToolsLinks() {
+  const items = [
+    {
+      href: '/tools/planet',
+      label: 'PlanetMap',
+      helper: 'Civilisational-scale assessment. Founder-only beta. Schema and routes still in flight.',
+    },
+  ]
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <p
+        style={{
+          ...body,
+          fontSize: '14px',
+          fontStyle: 'italic',
+          color: '#777',
+          margin: '0 0 6px',
+          lineHeight: 1.55,
+        }}
+      >
+        Only visible to founder accounts. Direct links to tools that are
+        not yet surfaced through the main navigation.
+      </p>
+      {items.map((item) => (
+        <a
+          key={item.href}
+          href={item.href}
+          style={{
+            display: 'block',
+            padding: '14px 16px',
+            border: '1px solid rgba(200, 146, 42, 0.25)',
+            borderRadius: '10px',
+            textDecoration: 'none',
+            background: '#FFFFFF',
+            transition: 'border-color 0.15s, background 0.15s',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(200, 146, 42, 0.55)'
+            e.currentTarget.style.background = 'rgba(200, 146, 42, 0.04)'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(200, 146, 42, 0.25)'
+            e.currentTarget.style.background = '#FFFFFF'
+          }}
+        >
+          <span
+            style={{
+              ...sc,
+              display: 'block',
+              fontSize: '12px',
+              letterSpacing: '0.14em',
+              color: '#A8721A',
+              fontWeight: 600,
+              marginBottom: '4px',
+            }}
+          >
+            {item.label} →
+          </span>
+          <span
+            style={{
+              ...body,
+              fontSize: '14px',
+              color: 'rgba(15, 21, 35, 0.72)',
+              lineHeight: 1.5,
+            }}
+          >
+            {item.helper}
+          </span>
+        </a>
+      ))}
+    </div>
   )
 }
 
