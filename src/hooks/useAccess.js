@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { supabase } from './useSupabase'
 import { useAuth } from './useAuth'
 
 const TIER_RANK = { full: 3, beta: 2, preview: 1, none: 0 }
@@ -9,17 +8,29 @@ function isFounder(user) {
   return user?.user_metadata?.role === 'founder'
 }
 
-export function useAccess(productKey) {
+// ─── Paywall disabled ─────────────────────────────────────────────────────────
+// All personal tools are open to any authenticated user. The RPC-driven tier
+// check is bypassed so a Supabase outage or stale plan row cannot lock a real
+// user out of their own work. Banned / suspended states are still respected via
+// user_metadata so we keep a safety lever if needed. Founder logic preserved.
+function metaTier(user) {
+  const status = user?.user_metadata?.status
+  if (status === 'banned')    return 'banned'
+  if (status === 'suspended') return 'suspended'
+  return 'full'
+}
+
+export function useAccess(/* productKey */) {
   const { user, loading: authLoading } = useAuth()
   const [tier, setTier]               = useState(null)
   const [discountPct, setDiscountPct] = useState(0)
   const [loading, setLoading]         = useState(true)
-  const [error, setError]             = useState(null)
+  const [error]                       = useState(null)
 
   useEffect(() => {
     if (authLoading) return
 
-    // Founder always gets full access — no database check needed
+    // Founder always gets full access
     if (isFounder(user)) {
       setTier('full')
       setDiscountPct(0)
@@ -27,6 +38,7 @@ export function useAccess(productKey) {
       return
     }
 
+    // Not signed in — gate falls through to the auth prompt
     if (!user) {
       setTier('none')
       setDiscountPct(0)
@@ -34,32 +46,12 @@ export function useAccess(productKey) {
       return
     }
 
-    let cancelled = false
-
-    async function check() {
-      try {
-        const { data, error: rpcError } = await supabase.rpc('get_access', {
-          p_user_id: user.id,
-          p_product: productKey,
-        })
-        if (cancelled) return
-        if (rpcError) throw rpcError
-        setTier(data?.tier ?? 'none')
-        setDiscountPct(data?.discount_pct ?? 0)
-      } catch (err) {
-        if (!cancelled) {
-          console.error('useAccess error:', err)
-          setError(err)
-          setTier('full') // fail open on error — don't block users on backend issues
-        }
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    check()
-    return () => { cancelled = true }
-  }, [user, authLoading, productKey])
+    // Signed in — open access. No RPC, no network hop, no chance of gating
+    // a real user on a backend hiccup.
+    setTier(metaTier(user))
+    setDiscountPct(0)
+    setLoading(false)
+  }, [user, authLoading])
 
   return { tier, discountPct, loading, error }
 }
