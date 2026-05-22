@@ -2390,7 +2390,7 @@ export function MapPage() {
       <div className="tool-wrap">
 
         {/* Header */}
-        <div className="tool-header">
+        <div className="tool-header" style={{ marginBottom: '3rem' }}>
           <span className="tool-eyebrow">Horizon Suite · The Map</span>
           <h1 className="tool-title">From where you are<br />to where you want to be.</h1>
           <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.6 }}>
