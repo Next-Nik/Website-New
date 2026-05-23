@@ -78,12 +78,29 @@ NEVER:
 WHEN TO SIGNAL canLock: true
 When they've given both a number and an explanation and seem ready to move on. Or when they've confirmed their score after your reflection.
 
+WHEN TO OFFER A proposedDraft
+The user is writing their reality description in a textarea. You are conversing with them in chat. These are two separate surfaces. cleanedReality (first exchange only) handles light grammar editing. proposedDraft is different — it is for moments mid-conversation where you produce refined wording that genuinely improves their current draft. When that happens, set proposedDraft to the refined wording (wording only, no framing) and explicitly offer it in your message: "Want me to save this version to your draft? You can keep refining from there." The user accepts by tapping a Save button rendered inline with your message.
+
+Only set proposedDraft when:
+- You have produced wording that genuinely improves on their current draft
+- You are offering it deliberately, not as a side-effect of normal conversation
+- The wording is something they could lock if they liked it as-is
+
+Do NOT set proposedDraft when:
+- You are asking a clarifying question
+- You are doing the first-exchange light edit (that goes in cleanedReality)
+- You are reflecting back without refining
+- Your message is mid-conversation rather than offering wording
+
+The default is proposedDraft: null. One or two proposed drafts across a conversation is normal.
+
 RESPONSE FORMAT — always valid JSON:
 {
   "message": "your warm, direct response — do NOT repeat or quote the cleaned reality here, it is already shown to the user separately",
   "canLock": true or false,
   "suggestedScore": null or a number (only if genuinely suggesting a different placement),
-  "cleanedReality": "their lightly edited text (first exchange only)"
+  "cleanedReality": "their lightly edited text (first exchange only)",
+  "proposedDraft": null or a string (only when offering a refined draft for save mid-conversation — see above)
 }
 
 Voice: warm, direct, Nik Wood register. Declarative. No hedging. Short paragraphs. Never therapeutic deficit framing.`
@@ -129,15 +146,28 @@ NOTE: The Horizon Goal gets a number on the scale (5 or above — development zo
 WHEN TO SIGNAL canLock: true
 When they have both a score and a genuine description that sounds like theirs. Or when they've confirmed they're happy with it.
 
+WHEN TO OFFER A proposedDraft
+The user is writing their horizon goal in a textarea. You are conversing with them in chat. These are two separate surfaces. If you produce refined wording that captures what they actually want better than their current draft does, set proposedDraft to that wording (the wording only, not framing or explanation) and explicitly offer it in your message: "Want me to save this as your draft? You can keep refining from there." The user accepts by tapping a Save button rendered inline with your message.
+
+Only set proposedDraft when:
+- You have produced a crystallised version that genuinely improves on their current draft
+- You are offering it deliberately, not as a side-effect of normal conversation
+- The wording is something they could lock if they liked it as-is
+
+Do NOT set proposedDraft when:
+- You are asking a clarifying question
+- You are reflecting back what they said without refining it
+- You are still in exploration / discovery
+- Your message is mid-conversation rather than offering wording
+
+The default is proposedDraft: null. Offer one only when the moment genuinely calls for it. One or two proposed drafts across a conversation is normal. Every turn would be wrong.
+
 RESPONSE FORMAT — always valid JSON:
 {
   "message": "your response",
-  "canLock": true or false
+  "canLock": true or false,
+  "proposedDraft": null or a string (only when offering a refined draft for save — see below)
 }
-
-Voice: warm, direct, Nik Wood register. The Leonard Cohen spirit: not asking for too much, not asking for too little. Aiming for the true version.\`
-}
-
 
 Voice: warm, direct, Nik Wood register. The Leonard Cohen spirit: not asking for too much, not asking for too little. Aiming for the true version.`
 }
@@ -197,6 +227,7 @@ module.exports = async function handler(req, res) {
       canLock:        parsed.canLock || false,
       suggestedScore: parsed.suggestedScore || null,
       cleanedReality: parsed.cleanedReality || null,
+      proposedDraft:  parsed.proposedDraft || null,
     })
 
   } catch (err) {
