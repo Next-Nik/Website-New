@@ -276,6 +276,39 @@ export function ToolDrawer({ open, onClose }) {
           {/* Divider */}
           <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '24px' }} />
 
+          {/* Coaching nudge — "Don't go it alone" */}
+          <div style={{
+            marginBottom: '24px',
+            padding: '20px 24px',
+            background: 'rgba(200,146,42,0.04)',
+            border: '1px solid rgba(200,146,42,0.12)',
+            borderRadius: '14px',
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: '14px',
+          }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
+              stroke="#A8721A" strokeWidth="1.2" strokeLinecap="round"
+              strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px', opacity: 0.75 }}>
+              <circle cx="9" cy="7" r="3"/><circle cx="15" cy="7" r="3"/>
+              <path d="M3 20c0-4 2.7-7 6-7M15 13c3.3 0 6 3 6 7"/>
+            </svg>
+            <div style={{ flex: 1 }}>
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: '#0F1523', fontWeight: 600, marginBottom: '4px' }}>
+                Don't go it alone.
+              </div>
+              <p style={{ ...body, fontSize: '14px', lineHeight: 1.65, color: 'rgba(15,21,35,0.65)', margin: 0 }}>
+                <Link to="/work-with-nik" onClick={onClose} style={{ color: '#A8721A', textDecoration: 'underline', textUnderlineOffset: '2px' }}>
+                  Talk to us
+                </Link>
+                {' '}about group programmes or individual coaching for your transformation.
+              </p>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', marginBottom: '24px' }} />
+
           {/* Discover row */}
           <div>
             <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em',

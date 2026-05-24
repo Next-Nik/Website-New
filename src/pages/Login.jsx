@@ -19,6 +19,23 @@ function getIntendedDestination() {
   return '/'
 }
 
+// Capture the welcome path the user chose on the wrapper so RootRoute
+// can route them to the matching welcome flow after sign-up. The
+// wrapper CTAs append ?path=self|civ|org|practitioner to /login.
+// 'civ' is treated as 'self' for welcome routing — the Kin narrative
+// walks both sides.
+function captureWelcomePath() {
+  try {
+    const params = new URLSearchParams(window.location.search)
+    const p = params.get('path')
+    if (!p) return
+    const mapped = p === 'civ' ? 'self' : p
+    if (['self', 'org', 'practitioner'].includes(mapped)) {
+      window.localStorage.setItem('nextus.welcomePath', mapped)
+    }
+  } catch {}
+}
+
 function getInitialScreen() {
   const params = new URLSearchParams(window.location.search)
   const s = params.get('screen')
@@ -361,6 +378,8 @@ export function LoginPage() {
   const notice = getInitialNotice()
 
   useEffect(() => {
+    // Capture welcome-path intent from the wrapper CTA before any redirects.
+    captureWelcomePath()
     // Skip auto-redirect if showing the new-password screen
     if (screen === 'new-password') return
     supabase.auth.getSession().then(({ data: { session } }) => {

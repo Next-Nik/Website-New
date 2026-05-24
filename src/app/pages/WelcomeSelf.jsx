@@ -1,16 +1,19 @@
 // ─────────────────────────────────────────────────────────────
-// WelcomeSelf — /beta/welcome/self
+// WelcomeSelf — /welcome/self
 //
-// The Kin intro. Reached from the starter at /beta/welcome via
-// the "I'm here for myself" choice.
+// The Kin narrative. Now serves two cases:
 //
-// On completion the overlay sets the nextus.welcomeSeen flag so
-// subsequent visits skip the gate and let the visitor through.
+//   1. POST-SIGNUP (signed in, welcome not seen):
+//      RootRoute routes a fresh user here after auth. On dismiss
+//      we mark welcome-seen and route to Mission Control (/).
 //
-// Logged-in users landing here are sent on to the dashboard.
+//   2. DIRECT VISIT (signed out, or signed in and already seen):
+//      Anyone can land here by URL. Signed-out visitors see the
+//      narrative and dismiss to /login. Signed-in users who've
+//      already seen it pass through to Mission Control.
 //
-// Query params:
-//   ?return=/path  — passed through to /login as ?redirect=…
+// Exports WELCOME_SEEN_KEY which is read by RootRoute in App.jsx
+// and IntroGate (legacy gate, kept for safety).
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect } from 'react'
@@ -22,36 +25,46 @@ import {
 } from '../components/welcome/WelcomeBeats'
 import { useAuth } from '../../hooks/useAuth'
 
-// Shared localStorage key — read by IntroGate too.
 export const WELCOME_SEEN_KEY = 'nextus.welcomeSeen'
+
+function getSeen() {
+  try { return window.localStorage.getItem(WELCOME_SEEN_KEY) === '1' }
+  catch { return false }
+}
+
+function markSeen() {
+  try { window.localStorage.setItem(WELCOME_SEEN_KEY, '1') }
+  catch {}
+}
 
 export default function WelcomeSelf() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const { user, loading } = useAuth()
-  const returnTo = params.get('return') || '/dashboard'
+  const returnTo = params.get('return') || '/'
 
-  // Already signed in? Skip the intro and go to the dashboard.
+  // Signed in AND already seen → skip straight to Mission Control.
+  // Signed in AND not yet seen → show the narrative so they meet
+  // the platform before landing in Mission Control.
   useEffect(() => {
-    if (!loading && user) {
+    if (loading) return
+    if (user && getSeen()) {
       navigate(returnTo, { replace: true })
     }
   }, [loading, user, returnTo, navigate])
 
-  if (loading || user) return null
-
-  function markSeen() {
-    try {
-      window.localStorage.setItem(WELCOME_SEEN_KEY, '1')
-    } catch {
-      // Storage may be blocked; the intro will just show again
-      // next time, which is acceptable.
-    }
-  }
+  if (loading) return null
+  if (user && getSeen()) return null
 
   function handleDismiss() {
     markSeen()
-    navigate(`/login?redirect=${encodeURIComponent(returnTo)}`)
+    if (user) {
+      // Post-signup: into Mission Control.
+      navigate(returnTo, { replace: true })
+    } else {
+      // Pre-auth direct visit: send to login.
+      navigate(`/login?redirect=${encodeURIComponent(returnTo)}`)
+    }
   }
 
   return (
@@ -63,7 +76,7 @@ export default function WelcomeSelf() {
       civData={KIN_CIV_DATA}
       returnTo={returnTo}
       onDismiss={handleDismiss}
-      closingCta="Sign in to begin"
+      closingCta={user ? "Begin" : "Sign in to begin"}
     />
   )
 }

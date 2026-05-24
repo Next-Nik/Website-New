@@ -108,7 +108,7 @@ export default function WelcomeStart() {
           <button
             type="button"
             className="start-skip"
-            onClick={() => navigate('/login?redirect=/beta/dashboard')}
+            onClick={() => navigate('/login?redirect=/')}
           >
             Sign in
           </button>

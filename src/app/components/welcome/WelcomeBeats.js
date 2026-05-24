@@ -163,13 +163,13 @@ export const BEATS = [
       cards: [
         {
           label: 'On the personal side',
-          eyebrow: 'Target Sprint · Path · day 12 of 90',
+          eyebrow: 'Target Stretch · Path · day 12 of 90',
           body: "Three conversations a week with people doing work I'd want to do. Notes after each.",
           meta: 'Tier · Small · Time · 2 hrs / week',
         },
         {
           label: 'On the planetary side',
-          eyebrow: 'Planet Sprint · contribution · committed',
+          eyebrow: 'Civ contribution · committed',
           body: 'Showing up monthly to the local food coordination meeting. Bringing a notebook. Not running it.',
           meta: 'Org · Brixton Mutual · Focus · neighbourhood',
         },

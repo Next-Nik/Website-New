@@ -5,6 +5,11 @@
 // surface that lists or links to tools.
 //
 // When a tool is renamed or rerouted, change it here only.
+//
+// `desc` carries the hospitable, benefit-led one-liner used on
+// the public marketing surface and in the tool drawer.
+// `hook` carries the longer, more architectural framing used on
+// deeper surfaces inside the platform.
 // ─────────────────────────────────────────────────────────────
 
 export const TOOLS = [
@@ -14,10 +19,10 @@ export const TOOLS = [
     eyebrow:  'Start here',
     subtitle: 'Turn caring into a step',
     path:     '/tools/nextsteps',
-    desc:     'Where caring becomes motion. Bring what is pulling at you.',
+    desc:     'Feeling stuck? Get personalised guidance on what to focus on next based on where you are right now.',
     hook:     'When something is gripping you and you do not know what to do with it. NextSteps takes the fire, gives it a direction, and produces your next move.',
     anchor:   'nextsteps',
-    featured: true,  // top of the Mission Control side stack
+    featured: true,
   },
   {
     key:      'horizon-state',
@@ -25,7 +30,7 @@ export const TOOLS = [
     eyebrow:  'Ground first',
     subtitle: 'Daily regulation practice',
     path:     '/tools/horizon-state',
-    desc:     'Regulated baseline. The floor beneath everything.',
+    desc:     'Calm your nervous system in 20 minutes. A guided daily audio practice to help you feel grounded, focused, and steady.',
     hook:     'Regulated nervous system first. A guided audio practice that builds the internal floor everything else runs on.',
     anchor:   'horizon-state',
   },
@@ -35,7 +40,7 @@ export const TOOLS = [
     eyebrow:  'See the whole',
     subtitle: "See where you are. Set where you're going.",
     path:     '/tools/map',
-    desc:     'Seven domains. An honest read of where you are.',
+    desc:     "See what's working — and what needs attention. Assess the seven core areas of your life and create a clearer path forward.",
     hook:     "A scored picture of your life across seven domains. See where you are. Set where you're going.",
     anchor:   'map',
   },
@@ -45,18 +50,18 @@ export const TOOLS = [
     eyebrow:  'Know your role',
     subtitle: 'Your role, your domain, your scale',
     path:     '/tools/purpose-piece',
-    desc:     'Your contribution archetype, domain, and scale.',
+    desc:     "Your life's purpose shapes how you show up. Find the work you're built for — your role, your domain, your scale.",
     hook:     "Surfaces the natural role you're built to play — archetype, domain, scale. The contribution coordinates.",
     anchor:   'purpose-piece',
   },
   {
     key:      'target-sprint',
-    label:    'Target Sprint',
+    label:    'Target Stretch',
     eyebrow:  'Build momentum',
     subtitle: '90-day focused goal plan',
     path:     '/tools/target-sprint',
-    desc:     'Ninety days. Three areas. A clear level-up.',
-    hook:     'Three domains. Ninety days. A sprint goal with identity, milestones, and weekly structure built in.',
+    desc:     'A focused plan. Real results. Ninety days to a new chapter — set clear goals and level up.',
+    hook:     'Three domains. Ninety days. A goal with identity, milestones, and weekly structure built in.',
     anchor:   'target-sprint',
   },
   {
@@ -65,7 +70,7 @@ export const TOOLS = [
     eyebrow:  'Become',
     subtitle: 'Daily becoming practice',
     path:     '/tools/horizon-practice',
-    desc:     'The daily return. T.E.A. practice, skill development, and thought loop work.',
+    desc:     'Build better habits, one day at a time. Your daily skill development practice.',
     hook:     'T.E.A. daily practice, skill development, and thought loop work toward your Horizon Self.',
     anchor:   'horizon-practice',
   },

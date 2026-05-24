@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom'
+import { useAuth } from './hooks/useAuth'
 import { useEffect, Component } from 'react'
 import { BottomTabs } from './components/BottomTabs'
 
@@ -36,6 +37,8 @@ import { FAQPage }               from './pages/FAQ'
 import { ContentEditorPage }      from './pages/ContentEditor'
 import { GroupJoinPage }          from './pages/GroupJoin'
 import { ToolsPage }              from './pages/Tools'
+import { MarketingHomePage }      from './pages/MarketingHome'
+import { MarketingToolsPage }     from './pages/MarketingTools'
 import { PricingPage }            from './pages/Pricing'
 import { CheckoutPage }          from './pages/Checkout'
 import { AuthCallbackPage }       from './pages/AuthCallback'
@@ -111,24 +114,66 @@ function ComingSoon({ name }) {
   )
 }
 
+// ── Root route ──
+//
+// Signed-out → MarketingHomePage (the wrapper)
+// Signed-in + welcome seen → MissionControl
+// Signed-in + welcome NOT seen → route to matching welcome flow
+//   (path captured from the wrapper CTA, stored in localStorage by Login)
+//
+// The WELCOME_SEEN_KEY flag is set by the welcome overlay on dismiss,
+// so this only routes new users through it once.
+function RootRoute() {
+  const { user, loading } = useAuth()
+  if (loading) return null
+  if (!user) return <MarketingHomePage />
+
+  // Signed in. Check welcome-seen flag.
+  let seen = true
+  try {
+    seen = window.localStorage.getItem('nextus.welcomeSeen') === '1'
+  } catch {
+    // localStorage blocked — fail open and skip the welcome.
+  }
+  if (seen) return <MissionControl />
+
+  // Not seen — route to the welcome flow matching the path the user
+  // chose on the wrapper. Default to self if no path was captured.
+  let path = 'self'
+  try {
+    const stored = window.localStorage.getItem('nextus.welcomePath')
+    if (stored === 'org' || stored === 'practitioner' || stored === 'self') {
+      path = stored
+    }
+    window.localStorage.removeItem('nextus.welcomePath')
+  } catch {}
+
+  const target = {
+    self:         '/welcome/self',
+    org:          '/welcome/org',
+    practitioner: '/welcome/practitioner',
+  }[path]
+
+  return <Navigate to={target} replace />
+}
+
 function AppInner() {
   const { pathname } = useLocation()
-  // Mission Control owns the whole viewport — hide the bottom tabs there.
-  // The hamburger menu in the brand bar exposes every destination the
-  // tab bar would, and the rail tiles cover the personal-side tools.
-  const hideBottomTabs = pathname === '/'
+  const { user } = useAuth()
+  // Mission Control owns the whole viewport when signed in.
+  const hideBottomTabs = pathname === '/' && !!user
 
   return (
     <>
       <ScrollToTop />
       <Routes>
         {/* ── Site pages ── */}
-        <Route path="/"                element={<IntroGate><MissionControl /></IntroGate>} />
+        <Route path="/"                element={<RootRoute />} />
         <Route path="/index"           element={<Navigate to="/" replace />} />
         <Route path="/home"            element={<Navigate to="/" replace />} />
         <Route path="/about"           element={<AboutPage />} />
         {/* ── Legacy NextUs routes → redirect to new platform paths ── */}
-        <Route path="/nextus-self"                   element={<Navigate to="/welcome/self" replace />} />
+        <Route path="/nextus-self"                   element={<Navigate to="/" replace />} />
         <Route path="/nextus"                        element={<Navigate to="/" replace />} />
         <Route path="/nextus/actors"                 element={<Navigate to="/feed" replace />} />
         <Route path="/nextus/actors/:id"             element={<LegacyOrgRedirect />} />
@@ -151,7 +196,7 @@ function AppInner() {
         <Route path="/faq"             element={<FAQPage />} />
         <Route path="/profile"         element={<Navigate to="/" replace />} />
         <Route path="/dashboard"       element={<Navigate to="/" replace />} />
-        <Route path="/tools"           element={<ToolsPage />} />
+        <Route path="/tools"           element={<MarketingToolsPage />} />
         <Route path="/content-editor"  element={<ContentEditorPage />} />
         <Route path="/watch"           element={<WatchPage />} />
 
@@ -208,8 +253,8 @@ function AppInner() {
         {/* ── /beta/* redirects — preserve old links ── */}
         <Route path="/beta"                              element={<Navigate to="/" replace />} />
         <Route path="/beta/dashboard"                    element={<Navigate to="/" replace />} />
-        <Route path="/beta/welcome"                      element={<Navigate to="/welcome" replace />} />
-        <Route path="/beta/welcome/self"                 element={<Navigate to="/welcome/self" replace />} />
+        <Route path="/beta/welcome"                      element={<Navigate to="/" replace />} />
+        <Route path="/beta/welcome/self"                 element={<Navigate to="/" replace />} />
         <Route path="/beta/welcome/org"                  element={<Navigate to="/welcome/org" replace />} />
         <Route path="/beta/welcome/practitioner"         element={<Navigate to="/welcome/practitioner" replace />} />
         <Route path="/beta/profile/edit"                 element={<Navigate to="/profile/edit" replace />} />

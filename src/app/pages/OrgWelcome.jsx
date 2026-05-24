@@ -1,25 +1,14 @@
 // ─────────────────────────────────────────────────────────────
-// OrgWelcome — /beta/welcome/org
+// OrgWelcome — /welcome/org
 //
-// The org intro. Reached from the starter at /beta/welcome via
-// the "I represent an organisation" choice.
+// The org narrative. Handles both pre-auth direct visits and
+// post-signup routing from RootRoute (when the user chose the
+// 'org' path on the wrapper or via WelcomeStart).
 //
-// Default returnTo lands the visitor on the dashboard with the
-// org scope pre-armed (?scope=org). On arrival, Mission Control
-// writes 'org' into the user's mission_control_scopes — overwriting
-// to ['org'] for fresh signups still on the legacy default
-// ['self','planet'] (per brief Section 3.2 — org welcome makes the
-// personal scales off by default), or merging 'org' in for users
-// who have already shaped their scopes. Either way the My Org
-// surface activates, which is itself the setup flow until an org
-// row exists for the user.
-//
-// The pre-auth case routes through /login first so the scope
-// handoff fires regardless of whether the visitor signs in
-// fresh or was already logged in.
-//
-// WelcomeNext is retained as a not-yet-authed fallback for
-// visitors who arrive without going through the welcome route.
+// returnTo carries ?scope=org so Mission Control activates the
+// org surface and writes 'org' into the user's scopes on arrival
+// (per Scopes & Onboarding brief, Section 3.2 — org overwrites
+// to ['org']).
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect } from 'react'
@@ -32,34 +21,39 @@ import {
 import { useAuth } from '../../hooks/useAuth'
 import { WELCOME_SEEN_KEY } from './WelcomeSelf'
 
+function getSeen() {
+  try { return window.localStorage.getItem(WELCOME_SEEN_KEY) === '1' }
+  catch { return false }
+}
+
+function markSeen() {
+  try { window.localStorage.setItem(WELCOME_SEEN_KEY, '1') }
+  catch {}
+}
+
 export default function OrgWelcome() {
   const [params] = useSearchParams()
   const navigate = useNavigate()
   const { user, loading } = useAuth()
-  // Default landing target after the intro. The dashboard reads
-  // ?scope=org on arrival and writes the user's scope array, then
-  // activates the My Org surface (which holds its own setup flow).
-  const returnTo = params.get('return') || '/dashboard?scope=org'
+  const returnTo = params.get('return') || '/?scope=org'
 
   useEffect(() => {
-    if (!loading && user) {
+    if (loading) return
+    if (user && getSeen()) {
       navigate(returnTo, { replace: true })
     }
   }, [loading, user, returnTo, navigate])
 
-  if (loading || user) return null
-
-  function markSeen() {
-    try {
-      window.localStorage.setItem(WELCOME_SEEN_KEY, '1')
-    } catch {
-      // Storage unavailable; not fatal.
-    }
-  }
+  if (loading) return null
+  if (user && getSeen()) return null
 
   function handleDismiss() {
     markSeen()
-    navigate(`/login?redirect=${encodeURIComponent(returnTo)}`)
+    if (user) {
+      navigate(returnTo, { replace: true })
+    } else {
+      navigate(`/login?redirect=${encodeURIComponent(returnTo)}`)
+    }
   }
 
   return (
@@ -71,7 +65,7 @@ export default function OrgWelcome() {
       civData={HEARTH_CIV_DATA}
       returnTo={returnTo}
       onDismiss={handleDismiss}
-      closingCta="Bring your organisation in →"
+      closingCta={user ? "Bring your organisation in →" : "Sign in to bring your organisation in →"}
     />
   )
 }
