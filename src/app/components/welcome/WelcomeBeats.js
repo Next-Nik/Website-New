@@ -169,7 +169,7 @@ export const BEATS = [
         },
         {
           label: 'On the planetary side',
-          eyebrow: 'Civ contribution · committed',
+          eyebrow: 'Planet Sprint · contribution · committed',
           body: 'Showing up monthly to the local food coordination meeting. Bringing a notebook. Not running it.',
           meta: 'Org · Brixton Mutual · Focus · neighbourhood',
         },
