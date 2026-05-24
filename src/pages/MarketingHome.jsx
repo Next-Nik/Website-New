@@ -60,29 +60,30 @@ function PillButton({ href, children, light }) {
 }
 
 // ── Path card — horizontal split (image | copy) ──────────────
+// Image takes ~40%, copy takes ~60% — copy needs more room so the
+// heading and body breathe. Image sits with breathing room around it
+// so the full composition is visible (not rough-cropped).
 function PathCard({ eyebrow, heading, body: bodyText, cta, href, image, imageSide, dark }) {
   const bg     = dark ? '#0F1523' : '#FFFFFF'
   const clr    = dark ? '#FAFAF7' : ink
-  const clrDim = dark ? 'rgba(250,250,247,0.70)' : inkFaint
+  const clrDim = dark ? 'rgba(250,250,247,0.72)' : inkFaint
   const btnBorder = dark ? 'rgba(200,146,42,0.6)' : goldBdr
   const btnBg     = dark ? 'transparent' : 'rgba(200,146,42,0.06)'
-  const btnClr    = dark ? 'rgba(200,146,42,0.85)' : gold
+  const btnClr    = dark ? 'rgba(200,146,42,0.9)' : gold
   const imageBg   = dark ? '#0F1523' : '#FFFFFF'
 
-  // The image sits in its own half of the card with padding around it
-  // so the full composition (gold circle, sunrise rays, globe rings)
-  // is visible — not rough-cropped to fill the panel.
   const imagePanel = (
     <div
       className="path-card-image"
       style={{
-        flex: '1 1 50%',
+        flex: '0 0 42%',
         minWidth: 0,
         background: imageBg,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 'clamp(20px,3vw,32px)',
+        padding: '0',
+        overflow: 'hidden',
       }}
     >
       <img
@@ -90,10 +91,9 @@ function PathCard({ eyebrow, heading, body: bodyText, cta, href, image, imageSid
         alt=""
         aria-hidden="true"
         style={{
-          maxWidth: '100%',
-          maxHeight: '320px',
-          width: 'auto',
-          height: 'auto',
+          width: '100%',
+          height: '100%',
+          maxHeight: '420px',
           objectFit: 'contain',
           display: 'block',
         }}
@@ -105,9 +105,9 @@ function PathCard({ eyebrow, heading, body: bodyText, cta, href, image, imageSid
     <div
       className="path-card-copy"
       style={{
-        flex: '1 1 50%',
+        flex: '1 1 60%',
         minWidth: 0,
-        padding: 'clamp(28px,3.5vw,40px)',
+        padding: 'clamp(28px,3vw,40px) clamp(28px,3.5vw,44px)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -116,11 +116,11 @@ function PathCard({ eyebrow, heading, body: bodyText, cta, href, image, imageSid
       <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '14px' }}>
         {eyebrow}
       </span>
-      <h2 style={{ ...serif, fontSize: 'clamp(26px,3.2vw,36px)', fontWeight: 400, color: clr, lineHeight: 1.15, margin: 0 }}>
+      <h2 style={{ ...serif, fontSize: 'clamp(26px,2.8vw,38px)', fontWeight: 400, color: clr, lineHeight: 1.1, margin: 0, letterSpacing: '-0.005em' }}>
         {heading}
       </h2>
-      <div style={{ width: '32px', height: '1px', background: gold, opacity: 0.55, margin: '16px 0 18px' }} />
-      <p style={{ ...body, fontSize: '15px', lineHeight: 1.75, color: clrDim, margin: '0 0 28px 0' }}>
+      <div style={{ width: '32px', height: '1px', background: gold, opacity: 0.55, margin: '18px 0 20px' }} />
+      <p style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: clrDim, margin: '0 0 28px 0' }}>
         {bodyText}
       </p>
       <a
@@ -133,6 +133,7 @@ function PathCard({ eyebrow, heading, body: bodyText, cta, href, image, imageSid
           ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.16em',
           color: btnClr, textDecoration: 'none',
           alignSelf: 'flex-start',
+          whiteSpace: 'nowrap',
           transition: 'all 0.18s',
         }}
         onMouseEnter={e => {
@@ -151,10 +152,6 @@ function PathCard({ eyebrow, heading, body: bodyText, cta, href, image, imageSid
     </div>
   )
 
-  // imageSide controls visual order on desktop:
-  //   'left'  → image on outer edge (personal card, sunrise on left)
-  //   'right' → image on outer edge (civ card, globe on right)
-  // On mobile, both stack image-above-copy regardless.
   return (
     <div
       className={`path-card path-card--image-${imageSide}`}
@@ -167,7 +164,7 @@ function PathCard({ eyebrow, heading, body: bodyText, cta, href, image, imageSid
         border: dark ? 'none' : '1px solid rgba(200,146,42,0.12)',
         display: 'flex',
         flexDirection: 'row',
-        minHeight: '380px',
+        minHeight: '400px',
       }}
     >
       {imageSide === 'left' ? imagePanel : copyPanel}
@@ -184,7 +181,7 @@ export function MarketingHomePage() {
 
       {/* ── Hero ─────────────────────────────────── */}
       <section style={{
-        maxWidth: '1040px',
+        maxWidth: '1200px',
         margin: '0 auto',
         padding: 'clamp(64px,7vw,88px) clamp(20px,5vw,40px) clamp(32px,4vw,44px)',
         textAlign: 'center',
@@ -207,7 +204,7 @@ export function MarketingHomePage() {
 
       {/* ── Two cards ────────────────────────────── */}
       <section style={{
-        maxWidth: '1040px',
+        maxWidth: '1200px',
         margin: '0 auto',
         padding: '0 clamp(20px,5vw,40px)',
       }}>
@@ -335,21 +332,18 @@ export function MarketingHomePage() {
           gap: clamp(16px, 2.5vw, 24px);
           align-items: stretch;
         }
-        /* On narrower viewports, switch each card to vertical
-           (image on top, copy below) so the layout reads on mobile. */
         @media (max-width: 820px) {
           .path-card {
             flex-direction: column !important;
             min-height: 0 !important;
           }
-          /* Force the image panel to come first on mobile regardless of
-             desktop imageSide. */
           .path-card--image-right .path-card-image { order: -1; }
           .path-card-image {
-            padding: clamp(20px, 5vw, 32px) !important;
+            flex: 0 0 auto !important;
+            min-height: 280px;
           }
           .path-card-image img {
-            max-height: 240px !important;
+            max-height: 320px !important;
           }
         }
         @media (max-width: 680px) {
