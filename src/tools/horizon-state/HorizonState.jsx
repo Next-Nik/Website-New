@@ -874,6 +874,12 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
   const [showBeginPopup, setShowBeginPopup] = useState(true)
   const [saveError,     setSaveError]     = useState('')
 
+  // Desktop viewport ref — used to auto-scroll the three-column grid right
+  // once Before is done, so the After column comes into view. Mobile uses
+  // its own stacked layout and doesn't need this.
+  const desktopViewportRef = useRef(null)
+  const hasAutoScrolledRef = useRef(false)
+
   // Mobile audio state — shared between play button and scrubber
   const mobileAudioRef   = useRef(null)
   const mobileProgressRef = useRef(null)
@@ -926,6 +932,35 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
       if (a) { setAfterValue(a.value); setAfterNote(a.note ?? ''); setAfterUnlocked(true); setAfterDone(true) }
     }
   }, [sessions])
+
+  // ── Auto-scroll the desktop viewport right when Before completes.
+  // The three-column grid (Before | Audio | After) is wider than the
+  // viewport on smaller laptops; this glide brings After into view at
+  // the moment it becomes the user's next action. Fires once per session,
+  // and only on a fresh Before → After transition (not on reload of a
+  // page where Before was already done earlier today).
+  const initialBeforeDoneRef = useRef(!!todayBefore)
+  useEffect(() => {
+    if (!beforeDone) return
+    if (hasAutoScrolledRef.current) return
+    // If Before was already done on initial mount, this isn't a fresh
+    // transition — they're returning to the page mid-session. Don't yank.
+    if (initialBeforeDoneRef.current) { hasAutoScrolledRef.current = true; return }
+    const el = desktopViewportRef.current
+    if (!el) return
+    // Skip on narrow viewports — mobile layout already shows both flames.
+    if (typeof window !== 'undefined' && window.innerWidth <= 640) return
+    hasAutoScrolledRef.current = true
+    // Scroll to the end so the After column is fully in view.
+    const target = el.scrollWidth - el.clientWidth
+    if (target > 0) {
+      // Tiny delay so the layout settles after beforeDone flips opacity.
+      setTimeout(() => {
+        try { el.scrollTo({ left: target, behavior: 'smooth' }) }
+        catch { el.scrollLeft = target }
+      }, 80)
+    }
+  }, [beforeDone])
 
   async function saveCheckin(stage, value, note) {
     if (!user?.id) return
@@ -1042,20 +1077,59 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
   return (
     <div data-compact={compact ? 'true' : 'false'} style={{ position: 'relative', minHeight: compact ? 'auto' : '420px' }}>
       <style>{`
+        /* ── Desktop scrollable viewport ── */
+        /* The grid below is sized to fit all three columns at their proper
+           widths. On narrow laptops the grid is wider than the viewport;
+           we scroll horizontally rather than squish. On Before completion,
+           a JS effect glides the scroll position right to reveal After. */
+        .hs-baseline-viewport {
+          overflow-x: auto;
+          overflow-y: visible;
+          scroll-behavior: smooth;
+          /* Hide native scrollbar — the auto-scroll is the primary affordance,
+             but users can still swipe/drag to scroll back. */
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          /* Fade hint on the right edge before Before completes — tells the
+             user there's more content to the right. Disappears once Before
+             is done (the auto-scroll has revealed it). */
+          position: relative;
+          mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
+          -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
+          transition: mask-image 0.6s ease, -webkit-mask-image 0.6s ease;
+        }
+        .hs-baseline-viewport[data-before-done="true"] {
+          mask-image: none;
+          -webkit-mask-image: none;
+        }
+        .hs-baseline-viewport::-webkit-scrollbar { display: none; }
+
         /* ── Desktop: three-column grid ── */
         .hs-baseline-grid {
           display: grid;
           grid-template-columns: 1fr 1.6fr 1fr;
           gap: 20px;
           align-items: start;
+          /* Min-width keeps the three columns at workable widths even when
+             the viewport is narrower; the parent .hs-baseline-viewport
+             provides the horizontal scroll. */
+          min-width: 880px;
         }
 
         /* ── Mobile: one-screen layout ── */
         @media (max-width: 640px) {
+          /* Viewport collapses on mobile — mobile layout uses .hs-mobile-only
+             and the grid is hidden, so no horizontal scroll or fade. */
+          .hs-baseline-viewport {
+            overflow-x: visible;
+            mask-image: none;
+            -webkit-mask-image: none;
+          }
           .hs-baseline-grid {
             display: flex;
             flex-direction: column;
             gap: 0;
+            min-width: 0;
           }
           /* Flames row: Before | After side by side */
           .hs-flames-row {
@@ -1099,10 +1173,16 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
         /* ── Compact override: force mobile layout regardless of viewport.
              Used when BaselineCard renders inside a narrow panel
              (e.g. Mission Control slider). ── */
+        [data-compact="true"] .hs-baseline-viewport {
+          overflow-x: visible;
+          mask-image: none;
+          -webkit-mask-image: none;
+        }
         [data-compact="true"] .hs-baseline-grid {
           display: flex;
           flex-direction: column;
           gap: 0;
+          min-width: 0;
         }
         [data-compact="true"] .hs-flames-row {
           display: flex;
@@ -1354,7 +1434,16 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
       </div>
 
       {/* ══ DESKTOP LAYOUT ═════════════════════════════════════════════════════ */}
-      <div className="hs-baseline-grid">
+      {/* Scrollable viewport: when Before completes, we glide the view right
+          so the After column comes into focus. Users can still swipe/scroll
+          back to see Before at any time. The fade on the right edge hints
+          there's more content before they hit Begin. */}
+      <div
+        ref={desktopViewportRef}
+        className="hs-baseline-viewport"
+        data-before-done={beforeDone ? 'true' : 'false'}
+      >
+        <div className="hs-baseline-grid">
 
         {/* Before */}
         <div className="hs-col-before-desktop" style={{ flexDirection: 'column', alignItems: 'center', opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
@@ -1408,6 +1497,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
           )}
         </div>
 
+        </div>
       </div>
 
       {showModal && <AuthModal onDismiss={() => setShowModal(false)} />}
