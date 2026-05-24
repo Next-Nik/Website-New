@@ -139,6 +139,116 @@ function HourglassPicker({ onScore, horizonMode = false, currentScore }) {
   )
 }
 
+// ─── HourglassPickerCompact — horizontal variant for embedded contexts ────────
+//
+// Same 0–10 scale, same tier colours, same Line at 5, same hover-reveals-tier
+// grammar as the vertical HourglassPicker — rotated 90° for embedded contexts
+// where vertical real estate is scarce (e.g. sub-domain cards inside Step 2).
+//
+// The shape still teaches its meaning: bars are narrowest at 5 (The Line) and
+// flare outward toward 0 (suffering) and 10 (flourishing). The pinch carries
+// the same semantics whether the long axis is vertical or horizontal.
+//
+// Differences vs full picker:
+//   • Horizontal row of bars instead of vertical column
+//   • Tier label/description appears above the row on hover or selection
+//     (instead of below the column, since 11 always-on tier labels won't fit)
+//   • No ToolCompassPanel — that's a one-place explainer, not for repetition
+//
+// Always operates in current-score mode. Embedded contexts that need a
+// horizon picker use the full HourglassPicker instead — horizon is a
+// whole-domain moment, not an embedded one.
+
+function HourglassPickerCompact({ onScore, currentScore }) {
+  const [hovered, setHovered] = useState(null)
+  const minH = 14, maxH = 38
+
+  // Bar heights mirror the vertical version's getWidth — narrow at 5, flaring
+  // outward. Using the same Math.pow(pct, 1.4) curve preserves the shape.
+  function getHeight(n) {
+    const dist = Math.abs(n - 5)
+    const pct  = dist / 5
+    return Math.round(minH + (maxH - minH) * Math.pow(pct, 1.4))
+  }
+
+  const shown = hovered !== null ? hovered : currentScore
+
+  return (
+    <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '10px', padding: '12px 14px', marginTop: '4px' }}>
+      {/* Tier indicator — appears when a score is hovered or selected */}
+      <div style={{ minHeight: '24px', marginBottom: '8px', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+        {shown !== undefined && shown !== null ? (
+          <>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '14px', fontWeight: 600, color: getScoreColor(shown), letterSpacing: '0.04em' }}>{shown}</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.10em', color: getScoreColor(shown) }}>{TIER_MAP[shown]}</span>
+            <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.62)' }}>— {LABEL_MAP[shown]}</span>
+          </>
+        ) : (
+          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.42)' }}>Hover a bar to see the tier · tap to set the score</span>
+        )}
+      </div>
+
+      {/* Horizontal hourglass row */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '4px', height: `${maxH + 4}px`, position: 'relative' }}>
+        {SCALE_POINTS.map(n => {
+          const h      = getHeight(n)
+          const c      = getScoreColor(n)
+          const isHov  = hovered === n
+          const isCur  = currentScore === n
+          const isLine = n === 5
+          return (
+            <div key={n} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', height: '100%', position: 'relative' }}>
+              <button
+                onMouseEnter={() => setHovered(n)}
+                onMouseLeave={() => setHovered(null)}
+                onClick={() => onScore(n)}
+                aria-label={`Score ${n} — ${TIER_MAP[n]}`}
+                style={{
+                  width: '100%',
+                  height: `${h}px`,
+                  background: isHov || isCur ? c : `${c}18`,
+                  border: `1px solid ${isHov || isCur ? c : `${c}30`}`,
+                  borderRadius: '3px',
+                  cursor: 'pointer',
+                  transition: 'all 0.12s ease',
+                  outline: isCur ? `2px solid ${c}44` : 'none',
+                  outlineOffset: '2px',
+                  padding: 0,
+                }}
+              />
+              {/* The Line at 5 — vertical accent above the bar */}
+              {isLine && (
+                <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '1px', background: 'rgba(200,146,42,0.35)', pointerEvents: 'none' }} />
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Number row beneath the bars */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '4px', marginTop: '4px' }}>
+        {SCALE_POINTS.map(n => {
+          const isHov  = hovered === n
+          const isCur  = currentScore === n
+          const isLine = n === 5
+          return (
+            <div key={n} style={{ flex: 1, textAlign: 'center', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.04em', color: isLine ? '#A8721A' : (isHov || isCur) ? getScoreColor(n) : 'rgba(15,21,35,0.55)', fontWeight: (isHov || isCur || isLine) ? 600 : 400 }}>{n}</div>
+          )
+        })}
+      </div>
+
+      {/* Tier signature — appears below on hover, like the full picker */}
+      {hovered !== null && (
+        <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.6, margin: 0 }}>
+            {SIGNATURE_MAP[hovered]}
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── MapWheel — spinning heptagon ─────────────────────────────────────────────
 
 function getNodePos(index, rotDeg = 0) {
@@ -570,6 +680,57 @@ function ChatBubble({ msg }) {
   )
 }
 
+// ProposedDraftAccept — renders below an assistant bubble when North Star has
+// offered refined wording for the textarea. The user explicitly chooses to
+// save it. Replaces the old pattern of silently overwriting the textarea on
+// canLock turns, which left the user unsure whether anything had happened
+// and discarded earlier mid-conversation refinements.
+function ProposedDraftAccept({ proposedDraft, accepted, onAccept }) {
+  if (!proposedDraft) return null
+  return (
+    <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '-4px', marginBottom: '12px', marginLeft: '4px' }}>
+      <div style={{
+        padding: '10px 14px',
+        background: accepted ? 'rgba(200,146,42,0.04)' : 'rgba(200,146,42,0.07)',
+        border: '1px dashed rgba(200,146,42,0.40)',
+        borderRadius: '8px',
+        maxWidth: '88%',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        flexWrap: 'wrap',
+      }}>
+        <span style={{
+          fontFamily: "'Cormorant SC', Georgia, serif",
+          fontSize: '12px',
+          letterSpacing: '0.14em',
+          color: '#A8721A',
+        }}>
+          {accepted ? '✓ Saved to your draft' : 'North Star offered a refined version'}
+        </span>
+        {!accepted && (
+          <button
+            onClick={onAccept}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '40px',
+              border: '1px solid rgba(168,114,26,0.8)',
+              background: '#C8922A',
+              color: '#FFFFFF',
+              fontFamily: "'Cormorant SC', Georgia, serif",
+              fontSize: '12px',
+              letterSpacing: '0.12em',
+              cursor: 'pointer',
+            }}
+          >
+            Save to draft →
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function ThinkingBubble() {
   return (
     <div style={{ display: 'flex', marginBottom: '10px' }}>
@@ -764,7 +925,15 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
         }),
       })
       const data = await res.json()
-      const aiMsg = { role: 'assistant', content: data.message, canLock: data.canLock, suggestedScore: data.suggestedScore, cleanedReality: data.cleanedReality || null }
+      const aiMsg = {
+        role: 'assistant',
+        content: data.message,
+        canLock: data.canLock,
+        suggestedScore: data.suggestedScore,
+        cleanedReality: data.cleanedReality || null,
+        proposedDraft: data.proposedDraft || null,
+        accepted: false,
+      }
       const updated = [...next, aiMsg]
       setScoreMsgs(updated)
       if (data.cleanedReality) setRealityFinal(data.cleanedReality)
@@ -815,14 +984,19 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
         }),
       })
       const data = await res.json()
-      const aiMsg = { role: 'assistant', content: data.message, canLock: data.canLock }
+      const aiMsg = {
+        role: 'assistant',
+        content: data.message,
+        canLock: data.canLock,
+        proposedDraft: data.proposedDraft || null,
+        accepted: false,
+      }
       const updated = [...next, aiMsg]
       setHorizonMsgs(updated)
-      // When North Star signals ready to lock, surface its version in the textarea
-      // so the user locks the refined text, not their rough draft
-      if (data.canLock && data.message) {
-        setHorizonText(data.message)
-      }
+      // Note: horizon text updates are now driven by the user explicitly
+      // accepting a proposedDraft via the ProposedDraftAccept affordance —
+      // no silent overwrites. North Star's refined wording shows in the
+      // chat bubble; the user chooses to promote it to the textarea.
       setThinking(false)
     } catch {
       setHorizonMsgs([...next, { role: 'assistant', content: 'Something went wrong. Try again.' }])
@@ -839,6 +1013,29 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
     setHorizonLocked(true)
     save({ horizonLocked: true, horizonScore, horizonText })
     setStep('done')
+  }
+
+  // ── Accept handlers for proposedDraft ───────────────────────
+  // North Star can offer refined wording via proposedDraft. The user
+  // accepts explicitly — we update the textarea, then mark the message
+  // accepted so the affordance flips to "Saved" and won't show twice.
+  function acceptScoreDraft(index) {
+    const msg = scoreMsgs[index]
+    if (!msg?.proposedDraft) return
+    setRealityDraft(msg.proposedDraft)
+    setRealityFinal(msg.proposedDraft)
+    const next = scoreMsgs.map((m, i) => i === index ? { ...m, accepted: true } : m)
+    setScoreMsgs(next)
+    save({ realityDraft: msg.proposedDraft, realityFinal: msg.proposedDraft, scoreMsgs: next })
+  }
+
+  function acceptHorizonDraft(index) {
+    const msg = horizonMsgs[index]
+    if (!msg?.proposedDraft) return
+    setHorizonText(msg.proposedDraft)
+    const next = horizonMsgs.map((m, i) => i === index ? { ...m, accepted: true } : m)
+    setHorizonMsgs(next)
+    save({ horizonText: msg.proposedDraft, horizonMsgs: next })
   }
 
   // ── Render ──────────────────────────────────────────────────
@@ -1070,6 +1267,13 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                     </div>
                   )}
                   <ChatBubble msg={m} />
+                  {m.role === 'assistant' && m.proposedDraft && (
+                    <ProposedDraftAccept
+                      proposedDraft={m.proposedDraft}
+                      accepted={m.accepted}
+                      onAccept={() => acceptScoreDraft(i)}
+                    />
+                  )}
                 </div>
               ))}
               {thinking && <ThinkingBubble />}
@@ -1116,9 +1320,9 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                 If the genie granted your wish in {domain.label}, what would it be?
               </p>
 
-              {horizonMsgs.some(m => m.canLock) && (
+              {horizonMsgs.some(m => m.accepted) && (
                 <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>
-                  ✓ North Star's version — edit freely, then lock
+                  ✓ Saved from North Star — edit freely, then lock
                 </div>
               )}
               <textarea
@@ -1126,7 +1330,7 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                 onChange={e => setHorizonText(e.target.value)}
                 placeholder="What does this area look like in your full yes life?"
                 rows={3}
-                style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', background: horizonMsgs.some(m => m.canLock) ? 'rgba(200,146,42,0.04)' : 'rgba(200,146,42,0.02)', border: horizonMsgs.some(m => m.canLock) ? '1.5px solid rgba(200,146,42,0.45)' : '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '12px' }}
+                style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', background: horizonMsgs.some(m => m.accepted) ? 'rgba(200,146,42,0.04)' : 'rgba(200,146,42,0.02)', border: horizonMsgs.some(m => m.accepted) ? '1.5px solid rgba(200,146,42,0.45)' : '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '12px' }}
               />
 
               <HourglassPicker onScore={handleHorizonScoreSelect} horizonMode currentScore={horizonScore} />
@@ -1134,7 +1338,18 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
               {/* Horizon conversation */}
               {horizonMsgs.length > 0 && (
                 <div style={{ marginTop: '16px' }}>
-                  {horizonMsgs.map((m, i) => <ChatBubble key={i} msg={m} />)}
+                  {horizonMsgs.map((m, i) => (
+                    <div key={i}>
+                      <ChatBubble msg={m} />
+                      {m.role === 'assistant' && m.proposedDraft && (
+                        <ProposedDraftAccept
+                          proposedDraft={m.proposedDraft}
+                          accepted={m.accepted}
+                          onAccept={() => acceptHorizonDraft(i)}
+                        />
+                      )}
+                    </div>
+                  ))}
                   {thinking && <ThinkingBubble />}
                 </div>
               )}
@@ -1468,7 +1683,6 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, ac
 
   const borderColor  = active ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.12)'
   const btnBorder    = active ? '2px solid #A8721A'    : '2px solid rgba(200,146,42,0.30)'
-  const scoreBorder  = n => currentScore === n ? '1.5px solid #A8721A' : '1.5px solid rgba(200,146,42,0.25)'
 
   return (
     <div style={{ border: '1px solid ' + borderColor, borderRadius: '10px', marginBottom: '8px', overflow: 'hidden', opacity: active ? 1 : 0.6 }}>
@@ -1501,13 +1715,11 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, ac
 
           {(step === 'score' || step === 'horizon' || step === 'done') && (
             <div style={{ marginBottom: '14px' }}>
-              <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>Where are you now? (0–10)</div>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                {[0,1,2,3,4,5,6,7,8,9,10].map(n => (
-                  <button key={n} onClick={() => { setCurrentScore(n); setStep('horizon'); save({ currentScore: n }) }}
-                    style={{ width: '34px', height: '34px', borderRadius: '50%', border: scoreBorder(n), background: currentScore === n ? '#A8721A' : 'transparent', color: currentScore === n ? '#FFFFFF' : 'rgba(15,21,35,0.78)', ...sc, fontSize: '13px', cursor: 'pointer', transition: 'all 0.15s' }}>{n}</button>
-                ))}
-              </div>
+              <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>Where are you now?</div>
+              <HourglassPickerCompact
+                currentScore={currentScore}
+                onScore={n => { setCurrentScore(n); setStep('horizon'); save({ currentScore: n }) }}
+              />
             </div>
           )}
 
@@ -1904,7 +2116,9 @@ export function ConnectionDomainStep({ domain, existingData, onComplete, onUpdat
                         })
                         const data = await res.json()
                         setHorizonMsgs([{ role: 'user', content: msg }, { role: 'assistant', content: data.message, canLock: data.canLock }])
-                        if (data.canLock && data.message) setHorizonText(data.message)
+                        // Silent overwrite removed — Phase 1 of the Connection refactor.
+                        // The full proposedDraft UX lands in Phase 3 when this whole
+                        // Connection flow is restructured into the standard three-step shape.
                       } catch {
                         setHorizonMsgs(p => [...p, { role: 'assistant', content: 'Something went wrong. Please try again.' }])
                       }
@@ -1933,7 +2147,8 @@ export function ConnectionDomainStep({ domain, existingData, onComplete, onUpdat
                         })
                         const data = await res.json()
                         setHorizonMsgs(p => [...p, { role: 'assistant', content: data.message, canLock: data.canLock }])
-                        if (data.canLock && data.message) setHorizonText(data.message)
+                        // Silent overwrite removed — see note above. Phase 3 brings the
+                        // full proposedDraft UX to Connection when this code is rebuilt.
                       } catch {
                         setHorizonMsgs(p => [...p, { role: 'assistant', content: 'Something went wrong. Please try again.' }])
                       }
