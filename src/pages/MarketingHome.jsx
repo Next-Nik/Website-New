@@ -59,80 +59,119 @@ function PillButton({ href, children, light }) {
   )
 }
 
-// ── Path card ───────────────────────────────────────────────
-function PathCard({ eyebrow, heading, body: bodyText, cta, href, image, dark }) {
+// ── Path card — horizontal split (image | copy) ──────────────
+function PathCard({ eyebrow, heading, body: bodyText, cta, href, image, imageSide, dark }) {
   const bg     = dark ? '#0F1523' : '#FFFFFF'
   const clr    = dark ? '#FAFAF7' : ink
-  const clrDim = dark ? 'rgba(250,250,247,0.65)' : inkFaint
+  const clrDim = dark ? 'rgba(250,250,247,0.70)' : inkFaint
   const btnBorder = dark ? 'rgba(200,146,42,0.6)' : goldBdr
   const btnBg     = dark ? 'transparent' : 'rgba(200,146,42,0.06)'
   const btnClr    = dark ? 'rgba(200,146,42,0.85)' : gold
+  const imageBg   = dark ? '#0F1523' : '#FFFFFF'
 
+  // The image sits in its own half of the card with padding around it
+  // so the full composition (gold circle, sunrise rays, globe rings)
+  // is visible — not rough-cropped to fill the panel.
+  const imagePanel = (
+    <div
+      className="path-card-image"
+      style={{
+        flex: '1 1 50%',
+        minWidth: 0,
+        background: imageBg,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 'clamp(20px,3vw,32px)',
+      }}
+    >
+      <img
+        src={image}
+        alt=""
+        aria-hidden="true"
+        style={{
+          maxWidth: '100%',
+          maxHeight: '320px',
+          width: 'auto',
+          height: 'auto',
+          objectFit: 'contain',
+          display: 'block',
+        }}
+      />
+    </div>
+  )
+
+  const copyPanel = (
+    <div
+      className="path-card-copy"
+      style={{
+        flex: '1 1 50%',
+        minWidth: 0,
+        padding: 'clamp(28px,3.5vw,40px)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+      }}
+    >
+      <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '14px' }}>
+        {eyebrow}
+      </span>
+      <h2 style={{ ...serif, fontSize: 'clamp(26px,3.2vw,36px)', fontWeight: 400, color: clr, lineHeight: 1.15, margin: 0 }}>
+        {heading}
+      </h2>
+      <div style={{ width: '32px', height: '1px', background: gold, opacity: 0.55, margin: '16px 0 18px' }} />
+      <p style={{ ...body, fontSize: '15px', lineHeight: 1.75, color: clrDim, margin: '0 0 28px 0' }}>
+        {bodyText}
+      </p>
+      <a
+        href={href}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: '8px',
+          padding: '13px 28px', borderRadius: '40px',
+          border: `1.5px solid ${btnBorder}`,
+          background: btnBg,
+          ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.16em',
+          color: btnClr, textDecoration: 'none',
+          alignSelf: 'flex-start',
+          transition: 'all 0.18s',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.background = 'rgba(200,146,42,0.10)'
+          e.currentTarget.style.borderColor = goldBdr
+          e.currentTarget.style.color = gold
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.background = btnBg
+          e.currentTarget.style.borderColor = btnBorder
+          e.currentTarget.style.color = btnClr
+        }}
+      >
+        {cta} →
+      </a>
+    </div>
+  )
+
+  // imageSide controls visual order on desktop:
+  //   'left'  → image on outer edge (personal card, sunrise on left)
+  //   'right' → image on outer edge (civ card, globe on right)
+  // On mobile, both stack image-above-copy regardless.
   return (
-    <div style={{
-      flex: '1 1 0',
-      minWidth: 0,
-      borderRadius: '16px',
-      overflow: 'hidden',
-      background: bg,
-      border: dark ? 'none' : '1px solid rgba(200,146,42,0.10)',
-      display: 'flex',
-      flexDirection: 'column',
-    }}>
-      {/* Image */}
-      <div style={{
-        width: '100%',
-        aspectRatio: '4/3',
+    <div
+      className={`path-card path-card--image-${imageSide}`}
+      style={{
+        flex: '1 1 0',
+        minWidth: 0,
+        borderRadius: '16px',
         overflow: 'hidden',
-        background: dark ? '#0B1020' : '#F5F2EC',
-        flexShrink: 0,
-      }}>
-        <img
-          src={image}
-          alt=""
-          aria-hidden="true"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-        />
-      </div>
-
-      {/* Copy */}
-      <div style={{ padding: 'clamp(28px,4vw,40px)', display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '12px' }}>
-          {eyebrow}
-        </span>
-        <h2 style={{ ...serif, fontSize: 'clamp(26px,3.5vw,36px)', fontWeight: 400, color: clr, lineHeight: 1.15, marginBottom: '8px' }}>
-          {heading}
-        </h2>
-        <div style={{ width: '32px', height: '1px', background: gold, opacity: 0.5, margin: '14px 0 18px' }} />
-        <p style={{ ...body, fontSize: '15px', lineHeight: 1.75, color: clrDim, marginBottom: '28px', flex: 1 }}>
-          {bodyText}
-        </p>
-        <a
-          href={href}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: '8px',
-            padding: '13px 28px', borderRadius: '40px',
-            border: `1.5px solid ${btnBorder}`,
-            background: btnBg,
-            ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.16em',
-            color: btnClr, textDecoration: 'none',
-            alignSelf: 'flex-start',
-            transition: 'all 0.18s',
-          }}
-          onMouseEnter={e => {
-            e.currentTarget.style.background = 'rgba(200,146,42,0.10)'
-            e.currentTarget.style.borderColor = goldBdr
-            e.currentTarget.style.color = gold
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.background = btnBg
-            e.currentTarget.style.borderColor = btnBorder
-            e.currentTarget.style.color = btnClr
-          }}
-        >
-          {cta} →
-        </a>
-      </div>
+        background: bg,
+        border: dark ? 'none' : '1px solid rgba(200,146,42,0.12)',
+        display: 'flex',
+        flexDirection: 'row',
+        minHeight: '380px',
+      }}
+    >
+      {imageSide === 'left' ? imagePanel : copyPanel}
+      {imageSide === 'left' ? copyPanel : imagePanel}
     </div>
   )
 }
@@ -147,15 +186,15 @@ export function MarketingHomePage() {
       <section style={{
         maxWidth: '1040px',
         margin: '0 auto',
-        padding: 'clamp(88px,10vw,120px) clamp(20px,5vw,40px) clamp(48px,6vw,64px)',
+        padding: 'clamp(64px,7vw,88px) clamp(20px,5vw,40px) clamp(32px,4vw,44px)',
         textAlign: 'center',
       }}>
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '24px' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '18px' }}>
           TWO PATHS. ONE PURPOSE.
         </span>
         <h1 style={{
           ...serif,
-          fontSize: 'clamp(38px,6vw,72px)',
+          fontSize: 'clamp(38px,5.5vw,64px)',
           fontWeight: 400,
           color: ink,
           lineHeight: 1.08,
@@ -175,20 +214,22 @@ export function MarketingHomePage() {
         <div className="mh-cards">
           <PathCard
             eyebrow="PERSONAL TRANSFORMATION"
-            heading="Start with yourself."
+            heading="Personal Transformation"
             bodyText="Build the inner clarity, courage, and capacity to live and lead from your highest self."
             cta="START WITH YOU"
             href="/login?path=self"
             image="/hero-personal.jpg"
+            imageSide="left"
             dark={false}
           />
           <PathCard
             eyebrow="CHANGING THE WORLD"
-            heading="Start out there."
+            heading="Changing the World"
             bodyText="Use your gifts to create meaningful change and build a more conscious and connected world."
             cta="START OUT THERE"
             href="/login?path=civ"
             image="/hero-civ.jpg"
+            imageSide="right"
             dark={true}
           />
         </div>
@@ -293,6 +334,23 @@ export function MarketingHomePage() {
           display: flex;
           gap: clamp(16px, 2.5vw, 24px);
           align-items: stretch;
+        }
+        /* On narrower viewports, switch each card to vertical
+           (image on top, copy below) so the layout reads on mobile. */
+        @media (max-width: 820px) {
+          .path-card {
+            flex-direction: column !important;
+            min-height: 0 !important;
+          }
+          /* Force the image panel to come first on mobile regardless of
+             desktop imageSide. */
+          .path-card--image-right .path-card-image { order: -1; }
+          .path-card-image {
+            padding: clamp(20px, 5vw, 32px) !important;
+          }
+          .path-card-image img {
+            max-height: 240px !important;
+          }
         }
         @media (max-width: 680px) {
           .mh-cards {

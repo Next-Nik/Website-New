@@ -9,8 +9,33 @@ import { ProtocolPanel } from '../../components/ProtocolPanel'
 import { AccessGate } from '../../components/AccessGate'
 import { DebriefPanel } from '../../components/DebriefPanel'
 
-const AUDIO_FILE = 'foundation-baseline.mp3'
-const BUCKET     = 'nextus-audio'
+const BUCKET = 'nextus-audio'
+
+// ─── Phase constants ──────────────────────────────────────────────────────────
+
+const PHASES = [
+  { key: 'baseline',    label: 'Foundation',  number: '1', locked: false },
+  { key: 'calibration', label: 'Calibration', number: '2', locked: false },
+  { key: 'embodiment',  label: 'Embodiment',  number: '3', locked: false },
+]
+
+const PHASE_AUDIO = {
+  baseline:    'foundation-baseline.mp3',
+  calibration: 'foundation-calibration.mp3',
+  embodiment:  'foundation-embodiment.mp3',
+}
+
+const PHASE_DURATION = {
+  baseline:    '20 min',
+  calibration: '20 min',
+  embodiment:  '20 min',
+}
+
+// Sessions threshold before phase-advance prompt is offered
+const PHASE_ADVANCE_THRESHOLD = {
+  baseline:    40,   // ~8 weeks × 5 days
+  calibration: 40,
+}
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -41,7 +66,7 @@ function getYearId(date = new Date()) { return String(date.getFullYear()) }
 // ─── Summary writer ───────────────────────────────────────────────────────────
 // Called after every after check-in. Computes and upserts foundation_summary.
 
-export async function writeSummary(user, allSessions, afterResult, beforeResult) {
+export async function writeSummary(user, allSessions, afterResult, beforeResult, currentPhase = 'baseline') {
   if (!user?.id) return
   try {
     const now     = new Date()
@@ -124,7 +149,7 @@ export async function writeSummary(user, allSessions, afterResult, beforeResult)
       last_before_note: last?.note_before ?? null,
       last_after_note:  last?.note_after  ?? null,
       latest_review:    latestReview,
-      phase:            'baseline',
+      phase:            currentPhase,
       spark_data:       sparkData,
       updated_at:       now.toISOString(),
     }, { onConflict: 'user_id' })
@@ -225,7 +250,7 @@ function AudioPlayer({ url, onEnded, onNearEnd, locked }) {
         </p>
       )}
       <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>
-        Horizon State {'·'} Foundation {'·'} 20 min
+        Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
         <button
@@ -312,7 +337,7 @@ function FlameDelta({ before, after }) {
 
 // ─── Foundation Review ────────────────────────────────────────────────────────
 
-function FoundationReview({ user, sessions }) {
+function FoundationReview({ user, sessions, phase = 'baseline' }) {
   const [loading,       setLoading]       = useState(false)
   const [reviewText,    setReviewText]    = useState('')
   const [error,         setError]         = useState('')
@@ -383,7 +408,7 @@ function FoundationReview({ user, sessions }) {
         }, { onConflict: 'user_id,period_type,period_id' })
         setSaved({ type, label })
         // Refresh summary so profile picks up new review text
-        writeSummary(user, sessions, null, null)
+        writeSummary(user, sessions, null, null, phase)
       }
     } catch {
       setError('Review unavailable. Please try again shortly.')
@@ -442,7 +467,7 @@ function FoundationReview({ user, sessions }) {
 // gated on weeklyAvailable. FoundationReview is preserved above as
 // internal reference but is no longer rendered.
 
-function FoundationReports({ user, sessions }) {
+function FoundationReports({ user, sessions, phase = 'baseline' }) {
   const [activePeriod, setActivePeriod] = useState('weekly')
   const [storedReviews, setStoredReviews] = useState([])
   const [loadingStored, setLoadingStored] = useState(true)
@@ -563,7 +588,7 @@ function FoundationReports({ user, sessions }) {
           .order('created_at', { ascending: false })
           .limit(40)
         setStoredReviews(refreshed || [])
-        writeSummary(user, sessions, null, null)
+        writeSummary(user, sessions, null, null, phase)
       }
     } catch {
       setError('Reflection unavailable. Please try again shortly.')
@@ -781,20 +806,45 @@ export function useHorizonStateData(user) {
   const [audioError,      setAudioError]      = useState(null)
   const [sessions,        setSessions]        = useState([])
   const [lifeIaStatement, setLifeIaStatement] = useState(null)
+  const [currentPhase,    setCurrentPhase]    = useState('baseline')
   const [reloadTick,      setReloadTick]      = useState(0)
 
   useEffect(() => {
     if (!user) return
     setAudioLoading(true)
-    try {
-      const { data } = supabase.storage.from(BUCKET).getPublicUrl(AUDIO_FILE)
-      if (data?.publicUrl) setAudioUrl(data.publicUrl)
-      else setAudioError('Unable to load audio. Please try again shortly.')
-    } catch {
-      setAudioError('Something went wrong. Please refresh the page.')
-    } finally {
-      setAudioLoading(false)
-    }
+
+    // Load user's current phase first, then resolve audio file
+    supabase
+      .from('users')
+      .select('horizon_state_phase')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        const phase = data?.horizon_state_phase || 'baseline'
+        setCurrentPhase(phase)
+        try {
+          const audioFile = PHASE_AUDIO[phase] || PHASE_AUDIO.baseline
+          const { data: storageData } = supabase.storage.from(BUCKET).getPublicUrl(audioFile)
+          if (storageData?.publicUrl) setAudioUrl(storageData.publicUrl)
+          else setAudioError('Unable to load audio. Please try again shortly.')
+        } catch {
+          setAudioError('Something went wrong. Please refresh the page.')
+        } finally {
+          setAudioLoading(false)
+        }
+      })
+      .catch(() => {
+        // Fallback to baseline if user row unreadable
+        try {
+          const { data: storageData } = supabase.storage.from(BUCKET).getPublicUrl(PHASE_AUDIO.baseline)
+          if (storageData?.publicUrl) setAudioUrl(storageData.publicUrl)
+          else setAudioError('Unable to load audio. Please try again shortly.')
+        } catch {
+          setAudioError('Something went wrong. Please refresh the page.')
+        } finally {
+          setAudioLoading(false)
+        }
+      })
     supabase
       .from('horizon_state_checkins')
       .select('*')
@@ -851,12 +901,27 @@ export function useHorizonStateData(user) {
       .then(({ data }) => { if (data?.life_ia_statement) setLifeIaStatement(data.life_ia_statement) })
   }, [user, reloadTick])
 
+  async function advancePhase(nextPhase) {
+    if (!user?.id) return
+    await supabase
+      .from('users')
+      .update({ horizon_state_phase: nextPhase })
+      .eq('id', user.id)
+    setCurrentPhase(nextPhase)
+    // Reload audio for new phase
+    try {
+      const audioFile = PHASE_AUDIO[nextPhase] || PHASE_AUDIO.baseline
+      const { data } = supabase.storage.from(BUCKET).getPublicUrl(audioFile)
+      if (data?.publicUrl) setAudioUrl(data.publicUrl)
+    } catch { /* silent */ }
+  }
+
   function reload() { setReloadTick(t => t + 1) }
 
-  return { audioUrl, audioLoading, audioError, sessions, lifeIaStatement, reload }
+  return { audioUrl, audioLoading, audioError, sessions, lifeIaStatement, currentPhase, advancePhase, reload }
 }
 
-export function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAfterComplete, lifeIaStatement, compact = false }) {
+export function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAfterComplete, lifeIaStatement, currentPhase = 'baseline', compact = false }) {
   const today = getLocalDateStr()
 
   const todayBefore = sessions.find(s => s.checkin_stage === 'before' && s.completed_at?.startsWith(today))
@@ -873,12 +938,6 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
   const [showModal,     setShowModal]     = useState(false)
   const [showBeginPopup, setShowBeginPopup] = useState(true)
   const [saveError,     setSaveError]     = useState('')
-
-  // Desktop viewport ref — used to auto-scroll the three-column grid right
-  // once Before is done, so the After column comes into view. Mobile uses
-  // its own stacked layout and doesn't need this.
-  const desktopViewportRef = useRef(null)
-  const hasAutoScrolledRef = useRef(false)
 
   // Mobile audio state — shared between play button and scrubber
   const mobileAudioRef   = useRef(null)
@@ -933,35 +992,6 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
     }
   }, [sessions])
 
-  // ── Auto-scroll the desktop viewport right when Before completes.
-  // The three-column grid (Before | Audio | After) is wider than the
-  // viewport on smaller laptops; this glide brings After into view at
-  // the moment it becomes the user's next action. Fires once per session,
-  // and only on a fresh Before → After transition (not on reload of a
-  // page where Before was already done earlier today).
-  const initialBeforeDoneRef = useRef(!!todayBefore)
-  useEffect(() => {
-    if (!beforeDone) return
-    if (hasAutoScrolledRef.current) return
-    // If Before was already done on initial mount, this isn't a fresh
-    // transition — they're returning to the page mid-session. Don't yank.
-    if (initialBeforeDoneRef.current) { hasAutoScrolledRef.current = true; return }
-    const el = desktopViewportRef.current
-    if (!el) return
-    // Skip on narrow viewports — mobile layout already shows both flames.
-    if (typeof window !== 'undefined' && window.innerWidth <= 640) return
-    hasAutoScrolledRef.current = true
-    // Scroll to the end so the After column is fully in view.
-    const target = el.scrollWidth - el.clientWidth
-    if (target > 0) {
-      // Tiny delay so the layout settles after beforeDone flips opacity.
-      setTimeout(() => {
-        try { el.scrollTo({ left: target, behavior: 'smooth' }) }
-        catch { el.scrollLeft = target }
-      }, 80)
-    }
-  }, [beforeDone])
-
   async function saveCheckin(stage, value, note) {
     if (!user?.id) return
     const now       = new Date()
@@ -971,7 +1001,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
     const monthId   = getMonthId(now)
     const quarterId = getQuarterId(now)
     const yearId    = getYearId(now)
-    const periodId  = `${dateStr}-foundation-baseline`
+    const periodId  = `${dateStr}-horizon-state-${currentPhase}`
 
     // Wide schema: one row per (user_id, period_id), before/after on same row.
     // Only set the half corresponding to this stage; the other half is left
@@ -979,7 +1009,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
     const payload = {
       user_id:     user.id,
       period_id:   periodId,
-      audio_phase: 'baseline',
+      audio_phase: currentPhase,
       week_id:     weekId,
       month_id:    monthId,
       quarter_id:  quarterId,
@@ -1028,7 +1058,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
         { checkin_stage: 'after', value: afterValue, note: afterNote, completed_at: new Date().toISOString(), week_id: getWeekId(), month_id: getMonthId(), quarter_id: getQuarterId(), year_id: getYearId() },
       ]
       const currentBefore = { value: beforeValue, note: beforeNote }
-      onAfterComplete?.({ value: afterValue, note: afterNote, timestamp: new Date().toISOString() }, currentBefore, updatedSessions)
+      onAfterComplete?.({ value: afterValue, note: afterNote, timestamp: new Date().toISOString() }, currentBefore, updatedSessions, currentPhase)
       setAfterDone(true)
     } catch (e) {
       console.error('[HorizonState] handleSave save failed:', e)
@@ -1077,59 +1107,20 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
   return (
     <div data-compact={compact ? 'true' : 'false'} style={{ position: 'relative', minHeight: compact ? 'auto' : '420px' }}>
       <style>{`
-        /* ── Desktop scrollable viewport ── */
-        /* The grid below is sized to fit all three columns at their proper
-           widths. On narrow laptops the grid is wider than the viewport;
-           we scroll horizontally rather than squish. On Before completion,
-           a JS effect glides the scroll position right to reveal After. */
-        .hs-baseline-viewport {
-          overflow-x: auto;
-          overflow-y: visible;
-          scroll-behavior: smooth;
-          /* Hide native scrollbar — the auto-scroll is the primary affordance,
-             but users can still swipe/drag to scroll back. */
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-          /* Fade hint on the right edge before Before completes — tells the
-             user there's more content to the right. Disappears once Before
-             is done (the auto-scroll has revealed it). */
-          position: relative;
-          mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
-          -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
-          transition: mask-image 0.6s ease, -webkit-mask-image 0.6s ease;
-        }
-        .hs-baseline-viewport[data-before-done="true"] {
-          mask-image: none;
-          -webkit-mask-image: none;
-        }
-        .hs-baseline-viewport::-webkit-scrollbar { display: none; }
-
         /* ── Desktop: three-column grid ── */
         .hs-baseline-grid {
           display: grid;
           grid-template-columns: 1fr 1.6fr 1fr;
           gap: 20px;
           align-items: start;
-          /* Min-width keeps the three columns at workable widths even when
-             the viewport is narrower; the parent .hs-baseline-viewport
-             provides the horizontal scroll. */
-          min-width: 880px;
         }
 
         /* ── Mobile: one-screen layout ── */
         @media (max-width: 640px) {
-          /* Viewport collapses on mobile — mobile layout uses .hs-mobile-only
-             and the grid is hidden, so no horizontal scroll or fade. */
-          .hs-baseline-viewport {
-            overflow-x: visible;
-            mask-image: none;
-            -webkit-mask-image: none;
-          }
           .hs-baseline-grid {
             display: flex;
             flex-direction: column;
             gap: 0;
-            min-width: 0;
           }
           /* Flames row: Before | After side by side */
           .hs-flames-row {
@@ -1173,16 +1164,10 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
         /* ── Compact override: force mobile layout regardless of viewport.
              Used when BaselineCard renders inside a narrow panel
              (e.g. Mission Control slider). ── */
-        [data-compact="true"] .hs-baseline-viewport {
-          overflow-x: visible;
-          mask-image: none;
-          -webkit-mask-image: none;
-        }
         [data-compact="true"] .hs-baseline-grid {
           display: flex;
           flex-direction: column;
           gap: 0;
-          min-width: 0;
         }
         [data-compact="true"] .hs-flames-row {
           display: flex;
@@ -1281,11 +1266,11 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
             </span>
           ) : !afterUnlocked ? (
             <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase' }}>
-              Horizon State {'·'} Foundation {'·'} 20 min
+              Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
             </span>
           ) : (
             <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase' }}>
-              Horizon State {'·'} Foundation {'·'} 20 min
+              Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
             </span>
           )}
         </div>
@@ -1411,7 +1396,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
         {beforeDone && audioUrl && (
           <div style={{ marginTop: '4px', marginBottom: '8px' }}>
             <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', textAlign: 'center', marginBottom: '8px' }}>
-              Horizon State {'·'} Foundation {'·'} 20 min
+              Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
             </div>
             <div
               onClick={e => {
@@ -1434,16 +1419,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
       </div>
 
       {/* ══ DESKTOP LAYOUT ═════════════════════════════════════════════════════ */}
-      {/* Scrollable viewport: when Before completes, we glide the view right
-          so the After column comes into focus. Users can still swipe/scroll
-          back to see Before at any time. The fade on the right edge hints
-          there's more content before they hit Begin. */}
-      <div
-        ref={desktopViewportRef}
-        className="hs-baseline-viewport"
-        data-before-done={beforeDone ? 'true' : 'false'}
-      >
-        <div className="hs-baseline-grid">
+      <div className="hs-baseline-grid">
 
         {/* Before */}
         <div className="hs-col-before-desktop" style={{ flexDirection: 'column', alignItems: 'center', opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
@@ -1473,7 +1449,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
           {!user && !audioLoading && !audioError && (
             <div style={{ padding: '20px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', opacity: 0.6 }}>
               <p style={{ ...body, fontSize: '1.3125rem', ...muted, marginBottom: '14px', lineHeight: 1.6 }}>Check-in to unlock the audio.</p>
-              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>Horizon State {'·'} Foundation {'·'} 20 min</div>
+              <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...muted, marginBottom: '12px' }}>Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}</div>
               <button onClick={() => setShowModal(true)} style={{ width: '52px', height: '52px', borderRadius: '50%', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', ...gold, fontSize: '18px' }}>{'\u25B6'}</button>
             </div>
           )}
@@ -1497,7 +1473,6 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
           )}
         </div>
 
-        </div>
       </div>
 
       {showModal && <AuthModal onDismiss={() => setShowModal(false)} />}
@@ -1521,20 +1496,30 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
 export function HorizonStatePage() {
   const { user, loading: authLoading } = useAuth()
   const { tier, loading: accessLoading } = useAccess('horizon-state')
-  const { audioUrl, audioLoading, audioError, sessions, lifeIaStatement } = useHorizonStateData(user)
+  const { audioUrl, audioLoading, audioError, sessions, lifeIaStatement, currentPhase, advancePhase } = useHorizonStateData(user)
 
-  const [activePhase, setActivePhase] = useState('foundation')
+  const [activePhase, setActivePhase] = useState('baseline')
   const [activeView,  setActiveView]  = useState('reports')
+
+  // Keep archive tab in sync with user's actual phase on load
+  useEffect(() => {
+    if (currentPhase) setActivePhase(currentPhase)
+  }, [currentPhase])
 
   if (authLoading || accessLoading) return <div className="loading" />
 
-  const phases = [
-    { key: 'foundation',  label: 'Foundation',  number: '1', locked: false },
-    { key: 'calibration', label: 'Calibration', number: '2', locked: true  },
-    { key: 'embodying',   label: 'Embodying',   number: '3', locked: true  },
-  ]
-
   const isFirstTime = sessions.length === 0
+
+  // Sessions scoped to currently-viewed phase tab
+  const phaseSessions = sessions.filter(s => s.audio_phase === activePhase)
+  const isFirstTimeForPhase = phaseSessions.length === 0
+
+  // Phase advance logic — only offer when user is viewing their current phase
+  // and has hit the threshold
+  const advanceThreshold = PHASE_ADVANCE_THRESHOLD[currentPhase]
+  const currentPhaseSessions = sessions.filter(s => s.audio_phase === currentPhase && s.checkin_stage === 'after')
+  const canAdvance = advanceThreshold && currentPhaseSessions.length >= advanceThreshold
+  const nextPhaseKey = currentPhase === 'baseline' ? 'calibration' : currentPhase === 'calibration' ? 'embodiment' : null
 
   return (
     <AccessGate productKey="horizon-state" toolName="Horizon State">
@@ -1550,17 +1535,22 @@ export function HorizonStatePage() {
 
         {/* Phase tabs */}
         <div style={{ display: 'flex', gap: 0, marginBottom: '32px', borderBottom: '1px solid rgba(200,146,42,0.2)' }}>
-          {phases.map(p => {
-            const isActive = activePhase === p.key
+          {PHASES.map(p => {
+            const isActive  = activePhase === p.key
+            // A phase is accessible if the user has reached it or it's Phase 1
+            const accessible = p.key === 'baseline' ||
+              (p.key === 'calibration' && (currentPhase === 'calibration' || currentPhase === 'embodiment')) ||
+              (p.key === 'embodiment'  &&  currentPhase === 'embodiment')
             return (
               <button
                 key={p.key}
-                onClick={() => setActivePhase(p.key)}
+                onClick={() => accessible && setActivePhase(p.key)}
                 style={{
                   ...sc, fontSize: '15px', letterSpacing: '0.16em',
                   padding: '12px 20px',
-                  background: 'none', border: 'none', cursor: 'pointer',
-                  color: isActive ? '#A8721A' : p.locked ? 'rgba(200,146,42,0.3)' : 'rgba(200,146,42,0.55)',
+                  background: 'none', border: 'none',
+                  cursor: accessible ? 'pointer' : 'default',
+                  color: isActive ? '#A8721A' : accessible ? 'rgba(200,146,42,0.55)' : 'rgba(200,146,42,0.25)',
                   borderBottom: isActive ? '2px solid #A8721A' : '2px solid transparent',
                   marginBottom: '-1px',
                   transition: 'all 0.2s',
@@ -1570,16 +1560,22 @@ export function HorizonStatePage() {
                   Phase {p.number}
                 </span>
                 {p.label}
+                {!accessible && (
+                  <span style={{ display: 'inline-block', marginLeft: '6px', fontSize: '10px', opacity: 0.5 }}>·</span>
+                )}
               </button>
             )
           })}
         </div>
 
-        {/* Phase 1 — Foundation */}
-        {activePhase === 'foundation' && (
-          <div>
-            {isFirstTime ? (
+        {/* Phase content */}
+        {PHASES.map(p => activePhase === p.key && (
+          <div key={p.key}>
+            {/* First-time pitch for this phase */}
+            {isFirstTimeForPhase && p.key === 'baseline' ? (
               <FirstTimePitch onContinue={() => {}} />
+            ) : isFirstTimeForPhase ? (
+              <PhaseIntro phase={p} />
             ) : (
               <>
                 {/* Reports / Logs sub-tabs */}
@@ -1588,7 +1584,7 @@ export function HorizonStatePage() {
                     { key: 'reports', label: 'Reports' },
                     { key: 'logs',    label: 'Logs'    },
                   ].map(v => {
-                    const isActive = activeView === v.key
+                    const isActiveView = activeView === v.key
                     return (
                       <button
                         key={v.key}
@@ -1597,8 +1593,8 @@ export function HorizonStatePage() {
                           ...sc, fontSize: '12px', letterSpacing: '0.18em',
                           padding: '10px 14px',
                           background: 'none', border: 'none', cursor: 'pointer',
-                          color: isActive ? '#0F1523' : 'rgba(15,21,35,0.45)',
-                          borderBottom: isActive ? '2px solid #A8721A' : '2px solid transparent',
+                          color: isActiveView ? '#0F1523' : 'rgba(15,21,35,0.45)',
+                          borderBottom: isActiveView ? '2px solid #A8721A' : '2px solid transparent',
                           marginBottom: '-1px',
                           transition: 'all 0.2s',
                           textTransform: 'uppercase',
@@ -1610,36 +1606,26 @@ export function HorizonStatePage() {
                   })}
                 </div>
 
-                {activeView === 'reports' && <FoundationReports user={user} sessions={sessions} />}
-                {activeView === 'logs'    && <FoundationLogs              sessions={sessions} />}
+                {activeView === 'reports' && (
+                  <FoundationReports user={user} sessions={phaseSessions} phase={p.key} />
+                )}
+                {activeView === 'logs' && (
+                  <FoundationLogs sessions={phaseSessions} />
+                )}
+
+                {/* Phase advance prompt — only on current phase, only when threshold met */}
+                {canAdvance && nextPhaseKey && activePhase === currentPhase && (
+                  <PhaseAdvancePrompt
+                    currentPhase={currentPhase}
+                    nextPhaseKey={nextPhaseKey}
+                    sessionCount={currentPhaseSessions.length}
+                    onAdvance={() => advancePhase(nextPhaseKey)}
+                  />
+                )}
               </>
             )}
           </div>
-        )}
-
-        {/* Phase 2 — Calibration */}
-        {activePhase === 'calibration' && (
-          <div style={{ padding: '60px 0', textAlign: 'center' }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>
-              Coming soon
-            </span>
-            <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, maxWidth: '380px', margin: '0 auto' }}>
-              Developing the capacity to move your state deliberately {'—'} not just recover from it.
-            </p>
-          </div>
-        )}
-
-        {/* Phase 3 — Embodying */}
-        {activePhase === 'embodying' && (
-          <div style={{ padding: '60px 0', textAlign: 'center' }}>
-            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>
-              Coming soon
-            </span>
-            <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7, maxWidth: '380px', margin: '0 auto' }}>
-              Living from a regulated ground {'—'} not as practice, but as your natural state.
-            </p>
-          </div>
-        )}
+        ))}
 
       </div>
       <ToolCompassPanel />
@@ -1649,7 +1635,87 @@ export function HorizonStatePage() {
   )
 }
 
-// ─── First-time pitch ─────────────────────────────────────────────────────────
+// ─── Phase Intro ──────────────────────────────────────────────────────────────
+//
+// Shown on Phases 2 and 3 when the user has reached that phase but has
+// zero sessions in it yet. Gives context before their first session.
+
+function PhaseIntro({ phase }) {
+  const copy = {
+    calibration: {
+      heading: 'The tuning begins here.',
+      body:    'You\'ve built the floor. Phase 2 trains something more specific — locating the felt signature of the man you most fully are, and learning to return to it. Not heading in the abstract. The state itself.',
+    },
+    embodiment: {
+      heading: 'Now you live as him.',
+      body:    'You\'ve found the state. Phase 3 installs it as your normal. Through the seven domains, you conjure the Horizon Self and step out already operating as him. The day will recreate what you bring.',
+    },
+  }
+  const c = copy[phase.key] || { heading: 'Welcome to Phase ' + phase.number, body: '' }
+
+  return (
+    <div style={{ padding: '40px 32px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '14px', textAlign: 'center', maxWidth: '560px', margin: '0 auto' }}>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px', textTransform: 'uppercase' }}>
+        Horizon State {'·'} {phase.label}
+      </span>
+      <h2 style={{ ...serif, fontSize: '28px', fontWeight: 400, color: '#0F1523', lineHeight: 1.25, marginBottom: '16px' }}>
+        {c.heading}
+      </h2>
+      <p style={{ ...body, fontSize: '17px', fontWeight: 300, ...meta, lineHeight: 1.7, marginBottom: '0' }}>
+        {c.body}
+      </p>
+    </div>
+  )
+}
+
+// ─── Phase Advance Prompt ─────────────────────────────────────────────────────
+//
+// Offered non-intrusively once the user has hit the session threshold for
+// their current phase. The platform doesn't push — it surfaces the option.
+// The user opts in by tapping the button.
+
+function PhaseAdvancePrompt({ currentPhase, nextPhaseKey, sessionCount, onAdvance }) {
+  const [confirmed, setConfirmed] = useState(false)
+  const [advancing, setAdvancing] = useState(false)
+
+  const nextPhase = PHASES.find(p => p.key === nextPhaseKey)
+  if (!nextPhase || confirmed) return null
+
+  async function handleAdvance() {
+    setAdvancing(true)
+    await onAdvance()
+    setConfirmed(true)
+    setAdvancing(false)
+  }
+
+  return (
+    <div style={{ marginTop: '40px', padding: '28px 32px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '14px' }}>
+      <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '10px', textTransform: 'uppercase' }}>
+        Phase {nextPhase.number} available
+      </span>
+      <p style={{ ...body, fontSize: '17px', fontWeight: 300, ...meta, lineHeight: 1.7, marginBottom: '20px' }}>
+        {sessionCount} sessions in Phase {PHASES.find(p => p.key === currentPhase)?.number}. The next layer of the work is ready when you are.
+      </p>
+      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '24px' }}>
+        Moving to {nextPhase.label} will update your daily session audio. You can always return to earlier phases in the archive.
+      </p>
+      <button
+        onClick={handleAdvance}
+        disabled={advancing}
+        style={{
+          ...sc, fontSize: '1rem', letterSpacing: '0.16em', color: '#A8721A',
+          background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)',
+          borderRadius: '40px', padding: '12px 28px', cursor: advancing ? 'default' : 'pointer',
+          opacity: advancing ? 0.6 : 1, transition: 'all 0.2s',
+        }}
+      >
+        {advancing ? 'Moving…' : `Begin Phase ${nextPhase.number} — ${nextPhase.label} →`}
+      </button>
+    </div>
+  )
+}
+
+
 //
 // Renders only on the archive page when the user has zero foundation
 // sessions. The point is to give first-timers context the first time
