@@ -370,106 +370,428 @@ function FiveBeatTracker({ currentBeat, sweep = false }) {
 const Fragment = ({ children }) => <>{children}</>
 
 // ────────────────────────────────────────────────────────────────────────────
-// Threshold list editor — used in Plan beat
+// CalendarPlanBeat — Plan beat with iCal feed integration
+//
+// Three states:
+//   1. No iCal URL set — show setup guide (how to find iCal URL in Google /
+//      Apple / Outlook) + URL input. One-time setup.
+//   2. iCal URL set, loading — spinner.
+//   3. iCal URL set, loaded — show today's events as tappable rows. Tapping
+//      adds the event as a threshold. Manual "add a threshold" always available
+//      alongside the calendar for moments not on the calendar.
 // ────────────────────────────────────────────────────────────────────────────
-function ThresholdListEditor({ thresholds, onChange }) {
+
+const ICAL_SETUP_GUIDES = [
+  {
+    name: 'Google Calendar',
+    icon: '📅',
+    steps: [
+      'Open Google Calendar on desktop.',
+      'Hover over your calendar in the left panel, click the three-dot menu → Settings.',
+      'Scroll to "Secret address in iCal format" and copy the URL.',
+    ],
+  },
+  {
+    name: 'Apple Calendar',
+    icon: '🍎',
+    steps: [
+      'On Mac: open Calendar, right-click your calendar in the sidebar → Get Info.',
+      'Copy the "Calendar URL" shown there.',
+      'If you don\'t see it, go to icloud.com → Calendar → share the calendar → copy the link.',
+    ],
+  },
+  {
+    name: 'Outlook / Microsoft 365',
+    icon: '📬',
+    steps: [
+      'Open Outlook Calendar on the web.',
+      'Click the gear icon → View all settings → Calendar → Shared calendars.',
+      'Under "Publish a calendar", select your calendar, set permissions to "Can view all details", and click Publish.',
+      'Copy the ICS link.',
+    ],
+  },
+]
+
+function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId }) {
+  // ical loading states
+  const [calEvents, setCalEvents] = useState([])
+  const [calLoading, setCalLoading] = useState(false)
+  const [calError, setCalError] = useState(null)
+
+  // setup states
+  const [showSetup, setShowSetup] = useState(!icalUrl)
+  const [urlDraft, setUrlDraft] = useState(icalUrl || '')
+  const [saving, setSaving] = useState(false)
+  const [activeGuide, setActiveGuide] = useState(0)
+
+  // manual add
+  const [showManual, setShowManual] = useState(false)
   const [draftTitle, setDraftTitle] = useState('')
   const [draftTime, setDraftTime] = useState('')
   const [draftNote, setDraftNote] = useState('')
 
-  function addThreshold() {
+  // Fetch calendar events when icalUrl is available
+  useEffect(() => {
+    if (!icalUrl || showSetup) return
+    let cancelled = false
+    setCalLoading(true)
+    setCalError(null)
+
+    const today = getLocalDateStr()
+    fetch('/api/ical-proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ical_url: icalUrl, date: today }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (cancelled) return
+        if (data.error) {
+          setCalError(data.hint || data.error)
+        } else {
+          setCalEvents(data.events || [])
+        }
+        setCalLoading(false)
+      })
+      .catch(err => {
+        if (cancelled) return
+        setCalError('Could not load calendar.')
+        setCalLoading(false)
+      })
+
+    return () => { cancelled = true }
+  }, [icalUrl, showSetup])
+
+  async function handleSaveUrl() {
+    if (!urlDraft.trim()) return
+    setSaving(true)
+    await onSaveIcalUrl(urlDraft.trim())
+    setShowSetup(false)
+    setSaving(false)
+  }
+
+  function toggleCalendarEvent(evt) {
+    const alreadyAdded = thresholds.find(t => t.source_ref === evt.id)
+    if (alreadyAdded) {
+      onChange(thresholds.filter(t => t.source_ref !== evt.id))
+    } else {
+      Chimes.hit()
+      onChange([...thresholds, {
+        tempId: `cal-${evt.id}`,
+        title: evt.title,
+        time_label: evt.time_label,
+        note: evt.note || null,
+        source: 'calendar',
+        source_ref: evt.id,
+      }])
+    }
+  }
+
+  function addManual() {
     if (!draftTitle.trim()) return
-    const next = [...thresholds, {
+    Chimes.hit()
+    onChange([...thresholds, {
       tempId: `t-${Date.now()}`,
       title: draftTitle.trim(),
       time_label: draftTime.trim() || null,
       note: draftNote.trim() || null,
-    }]
-    onChange(next)
+      source: 'manual',
+    }])
     setDraftTitle(''); setDraftTime(''); setDraftNote('')
-    Chimes.hit()
+    setShowManual(false)
   }
 
   function removeThreshold(idx) {
     onChange(thresholds.filter((_, i) => i !== idx))
   }
 
+  // ── Selected thresholds display (top of beat) ──
+  const SelectedThresholds = () => (
+    thresholds.length > 0 ? (
+      <div style={{ marginBottom: '20px' }}>
+        {thresholds.map((t, i) => (
+          <div key={t.tempId || t.id || i} style={{
+            padding: '12px 16px', marginBottom: '8px',
+            background: tokens.goldTint, border: `1px solid ${tokens.goldChrome}`,
+            borderRadius: '12px', display: 'flex', justifyContent: 'space-between',
+            alignItems: 'center', gap: '12px',
+          }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              {t.time_label && (
+                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em',
+                  color: tokens.gold, marginBottom: '3px' }}>{t.time_label}</div>
+              )}
+              <div style={{ ...body, fontSize: '14.5px', color: tokens.meta, lineHeight: 1.4 }}>
+                {t.title}
+              </div>
+              {t.note && (
+                <div style={{ ...body, fontSize: '12px', fontStyle: 'italic',
+                  color: tokens.ghost, marginTop: '2px', lineHeight: 1.4 }}>{t.note}</div>
+              )}
+            </div>
+            <button onClick={() => removeThreshold(i)} style={{
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              ...sc, fontSize: '10px', letterSpacing: '0.16em',
+              color: tokens.ghost, padding: '4px 8px',
+            }}>✕</button>
+          </div>
+        ))}
+      </div>
+    ) : null
+  )
+
+  // ── Setup guide (first time) ──
+  if (showSetup) {
+    return (
+      <div>
+        <SelectedThresholds />
+
+        <Card style={{ padding: '24px 26px' }}>
+          <Eyebrow style={{ marginBottom: '8px', fontSize: '11px' }}>Connect your calendar</Eyebrow>
+          <Body dim style={{ fontSize: '14px', margin: '0 0 20px' }}>
+            Paste your private iCal URL and your calendar shows up here every morning.
+            One-time setup, works with any calendar.
+          </Body>
+
+          {/* Provider guide tabs */}
+          <div style={{ display: 'flex', gap: '6px', marginBottom: '16px', flexWrap: 'wrap' }}>
+            {ICAL_SETUP_GUIDES.map((g, i) => (
+              <button key={g.name} onClick={() => setActiveGuide(i)} style={{
+                padding: '6px 12px', borderRadius: '40px',
+                background: activeGuide === i ? tokens.goldTint : 'transparent',
+                border: `1px solid ${activeGuide === i ? tokens.goldChrome : tokens.goldFaint}`,
+                ...sc, fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.14em',
+                color: activeGuide === i ? tokens.gold : tokens.ghost, cursor: 'pointer',
+              }}>{g.icon} {g.name}</button>
+            ))}
+          </div>
+
+          {/* Steps */}
+          <div style={{
+            padding: '16px 18px', background: tokens.goldTint,
+            borderRadius: '10px', marginBottom: '18px',
+          }}>
+            {ICAL_SETUP_GUIDES[activeGuide].steps.map((step, i) => (
+              <div key={i} style={{
+                display: 'flex', gap: '12px', marginBottom: i < ICAL_SETUP_GUIDES[activeGuide].steps.length - 1 ? '12px' : 0,
+              }}>
+                <span style={{
+                  ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
+                  color: tokens.gold, minWidth: '20px', paddingTop: '2px',
+                }}>{String(i + 1).padStart(2, '0')}</span>
+                <span style={{ ...body, fontSize: '13.5px', color: tokens.meta, lineHeight: 1.5, margin: 0 }}>
+                  {step}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* URL input */}
+          <input
+            type="url"
+            value={urlDraft}
+            onChange={e => setUrlDraft(e.target.value)}
+            placeholder="Paste your iCal URL here"
+            style={{ ...inputStyle(), minHeight: 'auto', padding: '10px 14px', marginBottom: '12px' }}
+            onKeyDown={e => { if (e.key === 'Enter') handleSaveUrl() }}
+          />
+
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <SolidButton onClick={handleSaveUrl} disabled={!urlDraft.trim() || saving}
+              style={{ flex: 2 }}>
+              {saving ? 'Connecting…' : 'Connect →'}
+            </SolidButton>
+            <GhostButton onClick={() => setShowManual(s => !s)} style={{ flex: 1 }}>
+              Skip · type manually
+            </GhostButton>
+          </div>
+        </Card>
+
+        {/* Manual add when skipping */}
+        {showManual && <ManualThresholdAdd
+          draftTitle={draftTitle} setDraftTitle={setDraftTitle}
+          draftTime={draftTime} setDraftTime={setDraftTime}
+          draftNote={draftNote} setDraftNote={setDraftNote}
+          onAdd={addManual}
+        />}
+      </div>
+    )
+  }
+
+  // ── Calendar view (connected) ──
   return (
     <div>
-      {thresholds.length > 0 && (
-        <div style={{ marginBottom: '20px' }}>
-          {thresholds.map((t, i) => (
-            <div key={t.tempId || t.id || i} style={{
-              padding: '14px 18px', marginBottom: '8px',
-              background: tokens.goldTint,
-              border: `1px solid ${tokens.goldChrome}`, borderRadius: '12px',
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px',
-            }}>
+      <SelectedThresholds />
+
+      {/* Calendar feed */}
+      <div style={{
+        border: `1px solid ${tokens.goldFaint}`, borderRadius: '14px',
+        overflow: 'hidden', marginBottom: '14px',
+      }}>
+        {/* Header */}
+        <div style={{
+          padding: '12px 18px', borderBottom: `1px solid ${tokens.goldFaint}`,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          background: tokens.bgCard,
+        }}>
+          <Eyebrow style={{ fontSize: '11px' }}>
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+          </Eyebrow>
+          <button onClick={() => setShowSetup(true)} style={{
+            background: 'transparent', border: 'none', cursor: 'pointer',
+            ...sc, fontSize: '9px', letterSpacing: '0.16em',
+            color: tokens.whisper, textTransform: 'uppercase',
+          }}>Change calendar</button>
+        </div>
+
+        {/* Loading */}
+        {calLoading && (
+          <div style={{ padding: '32px', textAlign: 'center' }}>
+            <Body dim style={{ margin: 0, fontSize: '14px' }}>Loading your day…</Body>
+          </div>
+        )}
+
+        {/* Error */}
+        {calError && !calLoading && (
+          <div style={{ padding: '20px 18px' }}>
+            <Body dim style={{ margin: '0 0 10px', fontSize: '13.5px' }}>
+              Couldn't load calendar: {calError}
+            </Body>
+            <button onClick={() => setShowSetup(true)} style={{
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              ...sc, fontSize: '11px', letterSpacing: '0.16em',
+              color: tokens.gold, borderBottom: `1px solid ${tokens.goldFaint}`,
+            }}>Update iCal URL</button>
+          </div>
+        )}
+
+        {/* Events */}
+        {!calLoading && !calError && calEvents.length === 0 && (
+          <div style={{ padding: '24px 18px', textAlign: 'center' }}>
+            <Body dim italic style={{ margin: 0, fontSize: '14px' }}>Nothing on the calendar today.</Body>
+          </div>
+        )}
+
+        {!calLoading && !calError && calEvents.map(evt => {
+          const isSelected = thresholds.some(t => t.source_ref === evt.id)
+          return (
+            <div key={evt.id}
+              onClick={() => toggleCalendarEvent(evt)}
+              style={{
+                padding: '13px 18px',
+                borderBottom: `1px solid ${tokens.goldFaint}`,
+                background: isSelected ? tokens.goldTint : tokens.bgCard,
+                cursor: 'pointer', transition: 'background 0.15s ease',
+                display: 'flex', alignItems: 'center', gap: '14px',
+              }}
+              onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = tokens.goldGlow }}
+              onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = tokens.bgCard }}
+            >
+              {/* Time */}
+              <div style={{
+                ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.14em',
+                color: isSelected ? tokens.gold : tokens.ghost,
+                minWidth: '42px', flexShrink: 0,
+              }}>
+                {evt.all_day ? 'All day' : (evt.time_label || '—')}
+              </div>
+
+              {/* Event details */}
               <div style={{ flex: 1, minWidth: 0 }}>
-                {t.time_label && (
+                <div style={{
+                  ...body, fontSize: '14.5px',
+                  color: isSelected ? tokens.gold : tokens.meta,
+                  lineHeight: 1.35, fontWeight: isSelected ? 400 : 300,
+                }}>{evt.title}</div>
+                {evt.note && (
                   <div style={{
-                    ...sc, fontSize: '10px', letterSpacing: '0.16em',
-                    color: tokens.gold, marginBottom: '4px',
-                  }}>{t.time_label}</div>
-                )}
-                <div style={{ ...body, fontSize: '14.5px', color: tokens.meta, lineHeight: 1.4 }}>
-                  {t.title}
-                </div>
-                {t.note && (
-                  <div style={{ ...body, fontSize: '12.5px', fontStyle: 'italic',
-                    color: tokens.ghost, marginTop: '3px', lineHeight: 1.4 }}>
-                    {t.note}
-                  </div>
+                    ...body, fontSize: '12px', fontStyle: 'italic',
+                    color: tokens.ghost, marginTop: '2px', lineHeight: 1.35,
+                  }}>{evt.note}</div>
                 )}
               </div>
-              <button onClick={() => removeThreshold(i)} style={{
-                background: 'transparent', border: 'none', cursor: 'pointer',
-                ...sc, fontSize: '10px', letterSpacing: '0.16em',
-                color: tokens.ghost, padding: '6px 10px',
-              }}>Remove</button>
-            </div>
-          ))}
-        </div>
-      )}
 
-      <Card style={{ background: tokens.bgCard, padding: '20px 22px' }}>
-        <Eyebrow style={{ marginBottom: '12px', fontSize: '10px' }}>Add a threshold</Eyebrow>
+              {/* Threshold indicator */}
+              <div style={{
+                width: '18px', height: '18px', borderRadius: '50%', flexShrink: 0,
+                background: isSelected ? tokens.goldChrome : 'transparent',
+                border: `1.5px solid ${isSelected ? tokens.goldChrome : tokens.goldFaint}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.2s',
+              }}>
+                {isSelected && (
+                  <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                    <path d="M1 4L3.5 6.5L9 1" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Manual add toggle */}
+      <button onClick={() => setShowManual(s => !s)} style={{
+        background: 'transparent', border: `1px dashed ${tokens.goldFaint}`,
+        borderRadius: '12px', width: '100%', padding: '12px',
+        ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.16em',
+        color: tokens.gold, cursor: 'pointer', marginBottom: showManual ? '12px' : 0,
+      }}>
+        {showManual ? '− Close' : '+ Add a threshold not on my calendar'}
+      </button>
+
+      {showManual && <ManualThresholdAdd
+        draftTitle={draftTitle} setDraftTitle={setDraftTitle}
+        draftTime={draftTime} setDraftTime={setDraftTime}
+        draftNote={draftNote} setDraftNote={setDraftNote}
+        onAdd={addManual}
+      />}
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Manual threshold add — used by CalendarPlanBeat in both states
+// ────────────────────────────────────────────────────────────────────────────
+function ManualThresholdAdd({ draftTitle, setDraftTitle, draftTime, setDraftTime, draftNote, setDraftNote, onAdd }) {
+  return (
+    <Card style={{ padding: '18px 20px', marginTop: '4px' }}>
+      <input
+        type="text"
+        value={draftTitle}
+        onChange={e => setDraftTitle(e.target.value)}
+        placeholder="What's the moment?"
+        style={{ ...inputStyle(), minHeight: 'auto', padding: '10px 14px', marginBottom: '8px' }}
+        onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) onAdd() }}
+        autoFocus
+      />
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
         <input
           type="text"
-          value={draftTitle}
-          onChange={e => setDraftTitle(e.target.value)}
-          placeholder="What's the moment? (e.g. Call with M)"
-          style={{ ...inputStyle(), minHeight: 'auto', padding: '10px 14px', marginBottom: '10px' }}
-          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) addThreshold() }}
+          value={draftTime}
+          onChange={e => setDraftTime(e.target.value)}
+          placeholder="Time (optional)"
+          style={{ ...inputStyle(), minHeight: 'auto', padding: '10px 14px', width: '130px' }}
         />
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
-          <input
-            type="text"
-            value={draftTime}
-            onChange={e => setDraftTime(e.target.value)}
-            placeholder="Time (optional)"
-            style={{ ...inputStyle(), minHeight: 'auto', padding: '10px 14px', width: '140px' }}
-          />
-          <input
-            type="text"
-            value={draftNote}
-            onChange={e => setDraftNote(e.target.value)}
-            placeholder="What you know about this moment (optional)"
-            style={{ ...inputStyle(), minHeight: 'auto', padding: '10px 14px', flex: 1 }}
-          />
-        </div>
-        <SolidButton onClick={addThreshold} style={{ padding: '10px 20px' }}>
-          Lock it in →
-        </SolidButton>
-      </Card>
-    </div>
+        <input
+          type="text"
+          value={draftNote}
+          onChange={e => setDraftNote(e.target.value)}
+          placeholder="What you know about this moment"
+          style={{ ...inputStyle(), minHeight: 'auto', padding: '10px 14px', flex: 1 }}
+        />
+      </div>
+      <SolidButton onClick={onAdd} disabled={!draftTitle.trim()} style={{ padding: '10px 20px' }}>
+        Lock it in →
+      </SolidButton>
+    </Card>
   )
 }
 
 // ────────────────────────────────────────────────────────────────────────────
 // Morning Sequence — the five beats
 // ────────────────────────────────────────────────────────────────────────────
-function MorningSequence({ userId, iamStatements, horizonSelfStatement, protectorCovenant, onComplete, onClose }) {
+function MorningSequence({ userId, iamStatements, horizonSelfStatement, protectorCovenant, icalUrl, onSaveIcalUrl, onComplete, onClose }) {
   const [beat, setBeat] = useState(1)
   const [sweep, setSweep] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -788,13 +1110,19 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
           <Body dim>The moments your Horizon Self will be tested today.</Body>
 
           <div style={{ marginTop: '24px' }}>
-            <ThresholdListEditor thresholds={thresholds} onChange={setThresholds} />
+            <CalendarPlanBeat
+              thresholds={thresholds}
+              onChange={setThresholds}
+              icalUrl={icalUrl}
+              onSaveIcalUrl={onSaveIcalUrl}
+              userId={userId}
+            />
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between',
             alignItems: 'center', marginTop: '28px' }}>
             <GhostButton onClick={() => setBeat(2)}>← Back</GhostButton>
-            <SolidButton onClick={moveToAnchor} disabled={thresholds.length === 0}>
+            <SolidButton onClick={moveToAnchor}>
               Anchor →
             </SolidButton>
           </div>
@@ -1656,6 +1984,7 @@ export function HorizonPracticePage() {
   const [protectorCovenant, setProtectorCovenant] = useState(null)
   const [hasMap, setHasMap] = useState(false)
   const [skipMap, setSkipMap] = useState(false)
+  const [icalUrl, setIcalUrl] = useState(null)
 
   // Today's state
   const [todayRun, setTodayRun] = useState(null)
@@ -1720,6 +2049,15 @@ export function HorizonPracticePage() {
           setHasMap(true)
           if (mapRow.life_ia_statement) setHorizonSelfStatement(mapRow.life_ia_statement)
         }
+
+        // contributor_profiles_beta — ical_url for calendar integration
+        const { data: profileRow } = await supabase
+          .from('contributor_profiles_beta')
+          .select('ical_url')
+          .eq('user_id', user.id)
+          .maybeSingle()
+        if (cancelled) return
+        if (profileRow?.ical_url) setIcalUrl(profileRow.ical_url)
 
         // Today's morning run
         const { data: runRow } = await supabase
@@ -1903,6 +2241,15 @@ export function HorizonPracticePage() {
     setTimeout(() => setRefreshOpen(true), 200)
   }
 
+  async function handleSaveIcalUrl(url) {
+    if (!user) return
+    setIcalUrl(url)
+    await supabase
+      .from('contributor_profiles_beta')
+      .update({ ical_url: url })
+      .eq('user_id', user.id)
+  }
+
   // ─── Render ─────────────────────────────────────────────────────────────
   if (authLoading || accessLoading || profileLoading) {
     return (
@@ -1954,6 +2301,8 @@ export function HorizonPracticePage() {
               iamStatements={iamStatements}
               horizonSelfStatement={horizonSelfStatement}
               protectorCovenant={protectorCovenant}
+              icalUrl={icalUrl}
+              onSaveIcalUrl={handleSaveIcalUrl}
               onComplete={handleMorningComplete}
               onClose={() => setView('day')}
             />
