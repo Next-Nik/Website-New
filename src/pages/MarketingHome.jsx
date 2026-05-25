@@ -63,7 +63,7 @@ function PillButton({ href, children, light }) {
 // Layout & sizing live in CSS classes (see <style> block below) so
 // the responsive media queries can override cleanly. Only the
 // dark/light variants live in inline styles.
-function PathCard({ eyebrow, heading, body: bodyText, cta, href, image, imageSide, dark }) {
+function PathCard({ eyebrow, heading, bodyText, cta, href, image, imageSide, dark }) {
   const bg     = dark ? '#0F1523' : '#FFFFFF'
   const clr    = dark ? '#FAFAF7' : ink
   const clrDim = dark ? 'rgba(250,250,247,0.72)' : inkFaint
@@ -80,18 +80,19 @@ function PathCard({ eyebrow, heading, body: bodyText, cta, href, image, imageSid
 
   const copyPanel = (
     <div className="path-card-copy">
-      <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '14px' }}>
+      <span className="path-card-eyebrow" style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '14px' }}>
         {eyebrow}
       </span>
-      <h2 style={{ ...serif, fontSize: 'clamp(26px,2.8vw,38px)', fontWeight: 400, color: clr, lineHeight: 1.1, margin: 0, letterSpacing: '-0.005em' }}>
+      <h2 className="path-card-heading" style={{ ...serif, fontSize: 'clamp(26px,2.8vw,38px)', fontWeight: 400, color: clr, lineHeight: 1.1, margin: 0, letterSpacing: '-0.005em' }}>
         {heading}
       </h2>
-      <div style={{ width: '32px', height: '1px', background: gold, opacity: 0.55, margin: '18px 0 20px' }} />
-      <p style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: clrDim, margin: '0 0 28px 0' }}>
+      <div className="path-card-divider" style={{ width: '32px', height: '1px', background: gold, opacity: 0.55, margin: '18px 0 20px' }} />
+      <p className="path-card-body" style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: clrDim, margin: '0 0 28px 0' }}>
         {bodyText}
       </p>
       <a
         href={href}
+        className="path-card-cta"
         style={{
           display: 'inline-flex', alignItems: 'center', gap: '8px',
           padding: '13px 28px', borderRadius: '40px',
