@@ -336,8 +336,7 @@ export function MarketingHomePage() {
           align-items: stretch;
         }
         /* Below 820px: stack the two cards vertically AND switch
-           each card's internal layout from horizontal to vertical.
-           This keeps the two breakpoints in sync. */
+           each card's internal layout from horizontal to vertical. */
         @media (max-width: 820px) {
           .mh-cards {
             flex-direction: column;
@@ -348,13 +347,23 @@ export function MarketingHomePage() {
           }
           /* Image always on top on mobile, regardless of imageSide */
           .path-card--image-right .path-card-image { order: -1; }
+          /* Definite-height image panel so the image inside has
+             something concrete to resolve its height:100% against. */
           .path-card-image {
-            flex: 0 0 auto !important;
-            min-height: 220px;
-            max-height: 280px;
+            flex: 0 0 260px !important;
+            height: 260px !important;
+            width: 100% !important;
+            padding: 16px !important;
           }
           .path-card-image img {
-            max-height: 260px !important;
+            max-height: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            width: auto !important;
+            object-fit: contain !important;
+          }
+          .path-card-copy {
+            padding: 28px 24px !important;
           }
         }
         /* Tighten hero headline on phone-narrow viewports */
