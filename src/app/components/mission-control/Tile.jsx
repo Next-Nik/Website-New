@@ -69,8 +69,13 @@ export default function Tile({
 const TILE_CSS = `
 .mc-rail-icon {
   width: 100%;
-  background: ${BG_CARD};
-  border: 1px solid ${GOLD_RULE};
+  /* Light stage: dark tile, lit from above — physical button feel */
+  background: linear-gradient(180deg, #2A3245 0%, #1A2030 60%, #0F1523 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 6px 16px rgba(15, 21, 35, 0.45),
+    0 2px 4px rgba(15, 21, 35, 0.30);
   padding: 10px 6px 8px;
   text-align: center;
   cursor: pointer;
@@ -84,15 +89,29 @@ const TILE_CSS = `
   gap: 4px;
 }
 [data-stage="dark"] .mc-rail-icon {
-  background: ${BG_INK_SOFT};
-  border: 1px solid rgba(200, 146, 42, 0.30);
+  /* Dark stage: light parchment tile floating off the surface */
+  background: linear-gradient(180deg, #FAFAF7 0%, #F0EFE8 60%, #E8E6DC 100%);
+  border: 1px solid rgba(255, 255, 255, 0.70);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.90),
+    0 6px 20px rgba(0, 0, 0, 0.55),
+    0 2px 6px rgba(0, 0, 0, 0.35);
 }
 .mc-rail-icon:hover {
-  background: rgba(200, 146, 42, 0.05);
+  background: linear-gradient(180deg, #3A4255 0%, #2A3245 60%, #1A2030 100%);
   border-color: ${GOLD};
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 6px 16px rgba(200, 146, 42, 0.20),
+    0 2px 4px rgba(15, 21, 35, 0.30);
 }
 [data-stage="dark"] .mc-rail-icon:hover {
-  background: rgba(200, 146, 42, 0.10);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAFAF7 60%, #F0EFE8 100%);
+  border-color: ${GOLD};
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 8px 24px rgba(0, 0, 0, 0.60),
+    0 2px 6px rgba(0, 0, 0, 0.35);
 }
 .mc-rail-icon:focus-visible {
   outline: 2px solid ${GOLD};
@@ -100,38 +119,50 @@ const TILE_CSS = `
 }
 .mc-rail-icon.mc-rail-active {
   border-color: ${GOLD};
-  background: rgba(200, 146, 42, 0.08);
+  background: linear-gradient(180deg, rgba(200, 146, 42, 0.30) 0%, rgba(200, 146, 42, 0.18) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    0 6px 16px rgba(200, 146, 42, 0.25),
+    0 2px 4px rgba(15, 21, 35, 0.20);
+}
+[data-stage="dark"] .mc-rail-icon.mc-rail-active {
+  background: linear-gradient(180deg, rgba(200, 146, 42, 0.22) 0%, rgba(200, 146, 42, 0.10) 100%);
+  border-color: ${GOLD};
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.20),
+    0 6px 20px rgba(200, 146, 42, 0.30),
+    0 2px 6px rgba(0, 0, 0, 0.40);
 }
 
 .mc-rail-glyph {
   font-family: ${FONT_DISPLAY};
   font-size: 24px;
-  color: ${GOLD_DK};
+  color: ${GOLD_LT};
   line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 28px;
 }
-[data-stage="dark"] .mc-rail-glyph { color: ${GOLD_LT}; }
+[data-stage="dark"] .mc-rail-glyph { color: ${GOLD_DK}; }
 
 .mc-rail-label {
   font-family: ${FONT_SC};
   font-size: 9px;
   letter-spacing: 0.14em;
-  color: ${TEXT_META};
+  color: ${TEXT_WHITE_META};
   line-height: 1.2;
   text-transform: uppercase;
 }
-[data-stage="dark"] .mc-rail-label { color: ${TEXT_WHITE_META}; }
+[data-stage="dark"] .mc-rail-label { color: ${TEXT_META}; }
 
 .mc-rail-state {
   font-family: ${FONT_SC};
   font-size: 8px;
   letter-spacing: 0.10em;
-  color: ${TEXT_FAINT};
+  color: ${TEXT_WHITE_FAINT};
 }
-[data-stage="dark"] .mc-rail-state { color: ${TEXT_WHITE_FAINT}; }
+[data-stage="dark"] .mc-rail-state { color: ${TEXT_FAINT}; }
 
 /* On larger screens, tiles get more breathing room and labels can
    sit on a single line where they fit. */
