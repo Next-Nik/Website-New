@@ -31,7 +31,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../../hooks/useSupabase'
 import {
-  DOMAINS, DomainStep, getDomainStage,
+  DOMAINS, DomainStep, getDomainStage, countActiveConnectionSubDomains,
 } from '../../../tools/map/Map'
 import {
   GOLD, GOLD_DK, GOLD_LT, GOLD_RULE,
@@ -43,35 +43,54 @@ import {
 const STAGE_LABELS = ['Not started', 'Avatar set', 'Score set', 'Complete']
 const STAGE_GLYPH  = ['○', '◎', '◑', '●']
 
-function ScoreChip({ label, value, dim }) {
+function ScoreChip({ label, value, dim, subtitle }) {
   return (
     <span style={{
       display: 'inline-flex',
-      alignItems: 'baseline',
-      gap: 6,
-      padding: '2px 10px',
-      borderRadius: 14,
-      border: `1px solid ${GOLD_RULE}`,
-      background: dim ? 'transparent' : 'rgba(200,146,42,0.06)',
-      fontFamily: FONT_BODY,
-      fontSize: 12,
-      lineHeight: 1.2,
-      color: TEXT_META,
+      flexDirection: 'column',
+      alignItems: 'stretch',
+      gap: 1,
     }}>
       <span style={{
-        fontFamily: FONT_SC,
-        fontSize: 9.5,
-        letterSpacing: '0.18em',
-        color: GOLD_DK,
-      }}>{label}</span>
-      <span style={{
-        fontFamily: FONT_DISPLAY,
-        fontSize: 15,
-        fontWeight: 500,
-        color: dim ? TEXT_FAINT : TEXT_INK,
+        display: 'inline-flex',
+        alignItems: 'baseline',
+        gap: 6,
+        padding: '2px 10px',
+        borderRadius: 14,
+        border: `1px solid ${GOLD_RULE}`,
+        background: dim ? 'transparent' : 'rgba(200,146,42,0.06)',
+        fontFamily: FONT_BODY,
+        fontSize: 12,
+        lineHeight: 1.2,
+        color: TEXT_META,
       }}>
-        {value ?? '—'}
+        <span style={{
+          fontFamily: FONT_SC,
+          fontSize: 9.5,
+          letterSpacing: '0.18em',
+          color: GOLD_DK,
+        }}>{label}</span>
+        <span style={{
+          fontFamily: FONT_DISPLAY,
+          fontSize: 15,
+          fontWeight: 500,
+          color: dim ? TEXT_FAINT : TEXT_INK,
+        }}>
+          {value ?? '—'}
+        </span>
       </span>
+      {subtitle && !dim && (
+        <span style={{
+          fontFamily: FONT_SC,
+          fontSize: 8.5,
+          letterSpacing: '0.12em',
+          color: TEXT_FAINT,
+          textAlign: 'center',
+          marginTop: 1,
+        }}>
+          {subtitle}
+        </span>
+      )}
     </span>
   )
 }
@@ -352,8 +371,23 @@ export default function MapMissionPanel({ user, onNavigate }) {
                     gap: 10,
                     flexShrink: 0,
                   }}>
-                    <ScoreChip label="NOW"   value={d?.currentScore} dim={d?.currentScore == null} />
-                    <ScoreChip label="HORIZON" value={d?.horizonScore} dim={d?.horizonScore == null} />
+                    {(() => {
+                      // Connection's currentScore is the average across active
+                      // sub-domains. Surface the "N areas" annotation so the
+                      // dashboard reading honours the plurality — same shell
+                      // as the other six, with the texture made visible.
+                      const isConnection = domain.id === 'connection'
+                      const activeCount  = isConnection ? countActiveConnectionSubDomains(d?.subDomains || []) : 0
+                      const nowSubtitle  = isConnection && activeCount > 0
+                        ? `${activeCount} ${activeCount === 1 ? 'area' : 'areas'}`
+                        : undefined
+                      return (
+                        <>
+                          <ScoreChip label="NOW"     value={d?.currentScore} dim={d?.currentScore == null} subtitle={nowSubtitle} />
+                          <ScoreChip label="HORIZON" value={d?.horizonScore} dim={d?.horizonScore == null} />
+                        </>
+                      )
+                    })()}
                   </div>
                 </div>
                 <div style={{
