@@ -106,7 +106,7 @@ RESPONSE FORMAT — always valid JSON:
 Voice: warm, direct, Nik Wood register. Declarative. No hedging. Short paragraphs. Never therapeutic deficit framing.`
 }
 
-const HORIZON_SYSTEM = (domain, avatarFinal, currentScore, nsBlock = '') => {
+const HORIZON_SYSTEM = (domain, avatarFinal, currentScore, nsBlock = '', landscapeBlock = '') => {
   const ctx = DOMAIN_CONTEXT[domain] || { label: domain, frame: domain }
   const tierLabel = TIER_STAGES[currentScore] || ''
   return `${NORTH_STAR_IDENTITY}${nsBlock ? '\n\n' + nsBlock : ''}
@@ -116,7 +116,7 @@ You are receiving someone's Horizon Goal for the domain of ${ctx.label} — ${ct
 THEIR AVATAR (10/10 calibration):
 ${avatarFinal || '(not provided)'}
 
-WHERE THEY ARE NOW: ${currentScore !== undefined ? `${currentScore} — ${tierLabel}` : 'not yet scored'}
+WHERE THEY ARE NOW: ${currentScore !== undefined ? `${currentScore} — ${tierLabel}` : 'not yet scored'}${landscapeBlock ? '\n\n' + landscapeBlock : ''}
 
 YOUR JOB:
 Receive this goal. Read it on its own terms. This is someone daring to say what they actually want — treat that with the weight it deserves.
@@ -185,6 +185,7 @@ module.exports = async function handler(req, res) {
     horizonScore,
     horizonText   = '',
     userId,
+    subDomains,
   } = req.body
 
   if (!domain || !mode) return res.status(400).json({ error: 'domain and mode required' })
@@ -192,9 +193,27 @@ module.exports = async function handler(req, res) {
   const northStarCtx = userId ? await getNorthStarContext(userId) : null
   const nsBlock = northStarCtx ? formatNorthStarContext(northStarCtx) : ''
 
+  // Connection horizon mode: build a landscape block so North Star can reflect
+  // against the specific relational areas the user scored and the contexts
+  // they shared, rather than producing a generic Connection horizon. The
+  // average is already in currentScore — this block adds the textured read.
+  let landscapeBlock = ''
+  if (mode === 'horizon' && domain === 'connection' && Array.isArray(subDomains) && subDomains.length > 0) {
+    const lines = subDomains
+      .filter(s => s.active)
+      .map(s => {
+        const score = (typeof s.currentScore === 'number') ? `${s.currentScore}/10` : 'not scored'
+        const ctx   = s.context ? `\n     context: ${s.context.trim()}` : ''
+        return `  • ${s.label} — ${score}${ctx}`
+      })
+    if (lines.length > 0) {
+      landscapeBlock = `THEIR RELATIONAL LANDSCAPE (the average above rolls up from these):\n${lines.join('\n')}\n\nWhen reflecting on their Connection horizon, hold the whole landscape. Don't generalise — speak to the texture of where they are across these specific areas. The horizon they're writing is for Connection as a whole, but it needs to honour the plurality, not flatten it.`
+    }
+  }
+
   const systemPrompt = mode === 'score'
     ? SCORE_SYSTEM(domain, avatarFinal, nsBlock)
-    : HORIZON_SYSTEM(domain, avatarFinal, currentScore, nsBlock)
+    : HORIZON_SYSTEM(domain, avatarFinal, currentScore, nsBlock, landscapeBlock)
 
   try {
     const response = await anthropic.messages.create({

@@ -17,11 +17,11 @@
 //   "Open The Map" → /tools/map (full flow with welcome modal,
 //                     synthesis, results, debrief)
 //
-// Component reuse: DomainStep, ConnectionDomainStep, DOMAINS,
-// getDomainStage all imported from Map.jsx — same source of truth
-// as the full page. No duplicated logic. Adding `export` keywords
-// to those declarations was a one-line ripple in Map.jsx with no
-// behaviour change.
+// Component reuse: DomainStep, DOMAINS, getDomainStage all imported
+// from Map.jsx — same source of truth as the full page. Connection
+// is no longer a special case; DomainStep handles all seven domains.
+// Adding `export` keywords to those declarations was a one-line ripple
+// in Map.jsx with no behaviour change.
 //
 // Props:
 //   user        — Supabase auth user (already loaded by Mission Control)
@@ -31,7 +31,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../../hooks/useSupabase'
 import {
-  DOMAINS, DomainStep, ConnectionDomainStep, getDomainStage,
+  DOMAINS, DomainStep, getDomainStage,
 } from '../../../tools/map/Map'
 import {
   GOLD, GOLD_DK, GOLD_LT, GOLD_RULE,
@@ -396,24 +396,13 @@ export default function MapMissionPanel({ user, onNavigate }) {
                   padding: '16px',
                   background: '#FFFFFF',
                 }}>
-                  {domain.id === 'connection' ? (
-                    <ConnectionDomainStep
-                      key={domain.id}
-                      domain={domain}
-                      existingData={d}
-                      onUpdate={handleDomainUpdate}
-                      onComplete={handleDomainComplete}
-                      userId={user?.id}
-                    />
-                  ) : (
-                    <DomainStep
-                      key={domain.id}
-                      domain={domain}
-                      existingData={d}
-                      onUpdate={handleDomainUpdate}
-                      onComplete={handleDomainComplete}
-                    />
-                  )}
+                  <DomainStep
+                    key={domain.id}
+                    domain={domain}
+                    existingData={d}
+                    onUpdate={handleDomainUpdate}
+                    onComplete={handleDomainComplete}
+                  />
                   <div style={{
                     marginTop: 18,
                     paddingTop: 14,
