@@ -189,15 +189,18 @@ export function MarketingHomePage() {
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '18px' }}>
           TWO PATHS. ONE PURPOSE.
         </span>
-        <h1 style={{
-          ...serif,
-          fontSize: 'clamp(38px,5.5vw,64px)',
-          fontWeight: 400,
-          color: ink,
-          lineHeight: 1.08,
-          letterSpacing: '-0.01em',
-          marginBottom: '0',
-        }}>
+        <h1
+          className="mh-hero-title"
+          style={{
+            ...serif,
+            fontSize: 'clamp(38px,5.5vw,64px)',
+            fontWeight: 400,
+            color: ink,
+            lineHeight: 1.08,
+            letterSpacing: '-0.01em',
+            marginBottom: '0',
+          }}
+        >
           Where will you build<br />your impact?
         </h1>
       </section>
@@ -332,23 +335,33 @@ export function MarketingHomePage() {
           gap: clamp(16px, 2.5vw, 24px);
           align-items: stretch;
         }
+        /* Below 820px: stack the two cards vertically AND switch
+           each card's internal layout from horizontal to vertical.
+           This keeps the two breakpoints in sync. */
         @media (max-width: 820px) {
+          .mh-cards {
+            flex-direction: column;
+          }
           .path-card {
             flex-direction: column !important;
             min-height: 0 !important;
           }
+          /* Image always on top on mobile, regardless of imageSide */
           .path-card--image-right .path-card-image { order: -1; }
           .path-card-image {
             flex: 0 0 auto !important;
-            min-height: 280px;
+            min-height: 220px;
+            max-height: 280px;
           }
           .path-card-image img {
-            max-height: 320px !important;
+            max-height: 260px !important;
           }
         }
-        @media (max-width: 680px) {
-          .mh-cards {
-            flex-direction: column;
+        /* Tighten hero headline on phone-narrow viewports */
+        @media (max-width: 480px) {
+          .mh-hero-title {
+            font-size: 32px !important;
+            line-height: 1.12 !important;
           }
         }
       `}</style>

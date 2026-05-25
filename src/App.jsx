@@ -117,36 +117,39 @@ function ComingSoon({ name }) {
 // ── Root route ──
 //
 // Signed-out → MarketingHomePage (the wrapper)
-// Signed-in + welcome seen → MissionControl
-// Signed-in + welcome NOT seen → route to matching welcome flow
-//   (path captured from the wrapper CTA, stored in localStorage by Login)
+// Signed-in → MissionControl, UNLESS the user just came from a
+//   wrapper CTA (welcomePath set in localStorage) AND hasn't seen
+//   the welcome yet — then route to the matching welcome flow.
 //
-// The WELCOME_SEEN_KEY flag is set by the welcome overlay on dismiss,
-// so this only routes new users through it once.
+// The 'welcomePath' flag is set by Login when ?path=... is on the
+// URL, so it only exists for users who arrived via the wrapper.
+// Existing users on a new device won't have it set and will go
+// straight to Mission Control — they don't need a re-introduction.
 function RootRoute() {
   const { user, loading } = useAuth()
   if (loading) return null
   if (!user) return <MarketingHomePage />
 
-  // Signed in. Check welcome-seen flag.
+  // Signed in. Look for fresh wrapper intent first — that's the
+  // only signal that justifies routing to the welcome flow.
+  let welcomePath = null
   let seen = true
   try {
+    welcomePath = window.localStorage.getItem('nextus.welcomePath')
     seen = window.localStorage.getItem('nextus.welcomeSeen') === '1'
   } catch {
     // localStorage blocked — fail open and skip the welcome.
   }
-  if (seen) return <MissionControl />
 
-  // Not seen — route to the welcome flow matching the path the user
-  // chose on the wrapper. Default to self if no path was captured.
-  let path = 'self'
-  try {
-    const stored = window.localStorage.getItem('nextus.welcomePath')
-    if (stored === 'org' || stored === 'practitioner' || stored === 'self') {
-      path = stored
-    }
-    window.localStorage.removeItem('nextus.welcomePath')
-  } catch {}
+  // No wrapper intent OR welcome already seen → Mission Control.
+  if (!welcomePath || seen) return <MissionControl />
+
+  // Brand-new user from the wrapper, never seen the welcome —
+  // route to the matching narrative.
+  const path = ['org', 'practitioner', 'self'].includes(welcomePath)
+    ? welcomePath
+    : 'self'
+  try { window.localStorage.removeItem('nextus.welcomePath') } catch {}
 
   const target = {
     self:         '/welcome/self',
