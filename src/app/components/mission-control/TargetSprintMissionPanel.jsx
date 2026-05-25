@@ -155,6 +155,28 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
   const [saveError, setSaveError] = useState(null)
   const isFirstRender = useRef(true)
 
+  // Cancel flow
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+  const [cancelling, setCancelling] = useState(false)
+  const [cancelError, setCancelError] = useState(null)
+
+  async function handleCancelConfirm() {
+    if (!user?.id || !sprint.id) return
+    setCancelling(true)
+    setCancelError(null)
+    try {
+      const { error } = await supabase
+        .from('target_sprint_sessions')
+        .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+        .eq('id', sprint.id)
+      if (error) throw error
+      onNavigate('/tools/target-sprint')
+    } catch (err) {
+      setCancelError('Something went wrong. Please try again.')
+      setCancelling(false)
+    }
+  }
+
   // If sprintData prop changes externally (e.g. parent reloads),
   // reset local state. We key on sprint.id at the parent so this
   // mostly handles in-place updates of the same row.
@@ -477,18 +499,94 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
         alignItems: 'center',
         gap: 10,
       }}>
-        <div style={{
-          fontFamily: FONT_SC,
-          fontSize: 9.5,
-          letterSpacing: '0.18em',
-          color: TEXT_FAINT,
-        }}>
-          INLINE EDIT · CHANGES SAVE AS YOU GO
-        </div>
+        <button
+          onClick={() => setShowCancelConfirm(true)}
+          style={cancelLinkStyle}
+        >
+          Cancel stretch
+        </button>
         <button onClick={() => onNavigate('/tools/target-sprint')} style={ghostBtnStyle}>
-          FULL SPRINT VIEW →
+          FULL VIEW →
         </button>
       </div>
+
+      {/* Cancel confirmation modal */}
+      {showCancelConfirm && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(15,21,35,0.72)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '24px',
+        }}>
+          <div style={{
+            background: '#FAFAF7',
+            border: `1px solid ${GOLD_RULE}`,
+            borderRadius: '4px',
+            padding: '32px 28px',
+            maxWidth: '360px',
+            width: '100%',
+            boxShadow: '0 24px 60px rgba(15,21,35,0.30)',
+          }}>
+            <div style={{
+              fontFamily: FONT_SC,
+              fontSize: '11px',
+              letterSpacing: '0.22em',
+              color: GOLD_DK,
+              textTransform: 'uppercase',
+              marginBottom: '14px',
+            }}>
+              Cancel This Stretch?
+            </div>
+            <div style={{
+              fontFamily: FONT_BODY,
+              fontSize: '15px',
+              color: TEXT_INK,
+              lineHeight: 1.6,
+              marginBottom: '24px',
+            }}>
+              This will end your current stretch. Your progress notes are kept.
+              Start a new one whenever you're ready.
+            </div>
+            {cancelError && (
+              <div style={{
+                fontFamily: FONT_BODY,
+                fontSize: '13px',
+                color: '#C85050',
+                marginBottom: '16px',
+                fontStyle: 'italic',
+              }}>
+                {cancelError}
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={handleCancelConfirm}
+                disabled={cancelling}
+                style={{
+                  ...primaryBtnStyle,
+                  flex: 1,
+                  opacity: cancelling ? 0.6 : 1,
+                  borderColor: '#C85050',
+                  color: '#C85050',
+                }}
+              >
+                {cancelling ? 'CANCELLING…' : 'END STRETCH'}
+              </button>
+              <button
+                onClick={() => { setShowCancelConfirm(false); setCancelError(null) }}
+                disabled={cancelling}
+                style={{ ...ghostBtnStyle, padding: '12px 16px', border: `1px solid ${GOLD_RULE}` }}
+              >
+                KEEP GOING
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -615,4 +713,16 @@ const ghostBtnStyle = {
   letterSpacing: '0.18em',
   textTransform: 'uppercase',
   cursor: 'pointer',
+}
+
+const cancelLinkStyle = {
+  background: 'transparent',
+  border: 'none',
+  color: TEXT_FAINT,
+  padding: '6px 0',
+  fontFamily: FONT_BODY,
+  fontSize: 12,
+  cursor: 'pointer',
+  textDecoration: 'underline',
+  textUnderlineOffset: '3px',
 }
