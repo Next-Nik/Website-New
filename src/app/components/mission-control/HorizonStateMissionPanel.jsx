@@ -52,15 +52,15 @@ function getLocalDateStr(date = new Date()) {
 
 export default function HorizonStateMissionPanel({ user, onNavigate }) {
   const {
-    audioUrl, audioLoading, audioError, sessions, lifeIaStatement, reload,
+    audioUrl, audioLoading, audioError, sessions, lifeIaStatement, currentPhase, reload,
   } = useHorizonStateData(user)
 
   const [savingPulse, setSavingPulse] = useState(false)
 
-  async function handleAfterComplete(afterData, beforeData, updatedSessions) {
+  async function handleAfterComplete(afterData, beforeData, updatedSessions, phase) {
     setSavingPulse(true)
     try {
-      await writeHorizonStateSummary(user, updatedSessions, afterData, beforeData)
+      await writeHorizonStateSummary(user, updatedSessions, afterData, beforeData, phase || currentPhase)
     } finally {
       setTimeout(() => setSavingPulse(false), 250)
       reload()
@@ -127,6 +127,7 @@ export default function HorizonStateMissionPanel({ user, onNavigate }) {
         audioError={audioError}
         sessions={sessions}
         lifeIaStatement={lifeIaStatement}
+        currentPhase={currentPhase}
         onAfterComplete={handleAfterComplete}
       />
 
