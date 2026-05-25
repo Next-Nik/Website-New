@@ -10,8 +10,11 @@
 // Tightenings vs prototype (per Welcome plan §2):
 //   • Tagline upright, not italic. Italic reserved for user's words
 //     reflected back; Kin is a worked example, not the user.
-//   • Top nav strip with "Sign in" + "Skip ahead" — login is the real
-//     skip; in-narrative skip jumps to closing.
+//   • Top nav strip with "Sign in" + "Skip ahead". Both exit the
+//     narrative to /login. "Skip ahead" used to jump to the closing
+//     beat, but on mobile the closing CTA can sit below browser
+//     chrome — a button labelled "Skip ahead" should reliably let
+//     the visitor out. Sign in is the same destination with intent.
 //   • Closing primary CTA: "Sign in to begin your own" → /login.
 //   • Mounts as its own page; no fake dashboard underneath.
 // ─────────────────────────────────────────────────────────────
@@ -202,13 +205,13 @@ export default function WelcomeOverlay({
   }, [beatIdx])
 
   const handleSkipAhead = useCallback(() => {
-    setFading(true)
-    setTimeout(() => {
-      setBackwards(false)
-      setBeatIdx(beats.length - 1)
-      setFading(false)
-    }, 250)
-  }, [beats.length])
+    // "Skip ahead" exits the narrative to /login. Previously this
+    // jumped to the closing beat, which on mobile could hide the
+    // only exit (closing CTA) behind Safari's address bar.
+    if (dismissedRef.current) return
+    dismissedRef.current = true
+    goToLogin(true)
+  }, [goToLogin])
 
   const handleSignIn = useCallback(() => {
     goToLogin(true)
@@ -411,7 +414,11 @@ const WELCOME_CSS = `
   transition: background 0.9s ease-out, color 0.9s ease-out, border-color 0.9s ease-out;
 }
 @media (max-width: 640px) {
-  .overlay-card { padding: 36px 26px 14px; height: 88vh; }
+  /* dvh = dynamic viewport height; accounts for mobile browser
+     chrome (Safari address bar etc.) so the .controls row at the
+     card's bottom is never pushed below the visible fold. */
+  .overlay-card { padding: 36px 26px 14px; height: 88dvh; max-height: 88dvh; }
+  .overlay { padding: 56px 16px 16px; }
 }
 
 .overlay-card.dark {
