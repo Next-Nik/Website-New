@@ -60,9 +60,9 @@ function PillButton({ href, children, light }) {
 }
 
 // ── Path card — horizontal split (image | copy) ──────────────
-// Image takes ~40%, copy takes ~60% — copy needs more room so the
-// heading and body breathe. Image sits with breathing room around it
-// so the full composition is visible (not rough-cropped).
+// Layout & sizing live in CSS classes (see <style> block below) so
+// the responsive media queries can override cleanly. Only the
+// dark/light variants live in inline styles.
 function PathCard({ eyebrow, heading, body: bodyText, cta, href, image, imageSide, dark }) {
   const bg     = dark ? '#0F1523' : '#FFFFFF'
   const clr    = dark ? '#FAFAF7' : ink
@@ -73,46 +73,13 @@ function PathCard({ eyebrow, heading, body: bodyText, cta, href, image, imageSid
   const imageBg   = dark ? '#0F1523' : '#FFFFFF'
 
   const imagePanel = (
-    <div
-      className="path-card-image"
-      style={{
-        flex: '0 0 42%',
-        minWidth: 0,
-        background: imageBg,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '0',
-        overflow: 'hidden',
-      }}
-    >
-      <img
-        src={image}
-        alt=""
-        aria-hidden="true"
-        style={{
-          width: '100%',
-          height: '100%',
-          maxHeight: '420px',
-          objectFit: 'contain',
-          display: 'block',
-        }}
-      />
+    <div className="path-card-image" style={{ background: imageBg }}>
+      <img src={image} alt="" aria-hidden="true" />
     </div>
   )
 
   const copyPanel = (
-    <div
-      className="path-card-copy"
-      style={{
-        flex: '1 1 60%',
-        minWidth: 0,
-        padding: 'clamp(28px,3vw,40px) clamp(28px,3.5vw,44px)',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-      }}
-    >
+    <div className="path-card-copy">
       <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '14px' }}>
         {eyebrow}
       </span>
@@ -155,17 +122,7 @@ function PathCard({ eyebrow, heading, body: bodyText, cta, href, image, imageSid
   return (
     <div
       className={`path-card path-card--image-${imageSide}`}
-      style={{
-        flex: '1 1 0',
-        minWidth: 0,
-        borderRadius: '16px',
-        overflow: 'hidden',
-        background: bg,
-        border: dark ? 'none' : '1px solid rgba(200,146,42,0.12)',
-        display: 'flex',
-        flexDirection: 'row',
-        minHeight: '400px',
-      }}
+      style={{ background: bg, border: dark ? 'none' : '1px solid rgba(200,146,42,0.12)' }}
     >
       {imageSide === 'left' ? imagePanel : copyPanel}
       {imageSide === 'left' ? copyPanel : imagePanel}
@@ -330,43 +287,75 @@ export function MarketingHomePage() {
       <SiteFooter />
 
       <style>{`
+        /* ── Path cards container ── */
         .mh-cards {
           display: flex;
           gap: clamp(16px, 2.5vw, 24px);
           align-items: stretch;
         }
-        /* Below 820px: stack the two cards vertically AND switch
-           each card's internal layout from horizontal to vertical. */
+
+        /* ── Card base (desktop default) ── */
+        .path-card {
+          flex: 1 1 0;
+          min-width: 0;
+          border-radius: 16px;
+          overflow: hidden;
+          display: flex;
+          flex-direction: row;
+          min-height: 400px;
+        }
+        .path-card-image {
+          flex: 0 0 42%;
+          min-width: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0;
+          overflow: hidden;
+        }
+        .path-card-image img {
+          width: 100%;
+          height: 100%;
+          max-height: 420px;
+          object-fit: contain;
+          display: block;
+        }
+        .path-card-copy {
+          flex: 1 1 60%;
+          min-width: 0;
+          padding: clamp(28px,3vw,40px) clamp(28px,3.5vw,44px);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+
+        /* ── Mobile: stack cards vertically, stack panels vertically ── */
         @media (max-width: 820px) {
-          .mh-cards {
-            flex-direction: column;
-          }
+          .mh-cards { flex-direction: column; }
           .path-card {
-            flex-direction: column !important;
-            min-height: 0 !important;
+            flex-direction: column;
+            min-height: 0;
           }
-          /* Image always on top on mobile, regardless of imageSide */
           .path-card--image-right .path-card-image { order: -1; }
-          /* Definite-height image panel so the image inside has
-             something concrete to resolve its height:100% against. */
           .path-card-image {
-            flex: 0 0 260px !important;
-            height: 260px !important;
-            width: 100% !important;
-            padding: 16px !important;
+            flex: 0 0 auto;
+            width: 100%;
+            height: 280px;
+            padding: 20px;
           }
           .path-card-image img {
-            max-height: 100% !important;
-            max-width: 100% !important;
-            height: auto !important;
-            width: auto !important;
-            object-fit: contain !important;
+            width: auto;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
           }
           .path-card-copy {
-            padding: 28px 24px !important;
+            flex: 1 1 auto;
+            padding: 28px 26px 32px;
           }
         }
-        /* Tighten hero headline on phone-narrow viewports */
+
+        /* ── Phone-narrow: smaller hero headline ── */
         @media (max-width: 480px) {
           .mh-hero-title {
             font-size: 32px !important;
