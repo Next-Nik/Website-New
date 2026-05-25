@@ -583,7 +583,7 @@ button {
   .path-card-copy .path-card-cta {
     padding: 8px 14px;
     font-size: 10.5px;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     align-self: center;
     margin-top: auto;
   }
@@ -594,4 +594,9 @@ button {
   .path-card { padding: 20px 12px 22px; }
   .path-card-image { width: 80px; height: 80px; margin-bottom: 14px; }
   .path-card-copy .path-card-heading { font-size: 19px; }
+  .path-card-copy .path-card-cta {
+    padding: 7px 12px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
 }
