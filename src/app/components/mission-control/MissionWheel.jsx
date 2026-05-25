@@ -280,8 +280,8 @@ function SelfWheel({
     return pts.join(' ')
   }, [cx, cy, maxR, displayRot])
 
-  const ringStroke  = dark ? 'rgba(200, 146, 42, 0.30)' : 'rgba(200, 146, 42, 0.20)'
-  const spokeStroke = dark ? 'rgba(200, 146, 42, 0.45)' : 'rgba(200, 146, 42, 0.30)'
+  const ringStroke  = dark ? 'rgba(200, 146, 42, 0.42)' : 'rgba(200, 146, 42, 0.30)'
+  const spokeStroke = dark ? 'rgba(200, 146, 42, 0.60)' : 'rgba(200, 146, 42, 0.42)'
   const vertStroke     = dark ? BG_INK : BG_CARD
   const walkerLabelFill = dark ? GOLD_LT : GOLD_DK
   const walkerDotFill   = dark ? GOLD_LT : GOLD_DK
@@ -298,12 +298,24 @@ function SelfWheel({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
+      {/* Label legibility filter — halo behind text so labels read
+          clearly over the map substrate on both stages */}
+      <defs>
+        <filter id={`lbl-halo-${dark ? 'dark' : 'light'}`} x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow
+            dx="0" dy="0" stdDeviation={dark ? 3 : 2.5}
+            floodColor={dark ? '#141A28' : '#FAFAF7'}
+            floodOpacity={dark ? 0.95 : 0.90}
+          />
+        </filter>
+      </defs>
+
       {/* Outer dashed ring — rotates with spokes so tips stay at corners */}
       <polygon
         points={ringPts}
         fill="none"
         stroke={ringStroke}
-        strokeWidth="1"
+        strokeWidth="1.2"
         strokeDasharray="3 3"
         style={{ pointerEvents: 'none' }}
       />
@@ -387,10 +399,10 @@ function SelfWheel({
           <>
             <polygon
               points={verts.map(v => `${v.x},${v.y}`).join(' ')}
-              fill="none"
+              fill={dark ? 'rgba(200,146,42,0.14)' : 'rgba(200,146,42,0.10)'}
               stroke={GOLD}
-              strokeWidth="1.25"
-              strokeOpacity="0.7"
+              strokeWidth="2"
+              strokeOpacity="0.85"
               strokeLinejoin="round"
               style={{ pointerEvents: 'none' }}
             />
@@ -404,10 +416,10 @@ function SelfWheel({
                   <circle cx={v.x} cy={v.y} r={12} fill="transparent" />
                 )}
                 <circle
-                  cx={v.x} cy={v.y} r={2.5}
+                  cx={v.x} cy={v.y} r={4}
                   fill={v.color}
                   stroke={vertStroke}
-                  strokeWidth="1"
+                  strokeWidth="1.2"
                   style={{ pointerEvents: 'none' }}
                 />
               </g>
@@ -494,6 +506,7 @@ function SelfWheel({
               y={pos.y}
               textAnchor={pos.anchor}
               onClick={onSelect ? () => onSelect(i) : undefined}
+              filter={`url(#lbl-halo-${dark ? 'dark' : 'light'})`}
               style={{
                 fontFamily: FONT_SC,
                 fontSize: 17,
@@ -847,8 +860,8 @@ function CivWheel({
     return pts.join(' ')
   }, [count, displayRot])
 
-  const ringStroke = dark ? 'rgba(200, 146, 42, 0.30)' : 'rgba(200, 146, 42, 0.20)'
-  const spokeStroke = dark ? 'rgba(200, 146, 42, 0.45)' : 'rgba(200, 146, 42, 0.30)'
+  const ringStroke = dark ? 'rgba(200, 146, 42, 0.42)' : 'rgba(200, 146, 42, 0.30)'
+  const spokeStroke = dark ? 'rgba(200, 146, 42, 0.60)' : 'rgba(200, 146, 42, 0.42)'
   const labelFill = dark ? TEXT_WHITE_META : TEXT_META
   const labelActiveFill = dark ? GOLD_LT : GOLD_DK
   const centreFill = GOLD
@@ -884,12 +897,23 @@ function CivWheel({
       style={{ display: 'block', overflow: 'visible'}}
       aria-label="The seven civilisational domains"
     >
+      {/* Label legibility filter */}
+      <defs>
+        <filter id={`lbl-halo-${dark ? 'dark' : 'light'}-civ`} x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow
+            dx="0" dy="0" stdDeviation={dark ? 3 : 2.5}
+            floodColor={dark ? '#141A28' : '#FAFAF7'}
+            floodOpacity={dark ? 0.95 : 0.90}
+          />
+        </filter>
+      </defs>
+
       {/* Outer dashed ring — rotates with spokes so tips stay at corners */}
       <polygon
         points={ringPts}
         fill="none"
         stroke={ringStroke}
-        strokeWidth="1"
+        strokeWidth="1.2"
         strokeDasharray="3 3"
       />
 
@@ -937,15 +961,13 @@ function CivWheel({
 
         return (
           <g style={{ opacity: bloomed ? 1 : bloomT }}>
-            {/* Polygon — gold stroke only, no fill, so the coloured
-                Position dots read against the dark background. Matches
-                the Self wheel treatment. */}
+            {/* Polygon — richer fill and stroke for visual presence */}
             <polygon
               points={polyPoints}
-              fill="none"
+              fill={dark ? 'rgba(200,146,42,0.12)' : 'rgba(200,146,42,0.08)'}
               stroke={GOLD}
-              strokeWidth="1.25"
-              strokeOpacity="0.55"
+              strokeWidth="2"
+              strokeOpacity="0.85"
               strokeLinejoin="round"
               style={{ pointerEvents: 'none' }}
             />
@@ -1147,13 +1169,11 @@ function CivWheel({
               x={labelPos.x}
               y={labelPos.y}
               textAnchor={labelPos.anchor}
+              filter={`url(#lbl-halo-${dark ? 'dark' : 'light'}-civ)`}
               style={{
                 fontFamily: FONT_SC,
                 fontSize: 17,
                 letterSpacing: '0.18em',
-                // Active and Placement get the saturated label; Focus is more
-                // subtle — a half-step lift, achieved by going to the
-                // active fill but keeping the lighter weight.
                 fill: isActive || isPlacement || isFocus
                   ? activeLabelFill
                   : baseLabelFill,
