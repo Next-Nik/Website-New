@@ -80,9 +80,11 @@ function PathCard({ eyebrow, heading, bodyText, cta, href, image, imageSide, dar
 
   const copyPanel = (
     <div className="path-card-copy">
-      <span className="path-card-eyebrow" style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '14px' }}>
-        {eyebrow}
-      </span>
+      {eyebrow && (
+        <span className="path-card-eyebrow" style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '14px' }}>
+          {eyebrow}
+        </span>
+      )}
       <h2 className="path-card-heading" style={{ ...serif, fontSize: 'clamp(26px,2.8vw,38px)', fontWeight: 400, color: clr, lineHeight: 1.1, margin: 0, letterSpacing: '-0.005em' }}>
         {heading}
       </h2>
@@ -171,7 +173,6 @@ export function MarketingHomePage() {
       }}>
         <div className="mh-cards">
           <PathCard
-            eyebrow="PERSONAL TRANSFORMATION"
             heading="Personal Transformation"
             bodyText="Build the inner clarity, courage, and capacity to live and lead from your highest self."
             cta="START"
@@ -181,7 +182,6 @@ export function MarketingHomePage() {
             dark={false}
           />
           <PathCard
-            eyebrow="CHANGING THE WORLD"
             heading="Changing the World"
             bodyText="Use your gifts to create meaningful change and build a more conscious and connected world."
             cta="START"
