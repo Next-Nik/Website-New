@@ -194,7 +194,7 @@ const MOBILE_STYLES = `
 
 // ─── Audio Player ─────────────────────────────────────────────────────────────
 
-function AudioPlayer({ url, onEnded, onNearEnd, locked }) {
+function AudioPlayer({ url, onEnded, onNearEnd, locked, currentPhase = 'baseline' }) {
   const audioRef                = useRef(null)
   const nearEndFiredRef         = useRef(false)
   const [playing, setPlaying]   = useState(false)
@@ -869,6 +869,7 @@ export function useHorizonStateData(user) {
               value:         row.before_value,
               note:          row.before_note,
               completed_at:  row.before_at,
+              audio_phase:   row.audio_phase || 'baseline',
               week_id:       weekId,
               month_id:      monthId,
               quarter_id:    quarterId,
@@ -881,6 +882,7 @@ export function useHorizonStateData(user) {
               value:         row.after_value,
               note:          row.after_note,
               completed_at:  row.after_at,
+              audio_phase:   row.audio_phase || 'baseline',
               week_id:       weekId,
               month_id:      monthId,
               quarter_id:    quarterId,
@@ -949,19 +951,26 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
 
   useEffect(() => {
     if (!audioUrl) return
-    const a = new Audio(audioUrl)
-    a.preload = 'metadata'
-    mobileAudioRef.current = a
-    a.addEventListener('loadedmetadata', () => { setMobileDuration(a.duration); setMobileLoaded(true) })
-    a.addEventListener('timeupdate', () => {
-      setMobileCurrent(a.currentTime)
-      if (!mobileNearEndRef.current && a.duration > 0 && (a.duration - a.currentTime) <= 60) {
-        mobileNearEndRef.current = true
-        setAfterUnlocked(true)
-      }
-    })
-    a.addEventListener('ended', () => { setMobilePlaying(false); setMobileCurrent(0); a.currentTime = 0; setAfterUnlocked(true) })
-    return () => { a.pause(); a.src = '' }
+    let a
+    try {
+      a = new Audio(audioUrl)
+      a.preload = 'metadata'
+      mobileAudioRef.current = a
+      a.addEventListener('loadedmetadata', () => { setMobileDuration(a.duration); setMobileLoaded(true) })
+      a.addEventListener('timeupdate', () => {
+        setMobileCurrent(a.currentTime)
+        if (!mobileNearEndRef.current && a.duration > 0 && (a.duration - a.currentTime) <= 60) {
+          mobileNearEndRef.current = true
+          setAfterUnlocked(true)
+        }
+      })
+      a.addEventListener('ended', () => { setMobilePlaying(false); setMobileCurrent(0); a.currentTime = 0; setAfterUnlocked(true) })
+    } catch (e) {
+      console.warn('[HorizonState] Audio init failed:', e)
+    }
+    return () => {
+      try { if (a) { a.pause(); a.src = '' } } catch { /* iOS AbortError on never-played audio — safe to ignore */ }
+    }
   }, [audioUrl])
 
   function mobileToggle() {
@@ -1443,7 +1452,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
           {audioLoading && <p style={{ ...body, fontSize: '1.125rem', ...muted }}>Loading audio{'…'}</p>}
           {audioError  && <p style={{ ...body, fontSize: '1.125rem', color: 'rgba(138,48,48,0.7)' }}>{audioError}</p>}
           {!audioLoading && !audioError && audioUrl && (
-            <AudioPlayer url={audioUrl} locked={!beforeDone} onNearEnd={() => setAfterUnlocked(true)} onEnded={() => setAfterUnlocked(true)} />
+            <AudioPlayer url={audioUrl} locked={!beforeDone} onNearEnd={() => setAfterUnlocked(true)} onEnded={() => setAfterUnlocked(true)} currentPhase={currentPhase} />
           )}
           {!user && !audioLoading && !audioError && (
             <div style={{ padding: '20px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.2)', borderRadius: '14px', opacity: 0.6 }}>

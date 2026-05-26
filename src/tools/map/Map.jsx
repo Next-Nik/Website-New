@@ -4,14 +4,10 @@ import { Nav } from '../../components/Nav'
 import { DomainTooltip } from '../../components/DomainTooltip'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
-import { AccessGate } from '../../components/AccessGate'
 import { supabase } from '../../hooks/useSupabase'
 import { HorizonScaleModal, SCALE_LINK_STYLE } from '../../components/HorizonScaleModal'
 import { DebriefPanel } from '../../components/DebriefPanel'
 import { CrisisRedirectCard } from '../../components/CrisisRedirectCard'
-import { InfoIcon } from '../../components/InfoIcon'
-import { ScaleEmbedded } from '../../components/ScaleEmbedded'
-import { DOMAIN_COPY } from '../../constants/domainCopy'
 
 // ─── Mobile hook ─────────────────────────────────────────────────────────────
 
@@ -825,7 +821,7 @@ function LockBtn({ onClick, label }) {
 
 // ─── Domain Step — full 3-step conversation flow ──────────────────────────────
 
-export function DomainStep({ domain, existingData, onComplete, onUpdate, onOpenScale }) {
+export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
   // Step within this domain: 'avatar' | 'score' | 'horizon' | 'done'
   const initStep = () => {
     if (!existingData) return 'avatar'
@@ -1139,31 +1135,9 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate, onOpenS
       {/* Domain header */}
       <div style={{ marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             {domain.label}
-            <InfoIcon label={`About ${domain.label}`} title={domain.label} align="left">
-              {DOMAIN_COPY[domain.id] && (
-                <>
-                  <p style={{ marginBottom: '12px', color: 'rgba(15,21,35,0.85)' }}>
-                    {DOMAIN_COPY[domain.id].gloss}
-                  </p>
-                  <p style={{ marginBottom: '12px' }}>
-                    {DOMAIN_COPY[domain.id].paragraph}
-                  </p>
-                  <p style={{
-                    fontFamily: "'Cormorant Garamond', Georgia, serif",
-                    fontSize:   '1.0625rem',
-                    fontStyle:  'italic',
-                    color:      '#A8721A',
-                    marginTop:  '14px',
-                    paddingTop: '12px',
-                    borderTop:  '1px solid rgba(200,146,42,0.18)',
-                  }}>
-                    {DOMAIN_COPY[domain.id].question}
-                  </p>
-                </>
-              )}
-            </InfoIcon>
+            <DomainTooltip domainKey={domain.id} system="lifeos" position="below" />
           </span>
           {stage === 3 && (
             <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A' }}>● Complete</span>
@@ -1179,22 +1153,20 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate, onOpenS
         )}
       </div>
 
-      {/* Step tabs — short labels so they fit on mobile; the full instruction
-          for each step lives inside the step body. */}
+      {/* Step tabs */}
       <div style={{ display: 'flex', gap: '0', marginBottom: '20px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
         {['avatar', 'score', 'horizon'].map((s, i) => {
-          const labels    = ['1 · Best in the world', '2 · Where you are', '3 · Horizon goal']
+          const labels   = ['1 · Avatar', '2 · Where are you', '3 · Horizon']
           const reachable = i === 0 || (i === 1 && getDomainStage(buildData()) >= 1) || (i === 2 && getDomainStage(buildData()) >= 2)
-          const active    = step === s || (step === 'done' && s === 'horizon')
+          const active   = step === s || (step === 'done' && s === 'horizon')
           return (
             <button key={s} onClick={() => reachable && setStep(s)}
               style={{
-                fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.1em',
-                padding: '8px 12px', background: 'none', border: 'none',
+                fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em',
+                padding: '8px 14px', background: 'none', border: 'none',
                 borderBottom: active ? '2px solid #A8721A' : '2px solid transparent',
                 marginBottom: '-1px', cursor: reachable ? 'pointer' : 'default',
                 color: active ? '#A8721A' : reachable ? 'rgba(15,21,35,0.72)' : 'rgba(15,21,35,0.72)',
-                whiteSpace: 'nowrap',
               }}>
               {labels[i]}
             </button>
@@ -1202,73 +1174,19 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate, onOpenS
         })}
       </div>
 
-      {/* ── STEP 1: BEST IN THE WORLD ── */}
+      {/* ── STEP 1: AVATAR ── */}
       {(step === 'avatar') && (
         <div>
           {!avatarLocked || editingAvatar ? (
             <>
-              {/* Step heading with info icon — the heading carries the instruction;
-                  the info icon holds the deeper teaching (why we do this, what to
-                  do if you've seen something that seems similar before, common
-                  questions). One affordance, available, never imposed. */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-                <h3 style={{
-                  fontFamily: "'Cormorant SC', Georgia, serif",
-                  fontSize:   '1.25rem',
-                  fontWeight: 400,
-                  color:      '#0F1523',
-                  margin:     0,
-                  lineHeight: 1.3,
-                }}>
-                  Describe best in the world in this domain
-                </h3>
-                <InfoIcon label="About this step" title="About this step" align="left">
-                  <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '6px' }}>
-                    Why we do this
-                  </div>
-                  <p style={{ marginBottom: '10px' }}>
-                    Asking <em>what do you want</em> hits the part of you that’s been told what’s reasonable, what’s allowed, what people like you get. Describing a character who already has this domain handled bypasses that gatekeeper — you’re just describing a figure, and the figure is allowed to be anything. By the time you’ve built them, the ceiling of what you think is possible has quietly moved.
-                  </p>
-                  <p style={{ marginBottom: '10px' }}>
-                    In practice, most people land around 80% of what they aim at. The vivid ten gives you somewhere honest to aim from.
-                  </p>
-                  <p style={{ marginBottom: '14px' }}>
-                    Imagining best in the world opens the world. Jeff Bezos has made upwards of a quarter of a million dollars a minute. Once you can picture that, a quarter of a million a year — or a month, or a week — stops being abstract. You’re not matching him. You’re not competing with him. You’re walking into a world where greatness exists.
-                  </p>
-
-                  <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginTop: '14px', marginBottom: '6px', paddingTop: '12px', borderTop: '1px solid rgba(200,146,42,0.15)' }}>
-                    If you’ve done work that seems similar
-                  </div>
-                  <p style={{ marginBottom: '10px' }}>
-                    If you’ve done a lot of developmental work, this exercise might seem similar to things you’ve done in the past. I get it. You’ll get the most out of this if you can bring new eyes to it. There are nuances you’ll miss if you treat it like something you’ve already done.
-                  </p>
-                  <p style={{ marginBottom: '14px' }}>
-                    The character you’re describing isn’t the version of you you’re walking toward — that’s Horizon Self, and you’ll meet that in a different tool. Right now you’re building the ten so the rest of the work has a ruler that means something.
-                  </p>
-
-                  <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginTop: '14px', marginBottom: '6px', paddingTop: '12px', borderTop: '1px solid rgba(200,146,42,0.15)' }}>
-                    Common questions
-                  </div>
-                  <p style={{ marginBottom: '10px' }}>
-                    <em>“Why wouldn’t I want to be ten in every area?”</em> Maintaining best-in-the-world in any single domain takes more than most people realise. I’ve coached people who were legitimately best in the world at what they did, and what it costs them is real. If that’s what you want for this domain, go for it. Most people find that a level or two up from where they are now — in the domains that matter most to them — is where the work wants to live.
-                  </p>
-                  <p style={{ marginBottom: '10px' }}>
-                    <em>“What if I can’t think of anyone?”</em> Describe the qualities instead. The character is the destination — the cast list is just one way to get there.
-                  </p>
-                  <p style={{ marginBottom: 0 }}>
-                    <em>“How high should I go?”</em> All the way. The vivid ten is where the scale gets honest. If the character you describe sits lower than your imagination can reach, every score you give yourself afterwards is reaching for a smaller ruler. Go to the top. Then come down and tell me where you actually are.
-                  </p>
-                </InfoIcon>
-              </div>
-
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '8px' }}>
-                Before you score yourself, we need to know what ten out of ten looks like — to you. Imagine an Olympian who was hit by a laser and granted superpowers. That’s the range. Best in the world. The top of what you can picture, lived in a life like yours.
+                Create a construct of "Best in the World" for you in {domain.label}. Think of it like you're writing a character for a stage play — someone who could walk into a room and be immediately recognised as the pinnacle of this domain for someone like you.
               </p>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '8px' }}>
-                Build this character in vivid detail. They can be one real person, a few people fused together, a fictional character, or someone who doesn’t exist yet — forged from references. You’re not asking <em>which of these people do I want to be</em>. You’re asking <em>what character emerges when I take the best of what each of them represents and fuse it into one figure</em>.
+                The list is raw material, not a shrine. You're not asking "which of these people do you want to be" — you're asking "what character emerges when you take the best of what each of these people represents and forge it into something that doesn't exist yet."
               </p>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px' }}>
-                The references are the ingredients. The character is the destination.
+                The character is the destination. The references are the ingredients.
               </p>
 
               {/* Doc-style input — before first AI exchange */}
@@ -1276,14 +1194,14 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate, onOpenS
                 <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '10px', overflow: 'hidden', marginBottom: '16px', boxShadow: '0 1px 8px rgba(15,21,35,0.04)' }}>
                   {/* Doc header bar */}
                   <div style={{ background: 'rgba(200,146,42,0.05)', borderBottom: '1px solid rgba(200,146,42,0.12)', padding: '10px 18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A' }}>YOUR DRAFT</span>
+                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A' }}>AVATAR DRAFT</span>
                     <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', fontStyle: 'italic' }}>{'·'} {domain.label}</span>
                   </div>
 
                   {/* Section 1 */}
                   <div style={{ padding: '16px 18px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
                     <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', display: 'block', marginBottom: '6px' }}>
-                      BEST IN THE WORLD IN {domain.label.toUpperCase()} LOOKS LIKE...
+                      BEST IN THE WORLD IN THE AREA OF {domain.label.toUpperCase()} LOOKS LIKE...
                     </label>
                     <textarea
                       value={avatarDoc?.essence || ''}
@@ -1299,9 +1217,6 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate, onOpenS
                     <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', display: 'block', marginBottom: '6px' }}>
                       PEOPLE AND CHARACTERS FOR REFERENCE
                     </label>
-                    <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.6)', lineHeight: 1.65, margin: '0 0 10px' }}>
-                      A note on references — you’re harvesting a specific gift in a specific domain. You don’t have to like or admire everything about a person to use what they’re great at. Someone whose politics you’d never share might have exactly the relationship with money you want to look at. Take the gift.
-                    </p>
                     <textarea
                       value={avatarDoc?.references || ''}
                       onChange={e => setAvatarDoc(d => ({ ...d, references: e.target.value }))}
@@ -1411,41 +1326,8 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate, onOpenS
 
       {step === 'score' && !isConnection && (
         <div>
-          {/* Step heading + open-the-scale link. The scale is the ruler the user
-              is measuring themselves against here, so we put it one tap away
-              right at the step header. */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px', flexWrap: 'wrap' }}>
-            <h3 style={{
-              fontFamily: "'Cormorant SC', Georgia, serif",
-              fontSize:   '1.25rem',
-              fontWeight: 400,
-              color:      '#0F1523',
-              margin:     0,
-              lineHeight: 1.3,
-            }}>
-              Where are you now?
-            </h3>
-            {onOpenScale && (
-              <button
-                onClick={onOpenScale}
-                aria-label="Open the scale"
-                style={{
-                  ...SCALE_LINK_STYLE,
-                  fontFamily: "'Cormorant SC', Georgia, serif",
-                  fontSize:    '12px',
-                  letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                See the scale
-              </button>
-            )}
-          </div>
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '6px' }}>
-            Score yourself honestly against the character you just described. Pick a number and say something about it.
-          </p>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '16px' }}>
-            The shape of the picker isn’t decoration — the middle is narrow, the ends flare. That shape is the meaning.
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '16px' }}>
+            Where are you right now, relative to that? Pick a number and say something about it.
           </p>
 
           {/* Hourglass picker — always visible */}
@@ -1521,38 +1403,8 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate, onOpenS
         <div>
           {!horizonLocked || step === 'horizon' ? (
             <>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px', flexWrap: 'wrap' }}>
-                <h3 style={{
-                  fontFamily: "'Cormorant SC', Georgia, serif",
-                  fontSize:   '1.25rem',
-                  fontWeight: 400,
-                  color:      '#0F1523',
-                  margin:     0,
-                  lineHeight: 1.3,
-                }}>
-                  Your horizon goal
-                </h3>
-                {onOpenScale && (
-                  <button
-                    onClick={onOpenScale}
-                    aria-label="Open the scale"
-                    style={{
-                      ...SCALE_LINK_STYLE,
-                      fontFamily: "'Cormorant SC', Georgia, serif",
-                      fontSize:    '12px',
-                      letterSpacing: '0.14em',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    See the scale
-                  </button>
-                )}
-              </div>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '8px' }}>
-                If a genie tapped you on the head and granted your wish in {domain.label}, what would it be?
-              </p>
-              <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '16px' }}>
-                Not the small wish. The real one.
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '16px' }}>
+                If the genie granted your wish in {domain.label}, what would it be?
               </p>
 
               {horizonMsgs.some(m => m.accepted) && (
@@ -1809,199 +1661,30 @@ export function ResultsCard({ mapData, domainData, currentScores, horizonScores 
 
 // ─── Auth Modal ───────────────────────────────────────────────────────────────
 
-// MapDoorPage — the in-tool intro for first-time users.
-//
-// Replaces the previous MapWelcomeModal (a 460px overlay that ended in a one-line
-// pitch and a false "takes about ten minutes" claim). The Map is not a ten-
-// minute tool. A focused sprint runs about an hour. Many users work one or two
-// domains in a sitting, sit with what comes up, and come back. Some spend weeks
-// on a single domain. The door page reflects that honestly.
-//
-// Structure follows the original NextU onboarding document's pedagogy:
-//   • Frame the work, then explain the three steps
-//   • Show the scale at the start so users know what they’re working with
-//   • Tell them where the scale lives later so they can return to it
-//
-// Renders inline inside .tool-wrap (not a modal). Returning users skip
-// this entirely — phase initialises to 'mapping' when domain data exists.
-function MapDoorPage({ onBegin }) {
+function MapWelcomeModal({ onBegin }) {
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
   const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
   const body  = { fontFamily: "'Lora', Georgia, serif" }
-
   return (
-    <div style={{ animation: 'fadeUp 0.4s ease-out', maxWidth: '720px' }}>
-
-      {/* Headline */}
-      <div style={{ marginBottom: '32px' }}>
-        <h2 style={{
-          ...sc,
-          fontSize:   'clamp(1.5rem, 3.6vw, 2rem)',
-          fontWeight: 400,
-          color:      '#0F1523',
-          lineHeight: 1.15,
-          marginBottom: '16px',
-        }}>
-          An honest read of where your life is — and where it’s asking to go.
-        </h2>
-        <p style={{
-          ...serif,
-          fontSize:   'clamp(1.125rem, 2.4vw, 1.3125rem)',
-          fontStyle:  'italic',
-          color:      '#A8721A',
-          lineHeight: 1.6,
-        }}>
-          Simple and challenging deep inner work that can change your life.
+    <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
+      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '460px', width: '100%', textAlign: 'center' }}>
+        <span style={{ display: 'block', ...sc, fontSize: '17px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>The Map</span>
+        <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>An honest read.</h2>
+        <p style={{ ...body, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
+          Seven domains of your life. Where you are, where you want to be, and what the gap is telling you. Takes about ten minutes. The only instruction: answer from where you actually are.
         </p>
-      </div>
-
-      {/* What this is */}
-      <div style={{
-        background:   '#FFFFFF',
-        border:       '1px solid rgba(200,146,42,0.2)',
-        borderLeft:   '3px solid rgba(200,146,42,0.55)',
-        borderRadius: '12px',
-        padding:      '28px 28px 24px',
-        marginBottom: '20px',
-      }}>
-        <p style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '14px' }}>
-          Most people don’t have a clear picture of their own life. They have a story about it. They have a feeling. They have a sense of which parts are working and which parts aren’t, and most of the time that sense is partly right, partly wrong, and entirely shaped by whatever they happen to be looking at this week.
-        </p>
-        <p style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '14px' }}>
-          The Map fixes that.
-        </p>
-        <p style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75 }}>
-          Seven domains. Three steps in each. North Star — the AI companion who walks with you through every tool in the suite — at your side the whole way. When you finish, you’ll have an honest picture of where you are across all seven, where you want to be, and which gap is doing the most work to hold the rest of your life back.
-        </p>
-      </div>
-
-      {/* The three steps */}
-      <div style={{
-        background:   '#FFFFFF',
-        border:       '1px solid rgba(200,146,42,0.2)',
-        borderRadius: '12px',
-        padding:      '28px 28px 22px',
-        marginBottom: '20px',
-      }}>
-        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
-          What you’ll be doing
-        </div>
-        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '20px' }}>
-          In each of the seven domains you’ll do three things:
-        </p>
-        {[
-          { n: '1', label: 'Describe best in the world in this domain', desc: 'You’ll build a vivid character of someone who has this domain handled at the top of what you can picture — for a life like yours. The character calibrates the scale to you. It’s the ten that lets your honest read of yourself mean something.' },
-          { n: '2', label: 'Score yourself', desc: 'Using the scale below, you’ll mark where you actually are in this domain right now — against the character you just described.' },
-          { n: '3', label: 'Name your horizon goal', desc: 'If a genie tapped you on the head and granted your wish in this domain, what would it be? Not the small wish. The real one.' },
-        ].map(s => (
-          <div key={s.n} style={{ display: 'flex', gap: '18px', marginBottom: '18px', alignItems: 'flex-start' }}>
-            <span style={{ ...sc, fontSize: '1.125rem', fontWeight: 600, color: '#A8721A', flexShrink: 0, lineHeight: 1.2, minWidth: '22px' }}>{s.n}</span>
-            <div>
-              <div style={{ ...sc, fontSize: '1.0625rem', letterSpacing: '0.06em', color: '#0F1523', marginBottom: '5px' }}>{s.label}</div>
-              <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7 }}>{s.desc}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* The seven domains */}
-      <div style={{
-        background:   '#FFFFFF',
-        border:       '1px solid rgba(200,146,42,0.2)',
-        borderRadius: '12px',
-        padding:      '28px 28px 22px',
-        marginBottom: '20px',
-      }}>
-        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
-          The seven domains
-        </div>
-        {[
-          { id: 'path',       label: 'Path',       brief: 'your purpose, your contribution, the work you’re here to do.' },
-          { id: 'spark',      label: 'Spark',      brief: 'what lights you up, what fills your tank.' },
-          { id: 'body',       label: 'Body',       brief: 'health, fitness, the vehicle through which you experience your life.' },
-          { id: 'finances',   label: 'Finances',   brief: 'your ability to get what you want in life.' },
-          { id: 'connection', label: 'Connection', brief: 'your relationships with other people.' },
-          { id: 'inner_game', label: 'Inner Game', brief: 'your relationship with yourself.' },
-          { id: 'signal',     label: 'Signal',     brief: 'your relationship with the world.' },
-        ].map(d => (
-          <div key={d.id} style={{ marginBottom: '10px', display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
-            <span style={{ ...sc, fontSize: '1rem', letterSpacing: '0.06em', color: '#0F1523', minWidth: '120px' }}>{d.label}</span>
-            <span style={{ ...body, fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.65)', lineHeight: 1.6 }}>— {d.brief}</span>
-          </div>
-        ))}
-        <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid rgba(200,146,42,0.12)', lineHeight: 1.6 }}>
-          Each domain has its own full explanation when you get there.
-        </p>
-      </div>
-
-      {/* The scale — rendered inline, so the user encounters it at the start */}
-      <div style={{ marginBottom: '20px' }}>
-        <ScaleEmbedded />
-      </div>
-
-      {/* How long this takes */}
-      <div style={{
-        background:   '#FFFFFF',
-        border:       '1px solid rgba(200,146,42,0.2)',
-        borderRadius: '12px',
-        padding:      '28px 28px 24px',
-        marginBottom: '20px',
-      }}>
-        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
-          How long this takes
-        </div>
-        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '12px' }}>
-          A focused sprint through all seven domains can take an hour. Most people don’t do it that way. Most people work through one or two domains in a sitting, sit with what comes up, and come back. Some people spend weeks on a single domain.
-        </p>
-        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75 }}>
-          The Map saves as you go and you can move between domains in any order — do all the <em>describe best in the world</em> steps first if you want, then score yourself across all seven, then set your horizons. Or work one domain through to completion before starting the next. There’s no right rhythm. There’s just the work.
-        </p>
-      </div>
-
-      {/* What you'll have */}
-      <div style={{
-        background:   '#FFFFFF',
-        border:       '1px solid rgba(200,146,42,0.2)',
-        borderRadius: '12px',
-        padding:      '28px 28px 24px',
-        marginBottom: '20px',
-      }}>
-        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
-          What you’ll have when you’re done
-        </div>
-        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75 }}>
-          An honest picture of all seven domains — current state, horizon, and the gap between. A read of which domains are below the Line and pulling on the rest of your life. A focus call on the three domains that, if you moved them, would catalyse the others. And a Life Horizon — a single statement of where the whole picture is asking to go. All of it carries forward. Every other tool in the suite reads from your Map.
-        </p>
-      </div>
-
-      {/* The instruction */}
-      <div style={{
-        background:   'rgba(200,146,42,0.05)',
-        border:       '1.5px solid rgba(200,146,42,0.45)',
-        borderRadius: '12px',
-        padding:      '24px 28px',
-        marginBottom: '24px',
-        textAlign:    'center',
-      }}>
-        <p style={{ ...body, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, margin: 0 }}>
-          The only instruction is to answer from where you actually are. Not where you wish you were. Not where you think you should be. Where you are.
-        </p>
-      </div>
-
-      {/* Begin */}
-      <button
-        onClick={onBegin}
-        style={{
-          ...btnStyle,
-          display: 'block',
-          width: '100%',
-          textAlign: 'center',
-          fontSize: '1.125rem',
-          padding: '16px 32px',
+        <button onClick={onBegin} style={{
+          display: 'block', width: '100%', padding: '15px 24px', borderRadius: '40px',
+          border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)',
+          color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif",
+          fontSize: '15px', letterSpacing: '0.14em', cursor: 'pointer', transition: 'all 0.2s',
         }}
-      >
-        Begin →
-      </button>
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
+        >
+          Begin {'→'}
+        </button>
+      </div>
     </div>
   )
 }
@@ -2403,10 +2086,6 @@ export function MapPage() {
 
   if (authLoading || accessLoading) return <div className="loading" />
 
-  if (tier !== 'full' && tier !== 'beta') {
-    return <AccessGate productKey="map" toolName="The Map">{null}</AccessGate>
-  }
-
   if (!user) return (
     <>
       <Nav activePath="nextus-self" />
@@ -2559,19 +2238,17 @@ export function MapPage() {
   return (
     <div className="page-shell">
       <Nav activePath="nextus-self" />
+      {user && showWelcome === true && <MapWelcomeModal onBegin={() => setShowWelcome(false)} />}
 
-      {/* Left — domain thread panel (desktop only — on mobile the wheel + Prev/Next
-          do the same job, so we recover the edge real estate) */}
-      {!isMobile && (
-        <DomainThreadPanel
-          domainData={domainData}
-          activeIndex={activeIndex}
-          onSelect={i => { setActiveIndex(i); setPhase('mapping') }}
-          forceOpen={threadPanelOpen}
-        />
-      )}
+      {/* Left — domain thread panel */}
+      <DomainThreadPanel
+        domainData={domainData}
+        activeIndex={activeIndex}
+        onSelect={i => { setActiveIndex(i); setPhase('mapping') }}
+        forceOpen={threadPanelOpen}
+      />
 
-      {/* Scale reference modal — opened from "The Scale" button in the tool header */}
+      {/* Scale reference modal */}
       <HorizonScaleModal
         open={scaleOpen}
         onClose={() => setScaleOpen(false)}
@@ -2589,74 +2266,8 @@ export function MapPage() {
           </p>
         </div>
 
-        {/* "The Scale" floating button — fixed bottom-right, visible on every screen
-            after the door page. The user encounters the scale inline at the start;
-            this button is how they return to it from anywhere in The Map. Same
-            behaviour across desktop and mobile. */}
-        {user && showWelcome === false && (
-          <button
-            onClick={() => setScaleOpen(true)}
-            aria-label="Open the scale"
-            style={{
-              position:     'fixed',
-              bottom:       '24px',
-              right:        '24px',
-              display:      'inline-flex',
-              alignItems:   'center',
-              gap:          '8px',
-              padding:      '12px 18px',
-              borderRadius: '40px',
-              border:       '1.5px solid rgba(200,146,42,0.78)',
-              background:   '#FAFAF7',
-              color:        '#A8721A',
-              fontFamily:   "'Cormorant SC', Georgia, serif",
-              fontSize:     '13px',
-              letterSpacing: '0.14em',
-              cursor:       'pointer',
-              boxShadow:    '0 4px 16px rgba(15,21,35,0.12)',
-              transition:   'all 0.15s',
-              zIndex:       150,
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'translateY(-2px)'
-              e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,21,35,0.16)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = ''
-              e.currentTarget.style.boxShadow = '0 4px 16px rgba(15,21,35,0.12)'
-            }}
-          >
-            <span style={{
-              display:        'inline-flex',
-              width:          '16px',
-              height:         '16px',
-              borderRadius:   '50%',
-              border:         '1px solid rgba(200,146,42,0.65)',
-              alignItems:     'center',
-              justifyContent: 'center',
-              lineHeight:     1,
-              fontSize:       '11px',
-              fontFamily:     "'Cormorant SC', Georgia, serif",
-            }}>
-              ⊞
-            </span>
-            The Scale
-          </button>
-        )}
-
-        {/* Door page — first-time users land here. The Map is deep work; the door
-            page explains what it is, what the three steps do, names the seven
-            domains, shows the scale inline, and tells the user where the scale
-            will live later. Returning users skip this entirely (showWelcome
-            initialises to false when domain data exists). */}
-        {user && showWelcome === true && (
-          <MapDoorPage
-            onBegin={() => { setShowWelcome(false); setPhase('mapping') }}
-          />
-        )}
-
-        {/* Welcome (legacy — preserved for back-compat with the old phase value) */}
-        {showWelcome === false && phase === 'welcome' && (
+        {/* Welcome */}
+        {phase === 'welcome' && (
           <div style={{ animation: 'fadeUp 0.4s ease-out' }}>
             <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.18)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '12px', padding: '32px 32px 28px', marginBottom: '20px' }}>
               <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', marginBottom: '16px' }}>
@@ -2697,7 +2308,7 @@ export function MapPage() {
         )}
 
         {/* Mapping phase */}
-        {showWelcome === false && phase === 'mapping' && (
+        {phase === 'mapping' && (
           <div style={{ marginTop: '229px' }}>
             {isMobile ? (
               /* ── Mobile layout: wheel centred above card ── */
@@ -2757,7 +2368,6 @@ export function MapPage() {
                       existingData={domainData[activeDomain.id]}
                       onUpdate={handleDomainUpdate}
                       onComplete={handleDomainComplete}
-                      onOpenScale={() => setScaleOpen(true)}
                     />
                   ) : (
                     <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', textAlign: 'center', padding: '20px 0' }}>
@@ -2857,7 +2467,6 @@ export function MapPage() {
                         existingData={domainData[activeDomain.id]}
                         onUpdate={handleDomainUpdate}
                         onComplete={handleDomainComplete}
-                      onOpenScale={() => setScaleOpen(true)}
                       />
                     ) : null}
                     {allComplete && (
@@ -2880,7 +2489,7 @@ export function MapPage() {
         )}
 
         {/* Crisis gate — fires when scores cross safety thresholds */}
-        {showWelcome === false && phase === 'crisis_gate' && crisisGate && (
+        {phase === 'crisis_gate' && crisisGate && (
           <div style={{ animation: 'fadeUp 0.4s ease-out' }}>
             <CrisisRedirectCard
               message={crisisGate.message}
@@ -2894,7 +2503,7 @@ export function MapPage() {
         )}
 
         {/* Synthesis */}
-        {showWelcome === false && phase === 'synthesis' && (
+        {phase === 'synthesis' && (
           <div style={{ animation: 'fadeUp 0.4s ease-out' }}>
             <div style={{ padding: '32px 28px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '12px', textAlign: 'center' }}>
               {thinking ? (
@@ -2922,7 +2531,7 @@ export function MapPage() {
         )}
 
         {/* Debrief — fires after synthesis completes, before results */}
-        {showWelcome === false && phase === 'debrief' && (
+        {phase === 'debrief' && (
           <div style={{ animation: 'fadeUp 0.4s ease-out', maxWidth: '600px' }}>
             <h2 style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: 'clamp(1.25rem,3vw,1.75rem)', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '20px' }}>
               Your map is built. Now reflect on the process.
@@ -2942,7 +2551,7 @@ export function MapPage() {
         )}
 
         {/* Results */}
-        {showWelcome === false && phase === 'results' && mapData && (
+        {phase === 'results' && mapData && (
           <>
             <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={() => setPhase('mapping')} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer' }}>
