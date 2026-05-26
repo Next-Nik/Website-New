@@ -4,7 +4,6 @@ import { Nav } from '../../components/Nav'
 import { DomainTooltip } from '../../components/DomainTooltip'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
-import { AccessGate } from '../../components/AccessGate'
 import { supabase } from '../../hooks/useSupabase'
 import { DebriefPanel } from '../../components/DebriefPanel'
 
@@ -1981,7 +1980,6 @@ export function TargetSprintPage() {
   if (authLoading || accessLoading) return <div className="loading" />
 
   return (
-    <AccessGate productKey="target-sprint" toolName="Target Sprint">
     <div className="page-shell">
       <style>{`
         @media (max-width: 640px) {
@@ -2233,6 +2231,5 @@ export function TargetSprintPage() {
         )}
       </div>
     </div>
-    </AccessGate>
   )
 }

@@ -4,7 +4,6 @@ import { Nav } from '../../components/Nav'
 import { DomainTooltip } from '../../components/DomainTooltip'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
-import { AccessGate } from '../../components/AccessGate'
 import { supabase } from '../../hooks/useSupabase'
 import { HorizonScaleModal, SCALE_LINK_STYLE } from '../../components/HorizonScaleModal'
 import { DebriefPanel } from '../../components/DebriefPanel'
@@ -2086,10 +2085,6 @@ export function MapPage() {
   }, [domainData, phase])
 
   if (authLoading || accessLoading) return <div className="loading" />
-
-  if (tier !== 'full' && tier !== 'beta') {
-    return <AccessGate productKey="map" toolName="The Map">{null}</AccessGate>
-  }
 
   if (!user) return (
     <>

@@ -25,7 +25,6 @@ import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
 import { supabase } from '../../hooks/useSupabase'
-import { AccessGate } from '../../components/AccessGate'
 
 // ─── Design tokens ──────────────────────────────────────────────────────────
 const tokens = {
@@ -2261,8 +2260,7 @@ export function HorizonPracticePage() {
   }
 
   return (
-    <AccessGate productKey="horizon-practice" toolName="Horizon Practice">
-      <div style={{ background: tokens.bg, minHeight: '100vh' }}>
+    <div style={{ background: tokens.bg, minHeight: '100vh' }}>
         <Nav activePath="nextus-self" />
 
         {/* Global animations */}
@@ -2430,6 +2428,5 @@ export function HorizonPracticePage() {
           onClose={() => setSettingsOpen(false)}
         />
       </div>
-    </AccessGate>
   )
 }
