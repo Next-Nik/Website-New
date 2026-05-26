@@ -29,6 +29,7 @@ import { LinksTab } from '../components/manage/LinksTab'
 import { CredentialsTab } from '../components/manage/CredentialsTab'
 import { TestimonialsTab } from '../components/manage/TestimonialsTab'
 import { EventsTab } from '../components/EventsTab'
+import { useEffortSignal } from '../hooks/useEffortSignal'
 
 // ── Chip multi-select ────────────────────────────────────────
 
@@ -85,6 +86,7 @@ const MEMBERSHIP_STATUS_OPTIONS = [
 ]
 
 function ProfileTab({ actor, onSave, toast }) {
+  const { data: effortSignal } = useEffortSignal()
   const [form, setForm] = useState({
     name:                    actor.name || '',
     description:             actor.description || '',
@@ -334,6 +336,39 @@ function ProfileTab({ actor, onSave, toast }) {
             sum of aligned work being applied across all actors. Update it
             whenever the number changes. One is a real number.
           </p>
+
+          {/* Contextual aggregate — "you are one of N actors" */}
+          {(() => {
+            const primaryDomain =
+              (actor.domains || [])[0] ||
+              actor.primary_domain ||
+              actor.domain_id
+            if (!primaryDomain || !effortSignal?.byDomain) return null
+            const row = effortSignal.byDomain[primaryDomain]
+            if (!row) return null
+            const domainLabel = DOMAIN_LABEL[primaryDomain] || primaryDomain
+            const actorCount = row.active_actors
+            const peopleCount = row.total_people_in_the_work
+            if (actorCount === 0) return null
+            return (
+              <div style={{
+                marginTop: '14px',
+                paddingTop: '14px',
+                borderTop: '1px solid rgba(42,107,58,0.18)',
+              }}>
+                <p style={{ ...body, fontSize: '13px',
+                  color: 'rgba(15,21,35,0.65)', lineHeight: 1.7,
+                  margin: 0 }}>
+                  You are one of <strong style={{ color: dark }}>
+                    {actorCount.toLocaleString('en-US')}
+                  </strong> {actorCount === 1 ? 'actor' : 'actors'} contributing to <strong style={{ color: dark }}>{domainLabel}</strong>. The work being done currently:{' '}
+                  <strong style={{ color: dark }}>
+                    {peopleCount.toLocaleString('en-US')}
+                  </strong> {peopleCount === 1 ? 'person' : 'people'} in the work.
+                </p>
+              </div>
+            )
+          })()}
         </div>
 
         <div style={{ display: 'flex', gap: '12px' }}>

@@ -15,6 +15,7 @@ import { PlanetWheel } from './PlanetWheel'
 import { PlanetDomainCard } from './PlanetDomainCard'
 import { PlanetGapSignal } from './PlanetGapSignal'
 import { ActorClaimGate } from './ActorClaimGate'
+import { EffortSignalPanel } from '../../app/components/EffortSignalPanel'
 
 function isFounder(user) {
   return user?.user_metadata?.role === 'founder'
@@ -324,6 +325,15 @@ function LandingView({ user, actorRecord, hasExistingScores, onBegin }) {
           Assessing as: {actorRecord.name}
         </p>
       )}
+
+      {/* Effort signal — the bottom-up companion. Shown on the landing
+          view so visitors see the work-in-motion before they begin their
+          own assessment. */}
+      <div style={{ marginTop: 80,
+        paddingTop: 48,
+        borderTop: '1px solid rgba(200,146,42,0.18)' }}>
+        <EffortSignalPanel />
+      </div>
     </div>
   )
 }
@@ -466,6 +476,12 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
           nextusScores={nextusScores}
           size={420}
         />
+      </div>
+
+      {/* Effort signal — the bottom-up companion to the top-down scores.
+          Always visible to anyone who has reached results. */}
+      <div style={{ marginBottom: 56 }}>
+        <EffortSignalPanel />
       </div>
 
       {/* Gap signal — only shown when both assessments exist */}

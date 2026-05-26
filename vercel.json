@@ -13,6 +13,10 @@
     {
       "path": "/api/compute-daily-snapshot",
       "schedule": "30 3 * * *"
+    },
+    {
+      "path": "/api/compute-effort-signal",
+      "schedule": "45 3 * * *"
     }
   ],
   "functions": {
@@ -26,6 +30,9 @@
       "maxDuration": 60
     },
     "api/compute-daily-snapshot.js": {
+      "maxDuration": 30
+    },
+    "api/compute-effort-signal.js": {
       "maxDuration": 30
     },
     "api/nextus-match.js": {
@@ -211,6 +218,10 @@
     {
       "source": "/api/compute-daily-snapshot",
       "destination": "/api/compute-daily-snapshot"
+    },
+    {
+      "source": "/api/compute-effort-signal",
+      "destination": "/api/compute-effort-signal"
     },
     {
       "source": "/api/podcast-feed",
