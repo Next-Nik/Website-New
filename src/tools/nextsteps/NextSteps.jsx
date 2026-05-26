@@ -269,6 +269,17 @@ function NextStepsHeader({ phase, hasOtherTracks, onBackToLoop }) {
   const showBack =
     hasOtherTracks && (phase === 'arrival' || phase === 'landing' || phase === 'path')
 
+  // On arrival the conversation IS the entry point — no header narration.
+  if (phase === 'arrival') {
+    return showBack ? (
+      <div className="ns-header ns-header--minimal">
+        <button className="ns-back" onClick={onBackToLoop} type="button">
+          ← Your tracks
+        </button>
+      </div>
+    ) : null
+  }
+
   return (
     <div className="ns-header">
       {showBack && (
@@ -276,13 +287,10 @@ function NextStepsHeader({ phase, hasOtherTracks, onBackToLoop }) {
           ← Your tracks
         </button>
       )}
-      <div className="ns-eyebrow">NextUs</div>
-      <h1 className="ns-title">NextSteps</h1>
       <p className="ns-subtitle">
-        {phase === 'arrival' && 'Something is pulling at you. Let’s find what it is, and what to do about it.'}
-        {phase === 'landing' && 'Here is what your caring is for — and who is already building toward it.'}
+        {phase === 'landing' && 'Here is what your caring is for.'}
         {phase === 'path'    && 'Your path. Short, ordered, real.'}
-        {phase === 'loop'    && 'The work you’re walking. Pick one up, or start something new.'}
+        {phase === 'loop'    && "The work you're walking."}
       </p>
     </div>
   )

@@ -11,7 +11,7 @@
 import { useState, useRef, useEffect } from 'react'
 
 const OPENING =
-  "Something's pulling at you. Tell me what — about the world, or about your own life. I'm listening."
+  "Let's chat about where you are in any area of your life and we'll see if we can aim you at where you want to be with the resources to support you."
 
 // localStorage key for an in-flight reflection conversation. User-scoped so
 // two people on the same device don't collide. Cleared when the reflection
@@ -173,7 +173,7 @@ export function ArrivalReflection({ user, onReflectionLanded }) {
             value={input}
             onChange={handleInput}
             onKeyDown={handleKeyDown}
-            placeholder="Type whatever's there. You don't have to know what it is yet."
+            placeholder="What's there right now…"
             rows={1}
             disabled={thinking}
             className="ns-input"

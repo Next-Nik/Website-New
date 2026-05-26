@@ -92,54 +92,14 @@ function easeInOut(t) {
 // Civ wheel labels rotate with the spokes, so position is computed
 // from the tip's actual angle. Anchor flips based on which side of
 // the wheel the tip is on.
-//
-// Placement rule (May 2026 update):
-// Labels are placed with a radial component (outward along the spoke)
-// AND a tangential component (perpendicular to the spoke) that scales
-// with how horizontal the spoke is. Horizontal-ish labels are pulled
-// inward and pushed toward the closer pole (away from the rails AND
-// away from their own spoke node). Vertical-ish labels (near top and
-// bottom of the wheel) keep the original outward placement — they
-// don't collide with rails or nodes.
-//
-// `horizontal` = |ux|, smoothly weighted by curve to soften diagonals.
 function civLabelPosFor(tipX, tipY, angleRad) {
-  // Unit vector pointing outward from centre along the spoke.
+  const GAP = 14
+  // Unit vector pointing outward from centre along the spoke
   const ux = Math.cos(angleRad)
   const uy = Math.sin(angleRad)
-
-  // Horizontality of the spoke: 0 at pure top/bottom, 1 at pure sides.
-  // Squaring softens diagonals so they're only partially affected.
-  const horizontal = ux * ux  // |ux|² — 0..1, weighted toward sides
-
-  // Radial offset (outward along spoke).
-  // Vertical spokes: full 14px outward (unchanged from prior behaviour).
-  // Horizontal spokes: pulled inward to 4px outward — clears the rails.
-  const radialBase = 14
-  const radialPull = 10  // how much we shrink radial on side labels
-  const radial = radialBase - radialPull * horizontal
-
-  // Tangential offset (perpendicular to spoke).
-  // Vertical spokes: 0 — no sideways nudge needed.
-  // Horizontal spokes: 12px, pushed toward the closer pole of the wheel
-  // (negative when upper half so label moves up; positive when lower half
-  // so label moves down). uy < 0 means upper hemisphere in screen coords.
-  const tangentMax = 12
-  const poleDir    = uy >= 0 ? 1 : -1  // +1 down, -1 up
-  const tangent    = tangentMax * horizontal * poleDir
-
-  // Tangent vector is perpendicular to (ux, uy): conventionally (-uy, ux).
-  // We pick the perpendicular that points toward the pole on the same side.
-  // Since |ux| collapses the sign on the sides, just project tangent onto y.
-  const px = 0           // x of tangent contribution — kept at 0; we don't
-                         // want side labels drifting laterally past the rail
-                         // edge. All tangent motion is vertical.
-  const py = tangent
-
-  const x = tipX + ux * radial + px
-  const y = tipY + uy * radial + py + 4 // +4 so vertical centring of small caps reads
-
-  // Anchor: middle if tip is near top/bottom, start/end based on side.
+  const x = tipX + ux * GAP
+  const y = tipY + uy * GAP + 4 // +4 so vertical centring of small caps reads
+  // Anchor: middle if tip is near top/bottom, start/end based on side
   let anchor = 'middle'
   if (ux > 0.2) anchor = 'start'
   else if (ux < -0.2) anchor = 'end'
@@ -320,8 +280,8 @@ function SelfWheel({
     return pts.join(' ')
   }, [cx, cy, maxR, displayRot])
 
-  const ringStroke  = dark ? 'rgba(200, 146, 42, 0.30)' : 'rgba(200, 146, 42, 0.20)'
-  const spokeStroke = dark ? 'rgba(200, 146, 42, 0.45)' : 'rgba(200, 146, 42, 0.30)'
+  const ringStroke  = dark ? 'rgba(200, 146, 42, 0.42)' : 'rgba(200, 146, 42, 0.30)'
+  const spokeStroke = dark ? 'rgba(200, 146, 42, 0.60)' : 'rgba(200, 146, 42, 0.42)'
   const vertStroke     = dark ? BG_INK : BG_CARD
   const walkerLabelFill = dark ? GOLD_LT : GOLD_DK
   const walkerDotFill   = dark ? GOLD_LT : GOLD_DK
@@ -333,17 +293,29 @@ function SelfWheel({
       height="100%"
       viewBox={SVG_VIEWBOX}
       preserveAspectRatio="xMidYMid meet"
-      style={{ display: 'block', overflow: 'visible'}}
+      style={{ display: 'block', overflow: 'visible', touchAction: 'manipulation' }}
       aria-label="Your seven domains"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
+      {/* Label legibility filter — halo behind text so labels read
+          clearly over the map substrate on both stages */}
+      <defs>
+        <filter id={`lbl-halo-${dark ? 'dark' : 'light'}`} x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow
+            dx="0" dy="0" stdDeviation={dark ? 3 : 2.5}
+            floodColor={dark ? '#141A28' : '#FAFAF7'}
+            floodOpacity={dark ? 0.95 : 0.90}
+          />
+        </filter>
+      </defs>
+
       {/* Outer dashed ring — rotates with spokes so tips stay at corners */}
       <polygon
         points={ringPts}
         fill="none"
         stroke={ringStroke}
-        strokeWidth="1"
+        strokeWidth="1.2"
         strokeDasharray="3 3"
         style={{ pointerEvents: 'none' }}
       />
@@ -401,7 +373,7 @@ function SelfWheel({
                   stroke="transparent"
                   strokeWidth="18"
                   style={{ cursor: 'pointer' }}
-                  onClick={() => onSelect(i)}
+                  onPointerDown={e => { e.stopPropagation(); onSelect(i) }}
                 />
               )}
               <circle
@@ -427,27 +399,27 @@ function SelfWheel({
           <>
             <polygon
               points={verts.map(v => `${v.x},${v.y}`).join(' ')}
-              fill="none"
+              fill={dark ? 'rgba(200,146,42,0.14)' : 'rgba(200,146,42,0.10)'}
               stroke={GOLD}
-              strokeWidth="1.25"
-              strokeOpacity="0.7"
+              strokeWidth="2"
+              strokeOpacity="0.85"
               strokeLinejoin="round"
               style={{ pointerEvents: 'none' }}
             />
             {verts.map(v => (
               <g
                 key={`vert-${v.i}`}
-                onClick={onSelect ? () => onSelect(v.i) : undefined}
+                onPointerDown={onSelect ? e => { e.stopPropagation(); onSelect(v.i) } : undefined}
                 style={onSelect ? { cursor: 'pointer' } : undefined}
               >
                 {onSelect && (
                   <circle cx={v.x} cy={v.y} r={12} fill="transparent" />
                 )}
                 <circle
-                  cx={v.x} cy={v.y} r={2.5}
+                  cx={v.x} cy={v.y} r={4}
                   fill={v.color}
                   stroke={vertStroke}
-                  strokeWidth="1"
+                  strokeWidth="1.2"
                   style={{ pointerEvents: 'none' }}
                 />
               </g>
@@ -509,48 +481,64 @@ function SelfWheel({
           Tip positions computed with displayRot baked in so labels
           follow their spokes but the text glyphs stay upright.
           Same pattern as CivWheel. ── */}
-      {labels.map((txt, i) => {
-        const p = getTipPos(i, displayRot)  // actual rotated position
-        const pos = civLabelPosFor(p.x, p.y, p.angle)
-        const isActive = activeKey && keys[i] === activeKey
-        const dc = selfColor(keys[i])
-        const baseFill   = dark ? dc.dark : dc.light
-        const activeFill = dc.base
-        return (
-          <g key={`label-${i}`}>
-            {/* Invisible hit target at the tip — generous tap zone */}
-            {onSelect && (
-              <circle
-                cx={p.x} cy={p.y} r={18}
-                fill="transparent"
-                style={{ cursor: 'pointer' }}
-                onClick={() => onSelect(i)}
+      {/* Labels — outside rotating group, positions baked with displayRot */}
+      {(() => {
+        // Which spoke is physically closest to the top (angle = -π/2)?
+        const rotRad = (displayRot * Math.PI) / 180
+        let topIdx = 0, minDist = Infinity
+        for (let i = 0; i < N; i++) {
+          const a = angleFor(i) + rotRad
+          // Normalise to [-π, π]
+          const diff = Math.atan2(Math.sin(a + Math.PI / 2), Math.cos(a + Math.PI / 2))
+          const dist = Math.abs(diff)
+          if (dist < minDist) { minDist = dist; topIdx = i }
+        }
+        return labels.map((txt, i) => {
+          const p = getTipPos(i, displayRot)
+          const pos = civLabelPosFor(p.x, p.y, p.angle)
+          const isTop    = i === topIdx
+          const isActive = activeKey && keys[i] === activeKey
+          const dc = selfColor(keys[i])
+          const baseFill   = dark ? dc.dark : dc.light
+          const activeFill = dc.base
+          return (
+            <g key={`label-${i}`}>
+              {onSelect && (
+                <circle
+                  cx={p.x} cy={p.y} r={26}
+                  fill="transparent"
+                  style={{ cursor: 'pointer' }}
+                  onPointerDown={e => { e.stopPropagation(); onSelect(i) }}
+                >
+                  <title>{labels[i]}</title>
+                </circle>
+              )}
+              <text
+                x={pos.x}
+                y={pos.y}
+                textAnchor={pos.anchor}
+                onPointerDown={onSelect ? e => { e.stopPropagation(); onSelect(i) } : undefined}
+                filter={`url(#lbl-halo-${dark ? 'dark' : 'light'})`}
+                style={{
+                  fontFamily: FONT_SC,
+                  fontSize: isTop ? 22 : 13,
+                  letterSpacing: '0.18em',
+                  fill: isActive ? activeFill : baseFill,
+                  fontWeight: isTop ? 700 : 500,
+                  opacity: isTop ? 1 : 0.60,
+                  cursor: onSelect ? 'pointer' : undefined,
+                  userSelect: 'none',
+                  textTransform: 'uppercase',
+                  pointerEvents: onSelect ? 'auto' : 'none',
+                  transition: 'font-size 0.35s ease, opacity 0.35s ease',
+                }}
               >
-                <title>{labels[i]}</title>
-              </circle>
-            )}
-            <text
-              x={pos.x}
-              y={pos.y}
-              textAnchor={pos.anchor}
-              onClick={onSelect ? () => onSelect(i) : undefined}
-              style={{
-                fontFamily: FONT_SC,
-                fontSize: 17,
-                letterSpacing: '0.18em',
-                fill: isActive ? activeFill : baseFill,
-                fontWeight: isActive ? 700 : 600,
-                cursor: onSelect ? 'pointer' : undefined,
-                userSelect: 'none',
-                textTransform: 'uppercase',
-                pointerEvents: onSelect ? 'auto' : 'none',
-              }}
-            >
-              {txt}
-            </text>
-          </g>
-        )
-      })}
+                {txt}
+              </text>
+            </g>
+          )
+        })
+      })()}
 
       {/* Walker label — outside rotating group so text stays upright */}
       {(() => {
@@ -589,7 +577,7 @@ function SelfWheel({
           Three layers for depth: wide outer bloom, mid haze, tight core. */}
       {onCentreClick && (
         <g
-          onClick={onCentreClick}
+          onPointerDown={e => { e.stopPropagation(); onCentreClick() }}
           style={{ cursor: 'pointer' }}
           aria-label="Return to my life overview"
         >
@@ -648,6 +636,9 @@ function CivWheel({
   onDrillDown,     // (i) => void
   onCentreClick,   // () => void
   placementKey = null,
+  focusKeys = null,    // string[] | null — slugs of civ domains the user has set
+                       // as Active Focus. Used to brighten the spoke + label so
+                       // the wheel acknowledges focus without overstating it.
   walkers = {},
   current = {},    // { [key]: 0..10 score from rollup, or undefined for unscored }
   horizons = {},   // { [key]: 0..10 horizon (always 10 for civ) }
@@ -884,8 +875,8 @@ function CivWheel({
     return pts.join(' ')
   }, [count, displayRot])
 
-  const ringStroke = dark ? 'rgba(200, 146, 42, 0.30)' : 'rgba(200, 146, 42, 0.20)'
-  const spokeStroke = dark ? 'rgba(200, 146, 42, 0.45)' : 'rgba(200, 146, 42, 0.30)'
+  const ringStroke = dark ? 'rgba(200, 146, 42, 0.42)' : 'rgba(200, 146, 42, 0.30)'
+  const spokeStroke = dark ? 'rgba(200, 146, 42, 0.60)' : 'rgba(200, 146, 42, 0.42)'
   const labelFill = dark ? TEXT_WHITE_META : TEXT_META
   const labelActiveFill = dark ? GOLD_LT : GOLD_DK
   const centreFill = GOLD
@@ -918,15 +909,26 @@ function CivWheel({
       height="100%"
       viewBox={SVG_VIEWBOX}
       preserveAspectRatio="xMidYMid meet"
-      style={{ display: 'block', overflow: 'visible'}}
+      style={{ display: 'block', overflow: 'visible', touchAction: 'manipulation' }}
       aria-label="The seven civilisational domains"
     >
+      {/* Label legibility filter */}
+      <defs>
+        <filter id={`lbl-halo-${dark ? 'dark' : 'light'}-civ`} x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow
+            dx="0" dy="0" stdDeviation={dark ? 3 : 2.5}
+            floodColor={dark ? '#141A28' : '#FAFAF7'}
+            floodOpacity={dark ? 0.95 : 0.90}
+          />
+        </filter>
+      </defs>
+
       {/* Outer dashed ring — rotates with spokes so tips stay at corners */}
       <polygon
         points={ringPts}
         fill="none"
         stroke={ringStroke}
-        strokeWidth="1"
+        strokeWidth="1.2"
         strokeDasharray="3 3"
       />
 
@@ -974,15 +976,13 @@ function CivWheel({
 
         return (
           <g style={{ opacity: bloomed ? 1 : bloomT }}>
-            {/* Polygon — gold stroke only, no fill, so the coloured
-                Position dots read against the dark background. Matches
-                the Self wheel treatment. */}
+            {/* Polygon — richer fill and stroke for visual presence */}
             <polygon
               points={polyPoints}
-              fill="none"
+              fill={dark ? 'rgba(200,146,42,0.12)' : 'rgba(200,146,42,0.08)'}
               stroke={GOLD}
-              strokeWidth="1.25"
-              strokeOpacity="0.55"
+              strokeWidth="2"
+              strokeOpacity="0.85"
               strokeLinejoin="round"
               style={{ pointerEvents: 'none' }}
             />
@@ -1025,7 +1025,10 @@ function CivWheel({
 
       {/* Spokes — rotate with displayRot. During bloom, spokes grow
           from the centre outward, ending at the same bloom-position
-          as the tip dot so the line and dot stay visually attached. */}
+          as the tip dot so the line and dot stay visually attached.
+          Focused spokes get a domain-coloured stroke (saturated) instead
+          of the default gold; this is the wheel's primary acknowledgement
+          of the user's Active Focus. */}
       {Array.from({ length: count }, (_, i) => {
         const p = getTipPos(i, displayRot, count)
         const sx = bloomed ? p.x : (CX + (p.x - CX) * bloomT)
@@ -1038,13 +1041,24 @@ function CivWheel({
         const uy = dy / len
         const px = -uy
         const py = ux
+        // Focus highlighting: substitute the default gold spokeStroke
+        // for a stroke in the domain's own colour when this spoke is
+        // among the user's Active Focus domains. The dot/label work
+        // happens further down in the labels loop.
+        const isFocusSpoke =
+          Array.isArray(focusKeys) && keys && focusKeys.includes(keys[i])
+        const dc = keys ? civColor(keys[i]) : null
+        const lineStroke = isFocusSpoke && dc
+          ? (dark ? dc.dark : dc.base)
+          : spokeStroke
+        const lineWidth = isFocusSpoke ? 1.4 : 1
         return (
           <g key={`spoke-${i}`}>
             <line
               x1={CX} y1={CY}
               x2={sx} y2={sy}
-              stroke={spokeStroke}
-              strokeWidth="1"
+              stroke={lineStroke}
+              strokeWidth={lineWidth}
               style={{ opacity: bloomed ? 1 : bloomT }}
             />
             {/* Scale notches — 10 major + 9 half marks per spoke.
@@ -1074,11 +1088,27 @@ function CivWheel({
       })}
 
       {/* Vertex tip dots + labels (rotate together with spokes) */}
-      {displayLabels.map((labelText, i) => {
+      {(() => {
+        // Which spoke is physically at the top right now?
+        const rotRad = (displayRot * Math.PI) / 180
+        let topSpokeIdx = 0, minTopDist = Infinity
+        for (let j = 0; j < count; j++) {
+          const a = angleFor(j, count) + rotRad
+          const dist = Math.abs(Math.atan2(Math.sin(a + Math.PI / 2), Math.cos(a + Math.PI / 2)))
+          if (dist < minTopDist) { minTopDist = dist; topSpokeIdx = j }
+        }
+        return displayLabels.map((labelText, i) => {
+          const isTop = i === topSpokeIdx
         const p        = getTipPos(i, displayRot, count)
         const ns       = nodeStates?.[i]
         const isActive = !busy && i === activeIndex
         const isPlacement = placementKey && keys[i] === placementKey
+        // isFocus: this spoke is one of the user's Active Focus civ domains.
+        // Distinct from isPlacement (which is the user's Purpose Piece "where
+        // I am") and isActive (which is the spoke they're currently looking
+        // at). A spoke can be all three. Focus is the most permissive — many
+        // may be set at once.
+        const isFocus = Array.isArray(focusKeys) && focusKeys.includes(keys[i])
 
         // Bloom: tips travel from centre outward
         const bloomedX = CX + (p.x - CX) * bloomT
@@ -1119,7 +1149,7 @@ function CivWheel({
             key={`node-${i}`}
             transform={groupTransform}
             opacity={groupOpacity}
-            onClick={() => handleNodeClick(i)}
+            onPointerDown={e => { e.stopPropagation(); handleNodeClick(i) }}
             role="button"
             tabIndex={busy ? -1 : 0}
             aria-label={`Domain: ${labelText}`}
@@ -1130,7 +1160,7 @@ function CivWheel({
           >
             {/* Generous invisible hit target */}
             <circle
-              cx={tipX} cy={tipY} r={18}
+              cx={tipX} cy={tipY} r={26}
               fill="transparent"
               style={{ pointerEvents: 'auto' }}
             />
@@ -1164,22 +1194,28 @@ function CivWheel({
               x={labelPos.x}
               y={labelPos.y}
               textAnchor={labelPos.anchor}
+              filter={`url(#lbl-halo-${dark ? 'dark' : 'light'}-civ)`}
               style={{
                 fontFamily: FONT_SC,
-                fontSize: 17,
+                fontSize: isTop ? 22 : 13,
                 letterSpacing: '0.18em',
-                fill: isActive || isPlacement ? activeLabelFill : baseLabelFill,
-                fontWeight: isActive || isPlacement ? 700 : 600,
+                fill: isActive || isPlacement || isFocus
+                  ? activeLabelFill
+                  : baseLabelFill,
+                fontWeight: isTop ? 700 : isPlacement ? 650 : isFocus ? 600 : 500,
+                opacity: isTop ? 1 : 0.60,
                 pointerEvents: 'none',
                 userSelect: 'none',
                 textTransform: 'uppercase',
+                transition: 'font-size 0.35s ease, opacity 0.35s ease',
               }}
             >
               {labelText}
             </text>
           </g>
         )
-      })}
+        })
+      })()}
 
       {/* Placement marker — pulsing ring outside placement spoke tip,
           (only when keys provided and placementKey present). Stays
