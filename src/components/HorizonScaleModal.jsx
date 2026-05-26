@@ -24,29 +24,23 @@ import {
 //   system      'self'|'planet'  — which scale to render (default: 'self')
 //   anchorScore number|null      — scroll to and highlight this score on open
 //
-// Usage:
-//   <HorizonScaleModal open={open} onClose={() => setOpen(false)} system="self" anchorScore={6.5} />
-//   <HorizonScaleModal open={open} onClose={() => setOpen(false)} system="planet" />
-//
-// Trigger pattern (inline link):
-//   <button onClick={() => setOpen(true)} style={SCALE_LINK_STYLE}>
-//     The Horizon Scale
-//   </button>
-//
-// Export SCALE_LINK_STYLE for consistent trigger styling across the site.
+// SELF_INTRO copy (May 2026) is aligned with the teaching layer drafted for
+// The Map: "the Line" at 5, "holding you up" / "asking for attention" — same
+// language users encounter on the door page, in the embedded scale view, and
+// inside the picker copy. One consistent voice across all surfaces.
 // ─────────────────────────────────────────────────────────────
 
 const SELF_INTRO = {
-  eyebrow:  'Horizon Suite',
-  title:    'The Horizon Scale',
-  subtitle: 'Fulfilment calibration · 0–10',
+  eyebrow:  'The Map · The Scale',
+  title:    'One ruler. Seven readings.',
+  subtitle: 'Calibrated to you · 0–10',
   body: [
-    'Each domain of your life is scored against this scale. The scale has two zones separated by The Pass/Fail Mark at 5. Above it, a domain is building — compounding toward what you want. Below it, the domain is in contraction.',
-    'Below 5 is not failure. It is where the work of restoration lives. Stabilise before you optimise.',
+    'Every score in The Map uses this scale. Zero is suffering. Five is the Line — the threshold between a domain that’s holding you up and a domain that’s pulling on the rest of your life. Ten is the character you describe in Step 1 of each domain.',
+    'Same ruler across all seven domains.',
   ],
-  aboveLine: { label: 'Building',     note: 'above The Pass/Fail Mark — growing, expressing, contributing' },
-  belowLine: { label: 'Contracting',  note: 'below The Pass/Fail Mark — restoration, repair, return' },
-  footer:    'Any score below 5 means this domain is actively creating friction — consuming more than it generates. Stabilise before optimising.',
+  aboveLine: { label: 'Above the Line',  note: 'this domain is holding you up — part of the foundation the rest of your life sits on' },
+  belowLine: { label: 'Below the Line',  note: 'this domain is asking for attention — pulling on the rest of your life' },
+  footer:    'A four and a six aren’t two ticks apart. They’re on different sides of a structural threshold. That’s why the Line matters more than any single number.',
 }
 
 // Consistent inline trigger style — import this wherever a scale link is needed

@@ -1,16 +1,27 @@
 import { useState } from 'react'
+import { DOMAIN_COPY } from '../constants/domainCopy'
 
-// ─── NextUs Self domain definitions ───────────────────────────────────────────────
+// ─── Domain definitions ───────────────────────────────────────────────────────
+//
+// The seven personal-side domain paragraphs now live in src/constants/domainCopy.js
+// as the single source of truth. This file derives LIFEOS_TIPS from that source
+// so any tool still using <DomainTooltip /> sees the same updated copy as the
+// richer <InfoIcon /> panels in The Map's teaching layer.
+//
+// The hover tooltip is a lightweight surface — it shows the domain title plus a
+// short opening line. For the full paragraph and the felt question, use the
+// <InfoIcon /> panel pattern (see The Map's Step 1 / domain headers).
 
-export const LIFEOS_TIPS = {
-  'path':       { aliases: "Life's Mission · Purpose · Dharma · Soul Alignment", desc: "The work you were built to do — not your job title, your gift. The contribution that runs beneath whatever you do for income." },
-  'spark':      { aliases: "Vitality · Energy · Recharge · Joy · Passion",        desc: "Is the fire on? The things that make you feel genuinely alive — not productive, alive. When Spark is low, everything runs on fumes." },
-  'body':       { aliases: "Health · Fitness · The Physical",                       desc: "The instrument through which everything else operates. Not aesthetics — capacity. The only one you get." },
-  'finances':   { aliases: "Agency · Money · Currency",                             desc: "Do you have the charge to act? This is about agency, not wealth." },
-  'connection': { aliases: "Your relationships with others",                        desc: "Not just the presence of people — the quality of what actually passes between you." },
-  'inner_game': { aliases: "Your relationship to yourself",                         desc: "The source code — everything else runs on it. The beliefs and stories you carry about who you are." },
-  'signal':     { aliases: "Your relationship to the world",                        desc: "Your public-facing persona and personal environment. Is what you're broadcasting aligned with who you actually are?" },
-}
+export const LIFEOS_TIPS = Object.fromEntries(
+  Object.entries(DOMAIN_COPY).map(([key, d]) => [
+    key,
+    {
+      aliases: d.title,
+      // First sentence of the gloss — short enough for a hover surface.
+      desc:    d.gloss.split('. ')[0] + '.',
+    },
+  ])
+)
 
 // Label → id map for components that store labels not ids
 export const LIFEOS_LABEL_MAP = {
