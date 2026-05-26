@@ -6,7 +6,6 @@ import { useAccess } from '../../hooks/useAccess'
 import { supabase } from '../../hooks/useSupabase'
 import { FlamePicker, FlameGlyph, FlameSlider } from '../../components/FlameCheckIn'
 import { ProtocolPanel } from '../../components/ProtocolPanel'
-import { AccessGate } from '../../components/AccessGate'
 import { DebriefPanel } from '../../components/DebriefPanel'
 
 const BUCKET = 'nextus-audio'
@@ -1522,7 +1521,6 @@ export function HorizonStatePage() {
   const nextPhaseKey = currentPhase === 'baseline' ? 'calibration' : currentPhase === 'calibration' ? 'embodiment' : null
 
   return (
-    <AccessGate productKey="horizon-state" toolName="Horizon State">
     <div className="page-shell">
       <style>{MOBILE_STYLES}</style>
       <Nav activePath="nextus-self" />
@@ -1631,7 +1629,6 @@ export function HorizonStatePage() {
       <ToolCompassPanel />
       <ProtocolPanel />
     </div>
-    </AccessGate>
   )
 }
 
