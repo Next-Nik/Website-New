@@ -115,6 +115,39 @@ const LINK_PRIORITY = {
   youtube_video: 16, other: 99,
 }
 
+// ── Accepting-status, membership-status, and mode labels ─────
+
+const ACCEPTING_STATUS_LABEL = {
+  yes:      { label: 'Accepting clients',     color: '#2A6B3A', bg: 'rgba(42,107,58,0.08)',  border: 'rgba(42,107,58,0.25)' },
+  waitlist: { label: 'Waitlist',              color: '#A8721A', bg: 'rgba(168,114,26,0.08)', border: 'rgba(168,114,26,0.25)' },
+  not_now:  { label: 'Not accepting now',     color: 'rgba(15,21,35,0.55)', bg: 'rgba(15,21,35,0.04)', border: 'rgba(15,21,35,0.12)' },
+}
+
+const MEMBERSHIP_STATUS_LABEL = {
+  open:                 'Open membership',
+  application_required: 'By application',
+  invite_only:          'Invite only',
+  closed:               'Closed',
+  not_applicable:       null,  // never render
+}
+
+// Mode-aware section ordering. Default order applies when actor_mode is NULL
+// or when the mode doesn't change order materially. 'practice' foregrounds
+// offerings (programmes / retreats) earlier in the page.
+const MODE_PROFILE_ORDER = {
+  practice:   ['identity', 'mission', 'story', 'description', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'contact', 'links', 'press', 'relationships', 'bridge', 'provenance'],
+  enterprise: ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'needs', 'credentials', 'testimonials', 'events', 'contact', 'links', 'press', 'relationships', 'bridge', 'provenance'],
+  platform:   ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'credentials', 'testimonials', 'needs', 'events', 'contact', 'links', 'press', 'relationships', 'bridge', 'provenance'],
+  collective: ['identity', 'mission', 'description', 'story', 'placement', 'working_on', 'needs', 'offers', 'testimonials', 'credentials', 'events', 'contact', 'links', 'press', 'relationships', 'bridge', 'provenance'],
+  mixed:      ['identity', 'mission', 'description', 'story', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'contact', 'links', 'press', 'relationships', 'bridge', 'provenance'],
+  // default (NULL mode) — close to the original OrgPublic order
+  default:    ['identity', 'mission', 'description', 'working_on', 'placement', 'offers', 'needs', 'story', 'testimonials', 'credentials', 'events', 'contact', 'links', 'press', 'relationships', 'bridge', 'provenance'],
+}
+
+function getSectionOrder(actorMode) {
+  return MODE_PROFILE_ORDER[actorMode] || MODE_PROFILE_ORDER.default
+}
+
 // ── Identity strip ───────────────────────────────────────────
 
 function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
@@ -192,6 +225,46 @@ function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
               color: 'rgba(15,21,35,0.45)', marginBottom: '16px',
               textTransform: 'uppercase' }}>
               {actor.location_name}
+            </div>
+          )}
+
+          {/* Founder of NextUs — admin-set badge, small and plain */}
+          {actor.is_platform_founder && (
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
+              color: '#A8721A', marginBottom: '16px',
+              textTransform: 'uppercase' }}>
+              Founder of NextUs
+            </div>
+          )}
+
+          {/* Accepting status — practitioner-facing signal */}
+          {actor.accepting_status && ACCEPTING_STATUS_LABEL[actor.accepting_status] && (() => {
+            const cfg = ACCEPTING_STATUS_LABEL[actor.accepting_status]
+            return (
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px',
+                padding: '5px 12px', background: cfg.bg,
+                border: `1px solid ${cfg.border}`, borderRadius: '4px',
+                marginBottom: '12px', marginRight: '8px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%',
+                  background: cfg.color, display: 'inline-block' }} />
+                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
+                  color: cfg.color, textTransform: 'uppercase' }}>
+                  {cfg.label}
+                </span>
+              </div>
+            )
+          })()}
+
+          {/* Membership status — groups, places, programmes */}
+          {actor.membership_status && MEMBERSHIP_STATUS_LABEL[actor.membership_status] && (
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px',
+              padding: '5px 12px', background: 'rgba(42,74,138,0.06)',
+              border: '1px solid rgba(42,74,138,0.20)', borderRadius: '4px',
+              marginBottom: '12px' }}>
+              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
+                color: '#2A4A8A', textTransform: 'uppercase' }}>
+                {MEMBERSHIP_STATUS_LABEL[actor.membership_status]}
+              </span>
             </div>
           )}
 
@@ -1024,6 +1097,185 @@ function ProvenanceBadge({ actor }) {
   )
 }
 
+// ── Story — long-form narrative ──────────────────────────────
+
+function StorySection({ actor }) {
+  if (!actor.story) return null
+  // Split paragraphs on blank lines to render naturally
+  const paragraphs = actor.story.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean)
+  return (
+    <div>
+      <Eyebrow>The work</Eyebrow>
+      {paragraphs.map((para, i) => (
+        <p key={i} style={{ ...body, fontSize: '17px', fontWeight: 300,
+          color: dark, lineHeight: 1.85, marginBottom: '22px',
+          maxWidth: '620px' }}>
+          {para}
+        </p>
+      ))}
+    </div>
+  )
+}
+
+// ── Credentials — grouped by kind ────────────────────────────
+
+const CREDENTIAL_KIND_LABEL = {
+  training:      'Training',
+  certification: 'Certifications',
+  membership:    'Memberships',
+  license:       'Licenses',
+  award:         'Awards',
+  lineage:       'Lineage',
+}
+
+// Display order for credential groups
+const CREDENTIAL_KIND_ORDER = ['training', 'lineage', 'certification', 'license', 'membership', 'award']
+
+function CredentialsSection({ credentials }) {
+  if (!credentials || credentials.length === 0) return null
+
+  // Group by kind
+  const grouped = {}
+  credentials.forEach(c => {
+    if (!grouped[c.kind]) grouped[c.kind] = []
+    grouped[c.kind].push(c)
+  })
+
+  // Order the groups
+  const orderedKinds = CREDENTIAL_KIND_ORDER.filter(k => grouped[k])
+
+  return (
+    <div>
+      <Eyebrow>Background</Eyebrow>
+      {orderedKinds.map(kind => (
+        <div key={kind} style={{ marginBottom: '32px' }}>
+          <h3 style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
+            color: gold, textTransform: 'uppercase', marginBottom: '14px',
+            fontWeight: 500 }}>
+            {CREDENTIAL_KIND_LABEL[kind] || kind}
+          </h3>
+          <div style={{ display: 'grid', gap: '14px' }}>
+            {grouped[kind].map(c => (
+              <div key={c.id} style={{
+                borderLeft: '2px solid rgba(200,146,42,0.20)',
+                paddingLeft: '18px' }}>
+                <div style={{ ...body, fontSize: '16px',
+                  color: dark, lineHeight: 1.4, marginBottom: '3px' }}>
+                  {c.url ? (
+                    <a href={c.url} target="_blank" rel="noopener"
+                       style={{ color: dark, textDecoration: 'none',
+                         borderBottom: '1px solid rgba(200,146,42,0.30)' }}>
+                      {c.title}
+                    </a>
+                  ) : c.title}
+                </div>
+                {(c.institution || c.year) && (
+                  <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
+                    color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
+                    {c.institution}
+                    {c.institution && c.year && ' · '}
+                    {c.year}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ── Testimonials ─────────────────────────────────────────────
+
+function TestimonialsSection({ testimonials, actorMode }) {
+  if (!testimonials || testimonials.length === 0) return null
+
+  // Featured first, then sort_order
+  const sorted = [...testimonials].sort((a, b) => {
+    if (a.featured !== b.featured) return a.featured ? -1 : 1
+    return (a.sort_order || 0) - (b.sort_order || 0)
+  })
+
+  // Mode-aware section heading
+  const heading = actorMode === 'practice'
+    ? 'Participants say'
+    : actorMode === 'enterprise'
+      ? 'What customers and partners say'
+      : 'What people say'
+
+  return (
+    <div>
+      <Eyebrow>{heading}</Eyebrow>
+      {sorted.map(t => (
+        <div key={t.id} style={{
+          borderLeft: '2px solid rgba(200,146,42,0.20)',
+          paddingLeft: '24px',
+          marginBottom: '32px',
+          maxWidth: '620px' }}>
+          <p style={{ ...body, fontSize: '16.5px', fontStyle: 'italic',
+            color: dark, lineHeight: 1.75, marginBottom: '12px',
+            fontWeight: 300 }}>
+            "{t.quote}"
+          </p>
+          {(t.attribution || t.context) && (
+            <div>
+              {t.attribution && (
+                <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em',
+                  color: gold, textTransform: 'uppercase' }}>
+                  — {t.attribution}
+                </span>
+              )}
+              {t.context && (
+                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                  color: 'rgba(15,21,35,0.45)', marginLeft: '10px' }}>
+                  {t.context}
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ── Bridge to developmental profile ──────────────────────────
+// Renders only when the practitioner has toggled show_developmental_link
+// AND has a profile_owner (i.e., is a person, not an org). The link points
+// to the developmental profile; whether that profile is actually visible
+// to the viewer is enforced server-side by usePublicProfile.
+
+function BridgeLink({ actor }) {
+  if (!actor.show_developmental_link || !actor.profile_owner) return null
+
+  return (
+    <div style={{
+      background: 'rgba(168,114,26,0.04)',
+      border: '1px dashed rgba(200,146,42,0.25)',
+      borderRadius: '10px',
+      padding: '22px 28px',
+      textAlign: 'center' }}>
+      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.20em',
+        color: 'rgba(15,21,35,0.40)', textTransform: 'uppercase',
+        marginBottom: '10px' }}>
+        Walking the talk
+      </div>
+      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
+        lineHeight: 1.7, marginBottom: '14px', fontStyle: 'italic' }}>
+        I do this work on myself, in public.
+      </p>
+      <Link to={`/profile/${actor.profile_owner}`}
+        style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em',
+          color: gold, textTransform: 'uppercase', textDecoration: 'none',
+          borderBottom: '1px solid rgba(200,146,42,0.30)',
+          paddingBottom: '2px' }}>
+        See my developmental profile →
+      </Link>
+    </div>
+  )
+}
+
 // ── Main page ────────────────────────────────────────────────
 
 export function OrgPublicPage() {
@@ -1038,24 +1290,28 @@ export function OrgPublicPage() {
   const [parent, setParent]       = useState(null)
   const [children, setChildren]   = useState([])
   const [partners, setPartners]   = useState([])
+  const [credentials, setCredentials]   = useState([])
+  const [testimonials, setTestimonials] = useState([])
   const [loading, setLoading]     = useState(true)
 
   useEffect(() => {
     async function load() {
       setLoading(true)
 
-      // Allow slug OR id lookup
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
-      const actorQuery = supabase.from('nextus_actors').select('*')
-      const { data: actor } = isUuid
-        ? await actorQuery.eq('id', id).single()
-        : await actorQuery.eq('slug', id).single()
+      // Use the privacy-locked RPC so people_in_the_work is stripped for
+      // non-owners. The owner reading their own profile gets the field
+      // populated; everyone else sees null. The function accepts either
+      // a UUID or a slug.
+      const { data: actorRows } = await supabase
+        .rpc('get_actor_public', { p_actor_id_or_slug: id })
+
+      const actor = Array.isArray(actorRows) ? actorRows[0] : actorRows
 
       if (!actor) { setLoading(false); return }
       setActor(actor)
 
       // Parallel load auxiliary data
-      const [linksRes, pressRes, offersRes, needsRes, parentRes, childrenRes, partnersRes] = await Promise.all([
+      const [linksRes, pressRes, offersRes, needsRes, parentRes, childrenRes, partnersRes, credentialsRes, testimonialsRes] = await Promise.all([
         supabase.from('actor_links').select('*').eq('actor_id', actor.id).order('sort_order'),
         supabase.from('actor_press').select('*').eq('actor_id', actor.id).order('sort_order'),
         supabase.from('actor_offers').select('*, target_focus:target_focus_id(id, name, type)').eq('actor_id', actor.id).eq('active', true).order('sort_order'),
@@ -1075,6 +1331,12 @@ export function OrgPublicPage() {
           .eq('actor_id', actor.id)
           .eq('relationship_type', 'partner')
           .eq('status', 'confirmed'),
+
+        // Credentials
+        supabase.from('actor_credentials').select('*').eq('actor_id', actor.id).order('sort_order'),
+
+        // Testimonials — public read policy restricts to active=true
+        supabase.from('actor_testimonials').select('*').eq('actor_id', actor.id).eq('active', true).order('sort_order'),
       ])
 
       setLinks(linksRes.data || [])
@@ -1084,6 +1346,8 @@ export function OrgPublicPage() {
       setParent(parentRes.data || null)
       setChildren(childrenRes.data || [])
       setPartners((partnersRes.data || []).map(r => r.related).filter(Boolean))
+      setCredentials(credentialsRes.data || [])
+      setTestimonials(testimonialsRes.data || [])
 
       setLoading(false)
     }
@@ -1118,6 +1382,103 @@ export function OrgPublicPage() {
     : score >= 5 ? 'contested'
     : 'pattern_instance'
 
+  // Mode-aware section ordering. 'identity' is always first; everything
+  // else respects MODE_PROFILE_ORDER for the actor's mode.
+  const sectionOrder = getSectionOrder(actor.actor_mode)
+
+  // Render registry — each key maps to a render function returning a node
+  // (or null). The map is consulted in sectionOrder.
+  const sectionRenderers = {
+    identity: () => (
+      <IdentityStrip
+        actor={actor}
+        primaryDomain={primaryDomain}
+        principalTier={tier}
+        isOwner={isOwner}
+      />
+    ),
+    mission: () => (
+      isClaimed && actor.mission_statement
+        ? <MissionStatement actor={actor} />
+        : null
+    ),
+    description: () => (
+      actor.description ? <Description actor={actor} /> : null
+    ),
+    story: () => (
+      actor.story ? <StorySection actor={actor} /> : null
+    ),
+    working_on: () => (
+      isClaimed && actor.working_on_now ? <WorkingOnNow actor={actor} /> : null
+    ),
+    placement: () => (
+      allDomains.length > 0
+        ? <Placement domains={allDomains} subdomains={actor.subdomains || []} />
+        : null
+    ),
+    offers: () => (
+      offers.length > 0
+        ? <OffersSection offers={offers} actor={actor} currentUser={user} />
+        : null
+    ),
+    needs: () => (
+      needs.length > 0
+        ? <NeedsSection needs={needs} actor={actor} currentUser={user} />
+        : null
+    ),
+    credentials: () => (
+      credentials.length > 0
+        ? <CredentialsSection credentials={credentials} />
+        : null
+    ),
+    testimonials: () => (
+      testimonials.length > 0
+        ? <TestimonialsSection testimonials={testimonials} actorMode={actor.actor_mode} />
+        : null
+    ),
+    events: () => (
+      <EventsSection actor={actor} isOwner={isOwner} />
+    ),
+    contact: () => (
+      links.some(l => CONTACT_LINK_TYPES.has(l.link_type))
+        ? <ContactSection links={links} actorName={actor.name} />
+        : null
+    ),
+    links: () => {
+      const hasLinks = links.some(l => !CONTACT_LINK_TYPES.has(l.link_type)) || actor.website
+      if (!hasLinks) return null
+      return (
+        <LinksRow links={[
+          ...(actor.website && !links.find(l => l.link_type === 'website')
+            ? [{ id: 'main-site', link_type: 'website', url: actor.website }]
+            : []),
+          ...links,
+        ]} />
+      )
+    },
+    press: () => (
+      press.length > 0 ? <PressStrip press={press} /> : null
+    ),
+    relationships: () => (
+      (parent || children.length > 0 || partners.length > 0)
+        ? <RelationshipsSection parent={parent} children={children} partners={partners} />
+        : null
+    ),
+    bridge: () => (
+      <BridgeLink actor={actor} />
+    ),
+    provenance: () => (
+      <ProvenanceBadge actor={actor} />
+    ),
+  }
+
+  // Sections that should NOT be followed by a Rule (visual separator):
+  // - identity (always first, the rule comes after it from the next section)
+  // - events (has its own internal chrome)
+  // - provenance (last, no trailing rule)
+  // - bridge (renders inside a styled box, doesn't need a divider above)
+  const SECTIONS_WITHOUT_TRAILING_RULE = new Set(['events', 'provenance', 'bridge'])
+
   return (
     <div style={{ background: parch, minHeight: '100vh' }}>
       <Nav />
@@ -1149,109 +1510,25 @@ export function OrgPublicPage() {
         {/* Claim banner — only on unclaimed wards */}
         <ClaimBanner actor={actor} user={user} />
 
-        {/* Identity strip — always */}
-        <IdentityStrip
-          actor={actor}
-          primaryDomain={primaryDomain}
-          principalTier={tier}
-          isOwner={isOwner}
-        />
-
-        {/* Voice layer — only when claimed */}
-        {isClaimed && actor.mission_statement && (
-          <>
-            <MissionStatement actor={actor} />
-            <Rule />
-          </>
-        )}
-
-        {/* Description (evidence) */}
-        {actor.description && (
-          <>
-            <Description actor={actor} />
-            <Rule />
-          </>
-        )}
-
-        {/* Voice layer — working on now */}
-        {isClaimed && actor.working_on_now && (
-          <>
-            <WorkingOnNow actor={actor} />
-            <Rule />
-          </>
-        )}
-
-        {/* Placement */}
-        {allDomains.length > 0 && (
-          <>
-            <Placement
-              domains={allDomains}
-              subdomains={actor.subdomains || []}
-            />
-            <Rule />
-          </>
-        )}
-
-        {/* Offers & needs */}
-        {offers.length > 0 && (
-          <>
-            <OffersSection offers={offers} actor={actor} currentUser={user} />
-            <Rule />
-          </>
-        )}
-        {needs.length > 0 && (
-          <>
-            <NeedsSection needs={needs} actor={actor} currentUser={user} />
-            <Rule />
-          </>
-        )}
-
-        {/* Events — upcoming, hosted, recent past */}
-        <EventsSection actor={actor} isOwner={isOwner} />
-
-        {/* Get in touch — contact links (email, contact form, calendly) */}
-        {links.some(l => CONTACT_LINK_TYPES.has(l.link_type)) && (
-          <>
-            <ContactSection links={links} actorName={actor.name} />
-            <Rule />
-          </>
-        )}
-
-        {/* Links */}
-        {(links.some(l => !CONTACT_LINK_TYPES.has(l.link_type)) || actor.website) && (
-          <>
-            <LinksRow links={[
-              ...(actor.website && !links.find(l => l.link_type === 'website')
-                ? [{ id: 'main-site', link_type: 'website', url: actor.website }]
-                : []),
-              ...links,
-            ]} />
-            <Rule />
-          </>
-        )}
-
-        {/* Press */}
-        {press.length > 0 && (
-          <>
-            <PressStrip press={press} />
-            <Rule />
-          </>
-        )}
-
-        {/* Relationships */}
-        {(parent || children.length > 0 || partners.length > 0) && (
-          <>
-            <RelationshipsSection
-              parent={parent}
-              children={children}
-              partners={partners}
-            />
-            <Rule />
-          </>
-        )}
-
-        {/* Provenance */}
-        <ProvenanceBadge actor={actor} />
+        {/* Render sections in mode-determined order. Skip nulls. Each section
+            is followed by a Rule (visual divider) except for the sections in
+            SECTIONS_WITHOUT_TRAILING_RULE. This matches the original page's
+            pattern of trailing-rules-only. */}
+        {(() => {
+          const rendered = []
+          for (const key of sectionOrder) {
+            const node = sectionRenderers[key]?.()
+            if (node == null) continue
+            const needsTrailingRule = !SECTIONS_WITHOUT_TRAILING_RULE.has(key)
+            rendered.push(
+              <div key={key}>
+                {node}
+                {needsTrailingRule && <Rule />}
+              </div>
+            )
+          }
+          return rendered
+        })()}
 
       </div>
 

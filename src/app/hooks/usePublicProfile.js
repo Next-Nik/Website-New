@@ -1,14 +1,28 @@
 // src/beta/hooks/usePublicProfile.js
 // Fetches all data required to render /beta/profile/:id.
-// Returns structured profile data, loading state, and error.
+// Returns structured profile data, loading state, error, and a 'private' flag
+// indicating the developmental profile is not visible to the current viewer.
+//
+// The profile-level visibility (`developmental_profile_visibility` on
+// contributor_profiles_beta) is enforced here as the primary gate:
+//   - 'private'        → only the user themselves can view
+//   - 'authenticated'  → any signed-in NextUs user can view
+//   - 'public'         → anyone with the URL can view
+//
+// When the viewer is not permitted by the master visibility, the hook
+// returns { data: null, isPrivate: true } so the calling page can render
+// a private-state UI.
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../../hooks/useSupabase'
+import { useAuth } from '../../hooks/useAuth'
 
 export function usePublicProfile(userId) {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [isPrivate, setIsPrivate] = useState(false)
+  const { user: viewer } = useAuth()
 
   useEffect(() => {
     if (!userId) return
@@ -17,22 +31,55 @@ export function usePublicProfile(userId) {
     async function load() {
       setLoading(true)
       setError(null)
+      setIsPrivate(false)
+
       try {
+        // Profile-level visibility gate. We fetch the visibility flag first
+        // so we can short-circuit when the viewer is not permitted to see
+        // anything.
+        const { data: profileRes, error: profileErr } = await supabase
+          .from('contributor_profiles_beta')
+          .select('display_name, headline, location_focus_id, what_i_stand_for, count_on_me_for, dont_count_on_me_for, engaged_civ_domains, engaged_self_domains, engaged_principles, developmental_profile_visibility')
+          .eq('user_id', userId)
+          .maybeSingle()
+
+        if (cancelled) return
+
+        // If there's no profile row at all, treat as private
+        if (!profileRes) {
+          if (!cancelled) {
+            setIsPrivate(true)
+            setData(null)
+            setLoading(false)
+          }
+          return
+        }
+
+        // Apply visibility gate
+        const visibility = profileRes.developmental_profile_visibility || 'private'
+        const isOwner = viewer && viewer.id === userId
+        const viewerSignedIn = !!viewer
+        const allowed =
+          isOwner ||
+          visibility === 'public' ||
+          (visibility === 'authenticated' && viewerSignedIn)
+
+        if (!allowed) {
+          if (!cancelled) {
+            setIsPrivate(true)
+            setData(null)
+            setLoading(false)
+          }
+          return
+        }
+
+        // Visibility permitted — continue with the full fetch
         const [
-          profileRes,
           horizonRes,
           sprintsRes,
           purposeRes,
           principlesRes,
         ] = await Promise.all([
-          // contributor_profiles_beta — profile fields + engaged domains
-          supabase
-            .from('contributor_profiles_beta')
-            .select('display_name, headline, location_focus_id, what_i_stand_for, count_on_me_for, dont_count_on_me_for, engaged_civ_domains, engaged_self_domains, engaged_principles')
-            .eq('user_id', userId)
-            .maybeSingle(),
-
-          // horizon_profile — per-domain scores, ia_statements
           supabase
             .from('horizon_profile')
             .select('domain, current_score, horizon_score, horizon_goal, ia_statement, source, last_updated')
@@ -69,7 +116,7 @@ export function usePublicProfile(userId) {
 
         // Resolve location focus name if present
         let focusName = null
-        const focusId = profileRes.data?.location_focus_id
+        const focusId = profileRes?.location_focus_id
         if (focusId) {
           const { data: focus } = await supabase
             .from('nextus_focuses')
@@ -172,7 +219,7 @@ export function usePublicProfile(userId) {
         })
 
         // Civ wheel — from engaged_civ_domains, filter by visibility
-        const engagedCivDomains = profileRes.data?.engaged_civ_domains || []
+        const engagedCivDomains = profileRes?.engaged_civ_domains || []
         const civWheelPublic = engagedCivDomains.filter(slug => {
           const key = `wheel_civ:${slug}`
           return visibilityMap[key] === 'public'
@@ -191,7 +238,7 @@ export function usePublicProfile(userId) {
 
         if (!cancelled) {
           setData({
-            profile: profileRes.data || {},
+            profile: profileRes || {},
             focusName,
             horizonByDomain,
             selfWheelPublic,
@@ -219,7 +266,7 @@ export function usePublicProfile(userId) {
 
     load()
     return () => { cancelled = true }
-  }, [userId])
+  }, [userId, viewer?.id])
 
-  return { data, loading, error }
+  return { data, loading, error, isPrivate }
 }

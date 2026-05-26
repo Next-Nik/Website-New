@@ -72,12 +72,44 @@ function NotFound() {
   )
 }
 
+// Rendered when the developmental profile's visibility setting excludes the
+// current viewer. Distinct from NotFound — the profile exists, the viewer
+// just isn't permitted to see it. Worded so it doesn't confirm or deny
+// the existence of the profile to viewers who shouldn't have that signal.
+function PrivateProfile() {
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: '#FAFAF7',
+    }}>
+      <Nav activePath="" />
+      <div style={{
+        maxWidth: '560px',
+        margin: '0 auto',
+        padding: '160px 24px',
+        textAlign: 'center',
+      }}>
+        <p style={{
+          ...body,
+          fontSize: '17px',
+          fontWeight: 300,
+          color: 'rgba(15,21,35,0.45)',
+          lineHeight: 1.75,
+        }}>
+          This profile is private.
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export function PublicProfile() {
   const { id } = useParams()
   const { user } = useAuth()
-  const { data, loading, error } = usePublicProfile(id)
+  const { data, loading, error, isPrivate } = usePublicProfile(id)
 
   if (loading) return <LoadingState />
+  if (isPrivate) return <PrivateProfile />
   if (error || !data) return <NotFound />
 
   const isSelf = user && user.id === id
