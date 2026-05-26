@@ -293,7 +293,7 @@ function SelfWheel({
       height="100%"
       viewBox={SVG_VIEWBOX}
       preserveAspectRatio="xMidYMid meet"
-      style={{ display: 'block', overflow: 'visible'}}
+      style={{ display: 'block', overflow: 'visible', touchAction: 'manipulation' }}
       aria-label="Your seven domains"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -373,7 +373,7 @@ function SelfWheel({
                   stroke="transparent"
                   strokeWidth="18"
                   style={{ cursor: 'pointer' }}
-                  onClick={() => onSelect(i)}
+                  onPointerDown={e => { e.stopPropagation(); onSelect(i) }}
                 />
               )}
               <circle
@@ -409,7 +409,7 @@ function SelfWheel({
             {verts.map(v => (
               <g
                 key={`vert-${v.i}`}
-                onClick={onSelect ? () => onSelect(v.i) : undefined}
+                onPointerDown={onSelect ? e => { e.stopPropagation(); onSelect(v.i) } : undefined}
                 style={onSelect ? { cursor: 'pointer' } : undefined}
               >
                 {onSelect && (
@@ -505,10 +505,10 @@ function SelfWheel({
             <g key={`label-${i}`}>
               {onSelect && (
                 <circle
-                  cx={p.x} cy={p.y} r={18}
+                  cx={p.x} cy={p.y} r={26}
                   fill="transparent"
                   style={{ cursor: 'pointer' }}
-                  onClick={() => onSelect(i)}
+                  onPointerDown={e => { e.stopPropagation(); onSelect(i) }}
                 >
                   <title>{labels[i]}</title>
                 </circle>
@@ -517,7 +517,7 @@ function SelfWheel({
                 x={pos.x}
                 y={pos.y}
                 textAnchor={pos.anchor}
-                onClick={onSelect ? () => onSelect(i) : undefined}
+                onPointerDown={onSelect ? e => { e.stopPropagation(); onSelect(i) } : undefined}
                 filter={`url(#lbl-halo-${dark ? 'dark' : 'light'})`}
                 style={{
                   fontFamily: FONT_SC,
@@ -577,7 +577,7 @@ function SelfWheel({
           Three layers for depth: wide outer bloom, mid haze, tight core. */}
       {onCentreClick && (
         <g
-          onClick={onCentreClick}
+          onPointerDown={e => { e.stopPropagation(); onCentreClick() }}
           style={{ cursor: 'pointer' }}
           aria-label="Return to my life overview"
         >
@@ -909,7 +909,7 @@ function CivWheel({
       height="100%"
       viewBox={SVG_VIEWBOX}
       preserveAspectRatio="xMidYMid meet"
-      style={{ display: 'block', overflow: 'visible'}}
+      style={{ display: 'block', overflow: 'visible', touchAction: 'manipulation' }}
       aria-label="The seven civilisational domains"
     >
       {/* Label legibility filter */}
@@ -1149,7 +1149,7 @@ function CivWheel({
             key={`node-${i}`}
             transform={groupTransform}
             opacity={groupOpacity}
-            onClick={() => handleNodeClick(i)}
+            onPointerDown={e => { e.stopPropagation(); handleNodeClick(i) }}
             role="button"
             tabIndex={busy ? -1 : 0}
             aria-label={`Domain: ${labelText}`}
@@ -1160,7 +1160,7 @@ function CivWheel({
           >
             {/* Generous invisible hit target */}
             <circle
-              cx={tipX} cy={tipY} r={18}
+              cx={tipX} cy={tipY} r={26}
               fill="transparent"
               style={{ pointerEvents: 'auto' }}
             />
