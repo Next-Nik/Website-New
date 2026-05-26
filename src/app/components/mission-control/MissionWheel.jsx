@@ -481,51 +481,64 @@ function SelfWheel({
           Tip positions computed with displayRot baked in so labels
           follow their spokes but the text glyphs stay upright.
           Same pattern as CivWheel. ── */}
-      {labels.map((txt, i) => {
-        const p = getTipPos(i, displayRot)  // actual rotated position
-        const pos = civLabelPosFor(p.x, p.y, p.angle)
-        const isActive = activeKey && keys[i] === activeKey
-        const dc = selfColor(keys[i])
-        const baseFill   = dark ? dc.dark : dc.light
-        const activeFill = dc.base
-        return (
-          <g key={`label-${i}`}>
-            {/* Invisible hit target at the tip — generous tap zone */}
-            {onSelect && (
-              <circle
-                cx={p.x} cy={p.y} r={18}
-                fill="transparent"
-                style={{ cursor: 'pointer' }}
-                onClick={() => onSelect(i)}
+      {/* Labels — outside rotating group, positions baked with displayRot */}
+      {(() => {
+        // Which spoke is physically closest to the top (angle = -π/2)?
+        const rotRad = (displayRot * Math.PI) / 180
+        let topIdx = 0, minDist = Infinity
+        for (let i = 0; i < N; i++) {
+          const a = angleFor(i) + rotRad
+          // Normalise to [-π, π]
+          const diff = Math.atan2(Math.sin(a + Math.PI / 2), Math.cos(a + Math.PI / 2))
+          const dist = Math.abs(diff)
+          if (dist < minDist) { minDist = dist; topIdx = i }
+        }
+        return labels.map((txt, i) => {
+          const p = getTipPos(i, displayRot)
+          const pos = civLabelPosFor(p.x, p.y, p.angle)
+          const isTop    = i === topIdx
+          const isActive = activeKey && keys[i] === activeKey
+          const dc = selfColor(keys[i])
+          const baseFill   = dark ? dc.dark : dc.light
+          const activeFill = dc.base
+          return (
+            <g key={`label-${i}`}>
+              {onSelect && (
+                <circle
+                  cx={p.x} cy={p.y} r={18}
+                  fill="transparent"
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => onSelect(i)}
+                >
+                  <title>{labels[i]}</title>
+                </circle>
+              )}
+              <text
+                x={pos.x}
+                y={pos.y}
+                textAnchor={pos.anchor}
+                onClick={onSelect ? () => onSelect(i) : undefined}
+                filter={`url(#lbl-halo-${dark ? 'dark' : 'light'})`}
+                style={{
+                  fontFamily: FONT_SC,
+                  fontSize: isTop ? 22 : 13,
+                  letterSpacing: '0.18em',
+                  fill: isActive ? activeFill : baseFill,
+                  fontWeight: isTop ? 700 : 500,
+                  opacity: isTop ? 1 : 0.60,
+                  cursor: onSelect ? 'pointer' : undefined,
+                  userSelect: 'none',
+                  textTransform: 'uppercase',
+                  pointerEvents: onSelect ? 'auto' : 'none',
+                  transition: 'font-size 0.35s ease, opacity 0.35s ease',
+                }}
               >
-                <title>{labels[i]}</title>
-              </circle>
-            )}
-            <text
-              x={pos.x}
-              y={pos.y}
-              textAnchor={pos.anchor}
-              onClick={onSelect ? () => onSelect(i) : undefined}
-              filter={`url(#lbl-halo-${dark ? 'dark' : 'light'})`}
-              style={{
-                fontFamily: FONT_SC,
-                fontSize: isActive ? 22 : 14,
-                letterSpacing: '0.18em',
-                fill: isActive ? activeFill : baseFill,
-                fontWeight: isActive ? 700 : 500,
-                opacity: isActive ? 1 : activeKey ? 0.65 : 1,
-                cursor: onSelect ? 'pointer' : undefined,
-                userSelect: 'none',
-                textTransform: 'uppercase',
-                pointerEvents: onSelect ? 'auto' : 'none',
-                transition: 'font-size 0.35s ease, opacity 0.35s ease',
-              }}
-            >
-              {txt}
-            </text>
-          </g>
-        )
-      })}
+                {txt}
+              </text>
+            </g>
+          )
+        })
+      })()}
 
       {/* Walker label — outside rotating group so text stays upright */}
       {(() => {
@@ -1075,7 +1088,17 @@ function CivWheel({
       })}
 
       {/* Vertex tip dots + labels (rotate together with spokes) */}
-      {displayLabels.map((labelText, i) => {
+      {(() => {
+        // Which spoke is physically at the top right now?
+        const rotRad = (displayRot * Math.PI) / 180
+        let topSpokeIdx = 0, minTopDist = Infinity
+        for (let j = 0; j < count; j++) {
+          const a = angleFor(j, count) + rotRad
+          const dist = Math.abs(Math.atan2(Math.sin(a + Math.PI / 2), Math.cos(a + Math.PI / 2)))
+          if (dist < minTopDist) { minTopDist = dist; topSpokeIdx = j }
+        }
+        return displayLabels.map((labelText, i) => {
+          const isTop = i === topSpokeIdx
         const p        = getTipPos(i, displayRot, count)
         const ns       = nodeStates?.[i]
         const isActive = !busy && i === activeIndex
@@ -1174,15 +1197,13 @@ function CivWheel({
               filter={`url(#lbl-halo-${dark ? 'dark' : 'light'}-civ)`}
               style={{
                 fontFamily: FONT_SC,
-                fontSize: isActive ? 22 : 14,
+                fontSize: isTop ? 22 : 13,
                 letterSpacing: '0.18em',
                 fill: isActive || isPlacement || isFocus
                   ? activeLabelFill
                   : baseLabelFill,
-                fontWeight: isActive || isPlacement ? 700
-                          : isFocus                 ? 650
-                          : 500,
-                opacity: isActive ? 1 : activeIndex >= 0 ? 0.65 : 1,
+                fontWeight: isTop ? 700 : isPlacement ? 650 : isFocus ? 600 : 500,
+                opacity: isTop ? 1 : 0.60,
                 pointerEvents: 'none',
                 userSelect: 'none',
                 textTransform: 'uppercase',
@@ -1193,7 +1214,8 @@ function CivWheel({
             </text>
           </g>
         )
-      })}
+        })
+      })()}
 
       {/* Placement marker — pulsing ring outside placement spoke tip,
           (only when keys provided and placementKey present). Stays
