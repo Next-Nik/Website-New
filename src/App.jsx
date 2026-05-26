@@ -91,6 +91,7 @@ import { HorizonStatePage }                        from './tools/horizon-state/H
 import { PurposePiecePage, PurposePieceDeepPage }  from './tools/purpose-piece/PurposePiece'
 import { TargetSprintPage }                        from './tools/target-sprint/TargetSprint'
 import { HorizonPracticePage }                     from './tools/horizon-practice/HorizonPractice'
+import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import PlanetMap                                    from './tools/planet/PlanetMap'
 
 const body = { fontFamily: "'Lora', Georgia, serif" }
@@ -208,6 +209,7 @@ function AppInner() {
         <Route path="/tools/orienteering"        element={<Navigate to="/tools/north-star" replace />} />
         <Route path="/tools/map"                 element={<MapPage />} />
         <Route path="/tools/horizon-state"       element={<HorizonStatePage />} />
+        <Route path="/tools/nextsteps"           element={<NextStepsPage />} />
         <Route path="/tools/purpose-piece"       element={<PurposePiecePage />} />
         <Route path="/tools/purpose-piece/deep"  element={<PurposePieceDeepPage />} />
         <Route path="/tools/target-sprint"       element={<TargetSprintPage />} />

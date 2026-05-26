@@ -509,14 +509,16 @@ function SelfWheel({
               filter={`url(#lbl-halo-${dark ? 'dark' : 'light'})`}
               style={{
                 fontFamily: FONT_SC,
-                fontSize: 17,
+                fontSize: isActive ? 22 : 14,
                 letterSpacing: '0.18em',
                 fill: isActive ? activeFill : baseFill,
-                fontWeight: isActive ? 700 : 600,
+                fontWeight: isActive ? 700 : 500,
+                opacity: isActive ? 1 : activeKey ? 0.65 : 1,
                 cursor: onSelect ? 'pointer' : undefined,
                 userSelect: 'none',
                 textTransform: 'uppercase',
                 pointerEvents: onSelect ? 'auto' : 'none',
+                transition: 'font-size 0.35s ease, opacity 0.35s ease',
               }}
             >
               {txt}
@@ -1172,17 +1174,19 @@ function CivWheel({
               filter={`url(#lbl-halo-${dark ? 'dark' : 'light'}-civ)`}
               style={{
                 fontFamily: FONT_SC,
-                fontSize: 17,
+                fontSize: isActive ? 22 : 14,
                 letterSpacing: '0.18em',
                 fill: isActive || isPlacement || isFocus
                   ? activeLabelFill
                   : baseLabelFill,
                 fontWeight: isActive || isPlacement ? 700
                           : isFocus                 ? 650
-                          : 600,
+                          : 500,
+                opacity: isActive ? 1 : activeIndex >= 0 ? 0.65 : 1,
                 pointerEvents: 'none',
                 userSelect: 'none',
                 textTransform: 'uppercase',
+                transition: 'font-size 0.35s ease, opacity 0.35s ease',
               }}
             >
               {labelText}

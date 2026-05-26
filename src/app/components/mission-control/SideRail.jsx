@@ -26,7 +26,7 @@ export default function SideRail({ side, children }) {
 const SIDE_RAIL_CSS = `
 .mc-side-rail {
   position: relative;
-  z-index: 5;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   gap: 6px;
