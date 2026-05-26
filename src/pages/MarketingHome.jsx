@@ -158,11 +158,25 @@ export function MarketingHomePage() {
             color: ink,
             lineHeight: 1.08,
             letterSpacing: '-0.01em',
-            marginBottom: '0',
+            marginBottom: 'clamp(20px,2.4vw,28px)',
           }}
         >
           Where will you build<br />your impact?
         </h1>
+        <p
+          className="mh-hero-subtitle"
+          style={{
+            ...body,
+            fontSize: 'clamp(15px,1.4vw,17px)',
+            fontWeight: 300,
+            lineHeight: 1.6,
+            color: inkFaint,
+            maxWidth: '620px',
+            margin: '0 auto',
+          }}
+        >
+          NextUs helps you locate where you are, see where you want to be, and connect you with the people and resources that can get you there.
+        </p>
       </section>
 
       {/* ── Two cards ────────────────────────────── */}
