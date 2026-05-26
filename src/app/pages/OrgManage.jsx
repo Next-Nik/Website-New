@@ -26,6 +26,8 @@ import { PrincipleStrip } from '../components/PrincipleStrip'
 import { VoiceTab } from '../components/manage/VoiceTab'
 import { CoordinationTab } from '../components/manage/CoordinationTab'
 import { LinksTab } from '../components/manage/LinksTab'
+import { CredentialsTab } from '../components/manage/CredentialsTab'
+import { TestimonialsTab } from '../components/manage/TestimonialsTab'
 import { EventsTab } from '../components/EventsTab'
 
 // ── Chip multi-select ────────────────────────────────────────
@@ -51,17 +53,58 @@ function DomainChips({ selected, onChange }) {
 
 // ── Tab: Profile ─────────────────────────────────────────────
 
+const ACTOR_MODE_OPTIONS = [
+  { value: '',           label: 'Not set' },
+  { value: 'practice',   label: 'Practice (transformation/development at scale)' },
+  { value: 'enterprise', label: 'Enterprise (commercial/non-profit production)' },
+  { value: 'platform',   label: 'Platform (infrastructure/coordination)' },
+  { value: 'collective', label: 'Collective (non-hierarchical network)' },
+  { value: 'mixed',      label: 'Mixed (operates in multiple modes)' },
+]
+
+const ACCEPTING_STATUS_OPTIONS = [
+  { value: '',         label: 'Not set' },
+  { value: 'yes',      label: 'Accepting clients' },
+  { value: 'waitlist', label: 'Waitlist' },
+  { value: 'not_now',  label: 'Not accepting right now' },
+]
+
+const MEDIUM_OPTIONS = [
+  { value: '',          label: 'Not set' },
+  { value: 'digital',   label: 'Digital' },
+  { value: 'in_person', label: 'In-person' },
+  { value: 'either',    label: 'Either' },
+]
+
+const MEMBERSHIP_STATUS_OPTIONS = [
+  { value: '',                     label: 'Not applicable' },
+  { value: 'open',                 label: 'Open membership' },
+  { value: 'application_required', label: 'By application' },
+  { value: 'invite_only',          label: 'Invite only' },
+  { value: 'closed',               label: 'Closed for now' },
+]
+
 function ProfileTab({ actor, onSave, toast }) {
   const [form, setForm] = useState({
-    name:           actor.name || '',
-    description:    actor.description || '',
-    impact_summary: actor.impact_summary || '',
-    reach:          actor.reach || '',
-    website:        actor.website || '',
-    scale:          actor.scale || 'national',
-    location_name:  actor.location_name || '',
-    lat:            actor.lat ?? '',
-    lng:            actor.lng ?? '',
+    name:                    actor.name || '',
+    description:             actor.description || '',
+    impact_summary:          actor.impact_summary || '',
+    reach:                   actor.reach || '',
+    website:                 actor.website || '',
+    scale:                   actor.scale || 'national',
+    location_name:           actor.location_name || '',
+    lat:                     actor.lat ?? '',
+    lng:                     actor.lng ?? '',
+    // New: actor mode + practitioner signals + membership + bridge
+    actor_mode:              actor.actor_mode || '',
+    accepting_status:        actor.accepting_status || '',
+    medium:                  actor.medium || '',
+    membership_status:       actor.membership_status || '',
+    show_developmental_link: !!actor.show_developmental_link,
+    // people_in_the_work — owner-private. Treated as string in the input so
+    // empty string maps to NULL on save; integer parse on submit.
+    people_in_the_work:      actor.people_in_the_work != null
+      ? String(actor.people_in_the_work) : '',
   })
   const [focus, setFocus] = useState(
     actor.focus_id ? { id: actor.focus_id, name: actor.focus?.name || '', type: actor.focus?.type || '' } : null
@@ -73,19 +116,50 @@ function ProfileTab({ actor, onSave, toast }) {
   async function save() {
     if (!form.name.trim()) { toast('Name is required'); return }
     setSaving(true)
-    const { error } = await supabase.from('nextus_actors').update({
-      name:           form.name.trim(),
-      description:    form.description.trim() || null,
-      impact_summary: form.impact_summary.trim() || null,
-      reach:          form.reach.trim() || null,
-      website:        form.website.trim() || null,
-      scale:          form.scale || null,
-      location_name:  form.location_name.trim() || null,
-      lat:            form.lat !== '' ? parseFloat(form.lat) : null,
-      lng:            form.lng !== '' ? parseFloat(form.lng) : null,
-      focus_id:       focus?.id || null,
-      updated_at:     new Date().toISOString(),
-    }).eq('id', actor.id)
+
+    // Parse people_in_the_work — empty string → NULL, otherwise non-negative int
+    let peopleInTheWork = null
+    let peopleInTheWorkUpdatedAt = null
+    if (form.people_in_the_work !== '' && form.people_in_the_work != null) {
+      const n = Number(form.people_in_the_work)
+      if (Number.isFinite(n) && n >= 0 && Number.isInteger(n)) {
+        peopleInTheWork = n
+        // Only bump updated_at when the value actually changed
+        if (n !== actor.people_in_the_work) {
+          peopleInTheWorkUpdatedAt = new Date().toISOString()
+        } else {
+          peopleInTheWorkUpdatedAt = actor.people_in_the_work_updated_at
+        }
+      } else {
+        setSaving(false)
+        toast('People in the work must be a non-negative whole number')
+        return
+      }
+    }
+
+    const updatePayload = {
+      name:                    form.name.trim(),
+      description:             form.description.trim() || null,
+      impact_summary:          form.impact_summary.trim() || null,
+      reach:                   form.reach.trim() || null,
+      website:                 form.website.trim() || null,
+      scale:                   form.scale || null,
+      location_name:           form.location_name.trim() || null,
+      lat:                     form.lat !== '' ? parseFloat(form.lat) : null,
+      lng:                     form.lng !== '' ? parseFloat(form.lng) : null,
+      focus_id:                focus?.id || null,
+      actor_mode:              form.actor_mode || null,
+      accepting_status:        form.accepting_status || null,
+      medium:                  form.medium || null,
+      membership_status:       form.membership_status || null,
+      show_developmental_link: !!form.show_developmental_link,
+      people_in_the_work:      peopleInTheWork,
+      people_in_the_work_updated_at: peopleInTheWorkUpdatedAt,
+      updated_at:              new Date().toISOString(),
+    }
+
+    const { error } = await supabase.from('nextus_actors')
+      .update(updatePayload).eq('id', actor.id)
     setSaving(false)
     if (error) { toast('Error saving: ' + error.message); return }
     toast('Profile saved')
@@ -154,6 +228,112 @@ function ProfileTab({ actor, onSave, toast }) {
         <div style={{ marginBottom: '24px' }}>
           <Label>Reach</Label>
           <TextInput value={form.reach} onChange={v => set('reach', v)} placeholder="e.g. 40 countries, 12,000 farmers" />
+        </div>
+
+        {/* ── How you operate ── */}
+        <div style={{ marginTop: '36px', marginBottom: '24px',
+          paddingTop: '24px', borderTop: '1px solid rgba(200,146,42,0.18)' }}>
+          <h3 style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
+            color: gold, textTransform: 'uppercase', marginBottom: '6px',
+            fontWeight: 500 }}>
+            How you operate
+          </h3>
+          <p style={{ ...body, fontSize: '13px',
+            color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '20px' }}>
+            These signals shape how your profile renders and how the platform
+            routes people to you. Set what applies; leave the rest.
+          </p>
+        </div>
+
+        <div style={{ marginBottom: '20px' }}>
+          <Label>Mode</Label>
+          <SelectInput value={form.actor_mode} onChange={v => set('actor_mode', v)}
+            options={ACTOR_MODE_OPTIONS} />
+          <Hint>How you operate, independent of what type of actor you are. Practice = transformation work; enterprise = commercial/non-profit production; platform = infrastructure for others; collective = non-hierarchical network; mixed = more than one.</Hint>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr',
+          gap: '16px', marginBottom: '20px' }}>
+          <div>
+            <Label>Accepting status</Label>
+            <SelectInput value={form.accepting_status}
+              onChange={v => set('accepting_status', v)}
+              options={ACCEPTING_STATUS_OPTIONS} />
+            <Hint>For practitioners and practice-mode orgs.</Hint>
+          </div>
+          <div>
+            <Label>Medium</Label>
+            <SelectInput value={form.medium} onChange={v => set('medium', v)}
+              options={MEDIUM_OPTIONS} />
+            <Hint>How the work is delivered.</Hint>
+          </div>
+        </div>
+
+        <div style={{ marginBottom: '20px' }}>
+          <Label>Membership status</Label>
+          <SelectInput value={form.membership_status}
+            onChange={v => set('membership_status', v)}
+            options={MEMBERSHIP_STATUS_OPTIONS} />
+          <Hint>For groups, places, and any actor with joinable membership.</Hint>
+        </div>
+
+        {/* ── Bridge to developmental profile ── */}
+        {actor.profile_owner && (
+          <div style={{ marginBottom: '24px',
+            background: 'rgba(168,114,26,0.04)',
+            border: '1px dashed rgba(200,146,42,0.25)',
+            borderRadius: '10px', padding: '18px 20px' }}>
+            <label style={{ display: 'flex', alignItems: 'flex-start',
+              gap: '12px', cursor: 'pointer' }}>
+              <input type='checkbox' checked={form.show_developmental_link}
+                onChange={e => set('show_developmental_link', e.target.checked)}
+                style={{ marginTop: '4px', width: '16px', height: '16px',
+                  accentColor: gold }} />
+              <div>
+                <div style={{ ...body, fontSize: '15px', color: dark,
+                  fontWeight: 400, marginBottom: '4px' }}>
+                  Show a link to my developmental profile
+                </div>
+                <div style={{ ...body, fontSize: '13px',
+                  color: 'rgba(15,21,35,0.60)', lineHeight: 1.6 }}>
+                  Renders a quiet "Walking the talk" link at the foot of your
+                  practitioner profile. The developmental profile is private by
+                  default; the link only works for viewers whom your
+                  developmental visibility setting permits.
+                </div>
+              </div>
+            </label>
+          </div>
+        )}
+
+        {/* ── People in the work — owner-private ── */}
+        <div style={{ marginBottom: '24px',
+          background: 'rgba(42,107,58,0.04)',
+          border: '1px solid rgba(42,107,58,0.18)',
+          borderRadius: '10px', padding: '18px 20px' }}>
+          <Label>People currently in your work</Label>
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center',
+            marginTop: '8px' }}>
+            <div style={{ width: '120px' }}>
+              <TextInput value={form.people_in_the_work}
+                onChange={v => set('people_in_the_work', v)}
+                placeholder='e.g. 6' type='number' />
+            </div>
+            {actor.people_in_the_work_updated_at && (
+              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                color: 'rgba(15,21,35,0.45)', textTransform: 'uppercase' }}>
+                Last updated {new Date(actor.people_in_the_work_updated_at).toLocaleDateString()}
+              </span>
+            )}
+          </div>
+          <p style={{ ...body, fontSize: '13px',
+            color: 'rgba(15,21,35,0.60)', lineHeight: 1.65, marginTop: '12px',
+            marginBottom: 0 }}>
+            This stays private. No one but you sees this number on your profile.
+            It contributes to the visible effort signal for your domain — the
+            sum of aligned work being applied across all actors. Update it
+            whenever the number changes. One is a real number.
+          </p>
         </div>
 
         <div style={{ display: 'flex', gap: '12px' }}>
@@ -591,6 +771,8 @@ function MatchesTab({ actorId, toast }) {
 const TABS = [
   { key: 'profile',       label: 'Profile' },
   { key: 'voice',         label: 'Voice' },
+  { key: 'credentials',   label: 'Credentials' },
+  { key: 'testimonials',  label: 'Testimonials' },
   { key: 'coordination',  label: 'Offers & Needs' },
   { key: 'links',         label: 'Links & Press' },
   { key: 'domains',       label: 'Domains' },
@@ -713,6 +895,8 @@ export function OrgManagePage() {
 
         {activeTab === 'profile'       && <ProfileTab       actor={actor} onSave={reloadActor} toast={showToast} />}
         {activeTab === 'voice'         && <VoiceTab         actor={actor} onSave={reloadActor} toast={showToast} />}
+        {activeTab === 'credentials'   && <CredentialsTab   actorId={id} toast={showToast} />}
+        {activeTab === 'testimonials'  && <TestimonialsTab  actorId={id} toast={showToast} />}
         {activeTab === 'coordination'  && <CoordinationTab  actorId={id} toast={showToast} />}
         {activeTab === 'links'         && <LinksTab         actorId={id} toast={showToast} />}
         {activeTab === 'offerings'     && <OfferingsTab     actorId={id} toast={showToast} />}

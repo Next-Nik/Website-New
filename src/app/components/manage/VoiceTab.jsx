@@ -18,6 +18,7 @@ export function VoiceTab({ actor, onSave, toast }) {
     image_url:         actor.image_url         || '',
     mission_statement: actor.mission_statement || '',
     working_on_now:    actor.working_on_now    || '',
+    story:             actor.story             || '',
   })
   const [saving, setSaving] = useState(false)
 
@@ -30,6 +31,7 @@ export function VoiceTab({ actor, onSave, toast }) {
       image_url:         form.image_url.trim()         || null,
       mission_statement: form.mission_statement.trim() || null,
       working_on_now:    form.working_on_now.trim()    || null,
+      story:             form.story.trim()             || null,
     }
     const { error } = await supabase.from('nextus_actors')
       .update(payload).eq('id', actor.id)
@@ -84,6 +86,14 @@ export function VoiceTab({ actor, onSave, toast }) {
         <TextArea value={form.mission_statement}
           onChange={v => set('mission_statement', v)}
           placeholder="We're working toward a world where..." rows={4} />
+      </div>
+
+      {/* Story — long-form narrative */}
+      <div>
+        <Label>Your story</Label>
+        <Hint>The longer narrative. How you came to this work, what turning points shaped it, what you're responding to. First or third person — your voice. 200–800 words is the natural range. Empty paragraphs separate sections.</Hint>
+        <TextArea value={form.story} onChange={v => set('story', v)}
+          placeholder="The longer version of your story..." rows={10} />
       </div>
 
       {/* Working on now */}

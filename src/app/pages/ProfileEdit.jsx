@@ -288,6 +288,18 @@ export default function ProfileEdit() {
     <PageShell>
       <PageHeader onViewPublic={openPublicProfile} />
 
+      {/* Developmental profile visibility — profile-level master switch */}
+      <Section
+        eyebrow="Visibility"
+        title="Who can see your developmental profile"
+        anchorId="visibility"
+      >
+        <DevelopmentalVisibility
+          value={profile?.developmental_profile_visibility || 'private'}
+          onSave={(next) => saveProfileField('developmental_profile_visibility', next)}
+        />
+      </Section>
+
       {/* Identity and orientation */}
       <Section eyebrow="Identity" title="Display" anchorId="identity">
         <Row>
@@ -556,6 +568,129 @@ function PageHeader({ onViewPublic }) {
         View public profile
       </button>
     </header>
+  )
+}
+
+function DevelopmentalVisibility({ value, onSave }) {
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState(null)
+
+  const options = [
+    {
+      value: 'private',
+      label: 'Private — only you',
+      desc: 'Your developmental profile is invisible to everyone but you. This is the default.',
+    },
+    {
+      value: 'authenticated',
+      label: 'Signed-in NextUs users',
+      desc: 'Anyone with a NextUs account can view your developmental profile. Anonymous visitors cannot.',
+    },
+    {
+      value: 'public',
+      label: 'Public — anyone with the link',
+      desc: 'Anyone with the URL can view your developmental profile. Search engines may index it.',
+    },
+  ]
+
+  async function pick(next) {
+    if (next === value) return
+    setSaving(true)
+    setError(null)
+    try {
+      await onSave(next)
+    } catch (err) {
+      setError(err.message || 'Save failed')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <p
+        style={{
+          ...body,
+          fontSize: '14px',
+          color: 'rgba(15, 21, 35, 0.65)',
+          lineHeight: 1.65,
+          margin: 0,
+          marginBottom: '8px',
+        }}
+      >
+        Your developmental profile shows your wheels, sprints, IA statements,
+        and what you stand for. It is intimate work and is private by default.
+        Your practitioner or actor profile is a separate, public-facing
+        surface — this setting does not affect it.
+      </p>
+
+      {options.map((opt) => {
+        const selected = value === opt.value
+        return (
+          <label
+            key={opt.value}
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '12px',
+              padding: '14px 16px',
+              borderRadius: '10px',
+              border: selected
+                ? '1.5px solid rgba(200, 146, 42, 0.65)'
+                : '1px solid rgba(200, 146, 42, 0.20)',
+              background: selected ? 'rgba(200, 146, 42, 0.05)' : 'transparent',
+              cursor: 'pointer',
+            }}
+          >
+            <input
+              type="radio"
+              name="developmental_profile_visibility"
+              value={opt.value}
+              checked={selected}
+              disabled={saving}
+              onChange={() => pick(opt.value)}
+              style={{ marginTop: '4px', accentColor: '#A8721A' }}
+            />
+            <div>
+              <div
+                style={{
+                  ...body,
+                  fontSize: '15px',
+                  color: '#0F1523',
+                  fontWeight: 400,
+                  marginBottom: '4px',
+                }}
+              >
+                {opt.label}
+              </div>
+              <div
+                style={{
+                  ...body,
+                  fontSize: '13px',
+                  color: 'rgba(15, 21, 35, 0.60)',
+                  lineHeight: 1.6,
+                }}
+              >
+                {opt.desc}
+              </div>
+            </div>
+          </label>
+        )
+      })}
+
+      {error && (
+        <p
+          style={{
+            ...body,
+            fontSize: '13px',
+            color: '#8A3030',
+            margin: 0,
+          }}
+        >
+          {error}
+        </p>
+      )}
+    </div>
   )
 }
 

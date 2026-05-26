@@ -677,6 +677,17 @@ function ActorsTab({ toast }) {
     fetchActors()
   }
 
+  async function toggleFounderBadge(actor) {
+    const next = !actor.is_platform_founder
+    const verb = next ? 'GRANT' : 'REVOKE'
+    if (!window.confirm(`${verb} the "Founder of NextUs" badge for ${actor.name}?`)) return
+    await supabase.from('nextus_actors')
+      .update({ is_platform_founder: next })
+      .eq('id', actor.id)
+    toast(next ? 'Founder badge granted' : 'Founder badge revoked')
+    fetchActors()
+  }
+
   async function resolveClaim(claimId, actorId, approved, resolverNote = '') {
     if (approved) {
       await supabase.from('nextus_actors').update({ claimed: true, verified: true, status: 'live' }).eq('id', actorId)
@@ -744,6 +755,7 @@ function ActorsTab({ toast }) {
                     <span style={{ ...body, fontSize: '17px', color: '#0F1523', fontWeight: 400 }}>{a.name}</span>
                     <Badge label={a.type || 'org'} />
                     {a.winning && <Badge label="winning" color="#2A6B3A" />}
+                    {a.is_platform_founder && <Badge label="founder" color="#A8721A" />}
                     {a.horizon_floor_status === 'flagged_for_review' && (
                       <Badge label="floor review" color="#8A3030" />
                     )}
@@ -768,6 +780,9 @@ function ActorsTab({ toast }) {
                   <Btn small onClick={() => startEdit(a)}>Edit</Btn>
                   <Btn small variant="ghost" onClick={() => toggleWinning(a)}>
                     {a.winning ? 'Un-win' : 'Win'}
+                  </Btn>
+                  <Btn small variant="ghost" onClick={() => toggleFounderBadge(a)}>
+                    {a.is_platform_founder ? 'Unfounder' : 'Founder'}
                   </Btn>
                   <Btn small variant="danger" onClick={() => deleteActor(a.id, a.name)}>Delete</Btn>
                 </div>
