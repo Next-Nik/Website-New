@@ -77,8 +77,11 @@ export function EventsSection({ actor, isOwner = false }) {
     return () => { cancelled = true }
   }, [actor?.id])
 
-  // Hide section entirely when there's nothing AND user isn't the owner.
-  if (!loading && upcoming.length === 0 && past.length === 0 && !isOwner) {
+  // Hide section entirely when there's nothing — including for the owner.
+  // Owners can add events via /org/:slug/manage?tab=events instead. Not every
+  // actor runs events, and an empty Events section on a page that never has
+  // events would always be empty.
+  if (!loading && upcoming.length === 0 && past.length === 0) {
     return null
   }
 
