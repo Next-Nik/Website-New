@@ -70,7 +70,6 @@ import MessagesIcon        from '../components/mission-control/MessagesIcon'
 import MessagesMissionPanel from '../components/mission-control/MessagesMissionPanel'
 import InterestsIcon       from '../components/mission-control/InterestsIcon'
 import MyInterestsPanel    from '../components/mission-control/MyInterestsPanel'
-import TargetSprintGlyph   from '../components/mission-control/TargetSprintGlyph'
 
 import useMissionControlData from '../components/mission-control/useMissionControlData'
 import { BG_PARCHMENT, BG_INK } from '../components/mission-control/tokens'
@@ -885,17 +884,6 @@ export default function MissionControl() {
     ? `${data.foundationData.streak_days}D STREAK`
     : null
 
-  const tsState = (() => {
-    if (!Array.isArray(data.sprintData) || data.sprintData.length === 0) return null
-    const sprint = data.sprintData[0]
-    if (!sprint?.created_at) return 'ACTIVE'
-    const start = new Date(sprint.created_at)
-    const now = new Date()
-    const days = Math.floor((now - start) / (1000 * 60 * 60 * 24))
-    const week = Math.max(1, Math.min(13, Math.floor(days / 7) + 1))
-    return `WEEK ${week} / 13`
-  })()
-
   const hpState = data.practiceData?.check_date ? 'RECENT' : null
 
   const mapAudited = countPlaced(selfCurrent)
@@ -963,13 +951,6 @@ export default function MissionControl() {
               state={hsState}
               onClick={() => openPersonalPanel('horizon-state')}
               title="Horizon State — daily check-in"
-            />
-            <Tile
-              glyph={<TargetSprintGlyph />}
-              label={<>TARGET<br/>SPRINT</>}
-              state={tsState}
-              onClick={() => openPersonalPanel('target-sprint')}
-              title="Target Sprint — 90-day commitment"
             />
             <Tile
               glyph="✦"

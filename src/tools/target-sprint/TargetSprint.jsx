@@ -1546,30 +1546,29 @@ function TasksStep({ dd, domainId, targetDate, generating, update, generateTasks
 // ─── Phase: Select ────────────────────────────────────────────────────────────
 
 function PhaseSelect({ hasMapData, scores, horizonScores, iaStatements = {}, selectedDomains, setSelectedDomains, recommendation, onContinue }) {
-  // Score-based fallback: mark the single lowest-scoring domain when
-  // recommendation hasn't resolved. A Stretch is one personal domain.
+  // Score-based fallback: mark 3 lowest-scoring domains when recommendation hasn't resolved
   const scoreFallbackRec = hasMapData && !recommendation?.recommended && Object.keys(scores).length > 0
     ? DOMAINS
         .filter(d => scores[d.id] !== undefined)
         .sort((a, b) => scores[a.id] - scores[b.id])
-        .slice(0, 1)
+        .slice(0, 3)
         .map(d => d.id)
     : null
 
   return (
     <div>
-      <Eyebrow>Stretch</Eyebrow>
+      <Eyebrow>Target Sprint</Eyebrow>
       <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '8px 0 12px', maxWidth: '520px' }}>
-        One domain. Bounded commitment. Real movement.
+        Three key areas, 90 days, level up.
       </p>
       <h1 style={{ ...sc, fontSize: 'clamp(1.75rem,4vw,2.5rem)', fontWeight: 400, color: '#0F1523', lineHeight: 1.1, marginBottom: '10px' }}>
-        Pick the domain you’re working.
+        Three areas. Three months.
       </h1>
       <Rule />
       <p style={{ ...body, fontSize: '1.25rem', ...muted, lineHeight: 1.75, marginBottom: '20px' }}>
         {hasMapData
-          ? 'Your Map scores are loaded. The ☆ marks where the most leverage is right now. You have the final say.'
-          : 'Choose the one area where focused effort over the next ninety days would matter most. Trust your instinct.'}
+          ? 'Your Map scores are loaded. The ☆ shows where the most leverage is right now. You have the final say.'
+          : 'Choose the three areas where focused effort this quarter would matter most. Trust your instinct.'}
       </p>
 
       {recommendation?.soft_observation && (
@@ -1584,13 +1583,13 @@ function PhaseSelect({ hasMapData, scores, horizonScores, iaStatements = {}, sel
           const isRec = recommendation?.recommended?.includes(d.id) || scoreFallbackRec?.includes(d.id)
           const rat   = recommendation?.rationale?.[d.id]
           const s     = scores[d.id]
+          const dis   = !sel && selectedDomains.length >= 3
           const col   = s !== undefined ? getColor(s) : null
-          // Single-pick: clicking another domain replaces the selection.
           return (
             <div key={d.id}
-              onClick={() => setSelectedDomains(sel ? [] : [d.id])}
-              style={{ padding: '14px', border: `1.5px solid ${sel ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.2)'}`, borderRadius: '10px', background: sel ? 'rgba(200,146,42,0.08)' : '#FFFFFF', cursor: 'pointer', transition: 'all 0.2s' }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,21,35,0.06)' }}
+              onClick={() => { if (dis) return; setSelectedDomains(p => p.includes(d.id) ? p.filter(x => x !== d.id) : [...p, d.id]) }}
+              style={{ padding: '14px', border: `1.5px solid ${sel ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.2)'}`, borderRadius: '10px', background: sel ? 'rgba(200,146,42,0.08)' : '#FFFFFF', cursor: dis ? 'not-allowed' : 'pointer', opacity: dis ? 0.45 : 1, transition: 'all 0.2s' }}
+              onMouseEnter={e => { if (!dis) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(15,21,35,0.06)' } }}
               onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '' }}>
               <div style={{ ...sc, fontSize: '1.25rem', letterSpacing: '0.08em', color: sel ? '#A8721A' : '#0F1523', marginBottom: '4px' }}>
                 {d.label}{isRec ? ' ☆' : ''}
@@ -1620,7 +1619,7 @@ function PhaseSelect({ hasMapData, scores, horizonScores, iaStatements = {}, sel
           )
         })}
       </div>
-      <Btn onClick={onContinue} disabled={selectedDomains.length !== 1}>Set my Stretch →</Btn>
+      <Btn onClick={onContinue} disabled={selectedDomains.length !== 3}>Set my sprint →</Btn>
     </div>
   )
 }
@@ -1676,7 +1675,7 @@ function PhaseQuarter({ quarterType, setQuarterType, setTargetDate, setEndDateLa
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 
-export function TargetSprintPage({ embedded = false } = {}) {
+export function TargetSprintPage() {
   const { user, loading: authLoading } = useAuth()
   const { tier, loading: accessLoading } = useAccess('target-sprint')
 
@@ -1981,7 +1980,7 @@ export function TargetSprintPage({ embedded = false } = {}) {
   if (authLoading || accessLoading) return <div className="loading" />
 
   return (
-    <div className={embedded ? 'page-shell-embedded' : 'page-shell'}>
+    <div className="page-shell">
       <style>{`
         @media (max-width: 640px) {
           .tool-wrap { padding-left: 24px !important; padding-right: 24px !important; }
@@ -1993,7 +1992,7 @@ export function TargetSprintPage({ embedded = false } = {}) {
         @keyframes tgFadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
         .tg-fade-up { animation: tgFadeUp 0.4s cubic-bezier(0.16,1,0.3,1) both; }
       `}</style>
-      {!embedded && <Nav activePath="nextus-self" />}
+      <Nav activePath="nextus-self" />
       {!user && <AuthModal />}
 
       {/* Debrief screen — fires after sprint is marked complete, before done screen */}
