@@ -1291,7 +1291,13 @@ function BridgeLink({ actor }) {
 // ── Main page ────────────────────────────────────────────────
 
 export function OrgPublicPage() {
-  const { id } = useParams()
+  // Route is /org/:slug (App.jsx line 230). Accept both `slug` (canonical) and
+  // `id` (legacy / fallback for any route still using ':id') so the RPC always
+  // gets a non-empty identifier. Without this, direct URL visits to /org/<slug>
+  // produced an undefined identifier → empty RPC result → NotFound.
+  const params = useParams()
+  const idOrSlug = params.slug || params.id
+
   const { user } = useAuth()
 
   const [actor, setActor]         = useState(null)
@@ -1315,7 +1321,7 @@ export function OrgPublicPage() {
       // populated; everyone else sees null. The function accepts either
       // a UUID or a slug.
       const { data: actorRows } = await supabase
-        .rpc('get_actor_public', { p_actor_id_or_slug: id })
+        .rpc('get_actor_public', { p_actor_id_or_slug: idOrSlug })
 
       const actor = Array.isArray(actorRows) ? actorRows[0] : actorRows
 
@@ -1364,7 +1370,7 @@ export function OrgPublicPage() {
       setLoading(false)
     }
     load()
-  }, [id])
+  }, [idOrSlug])
 
   if (loading) {
     return (
