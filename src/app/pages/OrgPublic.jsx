@@ -159,13 +159,24 @@ function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
       <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start',
         flexWrap: 'wrap' }}>
 
-        {/* Image */}
+        {/* Image — double gold border, matched to the Work With Nik treatment.
+            Tight gold inner border + softer gold outline floating 5px out.
+            Signals "NextUs profile" at a glance. Works for portraits and logos
+            alike. */}
         {actor.image_url && (
-          <div style={{ flexShrink: 0 }}>
-            <img src={actor.image_url} alt={actor.name}
-              style={{ width: '120px', height: '120px', objectFit: 'cover',
-                borderRadius: '12px',
-                border: '1px solid rgba(200,146,42,0.20)' }} />
+          <div style={{ flexShrink: 0, padding: '6px' }}>
+            <div style={{
+              width: '128px', height: '128px',
+              borderRadius: '4px', overflow: 'hidden',
+              border: '1.5px solid rgba(200,146,42,0.70)',
+              outline: '1px solid rgba(200,146,42,0.35)',
+              outlineOffset: '5px',
+              background: 'rgba(200,146,42,0.05)',
+            }}>
+              <img src={actor.image_url} alt={actor.name}
+                style={{ width: '100%', height: '100%', objectFit: 'cover',
+                  objectPosition: 'center top', display: 'block' }} />
+            </div>
           </div>
         )}
 
