@@ -319,6 +319,14 @@ function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
 function ClaimBanner({ actor, user }) {
   if (actor.profile_owner) return null  // already claimed
 
+  // Provenance — two honest states for an unclaimed live entry:
+  //   - nominated by someone, then approved/seeded by NextUs
+  //   - seeded directly by NextUs (no nominator on record)
+  const wasNominated = Boolean(actor.nominator_name || actor.nominator_email)
+  const provenance   = wasNominated
+    ? 'Nominated by the community · Seeded by NextUs'
+    : 'Seeded by NextUs'
+
   return (
     <div style={{ background: 'rgba(200,146,42,0.06)',
       border: '1.5px solid rgba(200,146,42,0.35)',
@@ -331,10 +339,14 @@ function ClaimBanner({ actor, user }) {
             HELD IN TRUST
           </div>
           <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)',
-            lineHeight: 1.6, margin: 0 }}>
-            This profile was added by the community. NextUs holds it in trust until claimed.
+            lineHeight: 1.6, margin: '0 0 8px' }}>
+            NextUs holds this profile in trust until claimed.
             {actor.name === 'NextUs' ? '' : ` Is this you? Claim ${actor.name} to add your voice.`}
           </p>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
+            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
+            {provenance}
+          </div>
         </div>
         {user ? (
           <Link to={`/org/${actor.slug || actor.id}/claim`}

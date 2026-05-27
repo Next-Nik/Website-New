@@ -634,28 +634,6 @@ export function AddPage() {
           Add them. They go live immediately.
         </p>
 
-        {/* Adding an Event? — pointer to the right flow */}
-        <div style={{
-          background: 'rgba(168,114,26,0.06)',
-          border: '1px solid rgba(200,146,42,0.25)',
-          borderRadius: '10px',
-          padding: '14px 18px',
-          marginBottom: '32px',
-          display: 'flex', alignItems: 'flex-start', gap: '12px',
-        }}>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
-            color: gold, textTransform: 'uppercase', whiteSpace: 'nowrap',
-            paddingTop: '2px',
-          }}>
-            Adding an Event?
-          </div>
-          <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55 }}>
-            Events are added from the actor who produces them. If the actor is
-            already on the Atlas, open their page and use the Events tab. If
-            not, add the actor first here, then add the Event from their page.
-          </div>
-        </div>
-
         {/* ── Optional URL autofill ─────────────────────────── */}
         <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.22)',
           borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
