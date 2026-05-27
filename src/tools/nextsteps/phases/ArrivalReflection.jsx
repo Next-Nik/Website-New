@@ -158,9 +158,9 @@ export function ArrivalReflection({ user, onReflectionLanded }) {
 
   return (
     <div className="ns-chat">
-      <div className="ns-msgs">
+      <div className="ns-msgs" ref={msgsRef => msgsRef && (msgsRef._ref = bottomRef)}>
         {messages.map((m, i) => (
-          <Bubble key={i} role={m.role} content={m.content} />
+          <Bubble key={i} role={m.role} content={m.content} isFirst={i === 0} />
         ))}
         {thinking && <TypingDots />}
         <div ref={bottomRef} />
@@ -191,42 +191,71 @@ export function ArrivalReflection({ user, onReflectionLanded }) {
 
       <style>{`
         .ns-chat {
-          margin-top: 32px;
-        }
-        .ns-msgs {
           display: flex;
           flex-direction: column;
-          gap: 18px;
-          margin-bottom: 28px;
-          min-height: 200px;
+          height: calc(100dvh - 56px);
+          padding: 0;
+          position: relative;
+        }
+        .ns-msgs {
+          flex: 1;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          padding: 48px 24px 24px;
+          max-width: 680px;
+          width: 100%;
+          margin: 0 auto;
+          box-sizing: border-box;
+        }
+        /* First bubble (opener) — larger, more presence */
+        .ns-bubble.assistant.ns-opener {
+          background: transparent;
+          border: none;
+          padding: 0 0 16px;
+          font-family: 'Cormorant Garamond', Georgia, serif;
+          font-size: clamp(1.35rem, 2.2vw, 1.65rem);
+          font-weight: 400;
+          line-height: 1.55;
+          color: rgba(15,21,35,0.88);
+          max-width: 100%;
+          border-bottom: 1px solid rgba(168,114,26,0.18);
         }
         .ns-bubble {
-          padding: 14px 18px;
-          border-radius: 14px;
+          padding: 14px 20px;
+          border-radius: 3px;
           font-family: 'Lora', Georgia, serif;
-          font-size: 1.02rem;
-          line-height: 1.6;
-          max-width: 88%;
+          font-size: 1rem;
+          line-height: 1.65;
+          max-width: 86%;
           color: #0F1523;
         }
         .ns-bubble.assistant {
           background: #FFFFFF;
-          border: 1px solid rgba(168,114,26,0.18);
+          border: 1px solid rgba(168,114,26,0.16);
           align-self: flex-start;
+          box-shadow: 0 2px 8px rgba(15,21,35,0.06);
         }
         .ns-bubble.user {
-          background: rgba(168,114,26,0.10);
-          border: 1px solid rgba(168,114,26,0.22);
+          background: rgba(168,114,26,0.08);
+          border: 1px solid rgba(168,114,26,0.20);
           align-self: flex-end;
         }
+        /* Input row — sticky at bottom */
         .ns-input-row {
+          flex-shrink: 0;
           display: flex;
           gap: 10px;
           align-items: flex-end;
           background: #FFFFFF;
-          border: 1px solid rgba(168,114,26,0.30);
-          border-radius: 14px;
-          padding: 10px 12px;
+          border-top: 1px solid rgba(168,114,26,0.18);
+          border-radius: 0;
+          padding: 14px 24px;
+          max-width: 680px;
+          width: 100%;
+          margin: 0 auto;
+          box-sizing: border-box;
         }
         .ns-input {
           flex: 1;
@@ -238,54 +267,67 @@ export function ArrivalReflection({ user, onReflectionLanded }) {
           line-height: 1.55;
           color: #0F1523;
           background: transparent;
-          padding: 6px 4px;
+          padding: 4px 0;
           min-height: 28px;
         }
         .ns-input::placeholder {
-          color: rgba(15,21,35,0.45);
+          color: rgba(15,21,35,0.38);
           font-style: italic;
         }
         .ns-send {
           background: #C8922A;
           color: #FFFFFF;
           border: none;
-          border-radius: 10px;
-          padding: 9px 18px;
+          border-radius: 3px;
+          padding: 10px 20px;
           font-family: 'Cormorant SC', Georgia, serif;
-          font-size: 0.82rem;
-          letter-spacing: 0.14em;
+          font-size: 0.8rem;
+          letter-spacing: 0.16em;
           text-transform: uppercase;
           cursor: pointer;
+          transition: background 0.15s;
+          flex-shrink: 0;
         }
+        .ns-send:hover:not(:disabled) { background: #A8721A; }
         .ns-send:disabled {
-          background: rgba(15,21,35,0.20);
+          background: rgba(15,21,35,0.15);
           cursor: not-allowed;
         }
         .ns-typing {
           align-self: flex-start;
           display: inline-flex;
-          gap: 4px;
-          padding: 14px 18px;
+          gap: 5px;
+          padding: 16px 20px;
+          background: #FFFFFF;
+          border: 1px solid rgba(168,114,26,0.16);
+          border-radius: 3px;
+          box-shadow: 0 2px 8px rgba(15,21,35,0.06);
         }
         .ns-typing span {
           width: 6px; height: 6px;
           border-radius: 50%;
-          background: rgba(168,114,26,0.45);
+          background: rgba(168,114,26,0.50);
           animation: ns-bounce 1.2s infinite;
         }
         .ns-typing span:nth-child(2) { animation-delay: 0.15s; }
         .ns-typing span:nth-child(3) { animation-delay: 0.30s; }
         @keyframes ns-bounce {
           0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
-          40% { transform: translateY(-4px); opacity: 1; }
+          40% { transform: translateY(-5px); opacity: 1; }
+        }
+        @media (max-width: 640px) {
+          .ns-msgs { padding: 32px 18px 16px; }
+          .ns-input-row { padding: 12px 18px; }
+          .ns-bubble.assistant.ns-opener { font-size: 1.2rem; }
         }
       `}</style>
     </div>
   )
 }
 
-function Bubble({ role, content }) {
-  return <div className={`ns-bubble ${role}`}>{content}</div>
+function Bubble({ role, content, isFirst }) {
+  const cls = `ns-bubble ${role}${isFirst && role === 'assistant' ? ' ns-opener' : ''}`
+  return <div className={cls}>{content}</div>
 }
 
 function TypingDots() {

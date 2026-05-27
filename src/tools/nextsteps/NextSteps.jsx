@@ -171,7 +171,7 @@ export function NextStepsPage() {
 
       <NextStepsHeader phase={phase} hasOtherTracks={tracks.length > 0} onBackToLoop={handleBackToLoop} />
 
-      <div className="nextsteps-stage">
+      <div className={`nextsteps-stage${phase === 'arrival' ? ' nextsteps-stage--chat' : ''}`}>
         {phase === 'arrival' && (
           <ArrivalReflection
             user={user}
@@ -208,6 +208,10 @@ export function NextStepsPage() {
           max-width: 720px;
           margin: 0 auto;
           padding: 32px 24px 96px;
+        }
+        .nextsteps-stage--chat {
+          max-width: 100%;
+          padding: 0;
         }
         .ns-header {
           max-width: 720px;
