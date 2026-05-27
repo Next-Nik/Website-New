@@ -415,11 +415,15 @@ function WorkingOnNow({ actor }) {
 
 function Description({ actor }) {
   if (!actor.description) return null
+  // When a long-form story is present, the Story section ("The work") carries
+  // the narrative. About is for stub entries that don't have a full story yet,
+  // and would otherwise feel empty without a paragraph somewhere.
+  if (actor.story && actor.story.trim().length > 0) return null
   return (
     <div>
       <Eyebrow>About</Eyebrow>
       <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.78)',
-        lineHeight: 1.7, margin: 0, whiteSpace: 'pre-wrap' }}>
+        lineHeight: 1.55, margin: 0, whiteSpace: 'pre-wrap' }}>
         {actor.description}
       </p>
     </div>
@@ -1131,7 +1135,7 @@ function StorySection({ actor }) {
       <Eyebrow>The work</Eyebrow>
       {paragraphs.map((para, i) => (
         <p key={i} style={{ ...body, fontSize: '17px', fontWeight: 300,
-          color: dark, lineHeight: 1.85, marginBottom: '22px',
+          color: dark, lineHeight: 1.55, marginBottom: '20px',
           maxWidth: '620px' }}>
           {para}
         </p>
@@ -1237,7 +1241,7 @@ function TestimonialsSection({ testimonials, actorMode }) {
           marginBottom: '32px',
           maxWidth: '620px' }}>
           <p style={{ ...body, fontSize: '16.5px', fontStyle: 'italic',
-            color: dark, lineHeight: 1.75, marginBottom: '12px',
+            color: dark, lineHeight: 1.55, marginBottom: '12px',
             fontWeight: 300 }}>
             "{t.quote}"
           </p>
