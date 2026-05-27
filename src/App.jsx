@@ -89,7 +89,6 @@ import { NorthStarPage }                           from './tools/orienteering/Or
 import { MapPage }                                 from './tools/map/Map'
 import { HorizonStatePage }                        from './tools/horizon-state/HorizonState'
 import { PurposePiecePage, PurposePieceDeepPage }  from './tools/purpose-piece/PurposePiece'
-import { TargetSprintPage }                        from './tools/target-sprint/TargetSprint'
 import { HorizonPracticePage }                     from './tools/horizon-practice/HorizonPractice'
 import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import PlanetMap                                    from './tools/planet/PlanetMap'
@@ -113,6 +112,19 @@ function ComingSoon({ name }) {
       </div>
     </div>
   )
+}
+
+// Legacy /tools/target-sprint → /tools/horizon-practice?stretch=… The Stretch
+// is now a mode inside Practice. Preserves ?domain=X and &view=1 deep-links.
+function TargetSprintRedirect() {
+  const { search } = useLocation()
+  const params = new URLSearchParams(search)
+  const domain = params.get('domain')
+  const view   = params.get('view')
+  const next   = new URLSearchParams()
+  next.set('stretch', domain || '1')
+  if (view) next.set('view', view)
+  return <Navigate to={`/tools/horizon-practice?${next.toString()}`} replace />
 }
 
 // ── Root route ──
@@ -212,7 +224,7 @@ function AppInner() {
         <Route path="/tools/nextsteps"           element={<NextStepsPage />} />
         <Route path="/tools/purpose-piece"       element={<PurposePiecePage />} />
         <Route path="/tools/purpose-piece/deep"  element={<PurposePieceDeepPage />} />
-        <Route path="/tools/target-sprint"       element={<TargetSprintPage />} />
+        <Route path="/tools/target-sprint"       element={<TargetSprintRedirect />} />
         <Route path="/tools/horizon-practice"    element={<HorizonPracticePage />} />
         <Route path="/tools/planet"              element={<PlanetMap />} />  {/* founder-only beta — gate inside PlanetMap */}
 
