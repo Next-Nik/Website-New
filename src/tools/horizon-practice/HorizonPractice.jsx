@@ -25,6 +25,7 @@ import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
 import { supabase } from '../../hooks/useSupabase'
+import { TargetSprintPage } from '../target-sprint/TargetSprint'
 
 // ─── Design tokens ──────────────────────────────────────────────────────────
 const tokens = {
@@ -1976,6 +1977,13 @@ export function HorizonPracticePage() {
   const { user, loading: authLoading } = useAuth()
   const { loading: accessLoading } = useAccess('horizon-practice')
 
+  // /tools/horizon-practice?stretch=… renders the Stretch surface inside
+  // Practice's shell. The legacy /tools/target-sprint route redirects here.
+  const stretchParam = typeof window !== 'undefined'
+    ? new URLSearchParams(window.location.search).get('stretch')
+    : null
+  const inStretchMode = !!stretchParam
+
   // Profile data
   const [profileLoading, setProfileLoading] = useState(true)
   const [iamStatements, setIamStatements] = useState({})  // { path: '...', spark: '...' }
@@ -2004,6 +2012,7 @@ export function HorizonPracticePage() {
 
   // ─── Load all profile + today's state ───────────────────────────────────
   useEffect(() => {
+    if (inStretchMode) { setProfileLoading(false); return }
     if (!user) { setProfileLoading(false); return }
     let cancelled = false
 
@@ -2250,6 +2259,18 @@ export function HorizonPracticePage() {
   }
 
   // ─── Render ─────────────────────────────────────────────────────────────
+
+  // Stretch mode: render the Stretch surface inside Practice's shell. The
+  // Stretch tool manages its own data loading and auth gate.
+  if (inStretchMode) {
+    return (
+      <div style={{ background: tokens.bg, minHeight: '100vh' }}>
+        <Nav activePath="nextus-self" />
+        <TargetSprintPage embedded={true} />
+      </div>
+    )
+  }
+
   if (authLoading || accessLoading || profileLoading) {
     return (
       <div style={{ background: tokens.bg, minHeight: '100vh' }}>
