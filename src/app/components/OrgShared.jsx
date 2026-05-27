@@ -2,8 +2,9 @@
 // Shared UI primitives used by OrgManage and OrgPublic.
 // Extracted so both pages stay lean and consistent.
 
-export const body = { fontFamily: "'Lora', Georgia, serif" }
-export const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+export const body  = { fontFamily: "'Lora', Georgia, serif" }
+export const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+export const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 export const gold = '#A8721A'
 export const dark = '#0F1523'
 export const parch = '#FAFAF7'
@@ -185,7 +186,7 @@ export function ModeSelector({ value, onChange }) {
 
 export function Eyebrow({ children, style = {} }) {
   return (
-    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: 'rgba(15,21,35,0.40)', textTransform: 'uppercase', ...style }}>
+    <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', color: 'rgba(15,21,35,0.65)', textTransform: 'uppercase', ...style }}>
       {children}
     </div>
   )

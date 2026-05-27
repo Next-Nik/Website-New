@@ -29,7 +29,7 @@ import { SiteFooter } from '../../components/SiteFooter'
 import { supabase } from '../../hooks/useSupabase'
 import { useAuth } from '../../hooks/useAuth'
 import {
-  body, sc, gold, dark, parch,
+  body, serif, sc, gold, dark, parch,
   DOMAIN_LABEL, SCALE_LABEL,
   PLACEMENT_TIER,
 } from '../components/OrgShared'
@@ -185,28 +185,31 @@ function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
 
           {/* Domain + scale eyebrow */}
           {primaryDomain && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px',
-              marginBottom: '16px' }}>
-              <div style={{ width: '8px', height: '8px', borderRadius: '50%',
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px',
+              marginBottom: '16px', flexWrap: 'wrap' }}>
+              <div style={{ width: '9px', height: '9px', borderRadius: '50%',
                 background: domainColor, flexShrink: 0 }} />
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em',
-                color: 'rgba(15,21,35,0.50)', textTransform: 'uppercase' }}>
+              <span style={{ ...sc, fontSize: '13px', fontWeight: 600,
+                letterSpacing: '0.18em',
+                color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase' }}>
                 {DOMAIN_LABEL[primaryDomain] || primaryDomain}
               </span>
               {actor.scale && (
                 <>
-                  <span style={{ color: 'rgba(200,146,42,0.30)', fontSize: '12px' }}>·</span>
-                  <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em',
-                    color: 'rgba(15,21,35,0.40)' }}>
+                  <span style={{ color: 'rgba(200,146,42,0.45)', fontSize: '13px' }}>·</span>
+                  <span style={{ ...sc, fontSize: '13px', fontWeight: 600,
+                    letterSpacing: '0.16em',
+                    color: 'rgba(15,21,35,0.65)', textTransform: 'uppercase' }}>
                     {SCALE_LABEL?.[actor.scale] || actor.scale}
                   </span>
                 </>
               )}
               {actor.type && (
                 <>
-                  <span style={{ color: 'rgba(200,146,42,0.30)', fontSize: '12px' }}>·</span>
-                  <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em',
-                    color: 'rgba(15,21,35,0.40)' }}>
+                  <span style={{ color: 'rgba(200,146,42,0.45)', fontSize: '13px' }}>·</span>
+                  <span style={{ ...sc, fontSize: '13px', fontWeight: 600,
+                    letterSpacing: '0.16em',
+                    color: 'rgba(15,21,35,0.65)', textTransform: 'uppercase' }}>
                     {actor.type.charAt(0).toUpperCase() + actor.type.slice(1)}
                   </span>
                 </>
@@ -215,25 +218,26 @@ function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
           )}
 
           {/* Name */}
-          <h1 style={{ ...body, fontSize: 'clamp(30px, 5vw, 48px)', fontWeight: 300,
-            color: dark, lineHeight: 1.06, letterSpacing: '-0.01em',
-            margin: '0 0 10px' }}>
+          <h1 style={{ ...serif, fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 300,
+            color: dark, lineHeight: 1.08, letterSpacing: '-0.01em',
+            margin: '0 0 12px' }}>
             {actor.name}
           </h1>
 
           {/* Tagline */}
           {actor.tagline && (
-            <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.65)',
-              lineHeight: 1.5, margin: '0 0 16px',
-              fontStyle: 'italic' }}>
+            <p style={{ ...body, fontSize: '18px', fontWeight: 400,
+              color: 'rgba(15,21,35,0.78)',
+              lineHeight: 1.5, margin: '0 0 18px' }}>
               {actor.tagline}
             </p>
           )}
 
           {/* Location */}
           {actor.location_name && (
-            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
-              color: 'rgba(15,21,35,0.45)', marginBottom: '16px',
+            <div style={{ ...sc, fontSize: '13px', fontWeight: 600,
+              letterSpacing: '0.16em',
+              color: 'rgba(15,21,35,0.65)', marginBottom: '16px',
               textTransform: 'uppercase' }}>
               {actor.location_name}
             </div>
@@ -241,8 +245,9 @@ function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
 
           {/* Founder of NextUs — admin-set badge, small and plain */}
           {actor.is_platform_founder && (
-            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
-              color: '#A8721A', marginBottom: '16px',
+            <div style={{ ...sc, fontSize: '13px', fontWeight: 600,
+              letterSpacing: '0.16em',
+              color: '#A8721A', marginBottom: '18px',
               textTransform: 'uppercase' }}>
               Founder of NextUs
             </div>
@@ -388,7 +393,7 @@ function MissionStatement({ actor }) {
   return (
     <div>
       <Eyebrow>Mission</Eyebrow>
-      <p style={{ ...body, fontSize: '20px', color: dark, lineHeight: 1.55,
+      <p style={{ ...serif, fontSize: '22px', color: dark, lineHeight: 1.4,
         margin: 0, fontWeight: 300 }}>
         {actor.mission_statement}
       </p>
@@ -422,7 +427,7 @@ function Description({ actor }) {
   return (
     <div>
       <Eyebrow>About</Eyebrow>
-      <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.78)',
+      <p style={{ ...body, fontSize: '17px', fontWeight: 400, color: dark,
         lineHeight: 1.55, margin: 0, whiteSpace: 'pre-wrap' }}>
         {actor.description}
       </p>
@@ -1134,7 +1139,7 @@ function StorySection({ actor }) {
     <div>
       <Eyebrow>The work</Eyebrow>
       {paragraphs.map((para, i) => (
-        <p key={i} style={{ ...body, fontSize: '17px', fontWeight: 300,
+        <p key={i} style={{ ...body, fontSize: '18px', fontWeight: 400,
           color: dark, lineHeight: 1.55, marginBottom: '20px',
           maxWidth: '620px' }}>
           {para}
@@ -1240,9 +1245,9 @@ function TestimonialsSection({ testimonials, actorMode }) {
           paddingLeft: '24px',
           marginBottom: '32px',
           maxWidth: '620px' }}>
-          <p style={{ ...body, fontSize: '16.5px', fontStyle: 'italic',
-            color: dark, lineHeight: 1.55, marginBottom: '12px',
-            fontWeight: 300 }}>
+          <p style={{ ...body, fontSize: '17px', fontStyle: 'italic',
+            color: dark, lineHeight: 1.55, marginBottom: '14px',
+            fontWeight: 400 }}>
             "{t.quote}"
           </p>
           {(t.attribution || t.context) && (
