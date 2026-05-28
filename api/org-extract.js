@@ -3,13 +3,14 @@
 // NextUs Atlas — actor identification and placement extraction.
 //
 // Reads a URL, HTML source, or text description and returns an array of
-// distinct actor records suitable for placement on the Atlas. No hardcoded
-// label model — the AI proposes any distinct entity found in the source,
-// whether it's a person, organisation, place, programme, podcast, or project.
+// distinct actor records suitable for placement on the Atlas. Honours the
+// Floor for seeded actor profiles (see project doc:
+// NextUs_Actor_Profile_Floor.md) — every returned record meets the floor
+// for what a seeded entry must contain when it goes live.
 //
 // Response shape per record:
 // {
-//   name, type, tagline, description, image_url,
+//   name, type, tagline, description, story, image_url,
 //   domains[], scale, location_name, website,
 //   alignment_score, placement_tier, hal_signals[], sfp_patterns[],
 //   confidence, score_reasoning,
@@ -17,6 +18,12 @@
 //   press[]:    [{ publication, url?, title?, published_at? }],
 //   relationships[]: [{ to_name, relationship_type }]
 // }
+//
+// What the extractor deliberately does NOT return:
+//   mission_statement, working_on_now, offerings, credentials, testimonials,
+//   accepting_status, medium, actor_mode
+// These are owner-only fields — they land on the entry when the owner claims
+// it and adds depth. The extractor does not infer them.
 //
 // Output is JSON only, validated and shape-enforced before return.
 
@@ -49,40 +56,172 @@ This site holds three distinct actor records that must all be returned:
    - Score: 8. Exemplar early-stage platform with systematic architecture.
    - Children: The Horizon Suite, NextUs Podcast, NextUs Atlas (sub-projects)
 
-2. The Horizon Suite (programme)
-   - Personal development tool suite: Horizon State, Purpose Piece, The Map,
-     Target Sprint, Horizon Practice.
-   - Built for nervous system regulation through civilisational contribution.
-   - Domain: path (primary). Touches all seven personal domains.
-   - Type: programme. Scale: global.
-   - Score: 8. Parent: NextUs.
+2. Nik Wood (practitioner)
+   - Coach for visionaries expanding what they bring into the world.
+   - Founder of NextUs. Nearly 30 years of coaching practice.
+   - Type: practitioner. Domain: human-being. Scale: international.
+   - Location: Mexico City.
 
-3. Nik Wood (practitioner)
-   - Founder of NextUs. 25+ years one-on-one coaching practice.
-   - Life coach, systems architect, futurist.
-   - Domain: inner-game (primary). Also strong in path, signal.
-   - Type: practitioner. Scale: local (1:1 practice). Location: Mexico City, Mexico.
-   - Score: 9. Parent: NextUs.
-
-The hierarchy is: NextUs is the umbrella. Nik Wood and The Horizon Suite
-sit underneath it. Both are real, distinct actors.
+3. NextUs Podcast (programme)
+   - The platform's podcast.
+   - Type: programme. Parent: NextUs.
 `,
 }
 
 function getKnownContext(input) {
+  const t = input.trim().toLowerCase()
   for (const [domain, context] of Object.entries(KNOWN_ENTITIES)) {
-    if (input.toLowerCase().includes(domain)) return context
+    if (t.includes(domain)) return `\n\n${context}\n`
   }
   return ''
 }
-
-// ── System prompt ─────────────────────────────────────────────────────────────
 
 const SYSTEM_PROMPT = `You are the NextUs Atlas placement extraction engine.
 
 The Atlas is a living map of actors working toward civilisational Horizon Goals.
 Your job is to read source material (a URL, HTML, or text description) and
-identify EVERY distinct actor that belongs on the map.
+identify EVERY distinct actor that belongs on the map. For each actor you
+identify, you produce an entry that meets the Atlas Floor — substantive
+enough that a viewer landing on the entry knows who the actor is, can find
+them on at least one channel, and can reach them.
+
+──────────────────────────────────────────────────────────────────────────────
+THE FLOOR — what every entry you return must contain
+──────────────────────────────────────────────────────────────────────────────
+
+Seven things, every entry, at minimum:
+
+1. Accurate name + type
+2. Accurate image (logo for orgs, portrait for practitioners — from the source)
+3. Description — 2-3 sentences, third person, evidence-grounded
+4. Story — 2-4 short paragraphs, third person, drawn from explicit claims on the source
+5. Tagline — one substantive line naming who they help and how
+6. Media links — every channel the source publishes through (podcast, YouTube,
+   Substack, LinkedIn, Instagram, Twitter, etc.)
+7. Business contact — at least one path to reach them (email, contact form,
+   booking link, phone if professionally published)
+
+If you cannot meet the floor for an actor from the source material — no usable
+image, no contact path, insufficient material for a story — return the entry
+with the fields you could fill and leave the rest empty. The pipeline will
+flag incomplete entries for manual review.
+
+──────────────────────────────────────────────────────────────────────────────
+COPY REGISTER — TED-tight
+──────────────────────────────────────────────────────────────────────────────
+
+All descriptive copy you write — description, story, tagline — obeys these
+rules:
+
+- Third person where the actor is not the speaker. If the source uses "I"
+  ("I have been coaching for 15 years"), translate to third person
+  ("X has been coaching for 15 years"). Never propagate first person.
+- Past tense for proof. Present tense for stakes.
+- No origin story, no emotional setup, no marketing breath.
+- Heavy edit standard. If a sentence circles, cut it. If a phrase qualifies,
+  cut it. If a paragraph sets up another paragraph, fold them.
+- Every sentence earns its place.
+- Do not propagate marketing copy from the source. If the source says
+  "Unlock your potential with our transformational five-pillar method!",
+  translate to what is actually being claimed
+  ("X's method centres on five focuses: A, B, C, D, E.") or omit if no clean
+  TED-register translation exists.
+- Do not invent specifics. If the source says "decades of practice" without
+  specifying how many, the story says "decades of practice," not "30 years."
+- Do not claim things the source does not show.
+
+──────────────────────────────────────────────────────────────────────────────
+TAGLINE — what makes a tagline land
+──────────────────────────────────────────────────────────────────────────────
+
+A floor-meeting tagline is one substantive line that names who the actor
+helps (or what they do) and how. It is not the generic positioning sentence
+from the actor's landing page if that sentence is empty.
+
+For a PRACTITIONER, the tagline names a population and a kind of work:
+  "Coach for visionaries expanding what they bring into the world."
+  "Therapist for high-functioning adults navigating life transitions."
+
+For an ORGANISATION, the tagline names what the org does and at what scale:
+  "A Future Building platform."
+  "Bioregional regeneration network across the Pacific Northwest."
+
+If the source's own tagline is generic or marketing-toned, write a tighter
+one from what the source actually shows. If the source provides nothing
+substantive enough to build a tagline from, return null for tagline.
+
+──────────────────────────────────────────────────────────────────────────────
+STORY — 2-4 short paragraphs, third person, TED-tight
+──────────────────────────────────────────────────────────────────────────────
+
+The story is the actor's narrative. Three to four short paragraphs at most.
+Built from explicit claims on the source. Third person. No marketing breath.
+
+What the story IS:
+- What the actor does and at what scale
+- Who they work with and how the work proceeds
+- The structural commitment behind the work (only if the source states it
+  explicitly — never inferred)
+
+What the story is NOT:
+- A credentials list (no "certified by X, trained at Y, member of Z" lists)
+- An origin story ("X started this when they realised..." — no)
+- A manifesto or call to action
+- A sales pitch
+- A list of services (those are offerings — owner-only, not extracted)
+
+If the source does not contain enough material for an honest 2-4 paragraph
+story, leave the story field null and let the description carry the page.
+Do not pad. Do not invent.
+
+──────────────────────────────────────────────────────────────────────────────
+LINKS — EXHAUSTIVE EXTRACTION
+──────────────────────────────────────────────────────────────────────────────
+
+Every channel the source publishes through. The actor's seeded profile must
+let a viewer find them on whatever platform the viewer prefers — which means
+the extractor catches every discoverable channel.
+
+Look in: footer, header, sidebar, contact page, "links" / "follow me" /
+"connect" sections, podcast embed widgets, RSS auto-discovery links, social
+icon rows, "as featured on" platform badges.
+
+link_type values (use exact strings):
+  website            — main public website
+  podcast_rss        — podcast RSS feed URL
+  podcast_apple      — Apple Podcasts show link
+  podcast_spotify    — Spotify show link
+  youtube_channel    — YouTube channel URL
+  youtube_video      — specific YouTube video worth surfacing
+  vimeo              — Vimeo channel
+  substack           — Substack publication URL
+  newsletter         — generic newsletter signup URL
+  instagram          — Instagram profile URL
+  twitter            — X / Twitter profile URL
+  tiktok             — TikTok profile URL
+  facebook           — Facebook page URL
+  linkedin           — LinkedIn profile or company page
+  medium             — Medium publication
+  github             — GitHub profile or org
+  book               — link to a published book (Amazon, publisher, bookshop.org)
+  email              — direct email address (use mailto: URL prefix)
+  contact_form       — URL to a contact form page (e.g. /contact, /get-in-touch)
+  calendly           — Calendly, SavvyCal, Cal.com, or other direct scheduling URL
+  phone              — phone number (use tel: URL prefix). Only if visibly
+                       published as a business contact, not buried in a personal blog.
+  other              — anything else worth linking
+
+BUSINESS CONTACT IS REQUIRED — extract whichever of email / contact_form /
+calendly / phone is discoverable on the source. An actor's seeded profile
+without a contact path is wallpaper. At least one of these four MUST appear
+in the links array unless the source genuinely makes no business contact
+available (rare — escalate by returning the entry as-is and the pipeline
+will flag it for manual completion).
+
+For practitioners with a /book or /contact page: surface that URL as
+contact_form, even if you don't know what platform powers it.
+
+Each link: { "link_type": "...", "url": "...", "label": "optional override" }
 
 ──────────────────────────────────────────────────────────────────────────────
 WHAT COUNTS AS A DISTINCT ACTOR
@@ -103,9 +242,9 @@ CRITICAL FRAMING for practitioner records:
 When you propose a practitioner record for a named individual, the record
 is about THEIR PUBLIC-FACING WORK — their coaching, teaching, consulting,
 analysis, journalism, etc. NOT their personal biography, family life, or
-private details. Description should focus on what they do publicly, their
-methodology, the body of work they're known for. The name identifies the
-practitioner; the content describes the practice.
+private details. Description and story should focus on what they do
+publicly, their methodology, the body of work they're known for. The name
+identifies the practitioner; the content describes the practice.
 
 One source can yield MULTIPLE distinct actors. A coach's website may surface:
 - The coach (practitioner)
@@ -182,45 +321,6 @@ Classify by IMPACT, not feedstock or means. What problem does this actor
 solve? What change are they trying to create? That is the domain.
 
 ──────────────────────────────────────────────────────────────────────────────
-LINKS — EXTRACT STRUCTURED LINKS
-──────────────────────────────────────────────────────────────────────────────
-
-Look for these link types in the source. Return only those that are present.
-
-Type values (use exact strings):
-  website            — main public website
-  podcast_rss        — podcast RSS feed URL if discoverable
-  podcast_apple      — Apple Podcasts link
-  podcast_spotify    — Spotify show link
-  youtube_channel    — YouTube channel URL
-  youtube_video      — specific YouTube video
-  vimeo              — Vimeo channel or video
-  substack           — Substack publication URL
-  newsletter         — generic newsletter signup URL
-  instagram          — Instagram profile URL
-  twitter            — X/Twitter profile URL
-  tiktok             — TikTok profile URL
-  facebook           — Facebook page URL
-  linkedin           — LinkedIn profile or company page
-  medium             — Medium publication
-  github             — GitHub profile or org
-  book               — link to a published book (Amazon, publisher)
-  email              — direct email address (use mailto: URL prefix)
-  contact_form       — URL to a contact form page (e.g. /contact)
-  calendly           — Calendly booking link or any direct scheduling URL
-  phone              — phone number (use tel: URL prefix). Skip unless obviously public/professional.
-  other              — anything else worth linking
-
-CONTACT LINKS ARE IMPORTANT — extract them whenever they're discoverable.
-Look at the footer, contact pages, "get in touch" sections, sidebar/header.
-For practitioners and orgs, contact information is what enables coordination.
-If you see an email address, return it as link_type 'email' with url 'mailto:<address>'.
-If you see a contact form link, return link_type 'contact_form'.
-If you see a Calendly link (calendly.com/...), return link_type 'calendly'.
-
-Each link: { "link_type": "...", "url": "...", "label": "optional override" }
-
-──────────────────────────────────────────────────────────────────────────────
 PRESS — "AS SEEN IN" MENTIONS
 ──────────────────────────────────────────────────────────────────────────────
 
@@ -253,11 +353,15 @@ The relationship is recorded on the FROM actor's record. Example:
 IMAGE
 ──────────────────────────────────────────────────────────────────────────────
 
-Return image_url with the most appropriate single anchor image for the actor:
-  - logo for organisations
-  - portrait for practitioners
-  - hero image for places
-Only return a URL you saw in the source. Don't invent.
+Return image_url with the single most appropriate anchor image for the actor:
+  - logo for organisations, programmes, projects, groups, resources
+  - portrait (face visible) for practitioners
+  - hero image of the space for places
+
+Only return a URL you saw in the source. Don't invent. Don't fall back to
+generic stock or placeholder imagery — if no usable image exists on the
+source, return null for image_url and let the pipeline flag the entry for
+manual image addition.
 
 ──────────────────────────────────────────────────────────────────────────────
 ALIGNMENT SCORE (0–9)
@@ -280,6 +384,27 @@ Tiers:
   9:   exemplar
 
 ──────────────────────────────────────────────────────────────────────────────
+OWNER-ONLY FIELDS — DO NOT INFER OR RETURN
+──────────────────────────────────────────────────────────────────────────────
+
+The following fields are owner-only. The Floor architecture requires that
+they be filled by the actor when they claim the entry, NOT by extraction.
+Do not return them in your output:
+
+- mission_statement (commitments about future direction — only the owner can
+  honestly assert what they stand for)
+- working_on_now (current focus — time-bound, owner-asserted)
+- offerings (formal products, programmes, sessions — claimed by the owner)
+- credentials (training, certifications, lineage — require verification)
+- testimonials (first-person quotes from others — never invent, never scrape)
+- accepting_status, medium, actor_mode, membership_status
+
+If the source clearly shows any of these (a "currently accepting clients"
+banner, a list of offerings on a sales page), you may surface a link to that
+sales/offerings page as a contact_form link — but do not extract structured
+data from it.
+
+──────────────────────────────────────────────────────────────────────────────
 OUTPUT FORMAT
 ──────────────────────────────────────────────────────────────────────────────
 
@@ -291,8 +416,9 @@ Return an array of 1-6 actor objects. Use this exact shape:
   {
     "name": "string",
     "type": "organisation | project | practitioner | programme | place | group | resource",
-    "tagline": "string or null — short one-liner",
-    "description": "string — 2-3 sentences in third person, evidence-based",
+    "tagline": "string or null — one substantive line, TED-tight",
+    "description": "string — 2-3 sentences, third person, TED-tight",
+    "story": "string or null — 2-4 short paragraphs, third person, TED-tight. Paragraphs separated by blank lines (\\n\\n). Null if source lacks material for an honest story.",
     "image_url": "string or null — single anchor image URL from source",
     "domains": ["primary-domain-slug", "secondary-slug", ...],
     "scale": "local | municipal | regional | national | international | global",
@@ -305,8 +431,11 @@ Return an array of 1-6 actor objects. Use this exact shape:
     "confidence": 0-100,
     "score_reasoning": "string — 2 sentences",
     "links": [
-      { "link_type": "podcast_rss", "url": "...", "label": "optional" },
-      { "link_type": "youtube_channel", "url": "..." }
+      { "link_type": "website",     "url": "https://..." },
+      { "link_type": "podcast_spotify", "url": "..." },
+      { "link_type": "linkedin",    "url": "..." },
+      { "link_type": "instagram",   "url": "..." },
+      { "link_type": "email",       "url": "mailto:..." }
     ],
     "press": [
       { "publication": "BBC", "url": "...", "title": "...", "published_at": "..." }
@@ -350,7 +479,7 @@ const ALLOWED_LINK_TYPES = [
   'substack', 'newsletter',
   'instagram', 'twitter', 'tiktok', 'facebook', 'linkedin', 'medium', 'github',
   'book',
-  // Contact-specific link types (in-platform messaging not yet built)
+  // Contact-specific link types
   'email', 'contact_form', 'calendly', 'phone',
   'other',
 ]
@@ -363,6 +492,16 @@ function enforceShape(record) {
   // Back-compat for old single-value callers
   if (!record.domains.length && record.domain_id) record.domains = [record.domain_id]
   record.domain_id       = record.domains[0] || null
+
+  // Trim string fields and normalise empty-ish values to null
+  for (const field of ['tagline', 'description', 'story', 'location_name']) {
+    if (typeof record[field] === 'string') {
+      const trimmed = record[field].trim()
+      record[field] = trimmed.length > 0 ? trimmed : null
+    } else {
+      record[field] = null
+    }
+  }
 
   record.hal_signals     = Array.isArray(record.hal_signals)  ? record.hal_signals  : []
   record.sfp_patterns    = Array.isArray(record.sfp_patterns) ? record.sfp_patterns : []
@@ -387,6 +526,25 @@ function enforceShape(record) {
   else if (s <= 8) record.placement_tier = 'qualified'
   else             record.placement_tier = 'exemplar'
 
+  // Floor-check signals — surface what's missing so the Add UI can flag
+  // entries that don't meet the Floor for manual completion.
+  // These are advisory; the entry still returns. The UI decides whether
+  // to gate save behind floor completeness.
+  const CONTACT_LINK_TYPES = new Set(['email', 'contact_form', 'calendly', 'phone'])
+  record.floor_check = {
+    has_image:       !!record.image_url,
+    has_description: !!record.description,
+    has_story:       !!record.story,
+    has_tagline:     !!record.tagline,
+    has_business_contact: record.links.some(l => CONTACT_LINK_TYPES.has(l.link_type)),
+    media_link_count: record.links.filter(l => !CONTACT_LINK_TYPES.has(l.link_type)).length,
+  }
+  record.floor_check.meets_floor = record.floor_check.has_image
+    && record.floor_check.has_description
+    && record.floor_check.has_tagline
+    && record.floor_check.has_business_contact
+    && record.floor_check.media_link_count >= 1
+
   return record
 }
 
@@ -407,9 +565,9 @@ module.exports = async function handler(req, res) {
   if (mode === 'html') {
     content = `[HTML source provided]\n\n${stripHtml(input)}\n\n${knownContext}`
   } else if (mode === 'url') {
-    content = `[URL provided: ${input.trim()}]\n\nRead this URL. Identify ALL distinct actors — look for: the main organisation/practitioner, any podcasts with their own brand, any retreat or physical places, any programmes with their own identity, any partner-run practices. Generate a separate record for each. Extract structured links (podcast RSS, YouTube, Substack, social), press mentions ("as seen in"), the most appropriate image, and any parent/child relationships between the actors you propose.\n\n${knownContext}`
+    content = `[URL provided: ${input.trim()}]\n\nRead this URL. Identify ALL distinct actors — look for: the main organisation/practitioner, any podcasts with their own brand, any retreat or physical places, any programmes with their own identity, any partner-run practices. Generate a separate record for each.\n\nFor every record, meet the Floor: accurate image, description, story (2-4 paragraphs from explicit source claims), tagline, ALL media links discoverable on the source, and at least one business contact path (email, contact form, booking link, or phone). Be exhaustive on the links — catch every channel.\n\n${knownContext}`
   } else {
-    content = `[Description provided]\n\n${input.trim()}\n\nIdentify ALL distinct actors and their relationships.\n\n${knownContext}`
+    content = `[Description provided]\n\n${input.trim()}\n\nIdentify ALL distinct actors and their relationships. Meet the Floor for each.\n\n${knownContext}`
   }
 
   const tools = mode === 'url' ? [{ type: 'web_search_20250305', name: 'web_search' }] : undefined
@@ -417,7 +575,7 @@ module.exports = async function handler(req, res) {
   try {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 6000,
+      max_tokens: 8000,
       system: SYSTEM_PROMPT,
       tools,
       messages: [{ role: 'user', content }],
