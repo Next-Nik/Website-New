@@ -402,7 +402,7 @@ export function MarketingToolsPage() {
               The work you do within yourself shapes the world around you.
             </h2>
             <p style={{ ...body, fontSize: '15px', color: 'rgba(250,250,247,0.55)', lineHeight: 1.75, maxWidth: '420px', marginTop: '12px' }}>
-              When you're ready, step into the bigger picture. Use your gifts. Join the movement. Dream bigger.
+              The Atlas maps the people, organisations, and projects already building the future, across seven civilisational domains. Find the work worth backing, and make your own visible.
             </p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'flex-start' }}>

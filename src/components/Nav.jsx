@@ -13,6 +13,7 @@ export function Nav({ activePath }) {
 
   const links = [
     { to: '/',              label: 'Home',          key: 'home'          },
+    { to: '/tools',         label: 'Tools',         key: 'tools'         },
     { to: '/nextmarket',    label: 'NextMarket',    key: 'nextmarket'    },
     { to: '/about',         label: 'About',         key: 'about'         },
     { to: '/work-with-nik', label: 'Work with Nik', key: 'work-with-nik' },

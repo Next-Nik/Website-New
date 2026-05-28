@@ -1,10 +1,19 @@
 // ─────────────────────────────────────────────────────────────
 // MarketingHome — signed-out homepage
 //
-// Two-door structure: Personal Transformation / Changing the World.
-// Hospitable register — benefit-led, short clauses, plain language.
-// Imagery: sunrise-over-mountains (personal), dotted-globe (civ).
-// Both CTAs route through auth → Mission Control.
+// Front door for a stranger: says plainly what NextUs is, what you
+// do, and what you get back, before asking anyone to log in.
+//
+// Structure:
+//   Hero        — what NextUs is, in one breath
+//   Two doors   — Personal Transformation / Changing the World
+//   How it works — two scales side by side, three steps each,
+//                  honest about the time and the payoff
+//   Align band  — the two scales are one project
+//   Makers      — entry point for coaches / orgs
+//
+// Tool usage still requires login (no anonymous sessions); the
+// marketing surface is readable without it.
 // ─────────────────────────────────────────────────────────────
 
 import { Nav }         from '../components/Nav'
@@ -60,9 +69,6 @@ function PillButton({ href, children, light }) {
 }
 
 // ── Path card — horizontal split (image | copy) ──────────────
-// Layout & sizing live in CSS classes (see <style> block below) so
-// the responsive media queries can override cleanly. Only the
-// dark/light variants live in inline styles.
 function PathCard({ eyebrow, heading, bodyText, cta, href, image, imageSide, dark }) {
   const bg     = dark ? '#0F1523' : '#FFFFFF'
   const clr    = dark ? '#FAFAF7' : ink
@@ -133,6 +139,77 @@ function PathCard({ eyebrow, heading, bodyText, cta, href, image, imageSide, dar
   )
 }
 
+// ── How-it-works content ─────────────────────────────────────
+const PERSONAL_STEPS = [
+  {
+    n: '01',
+    title: 'See where you stand',
+    body: 'The Map gives an honest read of your life across seven domains: Path, Spark, Body, Finances, Connection, Inner Game, and Signal. It is deliberate work, not a quiz. A first pass takes about an hour, and many people return to it domain by domain over weeks. You leave with a clear picture of where your life actually is.',
+  },
+  {
+    n: '02',
+    title: 'Decide where it goes',
+    body: 'With that picture in front of you, you name where you want each part of your life to be, and what you are willing to do to get there. Purpose Piece helps you find the contribution that is yours to make. The result is direction you chose, not direction you drifted into.',
+  },
+  {
+    n: '03',
+    title: 'Build toward it',
+    body: 'Horizon Practice turns that direction into a daily practice you can keep, and the Atlas connects you to the people and work already building the future you named. The result is momentum, and company for the road.',
+  },
+]
+
+const PLANET_STEPS = [
+  {
+    n: '01',
+    title: 'Name the future worth building',
+    body: 'The same seven domains that map a life map a civilisation: Human Being, Society, Nature, Technology, Finance & Economy, Legacy, and Vision. Humanity has never sat down and agreed what it is building toward. NextUs makes that picture something you can see, and starts with a simpler question: what future do you actually want to live in?',
+  },
+  {
+    n: '02',
+    title: 'Find where you come in',
+    body: 'Of those seven domains, which is yours to work in, and at what scale: close and local, or wide and structural? Name the domain and the scale where you most want to make an impact, and look there.',
+  },
+  {
+    n: '03',
+    title: 'See who is already building it',
+    body: 'The Atlas is a living directory of the people, organisations, and projects doing the real work across those seven domains. In the corner you named, you can see who is already on it: who is worth backing, joining, or learning from. Then add your weight: support the people already building, point others toward work that deserves to be seen, or make your own work visible to those most likely to be served by it. The fractal runs both ways: the work you do on yourself shapes the world, and the world you help build gives that work somewhere to land.',
+  },
+]
+
+function HiwStep({ n, title, body }) {
+  return (
+    <div className="hiw-step">
+      <span className="hiw-step-n" style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold }}>{n}</span>
+      <h4 style={{ ...serif, fontSize: 'clamp(19px,1.7vw,22px)', fontWeight: 400, color: ink, lineHeight: 1.2, margin: '6px 0 8px' }}>
+        {title}
+      </h4>
+      <p style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: inkFaint, margin: 0 }}>
+        {body}
+      </p>
+    </div>
+  )
+}
+
+function HiwTrack({ label, heading, steps, closing, ctaLabel, ctaHref }) {
+  return (
+    <div className="hiw-track">
+      <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.24em', color: gold, display: 'block', marginBottom: '8px' }}>
+        {label}
+      </span>
+      <h3 style={{ ...serif, fontSize: 'clamp(24px,2.4vw,30px)', fontWeight: 400, color: ink, lineHeight: 1.15, margin: '0 0 24px' }}>
+        {heading}
+      </h3>
+      <div className="hiw-steps">
+        {steps.map(s => <HiwStep key={s.n} {...s} />)}
+      </div>
+      <p style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: ink, fontWeight: 500, margin: '26px 0 22px' }}>
+        {closing}
+      </p>
+      <PillButton href={ctaHref} light>{ctaLabel}</PillButton>
+    </div>
+  )
+}
+
 // ── Main ────────────────────────────────────────────────────
 export function MarketingHomePage() {
   return (
@@ -147,7 +224,7 @@ export function MarketingHomePage() {
         textAlign: 'center',
       }}>
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '18px' }}>
-          TWO PATHS. ONE PURPOSE.
+          A LIFE WORTH LIVING. A FUTURE WORTH BUILDING.
         </span>
         <h1
           className="mh-hero-title"
@@ -161,7 +238,7 @@ export function MarketingHomePage() {
             marginBottom: 'clamp(20px,2.4vw,28px)',
           }}
         >
-          Where will you build<br />your impact?
+          See your life clearly.<br />Build toward what matters.
         </h1>
         <p
           className="mh-hero-subtitle"
@@ -169,17 +246,17 @@ export function MarketingHomePage() {
             ...body,
             fontSize: 'clamp(15px,1.4vw,17px)',
             fontWeight: 300,
-            lineHeight: 1.6,
+            lineHeight: 1.7,
             color: inkFaint,
-            maxWidth: '620px',
+            maxWidth: '660px',
             margin: '0 auto',
           }}
         >
-          NextUs helps you locate where you are, see where you want to be, and connect you with the people and resources that can get you there.
+          NextUs is a suite of tools for orienting a whole life. An honest picture of where you stand, a clear sense of where you want to go, and a way to connect with the people and work already building that future. The same tools run at two scales: your own life, and the wider world.
         </p>
       </section>
 
-      {/* ── Two cards ────────────────────────────── */}
+      {/* ── Two doors ────────────────────────────── */}
       <section style={{
         maxWidth: '1200px',
         margin: '0 auto',
@@ -188,7 +265,7 @@ export function MarketingHomePage() {
         <div className="mh-cards">
           <PathCard
             heading="Personal Transformation"
-            bodyText="Build the inner clarity, courage, and capacity to live and lead from your highest self."
+            bodyText="Get an honest read on your life and a practice for closing the gap between where you are and where you mean to be."
             cta="START"
             href="/login?path=self"
             image="/hero-personal.jpg"
@@ -197,7 +274,7 @@ export function MarketingHomePage() {
           />
           <PathCard
             heading="Changing the World"
-            bodyText="Use your gifts to create meaningful change and build a more conscious and connected world."
+            bodyText="Find the people, organisations, and work already building the future you want to live in, and add your own."
             cta="START"
             href="/login?path=civ"
             image="/hero-civ.jpg"
@@ -207,10 +284,58 @@ export function MarketingHomePage() {
         </div>
       </section>
 
+      {/* ── How it works ─────────────────────────── */}
+      <section style={{
+        maxWidth: '1100px',
+        margin: '0 auto',
+        padding: 'clamp(56px,7vw,88px) clamp(20px,5vw,40px) clamp(40px,5vw,56px)',
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: 'clamp(36px,4vw,52px)' }}>
+          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '14px' }}>
+            HOW IT WORKS
+          </span>
+          <p style={{ ...serif, fontSize: 'clamp(20px,2.6vw,28px)', fontWeight: 300, color: ink, lineHeight: 1.45, maxWidth: '560px', margin: '0 auto' }}>
+            The same three steps, at the scale of a single life and the scale of a civilisation.
+          </p>
+        </div>
+
+        <div className="hiw-grid">
+          <HiwTrack
+            label="FOR YOUR LIFE"
+            heading="A life worth living"
+            steps={PERSONAL_STEPS}
+            closing="Put in an honest hour to start. What you get back is a picture of your life you can act on, and a direction worth keeping."
+            ctaLabel="START WITH THE MAP →"
+            ctaHref="/login?path=self"
+          />
+          <HiwTrack
+            label="FOR THE WORLD"
+            heading="A future worth building"
+            steps={PLANET_STEPS}
+            closing="Start by naming one part of the future you want. What you get back is a map of who is already building it, and a place to add your own."
+            ctaLabel="EXPLORE THE ATLAS →"
+            ctaHref="/login?path=civ"
+          />
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: 'clamp(36px,4vw,48px)' }}>
+          <a
+            href="/tools"
+            style={{
+              ...sc, fontSize: '14px', letterSpacing: '0.16em',
+              color: gold, textDecoration: 'underline', textUnderlineOffset: '4px',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#8A5C15' }}
+            onMouseLeave={e => { e.currentTarget.style.color = gold }}
+          >
+            See all the tools →
+          </a>
+        </div>
+      </section>
+
       {/* ── Align band ───────────────────────────── */}
       <section style={{
         background: '#0F1523',
-        marginTop: 'clamp(48px,6vw,80px)',
         padding: 'clamp(56px,7vw,88px) clamp(20px,5vw,40px)',
         textAlign: 'center',
         position: 'relative',
@@ -238,8 +363,8 @@ export function MarketingHomePage() {
             maxWidth: '640px',
             margin: '0 auto 32px',
           }}>
-            Personal growth and global impact aren't separate.<br />
-            They're the same work — at different scales.
+            Personal growth and global impact are not separate.<br />
+            They are the same work, at different scales.
           </p>
           <a
             href="/login"
@@ -301,7 +426,35 @@ export function MarketingHomePage() {
 
       <SiteFooter />
 
-
+      <style>{`
+        .hiw-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: clamp(32px,5vw,64px);
+          align-items: start;
+        }
+        .hiw-grid > .hiw-track:first-child {
+          padding-right: clamp(32px,5vw,64px);
+          border-right: 1px solid rgba(200,146,42,0.14);
+        }
+        .hiw-steps {
+          display: flex;
+          flex-direction: column;
+          gap: 22px;
+        }
+        @media (max-width: 760px) {
+          .hiw-grid {
+            grid-template-columns: 1fr;
+            gap: 48px;
+          }
+          .hiw-grid > .hiw-track:first-child {
+            padding-right: 0;
+            border-right: none;
+            border-bottom: 1px solid rgba(200,146,42,0.14);
+            padding-bottom: 48px;
+          }
+        }
+      `}</style>
     </div>
   )
 }

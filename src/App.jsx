@@ -38,6 +38,7 @@ import { ContentEditorPage }      from './pages/ContentEditor'
 import { GroupJoinPage }          from './pages/GroupJoin'
 import { ToolsPage }              from './pages/Tools'
 import { MarketingHomePage }      from './pages/MarketingHome'
+import { MarketingToolsPage }     from './pages/MarketingTools'
 import { PricingPage }            from './pages/Pricing'
 import { CheckoutPage }          from './pages/Checkout'
 import { AuthCallbackPage }       from './pages/AuthCallback'
@@ -162,6 +163,16 @@ function RootRoute() {
   return <Navigate to={target} replace />
 }
 
+// /tools — the tools listing is readable signed-out so a stranger can
+// see the product before logging in. Signed-in users go to Mission
+// Control, preserving the previous behaviour.
+function ToolsRoute() {
+  const { user, loading } = useAuth()
+  if (loading) return null
+  if (!user) return <MarketingToolsPage />
+  return <Navigate to="/" replace />
+}
+
 function AppInner() {
   const { pathname } = useLocation()
   const { user } = useAuth()
@@ -201,7 +212,7 @@ function AppInner() {
         <Route path="/faq"             element={<FAQPage />} />
         <Route path="/profile"         element={<Navigate to="/" replace />} />
         <Route path="/dashboard"       element={<Navigate to="/" replace />} />
-        <Route path="/tools"           element={<Navigate to="/" replace />} />
+        <Route path="/tools"           element={<ToolsRoute />} />
         <Route path="/content-editor"  element={<ContentEditorPage />} />
         <Route path="/watch"           element={<WatchPage />} />
 
