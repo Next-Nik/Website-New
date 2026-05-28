@@ -279,14 +279,20 @@ export function SearchPage() {
         )}
 
         {/* Header */}
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
-          color: gold, textTransform: 'uppercase', marginBottom: '12px' }}>
+        <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em',
+          color: gold, textTransform: 'uppercase', marginBottom: '14px' }}>
           Search
         </div>
-        <h1 style={{ ...serif, fontSize: 'clamp(30px,5vw,46px)', fontWeight: 400,
-          color: dark, lineHeight: 1.08, marginBottom: '32px' }}>
-          Find your fit
+        <h1 style={{ ...serif, fontSize: 'clamp(36px,6vw,56px)', fontWeight: 300,
+          color: dark, lineHeight: 1.06, letterSpacing: '-0.012em',
+          marginBottom: '16px' }}>
+          The Atlas
         </h1>
+        <p style={{ ...body, fontSize: '18px', fontWeight: 400,
+          color: 'rgba(15,21,35,0.78)', lineHeight: 1.5,
+          marginBottom: '36px', maxWidth: '560px' }}>
+          Find the people, organisations, and projects building the future you want to live in.
+        </p>
 
         {/* Search box */}
         <div style={{ marginBottom: '20px' }}>

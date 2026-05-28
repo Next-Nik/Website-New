@@ -135,13 +135,13 @@ const MEMBERSHIP_STATUS_LABEL = {
 // or when the mode doesn't change order materially. 'practice' foregrounds
 // offerings (programmes / retreats) earlier in the page.
 const MODE_PROFILE_ORDER = {
-  practice:   ['identity', 'mission', 'story', 'description', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'contact', 'links', 'press', 'relationships', 'bridge', 'provenance'],
-  enterprise: ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'needs', 'credentials', 'testimonials', 'events', 'contact', 'links', 'press', 'relationships', 'bridge', 'provenance'],
-  platform:   ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'credentials', 'testimonials', 'needs', 'events', 'contact', 'links', 'press', 'relationships', 'bridge', 'provenance'],
-  collective: ['identity', 'mission', 'description', 'story', 'placement', 'working_on', 'needs', 'offers', 'testimonials', 'credentials', 'events', 'contact', 'links', 'press', 'relationships', 'bridge', 'provenance'],
-  mixed:      ['identity', 'mission', 'description', 'story', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'contact', 'links', 'press', 'relationships', 'bridge', 'provenance'],
+  practice:   ['identity', 'mission', 'story', 'description', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'contact', 'links', 'press', 'relationships', 'provenance'],
+  enterprise: ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'needs', 'credentials', 'testimonials', 'events', 'contact', 'links', 'press', 'relationships', 'provenance'],
+  platform:   ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'credentials', 'testimonials', 'needs', 'events', 'contact', 'links', 'press', 'relationships', 'provenance'],
+  collective: ['identity', 'mission', 'description', 'story', 'placement', 'working_on', 'needs', 'offers', 'testimonials', 'credentials', 'events', 'contact', 'links', 'press', 'relationships', 'provenance'],
+  mixed:      ['identity', 'mission', 'description', 'story', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'contact', 'links', 'press', 'relationships', 'provenance'],
   // default (NULL mode) — close to the original OrgPublic order
-  default:    ['identity', 'mission', 'description', 'working_on', 'placement', 'offers', 'needs', 'story', 'testimonials', 'credentials', 'events', 'contact', 'links', 'press', 'relationships', 'bridge', 'provenance'],
+  default:    ['identity', 'mission', 'description', 'working_on', 'placement', 'offers', 'needs', 'story', 'testimonials', 'credentials', 'events', 'contact', 'links', 'press', 'relationships', 'provenance'],
 }
 
 function getSectionOrder(actorMode) {
@@ -1301,41 +1301,17 @@ function TestimonialsSection({ testimonials, actorMode }) {
   )
 }
 
-// ── Bridge to developmental profile ──────────────────────────
-// Renders only when the practitioner has toggled show_developmental_link
-// AND has a profile_owner (i.e., is a person, not an org). The link points
-// to the developmental profile; whether that profile is actually visible
-// to the viewer is enforced server-side by usePublicProfile.
-
-function BridgeLink({ actor }) {
-  if (!actor.show_developmental_link || !actor.profile_owner) return null
-
-  return (
-    <div style={{
-      background: 'rgba(168,114,26,0.04)',
-      border: '1px dashed rgba(200,146,42,0.25)',
-      borderRadius: '10px',
-      padding: '22px 28px',
-      textAlign: 'center' }}>
-      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.20em',
-        color: 'rgba(15,21,35,0.40)', textTransform: 'uppercase',
-        marginBottom: '10px' }}>
-        Walking the talk
-      </div>
-      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
-        lineHeight: 1.7, marginBottom: '14px', fontStyle: 'italic' }}>
-        I do this work on myself, in public.
-      </p>
-      <Link to={`/profile/${actor.profile_owner}`}
-        style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em',
-          color: gold, textTransform: 'uppercase', textDecoration: 'none',
-          borderBottom: '1px solid rgba(200,146,42,0.30)',
-          paddingBottom: '2px' }}>
-        See my developmental profile →
-      </Link>
-    </div>
-  )
-}
+// ── Bridge to developmental profile — REMOVED ────────────────
+//
+// The practitioner page no longer advertises a public link to the owner's
+// developmental profile. Developmental profiles are intimate work, private
+// by default (migration 068). Broadcasting their existence on a public
+// practitioner page conflates two surfaces the platform deliberately keeps
+// separate.
+//
+// The schema column `show_developmental_link` is left in place to avoid a
+// breaking migration, but nothing reads it anymore. The checkbox is also
+// removed from OrgManage.
 
 // ── Main page ────────────────────────────────────────────────
 
@@ -1531,9 +1507,6 @@ export function OrgPublicPage() {
         ? <RelationshipsSection parent={parent} children={children} partners={partners} />
         : null
     ),
-    bridge: () => (
-      <BridgeLink actor={actor} />
-    ),
     provenance: () => (
       <ProvenanceBadge actor={actor} />
     ),
@@ -1543,8 +1516,7 @@ export function OrgPublicPage() {
   // - identity (always first, the rule comes after it from the next section)
   // - events (has its own internal chrome)
   // - provenance (last, no trailing rule)
-  // - bridge (renders inside a styled box, doesn't need a divider above)
-  const SECTIONS_WITHOUT_TRAILING_RULE = new Set(['events', 'provenance', 'bridge'])
+  const SECTIONS_WITHOUT_TRAILING_RULE = new Set(['events', 'provenance'])
 
   return (
     <div style={{ background: parch, minHeight: '100vh' }}>

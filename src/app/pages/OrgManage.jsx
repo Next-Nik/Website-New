@@ -97,12 +97,11 @@ function ProfileTab({ actor, onSave, toast }) {
     location_name:           actor.location_name || '',
     lat:                     actor.lat ?? '',
     lng:                     actor.lng ?? '',
-    // New: actor mode + practitioner signals + membership + bridge
+    // New: actor mode + practitioner signals + membership
     actor_mode:              actor.actor_mode || '',
     accepting_status:        actor.accepting_status || '',
     medium:                  actor.medium || '',
     membership_status:       actor.membership_status || '',
-    show_developmental_link: !!actor.show_developmental_link,
     // people_in_the_work — owner-private. Treated as string in the input so
     // empty string maps to NULL on save; integer parse on submit.
     people_in_the_work:      actor.people_in_the_work != null
@@ -154,7 +153,6 @@ function ProfileTab({ actor, onSave, toast }) {
       accepting_status:        form.accepting_status || null,
       medium:                  form.medium || null,
       membership_status:       form.membership_status || null,
-      show_developmental_link: !!form.show_developmental_link,
       people_in_the_work:      peopleInTheWork,
       people_in_the_work_updated_at: peopleInTheWorkUpdatedAt,
       updated_at:              new Date().toISOString(),
@@ -278,35 +276,6 @@ function ProfileTab({ actor, onSave, toast }) {
             options={MEMBERSHIP_STATUS_OPTIONS} />
           <Hint>For groups, places, and any actor with joinable membership.</Hint>
         </div>
-
-        {/* ── Bridge to developmental profile ── */}
-        {actor.profile_owner && (
-          <div style={{ marginBottom: '24px',
-            background: 'rgba(168,114,26,0.04)',
-            border: '1px dashed rgba(200,146,42,0.25)',
-            borderRadius: '10px', padding: '18px 20px' }}>
-            <label style={{ display: 'flex', alignItems: 'flex-start',
-              gap: '12px', cursor: 'pointer' }}>
-              <input type='checkbox' checked={form.show_developmental_link}
-                onChange={e => set('show_developmental_link', e.target.checked)}
-                style={{ marginTop: '4px', width: '16px', height: '16px',
-                  accentColor: gold }} />
-              <div>
-                <div style={{ ...body, fontSize: '15px', color: dark,
-                  fontWeight: 400, marginBottom: '4px' }}>
-                  Show a link to my developmental profile
-                </div>
-                <div style={{ ...body, fontSize: '13px',
-                  color: 'rgba(15,21,35,0.60)', lineHeight: 1.6 }}>
-                  Renders a quiet "Walking the talk" link at the foot of your
-                  practitioner profile. The developmental profile is private by
-                  default; the link only works for viewers whom your
-                  developmental visibility setting permits.
-                </div>
-              </div>
-            </label>
-          </div>
-        )}
 
         {/* ── People in the work — owner-private ── */}
         <div style={{ marginBottom: '24px',
