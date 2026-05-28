@@ -115,7 +115,11 @@ export default function Journal() {
     <div style={{ ...body, background: tokens.bg, minHeight: '100vh', color: tokens.ink }}>
       <Nav />
 
-      <main style={{ maxWidth: 760, margin: '0 auto', padding: '32px 24px 80px' }}>
+      <main style={{
+        maxWidth: 760,
+        margin: '0 auto',
+        padding: 'clamp(96px, 12vw, 128px) 24px 80px',
+      }}>
 
         {/* ── INTRO SIGNAGE ─────────────────────────────────── */}
         <header style={{ marginBottom: 28 }}>
