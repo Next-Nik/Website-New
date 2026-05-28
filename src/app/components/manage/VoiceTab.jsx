@@ -98,7 +98,11 @@ export function VoiceTab({ actor, onSave, toast }) {
 
       {/* Working on now */}
       <div>
-        <Label>Working on now</Label>
+        <Label>
+          {actor.actor_mode === 'practice'
+            ? 'Working on now through your practice'
+            : 'Working on now'}
+        </Label>
         <Hint>What you're focused on right now. A signal that this profile is alive. Update freely — there's no "stale" badge, just truth.</Hint>
         <TextArea value={form.working_on_now}
           onChange={v => set('working_on_now', v)}
