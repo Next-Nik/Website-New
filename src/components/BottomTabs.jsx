@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import { ToolDrawer } from './ToolDrawer'
 
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
@@ -127,7 +126,6 @@ function MoreMenu({ onClose }) {
 export function BottomTabs() {
   const { user }     = useAuth()
   const { pathname } = useLocation()
-  const [drawerOpen, setDrawerOpen] = useState(false)
   const [moreOpen,   setMoreOpen]   = useState(false)
 
   const initial = user?.email
@@ -135,7 +133,6 @@ export function BottomTabs() {
     : null
 
   const isHome    = pathname === '/'
-  const isSelf    = pathname.startsWith('/nextus-self') || pathname.startsWith('/tools')
   const isPlanet  = pathname.startsWith('/nextus') && !pathname.startsWith('/nextus-self')
   const isMore    = ['/work-with-nik', '/podcast', '/about', '/pricing']
     .some(p => pathname.startsWith(p))
@@ -148,14 +145,6 @@ export function BottomTabs() {
       active: isHome,
       to:     '/',
       action: null,
-    },
-    {
-      key:    'self',
-      label:  'NextUs Self',
-      icon:   <GridIcon active={isSelf || drawerOpen} />,
-      active: isSelf || drawerOpen,
-      to:     null,
-      action: () => { setMoreOpen(false); setDrawerOpen(o => !o) },
     },
     {
       key:    'planet',
@@ -171,14 +160,13 @@ export function BottomTabs() {
       icon:   <MoreIcon active={isMore || moreOpen} />,
       active: isMore || moreOpen,
       to:     null,
-      action: () => { setDrawerOpen(false); setMoreOpen(o => !o) },
+      action: () => setMoreOpen(o => !o),
     },
   ]
 
   return (
     <>
       {moreOpen   && <MoreMenu onClose={() => setMoreOpen(false)} />}
-      <ToolDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <nav data-bottom-tabs style={{
         position: 'fixed', bottom: 0, left: 0, right: 0,

@@ -1,14 +1,10 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-import { ToolDrawer } from './ToolDrawer'
-
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 
 export function Nav({ activePath }) {
   const { user }     = useAuth()
   const { pathname } = useLocation()
-  const [drawerOpen, setDrawerOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const initial = user?.email
@@ -44,7 +40,7 @@ export function Nav({ activePath }) {
             <img src="/logo_nav.png" alt="NextUs" />
           </Link>
 
-          {/* Desktop centre — nav links + Tools pill */}
+          {/* Desktop centre — marketing nav links (signed-out only) */}
           <div className="nav-centre" style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
             {/* Marketing links — hidden when logged in */}
             {!user && (
@@ -58,27 +54,6 @@ export function Nav({ activePath }) {
                 ))}
               </ul>
             )}
-
-            {/* Tools pill — deliberately outside nav-links ul */}
-            <button
-              className={`nav-tools-pill${drawerOpen ? ' nav-tools-pill--open' : ''}`}
-              onClick={() => { setDrawerOpen(o => !o); setMobileOpen(false) }}
-              aria-expanded={drawerOpen}
-              aria-label="Open tools menu"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-                <rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-                <rect x="8" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-                <rect x="1" y="8" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-                <rect x="8" y="8" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-              </svg>
-              Tools
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"
-                style={{ transform: drawerOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
-                <polyline points="2,3 5,7 8,3" stroke="currentColor" strokeWidth="1.3"
-                  strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
           </div>
 
           {/* Right — search + profile dot / sign in + hamburger */}
@@ -102,7 +77,7 @@ export function Nav({ activePath }) {
             {/* Hamburger — visible on mobile only via CSS */}
             <button
               className="nav-hamburger"
-              onClick={() => { setMobileOpen(o => !o); setDrawerOpen(false) }}
+              onClick={() => setMobileOpen(o => !o)}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileOpen}
             >
@@ -126,31 +101,6 @@ export function Nav({ activePath }) {
       {/* Mobile dropdown */}
       {mobileOpen && (
         <div className="nav-mobile-menu">
-          {/* NextUs Self section */}
-          <div className="nav-mobile-section">
-            <Link to="/" onClick={closeMobile} className="nav-mobile-link nav-mobile-link--heading">
-              <span>Horizon Suite</span>
-              <span style={{ ...body, fontSize: '14px',
-                color: 'rgba(15,21,35,0.55)', fontWeight: 400, letterSpacing: 0 }}>
-                Tools for your life
-              </span>
-            </Link>
-            <button
-              className="nav-mobile-link nav-mobile-tools-btn"
-              onClick={() => { setDrawerOpen(true); setMobileOpen(false) }}
-            >
-              <svg width="13" height="13" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0 }}>
-                <rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-                <rect x="8" y="1" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-                <rect x="1" y="8" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-                <rect x="8" y="8" width="5" height="5" rx="1" stroke="currentColor" strokeWidth="1.3" fill="none"/>
-              </svg>
-              Open Tools
-            </button>
-          </div>
-
-          <div className="nav-mobile-divider" />
-
           {/* Remaining links — hidden when logged in */}
           {!user && links.filter(l => l.key !== 'nextus-self').map(l => (
             <Link key={l.key} to={l.to} onClick={closeMobile} className="nav-mobile-link">
@@ -166,34 +116,7 @@ export function Nav({ activePath }) {
         </div>
       )}
 
-      <ToolDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
-
       <style>{`
-        /* ── Tools pill ── */
-        .nav-tools-pill {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 8px 16px;
-          border-radius: 40px;
-          border: 1.5px solid rgba(200,146,42,0.35);
-          background: transparent;
-          font-family: 'Cormorant SC', Georgia, serif;
-          font-size: 17px;
-          letter-spacing: 0.12em;
-          color: rgba(15,21,35,0.72);
-          cursor: pointer;
-          transition: border-color 0.18s, color 0.18s, background 0.18s;
-          white-space: nowrap;
-          flex-shrink: 0;
-        }
-        .nav-tools-pill:hover,
-        .nav-tools-pill--open {
-          border-color: rgba(200,146,42,0.78);
-          color: #A8721A;
-          background: rgba(200,146,42,0.05);
-        }
-
         /* ── Sign in ── */
         .nav-sign-in {
           padding: 10px 22px;
@@ -239,15 +162,6 @@ export function Nav({ activePath }) {
           padding: 6px 0 14px;
           animation: mobileMenuSlide 0.2s cubic-bezier(0.16,1,0.3,1) both;
         }
-        .nav-mobile-section {
-          display: flex;
-          flex-direction: column;
-        }
-        .nav-mobile-divider {
-          height: 1px;
-          background: rgba(200,146,42,0.08);
-          margin: 4px 0;
-        }
         .nav-mobile-link {
           display: flex;
           align-items: center;
@@ -266,17 +180,6 @@ export function Nav({ activePath }) {
           transition: color 0.15s;
         }
         .nav-mobile-link:hover { color: #0F1523; }
-        .nav-mobile-link--heading {
-          justify-content: space-between;
-          color: #0F1523;
-          font-weight: 600;
-        }
-        .nav-mobile-tools-btn {
-          color: #A8721A;
-          padding-top: 8px;
-          padding-bottom: 12px;
-        }
-        .nav-mobile-tools-btn:hover { color: #8A5C15; }
         .nav-mobile-link--cta {
           color: #A8721A;
           margin-top: 4px;

@@ -38,7 +38,6 @@ import { ContentEditorPage }      from './pages/ContentEditor'
 import { GroupJoinPage }          from './pages/GroupJoin'
 import { ToolsPage }              from './pages/Tools'
 import { MarketingHomePage }      from './pages/MarketingHome'
-import { MarketingToolsPage }     from './pages/MarketingTools'
 import { PricingPage }            from './pages/Pricing'
 import { CheckoutPage }          from './pages/Checkout'
 import { AuthCallbackPage }       from './pages/AuthCallback'
@@ -201,7 +200,7 @@ function AppInner() {
         <Route path="/faq"             element={<FAQPage />} />
         <Route path="/profile"         element={<Navigate to="/" replace />} />
         <Route path="/dashboard"       element={<Navigate to="/" replace />} />
-        <Route path="/tools"           element={<MarketingToolsPage />} />
+        <Route path="/tools"           element={<Navigate to="/" replace />} />
         <Route path="/content-editor"  element={<ContentEditorPage />} />
         <Route path="/watch"           element={<WatchPage />} />
 

@@ -15,7 +15,6 @@ export const ROUTES = {
   dashboard:      '/dashboard',
   pricing:        '/pricing',
   checkout:       '/checkout',
-  tools:          '/tools',
   nextUsSelf:     '/nextus-self',
   nextUs:         '/nextus',
   nextUsActors:   '/nextus/actors',
