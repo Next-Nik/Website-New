@@ -15,12 +15,12 @@
 export const TOOLS = [
   {
     key:      'nextsteps',
-    label:    'NextSteps',
+    label:    "Let's Talk",
     eyebrow:  'Start here',
-    subtitle: 'Turn caring into a step',
+    subtitle: 'Talk it through with North Star',
     path:     '/tools/nextsteps',
-    desc:     'Feeling stuck? Get personalised guidance on what to focus on next based on where you are right now.',
-    hook:     'When something is gripping you and you do not know what to do with it. NextSteps takes the fire, gives it a direction, and produces your next move.',
+    desc:     'Tell North Star what is going on in your life or an area of focus for you, and they will see if they can point you at some next steps and resources.',
+    hook:     'The entry conversation. Talk it through with North Star and let them point you at the next step.',
     anchor:   'nextsteps',
     featured: true,
   },
@@ -66,12 +66,12 @@ export const TOOLS = [
   },
   {
     key:      'horizon-practice',
-    label:    'Horizon Practice',
+    label:    'The Practice',
     eyebrow:  'Become',
     subtitle: 'Daily becoming practice',
     path:     '/tools/horizon-practice',
-    desc:     'Build better habits, one day at a time. Your daily skill development practice.',
-    hook:     'T.E.A. daily practice, skill development, and thought loop work toward your Horizon Self.',
+    desc:     'A daily ritual that anchors you into your life from the place of the you that you are choosing to be. When you are ready, turn the focus up and run a 90-day Sprint.',
+    hook:     'Daily T.E.A. practice, skill development, and thought-loop work toward your Horizon Self. Contains Sprint as the turn-up-the-focus mode.',
     anchor:   'horizon-practice',
   },
 ]

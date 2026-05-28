@@ -9,13 +9,23 @@
 // Layout: vertical column, glyph on top, label below, optional
 // state line at bottom. Width adapts to viewport.
 //
+// When dismissible is true, a small "×" affordance appears in
+// the top-right of the tile on hover/focus. Clicking it calls
+// onDismiss(); the parent is responsible for persisting state
+// and re-rendering without this tile. The × does not propagate
+// to the tile's onClick. This is the pin/unpin mechanic — a
+// dismissed tile leaves the rail but remains accessible from
+// the Journal's "You" lens.
+//
 // Props:
-//   glyph:    string|node  — unicode/svg/component shown at top
-//   label:    string|node  — main label, two lines OK (use <br/>)
-//   state:    string|null  — small state line; falsy → no line
-//   active:   boolean      — visually emphasises this tile
-//   onClick:  () => void
-//   title:    string       — hover/aria title
+//   glyph:        string|node  — unicode/svg/component shown at top
+//   label:        string|node  — main label, two lines OK (use <br/>)
+//   state:        string|null  — small state line; falsy → no line
+//   active:       boolean      — visually emphasises this tile
+//   onClick:      () => void
+//   title:        string       — hover/aria title
+//   dismissible:  boolean      — show × affordance on hover
+//   onDismiss:    () => void   — called when × tapped
 // ─────────────────────────────────────────────────────────────
 
 import {
@@ -42,11 +52,13 @@ export default function Tile({
   active = false,
   onClick,
   title,
+  dismissible = false,
+  onDismiss,
 }) {
   const showState = isMeaningfulState(state)
   return (
     <div
-      className={`mc-rail-icon ${active ? 'mc-rail-active' : ''}`}
+      className={`mc-rail-icon ${active ? 'mc-rail-active' : ''} ${dismissible ? 'mc-rail-dismissible' : ''}`}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -59,6 +71,28 @@ export default function Tile({
       }}
     >
       <style>{TILE_CSS}</style>
+      {dismissible && (
+        <button
+          type="button"
+          className="mc-rail-dismiss"
+          aria-label={`Hide ${typeof title === 'string' ? title : 'this tile'} from rail`}
+          title="Hide from rail. Stays accessible in your Journal."
+          onClick={(e) => {
+            e.stopPropagation()
+            onDismiss?.()
+          }}
+          onKeyDown={(e) => {
+            // Don't let Enter/Space on the × also trigger the tile's onClick
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.stopPropagation()
+              e.preventDefault()
+              onDismiss?.()
+            }
+          }}
+        >
+          ×
+        </button>
+      )}
       <div className="mc-rail-glyph">{glyph}</div>
       <div className="mc-rail-label">{label}</div>
       {showState && <div className="mc-rail-state">{state}</div>}
@@ -163,6 +197,41 @@ const TILE_CSS = `
   color: ${TEXT_WHITE_FAINT};
 }
 [data-stage="dark"] .mc-rail-state { color: ${TEXT_FAINT}; }
+
+/* Dismiss affordance — small × in the top-right of dismissible
+   tiles. Invisible by default, fades in on hover/focus of the
+   tile. Sits above the tile's onClick handler — we stopPropagation
+   on the button itself. */
+.mc-rail-dismiss {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  font-family: ${FONT_DISPLAY};
+  font-size: 16px;
+  line-height: 1;
+  color: ${TEXT_WHITE_FAINT};
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+[data-stage="dark"] .mc-rail-dismiss { color: ${TEXT_FAINT}; }
+.mc-rail-icon:hover .mc-rail-dismiss,
+.mc-rail-icon:focus-within .mc-rail-dismiss { opacity: 1; }
+.mc-rail-dismiss:hover { color: ${GOLD}; }
+.mc-rail-dismiss:focus-visible {
+  opacity: 1;
+  outline: 1px solid ${GOLD};
+  outline-offset: 1px;
+}
 
 /* On larger screens, tiles get more breathing room and labels can
    sit on a single line where they fit. */

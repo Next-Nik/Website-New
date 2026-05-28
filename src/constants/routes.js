@@ -48,6 +48,7 @@ export const ROUTES = {
   faq:            '/faq',
   nextUsPlace:    '/nextus/place',
   contentEditor:  '/content-editor',
+  journal:        '/journal',
 
   // ── Tool paths ─────────────────────────────────────────────
   northStar:        '/tools/north-star',

@@ -78,6 +78,7 @@ import PracticeDetail         from './app/pages/PracticeDetail'
 import PracticeContribute     from './app/pages/PracticeContribute'
 import { InvitationPage }     from './app/pages/Invitation'
 import { InvitationIndexPage } from './app/pages/InvitationIndex'
+import JournalPage            from './app/pages/Journal'
 
 // ── Begin / Build ────────────────────────────────────────────────
 import { BeginBuildOrgPage }      from './pages/begin-build/Org'
@@ -226,6 +227,7 @@ function AppInner() {
         <Route path="/profile/edit"                 element={<ProfileEdit />} />
         <Route path="/profile/:id"                  element={<PublicProfile />} />
         <Route path="/feed"                         element={<FeedPage />} />
+        <Route path="/journal"                      element={<JournalPage />} />
         <Route path="/contribution"                 element={<Contribution />} />
         <Route path="/org/:slug"                    element={<OrgPublicPage />} />
         <Route path="/org/:slug/manage"             element={<OrgManagePage />} />

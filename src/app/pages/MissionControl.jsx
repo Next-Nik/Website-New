@@ -897,6 +897,43 @@ export default function MissionControl() {
   const worldViewState = null
   const planetSprintState = null
 
+  // ─── Rail dismiss state ──────────────────────────────────────
+  // Reads from users.dismissed_rail_tools (text[]). Local state
+  // mirrors the column so dismiss is immediate; the column write
+  // is fire-and-forget. Optimistic update; if the write fails the
+  // user still sees the dismiss and reload restores from db.
+  const [dismissedTools, setDismissedTools] = useState(
+    Array.isArray(data.userRow?.dismissed_rail_tools)
+      ? data.userRow.dismissed_rail_tools
+      : []
+  )
+
+  // Sync when the underlying row changes (e.g. after initial load).
+  useEffect(() => {
+    if (Array.isArray(data.userRow?.dismissed_rail_tools)) {
+      setDismissedTools(data.userRow.dismissed_rail_tools)
+    }
+  }, [data.userRow?.dismissed_rail_tools])
+
+  const isDismissed = (key) => dismissedTools.includes(key)
+
+  const dismissTool = (key) => {
+    if (!data.user) return
+    if (dismissedTools.includes(key)) return
+    const next = [...dismissedTools, key]
+    setDismissedTools(next)
+    // Fire-and-forget. RLS-safe — user can only update their own row.
+    supabase
+      .from('users')
+      .update({ dismissed_rail_tools: next })
+      .eq('id', data.user.id)
+      .then(({ error }) => {
+        if (error) {
+          console.warn('[MissionControl] dismiss persist failed:', error.message)
+        }
+      })
+  }
+
   return (
     <div
       id="mc-stage-root"
@@ -911,10 +948,6 @@ export default function MissionControl() {
         placement={displayPlacement}
         onProfile={() => setActivePanel('profile')}
         onSettings={() => setActivePanel('settings')}
-        onFindFit={() => {
-          if (!data.user) { navigate('/login'); return }
-          openCivPanel('purpose-piece')
-        }}
       />
 
       <PoleHeader
@@ -925,46 +958,99 @@ export default function MissionControl() {
 
       <main className="mc-body">
 
+        {/* ── Welcome band ─────────────────────────────────────
+            Shown to a user who hasn't started The Map yet, on the
+            personal pole only. Disappears as soon as they begin —
+            once they have any Map work, this signage isn't the
+            right frame any more. */}
+        {activeScope === 'self' && mapAudited === 0 && (
+          <div className="mc-welcome-band" role="region" aria-label="Welcome">
+            <p className="mc-welcome-body">
+              The biggest gift you can give yourself, the people around you,
+              and the planet as a whole is to live fully and powerfully.
+              These tools will help you do that — specifically tailored to you.
+            </p>
+            <p className="mc-welcome-cue">
+              Start with <strong>The Map</strong>. Build <strong>Horizon State</strong> alongside it.
+            </p>
+          </div>
+        )}
+
         {(activeScope === 'self' || activeScope === 'planet') && (
         <>
         <div className="mc-grid">
 
-          {/* LEFT RAIL — My Life */}
+          {/* LEFT RAIL — My Life ──────────────────────────────
+              Six tiles in canonical order:
+                1. Let's Talk    — entry conversation with North Star
+                2. The Map       — see yourself across seven domains
+                3. Horizon State — the daily floor (built alongside Map)
+                4. Purpose Piece — find your fit
+                5. The Practice  — daily becoming (contains Sprint)
+                6. Journal       — the record
+
+              Let's Talk and Journal are permanent. The other four
+              are dismissible — when hidden, they remain accessible
+              from the Journal's "You" lens. Dismissed state lives
+              in users.dismissed_rail_tools. */}
           <SideRail side="left">
             <Tile
               glyph="✧"
-              label={<>NEXT<br/>STEPS</>}
+              label={<>Let's<br/>Talk</>}
               state={null}
               onClick={() => navigate('/tools/nextsteps')}
-              title="NextSteps — turn caring into a step"
+              title="Let's Talk — talk it through with North Star"
             />
-            <Tile
-              glyph={<MapPinGlyph />}
-              label={<>THE<br/>MAP</>}
-              state={mapState}
-              onClick={() => openPersonalPanel('map')}
-              title="The Map — your seven domains"
-            />
-            <Tile
-              glyph={<HorizonStateGauge />}
-              label={<>HORIZON<br/>STATE</>}
-              state={hsState}
-              onClick={() => openPersonalPanel('horizon-state')}
-              title="Horizon State — daily check-in"
-            />
-            <Tile
-              glyph="✦"
-              label={<>HORIZON<br/>PRACTICE</>}
-              state={hpState}
-              onClick={() => openPersonalPanel('horizon-practice')}
-              title="Horizon Practice"
-            />
+            {!isDismissed('map') && (
+              <Tile
+                glyph={<MapPinGlyph />}
+                label={<>The<br/>Map</>}
+                state={mapState}
+                onClick={() => openPersonalPanel('map')}
+                title="The Map — your seven domains"
+                dismissible
+                onDismiss={() => dismissTool('map')}
+              />
+            )}
+            {!isDismissed('horizon-state') && (
+              <Tile
+                glyph={<HorizonStateGauge />}
+                label={<>Horizon<br/>State</>}
+                state={hsState}
+                onClick={() => openPersonalPanel('horizon-state')}
+                title="Horizon State — daily check-in"
+                dismissible
+                onDismiss={() => dismissTool('horizon-state')}
+              />
+            )}
+            {!isDismissed('purpose-piece') && (
+              <Tile
+                glyph="◆"
+                label={<>Purpose<br/>Piece</>}
+                state={placementState}
+                onClick={() => openPersonalPanel('purpose-piece')}
+                title="Purpose Piece — find your fit"
+                dismissible
+                onDismiss={() => dismissTool('purpose-piece')}
+              />
+            )}
+            {!isDismissed('horizon-practice') && (
+              <Tile
+                glyph="✦"
+                label={<>The<br/>Practice</>}
+                state={hpState}
+                onClick={() => openPersonalPanel('horizon-practice')}
+                title="The Practice — daily becoming (contains Sprint)"
+                dismissible
+                onDismiss={() => dismissTool('horizon-practice')}
+              />
+            )}
             <Tile
               glyph="≡"
-              label="RESOURCES"
+              label="Journal"
               state={null}
-              onClick={() => openPersonalPanel('resources')}
-              title="Resources for self"
+              onClick={() => navigate('/journal')}
+              title="Journal — your record"
             />
           </SideRail>
 
@@ -1379,6 +1465,46 @@ const STAGE_CSS = `
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+/* Welcome band — first-time signage above the grid. Visible only
+   to users on the personal pole who have not started The Map.
+   Quiet, parchment-cream background, no card chrome. Disappears
+   once any Map work begins. */
+.mc-welcome-band {
+  position: relative;
+  z-index: 2;
+  margin: 18px auto 0;
+  padding: 18px 24px 2px;
+  max-width: 720px;
+  text-align: center;
+}
+.mc-welcome-body {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 19px;
+  line-height: 1.45;
+  color: rgba(15, 21, 35, 0.82);
+  margin: 0 0 10px;
+  font-weight: 400;
+}
+[data-stage="dark"] .mc-welcome-body { color: rgba(250, 250, 247, 0.92); }
+.mc-welcome-cue {
+  font-family: 'Cormorant SC', Georgia, serif;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: rgba(15, 21, 35, 0.62);
+  margin: 0;
+}
+[data-stage="dark"] .mc-welcome-cue { color: rgba(250, 250, 247, 0.72); }
+.mc-welcome-cue strong {
+  font-weight: 600;
+  color: #A8721A;
+}
+[data-stage="dark"] .mc-welcome-cue strong { color: #C8922A; }
+@media (max-width: 640px) {
+  .mc-welcome-band { padding: 14px 18px 2px; }
+  .mc-welcome-body { font-size: 17px; }
+  .mc-welcome-cue { font-size: 12px; }
 }
 
 .mc-grid {

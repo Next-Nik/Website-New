@@ -19,16 +19,15 @@
 // Control's chrome.
 //
 // The identity bar holds the user's name on the left and their
-// fit signature centred. When unplaced, the centre reads
-// "find your fit" in italic as a soft invitation (links to the
-// Purpose Piece tile via onFindFitClick).
+// fit signature centred. When unplaced, the centre is left empty
+// (no italic invite) — Purpose Piece now lives on the left rail
+// as its own tile, so the strip no longer needs to surface it.
 //
 // Props:
 //   userName:     string  — display name; capitalised on render
 //   placement:    string  — fit signature OR null/empty when unplaced
 //   onProfile:    () => void
 //   onSettings:   () => void
-//   onFindFit:    () => void  — invoked when unplaced "find your fit" clicked
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from 'react'
@@ -70,7 +69,6 @@ export default function IdentityStrip({
   placement = null,
   onProfile,
   onSettings,
-  onFindFit,
 }) {
   const displayName = capitaliseName(userName)
   const isPlaced = placement && placement !== 'PURPOSE PIECE NOT YET PLACED'
@@ -164,16 +162,8 @@ export default function IdentityStrip({
       <div className="mc-identity-bar">
         <div className="mc-identity-name">{displayName}</div>
         <div className="mc-identity-fit">
-          {isPlaced ? (
+          {isPlaced && (
             <span className="mc-fit-placed">{placement}</span>
-          ) : (
-            <button
-              type="button"
-              className="mc-fit-invite"
-              onClick={onFindFit}
-            >
-              <em>find your fit</em>
-            </button>
           )}
         </div>
         <div className="mc-identity-spacer" aria-hidden="true" />
