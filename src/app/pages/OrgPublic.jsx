@@ -161,24 +161,39 @@ function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
 
         {/* Image — double gold border, matched to the Work With Nik treatment.
             Tight gold inner border + softer gold outline floating 5px out.
-            Signals "NextUs profile" at a glance. Works for portraits and logos
-            alike. */}
-        {actor.image_url && (
-          <div style={{ flexShrink: 0, padding: '6px' }}>
-            <div style={{
-              width: '128px', height: '128px',
-              borderRadius: '4px', overflow: 'hidden',
-              border: '1.5px solid rgba(200,146,42,0.70)',
-              outline: '1px solid rgba(200,146,42,0.35)',
-              outlineOffset: '5px',
-              background: 'rgba(200,146,42,0.05)',
-            }}>
-              <img src={actor.image_url} alt={actor.name}
-                style={{ width: '100%', height: '100%', objectFit: 'cover',
-                  objectPosition: 'center top', display: 'block' }} />
+            Signals "NextUs profile" at a glance. Portrait fit (`cover` + top
+            alignment) for practitioners; contain fit with breathing room for
+            logos and other org imagery. */}
+        {actor.image_url && (() => {
+          const isPortrait = actor.type === 'practitioner'
+          return (
+            <div className="org-identity-photo-wrap" style={{ flexShrink: 0, padding: '6px' }}>
+              <div className="org-identity-photo-frame" style={{
+                width: '160px', height: '160px',
+                borderRadius: '4px', overflow: 'hidden',
+                border: '1.5px solid rgba(200,146,42,0.70)',
+                outline: '1px solid rgba(200,146,42,0.35)',
+                outlineOffset: '5px',
+                background: isPortrait
+                  ? 'rgba(200,146,42,0.05)'
+                  : '#FDFCF8',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: isPortrait ? 0 : '16px',
+                boxSizing: 'border-box',
+              }}>
+                <img src={actor.image_url} alt={actor.name}
+                  style={{
+                    width: '100%', height: '100%',
+                    objectFit: isPortrait ? 'cover' : 'contain',
+                    objectPosition: isPortrait ? 'center top' : 'center',
+                    display: 'block',
+                  }} />
+              </div>
             </div>
-          </div>
-        )}
+          )
+        })()}
 
         {/* Identity content */}
         <div style={{ flex: 1, minWidth: '260px' }}>
@@ -218,18 +233,31 @@ function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
           )}
 
           {/* Name */}
-          <h1 style={{ ...serif, fontSize: 'clamp(32px, 5vw, 48px)', fontWeight: 300,
-            color: dark, lineHeight: 1.08, letterSpacing: '-0.01em',
-            margin: '0 0 12px' }}>
+          <h1 style={{ ...serif, fontSize: 'clamp(36px, 6vw, 56px)', fontWeight: 300,
+            color: dark, lineHeight: 1.06, letterSpacing: '-0.012em',
+            margin: '0 0 14px' }}>
             {actor.name}
           </h1>
 
           {/* Tagline */}
           {actor.tagline && (
-            <p style={{ ...body, fontSize: '18px', fontWeight: 400,
-              color: 'rgba(15,21,35,0.78)',
-              lineHeight: 1.5, margin: '0 0 18px' }}>
+            <p style={{ ...body, fontSize: '20px', fontWeight: 400,
+              color: 'rgba(15,21,35,0.82)',
+              lineHeight: 1.45, margin: '0 0 22px' }}>
               {actor.tagline}
+            </p>
+          )}
+
+          {/* Stub-state description — folded into identity strip when the actor
+              has no full story yet. Gives a thin profile real substance up top
+              instead of dropping the description into its own thin section
+              below. Skipped when a story exists (Story carries the narrative). */}
+          {actor.description && !actor.story && (
+            <p style={{ ...body, fontSize: '17px', fontWeight: 400,
+              color: 'rgba(15,21,35,0.78)',
+              lineHeight: 1.55, margin: '0 0 22px', maxWidth: '620px',
+              whiteSpace: 'pre-wrap' }}>
+              {actor.description}
             </p>
           )}
 
@@ -237,7 +265,7 @@ function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
           {actor.location_name && (
             <div style={{ ...sc, fontSize: '13px', fontWeight: 600,
               letterSpacing: '0.16em',
-              color: 'rgba(15,21,35,0.65)', marginBottom: '16px',
+              color: 'rgba(15,21,35,0.65)', marginBottom: '14px',
               textTransform: 'uppercase' }}>
               {actor.location_name}
             </div>
@@ -417,22 +445,18 @@ function WorkingOnNow({ actor }) {
 }
 
 // ── Evidence layer — Description ─────────────────────────────
+//
+// Description text is now rendered inside the identity strip (for stub-state
+// actors with no full story) — that gives thin profiles real substance up top
+// instead of leaving the description floating in its own section. When a full
+// story IS present, the Story section ("The work") carries the narrative.
+//
+// Either way, this standalone About section no longer renders. Kept as a stub
+// component because the section registry references it; returning null is the
+// signal to skip.
 
 function Description({ actor }) {
-  if (!actor.description) return null
-  // When a long-form story is present, the Story section ("The work") carries
-  // the narrative. About is for stub entries that don't have a full story yet,
-  // and would otherwise feel empty without a paragraph somewhere.
-  if (actor.story && actor.story.trim().length > 0) return null
-  return (
-    <div>
-      <Eyebrow>About</Eyebrow>
-      <p style={{ ...body, fontSize: '17px', fontWeight: 400, color: dark,
-        lineHeight: 1.55, margin: 0, whiteSpace: 'pre-wrap' }}>
-        {actor.description}
-      </p>
-    </div>
-  )
+  return null
 }
 
 // ── Placement ────────────────────────────────────────────────
@@ -1105,24 +1129,29 @@ function ProvenanceBadge({ actor }) {
     hint = 'Added and managed by the actor.'
   } else if (actor.seeded_by === 'community') {
     label = 'Community-added'
-    hint = actor.profile_owner ? 'Added by community, claimed by the actor.' : 'Held in trust by NextUs until claimed.'
+    hint = actor.profile_owner
+      ? 'Added by the community. Claimed and managed by the actor.'
+      : 'Held in trust by NextUs until the owner claims and adds depth.'
   } else if (actor.seeded_by === 'nextus') {
     label = 'Seeded by NextUs'
-    hint = actor.profile_owner ? 'Editorially seeded, then claimed.' : 'Editorial seed entry. Held in trust until claimed.'
+    hint = actor.profile_owner
+      ? 'Seeded by NextUs. Claimed and managed by the actor.'
+      : 'Held in trust by NextUs until the owner claims and adds depth.'
   } else {
     return null
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px',
-      paddingTop: '8px' }}>
-      <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em',
-        color: 'rgba(15,21,35,0.40)', textTransform: 'uppercase' }}>
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px',
+      paddingTop: '8px', flexWrap: 'wrap' }}>
+      <span style={{ ...sc, fontSize: '12px', fontWeight: 600,
+        letterSpacing: '0.16em',
+        color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
         {label}
       </span>
-      <span style={{ color: 'rgba(200,146,42,0.30)', fontSize: '10px' }}>·</span>
-      <span style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.40)',
-        fontStyle: 'italic' }}>
+      <span style={{ color: 'rgba(200,146,42,0.40)', fontSize: '12px' }}>·</span>
+      <span style={{ ...body, fontSize: '14px', fontWeight: 400,
+        color: 'rgba(15,21,35,0.62)', lineHeight: 1.5 }}>
         {hint}
       </span>
     </div>
@@ -1524,6 +1553,7 @@ export function OrgPublicPage() {
       <style>{`
         @media (max-width: 640px) {
           .org-public-container { padding-left: 20px !important; padding-right: 20px !important; }
+          .org-identity-photo-frame { width: 128px !important; height: 128px !important; }
         }
       `}</style>
 
