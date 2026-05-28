@@ -21,6 +21,7 @@
 // ────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
@@ -1970,11 +1971,166 @@ function MapRedirect({ onSkip }) {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// SPRINT BAND
+//
+// Sits at the bottom of the day view. Two states:
+//   • No active sprint — quiet invitation to turn the focus up
+//   • Active sprint    — current sprint surfaced, day count, open link
+//
+// The Sprint tool lives at /tools/target-sprint; nothing about
+// Sprint runs inside Practice itself. This band is just a door.
+// ────────────────────────────────────────────────────────────────────────────
+function SprintBand({ activeSprint, onOpenSprint }) {
+  // Active sprint state
+  if (activeSprint) {
+    const target = activeSprint.target_date ? new Date(activeSprint.target_date) : null
+    const today  = new Date()
+    let daysToTarget = null
+    if (target && !isNaN(target.getTime())) {
+      const ms = target.getTime() - today.getTime()
+      daysToTarget = Math.ceil(ms / 86400000)
+    }
+    const domainCount = Array.isArray(activeSprint.domains) ? activeSprint.domains.length : 0
+    const dayLabel = daysToTarget === null
+      ? null
+      : daysToTarget > 0
+        ? `${daysToTarget} day${daysToTarget === 1 ? '' : 's'} to ${activeSprint.end_date_label || 'target'}`
+        : daysToTarget === 0
+          ? 'Target day'
+          : `${Math.abs(daysToTarget)} day${Math.abs(daysToTarget) === 1 ? '' : 's'} past target`
+
+    return (
+      <div style={{
+        marginTop: '48px',
+        padding: '20px 22px',
+        background: tokens.goldTint,
+        border: `1px solid ${tokens.goldFaint}`,
+        borderRadius: '10px',
+      }}>
+        <div style={{
+          ...sc,
+          fontSize: '10px',
+          letterSpacing: '0.20em',
+          color: tokens.gold,
+          textTransform: 'uppercase',
+          marginBottom: '8px',
+        }}>
+          Sprint active
+        </div>
+        <div style={{
+          ...serif,
+          fontSize: '18px',
+          color: tokens.dark,
+          lineHeight: 1.35,
+          marginBottom: '4px',
+        }}>
+          {domainCount > 0
+            ? `${domainCount} ${domainCount === 1 ? 'area' : 'areas'} of focus`
+            : 'A sprint is running'}
+          {dayLabel ? <span style={{ color: tokens.ghost }}>{' · '}{dayLabel}</span> : null}
+        </div>
+        <p style={{
+          ...body,
+          fontSize: '14px',
+          color: tokens.ghost,
+          lineHeight: 1.55,
+          margin: '6px 0 14px',
+        }}>
+          The daily Practice continues underneath. The Sprint sharpens it toward a specific aim.
+        </p>
+        <button
+          type="button"
+          onClick={onOpenSprint}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+            ...sc,
+            fontSize: '12px',
+            fontWeight: 600,
+            letterSpacing: '0.16em',
+            textTransform: 'uppercase',
+            color: tokens.gold,
+            borderBottom: `1px solid ${tokens.goldFaint}`,
+            paddingBottom: '2px',
+          }}
+        >
+          Open Sprint →
+        </button>
+      </div>
+    )
+  }
+
+  // No active sprint — invitation
+  return (
+    <div style={{
+      marginTop: '48px',
+      padding: '20px 22px',
+      background: tokens.bgCard,
+      border: `1px solid ${tokens.goldFaint}`,
+      borderRadius: '10px',
+    }}>
+      <div style={{
+        ...sc,
+        fontSize: '10px',
+        letterSpacing: '0.20em',
+        color: tokens.ghost,
+        textTransform: 'uppercase',
+        marginBottom: '8px',
+      }}>
+        Turn the focus up
+      </div>
+      <div style={{
+        ...serif,
+        fontSize: '18px',
+        color: tokens.dark,
+        lineHeight: 1.35,
+        marginBottom: '6px',
+      }}>
+        Ready to commit to ninety days?
+      </div>
+      <p style={{
+        ...body,
+        fontSize: '14px',
+        color: tokens.ghost,
+        lineHeight: 1.55,
+        margin: '0 0 14px',
+      }}>
+        A Sprint takes one area of your life and commits to it for ninety days.
+        The daily Practice continues underneath; the Sprint sharpens it toward a specific aim.
+      </p>
+      <button
+        type="button"
+        onClick={onOpenSprint}
+        style={{
+          background: 'transparent',
+          border: 'none',
+          padding: 0,
+          cursor: 'pointer',
+          ...sc,
+          fontSize: '12px',
+          fontWeight: 600,
+          letterSpacing: '0.16em',
+          textTransform: 'uppercase',
+          color: tokens.gold,
+          borderBottom: `1px solid ${tokens.goldFaint}`,
+          paddingBottom: '2px',
+        }}
+      >
+        Start a Sprint →
+      </button>
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // MAIN PAGE
 // ────────────────────────────────────────────────────────────────────────────
 export function HorizonPracticePage() {
   const { user, loading: authLoading } = useAuth()
   const { loading: accessLoading } = useAccess('horizon-practice')
+  const navigate = useNavigate()
 
   // Profile data
   const [profileLoading, setProfileLoading] = useState(true)
@@ -1984,6 +2140,13 @@ export function HorizonPracticePage() {
   const [hasMap, setHasMap] = useState(false)
   const [skipMap, setSkipMap] = useState(false)
   const [icalUrl, setIcalUrl] = useState(null)
+
+  // Sprint awareness — Sprint is the turn-up-the-focus mode inside
+  // The Practice. We surface whether one is active so the day view
+  // can show the right CTA (start one vs. open the active one).
+  // Reads target_sprint_sessions; nothing about Sprint runs inside
+  // Practice itself — the user navigates to /tools/target-sprint.
+  const [activeSprint, setActiveSprint] = useState(null)
 
   // Today's state
   const [todayRun, setTodayRun] = useState(null)
@@ -2092,6 +2255,22 @@ export function HorizonPracticePage() {
         if (cancelled) return
 
         if (entryRows) setEntries(entryRows)
+
+        // Active Sprint (if any). Sprint is the turn-up-the-focus
+        // mode inside The Practice — we just need to know whether
+        // one is running so the day view shows the right CTA.
+        // Failure is non-fatal; the section gracefully falls back
+        // to "start a Sprint" if the query fails.
+        const { data: sprintRow } = await supabase
+          .from('target_sprint_sessions')
+          .select('id, status, domains, target_date, end_date_label, updated_at')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+        if (cancelled) return
+        if (sprintRow) setActiveSprint(sprintRow)
 
         // Determine initial view: if morning complete today, go to day surface
         if (runRow?.completed_at) setView('day')
@@ -2391,6 +2570,17 @@ export function HorizonPracticePage() {
                 onOpenJournal={() => setLogOpen(true)}
               />
             </div>
+
+            {/* Sprint band — Sprint is the turn-up-the-focus mode
+                inside The Practice. If a Sprint is active, show
+                its state and a link to open it. If not, offer to
+                start one. Either way the user navigates to
+                /tools/target-sprint; nothing about Sprint runs
+                inside Practice itself. */}
+            <SprintBand
+              activeSprint={activeSprint}
+              onOpenSprint={() => navigate('/tools/target-sprint')}
+            />
           </div>
         )}
 
