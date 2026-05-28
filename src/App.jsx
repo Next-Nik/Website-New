@@ -70,6 +70,7 @@ import { DomainPage } from './app/pages/Domain'
 import { FocusProfile } from './app/pages/FocusProfile'
 import { FocusIndex } from './app/pages/FocusIndex'
 import { Explore } from './app/pages/Explore'
+import { SearchPage } from './app/pages/Search'
 import WatchedFeed from './app/pages/WatchedFeed'
 import CuratedFeed from './app/pages/CuratedFeed'
 import Practices              from './app/pages/Practices'
@@ -247,6 +248,7 @@ function AppInner() {
         <Route path="/explore/:domain"                                   element={<Explore />} />
         <Route path="/explore/:domain/:subdomain"                        element={<Explore />} />
         <Route path="/explore/:domain/:subdomain/:field"                 element={<Explore />} />
+        <Route path="/search"                                            element={<SearchPage />} />
         <Route path="/tuned-in"                     element={<WatchedFeed />} />
         <Route path="/watched"                      element={<Navigate to="/tuned-in" replace />} />
         <Route path="/curated"                      element={<CuratedFeed />} />
