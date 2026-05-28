@@ -819,8 +819,12 @@ const TABS = [
 ]
 
 export function OrgManagePage() {
-  const { id }     = useParams()
-  const navigate   = useNavigate()
+  // Route is /org/:slug/manage. Read both `slug` (canonical) and `id` (legacy
+  // fallback) so direct visits work. The query then accepts either a UUID or
+  // a slug — matching the pattern used by get_actor_public.
+  const params    = useParams()
+  const idOrSlug  = params.slug || params.id
+  const navigate  = useNavigate()
   const { user, loading: authLoading } = useAuth()
 
   const [actor, setActor]         = useState(null)
@@ -830,18 +834,29 @@ export function OrgManagePage() {
 
   function showToast(msg) { setToast(msg) }
 
+  // UUID detection — same regex as get_actor_public
+  const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+  async function fetchActor() {
+    if (!idOrSlug) return null
+    const isUuid = UUID_RE.test(idOrSlug)
+    const column = isUuid ? 'id' : 'slug'
+    const { data } = await supabase
+      .from('nextus_actors')
+      .select('*, focus:focus_id(id, name, type, slug)')
+      .eq(column, idOrSlug)
+      .single()
+    return data
+  }
+
   useEffect(() => {
     async function load() {
-      const { data } = await supabase
-        .from('nextus_actors')
-        .select('*, focus:focus_id(id, name, type, slug)')
-        .eq('id', id)
-        .single()
+      const data = await fetchActor()
       setActor(data)
       setLoading(false)
     }
     load()
-  }, [id])
+  }, [idOrSlug])
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -853,12 +868,12 @@ export function OrgManagePage() {
     if (authLoading || loading) return
     if (!user) { navigate('/login'); return }
     if (actor && actor.profile_owner !== user.id) {
-      navigate(`/org/${id}`)
+      navigate(`/org/${actor.slug || actor.id}`)
     }
   }, [user, authLoading, actor, loading])
 
   async function reloadActor() {
-    const { data } = await supabase.from('nextus_actors').select('*, focus:focus_id(id, name, type, slug)').eq('id', id).single()
+    const data = await fetchActor()
     setActor(data)
   }
 
@@ -873,7 +888,18 @@ export function OrgManagePage() {
     )
   }
 
-  if (!actor) return null
+  if (!actor) {
+    return (
+      <div style={{ background: parch, minHeight: '100vh' }}>
+        <Nav activePath="nextus" />
+        <div style={{ maxWidth: '560px', margin: '0 auto', padding: '160px 24px', textAlign: 'center' }}>
+          <p style={{ ...body, fontSize: '17px', fontWeight: 400, color: 'rgba(15,21,35,0.55)', lineHeight: 1.55 }}>
+            This profile does not exist or is not publicly visible.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div style={{ background: parch, minHeight: '100vh' }}>
@@ -890,7 +916,7 @@ export function OrgManagePage() {
 
       <div className="beta-manage-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '80px 40px 120px' }}>
 
-        <button onClick={() => navigate(`/org/${id}`)}
+        <button onClick={() => navigate(`/org/${actor.slug || actor.id}`)}
           style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', marginBottom: '32px', padding: 0 }}>
           {'\u2190'} {actor.name}
         </button>
@@ -930,16 +956,16 @@ export function OrgManagePage() {
 
         {activeTab === 'profile'       && <ProfileTab       actor={actor} onSave={reloadActor} toast={showToast} />}
         {activeTab === 'voice'         && <VoiceTab         actor={actor} onSave={reloadActor} toast={showToast} />}
-        {activeTab === 'credentials'   && <CredentialsTab   actorId={id} toast={showToast} />}
-        {activeTab === 'testimonials'  && <TestimonialsTab  actorId={id} toast={showToast} />}
-        {activeTab === 'coordination'  && <CoordinationTab  actorId={id} toast={showToast} />}
-        {activeTab === 'links'         && <LinksTab         actorId={id} toast={showToast} />}
-        {activeTab === 'offerings'     && <OfferingsTab     actorId={id} toast={showToast} />}
-        {activeTab === 'domains'       && <OrgDomainsTab    actorId={id} toast={showToast} />}
-        {activeTab === 'matches'       && <MatchesTab       actorId={id} toast={showToast} />}
-        {activeTab === 'events'        && <EventsTab        actorId={id} actorName={actor.name} toast={showToast} />}
-        {activeTab === 'contributions' && <ContributionsTab actorId={id} actorName={actor.name} toast={showToast} />}
-        {activeTab === 'needs'         && <OrgNeedsTab      actorId={id} navigate={navigate} toast={showToast} />}
+        {activeTab === 'credentials'   && <CredentialsTab   actorId={actor.id} toast={showToast} />}
+        {activeTab === 'testimonials'  && <TestimonialsTab  actorId={actor.id} toast={showToast} />}
+        {activeTab === 'coordination'  && <CoordinationTab  actorId={actor.id} toast={showToast} />}
+        {activeTab === 'links'         && <LinksTab         actorId={actor.id} toast={showToast} />}
+        {activeTab === 'offerings'     && <OfferingsTab     actorId={actor.id} toast={showToast} />}
+        {activeTab === 'domains'       && <OrgDomainsTab    actorId={actor.id} toast={showToast} />}
+        {activeTab === 'matches'       && <MatchesTab       actorId={actor.id} toast={showToast} />}
+        {activeTab === 'events'        && <EventsTab        actorId={actor.id} actorName={actor.name} toast={showToast} />}
+        {activeTab === 'contributions' && <ContributionsTab actorId={actor.id} actorName={actor.name} toast={showToast} />}
+        {activeTab === 'needs'         && <OrgNeedsTab      actorId={actor.id} navigate={navigate} toast={showToast} />}
       </div>
 
       <SiteFooter />

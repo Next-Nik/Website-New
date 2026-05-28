@@ -120,16 +120,6 @@ export function EventsSection({ actor, isOwner = false }) {
         </div>
       )}
 
-      {!loading && upcoming.length === 0 && past.length === 0 && isOwner && (
-        <div style={{
-          padding: '24px', textAlign: 'center',
-          border: '1.5px dashed rgba(200,146,42,0.30)', borderRadius: '10px',
-          color: 'rgba(15,21,35,0.55)', fontSize: '14px',
-        }}>
-          No Events yet. Add your first one to start surfacing what's coming.
-        </div>
-      )}
-
       {/* Upcoming */}
       {upcoming.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
