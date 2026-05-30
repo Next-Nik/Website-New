@@ -587,6 +587,7 @@ export default function MissionControl() {
   //   shown when no domain has been picked yet.
   const [selfActiveIndex,  setSelfActiveIndex]  = useState(null)
   const [selfShowOverview, setSelfShowOverview] = useState(true)
+  const selfPanelRef = useRef(null)
 
   // Trigger civ wheel bloom the first time we flip to civ
   useEffect(() => {
@@ -769,6 +770,11 @@ export default function MissionControl() {
     if (i == null || i < 0 || i >= SELF_DOMAINS.length) return
     setSelfActiveIndex(i)
     setSelfShowOverview(false)
+    // Scroll the panel into view on mobile so the user immediately
+    // sees their domain data without needing a second tap.
+    setTimeout(() => {
+      selfPanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 80)
   }
   const handleSelfPrev = () => {
     const len = SELF_DOMAINS.length
@@ -1186,6 +1192,7 @@ export default function MissionControl() {
             Self side now gets its parchment-mode counterpart, fed
             with the user's actual Map data per domain. */}
         {!isCiv && (
+          <div ref={selfPanelRef}>
           <SelfDomainPanel
             currentList={SELF_DOMAINS}
             selectedItem={selfActiveIndex !== null ? SELF_DOMAINS[selfActiveIndex] : null}
@@ -1195,6 +1202,7 @@ export default function MissionControl() {
             lifeIa={lifeIa}
             userScores={selfDomainDetail}
             activeSprintDomainKey={sprintKey}
+            user={data.user}
             onSelect={handleSelfSelect}
             onPrev={handleSelfPrev}
             onNext={handleSelfNext}
@@ -1203,6 +1211,7 @@ export default function MissionControl() {
             onOpenPractice={() => openPersonalPanel('horizon-practice')}
             onOpenHorizonState={() => openPersonalPanel('horizon-state')}
           />
+          </div>
         )}
         {isCiv && (
           <CivDomainPanel

@@ -46,7 +46,7 @@
 //   onOpenHorizonState: () => void  call to action — set IA via Horizon State
 // ─────────────────────────────────────────────────────────────
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import {
   GOLD, GOLD_DK, GOLD_LT, GOLD_RULE, GOLD_FAINT, GOLD_HOVER,
   TEXT_INK, TEXT_META, TEXT_FAINT,
@@ -54,6 +54,12 @@ import {
 } from './tokens'
 import SelfDomainResources from './SelfDomainResources'
 import { getCuratedFor, scoreToBand } from '../../constants/selfResources'
+
+const STEP_TYPE_LABELS = {
+  action:     'DO',
+  reflection: 'THINK',
+  practice:   'PRACTISE',
+}
 
 export default function SelfDomainPanel({
   currentList = [],
@@ -64,6 +70,7 @@ export default function SelfDomainPanel({
   lifeIa = null,
   userScores = {},
   activeSprintDomainKey = null,
+  user = null,
   onSelect,
   onPrev,
   onNext,
@@ -76,6 +83,50 @@ export default function SelfDomainPanel({
   const itemForDisplay = selectedItem
   const userScore = itemForDisplay ? (userScores[itemForDisplay.id] || null) : null
   const isPlaced = !!(userScore && userScore.current != null)
+
+  // ── Readout tab: 'now' | 'horizon' ───────────────────────────
+  const [readoutTab, setReadoutTab] = useState('now')
+
+  // Reset tab and next steps when domain changes
+  useEffect(() => {
+    setReadoutTab('now')
+    setNextStepsState({ status: 'idle', steps: [], crisis: false })
+  }, [itemForDisplay?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Next steps state ─────────────────────────────────────────
+  const [nextStepsState, setNextStepsState] = useState({ status: 'idle', steps: [], crisis: false })
+
+  const fetchNextSteps = useCallback(async () => {
+    if (!itemForDisplay?.id || !isPlaced) return
+    setNextStepsState({ status: 'loading', steps: [], crisis: false })
+    try {
+      const band = scoreToBand(userScore?.current)
+      const body = {
+        userId:      user?.id || null,
+        domain:      itemForDisplay.id,
+        domainName:  itemForDisplay.name,
+        current:     userScore?.current,
+        horizon:     userScore?.horizon,
+        band,
+        iaStatement: userScore?.iaStatement || '',
+        horizonGoal: userScore?.horizonGoal || '',
+      }
+      const r = await fetch('/api/self-nextsteps', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      if (!r.ok) throw new Error('http-' + r.status)
+      const data = await r.json()
+      setNextStepsState({
+        status: 'ready',
+        steps: Array.isArray(data.steps) ? data.steps : [],
+        crisis: !!data.crisis,
+      })
+    } catch (_) {
+      setNextStepsState({ status: 'error', steps: [], crisis: false })
+    }
+  }, [itemForDisplay?.id, itemForDisplay?.name, isPlaced, user?.id, userScore]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Layer B web-search state, keyed by domain id ──────────────
   // Keeping state per-domain means flipping between domains preserves
@@ -245,12 +296,6 @@ export default function SelfDomainPanel({
             {itemForDisplay.aliases && (
               <p className="mc-self-aliases">{itemForDisplay.aliases}</p>
             )}
-            {/* User's own horizon goal — falls back to canonical when not placed yet */}
-            {(userScore?.horizonGoal || itemForDisplay.horizonGoal) && (
-              <p className="mc-self-horizon">
-                {userScore?.horizonGoal || itemForDisplay.horizonGoal}
-              </p>
-            )}
             <div className="mc-self-rule" />
 
             {itemForDisplay.description && (
@@ -259,22 +304,112 @@ export default function SelfDomainPanel({
 
             {/* Real Map data — only when the user has placed this domain */}
             {isPlaced ? (
-              <div className="mc-self-readout">
-                <div className="mc-self-score-row">
-                  <div className="mc-self-score">
-                    <span className="mc-self-score-num">{formatScore(userScore.current)}</span>
-                    <span className="mc-self-score-label">CURRENT</span>
+              <>
+                {/* ── Tabbed readout card ─────────────────────── */}
+                <div className="mc-self-readout">
+                  {/* Tab strip */}
+                  <div className="mc-self-readout-tabs">
+                    <button
+                      className={`mc-self-readout-tab${readoutTab === 'now' ? ' mc-self-readout-tab--active' : ''}`}
+                      onClick={() => setReadoutTab('now')}
+                      type="button"
+                    >
+                      NOW
+                    </button>
+                    <button
+                      className={`mc-self-readout-tab${readoutTab === 'horizon' ? ' mc-self-readout-tab--active' : ''}`}
+                      onClick={() => setReadoutTab('horizon')}
+                      type="button"
+                    >
+                      HORIZON
+                    </button>
                   </div>
-                  <div className="mc-self-score-divider" />
-                  <div className="mc-self-score">
-                    <span className="mc-self-score-num">{formatScore(userScore.horizon)}</span>
-                    <span className="mc-self-score-label">HORIZON</span>
+
+                  {/* Score row */}
+                  <div className="mc-self-score-row">
+                    <div className="mc-self-score">
+                      <span className="mc-self-score-num">{formatScore(userScore.current)}</span>
+                      <span className="mc-self-score-label">CURRENT</span>
+                    </div>
+                    <div className="mc-self-score-divider" />
+                    <div className="mc-self-score">
+                      <span className="mc-self-score-num">{formatScore(userScore.horizon)}</span>
+                      <span className="mc-self-score-label">HORIZON</span>
+                    </div>
                   </div>
+
+                  {/* Tab body */}
+                  {readoutTab === 'now' && userScore.iaStatement && (
+                    <p className="mc-self-ia">{userScore.iaStatement}</p>
+                  )}
+                  {readoutTab === 'now' && !userScore.iaStatement && (
+                    <p className="mc-self-readout-empty">
+                      Your I am statement for this domain isn't written yet — open The Map to add it.
+                    </p>
+                  )}
+                  {readoutTab === 'horizon' && (userScore.horizonGoal || itemForDisplay.horizonGoal) && (
+                    <p className="mc-self-ia">{userScore.horizonGoal || itemForDisplay.horizonGoal}</p>
+                  )}
+                  {readoutTab === 'horizon' && !userScore.horizonGoal && !itemForDisplay.horizonGoal && (
+                    <p className="mc-self-readout-empty">
+                      Your horizon goal for this domain isn't written yet — open The Map to add it.
+                    </p>
+                  )}
                 </div>
-                {userScore.iaStatement && (
-                  <p className="mc-self-ia">{userScore.iaStatement}</p>
+
+                {/* ── Next steps ──────────────────────────────── */}
+                {nextStepsState.status === 'idle' && (
+                  <button
+                    type="button"
+                    className="mc-self-nextsteps-trigger"
+                    onClick={fetchNextSteps}
+                  >
+                    Suggest next steps →
+                  </button>
                 )}
-              </div>
+                {nextStepsState.status === 'loading' && (
+                  <div className="mc-self-nextsteps-loading">
+                    <span className="mc-self-nextsteps-loading-dot" />
+                    <span className="mc-self-nextsteps-loading-dot" />
+                    <span className="mc-self-nextsteps-loading-dot" />
+                  </div>
+                )}
+                {nextStepsState.status === 'crisis' && (
+                  <p className="mc-self-readout-empty">
+                    When things are this raw, a next step can wait. If you need support, 988 (call or text) is always there.
+                  </p>
+                )}
+                {nextStepsState.status === 'error' && (
+                  <div className="mc-self-nextsteps-error">
+                    <span>Couldn't load steps right now.</span>
+                    <button type="button" className="mc-self-nextsteps-retry" onClick={fetchNextSteps}>
+                      Try again
+                    </button>
+                  </div>
+                )}
+                {nextStepsState.status === 'ready' && nextStepsState.steps.length > 0 && (
+                  <div className="mc-self-nextsteps">
+                    <p className="mc-self-section-label">NEXT STEPS</p>
+                    <ul className="mc-self-nextsteps-list">
+                      {nextStepsState.steps.map(step => (
+                        <li key={step.id} className="mc-self-nextstep">
+                          <span className="mc-self-nextstep-type">
+                            {STEP_TYPE_LABELS[step.type] || step.type?.toUpperCase()}
+                          </span>
+                          <span className="mc-self-nextstep-text">{step.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      type="button"
+                      className="mc-self-nextsteps-refresh"
+                      onClick={fetchNextSteps}
+                    >
+                      Refresh
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="mc-self-empty">
                 <p className="mc-self-empty-text">
@@ -684,5 +819,154 @@ button.mc-self-chip:hover {
   }
   .mc-self-score-num { font-size: 28px; }
   .mc-self-score-row { gap: 18px; }
+}
+
+/* Readout tabs */
+.mc-self-readout-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid ${GOLD_RULE};
+}
+.mc-self-readout-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 6px 16px 8px;
+  font-family: ${FONT_SC};
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  color: ${TEXT_FAINT};
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+.mc-self-readout-tab:hover {
+  color: ${GOLD_DK};
+}
+.mc-self-readout-tab--active {
+  color: ${GOLD_DK};
+  border-bottom-color: ${GOLD};
+}
+
+.mc-self-readout-empty {
+  font-family: ${FONT_BODY};
+  font-size: 14px;
+  color: ${TEXT_FAINT};
+  margin: 10px 0 0;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* Next steps trigger */
+.mc-self-nextsteps-trigger {
+  background: transparent;
+  border: none;
+  color: ${GOLD_DK};
+  font-family: ${FONT_SC};
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  padding: 14px 0 6px;
+  display: block;
+  transition: opacity 0.18s ease;
+}
+.mc-self-nextsteps-trigger:hover {
+  opacity: 0.75;
+}
+
+/* Loading dots */
+.mc-self-nextsteps-loading {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 16px 0 8px;
+}
+.mc-self-nextsteps-loading-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: ${GOLD};
+  animation: mc-nextsteps-pulse 1.2s ease-in-out infinite;
+}
+.mc-self-nextsteps-loading-dot:nth-child(2) { animation-delay: 0.2s; }
+.mc-self-nextsteps-loading-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes mc-nextsteps-pulse {
+  0%, 80%, 100% { opacity: 0.25; transform: scale(0.85); }
+  40%           { opacity: 1;    transform: scale(1); }
+}
+
+/* Error state */
+.mc-self-nextsteps-error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0 6px;
+  font-family: ${FONT_BODY};
+  font-size: 13px;
+  color: ${TEXT_FAINT};
+}
+.mc-self-nextsteps-retry {
+  background: transparent;
+  border: none;
+  color: ${GOLD_DK};
+  font-family: ${FONT_SC};
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Steps list */
+.mc-self-nextsteps {
+  margin-top: 6px;
+}
+.mc-self-nextsteps-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mc-self-nextstep {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  background: ${GOLD_FAINT};
+  border: 1px solid ${GOLD_RULE};
+  border-radius: 14px;
+}
+.mc-self-nextstep-type {
+  font-family: ${FONT_SC};
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: ${GOLD_DK};
+  white-space: nowrap;
+  padding-top: 2px;
+  min-width: 52px;
+}
+.mc-self-nextstep-text {
+  font-family: ${FONT_BODY};
+  font-size: 14px;
+  color: ${TEXT_INK};
+  line-height: 1.55;
+}
+
+.mc-self-nextsteps-refresh {
+  background: transparent;
+  border: none;
+  color: ${TEXT_FAINT};
+  font-family: ${FONT_SC};
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  padding: 10px 0 4px;
+  display: block;
+  transition: color 0.18s ease;
+}
+.mc-self-nextsteps-refresh:hover {
+  color: ${GOLD_DK};
 }
 `
