@@ -411,7 +411,7 @@ const PANEL_CSS = `
   align-items: center;
   justify-content: center;
   font-size: 16px;
-  font-family: serif;
+  font-family: ${FONT_SC};
   line-height: 1;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -467,7 +467,6 @@ const PANEL_CSS = `
 .mc-self-horizon {
   font-family: ${FONT_BODY};
   font-size: 16px;
-  font-style: italic;
   color: ${GOLD_DK};
   margin: 0 0 14px;
   line-height: 1.45;
@@ -488,7 +487,6 @@ const PANEL_CSS = `
 .mc-self-goal {
   font-family: ${FONT_BODY};
   font-size: 16px;
-  font-style: italic;
   color: ${GOLD_DK};
   margin: 18px 0 14px;
   line-height: 1.5;
@@ -507,12 +505,11 @@ const PANEL_CSS = `
    when present. Larger and warmer than a per-domain horizon line so the
    home base reads as the home base. */
 .mc-self-life-horizon {
-  font-family: ${FONT_DISPLAY};
-  font-size: 22px;
-  font-style: italic;
+  font-family: ${FONT_BODY};
+  font-size: 24px;
   font-weight: 400;
   color: ${TEXT_INK};
-  line-height: 1.45;
+  line-height: 1.5;
   margin: 14px 0 6px;
 }
 
@@ -679,7 +676,7 @@ button.mc-self-chip:hover {
   }
   .mc-self-title { font-size: 24px; }
   .mc-self-horizon { font-size: 15px; }
-  .mc-self-life-horizon { font-size: 19px; }
+  .mc-self-life-horizon { font-size: 22px; }
   .mc-self-ia-statement { font-size: 15px; }
   .mc-self-body-text { font-size: 14px; }
   .mc-self-stepper {
