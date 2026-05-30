@@ -501,17 +501,25 @@ function SelfWheel({
           const dc = selfColor(keys[i])
           const baseFill   = dark ? dc.dark : dc.light
           const activeFill = dc.base
+          // Hit rect covers the label text position (offset from tip by GAP),
+          // not just the tip dot — this is what makes single-tap work reliably.
+          const hitW = isTop ? 100 : 70
+          const hitH = isTop ? 32 : 24
+          const hitX = pos.anchor === 'start'  ? pos.x - 4 :
+                       pos.anchor === 'end'    ? pos.x - hitW + 4 :
+                                                 pos.x - hitW / 2
+          const hitY = pos.y - hitH * 0.75
           return (
             <g key={`label-${i}`}>
               {onSelect && (
-                <circle
-                  cx={p.x} cy={p.y} r={26}
+                <rect
+                  x={hitX} y={hitY} width={hitW} height={hitH}
                   fill="transparent"
                   style={{ cursor: 'pointer' }}
                   onPointerDown={e => { e.stopPropagation(); onSelect(i) }}
                 >
                   <title>{labels[i]}</title>
-                </circle>
+                </rect>
               )}
               <text
                 x={pos.x}
