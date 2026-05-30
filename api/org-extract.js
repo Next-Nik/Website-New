@@ -28,7 +28,107 @@
 // Output is JSON only, validated and shape-enforced before return.
 
 const Anthropic = require('@anthropic-ai/sdk')
+const { createClient } = require('@supabase/supabase-js')
+
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+
+// Service client — read-only here, used to load the live placement vocabulary
+// (Domain → Subdomain → Field taxonomy + active problem-chains) so the
+// extractor places actors at the resolution that actually makes them
+// discoverable, and only ever returns slugs that exist.
+const supabase = (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_KEY)
+  ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_KEY)
+  : null
+
+// ── Placement vocabulary ──────────────────────────────────────────────────────
+// Cached in module scope across warm invocations. The taxonomy and chain
+// vocabulary change rarely; a short TTL keeps newly-added chains visible to
+// the extractor without a fetch on every call.
+let _vocabCache = { at: 0, data: null }
+const VOCAB_TTL_MS = 10 * 60 * 1000
+
+async function loadVocabulary() {
+  if (!supabase) return null
+  const now = Date.now()
+  if (_vocabCache.data && (now - _vocabCache.at) < VOCAB_TTL_MS) return _vocabCache.data
+
+  try {
+    const [domainsRes, subsRes, fieldsRes, chainsRes] = await Promise.all([
+      supabase.from('nextus_domains').select('slug, name, domain_kind, position').eq('domain_kind', 'civ').order('position'),
+      supabase.from('nextus_subdomains').select('slug, name, position, domain_id, nextus_domains!inner(slug)').order('position'),
+      supabase.from('nextus_fields').select('slug, name, position, topics, subdomain_id, nextus_subdomains!inner(slug)').order('position'),
+      supabase.from('nextus_problem_chains').select('slug, label, description, domains, aliases').eq('status', 'active'),
+    ])
+
+    const domains = domainsRes.data || []
+    const subs    = subsRes.data || []
+    const fields  = fieldsRes.data || []
+    const chains  = chainsRes.data || []
+
+    if (!domains.length || !subs.length || !fields.length) return null
+
+    const validSubdomains = new Set(subs.map(s => s.slug))
+    const validFields     = new Set(fields.map(f => f.slug))
+    const validChains     = new Set(chains.map(c => c.slug))
+
+    // Build a compact reference block grouped Domain → Subdomain → Field.
+    const subsByDomain = {}
+    for (const s of subs) {
+      const dslug = s.nextus_domains?.slug
+      if (!dslug) continue
+      ;(subsByDomain[dslug] ||= []).push(s)
+    }
+    const fieldsBySub = {}
+    for (const f of fields) {
+      const sslug = f.nextus_subdomains?.slug
+      if (!sslug) continue
+      ;(fieldsBySub[sslug] ||= []).push(f)
+    }
+
+    const taxoLines = []
+    for (const d of domains) {
+      taxoLines.push(`\n${d.slug}  (${d.name})`)
+      for (const s of (subsByDomain[d.slug] || [])) {
+        taxoLines.push(`  · ${s.slug}  — ${s.name}`)
+        for (const f of (fieldsBySub[s.slug] || [])) {
+          const topics = Array.isArray(f.topics) && f.topics.length
+            ? `  [${f.topics.slice(0, 5).join('; ')}]` : ''
+          taxoLines.push(`      - ${f.slug}  — ${f.name}${topics}`)
+        }
+      }
+    }
+
+    const chainLines = chains
+      .map(c => {
+        const al = Array.isArray(c.aliases) && c.aliases.length ? `  (also: ${c.aliases.slice(0, 6).join(', ')})` : ''
+        return `  ${c.slug}  — ${c.label}${al}`
+      })
+      .sort()
+
+    const reference = `
+──────────────────────────────────────────────────────────────────────────────
+PLACEMENT VOCABULARY — the live taxonomy and chain list (use these EXACT slugs)
+──────────────────────────────────────────────────────────────────────────────
+
+DOMAIN → SUBDOMAIN → FIELD (choose the subdomain and field that hold the actor's
+actual problem-shape — the precise area their work changes, not the broad domain):
+${taxoLines.join('\n')}
+
+PROBLEM-CHAINS (away-from concerns people walk in with — tag the ones this
+actor's work genuinely answers; slug exactly as listed):
+${chainLines.join('\n')}
+`
+
+    _vocabCache = {
+      at: now,
+      data: { reference, validSubdomains, validFields, validChains },
+    }
+    return _vocabCache.data
+  } catch (err) {
+    console.error('org-extract: vocabulary load failed:', err.message)
+    return null
+  }
+}
 
 function detectMode(input) {
   const t = input.trim()
@@ -321,6 +421,54 @@ Classify by IMPACT, not feedstock or means. What problem does this actor
 solve? What change are they trying to create? That is the domain.
 
 ──────────────────────────────────────────────────────────────────────────────
+PLACEMENT — SUBDOMAIN, FIELD, AND PROBLEM-CHAINS (this is what makes a seeded
+entry discoverable — do not skip it)
+──────────────────────────────────────────────────────────────────────────────
+
+A domain alone is too coarse to find an actor by. "Society" holds a thousand
+unlike things. The work that lets someone facing a problem find the people
+already solving it — anywhere, at any scale — happens at the subdomain and
+field level, and through the away-from problem-chains.
+
+A PLACEMENT VOCABULARY block is provided below the output format with the live
+Domain → Subdomain → Field taxonomy and the active problem-chains. Use ONLY the
+exact slugs it lists. If no vocabulary block is present, return empty arrays for
+these fields.
+
+For every actor, return:
+
+- "subdomains": the subdomain slug(s) under the actor's domain(s) that hold the
+  actor's actual problem-shape. Usually one; occasionally two. Choose by the
+  problem the actor changes, not by surface topic.
+
+- "fields": the field slug(s) — the precise problem-shape — under those
+  subdomains. One to three. This is the resolution at which the actor becomes
+  findable. Be specific: a group getting more women elected to municipal
+  council belongs in the field for local/municipal governance, not merely the
+  governance subdomain.
+
+- "problem_chains": the chain slug(s) from the vocabulary whose away-from
+  concern this actor's work GENUINELY answers. Honesty over coverage — a false
+  tag is worse than a miss. Most actors match one to four. Tag a chain because
+  the actor's actual work addresses that specific concern, never because the
+  domain is adjacent. If nothing fits, return [].
+
+- "proposed_chains": when the actor's core problem-shape has NO honest match in
+  the chain vocabulary, propose ONE (rarely two) new chain so the next actor
+  with this shape can be matched. Do NOT force-fit an existing chain, and do NOT
+  propose a chain that duplicates one already listed. Each proposal:
+    {
+      "slug": "lowercase-hyphenated-stable",
+      "label": "Short label in plain away-from grammar (how a person speaks the problem)",
+      "description": "One line on what the chain covers.",
+      "domains": ["domain-slug", ...],
+      "aliases": ["other phrasings people use", ...],
+      "rationale": "One sentence: why no existing chain fits this actor."
+    }
+  A proposed chain is a suggestion for human review — it is never auto-applied
+  to the actor. If every relevant concern is already covered, return [].
+
+──────────────────────────────────────────────────────────────────────────────
 PRESS — "AS SEEN IN" MENTIONS
 ──────────────────────────────────────────────────────────────────────────────
 
@@ -421,6 +569,12 @@ Return an array of 1-6 actor objects. Use this exact shape:
     "story": "string or null — 2-4 short paragraphs, third person, TED-tight. Paragraphs separated by blank lines (\\n\\n). Null if source lacks material for an honest story.",
     "image_url": "string or null — single anchor image URL from source",
     "domains": ["primary-domain-slug", "secondary-slug", ...],
+    "subdomains": ["subdomain-slug", ...],
+    "fields": ["field-slug", ...],
+    "problem_chains": ["chain-slug", ...],
+    "proposed_chains": [
+      { "slug": "...", "label": "...", "description": "...", "domains": ["..."], "aliases": ["..."], "rationale": "..." }
+    ],
     "scale": "local | municipal | regional | national | international | global",
     "location_name": "string or null",
     "website": "string or null",
@@ -485,13 +639,48 @@ const ALLOWED_LINK_TYPES = [
 ]
 const ALLOWED_REL_TYPES = ['parent_child', 'member_of', 'partner']
 
-function enforceShape(record) {
+function enforceShape(record, vocab = null) {
   // Required fields with defaults
   record.type            = ALLOWED_TYPES.includes(record.type) ? record.type : 'organisation'
   record.domains         = Array.isArray(record.domains) ? record.domains.filter(Boolean) : []
   // Back-compat for old single-value callers
   if (!record.domains.length && record.domain_id) record.domains = [record.domain_id]
   record.domain_id       = record.domains[0] || null
+
+  // ── Placement (slug arrays) — validate against the live vocabulary ───────
+  // Columns on nextus_actors are slug-based text[] (subdomains, fields,
+  // problem_chains). Keep only slugs that exist; drop anything invented.
+  const cleanSlugs = (val, validSet) => {
+    if (!Array.isArray(val)) return []
+    const out = []
+    for (const s of val) {
+      if (typeof s !== 'string') continue
+      const slug = s.trim()
+      if (!slug) continue
+      if (!validSet || validSet.has(slug)) out.push(slug)
+    }
+    return [...new Set(out)]
+  }
+  record.subdomains     = cleanSlugs(record.subdomains,     vocab?.validSubdomains)
+  record.fields         = cleanSlugs(record.fields,         vocab?.validFields)
+  record.problem_chains = cleanSlugs(record.problem_chains, vocab?.validChains)
+
+  // Proposed chains — suggestions for human review. Never auto-applied.
+  // Drop any whose slug already exists in the vocabulary (not a new chain),
+  // and never let a proposal leak into problem_chains.
+  record.proposed_chains = Array.isArray(record.proposed_chains)
+    ? record.proposed_chains
+        .filter(p => p && typeof p.slug === 'string' && p.slug.trim() && typeof p.label === 'string' && p.label.trim())
+        .filter(p => !(vocab?.validChains && vocab.validChains.has(p.slug.trim())))
+        .map(p => ({
+          slug:        p.slug.trim().toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, ''),
+          label:       p.label.trim(),
+          description: typeof p.description === 'string' ? p.description.trim() : null,
+          domains:     Array.isArray(p.domains) ? p.domains.filter(d => typeof d === 'string' && d.trim()) : [],
+          aliases:     Array.isArray(p.aliases) ? p.aliases.filter(a => typeof a === 'string' && a.trim()) : [],
+          rationale:   typeof p.rationale === 'string' ? p.rationale.trim() : null,
+        }))
+    : []
 
   // Trim string fields and normalise empty-ish values to null
   for (const field of ['tagline', 'description', 'story', 'location_name']) {
@@ -572,11 +761,18 @@ module.exports = async function handler(req, res) {
 
   const tools = mode === 'url' ? [{ type: 'web_search_20250305', name: 'web_search' }] : undefined
 
+  // Load the live placement vocabulary and append it to the system prompt so
+  // the extractor places at subdomain/field resolution and tags real chains.
+  const vocab = await loadVocabulary()
+  const systemPrompt = vocab?.reference
+    ? `${SYSTEM_PROMPT}\n${vocab.reference}`
+    : SYSTEM_PROMPT
+
   try {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 8000,
-      system: SYSTEM_PROMPT,
+      system: systemPrompt,
       tools,
       messages: [{ role: 'user', content }],
     })
@@ -597,7 +793,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (!Array.isArray(parsed)) parsed = [parsed]
-    const results = parsed.slice(0, 6).map(enforceShape)
+    const results = parsed.slice(0, 6).map(r => enforceShape(r, vocab))
 
     return res.status(200).json({ results, mode })
 

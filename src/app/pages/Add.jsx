@@ -77,8 +77,12 @@ const EMPTY_FORM = {
   website: '', primary_domain: '',
   secondary_domains: [], scale: '', location_name: '',
   platform_principles: [], description: '',
+  // AI-extracted placement (subdomain/field/chain slugs) — persisted on save
+  subdomains: [], fields: [], problem_chains: [],
   // AI-extracted aux data (saved into actor_links / actor_press after insert)
   _aiLinks: [], _aiPress: [],
+  // AI-proposed new problem-chains (saved to proposals table after insert)
+  _proposedChains: [],
   // AI-proposed relationships (resolved during submit)
   relationships: [],
 }
@@ -360,9 +364,15 @@ export function AddPage() {
         scale:          primary.scale          || f.scale,
         location_name:  primary.location_name  || f.location_name,
         description:    primary.description    || f.description,
+        // Placement — subdomain/field/chain slugs the extractor assigned
+        subdomains:     primary.subdomains     || [],
+        fields:         primary.fields         || [],
+        problem_chains: primary.problem_chains || [],
         // Stash auxiliary data for save phase — saved into actor_links and actor_press
         _aiLinks:       primary.links          || [],
         _aiPress:       primary.press          || [],
+        // Stash proposed new chains for save phase — saved to proposals table
+        _proposedChains: primary.proposed_chains || [],
         // Stash relationships so primary can have parent/child resolved
         relationships:  primary.relationships  || [],
       }))
@@ -552,6 +562,35 @@ export function AddPage() {
           })
         }
       }
+    }
+
+    // Persist any AI-proposed new problem-chains for admin review. These are
+    // suggestions only — never applied to the actor automatically. Each is
+    // linked to the actor it surfaced from. Non-fatal: a failure here never
+    // blocks the save.
+    try {
+      const proposalRows = []
+      for (const actor of allActors) {
+        const proposals = actor.data._proposedChains || actor.data.proposed_chains || []
+        for (const p of proposals) {
+          if (!p?.slug || !p?.label) continue
+          proposalRows.push({
+            proposed_slug: p.slug,
+            label:         p.label,
+            description:   p.description || null,
+            domains:       Array.isArray(p.domains) ? p.domains : [],
+            aliases:       Array.isArray(p.aliases) ? p.aliases : [],
+            rationale:     p.rationale || null,
+            actor_id:      actor.id,
+            proposed_by:   user?.id || null,
+          })
+        }
+      }
+      if (proposalRows.length) {
+        await supabase.from('nextus_problem_chain_proposals').insert(proposalRows)
+      }
+    } catch (propErr) {
+      console.warn('Problem-chain proposal save skipped:', propErr?.message)
     }
 
     setSaving(false)
