@@ -128,6 +128,97 @@ export default function SelfDomainPanel({
     }
   }, [itemForDisplay?.id, itemForDisplay?.name, isPlaced, user?.id, userScore]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── Recalibration state ──────────────────────────────────────
+  const [recalState, setRecalState] = useState({
+    open: false,
+    messages: [],       // { role: 'user'|'assistant', content: string }[]
+    inputValue: '',
+    status: 'idle',     // 'idle' | 'waiting' | 'error' | 'done'
+    proposal: null,     // { currentScore, horizonScore, horizonGoal, summary } | null
+    confirmed: false,
+  })
+
+  const openRecal = useCallback(() => {
+    setRecalState({
+      open: true,
+      messages: [{ role: 'assistant', content: 'What has changed?' }],
+      inputValue: '',
+      status: 'idle',
+      proposal: null,
+      confirmed: false,
+    })
+  }, [])
+
+  const closeRecal = useCallback(() => {
+    setRecalState(s => ({ ...s, open: false }))
+  }, [])
+
+  const sendRecal = useCallback(async (text) => {
+    if (!text?.trim() || !itemForDisplay?.id) return
+    const userMsg = { role: 'user', content: text.trim() }
+    const newMessages = [...recalState.messages, userMsg]
+    setRecalState(s => ({ ...s, messages: newMessages, inputValue: '', status: 'waiting', proposal: null }))
+
+    try {
+      const r = await fetch('/api/self-recalibrate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId:      user?.id || null,
+          domain:      itemForDisplay.id,
+          domainName:  itemForDisplay.name,
+          current:     userScore?.current,
+          horizon:     userScore?.horizon,
+          iaStatement: userScore?.iaStatement || '',
+          horizonGoal: userScore?.horizonGoal || '',
+          messages:    newMessages,
+        }),
+      })
+      if (!r.ok) throw new Error('http-' + r.status)
+      const data = await r.json()
+      setRecalState(s => ({
+        ...s,
+        messages: [...newMessages, { role: 'assistant', content: data.message }],
+        status: 'idle',
+        proposal: data.proposal || null,
+      }))
+    } catch (_) {
+      setRecalState(s => ({ ...s, status: 'error' }))
+    }
+  }, [recalState.messages, itemForDisplay?.id, itemForDisplay?.name, user?.id, userScore]) // eslint-disable-line
+
+  const confirmProposal = useCallback(async () => {
+    const { proposal } = recalState
+    if (!proposal || !itemForDisplay?.id) return
+    setRecalState(s => ({ ...s, status: 'waiting' }))
+    try {
+      await fetch('/api/self-recalibrate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user?.id || null,
+          domain: itemForDisplay.id,
+          domainName: itemForDisplay.name,
+          current: userScore?.current,
+          horizon: userScore?.horizon,
+          confirm: {
+            currentScore: proposal.currentScore ?? null,
+            horizonScore: proposal.horizonScore ?? null,
+            horizonGoal:  proposal.horizonGoal  ?? null,
+          },
+        }),
+      })
+      setRecalState(s => ({ ...s, status: 'done', confirmed: true }))
+    } catch (_) {
+      setRecalState(s => ({ ...s, status: 'error' }))
+    }
+  }, [recalState, itemForDisplay?.id, itemForDisplay?.name, user?.id, userScore]) // eslint-disable-line
+
+  // Reset recal when domain changes
+  useEffect(() => {
+    setRecalState({ open: false, messages: [], inputValue: '', status: 'idle', proposal: null, confirmed: false })
+  }, [itemForDisplay?.id]) // eslint-disable-line
+
   // ── Layer B web-search state, keyed by domain id ──────────────
   // Keeping state per-domain means flipping between domains preserves
   // what was already loaded, and the "Show more from the web" button
@@ -336,6 +427,18 @@ export default function SelfDomainPanel({
                       <span className="mc-self-score-num">{formatScore(userScore.horizon)}</span>
                       <span className="mc-self-score-label">HORIZON</span>
                     </div>
+                    {!recalState.open && !recalState.confirmed && (
+                      <button
+                        type="button"
+                        className="mc-self-update-btn"
+                        onClick={openRecal}
+                      >
+                        UPDATE
+                      </button>
+                    )}
+                    {recalState.confirmed && (
+                      <span className="mc-self-update-done">Updated ✓</span>
+                    )}
                   </div>
 
                   {/* Tab body */}
@@ -356,6 +459,80 @@ export default function SelfDomainPanel({
                     </p>
                   )}
                 </div>
+
+                {/* ── Recalibration chat ──────────────────────── */}
+                {recalState.open && (
+                  <div className="mc-self-recal">
+                    <div className="mc-self-recal-header">
+                      <span className="mc-self-section-label">UPDATE</span>
+                      <button type="button" className="mc-self-recal-close" onClick={closeRecal}>✕</button>
+                    </div>
+                    <div className="mc-self-recal-messages">
+                      {recalState.messages.map((m, i) => (
+                        <div key={i} className={`mc-self-recal-msg mc-self-recal-msg--${m.role}`}>
+                          {m.content}
+                        </div>
+                      ))}
+                      {recalState.status === 'waiting' && (
+                        <div className="mc-self-nextsteps-loading" style={{ padding: '8px 0 4px' }}>
+                          <span className="mc-self-nextsteps-loading-dot" />
+                          <span className="mc-self-nextsteps-loading-dot" />
+                          <span className="mc-self-nextsteps-loading-dot" />
+                        </div>
+                      )}
+                      {recalState.status === 'error' && (
+                        <p className="mc-self-readout-empty">Something went wrong. Try again.</p>
+                      )}
+                      {recalState.status === 'done' && (
+                        <p className="mc-self-recal-done">Done. Your scores have been updated.</p>
+                      )}
+                    </div>
+
+                    {/* Proposal confirmation */}
+                    {recalState.proposal && recalState.status === 'idle' && (
+                      <div className="mc-self-recal-proposal">
+                        <p className="mc-self-recal-proposal-summary">{recalState.proposal.summary}</p>
+                        <div className="mc-self-recal-proposal-actions">
+                          <button type="button" className="mc-self-recal-confirm" onClick={confirmProposal}>
+                            Confirm
+                          </button>
+                          <button type="button" className="mc-self-recal-adjust"
+                            onClick={() => setRecalState(s => ({ ...s, proposal: null }))}
+                          >
+                            Adjust
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Input */}
+                    {recalState.status !== 'done' && !recalState.proposal && (
+                      <div className="mc-self-recal-input-row">
+                        <textarea
+                          className="mc-self-recal-input"
+                          placeholder="Describe what's changed…"
+                          value={recalState.inputValue}
+                          rows={2}
+                          onChange={e => setRecalState(s => ({ ...s, inputValue: e.target.value }))}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault()
+                              sendRecal(recalState.inputValue)
+                            }
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="mc-self-recal-send"
+                          disabled={!recalState.inputValue.trim() || recalState.status === 'waiting'}
+                          onClick={() => sendRecal(recalState.inputValue)}
+                        >
+                          →
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* ── Next steps ──────────────────────────────── */}
                 {nextStepsState.status === 'idle' && (
@@ -968,5 +1145,180 @@ button.mc-self-chip:hover {
 }
 .mc-self-nextsteps-refresh:hover {
   color: ${GOLD_DK};
+}
+
+/* UPDATE button */
+.mc-self-update-btn {
+  background: transparent;
+  border: none;
+  color: ${TEXT_FAINT};
+  font-family: ${FONT_SC};
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  cursor: pointer;
+  padding: 0;
+  margin-left: auto;
+  align-self: flex-end;
+  transition: color 0.18s ease;
+  padding-bottom: 2px;
+}
+.mc-self-update-btn:hover {
+  color: ${GOLD_DK};
+}
+.mc-self-update-done {
+  font-family: ${FONT_SC};
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: ${GOLD_DK};
+  margin-left: auto;
+  align-self: flex-end;
+  padding-bottom: 2px;
+}
+
+/* Recalibration chat */
+.mc-self-recal {
+  margin-top: 8px;
+  border: 1px solid ${GOLD_RULE};
+  border-radius: 16px;
+  background: ${GOLD_FAINT};
+  overflow: hidden;
+}
+.mc-self-recal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid ${GOLD_RULE};
+}
+.mc-self-recal-close {
+  background: transparent;
+  border: none;
+  color: ${TEXT_FAINT};
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s ease;
+}
+.mc-self-recal-close:hover {
+  color: ${TEXT_INK};
+}
+.mc-self-recal-messages {
+  padding: 12px 14px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.mc-self-recal-msg {
+  font-family: ${FONT_BODY};
+  font-size: 14px;
+  line-height: 1.55;
+}
+.mc-self-recal-msg--assistant {
+  color: ${TEXT_INK};
+}
+.mc-self-recal-msg--user {
+  color: ${GOLD_DK};
+  font-style: italic;
+  padding-left: 10px;
+  border-left: 2px solid ${GOLD_RULE};
+}
+.mc-self-recal-done {
+  font-family: ${FONT_SC};
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: ${GOLD_DK};
+  padding: 4px 0 8px;
+}
+.mc-self-recal-proposal {
+  margin: 4px 14px 10px;
+  padding: 10px 14px;
+  background: rgba(168, 114, 26, 0.06);
+  border: 1px solid rgba(168, 114, 26, 0.2);
+  border-radius: 10px;
+}
+.mc-self-recal-proposal-summary {
+  font-family: ${FONT_BODY};
+  font-size: 13px;
+  color: ${TEXT_INK};
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+.mc-self-recal-proposal-actions {
+  display: flex;
+  gap: 10px;
+}
+.mc-self-recal-confirm {
+  background: ${GOLD_DK};
+  color: #FAFAF7;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-family: ${FONT_SC};
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  transition: opacity 0.18s ease;
+}
+.mc-self-recal-confirm:hover { opacity: 0.85; }
+.mc-self-recal-adjust {
+  background: transparent;
+  border: 1px solid ${GOLD_RULE};
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-family: ${FONT_SC};
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  color: ${TEXT_META};
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease;
+}
+.mc-self-recal-adjust:hover {
+  border-color: ${GOLD};
+  color: ${GOLD_DK};
+}
+.mc-self-recal-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  padding: 8px 14px 12px;
+  border-top: 1px solid ${GOLD_RULE};
+}
+.mc-self-recal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-family: ${FONT_BODY};
+  font-size: 14px;
+  color: ${TEXT_INK};
+  line-height: 1.5;
+  padding: 2px 0;
+}
+.mc-self-recal-input::placeholder {
+  color: ${TEXT_FAINT};
+}
+.mc-self-recal-send {
+  background: ${GOLD_DK};
+  color: #FAFAF7;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: opacity 0.18s ease;
+}
+.mc-self-recal-send:hover:not(:disabled) { opacity: 0.85; }
+.mc-self-recal-send:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 `
