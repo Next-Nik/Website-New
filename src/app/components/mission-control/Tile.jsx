@@ -176,7 +176,7 @@ const TILE_CSS = `
     min-height: 32px;
   }
   .mc-rail-label {
-    font-size: 9.5px;
+    font-size: 13px;
   }
 }
 

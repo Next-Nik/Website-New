@@ -541,7 +541,6 @@ function SelfWheel({
                 y={pos.y}
                 textAnchor={pos.anchor}
                 fill={isActive ? activeFill : baseFill}
-                onPointerDown={onSelect ? e => { e.stopPropagation(); onSelect(i) } : undefined}
                 filter={`url(#lbl-halo-${dark ? 'dark' : 'light'})`}
                 style={{
                   fontFamily: FONT_SC,
@@ -552,7 +551,7 @@ function SelfWheel({
                   cursor: onSelect ? 'pointer' : undefined,
                   userSelect: 'none',
                   textTransform: 'uppercase',
-                  pointerEvents: onSelect ? 'auto' : 'none',
+                  pointerEvents: 'none',
                   transition: 'opacity 0.35s ease',
                 }}
               >
