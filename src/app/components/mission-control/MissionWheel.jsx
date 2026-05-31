@@ -103,8 +103,8 @@ function easeInOut(t) {
 // Civ wheel labels rotate with the spokes, so position is computed
 // from the tip's actual angle. Anchor flips based on which side of
 // the wheel the tip is on.
-function civLabelPosFor(tipX, tipY, angleRad) {
-  const GAP = 14
+function civLabelPosFor(tipX, tipY, angleRad, isTop = false) {
+  const GAP = isTop ? 34 : 14
   // Unit vector pointing outward from centre along the spoke
   const ux = Math.cos(angleRad)
   const uy = Math.sin(angleRad)
@@ -164,7 +164,7 @@ function SelfWheel({
   const maxR = RADIUS
   const windowWidth = useWindowWidth()
   const isMobile = windowWidth < 768
-  const topLabelSize  = isMobile ? 30 : 26
+  const topLabelSize  = isMobile ? 34 : 30
   const restLabelSize = isMobile ? 17 : 16
 
   // ── Rotation state ───────────────────────────────────────────
@@ -510,7 +510,7 @@ function SelfWheel({
         }
         return labels.map((txt, i) => {
           const p = getTipPos(i, displayRot)
-          const pos = civLabelPosFor(p.x, p.y, p.angle)
+          const pos = civLabelPosFor(p.x, p.y, p.angle, isTop)
           const isTop    = i === topIdx
           const isActive = activeKey && keys[i] === activeKey
           const dc = selfColor(keys[i])
@@ -679,7 +679,7 @@ function CivWheel({
   const count = displayLabels.length || N
   const windowWidth = useWindowWidth()
   const isMobile = windowWidth < 768
-  const topLabelSize  = isMobile ? 30 : 26
+  const topLabelSize  = isMobile ? 34 : 30
   const restLabelSize = isMobile ? 17 : 16
 
   // Phase: 'spinning' → 'landing' → 'settled' → ('navigating' → 'settled')
@@ -1157,7 +1157,7 @@ function CivWheel({
             `translate(${-tipX}, ${-tipY})`
         }
 
-        const labelPos = civLabelPosFor(tipX, tipY, p.angle)
+        const labelPos = civLabelPosFor(tipX, tipY, p.angle, isTop)
 
         // Civ tip dot: domain colour. Active state lifts to the saturated
         // base on parchment; on dark we stay at the lighter stop because
