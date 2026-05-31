@@ -19,9 +19,9 @@
 import { Nav }         from '../components/Nav'
 import { SiteFooter }  from '../components/SiteFooter'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+const serif   = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const bodyFont = { fontFamily: "'Lora', Georgia, serif" }
+const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const gold      = '#A8721A'
 const goldBdr   = 'rgba(200,146,42,0.78)'
@@ -95,7 +95,7 @@ function PathCard({ eyebrow, heading, bodyText, cta, href, image, imageSide, dar
         {heading}
       </h2>
       <div className="path-card-divider" style={{ width: '32px', height: '1px', background: gold, opacity: 0.55, margin: '18px 0 20px' }} />
-      <p className="path-card-body" style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: clrDim, margin: '0 0 28px 0' }}>
+      <p className="path-card-body" style={{ ...bodyFont, fontSize: '15px', lineHeight: 1.7, color: clrDim, margin: '0 0 28px 0' }}>
         {bodyText}
       </p>
       <a
@@ -183,7 +183,7 @@ function HiwStep({ n, title, body }) {
       <h4 style={{ ...serif, fontSize: 'clamp(19px,1.7vw,22px)', fontWeight: 400, color: ink, lineHeight: 1.2, margin: '6px 0 8px' }}>
         {title}
       </h4>
-      <p style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: inkFaint, margin: 0 }}>
+      <p style={{ ...bodyFont, fontSize: '15px', lineHeight: 1.7, color: inkFaint, margin: 0 }}>
         {body}
       </p>
     </div>
@@ -202,7 +202,7 @@ function HiwTrack({ label, heading, steps, closing, ctaLabel, ctaHref }) {
       <div className="hiw-steps">
         {steps.map(s => <HiwStep key={s.n} {...s} />)}
       </div>
-      <p style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: ink, fontWeight: 500, margin: '26px 0 22px' }}>
+      <p style={{ ...bodyFont, fontSize: '15px', lineHeight: 1.7, color: ink, fontWeight: 500, margin: '26px 0 22px' }}>
         {closing}
       </p>
       <PillButton href={ctaHref} light>{ctaLabel}</PillButton>
@@ -243,7 +243,7 @@ export function MarketingHomePage() {
         <p
           className="mh-hero-subtitle"
           style={{
-            ...body,
+            ...bodyFont,
             fontSize: 'clamp(15px,1.4vw,17px)',
             fontWeight: 300,
             lineHeight: 1.7,
@@ -402,7 +402,7 @@ export function MarketingHomePage() {
           <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 400, color: ink, lineHeight: 1.3, marginBottom: '12px' }}>
             Coach, facilitator, therapist, organisation?
           </h3>
-          <p style={{ ...body, fontSize: '15px', lineHeight: 1.75, color: inkFaint, marginBottom: '24px', maxWidth: '520px', margin: '0 auto 24px' }}>
+          <p style={{ ...bodyFont, fontSize: '15px', lineHeight: 1.75, color: inkFaint, marginBottom: '24px', maxWidth: '520px', margin: '0 auto 24px' }}>
             Make your work visible to the people most likely to be served by it.
           </p>
           <a
