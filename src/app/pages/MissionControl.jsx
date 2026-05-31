@@ -1142,6 +1142,8 @@ export default function MissionControl() {
             onNext={handleCivNext}
             onContribute={handleCivContribute}
             busy={false}
+            user={data.user}
+            purposeData={data.purposeData}
           />
         )}
         </>

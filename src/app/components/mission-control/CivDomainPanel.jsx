@@ -40,14 +40,20 @@
 //   busy:         boolean         disable controls while wheel mid-transition
 // ─────────────────────────────────────────────────────────────
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import {
-  GOLD, GOLD_DK, GOLD_LT, GOLD_RULE,
+  GOLD, GOLD_DK, GOLD_LT, GOLD_RULE, GOLD_FAINT,
   TEXT_WHITE, TEXT_WHITE_META, TEXT_WHITE_FAINT,
   FONT_DISPLAY, FONT_SC, FONT_BODY,
 } from './tokens'
 import { HORIZON_DECOMPOSITIONS } from '../../constants/horizonDecompositions'
 import { HorizonScaleModal, SCALE_LINK_STYLE } from '../../../components/HorizonScaleModal'
+
+const CIV_STEP_TYPE_LABELS = {
+  action:       'DO',
+  practice:     'PRACTISE',
+  contribution: 'CONTRIBUTE',
+}
 
 // Convert markdown **bold** to <strong> while escaping any other HTML.
 // Used to render the `how_we_measure` paragraphs which lead with bolded
@@ -87,11 +93,51 @@ export default function CivDomainPanel({
   onNext,
   onContribute,
   busy = false,
+  user = null,
+  purposeData = null,
 }) {
   const isOverview      = showOverview && levelPath.length === 0
   const showParentPanel = parentPanelOpen && parentItem
   const showDomainPanel = !isOverview && !showParentPanel && selectedItem
   const itemForDisplay  = showParentPanel ? parentItem : selectedItem
+
+  // ── Panel tab: 'now' | 'horizon' ─────────────────────────────
+  const [panelTab, setPanelTab] = useState('now')
+
+  // ── Next steps state ─────────────────────────────────────────
+  const [nextStepsState, setNextStepsState] = useState({ status: 'idle', steps: [] })
+
+  // Reset on domain change
+  useEffect(() => {
+    setPanelTab('now')
+    setNextStepsState({ status: 'idle', steps: [] })
+  }, [itemForDisplay?.id]) // eslint-disable-line
+
+  const fetchNextSteps = useCallback(async () => {
+    if (!itemForDisplay?.id) return
+    setNextStepsState({ status: 'loading', steps: [] })
+    try {
+      const archetype = purposeData?.archetype || purposeData?.archetypeLabel || ''
+      const archetypeDomain = purposeData?.civ_domain_slug || purposeData?.domain_slug || ''
+      const r = await fetch('/api/civ-nextsteps', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId:        user?.id || null,
+          domain:        itemForDisplay.id,
+          domainName:    itemForDisplay.name,
+          currentScore:  liveScore,
+          archetype,
+          archetypeDomain,
+        }),
+      })
+      if (!r.ok) throw new Error('http-' + r.status)
+      const data = await r.json()
+      setNextStepsState({ status: 'ready', steps: Array.isArray(data.steps) ? data.steps : [] })
+    } catch (_) {
+      setNextStepsState({ status: 'error', steps: [] })
+    }
+  }, [itemForDisplay?.id, itemForDisplay?.name, user?.id, purposeData]) // eslint-disable-line
 
   // Resolve current-state data for the featured domain.
   // civScores uses wheel keys ('human', 'finance', 'tech', etc.)
@@ -296,119 +342,178 @@ export default function CivDomainPanel({
               )}
             </div>
 
-            {/* ── Horizon goal (the target) ── */}
-            {itemForDisplay.horizonGoal && (
-              <div className="mc-civ-horizon-block">
-                <span className="mc-civ-horizon-label">HORIZON</span>
-                <p className="mc-civ-horizon">{itemForDisplay.horizonGoal}</p>
-              </div>
-            )}
+            {/* ── NOW / HORIZON tabs ── */}
+            <div className="mc-civ-tabs">
+              <button
+                type="button"
+                className={`mc-civ-tab${panelTab === 'now' ? ' mc-civ-tab--active' : ''}`}
+                onClick={() => setPanelTab('now')}
+              >NOW</button>
+              <button
+                type="button"
+                className={`mc-civ-tab${panelTab === 'horizon' ? ' mc-civ-tab--active' : ''}`}
+                onClick={() => setPanelTab('horizon')}
+              >HORIZON</button>
+            </div>
 
-            {/* ── Horizon unpacking — what the goal actually describes ── */}
-            {decomp?.unpacking && (
-              <div className="mc-civ-unpacking">
-                {decomp.unpacking.split('\n\n').map((para, i) => (
-                  <p key={i} className="mc-civ-unpacking-text">{para}</p>
-                ))}
-              </div>
-            )}
-
-            <div className="mc-civ-rule" />
-
-            {/* ── Where we are now: narrative + indicators ── */}
-            {stateData && (
-              <div ref={stateBlockRef} className="mc-civ-state-block">
-                <p className="mc-civ-section-label">WHERE WE ARE NOW</p>
-                {stateData.narrative && (
-                  <p className="mc-civ-body-text">{stateData.narrative}</p>
+            {/* ── NOW tab ── */}
+            {panelTab === 'now' && (
+              <>
+                {/* Horizon unpacking */}
+                {decomp?.unpacking && (
+                  <div className="mc-civ-unpacking">
+                    {decomp.unpacking.split('\n\n').map((para, i) => (
+                      <p key={i} className="mc-civ-unpacking-text">{para}</p>
+                    ))}
+                  </div>
                 )}
 
-                {/* Live indicator breakdown from DB — preferred over static */}
-                {liveDetail?.scored?.length > 0 ? (
-                  <ul className="mc-civ-indicators">
-                    {liveDetail.scored.map((ind, i) => (
-                      <li key={i} className="mc-civ-indicator-row">
-                        <span className="mc-civ-indicator-name">{ind.name}</span>
-                        <span className="mc-civ-indicator-score">
-                          {ind.score.toFixed(1)}<span className="mc-civ-indicator-denom">/10</span>
-                        </span>
-                      </li>
-                    ))}
-                    {liveDetail.contributing < liveDetail.total && (
-                      <li className="mc-civ-indicator-gap">
-                        {liveDetail.total - liveDetail.contributing} indicator{liveDetail.total - liveDetail.contributing !== 1 ? 's' : ''} not yet scored
-                      </li>
-                    )}
-                  </ul>
-                ) : stateData.indicators?.length > 0 ? (
-                  /* Fall back to qualitative indicators from currentState.js */
-                  <ul className="mc-civ-indicators">
-                    {stateData.indicators.map((ind, i) => (
-                      <li key={i} className="mc-civ-indicator-row">
-                        <span className="mc-civ-indicator-name">{ind.label}</span>
-                        <span className="mc-civ-indicator-value">
-                          <span style={{ color: trendColor(ind.trend), marginRight: 4 }}>
-                            {trendGlyph(ind.trend)}
-                          </span>
-                          {ind.value}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
+                <div className="mc-civ-rule" />
 
-                {/* Why these indicators — expandable reasoning */}
-                {(decomp?.how_we_measure || decomp?.not_measuring) && (
-                  <div className="mc-civ-why-block">
-                    <button
-                      type="button"
-                      className="mc-civ-why-toggle"
-                      onClick={() => setWhyOpen(v => !v)}
-                      aria-expanded={whyOpen}
-                    >
-                      <span className="mc-civ-why-toggle-text">
-                        {whyOpen ? 'Hide the reasoning' : 'Why these indicators?'}
-                      </span>
-                      <span className="mc-civ-why-toggle-glyph">
-                        {whyOpen ? '−' : '+'}
-                      </span>
-                    </button>
-                    {whyOpen && (
-                      <div className="mc-civ-why-body">
-                        {decomp.how_we_measure && (
-                          <div className="mc-civ-why-section">
-                            <p className="mc-civ-why-heading">How we measure it</p>
-                            {decomp.how_we_measure.split('\n\n').map((para, i) => (
-                              <p key={i} className="mc-civ-why-text"
-                                 dangerouslySetInnerHTML={{ __html: renderInlineBold(para) }} />
-                            ))}
+                {/* Where we are now */}
+                {stateData && (
+                  <div ref={stateBlockRef} className="mc-civ-state-block">
+                    <p className="mc-civ-section-label">WHERE WE ARE NOW</p>
+                    {stateData.narrative && (
+                      <p className="mc-civ-body-text">{stateData.narrative}</p>
+                    )}
+
+                    {liveDetail?.scored?.length > 0 ? (
+                      <ul className="mc-civ-indicators">
+                        {liveDetail.scored.map((ind, i) => (
+                          <li key={i} className="mc-civ-indicator-row">
+                            <span className="mc-civ-indicator-name">{ind.name}</span>
+                            <span className="mc-civ-indicator-score">
+                              {ind.score.toFixed(1)}<span className="mc-civ-indicator-denom">/10</span>
+                            </span>
+                          </li>
+                        ))}
+                        {liveDetail.contributing < liveDetail.total && (
+                          <li className="mc-civ-indicator-gap">
+                            {liveDetail.total - liveDetail.contributing} indicator{liveDetail.total - liveDetail.contributing !== 1 ? 's' : ''} not yet scored
+                          </li>
+                        )}
+                      </ul>
+                    ) : stateData.indicators?.length > 0 ? (
+                      <ul className="mc-civ-indicators">
+                        {stateData.indicators.map((ind, i) => (
+                          <li key={i} className="mc-civ-indicator-row">
+                            <span className="mc-civ-indicator-name">{ind.label}</span>
+                            <span className="mc-civ-indicator-value">
+                              <span style={{ color: trendColor(ind.trend), marginRight: 4 }}>
+                                {trendGlyph(ind.trend)}
+                              </span>
+                              {ind.value}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+
+                    {(decomp?.how_we_measure || decomp?.not_measuring) && (
+                      <div className="mc-civ-why-block">
+                        <button
+                          type="button"
+                          className="mc-civ-why-toggle"
+                          onClick={() => setWhyOpen(v => !v)}
+                          aria-expanded={whyOpen}
+                        >
+                          <span className="mc-civ-why-toggle-text">
+                            {whyOpen ? 'Hide the reasoning' : 'Why these indicators?'}
+                          </span>
+                          <span className="mc-civ-why-toggle-glyph">
+                            {whyOpen ? '−' : '+'}
+                          </span>
+                        </button>
+                        {whyOpen && (
+                          <div className="mc-civ-why-body">
+                            {decomp.how_we_measure && (
+                              <div className="mc-civ-why-section">
+                                <p className="mc-civ-why-heading">How we measure it</p>
+                                {decomp.how_we_measure.split('\n\n').map((para, i) => (
+                                  <p key={i} className="mc-civ-why-text"
+                                     dangerouslySetInnerHTML={{ __html: renderInlineBold(para) }} />
+                                ))}
+                              </div>
+                            )}
+                            {decomp.not_measuring && (
+                              <div className="mc-civ-why-section">
+                                <p className="mc-civ-why-heading">What we are not measuring</p>
+                                {decomp.not_measuring.split('\n\n').map((para, i) => (
+                                  <p key={i} className="mc-civ-why-text">{para}</p>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         )}
-                        {decomp.not_measuring && (
-                          <div className="mc-civ-why-section">
-                            <p className="mc-civ-why-heading">What we are not measuring</p>
-                            {decomp.not_measuring.split('\n\n').map((para, i) => (
-                              <p key={i} className="mc-civ-why-text">{para}</p>
-                            ))}
-                          </div>
-                        )}
+                      </div>
+                    )}
+
+                    {stateData.gapSignal && stateData.gapReason && (
+                      <div className="mc-civ-gap-signal">
+                        <span className="mc-civ-gap-label">GAP</span>
+                        <span className="mc-civ-gap-reason">{stateData.gapReason}</span>
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* Gap signal */}
-                {stateData.gapSignal && stateData.gapReason && (
-                  <div className="mc-civ-gap-signal">
-                    <span className="mc-civ-gap-label">GAP</span>
-                    <span className="mc-civ-gap-reason">{stateData.gapReason}</span>
+                {!stateData && itemForDisplay.description && (
+                  <p className="mc-civ-body-text">{itemForDisplay.description}</p>
+                )}
+
+                {/* ── Next steps ── */}
+                {nextStepsState.status === 'idle' && (
+                  <button type="button" className="mc-civ-nextsteps-trigger" onClick={fetchNextSteps}>
+                    How can I contribute? →
+                  </button>
+                )}
+                {nextStepsState.status === 'loading' && (
+                  <div className="mc-civ-nextsteps-loading">
+                    <span className="mc-civ-nextsteps-dot" />
+                    <span className="mc-civ-nextsteps-dot" />
+                    <span className="mc-civ-nextsteps-dot" />
                   </div>
                 )}
-              </div>
+                {nextStepsState.status === 'error' && (
+                  <div className="mc-civ-nextsteps-error">
+                    <span>Couldn't load suggestions.</span>
+                    <button type="button" className="mc-civ-nextsteps-retry" onClick={fetchNextSteps}>Try again</button>
+                  </div>
+                )}
+                {nextStepsState.status === 'ready' && nextStepsState.steps.length > 0 && (
+                  <div className="mc-civ-nextsteps">
+                    <p className="mc-civ-section-label">YOUR CONTRIBUTION</p>
+                    <ul className="mc-civ-nextsteps-list">
+                      {nextStepsState.steps.map(step => (
+                        <li key={step.id} className="mc-civ-nextstep">
+                          <span className="mc-civ-nextstep-type">
+                            {CIV_STEP_TYPE_LABELS[step.type] || step.type?.toUpperCase()}
+                          </span>
+                          <span className="mc-civ-nextstep-text">{step.text}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <button type="button" className="mc-civ-nextsteps-refresh" onClick={fetchNextSteps}>
+                      Refresh
+                    </button>
+                  </div>
+                )}
+              </>
             )}
 
-            {!stateData && itemForDisplay.description && (
-              <p className="mc-civ-body-text">{itemForDisplay.description}</p>
+            {/* ── HORIZON tab ── */}
+            {panelTab === 'horizon' && (
+              <>
+                {itemForDisplay.horizonGoal ? (
+                  <div className="mc-civ-horizon-block">
+                    <span className="mc-civ-horizon-label">CIVILISATIONAL HORIZON</span>
+                    <p className="mc-civ-horizon">{itemForDisplay.horizonGoal}</p>
+                  </div>
+                ) : (
+                  <p className="mc-civ-readout-empty">No horizon goal defined for this domain yet.</p>
+                )}
+              </>
             )}
 
             {/* ── Sub-domains ── */}
@@ -786,7 +891,6 @@ const PANEL_CSS = `
 .mc-civ-horizon {
   font-family: ${FONT_BODY};
   font-size: 17px;
-  font-style: italic;
   color: ${GOLD_LT};
   margin: 0 0 16px;
   line-height: 1.5;
@@ -807,11 +911,146 @@ const PANEL_CSS = `
 .mc-civ-goal {
   font-family: ${FONT_BODY};
   font-size: 17px;
-  font-style: italic;
   color: ${GOLD_LT};
   margin: 18px 0 14px;
   line-height: 1.5;
 }
+
+/* NOW / HORIZON tabs */
+.mc-civ-tabs {
+  display: flex;
+  gap: 0;
+  margin: 10px 0 16px;
+  border-bottom: 1px solid rgba(200,146,42,0.25);
+}
+.mc-civ-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 6px 16px 8px;
+  font-family: ${FONT_SC};
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  color: ${TEXT_WHITE_FAINT};
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+.mc-civ-tab:hover { color: ${GOLD_LT}; }
+.mc-civ-tab--active {
+  color: ${GOLD_LT};
+  border-bottom-color: ${GOLD};
+}
+
+.mc-civ-readout-empty {
+  font-family: ${FONT_BODY};
+  font-size: 14px;
+  color: ${TEXT_WHITE_FAINT};
+  margin: 10px 0 0;
+  line-height: 1.5;
+}
+
+/* Contribution next steps */
+.mc-civ-nextsteps-trigger {
+  background: transparent;
+  border: none;
+  color: ${GOLD_LT};
+  font-family: ${FONT_SC};
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  padding: 14px 0 6px;
+  display: block;
+  transition: opacity 0.18s ease;
+}
+.mc-civ-nextsteps-trigger:hover { opacity: 0.75; }
+
+.mc-civ-nextsteps-loading {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 16px 0 8px;
+}
+.mc-civ-nextsteps-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: ${GOLD};
+  animation: mc-civ-pulse 1.2s ease-in-out infinite;
+}
+.mc-civ-nextsteps-dot:nth-child(2) { animation-delay: 0.2s; }
+.mc-civ-nextsteps-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes mc-civ-pulse {
+  0%, 80%, 100% { opacity: 0.25; transform: scale(0.85); }
+  40%           { opacity: 1;    transform: scale(1); }
+}
+
+.mc-civ-nextsteps-error {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0 6px;
+  font-family: ${FONT_BODY};
+  font-size: 13px;
+  color: ${TEXT_WHITE_FAINT};
+}
+.mc-civ-nextsteps-retry {
+  background: transparent;
+  border: none;
+  color: ${GOLD_LT};
+  font-family: ${FONT_SC};
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  padding: 0;
+}
+
+.mc-civ-nextsteps { margin-top: 6px; }
+.mc-civ-nextsteps-list {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mc-civ-nextstep {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  background: rgba(200,146,42,0.07);
+  border: 1px solid rgba(200,146,42,0.18);
+  border-radius: 14px;
+}
+.mc-civ-nextstep-type {
+  font-family: ${FONT_SC};
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: ${GOLD_LT};
+  white-space: nowrap;
+  padding-top: 2px;
+  min-width: 72px;
+}
+.mc-civ-nextstep-text {
+  font-family: ${FONT_BODY};
+  font-size: 14px;
+  color: ${TEXT_WHITE_META};
+  line-height: 1.55;
+}
+.mc-civ-nextsteps-refresh {
+  background: transparent;
+  border: none;
+  color: ${TEXT_WHITE_FAINT};
+  font-family: ${FONT_SC};
+  font-size: 9.5px;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  padding: 10px 0 4px;
+  display: block;
+  transition: color 0.18s ease;
+}
+.mc-civ-nextsteps-refresh:hover { color: ${GOLD_LT}; }
 
 .mc-civ-overview-section {
   margin: 22px 0 0;
