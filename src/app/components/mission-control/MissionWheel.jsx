@@ -510,8 +510,8 @@ function SelfWheel({
         }
         return labels.map((txt, i) => {
           const p = getTipPos(i, displayRot)
-          const pos = civLabelPosFor(p.x, p.y, p.angle, isTop)
           const isTop    = i === topIdx
+          const pos = civLabelPosFor(p.x, p.y, p.angle, isTop)
           const isActive = activeKey && keys[i] === activeKey
           const dc = selfColor(keys[i])
           const baseFill   = dark ? dc.dark : dc.light
