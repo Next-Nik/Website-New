@@ -525,13 +525,13 @@ function SelfWheel({
                 x={pos.x}
                 y={pos.y}
                 textAnchor={pos.anchor}
+                fill={isActive ? activeFill : baseFill}
                 onPointerDown={onSelect ? e => { e.stopPropagation(); onSelect(i) } : undefined}
                 filter={`url(#lbl-halo-${dark ? 'dark' : 'light'})`}
                 style={{
                   fontFamily: FONT_SC,
                   fontSize: isTop ? 26 : 16,
                   letterSpacing: '0.18em',
-                  fill: isActive ? activeFill : baseFill,
                   fontWeight: isTop ? 700 : 500,
                   opacity: isTop ? 1 : 0.82,
                   cursor: onSelect ? 'pointer' : undefined,
@@ -1202,14 +1202,12 @@ function CivWheel({
               x={labelPos.x}
               y={labelPos.y}
               textAnchor={labelPos.anchor}
+              fill={isActive || isPlacement || isFocus ? activeLabelFill : baseLabelFill}
               filter={`url(#lbl-halo-${dark ? 'dark' : 'light'}-civ)`}
               style={{
                 fontFamily: FONT_SC,
                 fontSize: isTop ? 26 : 16,
                 letterSpacing: '0.18em',
-                fill: isActive || isPlacement || isFocus
-                  ? activeLabelFill
-                  : baseLabelFill,
                 fontWeight: isTop ? 700 : isPlacement ? 650 : isFocus ? 600 : 500,
                 opacity: isTop ? 1 : 0.82,
                 pointerEvents: 'none',
