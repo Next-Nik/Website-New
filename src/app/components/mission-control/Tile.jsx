@@ -148,7 +148,7 @@ const TILE_CSS = `
 
 .mc-rail-label {
   font-family: ${FONT_SC};
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.14em;
   color: ${TEXT_WHITE_META};
   line-height: 1.2;
@@ -158,7 +158,7 @@ const TILE_CSS = `
 
 .mc-rail-state {
   font-family: ${FONT_SC};
-  font-size: 8px;
+  font-size: 9px;
   letter-spacing: 0.10em;
   color: ${TEXT_WHITE_FAINT};
 }
@@ -190,11 +190,11 @@ const TILE_CSS = `
     min-height: 22px;
   }
   .mc-rail-label {
-    font-size: 8px;
+    font-size: 10px;
     letter-spacing: 0.10em;
   }
   .mc-rail-state {
-    font-size: 7px;
+    font-size: 8px;
     letter-spacing: 0.08em;
   }
 }
