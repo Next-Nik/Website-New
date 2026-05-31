@@ -71,7 +71,6 @@ import { DomainPage } from './app/pages/Domain'
 import { FocusProfile } from './app/pages/FocusProfile'
 import { FocusIndex } from './app/pages/FocusIndex'
 import { Explore } from './app/pages/Explore'
-import { SearchPage } from './app/pages/Search'
 import WatchedFeed from './app/pages/WatchedFeed'
 import CuratedFeed from './app/pages/CuratedFeed'
 import Practices              from './app/pages/Practices'
@@ -79,7 +78,6 @@ import PracticeDetail         from './app/pages/PracticeDetail'
 import PracticeContribute     from './app/pages/PracticeContribute'
 import { InvitationPage }     from './app/pages/Invitation'
 import { InvitationIndexPage } from './app/pages/InvitationIndex'
-import JournalPage            from './app/pages/Journal'
 
 // ── Begin / Build ────────────────────────────────────────────────
 import { BeginBuildOrgPage }      from './pages/begin-build/Org'
@@ -163,16 +161,6 @@ function RootRoute() {
   return <Navigate to={target} replace />
 }
 
-// /tools — the tools listing is readable signed-out so a stranger can
-// see the product before logging in. Signed-in users go to Mission
-// Control, preserving the previous behaviour.
-function ToolsRoute() {
-  const { user, loading } = useAuth()
-  if (loading) return null
-  if (!user) return <MarketingToolsPage />
-  return <Navigate to="/" replace />
-}
-
 function AppInner() {
   const { pathname } = useLocation()
   const { user } = useAuth()
@@ -212,7 +200,7 @@ function AppInner() {
         <Route path="/faq"             element={<FAQPage />} />
         <Route path="/profile"         element={<Navigate to="/" replace />} />
         <Route path="/dashboard"       element={<Navigate to="/" replace />} />
-        <Route path="/tools"           element={<ToolsRoute />} />
+        <Route path="/tools"           element={<MarketingToolsPage />} />
         <Route path="/content-editor"  element={<ContentEditorPage />} />
         <Route path="/watch"           element={<WatchPage />} />
 
@@ -238,7 +226,6 @@ function AppInner() {
         <Route path="/profile/edit"                 element={<ProfileEdit />} />
         <Route path="/profile/:id"                  element={<PublicProfile />} />
         <Route path="/feed"                         element={<FeedPage />} />
-        <Route path="/journal"                      element={<JournalPage />} />
         <Route path="/contribution"                 element={<Contribution />} />
         <Route path="/org/:slug"                    element={<OrgPublicPage />} />
         <Route path="/org/:slug/manage"             element={<OrgManagePage />} />
@@ -259,7 +246,6 @@ function AppInner() {
         <Route path="/explore/:domain"                                   element={<Explore />} />
         <Route path="/explore/:domain/:subdomain"                        element={<Explore />} />
         <Route path="/explore/:domain/:subdomain/:field"                 element={<Explore />} />
-        <Route path="/search"                                            element={<SearchPage />} />
         <Route path="/tuned-in"                     element={<WatchedFeed />} />
         <Route path="/watched"                      element={<Navigate to="/tuned-in" replace />} />
         <Route path="/curated"                      element={<CuratedFeed />} />

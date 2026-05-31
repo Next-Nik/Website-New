@@ -538,7 +538,7 @@ function SelfWheel({
                   userSelect: 'none',
                   textTransform: 'uppercase',
                   pointerEvents: onSelect ? 'auto' : 'none',
-                  transition: 'font-size 0.35s ease, opacity 0.35s ease',
+                  transition: 'opacity 0.35s ease',
                 }}
               >
                 {txt}
@@ -1213,7 +1213,7 @@ function CivWheel({
                 pointerEvents: 'none',
                 userSelect: 'none',
                 textTransform: 'uppercase',
-                transition: 'font-size 0.35s ease, opacity 0.35s ease',
+                transition: 'opacity 0.35s ease',
               }}
             >
               {labelText}
