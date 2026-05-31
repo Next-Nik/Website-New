@@ -149,8 +149,8 @@ const TILE_CSS = `
 .mc-rail-label {
   font-family: ${FONT_SC};
   font-size: 11px;
-  letter-spacing: 0.14em;
-  color: ${TEXT_WHITE_META};
+  letter-spacing: 0.18em;
+  color: ${TEXT_WHITE};
   line-height: 1.2;
   text-transform: uppercase;
 }
@@ -159,8 +159,8 @@ const TILE_CSS = `
 .mc-rail-state {
   font-family: ${FONT_SC};
   font-size: 9px;
-  letter-spacing: 0.10em;
-  color: ${TEXT_WHITE_FAINT};
+  letter-spacing: 0.12em;
+  color: ${TEXT_WHITE_META};
 }
 [data-stage="dark"] .mc-rail-state { color: ${TEXT_FAINT}; }
 

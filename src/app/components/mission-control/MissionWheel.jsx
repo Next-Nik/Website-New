@@ -48,6 +48,17 @@ import {
 } from './tokens'
 import { selfColor, civColor } from '../../../constants/domainColors'
 
+// ─── Viewport hook ───────────────────────────────────────────
+function useWindowWidth() {
+  const [w, setW] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 1024)
+  useEffect(() => {
+    const handler = () => setW(window.innerWidth)
+    window.addEventListener('resize', handler, { passive: true })
+    return () => window.removeEventListener('resize', handler)
+  }, [])
+  return w
+}
+
 // ─── Shared geometry ─────────────────────────────────────────
 const N = 7
 const SVG_W = 380
@@ -151,6 +162,10 @@ function SelfWheel({
   const cx = CX
   const cy = CY
   const maxR = RADIUS
+  const windowWidth = useWindowWidth()
+  const isMobile = windowWidth < 768
+  const topLabelSize  = isMobile ? 30 : 26
+  const restLabelSize = isMobile ? 17 : 16
 
   // ── Rotation state ───────────────────────────────────────────
   // Initialise to a random spoke so no domain is privileged at top
@@ -530,7 +545,7 @@ function SelfWheel({
                 filter={`url(#lbl-halo-${dark ? 'dark' : 'light'})`}
                 style={{
                   fontFamily: FONT_SC,
-                  fontSize: isTop ? 26 : 16,
+                  fontSize: isTop ? topLabelSize : restLabelSize,
                   letterSpacing: '0.18em',
                   fontWeight: isTop ? 700 : 500,
                   opacity: isTop ? 1 : 0.82,
@@ -662,6 +677,10 @@ function CivWheel({
   }, [domains, labels])
 
   const count = displayLabels.length || N
+  const windowWidth = useWindowWidth()
+  const isMobile = windowWidth < 768
+  const topLabelSize  = isMobile ? 30 : 26
+  const restLabelSize = isMobile ? 17 : 16
 
   // Phase: 'spinning' → 'landing' → 'settled' → ('navigating' → 'settled')
   //        ('drilling' → 'breathing') terminates by emitting onDrillDown.
@@ -1206,7 +1225,7 @@ function CivWheel({
               filter={`url(#lbl-halo-${dark ? 'dark' : 'light'}-civ)`}
               style={{
                 fontFamily: FONT_SC,
-                fontSize: isTop ? 26 : 16,
+                fontSize: isTop ? topLabelSize : restLabelSize,
                 letterSpacing: '0.18em',
                 fontWeight: isTop ? 700 : isPlacement ? 650 : isFocus ? 600 : 500,
                 opacity: isTop ? 1 : 0.82,
