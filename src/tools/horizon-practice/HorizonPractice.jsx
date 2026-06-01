@@ -788,20 +788,475 @@ function ManualThresholdAdd({ draftTitle, setDraftTitle, draftTime, setDraftTime
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// Morning Sequence — the five beats
+// GroundBeat — two-stage animated breath timer
+//
+// Stage 1: Charge breath — 3 Tabata rounds × 20s fast / 10s rest
+//   Tabata-style with "Ready · 3 · 2 · 1 · Begin" / "Rest" / "Complete" audio cues
+//
+// Stage 2: Open breath — 3 rounds × 3 centres descending (chest → belly → pelvis)
+//   Each centre: deep breath in (4s) → hold (4s) → exhale with "ah" (6s) → hold (2s)
 // ────────────────────────────────────────────────────────────────────────────
+
+const CHARGE_ROUNDS   = 3
+const CHARGE_WORK_S   = 20
+const CHARGE_REST_S   = 10
+const OPEN_ROUNDS     = 3
+const OPEN_CENTRES    = ['Chest / heart', 'Belly', 'Groin / pelvis']
+const OPEN_PHASES     = [
+  { label: 'Breathe in',    dur: 4,  expand: true  },
+  { label: 'Hold',          dur: 4,  expand: true  },
+  { label: 'Exhale — "ah"', dur: 6,  expand: false },
+  { label: 'Hold',          dur: 2,  expand: false },
+]
+
+// Beep helpers (reuse Chimes ctx pattern)
+function makeBeep(freq, dur = 0.12, gain = 0.18) {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const osc = ctx.createOscillator()
+    const g   = ctx.createGain()
+    osc.type = 'sine'; osc.frequency.value = freq
+    g.gain.setValueAtTime(0, ctx.currentTime)
+    g.gain.linearRampToValueAtTime(gain, ctx.currentTime + 0.008)
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur)
+    osc.connect(g); g.connect(ctx.destination)
+    osc.start(); osc.stop(ctx.currentTime + dur)
+    setTimeout(() => ctx.close(), dur * 1000 + 200)
+  } catch(e) {}
+}
+function beepLow()    { makeBeep(330, 0.14, 0.16) }
+function beepMid()    { makeBeep(523, 0.12, 0.18) }
+function beepHigh()   { makeBeep(880, 0.18, 0.20) }
+function beepReady()  { makeBeep(440, 0.22, 0.15) }
+function beepBegin()  {
+  makeBeep(523, 0.15, 0.20)
+  setTimeout(() => makeBeep(659, 0.15, 0.20), 160)
+  setTimeout(() => makeBeep(880, 0.28, 0.22), 320)
+}
+function beepEnd()    {
+  makeBeep(880, 0.15, 0.18)
+  setTimeout(() => makeBeep(659, 0.15, 0.18), 160)
+  setTimeout(() => makeBeep(523, 0.28, 0.20), 320)
+}
+
+function GroundBeat({ onComplete, onBack }) {
+  // phase: 'intro' | 'charge-ready' | 'charge-work' | 'charge-rest' | 'charge-done'
+  //        | 'open-intro' | 'open-running' | 'done'
+  const [phase, setPhase]         = useState('intro')
+  const [chargeRound, setChargeRound] = useState(1)   // 1–3
+  const [tick, setTick]           = useState(0)        // countdown seconds
+  const [circleScale, setCircleScale] = useState(1)
+  const [openRound, setOpenRound] = useState(1)        // 1–3
+  const [openCentre, setOpenCentre] = useState(0)      // 0–2
+  const [openPhase, setOpenPhase] = useState(0)        // 0–3
+  const [openTick, setOpenTick]   = useState(0)
+
+  const timerRef   = useRef(null)
+  const countRef   = useRef(null)
+
+  function clearTimers() {
+    clearInterval(timerRef.current)
+    clearTimeout(countRef.current)
+  }
+
+  // ── Charge breath ──────────────────────────────────────────────────────
+  function startChargeReady(round) {
+    clearTimers()
+    setChargeRound(round)
+    setPhase('charge-ready')
+    // "Ready" beep then 3-2-1 countdown then Begin
+    beepReady()
+    let count = 3
+    setTick(count)
+    timerRef.current = setInterval(() => {
+      count--
+      if (count > 0) {
+        setTick(count)
+        beepMid()
+      } else {
+        clearInterval(timerRef.current)
+        beepBegin()
+        startChargeWork(round)
+      }
+    }, 1000)
+  }
+
+  function startChargeWork(round) {
+    setPhase('charge-work')
+    setTick(CHARGE_WORK_S)
+    setCircleScale(1)
+    let t = CHARGE_WORK_S
+    // Pulsing circle: expand/contract every ~0.5s to suggest rapid breathing
+    let expanding = true
+    timerRef.current = setInterval(() => {
+      t--
+      setTick(t)
+      expanding = !expanding
+      setCircleScale(expanding ? 1.12 : 0.92)
+      if (t <= 0) {
+        clearInterval(timerRef.current)
+        setCircleScale(1)
+        if (round < CHARGE_ROUNDS) {
+          beepEnd()
+          startChargeRest(round)
+        } else {
+          beepEnd()
+          setPhase('charge-done')
+        }
+      }
+    }, 1000)
+  }
+
+  function startChargeRest(round) {
+    setPhase('charge-rest')
+    setTick(CHARGE_REST_S)
+    let t = CHARGE_REST_S
+    timerRef.current = setInterval(() => {
+      t--
+      setTick(t)
+      if (t <= 0) {
+        clearInterval(timerRef.current)
+        startChargeReady(round + 1)
+      }
+    }, 1000)
+  }
+
+  // ── Open breath ────────────────────────────────────────────────────────
+  function startOpen() {
+    setPhase('open-running')
+    setOpenRound(1)
+    setOpenCentre(0)
+    setOpenPhase(0)
+    runOpenPhase(1, 0, 0)
+  }
+
+  function runOpenPhase(round, centre, phaseIdx) {
+    clearTimers()
+    setOpenRound(round)
+    setOpenCentre(centre)
+    setOpenPhase(phaseIdx)
+    const dur = OPEN_PHASES[phaseIdx].dur
+    setOpenTick(dur)
+    const isExpand = OPEN_PHASES[phaseIdx].expand
+
+    if (phaseIdx === 0) beepBegin()  // new centre starts
+    else beepLow()
+
+    let t = dur
+    setCircleScale(isExpand ? 1.18 : 0.88)
+    timerRef.current = setInterval(() => {
+      t--
+      setOpenTick(t)
+      if (t <= 0) {
+        clearInterval(timerRef.current)
+        advanceOpen(round, centre, phaseIdx)
+      }
+    }, 1000)
+  }
+
+  function advanceOpen(round, centre, phaseIdx) {
+    const nextPhase  = phaseIdx + 1
+    const nextCentre = centre + 1
+    const nextRound  = round + 1
+
+    if (nextPhase < OPEN_PHASES.length) {
+      runOpenPhase(round, centre, nextPhase)
+    } else if (nextCentre < OPEN_CENTRES.length) {
+      beepHigh()
+      runOpenPhase(round, nextCentre, 0)
+    } else if (nextRound <= OPEN_ROUNDS) {
+      beepHigh()
+      setTimeout(() => runOpenPhase(nextRound, 0, 0), 800)
+    } else {
+      beepEnd()
+      setCircleScale(1)
+      setPhase('done')
+    }
+  }
+
+  useEffect(() => () => clearTimers(), [])
+
+  // ── Visual helpers ─────────────────────────────────────────────────────
+  const isCharging = phase === 'charge-work' || phase === 'charge-rest' || phase === 'charge-ready'
+  const isOpen = phase === 'open-running'
+
+  // Circle colour: gold pulse for charge, gentler for open
+  const circleColor = phase === 'charge-work'
+    ? tokens.goldChrome
+    : isOpen && OPEN_PHASES[openPhase]?.expand
+      ? tokens.goldChrome
+      : tokens.gold
+
+  const circleBg = phase === 'charge-work'
+    ? tokens.goldStrong
+    : tokens.goldTint
+
+  // Progress arc for the circle (SVG)
+  const totalSecs  = phase === 'charge-work' ? CHARGE_WORK_S
+    : phase === 'charge-rest' ? CHARGE_REST_S
+    : isOpen ? OPEN_PHASES[openPhase]?.dur || 4
+    : 0
+  const elapsed    = totalSecs - (isOpen ? openTick : tick)
+  const progress   = totalSecs > 0 ? Math.min(elapsed / totalSecs, 1) : 0
+  const R = 88, C = 2 * Math.PI * R
+  const dashOffset = C - progress * C
+
+  return (
+    <div className="hp-fade-in" style={{ maxWidth: '520px', margin: '0 auto' }}>
+      <Eyebrow style={{ marginBottom: '12px' }}>Ground</Eyebrow>
+      <Heading size="lg" style={{ marginBottom: '6px' }}>
+        Land in the <em style={{ color: tokens.gold, fontStyle: 'italic' }}>body</em>.
+      </Heading>
+
+      {/* ── Intro ── */}
+      {phase === 'intro' && (
+        <div className="hp-fade-in">
+          <Body dim style={{ marginBottom: '28px' }}>
+            Two stages. First, three rounds of charge breathing to wake the system.
+            Then a three-centre open breath to settle in.
+          </Body>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <GhostButton onClick={onBack}>← Back</GhostButton>
+            <SolidButton onClick={() => startChargeReady(1)}>Begin →</SolidButton>
+            <GhostButton onClick={onComplete} style={{ marginLeft: 'auto' }}>Skip</GhostButton>
+          </div>
+        </div>
+      )}
+
+      {/* ── Charge: ready countdown ── */}
+      {phase === 'charge-ready' && (
+        <div className="hp-fade-in" style={{ textAlign: 'center', padding: '32px 0' }}>
+          <Eyebrow style={{ marginBottom: '16px' }}>
+            Round {chargeRound} of {CHARGE_ROUNDS} · Charge breath
+          </Eyebrow>
+          <div style={{
+            ...serif, fontStyle: 'italic', fontSize: 'clamp(60px, 14vw, 88px)',
+            color: tokens.gold, lineHeight: 1, marginBottom: '16px',
+          }}>{tick}</div>
+          <Body dim italic style={{ margin: 0 }}>Ready…</Body>
+        </div>
+      )}
+
+      {/* ── Charge: work / rest ── */}
+      {(phase === 'charge-work' || phase === 'charge-rest') && (
+        <div className="hp-fade-in" style={{ textAlign: 'center', padding: '20px 0' }}>
+          <Eyebrow style={{ marginBottom: '20px' }}>
+            {phase === 'charge-work'
+              ? `Round ${chargeRound} of ${CHARGE_ROUNDS} · Charge`
+              : `Rest · Round ${chargeRound + 1} begins next`}
+          </Eyebrow>
+
+          {/* Animated circle */}
+          <div style={{ position: 'relative', width: '210px', height: '210px', margin: '0 auto 20px' }}>
+            <svg width="210" height="210" style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}>
+              <circle cx="105" cy="105" r={R} fill="none"
+                stroke={tokens.goldFaint} strokeWidth="3" />
+              <circle cx="105" cy="105" r={R} fill="none"
+                stroke={circleColor} strokeWidth="3"
+                strokeDasharray={C} strokeDashoffset={dashOffset}
+                style={{ transition: 'stroke-dashoffset 0.9s linear' }}
+              />
+            </svg>
+            <div style={{
+              position: 'absolute', inset: 0, display: 'flex',
+              flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              gap: '6px',
+            }}>
+              <div style={{
+                width: '80px', height: '80px', borderRadius: '50%',
+                background: phase === 'charge-work' ? circleBg : tokens.goldTint,
+                border: `2px solid ${circleColor}`,
+                transform: `scale(${circleScale})`,
+                transition: phase === 'charge-work' ? 'transform 0.45s ease-in-out' : 'transform 0.8s ease',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <span style={{
+                  ...serif, fontSize: '28px', fontStyle: 'italic',
+                  color: circleColor, lineHeight: 1,
+                }}>{isOpen ? openTick : tick}</span>
+              </div>
+            </div>
+          </div>
+
+          <Body style={{ margin: 0 }} dim={phase === 'charge-rest'}>
+            {phase === 'charge-work'
+              ? 'Fast, deep breaths through the nose.'
+              : 'Pause on the exhale.'}
+          </Body>
+        </div>
+      )}
+
+      {/* ── Charge done ── */}
+      {phase === 'charge-done' && (
+        <div className="hp-fade-in" style={{ textAlign: 'center', padding: '28px 0' }}>
+          <Eyebrow style={{ marginBottom: '14px' }}>Charge complete</Eyebrow>
+          <Body dim style={{ marginBottom: '28px' }}>
+            Three centres, descending. Deep breath in, hold, exhale with an extended "ah", hold.
+          </Body>
+          <SolidButton onClick={startOpen}>Open breath →</SolidButton>
+        </div>
+      )}
+
+      {/* ── Open breath: running ── */}
+      {phase === 'open-running' && (
+        <div className="hp-fade-in" style={{ textAlign: 'center', padding: '20px 0' }}>
+          <Eyebrow style={{ marginBottom: '4px' }}>
+            Round {openRound} of {OPEN_ROUNDS} · {OPEN_CENTRES[openCentre]}
+          </Eyebrow>
+          <div style={{
+            ...sc, fontSize: '11px', letterSpacing: '0.18em',
+            color: tokens.whisper, marginBottom: '20px', textTransform: 'uppercase',
+          }}>
+            {OPEN_PHASES[openPhase]?.label}
+          </div>
+
+          {/* Animated circle */}
+          <div style={{ position: 'relative', width: '210px', height: '210px', margin: '0 auto 20px' }}>
+            <svg width="210" height="210" style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}>
+              <circle cx="105" cy="105" r={R} fill="none"
+                stroke={tokens.goldFaint} strokeWidth="3" />
+              <circle cx="105" cy="105" r={R} fill="none"
+                stroke={circleColor} strokeWidth="3"
+                strokeDasharray={C} strokeDashoffset={dashOffset}
+                style={{ transition: 'stroke-dashoffset 0.9s linear' }}
+              />
+            </svg>
+            <div style={{
+              position: 'absolute', inset: 0, display: 'flex',
+              flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <div style={{
+                width: '80px', height: '80px', borderRadius: '50%',
+                background: circleBg,
+                border: `2px solid ${circleColor}`,
+                transform: `scale(${circleScale})`,
+                transition: 'transform 1.2s ease-in-out',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <span style={{
+                  ...serif, fontSize: '28px', fontStyle: 'italic',
+                  color: circleColor, lineHeight: 1,
+                }}>{openTick}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Centre progress dots */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '14px' }}>
+            {OPEN_CENTRES.map((_, i) => (
+              <div key={i} style={{
+                width: i === openCentre ? '20px' : '6px', height: '6px', borderRadius: '3px',
+                background: i <= openCentre ? tokens.goldChrome : tokens.goldFaint,
+                transition: 'all 0.3s ease',
+              }} />
+            ))}
+          </div>
+
+          <Body dim style={{ margin: 0, fontSize: '14px' }}>
+            {OPEN_PHASES[openPhase]?.label === 'Exhale — "ah"'
+              ? 'Let the sound carry the breath out.'
+              : OPEN_PHASES[openPhase]?.expand
+                ? `Breathe into the ${OPEN_CENTRES[openCentre].split(' /')[0].toLowerCase()}.`
+                : 'Hold.'}
+          </Body>
+        </div>
+      )}
+
+      {/* ── Done ── */}
+      {phase === 'done' && (
+        <div className="hp-fade-in" style={{ textAlign: 'center', padding: '28px 0' }}>
+          <Eyebrow style={{ marginBottom: '14px' }}>Grounded</Eyebrow>
+          <Heading size="md" italic style={{ marginBottom: '24px', color: tokens.gold }}>
+            The body is ready.
+          </Heading>
+          <SolidButton onClick={onComplete}>Plan →</SolidButton>
+        </div>
+      )}
+
+      {/* Skip always available during active phases */}
+      {(isCharging || isOpen) && (
+        <div style={{ textAlign: 'center', marginTop: '28px' }}>
+          <button onClick={() => { clearTimers(); onComplete() }} style={{
+            background: 'transparent', border: 'none', cursor: 'pointer',
+            ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
+            color: tokens.whisper, textTransform: 'uppercase',
+          }}>Skip →</button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// ────────────────────────────────────────────────────────────────────────────
+const MORNING_STORAGE_KEY = 'hp_morning_progress'
+function saveMorningProgress(data) {
+  try {
+    localStorage.setItem(MORNING_STORAGE_KEY, JSON.stringify({ ...data, date: getLocalDateStr() }))
+  } catch (e) {}
+}
+function loadMorningProgress() {
+  try {
+    const raw = localStorage.getItem(MORNING_STORAGE_KEY)
+    if (!raw) return null
+    const data = JSON.parse(raw)
+    if (data.date !== getLocalDateStr()) { localStorage.removeItem(MORNING_STORAGE_KEY); return null }
+    return data
+  } catch (e) { return null }
+}
+function clearMorningProgress() {
+  try { localStorage.removeItem(MORNING_STORAGE_KEY) } catch (e) {}
+}
+
 function MorningSequence({ userId, iamStatements, horizonSelfStatement, protectorCovenant, icalUrl, onSaveIcalUrl, onComplete, onClose }) {
-  const [beat, setBeat] = useState(1)
+  const _saved = loadMorningProgress()
+
+  const [beat, setBeatRaw] = useState(_saved?.beat || 1)
   const [sweep, setSweep] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [runId, setRunId] = useState(null)
+  const [runId, setRunIdRaw] = useState(_saved?.runId || null)
 
   // Commit
-  const [answers, setAnswers] = useState({ ready: null, allowed: null, choosing: null })
+  const [answers, setAnswersRaw] = useState(_saved?.answers || { ready: null, allowed: null, choosing: null })
   const [showCovenant, setShowCovenant] = useState(false)
 
-  // Plan — thresholds the user adds
-  const [thresholds, setThresholds] = useState([])
+  // Plan
+  const [thresholds, setThresholdsRaw] = useState(_saved?.thresholds || [])
+
+  // Persisting wrappers — use these instead of raw setters
+  const beatRef = useRef(beat)
+  const answersRef = useRef(answers)
+  const thresholdsRef = useRef(thresholds)
+  const runIdRef = useRef(runId)
+  useEffect(() => { beatRef.current = beat }, [beat])
+  useEffect(() => { answersRef.current = answers }, [answers])
+  useEffect(() => { thresholdsRef.current = thresholds }, [thresholds])
+  useEffect(() => { runIdRef.current = runId }, [runId])
+
+  function persist(overrides = {}) {
+    saveMorningProgress({
+      beat: beatRef.current,
+      answers: answersRef.current,
+      thresholds: thresholdsRef.current,
+      runId: runIdRef.current,
+      ...overrides,
+    })
+  }
+
+  function setBeat(v) { setBeatRaw(v); persist({ beat: v }) }
+  function setAnswers(fn) {
+    setAnswersRaw(prev => {
+      const next = typeof fn === 'function' ? fn(prev) : fn
+      persist({ answers: next }); return next
+    })
+  }
+  function setThresholds(fn) {
+    setThresholdsRaw(prev => {
+      const next = typeof fn === 'function' ? fn(prev) : fn
+      persist({ thresholds: next }); return next
+    })
+  }
+  function setRunId(v) { setRunIdRaw(v); persist({ runId: v }) }
 
   // Anchor
   const [iamIdx, setIamIdx] = useState(0)
@@ -951,6 +1406,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
         completed_at: now,
       }).eq('id', runId)
     }
+    clearMorningProgress()
     setTimeout(() => onComplete(thresholds), 1500)
   }
 
@@ -1057,46 +1513,9 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
         </div>
       )}
 
-      {/* ━━━ GROUND — three text steps ━━━ */}
+      {/* ━━━ GROUND — two-stage breath ━━━ */}
       {beat === 2 && (
-        <div className="hp-fade-in">
-          <Eyebrow style={{ marginBottom: '12px' }}>Ground</Eyebrow>
-          <Heading size="lg" style={{ marginBottom: '16px' }}>
-            Land in the <em style={{ color: tokens.gold, fontStyle: 'italic' }}>body</em>.
-          </Heading>
-
-          <Card style={{ marginTop: '28px', padding: '36px 32px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              {[
-                { num: '01', text: 'Feet on the floor.' },
-                { num: '02', text: 'Breath through the chest.' },
-                { num: '03', text: 'Notice the room.' },
-              ].map((step, i) => (
-                <div key={step.num}
-                  className="hp-ground-step"
-                  style={{
-                    display: 'flex', alignItems: 'baseline', gap: '20px',
-                    animationDelay: `${i * 0.35}s`,
-                  }}>
-                  <span style={{
-                    ...sc, fontSize: '11px', fontWeight: 600,
-                    letterSpacing: '0.20em', color: tokens.gold, minWidth: '24px',
-                  }}>{step.num}</span>
-                  <span style={{
-                    ...serif, fontStyle: 'italic', fontSize: '22px',
-                    color: tokens.meta, lineHeight: 1.4,
-                  }}>{step.text}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between',
-            alignItems: 'center', marginTop: '28px' }}>
-            <GhostButton onClick={() => setBeat(1)}>← Back</GhostButton>
-            <SolidButton onClick={moveToPlan}>Plan →</SolidButton>
-          </div>
-        </div>
+        <GroundBeat onComplete={moveToPlan} onBack={() => setBeat(1)} />
       )}
 
       {/* ━━━ PLAN — threshold editor ━━━ */}
@@ -1104,9 +1523,9 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
         <div className="hp-fade-in">
           <Eyebrow style={{ marginBottom: '12px' }}>Plan</Eyebrow>
           <Heading size="lg" style={{ marginBottom: '16px' }}>
-            Lock the <em style={{ color: tokens.gold, fontStyle: 'italic' }}>thresholds</em>.
+            Look at your <em style={{ color: tokens.gold, fontStyle: 'italic' }}>day</em>.
           </Heading>
-          <Body dim>The moments your Horizon Self will be tested today.</Body>
+          <Body dim>Go through your get-to-do list and visualise meeting each moment as your Horizon Self.</Body>
 
           <div style={{ marginTop: '24px' }}>
             <CalendarPlanBeat
@@ -1375,7 +1794,7 @@ function HorizonSelfRefresh({ open, onClose, variant, prefilledTask, onComplete 
       {step === 3 && (
         <div className="hp-fade-in">
           <Heading size="md" italic style={{ marginBottom: '8px' }}>
-            Anchor in. Execute as him.
+            Anchor in. Execute as that version of you.
           </Heading>
 
           <div style={{ marginTop: '24px' }}>
