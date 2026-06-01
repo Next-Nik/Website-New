@@ -1235,7 +1235,7 @@ export default function MissionControl() {
         open={activePanel === 'horizon-practice'}
         onClose={closePanel}
         eyebrow="DAILY ANCHORS · HORIZON PRACTICE"
-        title="What you're tending to today"
+        title="Anchor and train your Horizon Self"
         actions={[
           { label: 'OPEN PRACTICE →', primary: true,
             onClick: () => navigate('/tools/horizon-practice') },

@@ -1622,12 +1622,12 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
             {horizonSelfStatement && (
               <div style={{
                 padding: '22px 24px', marginBottom: '28px',
-                background: tokens.goldTint, border: `1px solid ${tokens.goldChrome}`,
+                background: tokens.bgCard, border: `1px solid ${tokens.goldChrome}`,
                 borderRadius: '12px',
               }}>
                 <p style={{
                   ...body, fontSize: 'clamp(15px, 2vw, 17px)', fontWeight: 400,
-                  color: tokens.gold, lineHeight: 1.55, margin: 0,
+                  color: tokens.dark, lineHeight: 1.55, margin: 0,
                 }}>{horizonSelfStatement}</p>
               </div>
             )}
@@ -1769,7 +1769,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
             }}>
             <p style={{
               ...body, fontSize: 'clamp(18px, 2.6vw, 24px)', fontWeight: 400,
-              color: tokens.gold, lineHeight: 1.5,
+              color: tokens.dark, lineHeight: 1.5,
               margin: 0, maxWidth: '460px', marginLeft: 'auto', marginRight: 'auto',
             }}>
               {iamExpanded ? orderedIam[iamIdx].full : orderedIam[iamIdx].text}
@@ -1846,7 +1846,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
               }}>
                 <Eyebrow style={{ marginBottom: '4px', fontSize: '10px' }}>{stmt.label}</Eyebrow>
                 <p style={{
-                  ...body, fontSize: '16px', color: tokens.gold,
+                  ...body, fontSize: '16px', color: tokens.dark,
                   lineHeight: 1.5, margin: 0,
                 }}>{stmt.text}</p>
               </div>
@@ -1881,7 +1881,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
               }}>
               <p style={{
                 ...body, fontSize: 'clamp(17px, 2.4vw, 21px)', fontWeight: 400,
-                color: tokens.gold, lineHeight: 1.6, margin: 0,
+                color: tokens.dark, lineHeight: 1.6, margin: 0,
               }}>{horizonSelfStatement}</p>
             </div>
           ) : (
@@ -1918,7 +1918,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
           <Heading size="lg" style={{ marginBottom: '16px' }}>
             Look at your day.
           </Heading>
-          <Body dim>Go through your get-to-do list and visualise meeting each moment as your Horizon Self.</Body>
+          <p style={{ ...body, fontSize: '16px', color: tokens.dark, lineHeight: 1.6, margin: '0 0 24px' }}>Go through your get-to-do list and visualise meeting each moment as your Horizon Self.</p>
 
           <div style={{ marginTop: '24px' }}>
             <CalendarPlanBeat
@@ -1981,13 +1981,13 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
 function HorizonSelfRefresh({ open, onClose, variant, prefilledTask, onComplete }) {
   const [step, setStep] = useState(1)
   const [task, setTask] = useState('')
-  const [his, setHis] = useState('')
+  const [response, setResponse] = useState('')
 
   useEffect(() => {
     if (open) {
       setStep(1)
       setTask(prefilledTask || '')
-      setHis('')
+      setResponse('')
     }
   }, [open, prefilledTask])
 
@@ -1997,7 +1997,7 @@ function HorizonSelfRefresh({ open, onClose, variant, prefilledTask, onComplete 
   function finish() {
     if (isCross) Chimes.cross()
     else Chimes.backIn()
-    onComplete({ task, his, variant })
+    onComplete({ task, response, variant })
   }
 
   return (
@@ -2013,7 +2013,7 @@ function HorizonSelfRefresh({ open, onClose, variant, prefilledTask, onComplete 
 
       {step === 1 && (
         <div className="hp-fade-in">
-          <Heading size="md" italic style={{ marginBottom: '24px' }}>
+          <Heading size="md" style={{ marginBottom: '24px' }}>
             What's in front of you?
           </Heading>
           <textarea value={task} onChange={e => setTask(e.target.value)} autoFocus
@@ -2026,21 +2026,21 @@ function HorizonSelfRefresh({ open, onClose, variant, prefilledTask, onComplete 
 
       {step === 2 && (
         <div className="hp-fade-in">
-          <Heading size="md" italic style={{ marginBottom: '24px' }}>
+          <Heading size="md" style={{ marginBottom: '24px' }}>
             How would your Horizon Self handle this?
           </Heading>
-          <textarea value={his} onChange={e => setHis(e.target.value)} autoFocus
+          <textarea value={response} onChange={e => setResponse(e.target.value)} autoFocus
             style={{ ...inputStyle(), minHeight: '110px' }}/>
           <div style={{ marginTop: '22px', display: 'flex', justifyContent: 'space-between' }}>
             <GhostButton onClick={() => setStep(1)}>← Back</GhostButton>
-            <SolidButton onClick={() => setStep(3)} disabled={!his.trim()}>Next →</SolidButton>
+            <SolidButton onClick={() => setStep(3)} disabled={!response.trim()}>Next →</SolidButton>
           </div>
         </div>
       )}
 
       {step === 3 && (
         <div className="hp-fade-in">
-          <Heading size="md" italic style={{ marginBottom: '8px' }}>
+          <Heading size="md" style={{ marginBottom: '8px' }}>
             Anchor in. Execute as that version of you.
           </Heading>
 
@@ -2052,13 +2052,13 @@ function HorizonSelfRefresh({ open, onClose, variant, prefilledTask, onComplete 
               borderLeft: `1px solid ${tokens.goldFaint}`,
             }}>{task}</p>
 
-            <Eyebrow style={{ marginBottom: '8px', fontSize: '11px' }}>Your move</Eyebrow>
+            <Eyebrow style={{ marginBottom: '8px', fontSize: '11px' }}>Your approach</Eyebrow>
             <p style={{
-              ...serif, fontStyle: 'italic', fontSize: '21px', color: tokens.gold,
-              lineHeight: 1.5, margin: 0, padding: '20px 22px',
-              background: tokens.goldTint, borderRadius: '12px',
+              ...body, fontSize: '19px', fontWeight: 400, color: tokens.dark,
+              lineHeight: 1.55, margin: 0, padding: '20px 22px',
+              background: tokens.bgCard, borderRadius: '12px',
               border: `1px solid ${tokens.goldChrome}`,
-            }}>{his}</p>
+            }}>{response}</p>
           </div>
 
           <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between' }}>
@@ -2085,13 +2085,13 @@ function HorizonSelfPanel({ statement, onRefresh }) {
       <Eyebrow style={{ marginBottom: '14px' }}>Your Horizon Self</Eyebrow>
       {statement ? (
         <p style={{
-          ...serif, fontStyle: 'italic', fontSize: 'clamp(17px, 2.4vw, 20px)',
-          color: tokens.meta, lineHeight: 1.55,
+          ...body, fontSize: 'clamp(17px, 2.4vw, 20px)', fontWeight: 400,
+          color: tokens.dark, lineHeight: 1.6,
           maxWidth: '520px', margin: '0 auto 24px',
         }}>{statement}</p>
       ) : (
         <p style={{
-          ...body, fontStyle: 'italic', fontSize: '15px',
+          ...body, fontSize: '15px',
           color: tokens.ghost, lineHeight: 1.5,
           maxWidth: '420px', margin: '0 auto 24px',
         }}>Your integrated statement lands here once your Map's synthesis runs.</p>
@@ -2217,7 +2217,7 @@ function HitDriftBar({ onFlag, onCapture }) {
           onMouseEnter={e => e.currentTarget.style.background = tokens.goldGlow}
           onMouseLeave={e => e.currentTarget.style.background = tokens.goldTint}>
           <Eyebrow style={{ marginBottom: '6px', fontSize: '10px' }}>Hit</Eyebrow>
-          <span style={flagLabelStyle}>I was him. World responded.</span>
+          <span style={flagLabelStyle}>I showed up. World responded.</span>
         </button>
         <button onClick={(e) => handleFlag(e, 'drift')}
           style={flagBtnStyle('transparent', tokens.goldFaint)}
@@ -2392,8 +2392,8 @@ function AmbientStrip({ iam, listening }) {
           : `External read · ${item.from?.split(' ')[0] || 'they'}`}
       </Eyebrow>
       <p style={{
-        ...serif, fontStyle: 'italic', fontSize: '19px', fontWeight: 400,
-        color: tokens.gold, lineHeight: 1.5, margin: 0,
+        ...body, fontSize: '17px', fontWeight: 400,
+        color: tokens.dark, lineHeight: 1.55, margin: 0,
       }}>{item.text}</p>
       {!isIam && item.from && (
         <p style={{
@@ -2853,7 +2853,7 @@ export function HorizonPracticePage() {
     setReceiptOpen(false)
   }
 
-  async function handleRefreshComplete({ task, his, variant }) {
+  async function handleRefreshComplete({ task, response, variant }) {
     if (!user) return
     screenFlash()
     const isCross = variant === 'cross'
@@ -2862,9 +2862,9 @@ export function HorizonPracticePage() {
       .insert({
         user_id: user.id,
         kind: 'hit',
-        text: `${task} · ${his}`,
+        text: `${task} · ${response}`,
         refresh_task: task,
-        refresh_his: his,
+        refresh_response: response,
         refresh_variant: variant,
         threshold_id: isCross ? currentCrossingId : null,
       })
@@ -2919,7 +2919,7 @@ export function HorizonPracticePage() {
   if (authLoading || accessLoading || profileLoading) {
     return (
       <div style={{ background: tokens.bg, minHeight: '100vh' }}>
-        <Nav activePath="nextus-self" />
+        <Nav activePath="nextus-self" hideHamburger={view === 'morning'} />
         <div className="loading" />
       </div>
     )
@@ -2927,7 +2927,7 @@ export function HorizonPracticePage() {
 
   return (
     <div style={{ background: tokens.bg, minHeight: '100vh' }}>
-        <Nav activePath="nextus-self" />
+        <Nav activePath="nextus-self" hideHamburger={view === 'morning'} />
 
         {/* Global animations */}
         <style>{`
@@ -3000,8 +3000,12 @@ export function HorizonPracticePage() {
             <div style={{ marginBottom: '32px' }}>
               <Heading size="xl">
                 {getGreeting()}
-                {user?.email && <>, <em style={{ color: tokens.gold,
-                  fontStyle: 'italic' }}>{user.email.split('@')[0]}</em></>}.
+                {user && <>, <em style={{ color: tokens.gold,
+                  fontStyle: 'normal' }}>{
+                    user.user_metadata?.full_name?.split(' ')[0] ||
+                    user.user_metadata?.name?.split(' ')[0] ||
+                    (user.email.split('@')[0].charAt(0).toUpperCase() + user.email.split('@')[0].slice(1))
+                  }</em></>}.
               </Heading>
             </div>
 

@@ -254,25 +254,13 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
           marginBottom: 18,
         }}>
           <p style={{
-            fontFamily: FONT_DISPLAY,
-            fontSize: 18,
-            fontStyle: 'italic',
+            fontFamily: FONT_BODY,
+            fontSize: 15,
             color: TEXT_INK,
-            lineHeight: 1.55,
+            lineHeight: 1.65,
             margin: 0,
           }}>
-            Set who you're practicing toward.
-          </p>
-          <p style={{
-            fontFamily: FONT_BODY,
-            fontSize: 14,
-            color: TEXT_META,
-            lineHeight: 1.65,
-            margin: '12px 0 0',
-          }}>
-            Practice is short, daily, and anchored in a Horizon Self statement —
-            who you are when you're moving in your direction. Set it once, return
-            to it daily.
+            We all re-create our normal everywhere we go in the world. Set a new normal.
           </p>
         </div>
         <button onClick={() => onNavigate('/tools/horizon-practice')} style={primaryBtnStyle}>

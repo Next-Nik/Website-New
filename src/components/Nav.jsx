@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
-export function Nav({ activePath }) {
+export function Nav({ activePath, hideHamburger = false }) {
   const { user }     = useAuth()
   const { pathname } = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -75,8 +75,8 @@ export function Nav({ activePath }) {
               <Link to="/login" className="nav-sign-in" onClick={closeMobile}>Sign in</Link>
             )}
 
-            {/* Hamburger — visible on mobile only via CSS */}
-            <button
+            {/* Hamburger — visible on mobile only via CSS, hidden during practice */}
+            {!hideHamburger && <button
               className="nav-hamburger"
               onClick={() => setMobileOpen(o => !o)}
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
@@ -94,7 +94,7 @@ export function Nav({ activePath }) {
                   <line x1="3" y1="14" x2="17" y2="14" stroke="rgba(15,21,35,0.72)" strokeWidth="1.5" strokeLinecap="round"/>
                 </svg>
               )}
-            </button>
+            </button>}
           </div>
         </div>
       </nav>
