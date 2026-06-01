@@ -840,31 +840,71 @@ function beepEnd()    {
 }
 
 function GroundBeat({ onComplete, onBack }) {
-  // phase: 'intro' | 'charge-ready' | 'charge-work' | 'charge-rest' | 'charge-done'
-  //        | 'open-intro' | 'open-running' | 'done'
-  const [phase, setPhase]         = useState('intro')
-  const [chargeRound, setChargeRound] = useState(1)   // 1–3
-  const [tick, setTick]           = useState(0)        // countdown seconds
+  const [phase, setPhase]             = useState('intro')
+  const [chargeRound, setChargeRound] = useState(1)
+  const [tick, setTick]               = useState(0)
   const [circleScale, setCircleScale] = useState(1)
-  const [openRound, setOpenRound] = useState(1)        // 1–3
-  const [openCentre, setOpenCentre] = useState(0)      // 0–2
-  const [openPhase, setOpenPhase] = useState(0)        // 0–3
-  const [openTick, setOpenTick]   = useState(0)
+  const [openRound, setOpenRound]     = useState(1)
+  const [openCentre, setOpenCentre]   = useState(0)
+  const [openPhase, setOpenPhase]     = useState(0)
+  const [openTick, setOpenTick]       = useState(0)
+  const [paused, setPaused]           = useState(false)
 
-  const timerRef   = useRef(null)
-  const countRef   = useRef(null)
+  const timerRef     = useRef(null)
+  const countRef     = useRef(null)
+  const remainingRef = useRef(0)
+  const resumeCtxRef = useRef(null)
+  const phaseRef     = useRef('intro')
+  const pausedRef    = useRef(false)
+
+  useEffect(() => { phaseRef.current = phase }, [phase])
+  useEffect(() => { pausedRef.current = paused }, [paused])
 
   function clearTimers() {
     clearInterval(timerRef.current)
     clearTimeout(countRef.current)
   }
 
+  function doPause() {
+    if (pausedRef.current) return
+    clearTimers()
+    setPaused(true)
+  }
+
+  function doResume() {
+    setPaused(false)
+    const ctx = resumeCtxRef.current
+    if (!ctx) return
+    const rem = remainingRef.current
+    if (ctx.kind === 'charge-work') resumeChargeWork(ctx.round, rem)
+    else if (ctx.kind === 'charge-rest') resumeChargeRest(ctx.round, rem)
+    else if (ctx.kind === 'open') resumeOpenPhase(ctx.round, ctx.centre, ctx.phaseIdx, rem)
+  }
+
+  useEffect(() => {
+    function onVisibilityChange() {
+      const activePhases = ['charge-work','charge-rest','charge-ready','open-running']
+      if (document.hidden && activePhases.includes(phaseRef.current) && !pausedRef.current) {
+        doPause()
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', onVisibilityChange)
+  }, [])
+
   // ── Charge breath ──────────────────────────────────────────────────────
   function startChargeReady(round) {
     clearTimers()
     setChargeRound(round)
+
+    // Only round 1 gets the 3-2-1 countdown
+    if (round > 1) {
+      beepBegin()
+      startChargeWork(round)
+      return
+    }
+
     setPhase('charge-ready')
-    // "Ready" beep then 3-2-1 countdown then Begin
     beepReady()
     let count = 3
     setTick(count)
@@ -885,11 +925,19 @@ function GroundBeat({ onComplete, onBack }) {
     setPhase('charge-work')
     setTick(CHARGE_WORK_S)
     setCircleScale(1)
-    let t = CHARGE_WORK_S
-    // Pulsing circle: expand/contract every ~0.5s to suggest rapid breathing
+    resumeCtxRef.current = { kind: 'charge-work', round }
+    resumeChargeWork(round, CHARGE_WORK_S)
+  }
+
+  function resumeChargeWork(round, startAt) {
+    setPhase('charge-work')
+    setChargeRound(round)
+    let t = startAt
+    setTick(t)
     let expanding = true
     timerRef.current = setInterval(() => {
       t--
+      remainingRef.current = t
       setTick(t)
       expanding = !expanding
       setCircleScale(expanding ? 1.12 : 0.92)
@@ -909,10 +957,18 @@ function GroundBeat({ onComplete, onBack }) {
 
   function startChargeRest(round) {
     setPhase('charge-rest')
-    setTick(CHARGE_REST_S)
-    let t = CHARGE_REST_S
+    resumeCtxRef.current = { kind: 'charge-rest', round }
+    resumeChargeRest(round, CHARGE_REST_S)
+  }
+
+  function resumeChargeRest(round, startAt) {
+    setPhase('charge-rest')
+    setChargeRound(round)
+    let t = startAt
+    setTick(t)
     timerRef.current = setInterval(() => {
       t--
+      remainingRef.current = t
       setTick(t)
       if (t <= 0) {
         clearInterval(timerRef.current)
@@ -936,16 +992,24 @@ function GroundBeat({ onComplete, onBack }) {
     setOpenCentre(centre)
     setOpenPhase(phaseIdx)
     const dur = OPEN_PHASES[phaseIdx].dur
-    setOpenTick(dur)
-    const isExpand = OPEN_PHASES[phaseIdx].expand
-
-    if (phaseIdx === 0) beepBegin()  // new centre starts
+    resumeCtxRef.current = { kind: 'open', round, centre, phaseIdx }
+    if (phaseIdx === 0) beepBegin()
     else beepLow()
+    resumeOpenPhase(round, centre, phaseIdx, dur)
+  }
 
-    let t = dur
+  function resumeOpenPhase(round, centre, phaseIdx, startAt) {
+    setPhase('open-running')
+    setOpenRound(round)
+    setOpenCentre(centre)
+    setOpenPhase(phaseIdx)
+    const isExpand = OPEN_PHASES[phaseIdx].expand
     setCircleScale(isExpand ? 1.18 : 0.88)
+    let t = startAt
+    setOpenTick(t)
     timerRef.current = setInterval(() => {
       t--
+      remainingRef.current = t
       setOpenTick(t)
       if (t <= 0) {
         clearInterval(timerRef.current)
@@ -1005,7 +1069,7 @@ function GroundBeat({ onComplete, onBack }) {
     <div className="hp-fade-in" style={{ maxWidth: '520px', margin: '0 auto' }}>
       <Eyebrow style={{ marginBottom: '12px' }}>Ground</Eyebrow>
       <Heading size="lg" style={{ marginBottom: '6px' }}>
-        Land in the <em style={{ color: tokens.gold, fontStyle: 'italic' }}>body</em>.
+        Land in the body.
       </Heading>
 
       {/* ── Intro ── */}
@@ -1030,10 +1094,10 @@ function GroundBeat({ onComplete, onBack }) {
             Round {chargeRound} of {CHARGE_ROUNDS} · Charge breath
           </Eyebrow>
           <div style={{
-            ...serif, fontStyle: 'italic', fontSize: 'clamp(60px, 14vw, 88px)',
+            ...body, fontSize: 'clamp(60px, 14vw, 88px)', fontWeight: 300,
             color: tokens.gold, lineHeight: 1, marginBottom: '16px',
           }}>{tick}</div>
-          <Body dim italic style={{ margin: 0 }}>Ready…</Body>
+          <Body dim style={{ margin: 0 }}>Ready…</Body>
         </div>
       )}
 
@@ -1071,7 +1135,7 @@ function GroundBeat({ onComplete, onBack }) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <span style={{
-                  ...serif, fontSize: '28px', fontStyle: 'italic',
+                  ...body, fontSize: '28px', fontWeight: 300,
                   color: circleColor, lineHeight: 1,
                 }}>{isOpen ? openTick : tick}</span>
               </div>
@@ -1079,9 +1143,11 @@ function GroundBeat({ onComplete, onBack }) {
           </div>
 
           <Body style={{ margin: 0 }} dim={phase === 'charge-rest'}>
-            {phase === 'charge-work'
-              ? 'Fast, deep breaths through the nose.'
-              : 'Pause on the exhale.'}
+            {paused
+              ? 'Paused.'
+              : phase === 'charge-work'
+                ? 'Just breathe. Focus on the exhale.'
+                : 'Pause on the exhale.'}
           </Body>
         </div>
       )}
@@ -1134,7 +1200,7 @@ function GroundBeat({ onComplete, onBack }) {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
                 <span style={{
-                  ...serif, fontSize: '28px', fontStyle: 'italic',
+                  ...body, fontSize: '28px', fontWeight: 300,
                   color: circleColor, lineHeight: 1,
                 }}>{openTick}</span>
               </div>
@@ -1153,11 +1219,13 @@ function GroundBeat({ onComplete, onBack }) {
           </div>
 
           <Body dim style={{ margin: 0, fontSize: '14px' }}>
-            {OPEN_PHASES[openPhase]?.label === 'Exhale — "ah"'
-              ? 'Let the sound carry the breath out.'
-              : OPEN_PHASES[openPhase]?.expand
-                ? `Breathe into the ${OPEN_CENTRES[openCentre].split(' /')[0].toLowerCase()}.`
-                : 'Hold.'}
+            {paused
+              ? 'Paused.'
+              : OPEN_PHASES[openPhase]?.label === 'Exhale — "ah"'
+                ? 'Let the sound carry the breath out.'
+                : OPEN_PHASES[openPhase]?.expand
+                  ? `Breathe into the ${OPEN_CENTRES[openCentre].split(' /')[0].toLowerCase()}.`
+                  : 'Hold.'}
           </Body>
         </div>
       )}
@@ -1166,7 +1234,7 @@ function GroundBeat({ onComplete, onBack }) {
       {phase === 'done' && (
         <div className="hp-fade-in" style={{ textAlign: 'center', padding: '28px 0' }}>
           <Eyebrow style={{ marginBottom: '14px' }}>Grounded</Eyebrow>
-          <Heading size="md" italic style={{ marginBottom: '24px', color: tokens.gold }}>
+          <Heading size="md" style={{ marginBottom: '24px', color: tokens.gold }}>
             The body is ready.
           </Heading>
           <SolidButton onClick={onComplete}>Plan →</SolidButton>
@@ -1175,7 +1243,15 @@ function GroundBeat({ onComplete, onBack }) {
 
       {/* Skip always available during active phases */}
       {(isCharging || isOpen) && (
-        <div style={{ textAlign: 'center', marginTop: '28px' }}>
+        <div style={{ textAlign: 'center', marginTop: '28px', display: 'flex', justifyContent: 'center', gap: '20px', alignItems: 'center' }}>
+          <button onClick={paused ? doResume : doPause} style={{
+            background: paused ? tokens.goldChrome : 'transparent',
+            border: `1px solid ${paused ? tokens.goldChrome : tokens.goldFaint}`,
+            borderRadius: '40px', cursor: 'pointer',
+            ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
+            color: paused ? '#FFFFFF' : tokens.gold, textTransform: 'uppercase',
+            padding: '8px 18px',
+          }}>{paused ? 'Resume →' : 'Pause'}</button>
           <button onClick={() => { clearTimers(); onComplete() }} style={{
             background: 'transparent', border: 'none', cursor: 'pointer',
             ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
