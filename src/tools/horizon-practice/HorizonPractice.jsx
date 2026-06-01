@@ -62,6 +62,17 @@ function getGreeting() {
   return h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening'
 }
 
+function extractIamLine(text) {
+  if (!text) return ''
+  // Take everything up to and including the first sentence-ending punctuation
+  const match = text.match(/^(.+?[.!?])(\s|$)/)
+  if (match) return match[1].trim()
+  // Fallback: hard cap at 120 chars on a word boundary
+  if (text.length <= 120) return text.trim()
+  const cut = text.slice(0, 120).replace(/\s+\S+$/, '')
+  return cut.trim() + '…'
+}
+
 function relativeDate(iso) {
   if (!iso) return ''
   const then = new Date(iso)
@@ -1399,6 +1410,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
 
   // Anchor
   const [iamIdx, setIamIdx] = useState(0)
+  const [iamExpanded, setIamExpanded] = useState(false)
   const [voicedFinal, setVoicedFinal] = useState(false)
   const [pulseKey, setPulseKey] = useState(0)
   const [fastMode, setFastMode] = useState(false)
@@ -1406,8 +1418,13 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
 
   // The seven iam statements ordered by DOMAIN_ORDER
   const orderedIam = DOMAIN_ORDER
-    .map(d => ({ domain: d, label: DOMAIN_LABELS[d], text: iamStatements[d] }))
-    .filter(s => s.text && s.text.trim())
+    .map(d => ({
+      domain: d,
+      label: DOMAIN_LABELS[d],
+      text: extractIamLine(iamStatements[d]),
+      full: iamStatements[d],
+    }))
+    .filter(s => s.full && s.full.trim())
 
   const allYes = answers.ready === 'yes' && answers.allowed === 'yes' && answers.choosing === 'yes'
   const anyNo  = Object.values(answers).includes('no')
@@ -1516,6 +1533,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
   function handleIamVoiced() {
     Chimes.iamVoiced()
     setPulseKey(k => k + 1)
+    setIamExpanded(false)
     const currentDomain = orderedIam[iamIdx].domain
     if (!voicedDomainsRef.current.includes(currentDomain)) {
       voicedDomainsRef.current = [...voicedDomainsRef.current, currentDomain]
@@ -1753,7 +1771,17 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
               ...body, fontSize: 'clamp(18px, 2.6vw, 24px)', fontWeight: 400,
               color: tokens.gold, lineHeight: 1.5,
               margin: 0, maxWidth: '460px', marginLeft: 'auto', marginRight: 'auto',
-            }}>{orderedIam[iamIdx].text}</p>
+            }}>
+              {iamExpanded ? orderedIam[iamIdx].full : orderedIam[iamIdx].text}
+            </p>
+            {orderedIam[iamIdx].full !== orderedIam[iamIdx].text && (
+              <button onClick={() => setIamExpanded(e => !e)} style={{
+                marginTop: '14px', background: 'transparent', border: 'none',
+                cursor: 'pointer', ...sc, fontSize: '10px', fontWeight: 600,
+                letterSpacing: '0.16em', color: tokens.ghost, textTransform: 'uppercase',
+                borderBottom: `1px solid ${tokens.goldFaint}`, paddingBottom: '1px',
+              }}>{iamExpanded ? 'Less' : 'More'}</button>
+            )}
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', margin: '22px 0' }}>
@@ -3002,7 +3030,7 @@ export function HorizonPracticePage() {
               <AmbientStrip
                 iam={DOMAIN_ORDER
                   .filter(d => iamStatements[d])
-                  .map(d => ({ domain: d, label: DOMAIN_LABELS[d], text: iamStatements[d] }))
+                  .map(d => ({ domain: d, label: DOMAIN_LABELS[d], text: extractIamLine(iamStatements[d]) }))
                 }
                 listening={entries.filter(e => e.kind === 'listening_glow').slice(0, 5)
                   .map(e => ({ text: e.text, from: e.from_who }))
