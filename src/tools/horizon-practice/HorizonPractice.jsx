@@ -1129,176 +1129,309 @@ function GroundBeat({ onComplete, onBack }) {
 // ────────────────────────────────────────────────────────────────────────────
 // ────────────────────────────────────────────────────────────────────────────
 // OpenBreathBeat — three-centre descending breath to anchor the I Am statements
+// Glow field · tick-dot canvas · phase-text animation · complete-pulse · 0.7s gap
 // ────────────────────────────────────────────────────────────────────────────
 function OpenBreathBeat({ onComplete, onBack }) {
-  const [phase, setPhase]         = useState('intro')   // 'intro' | 'running' | 'done'
-  const [openRound, setOpenRound] = useState(1)
+  const canvasRef      = useRef(null)
+  const glowRef        = useRef(null)
+  const phaseTextRef   = useRef(null)
+  const timerRef       = useRef(null)
+  const glowAnimRef    = useRef(null)
+  const pulseAnimRef   = useRef(null)
+  const currentGlowRef = useRef(0)
+  const transRef       = useRef(false)
+  const pausedRef      = useRef(false)
+
+  const [screen, setScreen]         = useState('intro')
+  const [paused, setPaused]         = useState(false)
+  const [openRound, setOpenRound]   = useState(1)
   const [openCentre, setOpenCentre] = useState(0)
-  const [openPhase, setOpenPhase] = useState(0)
-  const [openTick, setOpenTick]   = useState(0)
-  const [circleScale, setCircleScale] = useState(1)
-  const [paused, setPaused]       = useState(false)
+  const [openPhase, setOpenPhase]   = useState(0)
 
-  const timerRef     = useRef(null)
-  const remainingRef = useRef(0)
-  const resumeCtxRef = useRef(null)
-  const phaseRef     = useRef('intro')
-  const pausedRef    = useRef(false)
-
-  useEffect(() => { phaseRef.current = phase }, [phase])
   useEffect(() => { pausedRef.current = paused }, [paused])
 
-  function clearTimers() { clearInterval(timerRef.current) }
+  // ── Audio ───────────────────────────────────────────────────────────
+  function bpIn()    { makeBeep(523, 0.18, 0.12); setTimeout(() => makeBeep(659, 0.16, 0.10), 180) }
+  function bpTrans() { makeBeep(440, 0.22, 0.09) }
+  function bpDone()  { makeBeep(659, 0.20, 0.11); setTimeout(() => makeBeep(880, 0.30, 0.13), 220) }
+
+  // ── Glow ────────────────────────────────────────────────────────────
+  function setGlow(v) {
+    currentGlowRef.current = v
+    if (!glowRef.current) return
+    const a1 = 0.04 + v * 0.30
+    const a2 = 0.00 + v * 0.14
+    glowRef.current.style.background =
+      'radial-gradient(circle, rgba(200,146,42,' + a1 + ') 20%, rgba(200,146,42,' + a2 + ') 55%, transparent 78%)'
+  }
+
+  function animateGlowTo(from, to, durMs) {
+    cancelAnimationFrame(glowAnimRef.current)
+    let start = null
+    function step(ts) {
+      if (!start) start = ts
+      const t = Math.min((ts - start) / durMs, 1)
+      const e = t < 0.5 ? 2*t*t : -1 + (4-2*t)*t
+      setGlow(from + (to - from) * e)
+      if (t < 1) glowAnimRef.current = requestAnimationFrame(step)
+    }
+    glowAnimRef.current = requestAnimationFrame(step)
+  }
+
+  // ── Tick canvas ──────────────────────────────────────────────────────
+  function drawTicks(total, filled, pulse) {
+    pulse = pulse || 0
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    ctx.clearRect(0, 0, 220, 220)
+    const cx = 110, cy = 110, r = 96
+    const step = (Math.PI * 2) / total
+    const startA = -Math.PI / 2
+    const allFilled = filled >= total
+    for (let i = 0; i < total; i++) {
+      const angle = startA + i * step
+      const x = cx + r * Math.cos(angle)
+      const y = cy + r * Math.sin(angle)
+      const isLast = i === total - 1
+      const isFilled = i < filled
+      let dotR = 2.8
+      if (isLast && isFilled) dotR = 4.4
+      if (allFilled && pulse > 0) {
+        const p = Math.sin(pulse * Math.PI)
+        dotR += p * (isLast ? 3.2 : 1.6)
+      }
+      let alpha = isFilled ? 0.85 : 0.16
+      if (allFilled && pulse > 0) {
+        const p2 = Math.sin(pulse * Math.PI)
+        alpha = isFilled ? Math.min(1.0, 0.85 + p2 * 0.15) : 0.16 + p2 * 0.28
+      }
+      ctx.beginPath()
+      ctx.arc(x, y, dotR, 0, Math.PI * 2)
+      ctx.fillStyle = 'rgba(200,146,42,' + alpha + ')'
+      ctx.fill()
+    }
+  }
+
+  function runCompletePulse(total, onDone) {
+    cancelAnimationFrame(pulseAnimRef.current)
+    let start = null
+    const dur = 520
+    function step(ts) {
+      if (!start) start = ts
+      const t = Math.min((ts - start) / dur, 1)
+      drawTicks(total, total, t)
+      if (t < 1) { pulseAnimRef.current = requestAnimationFrame(step) }
+      else { drawTicks(total, total, 0); onDone() }
+    }
+    pulseAnimRef.current = requestAnimationFrame(step)
+  }
+
+  // ── Phase visuals ────────────────────────────────────────────────────
+  function applyPhaseVisuals(kind, durMs) {
+    const el = phaseTextRef.current
+    if (!el) return
+    if (kind === 'inhale') {
+      el.style.transition = 'opacity 0.3s ease, color 0.4s ease'
+      el.style.opacity = '1'; el.style.color = tokens.dark
+      el.style.fontSize = '17px'; el.style.letterSpacing = '0.03em'
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        el.style.transition =
+          'font-size ' + durMs + 'ms cubic-bezier(0.25,0,0.1,1), ' +
+          'letter-spacing ' + durMs + 'ms cubic-bezier(0.25,0,0.1,1), ' +
+          'opacity 0.3s ease, color 0.4s ease'
+        el.style.fontSize = '30px'; el.style.letterSpacing = '0.06em'
+      }))
+      animateGlowTo(0.05, 0.26, durMs)
+    } else if (kind === 'hold-in') {
+      el.style.transition = 'font-size 0.4s ease, letter-spacing 0.4s ease, opacity 0.3s ease, color 0.4s ease'
+      el.style.opacity = '1'; el.style.color = tokens.dark
+      el.style.fontSize = '30px'; el.style.letterSpacing = '0.10em'
+      animateGlowTo(0.26, 0.78, durMs)
+    } else if (kind === 'exhale') {
+      el.style.transition = 'opacity 0.3s ease, color 0.5s ease'
+      el.style.opacity = '0.88'; el.style.color = 'rgba(168,114,26,0.72)'
+      el.style.fontSize = '30px'; el.style.letterSpacing = '0.10em'
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        el.style.transition =
+          'font-size ' + durMs + 'ms cubic-bezier(0.0,0,0.2,1), ' +
+          'letter-spacing ' + (durMs * 1.15) + 'ms cubic-bezier(0.0,0,0.2,1), ' +
+          'opacity 0.3s ease, color 0.5s ease'
+        el.style.fontSize = '16px'; el.style.letterSpacing = '0.26em'
+      }))
+      animateGlowTo(0.78, 0.04, durMs)
+    } else if (kind === 'hold-out') {
+      el.style.transition = 'font-size 0.6s ease, letter-spacing 0.6s ease, opacity 0.7s ease, color 0.5s ease'
+      el.style.fontSize = '15px'; el.style.letterSpacing = '0.20em'
+      el.style.opacity = '0.48'; el.style.color = tokens.ghost
+      animateGlowTo(0.04, 0.02, durMs)
+    }
+  }
+
+  // ── Core timer ───────────────────────────────────────────────────────
+  function startPhase(r, c, p) {
+    if (transRef.current) return
+    setOpenRound(r); setOpenCentre(c); setOpenPhase(p)
+    clearInterval(timerRef.current)
+    const cfg = OPEN_PHASES[p]
+    let ticksLeft = cfg.dur
+    const total = cfg.dur
+    if (phaseTextRef.current) phaseTextRef.current.textContent = cfg.label
+    drawTicks(total, 0, 0)
+    applyPhaseVisuals(cfg.kind, cfg.dur * 1000)
+    if (p === 0) bpIn(); else bpTrans()
+    timerRef.current = setInterval(() => {
+      if (pausedRef.current) return
+      ticksLeft--
+      drawTicks(total, total - ticksLeft, 0)
+      if (ticksLeft <= 0) {
+        clearInterval(timerRef.current)
+        runCompletePulse(total, () => {
+          const el = phaseTextRef.current
+          if (el) { el.style.transition = 'opacity 0.25s ease'; el.style.opacity = '0.28' }
+          transRef.current = true
+          setTimeout(() => { transRef.current = false; advancePhase(r, c, p) }, 700)
+        })
+      }
+    }, 1000)
+  }
+
+  function advancePhase(r, c, p) {
+    const nextP = p + 1, nextC = c + 1, nextR = r + 1
+    if (nextP < OPEN_PHASES.length) { startPhase(r, c, nextP) }
+    else if (nextC < OPEN_CENTRES.length) { bpTrans(); startPhase(r, nextC, 0) }
+    else if (nextR <= OPEN_ROUNDS) { bpTrans(); startPhase(nextR, 0, 0) }
+    else {
+      bpDone()
+      const el = phaseTextRef.current
+      if (el) { el.style.transition = 'all 0.6s ease'; el.style.fontSize = '22px';
+        el.style.letterSpacing = '0.02em'; el.style.opacity = '1'; el.style.color = tokens.dark }
+      animateGlowTo(currentGlowRef.current, 0, 800)
+      setTimeout(() => setScreen('done'), 900)
+    }
+  }
+
+  function doStart() {
+    setScreen('running')
+    setTimeout(() => startPhase(1, 0, 0), 80)
+  }
 
   function doPause() {
-    if (pausedRef.current) return
-    clearTimers(); setPaused(true)
+    setPaused(p => {
+      const next = !p
+      pausedRef.current = next
+      if (next) cancelAnimationFrame(glowAnimRef.current)
+      return next
+    })
   }
-  function doResume() {
-    setPaused(false)
-    const ctx = resumeCtxRef.current
-    if (ctx) resumeOpenPhase(ctx.round, ctx.centre, ctx.phaseIdx, remainingRef.current)
+
+  function doSkip() {
+    clearInterval(timerRef.current)
+    cancelAnimationFrame(glowAnimRef.current)
+    cancelAnimationFrame(pulseAnimRef.current)
+    onComplete()
   }
 
   useEffect(() => {
     function onVis() {
-      if (document.hidden && phaseRef.current === 'running' && !pausedRef.current) doPause()
+      if (document.hidden && !pausedRef.current) doPause()
     }
     document.addEventListener('visibilitychange', onVis)
     return () => document.removeEventListener('visibilitychange', onVis)
   }, [])
 
-  useEffect(() => () => clearTimers(), [])
+  useEffect(() => () => {
+    clearInterval(timerRef.current)
+    cancelAnimationFrame(glowAnimRef.current)
+    cancelAnimationFrame(pulseAnimRef.current)
+  }, [])
 
-  function startOpen() {
-    setPhase('running')
-    runOpenPhase(1, 0, 0)
-  }
-
-  function runOpenPhase(round, centre, phaseIdx) {
-    clearTimers()
-    resumeCtxRef.current = { round, centre, phaseIdx }
-    if (phaseIdx === 0) beepBegin()
-    else beepLow()
-    resumeOpenPhase(round, centre, phaseIdx, OPEN_PHASES[phaseIdx].dur)
-  }
-
-  function resumeOpenPhase(round, centre, phaseIdx, startAt) {
-    setOpenRound(round); setOpenCentre(centre); setOpenPhase(phaseIdx)
-    setCircleScale(OPEN_PHASES[phaseIdx].expand ? 1.18 : 0.88)
-    let t = startAt
-    setOpenTick(t)
-    timerRef.current = setInterval(() => {
-      t--; remainingRef.current = t; setOpenTick(t)
-      if (t <= 0) { clearTimers(); advanceOpen(round, centre, phaseIdx) }
-    }, 1000)
-  }
-
-  function advanceOpen(round, centre, phaseIdx) {
-    if (phaseIdx + 1 < OPEN_PHASES.length) {
-      runOpenPhase(round, centre, phaseIdx + 1)
-    } else if (centre + 1 < OPEN_CENTRES.length) {
-      beepHigh(); runOpenPhase(round, centre + 1, 0)
-    } else if (round + 1 <= OPEN_ROUNDS) {
-      beepHigh(); setTimeout(() => runOpenPhase(round + 1, 0, 0), 800)
-    } else {
-      beepEnd(); setCircleScale(1); setPhase('done')
-    }
-  }
-
-  const circleColor = OPEN_PHASES[openPhase]?.expand ? tokens.goldChrome : tokens.gold
-  const totalSecs   = OPEN_PHASES[openPhase]?.dur || 5
-  const elapsed     = totalSecs - openTick
-  const progress    = totalSecs > 0 ? Math.min(elapsed / totalSecs, 1) : 0
-  const R = 88, C = 2 * Math.PI * R
-  const dashOffset  = C - progress * C
-
+  // ── Render ───────────────────────────────────────────────────────────
   return (
-    <div className="hp-fade-in" style={{ maxWidth: '520px', margin: '0 auto' }}>
-      <Eyebrow style={{ marginBottom: '12px' }}>Anchor</Eyebrow>
+    <div className="hp-fade-in" style={{ maxWidth: '480px', margin: '0 auto', textAlign: 'center' }}>
+      <Eyebrow style={{ marginBottom: '6px' }}>Anchor</Eyebrow>
       <Heading size="lg" style={{ marginBottom: '6px' }}>Let it land.</Heading>
 
-      {phase === 'intro' && (
+      {screen === 'intro' && (
         <div className="hp-fade-in">
-          <Body dim style={{ marginBottom: '28px' }}>
-            Three centres, descending. Breathe in, hold, exhale with a voiced "ah", hold.
-            Let each breath anchor what you just declared.
-          </Body>
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{
+            background: tokens.goldTint, border: '1px solid ' + tokens.goldFaint,
+            borderRadius: '14px', padding: '26px', margin: '28px 0', textAlign: 'left',
+          }}>
+            <Body dim style={{ marginBottom: '10px' }}>
+              Three centres, descending. Breathe in, hold, exhale with a voiced "ah", hold.
+            </Body>
+            <Body dim>Let each breath anchor what you just declared.</Body>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
             <GhostButton onClick={onBack}>← Back</GhostButton>
-            <SolidButton onClick={startOpen}>Begin →</SolidButton>
-            <GhostButton onClick={onComplete} style={{ marginLeft: 'auto' }}>Skip</GhostButton>
+            <SolidButton onClick={doStart}>Begin →</SolidButton>
+            <button onClick={doSkip} style={{
+              background: 'transparent', border: 'none', cursor: 'pointer',
+              ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
+              color: tokens.whisper, textTransform: 'uppercase',
+            }}>Skip</button>
           </div>
         </div>
       )}
 
-      {phase === 'running' && (
-        <div className="hp-fade-in" style={{ textAlign: 'center', padding: '20px 0' }}>
-          <Eyebrow style={{ marginBottom: '4px' }}>{OPEN_CENTRES[openCentre]}</Eyebrow>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em',
-            color: tokens.whisper, marginBottom: '12px', textTransform: 'uppercase' }}>
-            {OPEN_PHASES[openPhase]?.label}
+      {screen === 'running' && (
+        <div className="hp-fade-in">
+          <div style={{
+            ...sc, fontSize: '13px', letterSpacing: '0.18em', color: tokens.ghost,
+            textTransform: 'uppercase', margin: '8px 0 36px',
+          }}>
+            {OPEN_CENTRES[openCentre]}
           </div>
 
-          {/* Round indicator */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginBottom: '4px' }}>
-            {[1,2,3].map(r => (
-              <div key={r} style={{
-                width: r === openRound ? '20px' : '6px', height: '6px', borderRadius: '3px',
-                background: r <= openRound ? tokens.goldChrome : tokens.goldFaint,
-                transition: 'all 0.3s ease',
-              }} />
-            ))}
-          </div>
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: tokens.whisper,
-            textTransform: 'uppercase', marginBottom: '20px' }}>
-            Round {openRound} of {OPEN_ROUNDS}
-          </div>
-
-          {/* Animated circle */}
-          <div style={{ position: 'relative', width: '210px', height: '210px', margin: '0 auto 20px' }}>
-            <svg width="210" height="210" style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}>
-              <circle cx="105" cy="105" r={R} fill="none" stroke={tokens.goldFaint} strokeWidth="3" />
-              <circle cx="105" cy="105" r={R} fill="none" stroke={circleColor} strokeWidth="3"
-                strokeDasharray={C} strokeDashoffset={dashOffset}
-                style={{ transition: 'stroke-dashoffset 0.9s linear' }} />
-            </svg>
-            <div style={{ position: 'absolute', inset: 0, display: 'flex',
-              alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{
-                width: '80px', height: '80px', borderRadius: '50%',
-                background: OPEN_PHASES[openPhase]?.expand ? tokens.goldStrong : tokens.goldTint,
-                border: `2px solid ${circleColor}`,
-                transform: `scale(${circleScale})`,
-                transition: 'transform 1.2s ease-in-out',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <span style={{ ...body, fontSize: '28px', fontWeight: 300,
-                  color: circleColor, lineHeight: 1 }}>{openTick}</span>
-              </div>
+          <div style={{
+            position: 'relative', width: '220px', height: '220px',
+            margin: '0 auto 36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <div ref={glowRef} style={{
+              position: 'absolute', inset: 0, borderRadius: '50%',
+              background: 'radial-gradient(circle, transparent 30%, transparent 100%)',
+              pointerEvents: 'none',
+            }} />
+            <canvas ref={canvasRef} width={220} height={220}
+              style={{ position: 'absolute', inset: 0 }} />
+            <div ref={phaseTextRef} style={{
+              ...body, fontWeight: 400, color: tokens.dark, fontSize: '22px',
+              letterSpacing: '0.02em', opacity: 1, lineHeight: 1.25,
+              position: 'relative', zIndex: 1,
+              transition: 'font-size 0.5s ease, letter-spacing 0.5s ease, opacity 0.4s ease, color 0.5s ease',
+            }}>
+              {OPEN_PHASES[openPhase]?.label}
             </div>
           </div>
 
-          <Body dim style={{ margin: 0, fontSize: '14px' }}>
-            {paused ? 'Paused.'
-              : OPEN_PHASES[openPhase]?.label === 'Exhale — "ah"'
-                ? 'Let the sound carry the breath out.'
-                : OPEN_PHASES[openPhase]?.expand
-                  ? `Breathe into the ${OPEN_CENTRES[openCentre].split(' /')[0].toLowerCase()}.`
-                  : 'Hold.'}
-          </Body>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '6px' }}>
+            {[1,2,3].map(r => (
+              <div key={r} style={{
+                height: '4px', borderRadius: '2px',
+                width: r === openRound ? '24px' : '10px',
+                background: r <= openRound ? tokens.goldChrome : tokens.goldFaint,
+                transition: 'all 0.4s ease',
+              }} />
+            ))}
+          </div>
+          <div style={{
+            ...sc, fontSize: '10px', letterSpacing: '0.18em',
+            color: tokens.whisper, textTransform: 'uppercase', marginBottom: '36px',
+          }}>
+            Round {openRound} of {OPEN_ROUNDS}
+          </div>
 
-          <div style={{ textAlign: 'center', marginTop: '28px', display: 'flex',
-            justifyContent: 'center', gap: '20px', alignItems: 'center' }}>
-            <button onClick={paused ? doResume : doPause} style={{
+          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', alignItems: 'center' }}>
+            <button onClick={doPause} style={{
               background: paused ? tokens.goldChrome : 'transparent',
-              border: `1px solid ${paused ? tokens.goldChrome : tokens.goldFaint}`,
+              border: '1px solid ' + (paused ? tokens.goldChrome : tokens.goldFaint),
               borderRadius: '40px', cursor: 'pointer',
               ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
               color: paused ? '#FFFFFF' : tokens.gold, textTransform: 'uppercase',
               padding: '8px 18px',
             }}>{paused ? 'Resume →' : 'Pause'}</button>
-            <button onClick={() => { clearTimers(); onComplete() }} style={{
+            <button onClick={doSkip} style={{
               background: 'transparent', border: 'none', cursor: 'pointer',
               ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
               color: tokens.whisper, textTransform: 'uppercase',
@@ -1307,9 +1440,9 @@ function OpenBreathBeat({ onComplete, onBack }) {
         </div>
       )}
 
-      {phase === 'done' && (
-        <div className="hp-fade-in" style={{ textAlign: 'center', padding: '28px 0' }}>
-          <Eyebrow style={{ marginBottom: '14px' }}>Anchored</Eyebrow>
+      {screen === 'done' && (
+        <div className="hp-fade-in" style={{ padding: '28px 0' }}>
+          <Eyebrow style={{ marginBottom: '12px' }}>Anchored</Eyebrow>
           <Heading size="md" style={{ marginBottom: '24px', color: tokens.gold }}>
             Locked in.
           </Heading>
