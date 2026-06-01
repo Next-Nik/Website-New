@@ -205,9 +205,8 @@ export default function Heptagon({
 
       else if (phase === 'breathing') {
         if (time - breatheStartRef.current >= T_BREATHE) {
-          const idx = drillIdxRef.current
           drillIdxRef.current = null
-          onDrillDown?.(idx)
+          setPhase('settled')
         }
       }
 
@@ -223,6 +222,8 @@ export default function Heptagon({
     if (phase !== 'settled') return
     onSelect(i)
     if (domains?.[i]?.subDomains?.length > 0) {
+      // Emit immediately — animation plays cosmetically behind the navigation
+      onDrillDown?.(i)
       drillIdxRef.current = i
       drillStartRef.current = null
       setPhase('drilling')
