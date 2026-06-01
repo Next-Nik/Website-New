@@ -1,19 +1,5 @@
 /* ─── NextUs Design System ─────────────────────────────────── */
 
-/* ─── Self-hosted Lora Bold ─────────────────────────────────── */
-/* Google Fonts doesn't reliably serve Lora 700 for all subsets, */
-/* and on mobile the regular 400/600 reads thin. We self-host    */
-/* the bold so mobile chrome can lean on it confidently.         */
-@font-face {
-  font-family: 'Lora';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('/fonts/Lora-Bold.woff2') format('woff2'),
-       url('/fonts/Lora-Bold.woff')  format('woff'),
-       url('/fonts/Lora-Bold.ttf')   format('truetype');
-}
-
 :root {
   --bg:           #FAFAF7;
   --gold-dk:      #A8721A;
@@ -258,25 +244,6 @@ button {
   text-decoration: none;
 }
 
-.nav-search-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(15, 21, 35, 0.55);
-  text-decoration: none;
-  transition: color 0.2s, background 0.2s;
-  flex-shrink: 0;
-}
-
-.nav-search-icon:hover {
-  color: #A8721A;
-  background: rgba(200, 146, 42, 0.06);
-  text-decoration: none;
-}
-
 /* ─── Page shell (below nav) ────────────────────────────────── */
 
 .page-shell {
@@ -368,6 +335,12 @@ button {
 @keyframes pulse-dot {
   0%, 80%, 100% { opacity: 0.4; transform: scale(1); }
   40%           { opacity: 1;   transform: scale(1.2); }
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(0.8); opacity: 0.7; }
+  70%  { transform: scale(2.0); opacity: 0; }
+  100% { transform: scale(2.0); opacity: 0; }
 }
 
 /* ─── Input area ────────────────────────────────────────────── */
@@ -474,129 +447,4 @@ button {
   .btn-send          { font-size: 1.125rem !important; }
   .input-area textarea { font-size: 1.125rem !important; }
   .nav-links a       { font-size: 17px !important; }
-}
-
-
-/* ─── Marketing home — path cards ──────────────────────────── */
-
-.mh-cards {
-  display: flex;
-  gap: clamp(16px, 2.5vw, 24px);
-  align-items: stretch;
-}
-
-.path-card {
-  flex: 1 1 0;
-  min-width: 0;
-  border-radius: 16px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  min-height: 400px;
-}
-
-.path-card-image {
-  flex: 0 0 42%;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  overflow: hidden;
-}
-
-.path-card-image img {
-  width: 100%;
-  height: 100%;
-  max-height: 420px;
-  object-fit: contain;
-  display: block;
-}
-
-.path-card-copy {
-  flex: 1 1 60%;
-  min-width: 0;
-  padding: clamp(28px,3vw,40px) clamp(28px,3.5vw,44px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-/* ── Mobile mini-cards: two doors, side by side ─────────────
-   Preserves the "two paths, one purpose" parallelism on phones.
-   Image becomes a small circular motif, copy compacts under it,
-   whole card is tap-target. ~640px breakpoint keeps tablets on
-   the desktop horizontal-split layout. */
-@media (max-width: 640px) {
-  .mh-cards {
-    flex-direction: row;
-    gap: 12px;
-    align-items: stretch;
-  }
-  .path-card {
-    flex: 1 1 0;
-    min-width: 0;
-    flex-direction: column;
-    min-height: 0;
-    padding: 22px 16px 24px;
-    border-radius: 14px;
-  }
-  /* Reset the desktop horizontal split — image always on top, copy below */
-  .path-card--image-right .path-card-image,
-  .path-card--image-left  .path-card-image { order: 0; }
-  .path-card-image {
-    flex: 0 0 auto;
-    width: 92px;
-    height: 92px;
-    margin: 0 auto 16px;
-    padding: 0;
-    border-radius: 50%;
-    overflow: hidden;
-  }
-  .path-card-image img {
-    width: 100%;
-    height: 100%;
-    max-width: none;
-    max-height: none;
-    object-fit: cover;
-  }
-  .path-card-copy {
-    flex: 1 1 auto;
-    padding: 0;
-    text-align: center;
-    align-items: center;
-  }
-  .path-card-copy .path-card-eyebrow {
-    font-size: 10.5px;
-    letter-spacing: 0.18em;
-    margin-bottom: 10px;
-  }
-  .path-card-copy .path-card-heading {
-    font-size: 22px;
-    line-height: 1.15;
-    margin-bottom: 14px;
-  }
-  /* Hide the divider line and body copy on mobile — eyebrow + heading
-     carry the message; the CTA is the card itself */
-  .path-card-copy .path-card-divider,
-  .path-card-copy .path-card-body { display: none; }
-  .path-card-copy .path-card-cta {
-    padding: 8px 14px;
-    font-size: 10.5px;
-    letter-spacing: 0.12em;
-    align-self: center;
-    margin-top: auto;
-  }
-}
-
-@media (max-width: 480px) {
-  .mh-hero-title { font-size: 32px; line-height: 1.12; }
-  .path-card { padding: 20px 12px 22px; }
-  .path-card-image { width: 80px; height: 80px; margin-bottom: 14px; }
-  .path-card-copy .path-card-heading { font-size: 19px; }
-  .path-card-copy .path-card-cta {
-    padding: 7px 12px;
-    font-size: 10px;
-    letter-spacing: 0.1em;
-  }
 }
