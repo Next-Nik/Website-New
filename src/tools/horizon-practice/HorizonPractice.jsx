@@ -801,12 +801,12 @@ const CHARGE_ROUNDS   = 3
 const CHARGE_WORK_S   = 20
 const CHARGE_REST_S   = 10
 const OPEN_ROUNDS     = 3
-const OPEN_CENTRES    = ['Chest / heart', 'Belly', 'Groin / pelvis']
+const OPEN_CENTRES    = ['Chest / heart', 'Belly', 'Sacrum']
 const OPEN_PHASES     = [
-  { label: 'Breathe in',    dur: 4,  expand: true  },
+  { label: 'Breathe in',    dur: 5,  expand: true  },
   { label: 'Hold',          dur: 4,  expand: true  },
-  { label: 'Exhale — "ah"', dur: 6,  expand: false },
-  { label: 'Hold',          dur: 2,  expand: false },
+  { label: 'Exhale — "ah"', dur: 7,  expand: false },
+  { label: 'Hold',          dur: 4,  expand: false },
 ]
 
 // Beep helpers (reuse Chimes ctx pattern)
@@ -840,7 +840,14 @@ function beepEnd()    {
 }
 
 function GroundBeat({ onComplete, onBack }) {
-  const [phase, setPhase]             = useState('intro')
+  const [phase, setPhase]             = useState(() => {
+    const saved = loadGroundPhase()
+    // Only restore active phases — don't drop them into the middle of a timer
+    // Restore to the pre-phase card so they can deliberately resume
+    if (saved === 'charge-work' || saved === 'charge-rest' || saved === 'charge-ready') return 'intro'
+    if (saved === 'open-running') return 'charge-done'
+    return saved || 'intro'
+  })
   const [chargeRound, setChargeRound] = useState(1)
   const [tick, setTick]               = useState(0)
   const [circleScale, setCircleScale] = useState(1)
@@ -857,7 +864,7 @@ function GroundBeat({ onComplete, onBack }) {
   const phaseRef     = useRef('intro')
   const pausedRef    = useRef(false)
 
-  useEffect(() => { phaseRef.current = phase }, [phase])
+  useEffect(() => { phaseRef.current = phase; saveGroundPhase(phase) }, [phase])
   useEffect(() => { pausedRef.current = paused }, [paused])
 
   function clearTimers() {
@@ -1082,7 +1089,7 @@ function GroundBeat({ onComplete, onBack }) {
           <div style={{ display: 'flex', gap: '10px' }}>
             <GhostButton onClick={onBack}>← Back</GhostButton>
             <SolidButton onClick={() => startChargeReady(1)}>Begin →</SolidButton>
-            <GhostButton onClick={onComplete} style={{ marginLeft: 'auto' }}>Skip</GhostButton>
+            <GhostButton onClick={() => { clearGroundPhase(); onComplete() }} style={{ marginLeft: 'auto' }}>Skip</GhostButton>
           </div>
         </div>
       )}
@@ -1167,13 +1174,28 @@ function GroundBeat({ onComplete, onBack }) {
       {phase === 'open-running' && (
         <div className="hp-fade-in" style={{ textAlign: 'center', padding: '20px 0' }}>
           <Eyebrow style={{ marginBottom: '4px' }}>
-            Round {openRound} of {OPEN_ROUNDS} · {OPEN_CENTRES[openCentre]}
+            {OPEN_CENTRES[openCentre]}
           </Eyebrow>
           <div style={{
             ...sc, fontSize: '11px', letterSpacing: '0.18em',
-            color: tokens.whisper, marginBottom: '20px', textTransform: 'uppercase',
+            color: tokens.whisper, marginBottom: '16px', textTransform: 'uppercase',
           }}>
             {OPEN_PHASES[openPhase]?.label}
+          </div>
+
+          {/* Round dots */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginBottom: '4px' }}>
+            {[1,2,3].map(r => (
+              <div key={r} style={{
+                width: r === openRound ? '20px' : '6px', height: '6px', borderRadius: '3px',
+                background: r < openRound ? tokens.goldChrome : r === openRound ? tokens.goldChrome : tokens.goldFaint,
+                transition: 'all 0.3s ease',
+              }} />
+            ))}
+          </div>
+          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: tokens.whisper,
+            textTransform: 'uppercase', marginBottom: '20px' }}>
+            Round {openRound} of {OPEN_ROUNDS}
           </div>
 
           {/* Animated circle */}
@@ -1207,17 +1229,6 @@ function GroundBeat({ onComplete, onBack }) {
             </div>
           </div>
 
-          {/* Centre progress dots */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '14px' }}>
-            {OPEN_CENTRES.map((_, i) => (
-              <div key={i} style={{
-                width: i === openCentre ? '20px' : '6px', height: '6px', borderRadius: '3px',
-                background: i <= openCentre ? tokens.goldChrome : tokens.goldFaint,
-                transition: 'all 0.3s ease',
-              }} />
-            ))}
-          </div>
-
           <Body dim style={{ margin: 0, fontSize: '14px' }}>
             {paused
               ? 'Paused.'
@@ -1237,7 +1248,7 @@ function GroundBeat({ onComplete, onBack }) {
           <Heading size="md" style={{ marginBottom: '24px', color: tokens.gold }}>
             The body is ready.
           </Heading>
-          <SolidButton onClick={onComplete}>Plan →</SolidButton>
+          <SolidButton onClick={() => { clearGroundPhase(); onComplete() }}>Plan →</SolidButton>
         </div>
       )}
 
@@ -1252,7 +1263,7 @@ function GroundBeat({ onComplete, onBack }) {
             color: paused ? '#FFFFFF' : tokens.gold, textTransform: 'uppercase',
             padding: '8px 18px',
           }}>{paused ? 'Resume →' : 'Pause'}</button>
-          <button onClick={() => { clearTimers(); onComplete() }} style={{
+          <button onClick={() => { clearTimers(); clearGroundPhase(); onComplete() }} style={{
             background: 'transparent', border: 'none', cursor: 'pointer',
             ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
             color: tokens.whisper, textTransform: 'uppercase',
@@ -1270,6 +1281,18 @@ function saveMorningProgress(data) {
   try {
     localStorage.setItem(MORNING_STORAGE_KEY, JSON.stringify({ ...data, date: getLocalDateStr() }))
   } catch (e) {}
+}
+
+// GroundBeat phase persisted separately so tab-close restores breath position
+const GROUND_STORAGE_KEY = 'hp_ground_phase'
+function saveGroundPhase(phase) {
+  try { localStorage.setItem(GROUND_STORAGE_KEY, phase) } catch (e) {}
+}
+function loadGroundPhase() {
+  try { return localStorage.getItem(GROUND_STORAGE_KEY) || 'intro' } catch (e) { return 'intro' }
+}
+function clearGroundPhase() {
+  try { localStorage.removeItem(GROUND_STORAGE_KEY) } catch (e) {}
 }
 function loadMorningProgress() {
   try {
@@ -1323,7 +1346,14 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
   function setAnswers(fn) {
     setAnswersRaw(prev => {
       const next = typeof fn === 'function' ? fn(prev) : fn
-      persist({ answers: next }); return next
+      answersRef.current = next
+      saveMorningProgress({
+        beat: beatRef.current,
+        answers: next,
+        thresholds: thresholdsRef.current,
+        runId: runIdRef.current,
+      })
+      return next
     })
   }
   function setThresholds(fn) {
@@ -1508,86 +1538,135 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
       <FiveBeatTracker currentBeat={beat} sweep={sweep} />
 
       {/* ━━━ COMMIT ━━━ */}
-      {beat === 1 && (
-        <div className="hp-fade-in">
-          <Eyebrow style={{ marginBottom: '12px' }}>Commit</Eyebrow>
-          <Heading size="lg" style={{ marginBottom: '16px' }}>
-            Ready to step into your{' '}
-            <em style={{ color: tokens.gold, fontStyle: 'italic' }}>Horizon</em>?
-          </Heading>
+      {beat === 1 && (() => {
+        const COMMIT_QS = [
+          { key: 'ready',    label: 'Are you ready?' },
+          { key: 'allowed',  label: 'Are you allowed?' },
+          { key: 'choosing', label: 'Are you choosing this?' },
+        ]
+        // Find first unanswered question
+        const activeIdx = COMMIT_QS.findIndex(q => answers[q.key] === null)
+        const allAnswered = activeIdx === -1
+        const currentQ = allAnswered ? null : COMMIT_QS[activeIdx]
 
-          <div style={{ marginTop: '28px' }}>
-            {[
-              { key: 'ready',    label: 'Are you ready to step into your Horizon Self?' },
-              { key: 'allowed',  label: 'Are you allowed to live as your Horizon Self?' },
-              { key: 'choosing', label: 'Are you choosing to step into your Horizon Self?' },
-            ].map((q) => (
-              <Card key={q.key} style={{ marginBottom: '12px', padding: '18px 22px' }}>
+        function handleAnswer(key, ans) {
+          setAnswers(a => ({ ...a, [key]: ans }))
+        }
+
+        return (
+          <div className="hp-fade-in">
+            <Eyebrow style={{ marginBottom: '12px' }}>Commit</Eyebrow>
+
+            {/* Horizon Self statement shown throughout */}
+            {horizonSelfStatement && (
+              <div style={{
+                padding: '22px 24px', marginBottom: '28px',
+                background: tokens.goldTint, border: `1px solid ${tokens.goldChrome}`,
+                borderRadius: '12px',
+              }}>
                 <p style={{
-                  ...serif, fontStyle: 'italic', fontSize: '17px',
-                  color: tokens.meta, margin: '0 0 14px', lineHeight: 1.4,
-                }}>{q.label}</p>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  {['yes', 'no'].map(ans => (
-                    <button key={ans}
-                      onClick={() => setAnswers(a => ({ ...a, [q.key]: ans }))}
-                      style={{
-                        flex: 1,
-                        background: answers[q.key] === ans
-                          ? (ans === 'yes' ? tokens.goldChrome : tokens.ghost) : 'transparent',
-                        color: answers[q.key] === ans ? '#FFFFFF'
-                          : (ans === 'yes' ? tokens.gold : tokens.ghost),
-                        border: `1px solid ${answers[q.key] === ans
-                          ? (ans === 'yes' ? tokens.goldChrome : tokens.ghost) : tokens.goldFaint}`,
-                        borderRadius: '40px', padding: '10px 18px',
-                        ...sc, fontSize: '12px', fontWeight: 600, letterSpacing: '0.18em',
-                        textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s',
-                      }}>{ans}</button>
+                  ...body, fontSize: 'clamp(15px, 2vw, 17px)', fontWeight: 400,
+                  color: tokens.gold, lineHeight: 1.55, margin: 0,
+                }}>{horizonSelfStatement}</p>
+              </div>
+            )}
+
+            {/* One question at a time */}
+            {!allAnswered && currentQ && (
+              <div key={currentQ.key} className="hp-fade-in">
+                {/* Progress dots */}
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '20px' }}>
+                  {COMMIT_QS.map((q, i) => (
+                    <div key={q.key} style={{
+                      height: '3px', flex: 1, borderRadius: '2px',
+                      background: answers[q.key] !== null
+                        ? tokens.goldChrome
+                        : i === activeIdx ? tokens.goldFaint : tokens.goldFaint,
+                      transition: 'background 0.3s',
+                    }} />
                   ))}
                 </div>
-              </Card>
-            ))}
-          </div>
 
-          {protectorCovenant && (
-            <div style={{ marginTop: '8px', marginBottom: '24px' }}>
-              <button onClick={() => setShowCovenant(s => !s)} style={{
-                background: 'transparent', border: 'none', padding: '8px 0',
-                cursor: 'pointer', ...sc, fontSize: '11px', fontWeight: 600,
-                letterSpacing: '0.18em', color: tokens.gold,
-                borderBottom: `1px solid ${tokens.goldFaint}`,
-              }}>{showCovenant ? '— Hide covenant' : '+ Covenant'}</button>
-              {showCovenant && (
-                <div style={{
-                  marginTop: '14px', padding: '20px 22px',
-                  background: tokens.goldTint,
-                  borderLeft: `2px solid ${tokens.goldChrome}`, borderRadius: '4px',
-                }}>
-                  <p style={{
-                    margin: 0, ...serif, fontSize: '16px', fontStyle: 'italic',
-                    color: tokens.meta, lineHeight: 1.6,
-                  }}>{protectorCovenant}</p>
+                <p style={{
+                  ...body, fontSize: 'clamp(18px, 2.4vw, 22px)', fontWeight: 400,
+                  color: tokens.meta, margin: '0 0 28px', lineHeight: 1.45,
+                }}>{currentQ.label}</p>
+
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  {['yes', 'no'].map(ans => (
+                    <button key={ans}
+                      onClick={() => handleAnswer(currentQ.key, ans)}
+                      style={{
+                        flex: 1, padding: '14px 18px',
+                        background: ans === 'yes' ? tokens.goldChrome : 'transparent',
+                        color: ans === 'yes' ? '#FFFFFF' : tokens.ghost,
+                        border: `1px solid ${ans === 'yes' ? tokens.goldChrome : tokens.goldFaint}`,
+                        borderRadius: '40px',
+                        ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em',
+                        textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s',
+                      }}
+                    >{ans === 'yes' ? 'Yes' : 'No'}</button>
+                  ))}
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
 
-          {anyNo && (
-            <Card style={{ background: tokens.goldTint, marginBottom: '24px' }}>
-              <Eyebrow color="ghost" style={{ marginBottom: '8px', fontSize: '11px' }}>A no is data</Eyebrow>
-              <Body dim style={{ margin: 0, fontSize: '14px' }}>
-                Run lighter today. Or close and return.
-              </Body>
-            </Card>
-          )}
+            {/* All answered */}
+            {allAnswered && (
+              <div className="hp-fade-in">
+                {anyNo ? (
+                  <Card style={{ background: tokens.goldTint, marginBottom: '24px' }}>
+                    <Eyebrow color="ghost" style={{ marginBottom: '8px', fontSize: '11px' }}>A no is data</Eyebrow>
+                    <Body dim style={{ margin: 0, fontSize: '14px' }}>
+                      Run lighter today. Or close and return.
+                    </Body>
+                  </Card>
+                ) : (
+                  <div style={{
+                    padding: '16px 20px', marginBottom: '24px',
+                    background: tokens.goldTint, borderRadius: '10px',
+                    textAlign: 'center',
+                  }}>
+                    <Body dim style={{ margin: 0, fontSize: '14px' }}>Ready.</Body>
+                  </div>
+                )}
 
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-            {anyNo && <GhostButton onClick={moveToGround}>Light run →</GhostButton>}
-            <SolidButton onClick={moveToGround} disabled={!allYes && !anyNo}
-              style={{ display: anyNo ? 'none' : 'inline-block' }}>Ground →</SolidButton>
+                {protectorCovenant && (
+                  <div style={{ marginBottom: '24px' }}>
+                    <button onClick={() => setShowCovenant(s => !s)} style={{
+                      background: 'transparent', border: 'none', padding: '8px 0',
+                      cursor: 'pointer', ...sc, fontSize: '11px', fontWeight: 600,
+                      letterSpacing: '0.18em', color: tokens.gold,
+                      borderBottom: `1px solid ${tokens.goldFaint}`,
+                    }}>{showCovenant ? '— Hide covenant' : '+ Covenant'}</button>
+                    {showCovenant && (
+                      <div style={{
+                        marginTop: '14px', padding: '20px 22px',
+                        background: tokens.goldTint,
+                        borderLeft: `2px solid ${tokens.goldChrome}`, borderRadius: '4px',
+                      }}>
+                        <p style={{
+                          margin: 0, ...body, fontSize: '16px',
+                          color: tokens.meta, lineHeight: 1.6,
+                        }}>{protectorCovenant}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', gap: '10px', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <GhostButton onClick={() => setAnswers({ ready: null, allowed: null, choosing: null })}>
+                    ← Reset
+                  </GhostButton>
+                  <SolidButton onClick={moveToGround}>
+                    {anyNo ? 'Light run →' : 'Ground →'}
+                  </SolidButton>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        )
+      })()}
 
       {/* ━━━ GROUND — two-stage breath ━━━ */}
       {beat === 2 && (
