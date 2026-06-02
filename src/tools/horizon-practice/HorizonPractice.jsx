@@ -2591,9 +2591,54 @@ function labelForKind(kind) {
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// Full log
+// Full log — three tabs: Log · Wins · Predictable Pitfalls
 // ────────────────────────────────────────────────────────────────────────────
-function LogView({ open, onClose, entries }) {
+function PersistentList({ items, placeholder, onAdd, onDelete }) {
+  const [draft, setDraft] = useState('')
+  function handleAdd() {
+    if (!draft.trim()) return
+    onAdd(draft.trim())
+    setDraft('')
+  }
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+        <input
+          type="text"
+          value={draft}
+          onChange={e => setDraft(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) handleAdd() }}
+          placeholder={placeholder}
+          style={{ ...inputStyle(), minHeight: 'auto', padding: '10px 14px', flex: 1 }}
+        />
+        <SolidButton onClick={handleAdd} disabled={!draft.trim()}
+          style={{ padding: '10px 18px', flexShrink: 0 }}>Add</SolidButton>
+      </div>
+      {items.length === 0 && (
+        <Body dim italic style={{ textAlign: 'center', padding: '40px 0' }}>
+          Nothing recorded yet.
+        </Body>
+      )}
+      {items.map(item => (
+        <div key={item.id} style={{
+          padding: '14px 0', borderBottom: `1px solid ${tokens.goldFaint}`,
+          display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px',
+        }}>
+          <div style={{ ...body, fontSize: '14.5px', fontStyle: 'italic',
+            color: tokens.meta, lineHeight: 1.65, flex: 1 }}>{item.text}</div>
+          <button onClick={() => onDelete(item.id)} style={{
+            background: 'transparent', border: 'none', cursor: 'pointer',
+            ...sc, fontSize: '10px', letterSpacing: '0.14em', color: tokens.whisper,
+            flexShrink: 0, paddingTop: '3px',
+          }}>Remove</button>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function LogView({ open, onClose, entries, wins, pitfalls, onAddWin, onDeleteWin, onAddPitfall, onDeletePitfall }) {
+  const [tab, setTab]       = useState('log')
   const [filter, setFilter] = useState('all')
   const filterMap = {
     all: () => true,
@@ -2603,62 +2648,119 @@ function LogView({ open, onClose, entries }) {
     drift: e => e.kind === 'drift',
   }
   const filtered = entries.filter(filterMap[filter] || (() => true))
+
+  const TAB_STYLE = (active) => ({
+    padding: '8px 16px',
+    background: active ? tokens.goldChrome : 'transparent',
+    color: active ? '#FFFFFF' : tokens.gold,
+    border: `1px solid ${active ? tokens.goldChrome : tokens.goldFaint}`,
+    borderRadius: '40px',
+    ...sc, fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.14em',
+    cursor: 'pointer',
+  })
+
   return (
     <ModalShell open={open} onClose={onClose}>
-      <Eyebrow style={{ marginBottom: '10px' }}>The Log</Eyebrow>
-      <Heading size="md" italic style={{ marginBottom: '6px' }}>One continuous record.</Heading>
-      <Body dim style={{ fontSize: '14px', marginBottom: '24px' }}>
-        Your proof file. Read on a hard day.
-      </Body>
-      <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', flexWrap: 'wrap' }}>
-        {[
-          ['all', 'All'],
-          ['hit', 'Hits'],
-          ['listening', 'External'],
-          ['receipt', 'Receipts'],
-          ['drift', 'Drifts'],
-        ].map(([key, label]) => (
-          <button key={key} onClick={() => setFilter(key)} style={{
-            padding: '7px 13px',
-            background: filter === key ? tokens.goldChrome : 'transparent',
-            color: filter === key ? '#FFFFFF' : tokens.gold,
-            border: `1px solid ${filter === key ? tokens.goldChrome : tokens.goldFaint}`,
-            borderRadius: '40px',
-            ...sc, fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.14em',
-            cursor: 'pointer',
-          }}>{label}</button>
-        ))}
+      {/* Tab strip */}
+      <div style={{ display: 'flex', gap: '6px', marginBottom: '24px', flexWrap: 'wrap' }}>
+        <button style={TAB_STYLE(tab === 'log')}      onClick={() => setTab('log')}>Log</button>
+        <button style={TAB_STYLE(tab === 'wins')}     onClick={() => setTab('wins')}>Wins</button>
+        <button style={TAB_STYLE(tab === 'pitfalls')} onClick={() => setTab('pitfalls')}>Predictable Pitfalls</button>
       </div>
-      {filtered.map(entry => (
-        <div key={entry.id} style={{ padding: '16px 0',
-          borderBottom: `1px solid ${tokens.goldFaint}` }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between',
-            alignItems: 'baseline', marginBottom: '6px', gap: '8px', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'baseline', flexWrap: 'wrap' }}>
-              <span style={{
-                ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em',
-                color: entry.kind === 'drift' ? tokens.ghost : tokens.gold,
-              }}>{labelForKind(entry.kind)}</span>
-              {entry.from_who && (
-                <span style={{
-                  ...sc, fontSize: '10px', letterSpacing: '0.16em', color: tokens.gold,
-                }}>· {entry.from_who}</span>
-              )}
-            </div>
-            <span style={{ ...body, fontSize: '12px', color: tokens.whisper }}>
-              {relativeDate(entry.occurred_at)}
-            </span>
+
+      {/* Log tab */}
+      {tab === 'log' && (
+        <>
+          <Eyebrow style={{ marginBottom: '10px' }}>The Log</Eyebrow>
+          <Heading size="md" italic style={{ marginBottom: '6px' }}>One continuous record.</Heading>
+          <Body dim style={{ fontSize: '14px', marginBottom: '24px' }}>
+            Your proof file. Read on a hard day.
+          </Body>
+          <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', flexWrap: 'wrap' }}>
+            {[
+              ['all', 'All'],
+              ['hit', 'Hits'],
+              ['listening', 'External'],
+              ['receipt', 'Receipts'],
+              ['drift', 'Drifts'],
+            ].map(([key, label]) => (
+              <button key={key} onClick={() => setFilter(key)} style={{
+                padding: '7px 13px',
+                background: filter === key ? tokens.goldChrome : 'transparent',
+                color: filter === key ? '#FFFFFF' : tokens.gold,
+                border: `1px solid ${filter === key ? tokens.goldChrome : tokens.goldFaint}`,
+                borderRadius: '40px',
+                ...sc, fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.14em',
+                cursor: 'pointer',
+              }}>{label}</button>
+            ))}
           </div>
-          <div style={{
-            ...body, fontSize: '14.5px', fontStyle: 'italic',
-            color: tokens.meta, lineHeight: 1.65,
-          }}>{entry.text}</div>
-        </div>
-      ))}
-      {filtered.length === 0 && (
-        <Body dim italic style={{ textAlign: 'center', padding: '40px 0' }}>
-          No entries.
-        </Body>
+          {filtered.map(entry => (
+            <div key={entry.id} style={{ padding: '16px 0',
+              borderBottom: `1px solid ${tokens.goldFaint}` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between',
+                alignItems: 'baseline', marginBottom: '6px', gap: '8px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'baseline', flexWrap: 'wrap' }}>
+                  <span style={{
+                    ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em',
+                    color: entry.kind === 'drift' ? tokens.ghost : tokens.gold,
+                  }}>{labelForKind(entry.kind)}</span>
+                  {entry.from_who && (
+                    <span style={{
+                      ...sc, fontSize: '10px', letterSpacing: '0.16em', color: tokens.gold,
+                    }}>· {entry.from_who}</span>
+                  )}
+                </div>
+                <span style={{ ...body, fontSize: '12px', color: tokens.whisper }}>
+                  {relativeDate(entry.occurred_at)}
+                </span>
+              </div>
+              <div style={{
+                ...body, fontSize: '14.5px', fontStyle: 'italic',
+                color: tokens.meta, lineHeight: 1.65,
+              }}>{entry.text}</div>
+            </div>
+          ))}
+          {filtered.length === 0 && (
+            <Body dim italic style={{ textAlign: 'center', padding: '40px 0' }}>
+              No entries.
+            </Body>
+          )}
+        </>
+      )}
+
+      {/* Wins tab */}
+      {tab === 'wins' && (
+        <>
+          <Eyebrow style={{ marginBottom: '10px' }}>Wins</Eyebrow>
+          <Heading size="md" italic style={{ marginBottom: '6px' }}>You were already that person.</Heading>
+          <Body dim style={{ fontSize: '14px', marginBottom: '24px' }}>
+            Moments where you showed up as your Horizon Self. Evidence it's real.
+          </Body>
+          <PersistentList
+            items={wins}
+            placeholder="Describe the moment..."
+            onAdd={onAddWin}
+            onDelete={onDeleteWin}
+          />
+        </>
+      )}
+
+      {/* Predictable Pitfalls tab */}
+      {tab === 'pitfalls' && (
+        <>
+          <Eyebrow style={{ marginBottom: '10px' }}>Predictable Pitfalls</Eyebrow>
+          <Heading size="md" italic style={{ marginBottom: '6px' }}>You've been here before.</Heading>
+          <Body dim style={{ fontSize: '14px', marginBottom: '24px' }}>
+            The setups that reliably knock you off. Name them so you can see them coming.
+          </Body>
+          <PersistentList
+            items={pitfalls}
+            placeholder="Name the pattern..."
+            onAdd={onAddPitfall}
+            onDelete={onDeletePitfall}
+          />
+        </>
       )}
     </ModalShell>
   )
@@ -2791,6 +2893,8 @@ export function HorizonPracticePage() {
   const [todayRun, setTodayRun] = useState(null)
   const [thresholds, setThresholds] = useState([])
   const [entries, setEntries] = useState([])  // last ~30 days
+  const [wins, setWins]       = useState([])  // persistent, all time
+  const [pitfalls, setPitfalls] = useState([])  // persistent, all time
   const [view, setView] = useState('loading')  // loading | morning | day
 
   // Modal state
@@ -2894,6 +2998,19 @@ export function HorizonPracticePage() {
         if (cancelled) return
 
         if (entryRows) setEntries(entryRows)
+
+        // Wins + Predictable Pitfalls — persistent lists, no date filter
+        const { data: persistentRows } = await supabase
+          .from('horizon_practice_entries')
+          .select('*')
+          .eq('user_id', user.id)
+          .in('kind', ['win', 'pitfall'])
+          .order('occurred_at', { ascending: false })
+        if (cancelled) return
+        if (persistentRows) {
+          setWins(persistentRows.filter(r => r.kind === 'win'))
+          setPitfalls(persistentRows.filter(r => r.kind === 'pitfall'))
+        }
 
         // Determine initial view: if morning complete today, go to day surface
         if (runRow?.completed_at) setView('day')
@@ -3040,6 +3157,36 @@ export function HorizonPracticePage() {
     setRefreshVariant('standard')
     setRefreshTask('')
     setTimeout(() => setRefreshOpen(true), 200)
+  }
+
+  async function handleAddWin(text) {
+    if (!user || !text.trim()) return
+    const { data: inserted } = await supabase
+      .from('horizon_practice_entries')
+      .insert({ user_id: user.id, kind: 'win', text: text.trim(),
+        occurred_at: new Date().toISOString() })
+      .select().single()
+    if (inserted) setWins(w => [inserted, ...w])
+  }
+
+  async function handleDeleteWin(id) {
+    await supabase.from('horizon_practice_entries').delete().eq('id', id)
+    setWins(w => w.filter(e => e.id !== id))
+  }
+
+  async function handleAddPitfall(text) {
+    if (!user || !text.trim()) return
+    const { data: inserted } = await supabase
+      .from('horizon_practice_entries')
+      .insert({ user_id: user.id, kind: 'pitfall', text: text.trim(),
+        occurred_at: new Date().toISOString() })
+      .select().single()
+    if (inserted) setPitfalls(p => [inserted, ...p])
+  }
+
+  async function handleDeletePitfall(id) {
+    await supabase.from('horizon_practice_entries').delete().eq('id', id)
+    setPitfalls(p => p.filter(e => e.id !== id))
   }
 
   async function handleSaveIcalUrl(url) {
@@ -3228,6 +3375,12 @@ export function HorizonPracticePage() {
           open={logOpen}
           onClose={() => setLogOpen(false)}
           entries={entries}
+          wins={wins}
+          pitfalls={pitfalls}
+          onAddWin={handleAddWin}
+          onDeleteWin={handleDeleteWin}
+          onAddPitfall={handleAddPitfall}
+          onDeletePitfall={handleDeletePitfall}
         />
         <SettingsModal
           open={settingsOpen}
