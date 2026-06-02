@@ -241,7 +241,7 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
     )
   }
 
-  // No setup yet — onboarding state
+  // No setup yet — show body copy only; panel action buttons handle navigation
   if (!horizonSelf) {
     return (
       <div style={{ padding: '4px 0' }}>
@@ -251,7 +251,6 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
           borderLeft: `3px solid ${GOLD}`,
           borderRadius: 14,
           padding: '20px 22px',
-          marginBottom: 18,
         }}>
           <p style={{
             fontFamily: FONT_BODY,
@@ -263,9 +262,6 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
             We all re-create our normal everywhere we go in the world. Set a new normal.
           </p>
         </div>
-        <button onClick={() => onNavigate('/tools/horizon-practice')} style={primaryBtnStyle}>
-          BEGIN PRACTICE SETUP →
-        </button>
       </div>
     )
   }
