@@ -48,17 +48,6 @@ import {
 } from './tokens'
 import { selfColor, civColor } from '../../../constants/domainColors'
 
-// ─── Viewport hook ───────────────────────────────────────────
-function useWindowWidth() {
-  const [w, setW] = useState(() => typeof window !== 'undefined' ? window.innerWidth : 1024)
-  useEffect(() => {
-    const handler = () => setW(window.innerWidth)
-    window.addEventListener('resize', handler, { passive: true })
-    return () => window.removeEventListener('resize', handler)
-  }, [])
-  return w
-}
-
 // ─── Shared geometry ─────────────────────────────────────────
 const N = 7
 const SVG_W = 380
@@ -103,8 +92,8 @@ function easeInOut(t) {
 // Civ wheel labels rotate with the spokes, so position is computed
 // from the tip's actual angle. Anchor flips based on which side of
 // the wheel the tip is on.
-function civLabelPosFor(tipX, tipY, angleRad, isTop = false) {
-  const GAP = isTop ? 34 : 14
+function civLabelPosFor(tipX, tipY, angleRad) {
+  const GAP = 14
   // Unit vector pointing outward from centre along the spoke
   const ux = Math.cos(angleRad)
   const uy = Math.sin(angleRad)
@@ -162,10 +151,6 @@ function SelfWheel({
   const cx = CX
   const cy = CY
   const maxR = RADIUS
-  const windowWidth = useWindowWidth()
-  const isMobile = windowWidth < 768
-  const topLabelSize  = isMobile ? 34 : 30
-  const restLabelSize = isMobile ? 17 : 16
 
   // ── Rotation state ───────────────────────────────────────────
   // Initialise to a random spoke so no domain is privileged at top
@@ -510,8 +495,8 @@ function SelfWheel({
         }
         return labels.map((txt, i) => {
           const p = getTipPos(i, displayRot)
+          const pos = civLabelPosFor(p.x, p.y, p.angle)
           const isTop    = i === topIdx
-          const pos = civLabelPosFor(p.x, p.y, p.angle, isTop)
           const isActive = activeKey && keys[i] === activeKey
           const dc = selfColor(keys[i])
           const baseFill   = dark ? dc.dark : dc.light
@@ -541,17 +526,18 @@ function SelfWheel({
                 y={pos.y}
                 textAnchor={pos.anchor}
                 fill={isActive ? activeFill : baseFill}
+                onPointerDown={onSelect ? e => { e.stopPropagation(); onSelect(i) } : undefined}
                 filter={`url(#lbl-halo-${dark ? 'dark' : 'light'})`}
                 style={{
                   fontFamily: FONT_SC,
-                  fontSize: isTop ? topLabelSize : restLabelSize,
+                  fontSize: isTop ? 26 : 16,
                   letterSpacing: '0.18em',
                   fontWeight: isTop ? 700 : 500,
                   opacity: isTop ? 1 : 0.82,
                   cursor: onSelect ? 'pointer' : undefined,
                   userSelect: 'none',
                   textTransform: 'uppercase',
-                  pointerEvents: 'none',
+                  pointerEvents: onSelect ? 'auto' : 'none',
                   transition: 'opacity 0.35s ease',
                 }}
               >
@@ -676,10 +662,6 @@ function CivWheel({
   }, [domains, labels])
 
   const count = displayLabels.length || N
-  const windowWidth = useWindowWidth()
-  const isMobile = windowWidth < 768
-  const topLabelSize  = isMobile ? 34 : 30
-  const restLabelSize = isMobile ? 17 : 16
 
   // Phase: 'spinning' → 'landing' → 'settled' → ('navigating' → 'settled')
   //        ('drilling' → 'breathing') terminates by emitting onDrillDown.
@@ -830,8 +812,9 @@ function CivWheel({
 
       else if (phase === 'breathing') {
         if (time - breatheStartRef.current >= T_BREATHE) {
+          const idx = drillIdxRef.current
           drillIdxRef.current = null
-          setPhase('settled')
+          onDrillDown?.(idx)
         }
       }
 
@@ -853,8 +836,6 @@ function CivWheel({
     if (phase === 'navigating' || phase === 'settled') {
       onSelect?.(i)
       if (domains?.[i]?.subDomains?.length > 0) {
-        // Emit immediately — animation plays cosmetically behind the navigation
-        onDrillDown?.(i)
         drillIdxRef.current = i
         drillStartRef.current = null
         setPhase('drilling')
@@ -1157,7 +1138,7 @@ function CivWheel({
             `translate(${-tipX}, ${-tipY})`
         }
 
-        const labelPos = civLabelPosFor(tipX, tipY, p.angle, isTop)
+        const labelPos = civLabelPosFor(tipX, tipY, p.angle)
 
         // Civ tip dot: domain colour. Active state lifts to the saturated
         // base on parchment; on dark we stay at the lighter stop because
@@ -1225,7 +1206,7 @@ function CivWheel({
               filter={`url(#lbl-halo-${dark ? 'dark' : 'light'}-civ)`}
               style={{
                 fontFamily: FONT_SC,
-                fontSize: isTop ? topLabelSize : restLabelSize,
+                fontSize: isTop ? 26 : 16,
                 letterSpacing: '0.18em',
                 fontWeight: isTop ? 700 : isPlacement ? 650 : isFocus ? 600 : 500,
                 opacity: isTop ? 1 : 0.82,

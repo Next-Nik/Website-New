@@ -4,9 +4,8 @@ import { Nav } from '../../components/Nav'
 import { DomainTooltip } from '../../components/DomainTooltip'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
-import { AccessGate } from '../../components/AccessGate'
 import { supabase } from '../../hooks/useSupabase'
-import { ScalePanel } from '../../components/ScalePanel'
+import { HorizonScaleModal, SCALE_LINK_STYLE } from '../../components/HorizonScaleModal'
 import { DebriefPanel } from '../../components/DebriefPanel'
 import { CrisisRedirectCard } from '../../components/CrisisRedirectCard'
 
@@ -28,7 +27,7 @@ export const DOMAINS = [
   { id: 'path',          label: 'Path',          question: 'Am I walking my path — or just walking?',                    fractal: 'Vision' },
   { id: 'spark',         label: 'Spark',         question: "When did I last feel genuinely alive — and what's been costing me that?",           fractal: 'Human Being' },
   { id: 'body',          label: 'Body',          question: "Am I honouring this instrument — or running it into the ground?",                  fractal: 'Nature' },
-  { id: 'finances',      label: 'Finances',      question: 'Do I have the agency to act on what matters?',              fractal: 'Finance & Economy' },
+  { id: 'finances',      label: 'Finances',      question: 'Do I have the agency to act on what matters?',              fractal: 'Economy' },
   { id: 'connection', label: 'Connection', question: "Am I truly known by anyone — and am I truly knowing them?",                        fractal: 'Society' },
   { id: 'inner_game',    label: 'Inner Game',    question: "What story about myself is quietly running the room — and is that story still true?", fractal: 'Legacy' },
   { id: 'signal',    label: 'Signal',    question: "Is what I'm broadcasting aligned with who I actually am?", fractal: 'Technology' },
@@ -52,6 +51,58 @@ export function getDomainStage(data) {
   if (data.currentScore !== undefined) return 2
   if (data.avatarFinal) return 1
   return 0
+}
+
+// ─── Connection helpers ───────────────────────────────────────────────────────
+// Connection's plurality is honoured *inside* Step 2 — the user scores each
+// active relational area, and the domain-level currentScore is the average
+// across those scores. After Phase 3 of the Connection refactor, Connection
+// runs through DomainStep like the other six domains; the only divergence
+// is in Step 2's render, which uses ConnectionLandscapeStep instead of the
+// standard single-score capture.
+
+export const DEFAULT_CONNECTION_SUBDOMAINS = [
+  { id: 'intimate',      label: 'Romantic Partner', defaultActive: true  },
+  { id: 'family',        label: 'Family',           defaultActive: true  },
+  { id: 'friendship',    label: 'Friendship',       defaultActive: true  },
+  { id: 'collaborators', label: 'Collaborators',    defaultActive: true  },
+  { id: 'community',     label: 'Community',        defaultActive: false },
+]
+
+// Computes the Connection-level currentScore as the average of active
+// sub-domain currentScores. Returns undefined if no active sub-domain has
+// been scored yet. Rounded to one decimal — half-step precision lives at
+// the rolled-up level even though sub-domain scores are integer-only via
+// the compact picker.
+export function computeConnectionAverage(subDomains = []) {
+  const scored = subDomains.filter(s => s.active && typeof s.currentScore === 'number')
+  if (scored.length === 0) return undefined
+  const sum = scored.reduce((acc, s) => acc + s.currentScore, 0)
+  const avg = sum / scored.length
+  return Math.round(avg * 10) / 10
+}
+
+// Number of active sub-domains the user has chosen to engage with (for the
+// "5 areas" annotation alongside the Connection score on the dashboard).
+export function countActiveConnectionSubDomains(subDomains = []) {
+  return subDomains.filter(s => s.active).length
+}
+
+// Hydrate a sub-domains array from saved data — preserving legacy fields
+// (horizonText, horizonScore) so they survive read/write cycles and are
+// available as landscape context to North Star at Step 3.
+export function hydrateConnectionSubDomains(saved) {
+  if (Array.isArray(saved) && saved.length > 0) {
+    // Map defaults to merge with saved entries; preserves order from defaults
+    return DEFAULT_CONNECTION_SUBDOMAINS.map(def => {
+      const existing = saved.find(s => s.id === def.id)
+      if (existing) return { ...def, ...existing }
+      return { ...def, active: def.defaultActive, currentScore: undefined, context: '' }
+    })
+  }
+  return DEFAULT_CONNECTION_SUBDOMAINS.map(s => ({
+    ...s, active: s.defaultActive, currentScore: undefined, context: '',
+  }))
 }
 
 // Node fill based on stage — 4 visual states
@@ -139,6 +190,116 @@ function HourglassPicker({ onScore, horizonMode = false, currentScore }) {
   )
 }
 
+// ─── HourglassPickerCompact — horizontal variant for embedded contexts ────────
+//
+// Same 0–10 scale, same tier colours, same Line at 5, same hover-reveals-tier
+// grammar as the vertical HourglassPicker — rotated 90° for embedded contexts
+// where vertical real estate is scarce (e.g. sub-domain cards inside Step 2).
+//
+// The shape still teaches its meaning: bars are narrowest at 5 (The Line) and
+// flare outward toward 0 (suffering) and 10 (flourishing). The pinch carries
+// the same semantics whether the long axis is vertical or horizontal.
+//
+// Differences vs full picker:
+//   • Horizontal row of bars instead of vertical column
+//   • Tier label/description appears above the row on hover or selection
+//     (instead of below the column, since 11 always-on tier labels won't fit)
+//   • No ToolCompassPanel — that's a one-place explainer, not for repetition
+//
+// Always operates in current-score mode. Embedded contexts that need a
+// horizon picker use the full HourglassPicker instead — horizon is a
+// whole-domain moment, not an embedded one.
+
+function HourglassPickerCompact({ onScore, currentScore }) {
+  const [hovered, setHovered] = useState(null)
+  const minH = 14, maxH = 38
+
+  // Bar heights mirror the vertical version's getWidth — narrow at 5, flaring
+  // outward. Using the same Math.pow(pct, 1.4) curve preserves the shape.
+  function getHeight(n) {
+    const dist = Math.abs(n - 5)
+    const pct  = dist / 5
+    return Math.round(minH + (maxH - minH) * Math.pow(pct, 1.4))
+  }
+
+  const shown = hovered !== null ? hovered : currentScore
+
+  return (
+    <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '10px', padding: '12px 14px', marginTop: '4px' }}>
+      {/* Tier indicator — appears when a score is hovered or selected */}
+      <div style={{ minHeight: '24px', marginBottom: '8px', display: 'flex', alignItems: 'baseline', gap: '8px' }}>
+        {shown !== undefined && shown !== null ? (
+          <>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '14px', fontWeight: 600, color: getScoreColor(shown), letterSpacing: '0.04em' }}>{shown}</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.10em', color: getScoreColor(shown) }}>{TIER_MAP[shown]}</span>
+            <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.62)' }}>— {LABEL_MAP[shown]}</span>
+          </>
+        ) : (
+          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.42)' }}>Hover a bar to see the tier · tap to set the score</span>
+        )}
+      </div>
+
+      {/* Horizontal hourglass row */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '4px', height: `${maxH + 4}px`, position: 'relative' }}>
+        {SCALE_POINTS.map(n => {
+          const h      = getHeight(n)
+          const c      = getScoreColor(n)
+          const isHov  = hovered === n
+          const isCur  = currentScore === n
+          const isLine = n === 5
+          return (
+            <div key={n} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', height: '100%', position: 'relative' }}>
+              <button
+                onMouseEnter={() => setHovered(n)}
+                onMouseLeave={() => setHovered(null)}
+                onClick={() => onScore(n)}
+                aria-label={`Score ${n} — ${TIER_MAP[n]}`}
+                style={{
+                  width: '100%',
+                  height: `${h}px`,
+                  background: isHov || isCur ? c : `${c}18`,
+                  border: `1px solid ${isHov || isCur ? c : `${c}30`}`,
+                  borderRadius: '3px',
+                  cursor: 'pointer',
+                  transition: 'all 0.12s ease',
+                  outline: isCur ? `2px solid ${c}44` : 'none',
+                  outlineOffset: '2px',
+                  padding: 0,
+                }}
+              />
+              {/* The Line at 5 — vertical accent above the bar */}
+              {isLine && (
+                <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '1px', background: 'rgba(200,146,42,0.35)', pointerEvents: 'none' }} />
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Number row beneath the bars */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '4px', marginTop: '4px' }}>
+        {SCALE_POINTS.map(n => {
+          const isHov  = hovered === n
+          const isCur  = currentScore === n
+          const isLine = n === 5
+          return (
+            <div key={n} style={{ flex: 1, textAlign: 'center', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.04em', color: isLine ? '#A8721A' : (isHov || isCur) ? getScoreColor(n) : 'rgba(15,21,35,0.55)', fontWeight: (isHov || isCur || isLine) ? 600 : 400 }}>{n}</div>
+          )
+        })}
+      </div>
+
+      {/* Tier signature — appears below on hover, like the full picker */}
+      {hovered !== null && (
+        <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.6, margin: 0 }}>
+            {SIGNATURE_MAP[hovered]}
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── MapWheel — spinning heptagon ─────────────────────────────────────────────
 
 function getNodePos(index, rotDeg = 0) {
@@ -152,7 +313,7 @@ function getRotationToTop(index, currentRot) {
   return currentRot + diff
 }
 
-function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreClick, triggerSpin = 0 }) {
+export function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, onCentreClick, triggerSpin = 0 }) {
   const [phase,      setPhase]      = useState('spinning')
   const [displayRot, setDisplayRot] = useState(0)
   const rotRef      = useRef(0)
@@ -570,6 +731,57 @@ function ChatBubble({ msg }) {
   )
 }
 
+// ProposedDraftAccept — renders below an assistant bubble when North Star has
+// offered refined wording for the textarea. The user explicitly chooses to
+// save it. Replaces the old pattern of silently overwriting the textarea on
+// canLock turns, which left the user unsure whether anything had happened
+// and discarded earlier mid-conversation refinements.
+function ProposedDraftAccept({ proposedDraft, accepted, onAccept }) {
+  if (!proposedDraft) return null
+  return (
+    <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '-4px', marginBottom: '12px', marginLeft: '4px' }}>
+      <div style={{
+        padding: '10px 14px',
+        background: accepted ? 'rgba(200,146,42,0.04)' : 'rgba(200,146,42,0.07)',
+        border: '1px dashed rgba(200,146,42,0.40)',
+        borderRadius: '8px',
+        maxWidth: '88%',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        flexWrap: 'wrap',
+      }}>
+        <span style={{
+          fontFamily: "'Cormorant SC', Georgia, serif",
+          fontSize: '12px',
+          letterSpacing: '0.14em',
+          color: '#A8721A',
+        }}>
+          {accepted ? '✓ Saved to your draft' : 'North Star offered a refined version'}
+        </span>
+        {!accepted && (
+          <button
+            onClick={onAccept}
+            style={{
+              padding: '6px 14px',
+              borderRadius: '40px',
+              border: '1px solid rgba(168,114,26,0.8)',
+              background: '#C8922A',
+              color: '#FFFFFF',
+              fontFamily: "'Cormorant SC', Georgia, serif",
+              fontSize: '12px',
+              letterSpacing: '0.12em',
+              cursor: 'pointer',
+            }}
+          >
+            Save to draft →
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function ThinkingBubble() {
   return (
     <div style={{ display: 'flex', marginBottom: '10px' }}>
@@ -640,6 +852,13 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
   const [horizonMsgs,    setHorizonMsgs]    = useState(existingData?.horizonMsgs || [])
   const [horizonLocked,  setHorizonLocked]  = useState(!!existingData?.horizonText)
 
+  // Connection-only state: the relational landscape. For other domains this
+  // stays at its initial value and never gets touched.
+  const isConnection = domain.id === 'connection'
+  const [subDomains, setSubDomains] = useState(() =>
+    isConnection ? hydrateConnectionSubDomains(existingData?.subDomains) : []
+  )
+
   const [flagReview,     setFlagReview]     = useState(existingData?.flagReview || false)
   const [thinking,       setThinking]       = useState(false)
   const [avatarInput,    setAvatarInput]    = useState('')
@@ -654,6 +873,7 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
       avatarDraft, avatarFinal, avatarMessages, avatarLocked, avatarDoc,
       currentScore, realityDraft, realityFinal, scoreMsgs, scoreLocked,
       horizonScore, horizonText, horizonMsgs, horizonLocked,
+      ...(isConnection ? { subDomains } : {}),
       flagReview,
       ...overrides,
     }
@@ -665,6 +885,25 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
     const stage = getDomainStage(data)
     if (stage === 3) onComplete(data)
   }
+
+  // ── Background autosave ─────────────────────────────────────────────────────
+  // Lock buttons are the explicit save points, but the user is also writing
+  // continuously between locks (typing drafts, exchanging chat turns). This
+  // effect debounces a save of the current in-progress state so that a closed
+  // tab mid-conversation doesn't lose work. Parent's onUpdate cascades to a
+  // map_results upsert, so this writes through to Supabase for signed-in users.
+  const firstAutosaveRef = useRef(true)
+  useEffect(() => {
+    if (firstAutosaveRef.current) { firstAutosaveRef.current = false; return }
+    const t = setTimeout(() => { onUpdate(buildData()) }, 800)
+    return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    avatarDraft, avatarMessages, avatarDoc,
+    realityDraft, scoreMsgs,
+    horizonText, horizonMsgs,
+    subDomains,
+  ])
 
   // ── Avatar step ─────────────────────────────────────────────
 
@@ -746,7 +985,15 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
         }),
       })
       const data = await res.json()
-      const aiMsg = { role: 'assistant', content: data.message, canLock: data.canLock, suggestedScore: data.suggestedScore, cleanedReality: data.cleanedReality || null }
+      const aiMsg = {
+        role: 'assistant',
+        content: data.message,
+        canLock: data.canLock,
+        suggestedScore: data.suggestedScore,
+        cleanedReality: data.cleanedReality || null,
+        proposedDraft: data.proposedDraft || null,
+        accepted: false,
+      }
       const updated = [...next, aiMsg]
       setScoreMsgs(updated)
       if (data.cleanedReality) setRealityFinal(data.cleanedReality)
@@ -768,6 +1015,20 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
     setScoreLocked(true)
     setStep('horizon')
     save({ scoreLocked: true, currentScore, realityFinal: realityFinal || realityDraft })
+  }
+
+  // Lock for the Connection landscape step. The average becomes currentScore;
+  // sub-domains stay on the object so North Star has them at horizon time and
+  // the dashboard can show the "5 areas" annotation.
+  function lockConnectionLandscape({ currentScore: avg }) {
+    setCurrentScore(avg)
+    setScoreLocked(true)
+    setStep('horizon')
+    save({
+      scoreLocked: true,
+      currentScore: avg,
+      subDomains,
+    })
   }
 
   // ── Horizon step ────────────────────────────────────────────
@@ -794,17 +1055,27 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           messages: next,
           horizonScore: score ?? horizonScore,
           horizonText,
+          // Connection's relational landscape — passed only for the
+          // connection domain so North Star can reflect against the
+          // specific areas the user scored and the contexts they shared,
+          // rather than producing a generic Connection horizon.
+          ...(isConnection ? { subDomains: subDomains.filter(s => s.active) } : {}),
         }),
       })
       const data = await res.json()
-      const aiMsg = { role: 'assistant', content: data.message, canLock: data.canLock }
+      const aiMsg = {
+        role: 'assistant',
+        content: data.message,
+        canLock: data.canLock,
+        proposedDraft: data.proposedDraft || null,
+        accepted: false,
+      }
       const updated = [...next, aiMsg]
       setHorizonMsgs(updated)
-      // When North Star signals ready to lock, surface its version in the textarea
-      // so the user locks the refined text, not their rough draft
-      if (data.canLock && data.message) {
-        setHorizonText(data.message)
-      }
+      // Note: horizon text updates are now driven by the user explicitly
+      // accepting a proposedDraft via the ProposedDraftAccept affordance —
+      // no silent overwrites. North Star's refined wording shows in the
+      // chat bubble; the user chooses to promote it to the textarea.
       setThinking(false)
     } catch {
       setHorizonMsgs([...next, { role: 'assistant', content: 'Something went wrong. Try again.' }])
@@ -821,6 +1092,29 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
     setHorizonLocked(true)
     save({ horizonLocked: true, horizonScore, horizonText })
     setStep('done')
+  }
+
+  // ── Accept handlers for proposedDraft ───────────────────────
+  // North Star can offer refined wording via proposedDraft. The user
+  // accepts explicitly — we update the textarea, then mark the message
+  // accepted so the affordance flips to "Saved" and won't show twice.
+  function acceptScoreDraft(index) {
+    const msg = scoreMsgs[index]
+    if (!msg?.proposedDraft) return
+    setRealityDraft(msg.proposedDraft)
+    setRealityFinal(msg.proposedDraft)
+    const next = scoreMsgs.map((m, i) => i === index ? { ...m, accepted: true } : m)
+    setScoreMsgs(next)
+    save({ realityDraft: msg.proposedDraft, realityFinal: msg.proposedDraft, scoreMsgs: next })
+  }
+
+  function acceptHorizonDraft(index) {
+    const msg = horizonMsgs[index]
+    if (!msg?.proposedDraft) return
+    setHorizonText(msg.proposedDraft)
+    const next = horizonMsgs.map((m, i) => i === index ? { ...m, accepted: true } : m)
+    setHorizonMsgs(next)
+    save({ horizonText: msg.proposedDraft, horizonMsgs: next })
   }
 
   // ── Render ──────────────────────────────────────────────────
@@ -1022,7 +1316,15 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
       )}
 
       {/* ── STEP 2: SCORE ── */}
-      {step === 'score' && (
+      {step === 'score' && isConnection && (
+        <ConnectionLandscapeStep
+          subDomains={subDomains}
+          setSubDomains={setSubDomains}
+          onLock={lockConnectionLandscape}
+        />
+      )}
+
+      {step === 'score' && !isConnection && (
         <div>
           <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '16px' }}>
             Where are you right now, relative to that? Pick a number and say something about it.
@@ -1052,6 +1354,13 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                     </div>
                   )}
                   <ChatBubble msg={m} />
+                  {m.role === 'assistant' && m.proposedDraft && (
+                    <ProposedDraftAccept
+                      proposedDraft={m.proposedDraft}
+                      accepted={m.accepted}
+                      onAccept={() => acceptScoreDraft(i)}
+                    />
+                  )}
                 </div>
               ))}
               {thinking && <ThinkingBubble />}
@@ -1098,9 +1407,9 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                 If the genie granted your wish in {domain.label}, what would it be?
               </p>
 
-              {horizonMsgs.some(m => m.canLock) && (
+              {horizonMsgs.some(m => m.accepted) && (
                 <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>
-                  ✓ North Star's version — edit freely, then lock
+                  ✓ Saved from North Star — edit freely, then lock
                 </div>
               )}
               <textarea
@@ -1108,7 +1417,7 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                 onChange={e => setHorizonText(e.target.value)}
                 placeholder="What does this area look like in your full yes life?"
                 rows={3}
-                style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', background: horizonMsgs.some(m => m.canLock) ? 'rgba(200,146,42,0.04)' : 'rgba(200,146,42,0.02)', border: horizonMsgs.some(m => m.canLock) ? '1.5px solid rgba(200,146,42,0.45)' : '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '12px' }}
+                style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', background: horizonMsgs.some(m => m.accepted) ? 'rgba(200,146,42,0.04)' : 'rgba(200,146,42,0.02)', border: horizonMsgs.some(m => m.accepted) ? '1.5px solid rgba(200,146,42,0.45)' : '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '12px' }}
               />
 
               <HourglassPicker onScore={handleHorizonScoreSelect} horizonMode currentScore={horizonScore} />
@@ -1116,7 +1425,18 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
               {/* Horizon conversation */}
               {horizonMsgs.length > 0 && (
                 <div style={{ marginTop: '16px' }}>
-                  {horizonMsgs.map((m, i) => <ChatBubble key={i} msg={m} />)}
+                  {horizonMsgs.map((m, i) => (
+                    <div key={i}>
+                      <ChatBubble msg={m} />
+                      {m.role === 'assistant' && m.proposedDraft && (
+                        <ProposedDraftAccept
+                          proposedDraft={m.proposedDraft}
+                          accepted={m.accepted}
+                          onAccept={() => acceptHorizonDraft(i)}
+                        />
+                      )}
+                    </div>
+                  ))}
                   {thinking && <ThinkingBubble />}
                 </div>
               )}
@@ -1167,7 +1487,7 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
 
 // ─── Results Card ─────────────────────────────────────────────────────────────
 
-function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
+export function ResultsCard({ mapData, domainData, currentScores, horizonScores }) {
   const [horizonText,   setHorizonText]   = useState(() => {
     try { return localStorage.getItem('lifeos_map_horizon_locked') || '' } catch { return '' }
   })
@@ -1391,63 +1711,66 @@ function AuthModal() {
 
 
 // ─── Connection Domain ───────────────────────────────────────────────────────
-// Connection has an avatar step (same as other domains) followed by
-// five default sub-domains that each go through score → horizon → lock.
-// North Star synthesises across all active sub-domains at the end.
-// FIX LOG:
-//   1. Avatar step added — Connection now has the same 3-step calibration as all other domains
-//   2. onComplete no-op fixed — sub-domain completion now correctly propagates
-//   3. allActiveComplete gate fixed — driven by completed state not stale closure
-//   4. Horizon score stale closure fixed — horizonScore stored in ConnectionDomainStep state
-//   5. Lock writes real synthesis text to horizon_profile, not placeholder
-//   6. North Star context (userId) passed to synthesis API
-//   7. userId prop added to ConnectionDomainStep for horizon_profile writes
-//   8. Save confirmation indicator added so user knows progress is persisted
+// Phase 3 of the Connection refactor (May 2026): Connection became peer-shaped
+// with the other six domains. It now runs through DomainStep like the rest;
+// the only divergence is Step 2 ("Where are you"), which renders the
+// relational landscape via ConnectionLandscapeStep instead of the standard
+// single-score capture. The previous ConnectionDomainStep (~485 lines, with
+// its own avatar / synthesis-as-gate / five sub-horizons flow) was removed.
+//
+// What lives where now:
+//   • DEFAULT_CONNECTION_SUBDOMAINS, computeConnectionAverage,
+//     hydrateConnectionSubDomains, countActiveConnectionSubDomains — top of file
+//   • ConnectionSubDomainCard — score + context per area (no per-sub-horizon)
+//   • ConnectionLandscapeStep — Step 2 wrapper, used inside DomainStep
+//   • Connection horizon: standard DomainStep Step 3 with the relational
+//     landscape passed to North Star as additional context
 
-const DEFAULT_CONNECTION_SUBDOMAINS = [
-  { id: 'intimate',      label: 'Romantic Partner', defaultActive: true },
-  { id: 'family',        label: 'Family',              defaultActive: true },
-  { id: 'friendship',    label: 'Friendship',          defaultActive: true },
-  { id: 'collaborators', label: 'Collaborators',       defaultActive: true },
-  { id: 'community',     label: 'Community',           defaultActive: false },
-]
+// DEFAULT_CONNECTION_SUBDOMAINS now lives near the other Connection helpers
+// at the top of this file (see line ~65), alongside computeConnectionAverage
+// and hydrateConnectionSubDomains.
 
-export function countActiveConnectionSubDomains(subDomains = []) {
-  return subDomains.filter(s => s.active).length
-}
-
-function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, active }) {
-  const [step,         setStep]         = useState(() => {
-    if (!data) return 'idle'
-    if (data.horizonText) return 'done'
-    if (data.currentScore !== undefined) return 'horizon'
-    return 'score'
-  })
+// ConnectionSubDomainCard — score + context per relational area.
+//
+// Phase 3 of the Connection refactor folded the per-sub-domain horizons away:
+// after the rebuild there is one Connection horizon at the domain level,
+// reflected against the full landscape. Each sub-domain now captures only:
+//   - currentScore (compact Hourglass, 0–10)
+//   - optional context note (what North Star should know about this area)
+//
+// The card writes back to the parent on every meaningful change via onUpdate.
+// The parent (ConnectionLandscapeStep) is the one composing the landscape and
+// deciding when Step 2 is complete (= all active areas scored).
+function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, active }) {
   const [currentScore, setCurrentScore] = useState(data?.currentScore)
-  const [horizonText,  setHorizonText]  = useState(data?.horizonText || '')
-  const [horizonScore, setHorizonScore] = useState(data?.horizonScore)
   const [context,      setContext]      = useState(data?.context || '')
-  const [showContext,  setShowContext]  = useState(false)
+  const [showContext,  setShowContext]  = useState(!!data?.context)
   const [saved,        setSaved]        = useState(false)
-  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
   const body  = { fontFamily: "'Lora', Georgia, serif" }
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
   function save(overrides = {}) {
-    const updated = { id: sub.id, label: sub.label, active, currentScore, horizonText, horizonScore, context, ...overrides }
-    onUpdate(updated)
-    // FIX: call onComplete when sub-domain is genuinely complete
-    if (updated.horizonText && updated.currentScore !== undefined) {
-      onComplete(updated)
+    // Preserve any legacy horizonText/horizonScore from earlier Connection
+    // builds. They are no longer written by this card but kept on the object
+    // so they survive read/write cycles and are available to North Star as
+    // landscape context during Step 3 reflection.
+    const legacy = data ? { horizonText: data.horizonText, horizonScore: data.horizonScore } : {}
+    const updated = {
+      id: sub.id,
+      label: sub.label,
+      active,
+      currentScore,
+      context,
+      ...legacy,
+      ...overrides,
     }
-    // Show saved indicator briefly
+    onUpdate(updated)
     setSaved(true)
     setTimeout(() => setSaved(false), 1500)
   }
 
   const borderColor  = active ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.12)'
   const btnBorder    = active ? '2px solid #A8721A'    : '2px solid rgba(200,146,42,0.30)'
-  const scoreBorder  = n => currentScore === n ? '1.5px solid #A8721A' : '1.5px solid rgba(200,146,42,0.25)'
 
   return (
     <div style={{ border: '1px solid ' + borderColor, borderRadius: '10px', marginBottom: '8px', overflow: 'hidden', opacity: active ? 1 : 0.6 }}>
@@ -1457,8 +1780,7 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, ac
         </button>
         <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: active ? '#0F1523' : 'rgba(15,21,35,0.45)', flex: 1 }}>{sub.label}</span>
         {saved && <span style={{ ...sc, fontSize: '11px', color: '#A8721A', letterSpacing: '0.1em' }}>Saved</span>}
-        {!saved && active && step === 'done' && <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: '#A8721A' }}>{'✓'} Complete</span>}
-        {!saved && active && currentScore !== undefined && step !== 'done' && <span style={{ ...sc, fontSize: '13px', color: '#A8721A' }}>{currentScore}/10</span>}
+        {!saved && active && currentScore !== undefined && <span style={{ ...sc, fontSize: '13px', color: '#A8721A' }}>{currentScore}/10</span>}
       </div>
 
       {active && (
@@ -1471,486 +1793,98 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, onComplete, ac
               <textarea
                 value={context}
                 onChange={e => { setContext(e.target.value); save({ context: e.target.value }) }}
-                placeholder="Any context that matters here — relationship structure, family dynamics, anything that helps North Star give relevant rather than generic advice..."
+                placeholder="Any context that matters here — relationship structure, family dynamics, anything that helps North Star give relevant rather than generic advice…"
                 rows={3}
                 style={{ width: '100%', marginTop: '8px', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.22)', background: '#FAFAF7', ...body, fontSize: '15px', color: 'rgba(15,21,35,0.78)', resize: 'vertical', outline: 'none', lineHeight: 1.6, boxSizing: 'border-box' }}
               />
             )}
           </div>
 
-          {(step === 'score' || step === 'horizon' || step === 'done') && (
-            <div style={{ marginBottom: '14px' }}>
-              <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>Where are you now? (0–10)</div>
-              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                {[0,1,2,3,4,5,6,7,8,9,10].map(n => (
-                  <button key={n} onClick={() => { setCurrentScore(n); setStep('horizon'); save({ currentScore: n }) }}
-                    style={{ width: '34px', height: '34px', borderRadius: '50%', border: scoreBorder(n), background: currentScore === n ? '#A8721A' : 'transparent', color: currentScore === n ? '#FFFFFF' : 'rgba(15,21,35,0.78)', ...sc, fontSize: '13px', cursor: 'pointer', transition: 'all 0.15s' }}>{n}</button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {(step === 'horizon' || step === 'done') && currentScore !== undefined && (
-            <div>
-              <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>Horizon goal for this area</div>
-              <textarea
-                value={horizonText}
-                onChange={e => setHorizonText(e.target.value)}
-                placeholder="What does this relationship look like in your full yes life?"
-                rows={2}
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.22)', background: '#FAFAF7', ...body, fontSize: '15px', color: 'rgba(15,21,35,0.78)', resize: 'vertical', outline: 'none', lineHeight: 1.6, marginBottom: '8px', boxSizing: 'border-box' }}
-              />
-              {horizonText.trim() && step !== 'done' && (
-                <button onClick={() => { setStep('done'); save({ horizonText, currentScore }) }}
-                  style={{ padding: '8px 20px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', ...sc, fontSize: '13px', letterSpacing: '0.12em', cursor: 'pointer' }}>
-                  Lock this in {'→'}
-                </button>
-              )}
-            </div>
-          )}
+          <div style={{ marginBottom: '4px' }}>
+            <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>Where are you now?</div>
+            <HourglassPickerCompact
+              currentScore={currentScore}
+              onScore={n => { setCurrentScore(n); save({ currentScore: n }) }}
+            />
+          </div>
         </div>
       )}
     </div>
   )
 }
 
-function ConnectionDomainStep({ domain, existingData, onComplete, onUpdate, userId }) {
-  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-  const body  = { fontFamily: "'Lora', Georgia, serif" }
+// ConnectionLandscapeStep — the Step 2 render for Connection.
+//
+// Used inside DomainStep when domain.id === 'connection' and step === 'score'.
+// Renders the sub-domain cards, manages their state, computes the rolled-up
+// currentScore as an average, and advances to Step 3 when all active areas
+// have been scored.
+//
+// Lock advances the parent DomainStep into 'horizon' with currentScore set
+// to the average. The landscape (sub-domain scores + contexts) is preserved
+// on the domain object and passed to North Star at Step 3 horizon mode so
+// her reflection can honour the plurality rather than flattening it.
+//
+// (An optional whole-landscape reflection with North Star here in Step 2 was
+// scoped but deferred — the existing synthesis endpoint expects a different
+// payload shape, and the structural rebuild's main job is making Connection
+// peer-shaped. Synthesis can be revisited as a follow-on.)
+function ConnectionLandscapeStep({ subDomains, setSubDomains, onLock }) {
   const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
-  // ── FIX #1: Avatar step ───────────────────────────────────────────────────
-  const [avatarLocked,   setAvatarLocked]   = useState(!!existingData?.avatarFinal)
-  const [avatarDraft,    setAvatarDraft]    = useState(existingData?.avatarDraft || '')
-  const [avatarDoc,      setAvatarDoc]      = useState(existingData?.avatarDoc || { essence: '', references: '', other: '' })
-  const [avatarFinal,    setAvatarFinal]    = useState(existingData?.avatarFinal || '')
-  const [avatarMsgs,     setAvatarMsgs]     = useState(existingData?.avatarMessages || [])
-  const [avatarInput,    setAvatarInput]    = useState('')
-  const [avatarThinking, setAvatarThinking] = useState(false)
-
-  const initSubDomains = () => {
-    if (existingData?.subDomains) return existingData.subDomains
-    return DEFAULT_CONNECTION_SUBDOMAINS.map(s => ({ ...s, active: s.defaultActive, currentScore: undefined, horizonText: '', horizonScore: undefined, context: '' }))
+  function toggleSub(id) {
+    setSubDomains(prev => prev.map(s => s.id === id ? { ...s, active: !s.active } : s))
   }
 
-  const [subDomains,    setSubDomains]    = useState(initSubDomains)
-  const [customLabel,   setCustomLabel]   = useState('')
-  const [addingCustom,  setAddingCustom]  = useState(false)
-  const [synthesis,     setSynthesis]     = useState(existingData?.synthesis || '')
-  const [synthesising,  setSynthesising]  = useState(false)
-  const [synthesisDone, setSynthesisDone] = useState(!!existingData?.synthesis)
-  // FIX #4: horizonScore in ConnectionDomainStep state, not stale closure
-  const [horizonScore,  setHorizonScore]  = useState(existingData?.horizonScore)
-  const [horizonLocked, setHorizonLocked] = useState(!!existingData?.horizonLocked)
-  const [horizonText,   setHorizonText]   = useState(existingData?.horizonText || '')
-  const [horizonMsgs,   setHorizonMsgs]   = useState(existingData?.horizonMsgs || [])
-  const [horizonThink,  setHorizonThink]  = useState(false)
-  const [saveIndicator, setSaveIndicator] = useState(false)
-
-  const activeSubDomains    = subDomains.filter(s => s.active)
-  // FIX #2/#3: driven by sub-domain state directly
-  const completedSubDomains = activeSubDomains.filter(s => s.horizonText && s.currentScore !== undefined)
-  const allActiveComplete   = activeSubDomains.length > 0 && completedSubDomains.length === activeSubDomains.length
-
-  function save(overrides = {}) {
-    const data = {
-      domainId: domain.id,
-      avatarDraft, avatarFinal, avatarMessages: avatarMsgs, avatarLocked,
-      avatarDoc, subDomains, synthesis, horizonScore, horizonLocked,
-      currentScore: existingData?.currentScore,
-      ...overrides,
-    }
-    onUpdate(data)
-    setSaveIndicator(true)
-    setTimeout(() => setSaveIndicator(false), 1500)
+  function updateSub(updated) {
+    setSubDomains(prev => prev.map(s => s.id === updated.id ? { ...s, ...updated } : s))
   }
 
-  // ── Avatar chat ───────────────────────────────────────────────────────────
-  async function sendAvatarMessage(text) {
-    if (!text.trim() || avatarThinking) return
-    const userMsg = { role: 'user', content: text }
-    const next = [...avatarMsgs, userMsg]
-    setAvatarMsgs(next)
-    setAvatarInput('')
-    setAvatarThinking(true)
-    try {
-      const res = await fetch('/api/map-avatar-chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ domain: domain.id, messages: next, avatarDraft }),
-      })
-      const d = await res.json()
-      const aiMsg = { role: 'assistant', content: d.message, canLock: d.canLock, cleanedDraft: d.cleanedDraft || null }
-      const updated = [...next, aiMsg]
-      setAvatarMsgs(updated)
-      if (d.cleanedDraft) setAvatarDraft(d.cleanedDraft)
-      save({ avatarMessages: updated, avatarDraft: d.cleanedDraft || avatarDraft })
-    } catch {
-      setAvatarMsgs(prev => [...prev, { role: 'assistant', content: 'Something went wrong. Try again.' }])
-    }
-    setAvatarThinking(false)
-  }
-
-  function lockAvatar() {
-    const final = avatarDraft || avatarMsgs.find(m => m.role === 'user')?.content || ''
-    setAvatarFinal(final)
-    setAvatarLocked(true)
-    save({ avatarFinal: final, avatarLocked: true })
-  }
-
-  function toggleSubDomain(id) {
-    const next = subDomains.map(s => s.id === id ? { ...s, active: !s.active } : s)
-    setSubDomains(next)
-    save({ subDomains: next })
-  }
-
-  function updateSubDomain(updated) {
-    const next = subDomains.map(s => s.id === updated.id ? { ...s, ...updated } : s)
-    setSubDomains(next)
-    const scored = next.filter(s => s.active && s.currentScore !== undefined)
-    const avg = scored.length ? scored.reduce((sum, s) => sum + s.currentScore, 0) / scored.length : 0
-    save({ subDomains: next, currentScore: Math.round(avg * 10) / 10 })
-  }
-
-  // FIX #2: real onComplete handler
-  function handleSubDomainComplete(updated) {
-    updateSubDomain(updated)
-  }
-
-  function addCustomSubDomain() {
-    if (!customLabel.trim()) return
-    const id = 'custom_' + Date.now()
-    const next = [...subDomains, { id, label: customLabel.trim(), active: true, currentScore: undefined, horizonText: '', context: '' }]
-    setSubDomains(next)
-    setCustomLabel('')
-    setAddingCustom(false)
-    save({ subDomains: next })
-  }
-
-  async function synthesise() {
-    setSynthesising(true)
-    try {
-      const res = await fetch('/tools/map/api/connection-synthesis', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        // FIX #6: pass userId for North Star context
-        body: JSON.stringify({ subDomains: completedSubDomains, userId }),
-      })
-      const d = await res.json()
-      setSynthesis(d.synthesis)
-      setSynthesisDone(true)
-      const avg = completedSubDomains.reduce((sum, s) => sum + s.currentScore, 0) / completedSubDomains.length
-      save({ synthesis: d.synthesis, currentScore: Math.round(avg * 10) / 10 })
-    } catch {
-      setSynthesis('Something went wrong. Please try again.')
-    } finally {
-      setSynthesising(false)
-    }
-  }
+  const activeSubs = subDomains.filter(s => s.active)
+  const scoredSubs = activeSubs.filter(s => typeof s.currentScore === 'number')
+  const allActiveScored = activeSubs.length > 0 && scoredSubs.length === activeSubs.length
+  const average = computeConnectionAverage(subDomains)
 
   return (
-    <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '12px', padding: '24px 24px 20px', animation: 'fadeUp 0.3s ease-out' }}>
+    <div>
+      <p style={{ ...serif, fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '8px' }}>
+        Your relational landscape. Activate the areas of connection that matter to you, score each, and add any context North Star should know.
+      </p>
+      <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '20px', fontStyle: 'italic' }}>
+        Your Connection score on the wheel is the average across the areas you score.
+      </p>
 
-      {/* FIX #8: Save indicator */}
-      {saveIndicator && (
-        <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.14em', color: '#A8721A', textAlign: 'right', marginBottom: '8px' }}>
-          Saved ✓
+      {subDomains.map(sub => (
+        <ConnectionSubDomainCard
+          key={sub.id}
+          sub={sub}
+          data={sub}
+          active={sub.active}
+          onToggle={toggleSub}
+          onUpdate={updateSub}
+        />
+      ))}
+
+      {/* Average preview — appears once anything is scored */}
+      {average !== undefined && (
+        <div style={{ marginTop: '20px', padding: '14px 18px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '10px' }}>
+          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>Your Connection score</div>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+            <span style={{ ...sc, fontSize: '1.75rem', fontWeight: 600, color: '#A8721A', letterSpacing: '0.02em' }}>{average}</span>
+            <span style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.60)', fontStyle: 'italic' }}>
+              average across {scoredSubs.length} of {activeSubs.length} active {activeSubs.length === 1 ? 'area' : 'areas'}
+            </span>
+          </div>
         </div>
       )}
 
-      {/* ── STEP 1: AVATAR ────────────────────────────────────────────────── */}
-      {!avatarLocked ? (
-        <div>
-          <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', marginBottom: '6px' }}>North Star · Connection · Step 1</div>
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '8px' }}>
-            Create a construct of “Best in the World” for you in Connection. Think of it like you’re writing a character for a stage play — someone who could walk into a room and be immediately recognised as the pinnacle of connection for someone like you.
-          </p>
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, marginBottom: '20px' }}>
-            The character is the destination. The references are the ingredients.
-          </p>
-
-          {avatarMsgs.length === 0 && (
-            <div style={{ background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '10px', overflow: 'hidden', marginBottom: '16px' }}>
-              <div style={{ background: 'rgba(200,146,42,0.05)', borderBottom: '1px solid rgba(200,146,42,0.12)', padding: '10px 18px' }}>
-                <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A' }}>AVATAR DRAFT · CONNECTION</span>
-              </div>
-              <div style={{ padding: '16px 18px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-                <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', display: 'block', marginBottom: '6px' }}>BEST IN THE WORLD IN CONNECTION LOOKS LIKE...</label>
-                <textarea value={avatarDoc?.essence || ''} onChange={e => setAvatarDoc(d => ({ ...d, essence: e.target.value }))}
-                  placeholder="Describe the depth of connection, how they love, how they show up..."
-                  rows={3} style={{ width: '100%', padding: '4px 0 12px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: '#0F1523', background: 'transparent', border: 'none', outline: 'none', resize: 'none', lineHeight: 1.7 }} />
-              </div>
-              <div style={{ padding: '16px 18px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-                <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', display: 'block', marginBottom: '6px' }}>PEOPLE AND CHARACTERS FOR REFERENCE</label>
-                <textarea value={avatarDoc?.references || ''} onChange={e => setAvatarDoc(d => ({ ...d, references: e.target.value }))}
-                  placeholder="Real couples, friendships, families, communities..."
-                  rows={3} style={{ width: '100%', padding: '4px 0 12px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: '#0F1523', background: 'transparent', border: 'none', outline: 'none', resize: 'none', lineHeight: 1.7 }} />
-              </div>
-              <div style={{ padding: '16px 18px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
-                <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', display: 'block', marginBottom: '6px' }}>OTHER CHARACTERISTICS</label>
-                <textarea value={avatarDoc?.other || ''} onChange={e => setAvatarDoc(d => ({ ...d, other: e.target.value }))}
-                  placeholder="Anything else — how they love, how they show up..."
-                  rows={2} style={{ width: '100%', padding: '4px 0 12px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: '#0F1523', background: 'transparent', border: 'none', outline: 'none', resize: 'none', lineHeight: 1.7 }} />
-              </div>
-              <div style={{ padding: '12px 18px', display: 'flex', justifyContent: 'flex-end' }}>
-                <button
-                  onClick={() => {
-                    const composed = [
-                      avatarDoc?.essence && `Best in the world in Connection looks like:\n${avatarDoc.essence}`,
-                      avatarDoc?.references && `People and characters for reference:\n${avatarDoc.references}`,
-                      avatarDoc?.other && `Other characteristics:\n${avatarDoc.other}`,
-                    ].filter(Boolean).join('\n\n')
-                    if (!composed.trim()) return
-                    setAvatarDraft(composed)
-                    onUpdate({ domainId: domain.id, avatarDoc, avatarDraft: composed })
-                    sendAvatarMessage(composed)
-                  }}
-                  disabled={avatarThinking || !((avatarDoc?.essence || avatarDoc?.references || avatarDoc?.other))}
-                  style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.08em', color: '#A8721A', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '40px', padding: '10px 22px', cursor: 'pointer', opacity: avatarThinking || !((avatarDoc?.essence || avatarDoc?.references || avatarDoc?.other)) ? 0.4 : 1 }}>
-                  Update draft
-                </button>
-              </div>
-            </div>
-          )}
-
-          {avatarMsgs.length > 0 && (
-            <div style={{ marginBottom: '8px' }}>
-              {avatarMsgs.map((m, i) => (
-                <div key={i}>
-                  {m.role === 'assistant' && m.cleanedDraft && (
-                    <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.15)', borderLeft: '3px solid rgba(200,146,42,0.35)', borderRadius: '8px', marginBottom: '10px' }}>
-                      <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px' }}>YOUR AVATAR DRAFT · CLEANED</div>
-                      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, margin: 0, whiteSpace: 'pre-wrap' }}>{m.cleanedDraft}</p>
-                    </div>
-                  )}
-                  <ChatBubble msg={m} />
-                </div>
-              ))}
-              {avatarThinking && <ThinkingBubble />}
-            </div>
-          )}
-
-          {avatarMsgs.length > 0 && (
-            <>
-              {(avatarMsgs.some(m => m.canLock) || avatarMsgs.length >= 4) && !avatarThinking && (
-                <LockBtn onClick={lockAvatar} label="Lock in my avatar →" />
-              )}
-              {!avatarThinking && (
-                <ChatInput value={avatarInput} onChange={setAvatarInput} onSend={sendAvatarMessage} placeholder="Refine your avatar..." disabled={avatarThinking} />
-              )}
-            </>
-          )}
-        </div>
-      ) : (
-
-      /* ── STEPS 2-3: Sub-domains ───────────────────────────────────────── */
-      <div>
-        {avatarFinal && (
-          <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.15)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '8px', marginBottom: '20px' }}>
-            <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '8px' }}>YOUR CONNECTION AVATAR</div>
-            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, margin: '0 0 8px', whiteSpace: 'pre-wrap' }}>{avatarFinal}</p>
-            <button onClick={() => setAvatarLocked(false)} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>Edit →</button>
-          </div>
-        )}
-
-        <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', marginBottom: '6px' }}>North Star · Connection · Step 2</div>
-        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, margin: '0 0 4px' }}>
-          Connection holds your full relational landscape. Activate the areas that apply to your life — and add your own if needed.
-        </p>
-        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.50)', lineHeight: 1.6, margin: '0 0 16px' }}>
-          Use the context field to share anything that would help North Star give you relevant rather than generic guidance.
-        </p>
-
-        {subDomains.map(sub => (
-          <ConnectionSubDomainCard
-            key={sub.id}
-            sub={sub}
-            data={sub}
-            active={sub.active}
-            onToggle={toggleSubDomain}
-            onUpdate={updateSubDomain}
-            onComplete={handleSubDomainComplete}
-          />
-        ))}
-
-        {addingCustom ? (
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-            <input value={customLabel} onChange={e => setCustomLabel(e.target.value)} placeholder="Name this relationship area"
-              onKeyDown={e => e.key === 'Enter' && addCustomSubDomain()}
-              style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(200,146,42,0.30)', background: '#FAFAF7', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', outline: 'none' }} />
-            <button onClick={addCustomSubDomain} style={{ padding: '10px 16px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', cursor: 'pointer' }}>Add</button>
-            <button onClick={() => setAddingCustom(false)} style={{ padding: '10px 14px', borderRadius: '40px', border: '1px solid rgba(200,146,42,0.25)', background: 'transparent', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}>Cancel</button>
-          </div>
-        ) : (
-          <button onClick={() => setAddingCustom(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', padding: '8px 0', display: 'block' }}>
-            + Add a relationship area
-          </button>
-        )}
-
-        {allActiveComplete && !synthesisDone && (
-          <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.15)' }}>
-            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', marginBottom: '14px', lineHeight: 1.65 }}>
-              All active areas complete. North Star can now reflect the whole picture back to you.
-            </p>
-            <button onClick={synthesise} disabled={synthesising}
-              style={{ padding: '12px 28px', borderRadius: '40px', border: '1px solid rgba(168,114,26,0.8)', background: '#C8922A', color: '#FFFFFF', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', cursor: synthesising ? 'wait' : 'pointer', opacity: synthesising ? 0.7 : 1 }}>
-              {synthesising ? 'North Star is reflecting…' : "Get North Star's reflection →"}
-            </button>
-          </div>
-        )}
-
-        {synthesisDone && synthesis && (
-          <>
-            <div style={{ marginTop: '20px', padding: '20px 22px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.20)', borderLeft: '3px solid rgba(200,146,42,0.55)', borderRadius: '10px' }}>
-              <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '10px' }}>North Star · Connection</div>
-              {synthesis.split('\n\n').map((p, i) => (
-                <p key={i} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.8, margin: i > 0 ? '12px 0 0' : 0 }}>{p}</p>
-              ))}
-            </div>
-
-            {!horizonLocked ? (
-              <div style={{ marginTop: '24px', paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
-                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>Now — where do you want to be?</div>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.7, marginBottom: '16px' }}>
-                  Given everything across your relational life — what does connection look like in your full yes life?
-                </p>
-                <textarea
-                  value={horizonText}
-                  onChange={e => setHorizonText(e.target.value)}
-                  placeholder="What does this relationship landscape look like in your full yes life?"
-                  rows={3}
-                  style={{ width: '100%', padding: '12px 14px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', outline: 'none', resize: 'vertical', lineHeight: 1.65, marginBottom: '12px', boxSizing: 'border-box' }}
-                />
-                <HourglassPicker onScore={n => { setHorizonScore(n); onUpdate({ ...existingData, subDomains, horizonScore: n }) }} horizonMode currentScore={horizonScore} />
-
-                {/* Horizon reflection chat */}
-                {horizonMsgs.length > 0 && (
-                  <div style={{ marginTop: '16px' }}>
-                    {horizonMsgs.map((m, i) => <ChatBubble key={i} msg={m} />)}
-                    {horizonThink && <ThinkingBubble />}
-                  </div>
-                )}
-
-                {horizonScore !== undefined && horizonText.trim() && horizonMsgs.length === 0 && !horizonThink && (
-                  <button
-                    onClick={async () => {
-                      const msg = `[Horizon: ${horizonScore}] ${horizonText}`
-                      setHorizonMsgs([{ role: 'user', content: msg }])
-                      setHorizonThink(true)
-                      try {
-                        const res = await fetch('/api/map-scoring-chat', {
-                          method: 'POST', headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ mode: 'horizon', domain: 'connection', avatarFinal, currentScore: existingData?.currentScore, messages: [{ role: 'user', content: msg }], horizonScore, horizonText })
-                        })
-                        const data = await res.json()
-                        setHorizonMsgs([{ role: 'user', content: msg }, { role: 'assistant', content: data.message, canLock: data.canLock }])
-                        if (data.canLock && data.message) setHorizonText(data.message)
-                      } catch {
-                        setHorizonMsgs(p => [...p, { role: 'assistant', content: 'Something went wrong. Please try again.' }])
-                      }
-                      setHorizonThink(false)
-                    }}
-                    style={{ ...btnStyle, marginTop: '12px' }}
-                  >
-                    Send for reflection →
-                  </button>
-                )}
-
-                {horizonMsgs.length > 0 && !horizonThink && (
-                  <ChatInput
-                    value={''}
-                    onChange={() => {}}
-                    onSend={async text => {
-                      const next = [...horizonMsgs, { role: 'user', content: text }]
-                      setHorizonMsgs(next)
-                      setHorizonThink(true)
-                      try {
-                        const res = await fetch('/api/map-scoring-chat', {
-                          method: 'POST', headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ mode: 'horizon', domain: 'connection', avatarFinal, currentScore: existingData?.currentScore, messages: next, horizonScore, horizonText })
-                        })
-                        const data = await res.json()
-                        setHorizonMsgs(p => [...p, { role: 'assistant', content: data.message, canLock: data.canLock }])
-                        if (data.canLock && data.message) setHorizonText(data.message)
-                      } catch {
-                        setHorizonMsgs(p => [...p, { role: 'assistant', content: 'Something went wrong. Please try again.' }])
-                      }
-                      setHorizonThink(false)
-                    }}
-                    placeholder="Respond here…"
-                    disabled={horizonThink}
-                  />
-                )}
-
-                {horizonScore !== undefined && horizonText.trim() && (horizonMsgs.some(m => m.canLock) || horizonMsgs.length >= 2) && !horizonThink && (
-                  <div style={{ marginTop: '16px' }}>
-                    <LockBtn
-                      onClick={() => {
-                        setHorizonLocked(true)
-                        const avg = completedSubDomains.length
-                          ? completedSubDomains.reduce((s, d) => s + d.currentScore, 0) / completedSubDomains.length
-                          : horizonScore
-                        const avgScore = Math.round(avg * 10) / 10
-                        // Build horizon text from sub-domain goals — the actual aspirations.
-                        // Synthesis is North Star's reflection on current state, not a horizon goal.
-                        const subHorizons = completedSubDomains
-                          .filter(s => s.horizonText)
-                          .map(s => `${s.label}: ${s.horizonText}`)
-                          .join(' · ')
-                        const horizonText = subHorizons || 'Connection horizon set across sub-domains'
-                        const horizonTextFinal = horizonText.trim() || completedSubDomains.filter(s => s.horizonText).map(s => `${s.label}: ${s.horizonText}`).join(' · ') || 'Connection horizon set across sub-domains'
-                        const final = {
-                          domainId: domain.id,
-                          subDomains, synthesis,
-                          avatarFinal, avatarLocked: true,
-                          avatarDoc, avatarMessages: avatarMsgs,
-                          currentScore: avgScore,
-                          horizonScore,
-                          horizonText: horizonTextFinal,
-                          horizonMsgs,
-                          horizonLocked: true,
-                        }
-                        onUpdate(final)
-                        onComplete(final)
-                        // FIX #7: write to horizon_profile
-                        if (userId) {
-                          supabase.from('horizon_profile').upsert({
-                            user_id:          userId,
-                            domain:           'connection',
-                            current_score:    avgScore,
-                            horizon_score:    horizonScore,
-                            horizon_goal:     horizonText,
-                            avatar_statement: avatarFinal,
-                            source:           'map',
-                            last_updated:     new Date().toISOString(),
-                          }, { onConflict: 'user_id,domain' }).then(() => {})
-                        }
-                      }}
-                      label="Lock in my horizon →"
-                    />
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div style={{ marginTop: '20px' }}>
-                <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', marginBottom: '10px' }}>
-                  <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>YOUR HORIZON · CONNECTION</div>
-                  <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '10px' }}>
-                    Across your relational landscape — sub-domain goals set above.
-                  </p>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.35)', background: 'rgba(200,146,42,0.05)' }}>
-                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.3125rem', color: '#A8721A' }}>Horizon: {horizonScore}</span>
-                    <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.08em', color: '#A8721A' }}>{TIER_MAP[horizonScore]}</span>
-                  </div>
-                </div>
-                <button onClick={() => setHorizonLocked(false)} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                  Edit →
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+      {/* Lock — advances to Step 3 with the average as currentScore */}
+      {allActiveScored && (
+        <LockBtn
+          onClick={() => onLock({ currentScore: average })}
+          label={`Lock landscape · ${average} → Horizon`}
+        />
       )}
     </div>
   )
@@ -1966,11 +1900,11 @@ function MapNextSteps({ compact = false }) {
   if (compact) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
-        <a href="/dashboard?view=map" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 18px', display: 'inline-block' }}>
-          Declare your I Am statements →
+        <a href="/tools/target-sprint" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 18px', display: 'inline-block' }}>
+          Start a Target Sprint →
         </a>
-        <a href="/tools/target-sprint" style={{ ...body, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', display: 'inline-block' }}>
-          Or start a Target Sprint →
+        <a href="/tools/horizon-practice" style={{ ...body, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', display: 'inline-block' }}>
+          Or begin your daily practice →
         </a>
       </div>
     )
@@ -1982,28 +1916,18 @@ function MapNextSteps({ compact = false }) {
         What comes next
       </div>
       <p style={{ ...body, fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '28px' }}>
-        The Map gives you the picture. Step 2 is declaring who you already are.
+        The Map shows you the picture. The next tools help you move.
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <a href="/dashboard?view=map"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: '#FFFFFF', border: '2px solid rgba(200,146,42,0.7)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-          onMouseLeave={e => e.currentTarget.style.transform = ''}>
-          <div>
-            <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#A8721A', marginBottom: '4px' }}>I Am statements</div>
-            <div style={{ ...body, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>Rewrite each horizon goal as a first-person declaration.</div>
-          </div>
-          <span style={{ ...sc, fontSize: '1.25rem', color: '#A8721A', flexShrink: 0, marginLeft: '16px' }}>→</span>
-        </a>
         <a href="/tools/target-sprint"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.55)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}
           onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
           onMouseLeave={e => e.currentTarget.style.transform = ''}>
           <div>
-            <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Target Sprint</div>
+            <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#A8721A', marginBottom: '4px' }}>Target Sprint</div>
             <div style={{ ...body, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>Three areas. Ninety days. A clear level-up.</div>
           </div>
-          <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.4)', flexShrink: 0, marginLeft: '16px' }}>→</span>
+          <span style={{ ...sc, fontSize: '1.25rem', color: '#A8721A', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>
         <a href="/tools/horizon-practice"
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}
@@ -2026,12 +1950,12 @@ function MapNextSteps({ compact = false }) {
           <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.4)', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>
         <a href="/dashboard"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.55)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}
           onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
           onMouseLeave={e => e.currentTarget.style.transform = ''}>
           <div>
             <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.1em', color: '#A8721A', marginBottom: '4px' }}>Mission Control</div>
-            <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>Your dashboard.</div>
+            <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>See your map, write your I am statements, act on the gap.</div>
           </div>
           <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: '#A8721A', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>
@@ -2057,6 +1981,7 @@ export function MapPage() {
   const [mapData,      setMapData]      = useState(null)
   const [crisisGate,   setCrisisGate]   = useState(null)
   const [thinking,     setThinking]     = useState(false)
+  const [scaleOpen,    setScaleOpen]    = useState(false)
   const [sessionId,    setSessionId]    = useState(null)
   const [showWelcome,  setShowWelcome]  = useState(() => {
     try {
@@ -2160,10 +2085,6 @@ export function MapPage() {
   }, [domainData, phase])
 
   if (authLoading || accessLoading) return <div className="loading" />
-
-  if (tier !== 'full' && tier !== 'beta') {
-    return <AccessGate productKey="map" toolName="The Map">{null}</AccessGate>
-  }
 
   if (!user) return (
     <>
@@ -2282,6 +2203,33 @@ export function MapPage() {
         try { await supabase.from('north_star_notes').delete().eq('user_id', user.id).eq('tool', 'map') } catch {}
         try { await supabase.from('north_star_notes').insert(notes.map(n => ({ user_id: user.id, ...n }))) } catch {}
       }
+
+      // Write all 7 domains to horizon_profile so Target Sprint, feed,
+      // public profile, and _north-star.js can all read from one source.
+      const DOMAIN_KEYS = ['path','spark','body','finances','connection','inner_game','signal']
+      const profileRows = DOMAIN_KEYS
+        .map(key => {
+          const d = allData[key]
+          if (!d || d.currentScore === undefined) return null
+          return {
+            user_id:          user.id,
+            domain:           key,
+            current_score:    d.currentScore,
+            horizon_score:    d.horizonScore ?? null,
+            horizon_goal:     d.horizonText  ?? null,
+            ia_statement:     d.ia_statement ?? null,
+            avatar_statement: d.avatarFinal  ?? null,
+            source:           'map',
+            last_updated:     new Date().toISOString(),
+          }
+        })
+        .filter(Boolean)
+      if (profileRows.length) {
+        try {
+          await supabase.from('horizon_profile')
+            .upsert(profileRows, { onConflict: 'user_id,domain' })
+        } catch {}
+      }
     } catch {}
   }
 
@@ -2300,8 +2248,12 @@ export function MapPage() {
         forceOpen={threadPanelOpen}
       />
 
-      {/* Right — scale reference */}
-      <ScalePanel side="right" />
+      {/* Scale reference modal */}
+      <HorizonScaleModal
+        open={scaleOpen}
+        onClose={() => setScaleOpen(false)}
+        system="self"
+      />
 
       <div className="tool-wrap">
 
@@ -2410,16 +2362,6 @@ export function MapPage() {
                   marginBottom: '24px',
                 }}>
                   {activeDomain ? (
-                    activeDomain.id === 'connection' ? (
-                      <ConnectionDomainStep
-                        key={activeDomain.id}
-                        domain={activeDomain}
-                        existingData={domainData[activeDomain.id]}
-                        onUpdate={handleDomainUpdate}
-                        onComplete={handleDomainComplete}
-                        userId={user?.id}
-                      />
-                    ) : (
                     <DomainStep
                       key={activeDomain.id}
                       domain={activeDomain}
@@ -2427,7 +2369,6 @@ export function MapPage() {
                       onUpdate={handleDomainUpdate}
                       onComplete={handleDomainComplete}
                     />
-                    )
                   ) : (
                     <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', textAlign: 'center', padding: '20px 0' }}>
                       Tap a domain to begin.
@@ -2456,7 +2397,7 @@ export function MapPage() {
                   <div style={{
                     position: 'absolute',
                     right: '-60px',
-                    top: '-324px',
+                    top: '-292px',
                     width: '520px',
                     height: '520px',
                     zIndex: 0,
@@ -2520,16 +2461,6 @@ export function MapPage() {
                     maxWidth: '560px',
                   }}>
                     {activeDomain ? (
-                      activeDomain.id === 'connection' ? (
-                        <ConnectionDomainStep
-                          key={activeDomain.id}
-                          domain={activeDomain}
-                          existingData={domainData[activeDomain.id]}
-                          onUpdate={handleDomainUpdate}
-                          onComplete={handleDomainComplete}
-                          userId={user?.id}
-                        />
-                      ) : (
                       <DomainStep
                         key={activeDomain.id}
                         domain={activeDomain}
@@ -2537,7 +2468,6 @@ export function MapPage() {
                         onUpdate={handleDomainUpdate}
                         onComplete={handleDomainComplete}
                       />
-                      )
                     ) : null}
                     {allComplete && (
                       <div style={{ marginTop: '24px', padding: '20px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', textAlign: 'center' }}>

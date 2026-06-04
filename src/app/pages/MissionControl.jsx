@@ -1142,8 +1142,6 @@ export default function MissionControl() {
             onNext={handleCivNext}
             onContribute={handleCivContribute}
             busy={false}
-            user={data.user}
-            purposeData={data.purposeData}
           />
         )}
         </>
@@ -1235,7 +1233,7 @@ export default function MissionControl() {
         open={activePanel === 'horizon-practice'}
         onClose={closePanel}
         eyebrow="DAILY ANCHORS · HORIZON PRACTICE"
-        title="Anchor and train your Horizon Self"
+        title="What you're tending to today"
         actions={[
           { label: 'OPEN PRACTICE →', primary: true,
             onClick: () => navigate('/tools/horizon-practice') },

@@ -144,7 +144,7 @@ const TILE_CSS = `
   justify-content: center;
   min-height: 28px;
 }
-[data-stage="dark"] .mc-rail-glyph { color: ${GOLD_DK}; }
+[data-stage="dark"] .mc-rail-glyph { color: ${TEXT_INK}; }
 
 .mc-rail-label {
   font-family: ${FONT_SC};
@@ -154,7 +154,7 @@ const TILE_CSS = `
   line-height: 1.2;
   text-transform: uppercase;
 }
-[data-stage="dark"] .mc-rail-label { color: ${TEXT_META}; }
+[data-stage="dark"] .mc-rail-label { color: ${TEXT_INK}; }
 
 .mc-rail-state {
   font-family: ${FONT_SC};
@@ -162,7 +162,7 @@ const TILE_CSS = `
   letter-spacing: 0.12em;
   color: ${TEXT_WHITE_META};
 }
-[data-stage="dark"] .mc-rail-state { color: ${TEXT_FAINT}; }
+[data-stage="dark"] .mc-rail-state { color: ${TEXT_META}; }
 
 /* On larger screens, tiles get more breathing room and labels can
    sit on a single line where they fit. */
