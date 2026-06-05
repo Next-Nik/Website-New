@@ -33,7 +33,7 @@
 //     those tools land in tile/panel surfaces instead.
 // ──────────────────────────────────────────────────────────────
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { supabase } from '../../hooks/useSupabase'
@@ -310,6 +310,47 @@ function ScopePlaceholder({ scope }) {
         <h2 className="mc-scope-placeholder-title">Coming soon</h2>
         <div className="mc-scope-placeholder-rule" />
         <p className="mc-scope-placeholder-body">{body}</p>
+      </div>
+    </div>
+  )
+}
+
+// ── Inline Next Steps launcher for the Resources panel ─────────────────────
+function ResourcesNextStepsInput({ onSubmit }) {
+  const [val, setVal] = React.useState('')
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (val.trim()) onSubmit(val.trim()) }
+  }
+  return (
+    <div>
+      <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A', marginBottom: '10px' }}>NEXT STEPS</div>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+        <textarea
+          value={val}
+          onChange={e => setVal(e.target.value)}
+          onKeyDown={handleKey}
+          rows={2}
+          placeholder="What's on your mind right now…"
+          style={{
+            flex: 1, resize: 'none', border: '1px solid rgba(168,114,26,0.28)', borderRadius: '3px',
+            padding: '10px 12px', fontFamily: "'Lora', Georgia, serif", fontSize: '14px',
+            lineHeight: 1.55, color: '#0F1523', background: '#FAFAF7', outline: 'none',
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => { if (val.trim()) onSubmit(val.trim()) }}
+          disabled={!val.trim()}
+          style={{
+            background: val.trim() ? '#C8922A' : 'rgba(15,21,35,0.12)', color: val.trim() ? '#FFFFFF' : 'rgba(15,21,35,0.35)',
+            border: 'none', borderRadius: '3px', padding: '10px 16px', cursor: val.trim() ? 'pointer' : 'not-allowed',
+            fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', letterSpacing: '0.16em', textTransform: 'uppercase',
+            transition: 'background 0.15s', flexShrink: 0,
+          }}
+        >→</button>
+      </div>
+      <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '12px', color: 'rgba(15,21,35,0.38)', marginTop: '6px', fontStyle: 'italic' }}>
+        Press enter or → to begin
       </div>
     </div>
   )
@@ -1245,24 +1286,20 @@ export default function MissionControl() {
         eyebrow="FOR YOUR WORK · RESOURCES"
         title="Things that fit where you are"
       >
-        <div
-          onClick={() => { closePanel(); navigate('/tools/nextsteps') }}
-          style={{
-            display: 'flex', alignItems: 'center', gap: '14px',
-            padding: '16px 0 18px', borderBottom: '1px solid rgba(200,146,42,0.15)',
-            marginBottom: '20px', cursor: 'pointer',
-          }}
-        >
-          <span style={{ fontSize: '22px', color: '#A8721A', lineHeight: 1 }}>✧</span>
-          <div>
-            <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.18em', color: '#A8721A', marginBottom: '3px' }}>NEXT STEPS</div>
-            <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.4 }}>Where you are, where you want to be, and what to do next.</div>
-          </div>
-          <span style={{ marginLeft: 'auto', color: 'rgba(200,146,42,0.5)', fontSize: '16px' }}>→</span>
+        {/* Next Steps entry — inline input launches the tool in motion */}
+        <div style={{ marginBottom: '24px' }}>
+          <ResourcesNextStepsInput onSubmit={(q) => { closePanel(); navigate(`/tools/nextsteps?q=${encodeURIComponent(q)}`) }} />
         </div>
-        <p>Surfaced from across NextUs based on your active sprint and current practice. Articles, conversations, practitioners, books, exercises. Updated as your work moves.</p>
-        <div className="mc-panel-build-edge">
-          Building in progress. Resource library wires up when the surface is wired.
+
+        {/* Feed — empty for now, fills as content is surfaced */}
+        <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', paddingTop: '20px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <span style={{ color: '#A8721A', fontSize: '14px' }}>✦</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.45)' }}>YOUR FEED</span>
+          </div>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.38)', fontStyle: 'italic', margin: 0, lineHeight: 1.6 }}>
+            Articles, conversations, practitioners, and exercises — surfaced as your work moves.
+          </p>
         </div>
       </Panel>
 
