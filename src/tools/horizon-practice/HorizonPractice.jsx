@@ -2791,7 +2791,10 @@ export function HorizonPracticePage() {
   const [todayRun, setTodayRun] = useState(null)
   const [thresholds, setThresholds] = useState([])
   const [entries, setEntries] = useState([])  // last ~30 days
-  const [view, setView] = useState('loading')  // loading | morning | day
+  const [view, setView] = useState('loading')  // loading | hub | morning | refresh | evening | log
+
+  // Sprint tile data
+  const [activeSprint, setActiveSprint] = useState(null)  // null | { domains, status }
 
   // Modal state
   const [refreshOpen, setRefreshOpen] = useState(false)
@@ -2895,13 +2898,24 @@ export function HorizonPracticePage() {
 
         if (entryRows) setEntries(entryRows)
 
-        // Determine initial view: if morning complete today, go to day surface
-        if (runRow?.completed_at) setView('day')
-        else setView('morning')
+        // Load active or draft sprint for hub tile
+        const { data: sprintRow } = await supabase
+          .from('target_sprint_sessions')
+          .select('id, domains, status')
+          .eq('user_id', user.id)
+          .in('status', ['active', 'draft'])
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+        if (cancelled) return
+        if (sprintRow?.domains?.length) setActiveSprint(sprintRow)
+
+        // Always land on the hub
+        setView('hub')
 
       } catch (err) {
         console.error('Horizon Practice load error:', err)
-        setView('day')  // graceful fallback
+        setView('hub')  // graceful fallback
       } finally {
         if (!cancelled) setProfileLoading(false)
       }
@@ -2932,7 +2946,7 @@ export function HorizonPracticePage() {
         .order('time_label', { ascending: true, nullsFirst: false })
       if (thresholdRows) setThresholds(thresholdRows)
     }
-    setView('day')
+    setView('hub')
   }
 
   async function handleHitOrDrift(kind, payload) {
@@ -3055,7 +3069,7 @@ export function HorizonPracticePage() {
   if (authLoading || accessLoading || profileLoading) {
     return (
       <div style={{ background: tokens.bg, minHeight: '100vh' }}>
-        <Nav activePath="nextus-self" hideHamburger={view === 'morning'} />
+        <Nav activePath="nextus-self" hideHamburger={view === 'morning' || view === 'evening'} />
         <div className="loading" />
       </div>
     )
@@ -3063,7 +3077,7 @@ export function HorizonPracticePage() {
 
   return (
     <div style={{ background: tokens.bg, minHeight: '100vh' }}>
-        <Nav activePath="nextus-self" hideHamburger={view === 'morning'} />
+        <Nav activePath="nextus-self" hideHamburger={view === 'morning' || view === 'evening'} />
 
         {/* Global animations */}
         <style>{`
@@ -3093,7 +3107,147 @@ export function HorizonPracticePage() {
           <MapRedirect onSkip={() => setSkipMap(true)} />
         )}
 
-        {/* Morning view */}
+        {/* ── Hub ── */}
+        {(hasMap || skipMap) && view === 'hub' && (
+          <div className="hp-fade-in" style={{
+            maxWidth: '640px', margin: '0 auto',
+            padding: 'clamp(88px, 10vw, 112px) clamp(20px, 4vw, 40px) 80px',
+          }}>
+            <div style={{ marginBottom: '40px' }}>
+              <Heading size="xl">
+                {getGreeting()}
+                {user && <>, <em style={{ color: tokens.gold, fontStyle: 'normal' }}>{
+                  user.user_metadata?.full_name?.split(' ')[0] ||
+                  user.user_metadata?.name?.split(' ')[0] ||
+                  (user.email.split('@')[0].charAt(0).toUpperCase() + user.email.split('@')[0].slice(1))
+                }</em></>}.
+              </Heading>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+
+              {/* Morning Practice */}
+              <button onClick={() => setView('morning')} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: todayRun?.completed_at ? tokens.bgCard : '#FFFFFF',
+                border: `1px solid ${todayRun?.completed_at ? tokens.goldFaint : tokens.goldChrome}`,
+                borderRadius: '12px', padding: '22px 26px',
+                cursor: 'pointer', textAlign: 'left', width: '100%',
+                transition: 'border-color 0.2s ease',
+              }}>
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em',
+                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
+                    Morning Practice
+                  </div>
+                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
+                    {todayRun?.completed_at ? 'Complete — run again' : 'Commit · Ground · I Am · Anchor · Plan · Act'}
+                  </div>
+                </div>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.goldChrome, marginLeft: '16px' }}>→</span>
+              </button>
+
+              {/* Horizon Self Refresh */}
+              <button onClick={() => { setRefreshVariant('standard'); setRefreshTask(''); setRefreshOpen(true) }} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: '#FFFFFF',
+                border: `1px solid ${tokens.goldFaint}`,
+                borderRadius: '12px', padding: '22px 26px',
+                cursor: 'pointer', textAlign: 'left', width: '100%',
+                transition: 'border-color 0.2s ease',
+              }}>
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em',
+                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
+                    Horizon Self Refresh
+                  </div>
+                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
+                    What's in front of you. How your Horizon Self handles it.
+                  </div>
+                </div>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
+              </button>
+
+              {/* Sprint */}
+              <button onClick={() => window.location.href = '/tools/target-sprint'} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: '#FFFFFF',
+                border: `1px solid ${tokens.goldFaint}`,
+                borderRadius: '12px', padding: '22px 26px',
+                cursor: 'pointer', textAlign: 'left', width: '100%',
+                transition: 'border-color 0.2s ease',
+              }}>
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em',
+                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
+                    {activeSprint?.status === 'active' ? 'Active Sprint' : activeSprint?.status === 'draft' ? 'Sprint in Setup' : 'Target Stretch'}
+                  </div>
+                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
+                    {activeSprint?.domains?.length
+                      ? activeSprint.domains.map(d => DOMAIN_LABELS[d] || d).join(' · ')
+                      : 'No active sprint — start one'}
+                  </div>
+                </div>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
+              </button>
+
+              {/* Evening Integrate */}
+              <button onClick={() => setView('evening')} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: '#FFFFFF',
+                border: `1px solid ${tokens.goldFaint}`,
+                borderRadius: '12px', padding: '22px 26px',
+                cursor: 'pointer', textAlign: 'left', width: '100%',
+                transition: 'border-color 0.2s ease',
+              }}>
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em',
+                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
+                    Evening Integrate
+                  </div>
+                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
+                    Close the day. What landed. What to carry forward.
+                  </div>
+                </div>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
+              </button>
+
+              {/* Journal / Log */}
+              <button onClick={() => setLogOpen(true)} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: '#FFFFFF',
+                border: `1px solid ${tokens.goldFaint}`,
+                borderRadius: '12px', padding: '22px 26px',
+                cursor: 'pointer', textAlign: 'left', width: '100%',
+                transition: 'border-color 0.2s ease',
+              }}>
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em',
+                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
+                    Journal
+                  </div>
+                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
+                    {entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length > 0
+                      ? `${entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length} entr${entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length === 1 ? 'y' : 'ies'} today`
+                      : 'Hits · Drifts · Receipts · Listening'}
+                  </div>
+                </div>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
+              </button>
+
+            </div>
+
+            <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={() => setSettingsOpen(true)} style={{
+                background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+                ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
+                color: tokens.whisper, textTransform: 'uppercase',
+              }}>Settings</button>
+            </div>
+          </div>
+        )}
+
+        {/* ── Morning Practice ── */}
         {(hasMap || skipMap) && view === 'morning' && (
           <div style={{ paddingTop: 'clamp(80px, 10vw, 110px)' }}>
             <MorningSequence
@@ -3104,98 +3258,29 @@ export function HorizonPracticePage() {
               icalUrl={icalUrl}
               onSaveIcalUrl={handleSaveIcalUrl}
               onComplete={handleMorningComplete}
-              onClose={() => setView('day')}
+              onClose={() => setView('hub')}
             />
           </div>
         )}
 
-        {/* Day view */}
-        {(hasMap || skipMap) && view === 'day' && (
-          <div style={{ maxWidth: '760px', margin: '0 auto',
-            padding: 'clamp(88px, 10vw, 112px) clamp(20px, 4vw, 40px) 80px' }}>
-
-            <div style={{
-              ...sc, fontSize: '10px', letterSpacing: '0.20em',
-              color: tokens.whisper, textTransform: 'uppercase',
-              marginBottom: '36px', display: 'flex', justifyContent: 'space-between',
-              alignItems: 'center', gap: '12px', flexWrap: 'wrap',
-            }}>
-              <span>{todayRun?.completed_at ? 'Active' : 'Day surface'}</span>
-              <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
-                <button onClick={() => setSettingsOpen(true)} style={{
-                  background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-                  font: 'inherit', letterSpacing: 'inherit', color: tokens.gold,
-                }}>Settings</button>
-                <button onClick={() => setView('morning')} style={{
-                  background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-                  font: 'inherit', letterSpacing: 'inherit', color: tokens.gold,
-                }}>{todayRun?.completed_at ? '← Pre-flight' : '← Run pre-flight'}</button>
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '32px' }}>
-              <Heading size="xl">
-                {getGreeting()}
-                {user && <>, <em style={{ color: tokens.gold,
-                  fontStyle: 'normal' }}>{
-                    user.user_metadata?.full_name?.split(' ')[0] ||
-                    user.user_metadata?.name?.split(' ')[0] ||
-                    (user.email.split('@')[0].charAt(0).toUpperCase() + user.email.split('@')[0].slice(1))
-                  }</em></>}.
-              </Heading>
-            </div>
-
-            <div style={{ marginBottom: '36px' }}>
-              <HorizonSelfPanel
-                statement={horizonSelfStatement}
-                onRefresh={handleStandardRefresh}
-              />
-            </div>
-
-            <div style={{ marginBottom: '36px' }}>
-              <ActiveThresholds thresholds={thresholds} onCross={handleCross} />
-            </div>
-
-            <div style={{ marginBottom: '36px' }}>
-              <HitDriftBar
-                onFlag={(k) => setFlagKind(k)}
-                onCapture={(k) => {
-                  if (k === 'listening') setListeningOpen(true)
-                  else if (k === 'receipt') setReceiptOpen(true)
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '36px' }}>
-              <AmbientStrip
-                iam={DOMAIN_ORDER
-                  .filter(d => iamStatements[d])
-                  .map(d => ({ domain: d, label: DOMAIN_LABELS[d], text: extractIamLine(iamStatements[d]) }))
-                }
-                listening={entries.filter(e => e.kind === 'listening_glow').slice(0, 5)
-                  .map(e => ({ text: e.text, from: e.from_who }))
-                }
-              />
-            </div>
-
-            <div style={{ marginBottom: '36px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between',
-                alignItems: 'baseline', marginBottom: '8px' }}>
-                <Eyebrow>Today's log</Eyebrow>
-                <button onClick={() => setLogOpen(true)} style={{
-                  background: 'transparent', border: 'none', padding: 0,
-                  ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.16em',
-                  color: tokens.gold, cursor: 'pointer',
-                  borderBottom: `1px solid ${tokens.goldFaint}`, paddingBottom: '2px',
-                }}>Full log →</button>
-              </div>
-              <RecentEntries
-                entries={entries.filter(e => {
-                  const d = new Date(e.occurred_at)
-                  return getLocalDateStr(d) === getLocalDateStr()
-                }).slice(0, 5)}
-                onOpenJournal={() => setLogOpen(true)}
-              />
+        {/* ── Evening Integrate (placeholder) ── */}
+        {(hasMap || skipMap) && view === 'evening' && (
+          <div className="hp-fade-in" style={{
+            maxWidth: '520px', margin: '0 auto',
+            padding: 'clamp(88px, 10vw, 112px) clamp(20px, 4vw, 40px) 80px',
+          }}>
+            <Eyebrow style={{ marginBottom: '12px' }}>Evening Integrate</Eyebrow>
+            <Heading size="lg" style={{ marginBottom: '16px' }}>
+              Close the day.
+            </Heading>
+            <Card style={{ padding: '32px', marginBottom: '28px' }}>
+              <Body dim style={{ margin: 0 }}>
+                This is where you'll land the day — what showed up, what you met, what to carry forward.
+                Coming soon.
+              </Body>
+            </Card>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <GhostButton onClick={() => setView('hub')}>← Back</GhostButton>
             </div>
           </div>
         )}

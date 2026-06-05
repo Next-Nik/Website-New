@@ -51,7 +51,6 @@ import MyPracticeMissionPanel     from '../components/mission-control/MyPractice
 import MyOrgMissionPanel          from '../components/mission-control/MyOrgMissionPanel'
 import MapMissionPanel            from '../components/mission-control/MapMissionPanel'
 import TargetSprintMissionPanel   from '../components/mission-control/TargetSprintMissionPanel'
-import HorizonPracticeMissionPanel from '../components/mission-control/HorizonPracticeMissionPanel'
 import PurposePieceMissionPanel   from '../components/mission-control/PurposePieceMissionPanel'
 import HorizonStateMissionPanel   from '../components/mission-control/HorizonStateMissionPanel'
 import ProfileMissionPanel        from '../components/mission-control/ProfileMissionPanel'
@@ -990,7 +989,7 @@ export default function MissionControl() {
               glyph="✦"
               label={<>HORIZON<br/>PRACTICE</>}
               state={hpState}
-              onClick={() => openPersonalPanel('horizon-practice')}
+              onClick={() => navigate('/tools/horizon-practice')}
               title="Horizon Practice"
             />
             <Tile
@@ -1244,23 +1243,6 @@ export default function MissionControl() {
         <TargetSprintMissionPanel
           user={data.user}
           sprintData={data.sprintData}
-          onNavigate={navigate}
-        />
-      </Panel>
-
-      <Panel
-        open={activePanel === 'horizon-practice'}
-        onClose={closePanel}
-        eyebrow="DAILY ANCHORS · HORIZON PRACTICE"
-        title="What you're tending to today"
-        actions={[
-          { label: 'OPEN PRACTICE →', primary: true,
-            onClick: () => navigate('/tools/horizon-practice') },
-          { label: 'CLOSE', onClick: closePanel },
-        ]}
-      >
-        <HorizonPracticeMissionPanel
-          user={data.user}
           onNavigate={navigate}
         />
       </Panel>
