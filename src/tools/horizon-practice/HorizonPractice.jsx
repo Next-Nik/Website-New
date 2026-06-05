@@ -2242,70 +2242,122 @@ function HorizonSelfPanel({ statement, onRefresh }) {
 // ────────────────────────────────────────────────────────────────────────────
 // Active Thresholds — with Cross action
 // ────────────────────────────────────────────────────────────────────────────
-function ActiveThresholds({ thresholds, onCross }) {
+function TaskList({ thresholds, onComplete, onUncomplete, onCross }) {
   if (!thresholds || thresholds.length === 0) {
     return (
       <div>
-        <Eyebrow style={{ marginBottom: '12px' }}>Active thresholds</Eyebrow>
+        <Eyebrow style={{ marginBottom: '12px' }}>Today's tasks</Eyebrow>
         <Card style={{ textAlign: 'center', padding: '24px' }}>
           <Body dim italic style={{ margin: 0 }}>None set for today.</Body>
         </Card>
       </div>
     )
   }
+
+  const pending   = thresholds.filter(t => !t.completed_at)
+  const completed = thresholds.filter(t =>  t.completed_at)
+
+  const TaskRow = ({ t }) => {
+    const isDone    = !!t.completed_at
+    const isCrossed = !!t.crossed_at
+    const isCarried = !!t.carried_from_id
+
+    return (
+      <div style={{
+        display: 'flex', alignItems: 'flex-start', gap: '14px',
+        padding: '14px 0',
+        borderBottom: `1px solid ${tokens.goldFaint}`,
+        opacity: isDone ? 0.55 : 1,
+        transition: 'opacity 0.3s ease',
+      }}>
+        {/* Tick circle — borrowed from TargetSprint */}
+        <button
+          onClick={() => isDone ? onUncomplete(t) : onComplete(t)}
+          style={{
+            flexShrink: 0, marginTop: '2px',
+            width: '22px', height: '22px', borderRadius: '50%',
+            border: `1.5px solid ${isDone ? tokens.goldChrome : 'rgba(200,146,42,0.35)'}`,
+            background: isDone ? tokens.goldChrome : 'transparent',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', transition: 'all 0.2s ease',
+            padding: 0,
+          }}
+          aria-label={isDone ? 'Mark incomplete' : 'Mark complete'}
+        >
+          {isDone && (
+            <span style={{ color: '#FFFFFF', fontSize: '13px', lineHeight: 1 }}>✓</span>
+          )}
+        </button>
+
+        {/* Content */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
+            <span style={{
+              ...body, fontSize: '14.5px', color: tokens.meta, lineHeight: 1.4,
+              textDecoration: isDone ? 'line-through' : 'none',
+              textDecorationColor: tokens.goldFaint,
+            }}>{t.title}</span>
+            {isCarried && !isDone && (
+              <span style={{
+                ...sc, fontSize: '9px', letterSpacing: '0.16em',
+                color: tokens.ghost, textTransform: 'uppercase',
+              }}>carried</span>
+            )}
+          </div>
+          {(t.time_label || t.note) && (
+            <div style={{
+              ...body, fontSize: '12px', color: tokens.ghost,
+              marginTop: '3px', lineHeight: 1.4,
+            }}>
+              {[t.time_label, t.note].filter(Boolean).join(' · ')}
+            </div>
+          )}
+        </div>
+
+        {/* Cross button — only on pending, uncrossed tasks */}
+        {!isDone && !isCrossed && (
+          <button onClick={() => onCross(t)} style={{
+            flexShrink: 0,
+            background: 'transparent', color: tokens.gold,
+            border: `1px solid ${tokens.goldFaint}`, borderRadius: '40px',
+            padding: '5px 12px', ...sc, fontSize: '10px', fontWeight: 600,
+            letterSpacing: '0.14em', cursor: 'pointer', whiteSpace: 'nowrap',
+          }}>Cross →</button>
+        )}
+        {!isDone && isCrossed && (
+          <span style={{
+            flexShrink: 0,
+            ...sc, fontSize: '10px', fontWeight: 600,
+            letterSpacing: '0.18em', color: tokens.gold,
+          }}>crossed</span>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div>
-      <Eyebrow style={{ marginBottom: '12px' }}>Active thresholds</Eyebrow>
-      <div>
-        {thresholds.map((t) => {
-          const isCrossed = !!t.crossed_at
-          return (
-            <div key={t.id} style={{
-              padding: '14px 18px', marginBottom: '8px',
-              background: isCrossed ? tokens.goldTint : tokens.bgCard,
-              border: `1px solid ${tokens.goldFaint}`, borderRadius: '12px',
-              display: 'flex', justifyContent: 'space-between',
-              alignItems: 'center', gap: '12px',
-              opacity: isCrossed ? 0.75 : 1, transition: 'all 0.4s ease',
-            }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{
-                  ...sc, fontSize: '10px', letterSpacing: '0.16em',
-                  color: tokens.gold, marginBottom: '4px',
-                }}>
-                  {t.time_label || 'No time set'}{isCrossed ? ' · CROSSED' : ''}
-                </div>
-                <div style={{
-                  ...body, fontSize: '14.5px', color: tokens.meta, lineHeight: 1.4,
-                  textDecoration: isCrossed ? 'line-through' : 'none',
-                  textDecorationColor: tokens.goldFaint,
-                }}>{t.title}</div>
-                {t.note && (
-                  <div style={{
-                    ...body, fontSize: '12.5px', fontStyle: 'italic',
-                    color: tokens.ghost, marginTop: '3px', lineHeight: 1.4,
-                  }}>{t.note}</div>
-                )}
-              </div>
-              {!isCrossed && (
-                <button onClick={() => onCross(t)} style={{
-                  background: 'transparent', color: tokens.gold,
-                  border: `1px solid ${tokens.goldFaint}`, borderRadius: '40px',
-                  padding: '6px 14px', ...sc, fontSize: '10.5px', fontWeight: 600,
-                  letterSpacing: '0.14em', cursor: 'pointer', whiteSpace: 'nowrap',
-                  position: 'relative', overflow: 'hidden',
-                }}>Cross →</button>
-              )}
-              {isCrossed && (
-                <span style={{
-                  ...sc, fontSize: '11px', fontWeight: 600,
-                  letterSpacing: '0.18em', color: tokens.gold,
-                }}>✓</span>
-              )}
-            </div>
-          )
-        })}
+      <Eyebrow style={{ marginBottom: '4px' }}>Today's tasks</Eyebrow>
+
+      <div style={{ marginBottom: completed.length > 0 ? '20px' : 0 }}>
+        {pending.map(t => <TaskRow key={t.id} t={t} />)}
+        {pending.length === 0 && (
+          <div style={{ padding: '16px 0' }}>
+            <Body dim italic style={{ margin: 0 }}>All done.</Body>
+          </div>
+        )}
       </div>
+
+      {completed.length > 0 && (
+        <div style={{ marginTop: '8px' }}>
+          <div style={{
+            ...sc, fontSize: '9px', letterSpacing: '0.18em',
+            color: tokens.ghost, textTransform: 'uppercase',
+            marginBottom: '4px',
+          }}>Done</div>
+          {completed.map(t => <TaskRow key={t.id} t={t} />)}
+        </div>
+      )}
     </div>
   )
 }
@@ -2885,6 +2937,53 @@ export function HorizonPracticePage() {
 
         if (thresholdRows) setThresholds(thresholdRows)
 
+        // ── Silent carryover: roll incomplete tasks from yesterday ──────────
+        // Only run if user exists and we have their id
+        if (user?.id) {
+          const yesterday = new Date()
+          yesterday.setDate(yesterday.getDate() - 1)
+          const yesterdayStr = getLocalDateStr(yesterday)
+
+          // Fetch yesterday's incomplete tasks (no completed_at)
+          const { data: yesterdayTasks } = await supabase
+            .from('horizon_practice_thresholds')
+            .select('id, title, time_label, note, source, source_ref')
+            .eq('user_id', user.id)
+            .eq('run_date', yesterdayStr)
+            .is('completed_at', null)
+          if (cancelled) return
+
+          if (yesterdayTasks?.length) {
+            // Find which ones are already carried into today (idempotent guard)
+            const alreadyCarried = (thresholdRows || [])
+              .filter(t => t.carried_from_id)
+              .map(t => t.carried_from_id)
+
+            const toCarry = yesterdayTasks.filter(t => !alreadyCarried.includes(t.id))
+
+            if (toCarry.length > 0) {
+              const newRows = toCarry.map(t => ({
+                user_id: user.id,
+                title: t.title,
+                time_label: t.time_label || null,
+                note: t.note || null,
+                source: t.source || 'manual',
+                source_ref: t.source_ref || null,
+                run_date: today,
+                carried_from_id: t.id,
+              }))
+              const { data: carried } = await supabase
+                .from('horizon_practice_thresholds')
+                .insert(newRows)
+                .select('*')
+              if (cancelled) return
+              if (carried) {
+                setThresholds(existing => [...(existing || []), ...carried])
+              }
+            }
+          }
+        }
+
         // Recent entries (last 30 days, capped at 100 for the log view)
         const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString()
         const { data: entryRows } = await supabase
@@ -3042,6 +3141,30 @@ export function HorizonPracticePage() {
     setRefreshVariant('cross')
     setRefreshTask(threshold.title + (threshold.note ? ` — ${threshold.note}` : ''))
     setRefreshOpen(true)
+  }
+
+  async function handleComplete(threshold) {
+    if (!user || !threshold.id) return
+    const now = new Date().toISOString()
+    await supabase
+      .from('horizon_practice_thresholds')
+      .update({ completed_at: now })
+      .eq('id', threshold.id)
+    Chimes.hit()
+    setThresholds(ts => ts.map(t =>
+      t.id === threshold.id ? { ...t, completed_at: now } : t
+    ))
+  }
+
+  async function handleUncomplete(threshold) {
+    if (!user || !threshold.id) return
+    await supabase
+      .from('horizon_practice_thresholds')
+      .update({ completed_at: null })
+      .eq('id', threshold.id)
+    setThresholds(ts => ts.map(t =>
+      t.id === threshold.id ? { ...t, completed_at: null } : t
+    ))
   }
 
   function handleStandardRefresh() {
@@ -3236,6 +3359,18 @@ export function HorizonPracticePage() {
               </button>
 
             </div>
+
+            {/* Tasks — shown when any exist for today */}
+            {thresholds.length > 0 && (
+              <div style={{ marginTop: '36px' }}>
+                <TaskList
+                  thresholds={thresholds}
+                  onComplete={handleComplete}
+                  onUncomplete={handleUncomplete}
+                  onCross={handleCross}
+                />
+              </div>
+            )}
 
             <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={() => setSettingsOpen(true)} style={{
