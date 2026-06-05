@@ -125,14 +125,12 @@ function logErr(msg, err) {
 
 // Write a value row. focusId may be null for planetary indicators.
 //
-// Uses a plain INSERT rather than upsert because the unique index on
-// (indicator_id, coalesce(focus_id, '00000000...'), observed_at) is a
-// functional index — Supabase's onConflict upsert requires a plain column
-// list or named constraint and cannot resolve functional indexes.
+// Uses upsert with the correct partial index names:
+//   ndiv_unique         — planetary rows (focus_id IS NULL)
+//   ndiv_unique_focused — focus-scoped rows (focus_id IS NOT NULL)
 //
-// Strategy: attempt insert. If it hits the duplicate (same indicator +
-// focus + observed_at already exists), treat as idempotent success and
-// return the existing row. On success, flip is_current on prior rows.
+// On success, flips is_current=false on all prior rows for this
+// (indicator_id, focus_id) pair so only the new row is current.
 async function writeValue(supabase, indicatorId, focusId, payload) {
   const insertRow = {
     indicator_id:     indicatorId,
@@ -146,17 +144,22 @@ async function writeValue(supabase, indicatorId, focusId, payload) {
     confidence:       payload.confidence ?? null,
   }
 
+  // Choose the right conflict target based on whether this is a
+  // planetary (no focus) or focus-scoped observation.
+  const conflictCols = focusId
+    ? 'indicator_id,focus_id,observed_at'
+    : 'indicator_id,observed_at'
+
   const { data: inserted, error: insertErr } = await supabase
     .from('nextus_domain_indicator_values')
-    .insert(insertRow)
+    .upsert(insertRow, {
+      onConflict:       conflictCols,
+      ignoreDuplicates: false,
+    })
     .select()
     .maybeSingle()
 
   if (insertErr) {
-    // Duplicate = idempotent success (cron retry on same observed_at)
-    if (insertErr.code === '23505') {
-      return { ok: true, row: null, duplicate: true }
-    }
     return { ok: false, error: insertErr }
   }
 
@@ -164,8 +167,7 @@ async function writeValue(supabase, indicatorId, focusId, payload) {
     return { ok: true, row: null, duplicate: true }
   }
 
-  // Flip prior is_current rows for this indicator + focus so only the
-  // newly inserted row is current.
+  // Flip prior is_current rows for this indicator + focus.
   let flipQuery = supabase
     .from('nextus_domain_indicator_values')
     .update({ is_current: false })
