@@ -125,7 +125,7 @@ module.exports = async function handler(req, res) {
   // (contributor) is contributor-seeded and does not run through the cron.
   const { data: indicators, error: catalogError } = await supabase
     .from('nextus_domain_indicators')
-    .select('id, domain_id, name, tier, refresh_cadence, endpoint_url')
+    .select('id, domain_id, name, source_name, tier, refresh_cadence, endpoint_url')
     .eq('status', 'active')
     .in('tier', ['api', 'scrape'])
 
