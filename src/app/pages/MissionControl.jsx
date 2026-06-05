@@ -932,13 +932,6 @@ export default function MissionControl() {
           {/* LEFT RAIL — My Life */}
           <SideRail side="left">
             <Tile
-              glyph="✧"
-              label={<>NEXT<br/>STEPS</>}
-              state={null}
-              onClick={() => navigate('/tools/nextsteps')}
-              title="NextSteps — turn caring into a step"
-            />
-            <Tile
               glyph={<MapPinGlyph />}
               label={<>THE<br/>MAP</>}
               state={mapState}
@@ -1252,6 +1245,21 @@ export default function MissionControl() {
         eyebrow="FOR YOUR WORK · RESOURCES"
         title="Things that fit where you are"
       >
+        <div
+          onClick={() => { closePanel(); navigate('/tools/nextsteps') }}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '14px',
+            padding: '16px 0 18px', borderBottom: '1px solid rgba(200,146,42,0.15)',
+            marginBottom: '20px', cursor: 'pointer',
+          }}
+        >
+          <span style={{ fontSize: '22px', color: '#A8721A', lineHeight: 1 }}>✧</span>
+          <div>
+            <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.18em', color: '#A8721A', marginBottom: '3px' }}>NEXT STEPS</div>
+            <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.4 }}>Where you are, where you want to be, and what to do next.</div>
+          </div>
+          <span style={{ marginLeft: 'auto', color: 'rgba(200,146,42,0.5)', fontSize: '16px' }}>→</span>
+        </div>
         <p>Surfaced from across NextUs based on your active sprint and current practice. Articles, conversations, practitioners, books, exercises. Updated as your work moves.</p>
         <div className="mc-panel-build-edge">
           Building in progress. Resource library wires up when the surface is wired.

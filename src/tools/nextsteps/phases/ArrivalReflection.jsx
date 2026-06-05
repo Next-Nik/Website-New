@@ -203,7 +203,7 @@ export function ArrivalReflection({ user, onReflectionLanded }) {
           display: flex;
           flex-direction: column;
           gap: 20px;
-          padding: 48px 24px 24px;
+          padding: 28px 24px 16px;
           max-width: 680px;
           width: 100%;
           margin: 0 auto;
