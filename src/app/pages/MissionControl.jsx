@@ -1000,6 +1000,13 @@ export default function MissionControl() {
               onClick={() => openPersonalPanel('resources')}
               title="Resources for self"
             />
+            <Tile
+              glyph={<MessagesIcon />}
+              label="MESSAGES"
+              state={null}
+              onClick={() => setActivePanel('messages')}
+              title="Messages — your inboxes per hat"
+            />
           </SideRail>
 
           {/* CENTRE — wheel */}
@@ -1078,13 +1085,6 @@ export default function MissionControl() {
               title="My Focus — places, domains, organisations you're centring on"
             />
             <Tile
-              glyph="✧"
-              label={<>NEXT<br/>STEPS</>}
-              state={null}
-              onClick={() => navigate('/tools/nextsteps')}
-              title="NextSteps — turn caring into a step"
-            />
-            <Tile
               glyph="◯"
               label={<>WORLD<br/>VIEW</>}
               state={worldViewState}
@@ -1097,20 +1097,6 @@ export default function MissionControl() {
               state={planetSprintState}
               onClick={() => openCivPanel('missions')}
               title="Planet Sprint — quests offered by orgs"
-            />
-            <Tile
-              glyph={<MessagesIcon />}
-              label="MESSAGES"
-              state={null}
-              onClick={() => setActivePanel('messages')}
-              title="Messages — your inboxes per hat"
-            />
-            <Tile
-              glyph={<InterestsIcon />}
-              label={<>MY<br/>INTERESTS</>}
-              state={null}
-              onClick={() => setActivePanel('interests')}
-              title="My Interests — tabs you've pulled on offers and needs"
             />
             <Tile
               glyph={<SearchGlyph />}
@@ -1205,18 +1191,6 @@ export default function MissionControl() {
       </Panel>
 
       <Panel
-        open={activePanel === 'interests'}
-        onClose={closePanel}
-        eyebrow="YOUR PULLS"
-        title="My Interests"
-        actions={[
-          { label: 'CLOSE', onClick: closePanel },
-        ]}
-      >
-        <MyInterestsPanel userId={data.user?.id} />
-      </Panel>
-
-      <Panel
         open={activePanel === 'focus'}
         onClose={closePanel}
         eyebrow="YOUR ANCHOR"
@@ -1226,6 +1200,17 @@ export default function MissionControl() {
         ]}
       >
         <FocusPanelContent />
+        <div style={{
+          borderTop: '1px solid rgba(200,146,42,0.18)',
+          marginTop: '28px',
+          paddingTop: '20px',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+            <span style={{ color: '#A8721A', fontSize: '14px' }}>✦</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A' }}>WHAT'S BEEN PULLING AT YOU</span>
+          </div>
+          <MyInterestsPanel userId={data.user?.id} />
+        </div>
       </Panel>
 
       <Panel
