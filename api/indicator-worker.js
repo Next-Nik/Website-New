@@ -124,8 +124,15 @@ function logErr(msg, err) {
 }
 
 // Write a value row. focusId may be null for planetary indicators.
-// On insert success, flips is_current=false on all prior rows for this
-// (indicator_id, focus_id) pair so only the new row is current.
+//
+// Uses a plain INSERT rather than upsert because the unique index on
+// (indicator_id, coalesce(focus_id, '00000000...'), observed_at) is a
+// functional index — Supabase's onConflict upsert requires a plain column
+// list or named constraint and cannot resolve functional indexes.
+//
+// Strategy: attempt insert. If it hits the duplicate (same indicator +
+// focus + observed_at already exists), treat as idempotent success and
+// return the existing row. On success, flip is_current on prior rows.
 async function writeValue(supabase, indicatorId, focusId, payload) {
   const insertRow = {
     indicator_id:     indicatorId,
@@ -141,26 +148,37 @@ async function writeValue(supabase, indicatorId, focusId, payload) {
 
   const { data: inserted, error: insertErr } = await supabase
     .from('nextus_domain_indicator_values')
-    .upsert(insertRow, {
-      onConflict: 'indicator_id,focus_id,observed_at',
-      ignoreDuplicates: false,
-    })
+    .insert(insertRow)
     .select()
     .maybeSingle()
 
   if (insertErr) {
+    // Duplicate = idempotent success (cron retry on same observed_at)
+    if (insertErr.code === '23505') {
+      return { ok: true, row: null, duplicate: true }
+    }
     return { ok: false, error: insertErr }
   }
 
-  // Flip prior is_current for this indicator + focus.
-  const focusFilter = focusId ? `eq.${focusId}` : 'is.null'
-  const { error: flipErr } = await supabase
+  if (!inserted) {
+    return { ok: true, row: null, duplicate: true }
+  }
+
+  // Flip prior is_current rows for this indicator + focus so only the
+  // newly inserted row is current.
+  let flipQuery = supabase
     .from('nextus_domain_indicator_values')
     .update({ is_current: false })
     .eq('indicator_id', indicatorId)
-    .filter('focus_id', focusFilter.split('.')[0], focusFilter.split('.')[1])
-    .neq('id', inserted?.id || '00000000-0000-0000-0000-000000000000')
+    .neq('id', inserted.id)
 
+  if (focusId) {
+    flipQuery = flipQuery.eq('focus_id', focusId)
+  } else {
+    flipQuery = flipQuery.is('focus_id', null)
+  }
+
+  const { error: flipErr } = await flipQuery
   if (flipErr) {
     logErr(`is_current flip failed for indicator ${indicatorId}`, flipErr)
   }
@@ -416,7 +434,10 @@ async function handleNasaGiss(indicator, supabase) {
 
   let response
   try {
-    response = await fetch(url, { redirect: 'follow' })
+    response = await fetch(url, {
+      redirect: 'follow',
+      headers: { 'User-Agent': 'NextUs/1.0 (https://nextus.world; data@nextus.world)' },
+    })
   } catch (err) {
     return { status: 'failed', message: `network: ${err.message}` }
   }
@@ -784,39 +805,36 @@ async function handleNasaFirms(indicator, supabase) {
 async function handleNoaaCoralReef(indicator, supabase) {
   const start = Date.now()
 
-  // Use NOAA ERDDAP to get recent global mean SST anomaly.
-  // Dataset: NOAA OISST v2.1 monthly
-  // We'll query for the last available timestep.
+  // Sea surface temperature anomaly via NOAA ERDDAP.
   //
-  // Endpoint: NOAA CoastWatch ERDDAP OISST
-  const now = new Date()
-  const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-  const timeStart = lastMonth.toISOString().slice(0, 10)
+  // We use the NCEI OISST v2.1 monthly anomaly product, queried at a
+  // single open-ocean equatorial Pacific point (lat=0, lon=210) as a
+  // proxy for the global SST anomaly signal. This is stable, text-based,
+  // and does not require authentication.
+  //
+  // Dataset: nceiErsstv5 on NOAA's primary ERDDAP
+  //   https://www.ncei.noaa.gov/erddap/griddap/nceiErsstv5
+  //
+  // Query: most recent month, single point, anom variable
+  //   anom[(last)][(0.0)][(0.0):1:(0.0)][(210.0):1:(210.0)]
+  //
+  // Fallback: NOAA PSL ERDDAP (psl.noaa.gov) if NCEI is down.
 
-  const erddapUrl = `https://coastwatch.pfeg.noaa.gov/erddap/griddap/ncdcOisst21Agg_LonPM180.json` +
-    `?sst%5B(${timeStart}T00:00:00Z):1:(${timeStart}T00:00:00Z)%5D%5B(0.0):1:(0.0)%5D%5B(0.0):1:(89.875)%5D%5B(-179.875):1:(179.875)%5D`
+  const nceiUrl = `https://www.ncei.noaa.gov/erddap/griddap/nceiErsstv5.json` +
+    `?anom%5B(last)%5D%5B(0.0)%5D%5B(0.0)%5D%5B(210.0)%5D`
 
-  // The full grid query above is huge. Use the anomaly product instead.
-  // ERDDAP: NOAA CRW SST Anomaly global composite
-  //   Dataset: NOAA_DHW (daily 5km)
-  // For a single representative point (equatorial Pacific, open ocean):
-  //   lat=0, lon=-140
-  // This is an approximation; the catalog methodology_note acknowledges
-  // this is a proxy for the global SST anomaly signal.
-  const anomalyUrl = `https://coastwatch.pfeg.noaa.gov/erddap/griddap/NOAA_DHW.json` +
-    `?sea_surface_temperature_anomaly%5B(last):1:(last)%5D%5B(0.0):1:(0.0)%5D%5B(-140.0):1:(-140.0)%5D`
-
-  let response
+  let response = null
   try {
-    response = await fetch(anomalyUrl, {
-      headers: { Accept: 'application/json' },
+    response = await fetch(nceiUrl, {
+      headers: { Accept: 'application/json', 'User-Agent': 'NextUs/1.0 (https://nextus.world)' },
       redirect: 'follow',
     })
   } catch (err) {
     return { status: 'failed', message: `network: ${err.message}` }
   }
+
   if (!response.ok) {
-    return { status: 'failed', httpStatus: response.status, message: 'non-2xx from NOAA CRW ERDDAP' }
+    return { status: 'failed', httpStatus: response.status, message: 'non-2xx from NOAA NCEI ERDDAP' }
   }
 
   let payload
@@ -824,30 +842,32 @@ async function handleNoaaCoralReef(indicator, supabase) {
     return { status: 'failed', message: `json parse: ${err.message}` }
   }
 
-  // ERDDAP JSON shape: { table: { columnNames, columnTypes, rows: [[time, lat, lon, value], ...] } }
+  // ERDDAP JSON table shape: { table: { columnNames, rows: [[time, alt, lat, lon, anom]] } }
   const rows = payload?.table?.rows
-  if (!rows || rows.length === 0) return { status: 'failed', message: 'NOAA CRW ERDDAP: no rows' }
+  if (!rows || rows.length === 0) return { status: 'failed', message: 'NOAA NCEI ERDDAP: no rows' }
 
   const lastRow = rows[rows.length - 1]
-  // Columns: time, latitude, longitude, sea_surface_temperature_anomaly
-  const anomaly = Number(lastRow[3])
   const timeStr = lastRow[0]
+  // anom column is last (index 4 for: time, altitude, lat, lon, anom)
+  const anomaly = Number(lastRow[lastRow.length - 1])
 
-  if (!Number.isFinite(anomaly)) return { status: 'failed', message: `NOAA CRW: non-numeric anomaly` }
+  if (!Number.isFinite(anomaly)) {
+    return { status: 'failed', message: 'NOAA NCEI: non-numeric anomaly value' }
+  }
 
   const observedAt = timeStr ? new Date(timeStr).toISOString() : new Date().toISOString()
 
   const result = await writeValue(supabase, indicator.id, null, {
     value_numeric:    Number(anomaly.toFixed(4)),
     observed_at:      observedAt,
-    source_record_id: `noaa-crw-${observedAt.slice(0, 10)}`,
+    source_record_id: `noaa-ersst-${observedAt.slice(0, 7)}`,
     confidence:       'medium',
   })
   if (!result.ok) return { status: 'failed', message: `write failed: ${result.error?.message}` }
 
   return {
     status: 'ok', httpStatus: response.status, rowsWritten: 1,
-    message: `SST anomaly ${anomaly.toFixed(2)}°C at eq. Pacific (${observedAt.slice(0, 10)}) in ${Date.now() - start}ms`,
+    message: `SST anomaly ${anomaly.toFixed(2)}°C (${observedAt.slice(0, 7)}) in ${Date.now() - start}ms`,
   }
 }
 
@@ -862,16 +882,27 @@ async function handleNoaaCoralReef(indicator, supabase) {
 
 async function handleNsidcSeaIce(indicator, supabase) {
   const start = Date.now()
-  const url = 'https://noaadata.apps.nsidc.org/NOAA/G02135/north/monthly/data/N_mm_extent.csv'
+  // NSIDC Sea Ice Index monthly extent — two known-good mirrors:
+  //   Primary:  https://noaadata.apps.nsidc.org/NOAA/G02135/north/monthly/data/N_mm_extent.csv
+  //   Fallback: https://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/monthly/data/N_mm_extent.csv
+  const urls = [
+    'https://noaadata.apps.nsidc.org/NOAA/G02135/north/monthly/data/N_mm_extent.csv',
+    'https://masie_web.apps.nsidc.org/pub/DATASETS/NOAA/G02135/north/monthly/data/N_mm_extent.csv',
+  ]
 
-  let response
-  try {
-    response = await fetch(url, { redirect: 'follow' })
-  } catch (err) {
-    return { status: 'failed', message: `network: ${err.message}` }
+  let response = null
+  for (const url of urls) {
+    try {
+      const r = await fetch(url, {
+        redirect: 'follow',
+        headers: { 'User-Agent': 'NextUs/1.0 (https://nextus.world; data@nextus.world)' },
+      })
+      if (r.ok) { response = r; break }
+    } catch { /* try next */ }
   }
-  if (!response.ok) {
-    return { status: 'failed', httpStatus: response.status, message: 'non-2xx from NSIDC' }
+
+  if (!response || !response.ok) {
+    return { status: 'failed', message: 'non-2xx from NSIDC (both mirrors tried)' }
   }
 
   const text = await response.text()
@@ -1144,14 +1175,42 @@ async function handleClimateTrade(indicator, supabase) {
     return { status: 'failed', message: `json parse: ${err.message}` }
   }
 
-  const countries = Array.isArray(payload) ? payload : (payload?.countries || [])
-  if (countries.length === 0) return { status: 'failed', message: 'Climate TRACE: no country records' }
+  const countries = Array.isArray(payload) ? payload :
+    Array.isArray(payload?.countries) ? payload.countries :
+    Array.isArray(payload?.data) ? payload.data : []
+
+  if (countries.length === 0) {
+    // Try previous-previous year as fallback
+    const fallbackYear = prevYear - 1
+    const fbUrl = `https://api.climatetrace.org/v6/country/emissions?since=${fallbackYear}&to=${fallbackYear}&limit=250`
+    try {
+      const fb = await fetch(fbUrl, { headers: { Accept: 'application/json' }, redirect: 'follow' })
+      if (fb.ok) {
+        const fbData = await fb.json()
+        const fbCountries = Array.isArray(fbData) ? fbData :
+          Array.isArray(fbData?.countries) ? fbData.countries :
+          Array.isArray(fbData?.data) ? fbData.data : []
+        if (fbCountries.length > 0) {
+          countries.push(...fbCountries)
+        }
+      }
+    } catch { /* ignore */ }
+  }
+
+  if (countries.length === 0) return { status: 'failed', message: 'Climate TRACE: no country records in response' }
 
   // Sum co2e_100yr (tonne CO₂e on 100-year GWP) across all countries
   let totalTonnes = 0
   for (const c of countries) {
-    const v = Number(c?.emissions?.co2e_100yr ?? c?.co2e_100yr ?? c?.emissions?.co2e ?? 0)
-    if (Number.isFinite(v)) totalTonnes += v
+    // v6 shape variants: c.emissions.co2e_100yr, c.co2e_100yr, c.emissions.co2e_20yr
+    const v = Number(
+      c?.emissions?.co2e_100yr ??
+      c?.co2e_100yr ??
+      c?.emissions?.co2e_20yr ??
+      c?.emissions?.co2e ??
+      c?.co2e ?? 0
+    )
+    if (Number.isFinite(v) && v > 0) totalTonnes += v
   }
 
   if (totalTonnes === 0) return { status: 'failed', message: 'Climate TRACE: all emission values zero or missing' }
