@@ -427,6 +427,54 @@ export function MarketingHomePage() {
       <SiteFooter />
 
       <style>{`
+        /* ── Path cards ─────────────────────────── */
+        .mh-cards {
+          display: flex;
+          flex-direction: column;
+          gap: 0;
+        }
+        .path-card {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          min-height: 440px;
+          overflow: hidden;
+        }
+        .path-card-image {
+          overflow: hidden;
+        }
+        .path-card-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .path-card-copy {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          padding: clamp(32px,4vw,56px) clamp(24px,3.5vw,48px);
+        }
+        @media (max-width: 680px) {
+          .path-card {
+            grid-template-columns: 1fr;
+            min-height: unset;
+          }
+          .path-card-image {
+            height: 220px;
+          }
+          /* image always on top regardless of imageSide on mobile */
+          .path-card--image-right .path-card-copy {
+            order: -1;
+          }
+          .path-card--image-right .path-card-image {
+            order: 0;
+          }
+          .path-card-copy {
+            padding: 28px 20px 32px;
+          }
+        }
+
+        /* ── How-it-works grid ──────────────────── */
         .hiw-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;

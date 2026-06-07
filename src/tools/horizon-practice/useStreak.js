@@ -15,7 +15,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { supabase } from '../../lib/supabaseClient'
+import { supabase } from '../../hooks/useSupabase'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
