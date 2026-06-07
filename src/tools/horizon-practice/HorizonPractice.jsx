@@ -25,6 +25,7 @@ import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
 import { supabase } from '../../hooks/useSupabase'
+import { useStreak } from './useStreak'
 
 // ─── Design tokens ──────────────────────────────────────────────────────────
 const tokens = {
@@ -2830,6 +2831,14 @@ export function HorizonPracticePage() {
   const { user, loading: authLoading } = useAuth()
   const { loading: accessLoading } = useAccess('horizon-practice')
 
+  // Streak
+  const {
+    streak, streakLoading, streakBroken, pendingMilestone,
+    isCadenceDay, recordEngagement, saveCadence, saveBadgePermission, clearMilestone,
+  } = useStreak(user)
+  const [cadenceSetupOpen, setCadenceSetupOpen] = useState(false)
+  const [badgeAsked, setBadgeAsked] = useState(false)
+
   // Profile data
   const [profileLoading, setProfileLoading] = useState(true)
   const [iamStatements, setIamStatements] = useState({})  // { path: '...', spark: '...' }
@@ -3011,6 +3020,7 @@ export function HorizonPracticePage() {
 
         // Always land on the hub
         setView('hub')
+        recordEngagement()
 
       } catch (err) {
         console.error('Horizon Practice load error:', err)
@@ -3046,6 +3056,7 @@ export function HorizonPracticePage() {
       if (thresholdRows) setThresholds(thresholdRows)
     }
     setView('hub')
+    recordEngagement()
   }
 
   async function handleHitOrDrift(kind, payload) {
@@ -3236,7 +3247,83 @@ export function HorizonPracticePage() {
             maxWidth: '640px', margin: '0 auto',
             padding: 'clamp(88px, 10vw, 112px) clamp(20px, 4vw, 40px) 80px',
           }}>
-            <div style={{ marginBottom: '40px' }}>
+
+            {/* ── Milestone celebration overlay ── */}
+            {pendingMilestone && (
+              <div style={{
+                position: 'fixed', inset: 0, zIndex: 1000,
+                background: 'rgba(15,21,35,0.85)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                padding: '24px',
+              }}>
+                <div className="hp-fade-in" style={{
+                  background: tokens.bg, borderRadius: '20px',
+                  padding: '48px 36px', maxWidth: '360px', width: '100%',
+                  textAlign: 'center',
+                  border: `1px solid ${tokens.goldChrome}`,
+                }}>
+                  <div style={{ fontSize: '3rem', marginBottom: '16px' }}>
+                    {pendingMilestone === 21 ? '✦' : '✦✦'}
+                  </div>
+                  <div style={{
+                    ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.22em',
+                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '12px',
+                  }}>
+                    {pendingMilestone} days
+                  </div>
+                  <Heading size="lg" style={{ marginBottom: '12px' }}>
+                    {pendingMilestone === 21
+                      ? 'The habit is taking root.'
+                      : 'Forty days. This is who you are now.'}
+                  </Heading>
+                  <Body dim style={{ marginBottom: '32px' }}>
+                    {pendingMilestone === 21
+                      ? 'Twenty-one consecutive days. The research says the groove is forming. Keep going.'
+                      : 'Forty days in. This is no longer something you do — it\'s something you are.'}
+                  </Body>
+                  <button onClick={clearMilestone} style={{
+                    background: tokens.gold, color: '#FFFFFF',
+                    border: 'none', borderRadius: '10px',
+                    padding: '14px 32px', cursor: 'pointer',
+                    ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em',
+                    textTransform: 'uppercase',
+                  }}>Continue →</button>
+                </div>
+              </div>
+            )}
+
+            {/* ── Return prompt (streak broken) ── */}
+            {streakBroken && (
+              <div style={{
+                background: '#FFFFFF',
+                border: `1px solid ${tokens.goldChrome}`,
+                borderRadius: '14px', padding: '22px 24px',
+                marginBottom: '28px',
+                display: 'flex', alignItems: 'center',
+                justifyContent: 'space-between', gap: '16px',
+              }}>
+                <div>
+                  <div style={{
+                    ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
+                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px',
+                  }}>Welcome back</div>
+                  <Body style={{ margin: 0, fontSize: '14.5px' }}>
+                    Your practice is here. Pick it back up.
+                  </Body>
+                </div>
+                <button onClick={() => setView('morning')} style={{
+                  flexShrink: 0,
+                  background: tokens.gold, color: '#FFFFFF',
+                  border: 'none', borderRadius: '8px',
+                  padding: '10px 18px', cursor: 'pointer',
+                  ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                }}>Begin →</button>
+              </div>
+            )}
+
+            {/* ── Greeting + streak counter ── */}
+            <div style={{ marginBottom: '40px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px' }}>
               <Heading size="xl">
                 {getGreeting()}
                 {user && <>, <em style={{ color: tokens.gold, fontStyle: 'normal' }}>{
@@ -3245,6 +3332,39 @@ export function HorizonPracticePage() {
                   (user.email.split('@')[0].charAt(0).toUpperCase() + user.email.split('@')[0].slice(1))
                 }</em></>}.
               </Heading>
+              {streak && streak.streak_current > 0 && (
+                <button
+                  onClick={() => setCadenceSetupOpen(true)}
+                  title="Streak settings"
+                  style={{
+                    flexShrink: 0, marginTop: '6px',
+                    background: 'transparent', border: `1px solid ${tokens.goldFaint}`,
+                    borderRadius: '40px', padding: '6px 14px',
+                    display: 'flex', alignItems: 'center', gap: '6px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span style={{ fontSize: '14px' }}>✦</span>
+                  <span style={{
+                    ...sc, fontSize: '11px', fontWeight: 700,
+                    letterSpacing: '0.12em', color: tokens.gold,
+                  }}>{streak.streak_current}</span>
+                </button>
+              )}
+              {streak && streak.streak_current === 0 && !streakLoading && (
+                <button
+                  onClick={() => setCadenceSetupOpen(true)}
+                  style={{
+                    flexShrink: 0, marginTop: '6px',
+                    background: 'transparent', border: `1px solid ${tokens.goldFaint}`,
+                    borderRadius: '40px', padding: '6px 14px',
+                    cursor: 'pointer',
+                    ...sc, fontSize: '10px', fontWeight: 600,
+                    letterSpacing: '0.14em', color: tokens.ghost,
+                    textTransform: 'uppercase',
+                  }}
+                >Set streak</button>
+              )}
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -3372,13 +3492,128 @@ export function HorizonPracticePage() {
               </div>
             )}
 
-            <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'flex-end' }}>
+            {/* ── Badge permission ask (Android, after first engagement) ── */}
+            {streak && streak.streak_current >= 1 && !streak.badge_permission && !badgeAsked && 'setAppBadge' in navigator && (
+              <div style={{
+                marginTop: '24px',
+                background: '#FFFFFF',
+                border: `1px solid ${tokens.goldFaint}`,
+                borderRadius: '12px', padding: '18px 20px',
+                display: 'flex', alignItems: 'center',
+                justifyContent: 'space-between', gap: '12px',
+              }}>
+                <Body dim style={{ margin: 0, fontSize: '13px', lineHeight: 1.5 }}>
+                  Show a reminder dot on the app icon when your practice is waiting?
+                </Body>
+                <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                  <button onClick={() => { setBadgeAsked(true); saveBadgePermission(true) }} style={{
+                    background: tokens.gold, color: '#FFF', border: 'none',
+                    borderRadius: '8px', padding: '8px 14px', cursor: 'pointer',
+                    ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.12em',
+                  }}>Yes</button>
+                  <button onClick={() => setBadgeAsked(true)} style={{
+                    background: 'transparent', color: tokens.ghost,
+                    border: `1px solid ${tokens.goldFaint}`,
+                    borderRadius: '8px', padding: '8px 14px', cursor: 'pointer',
+                    ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.12em',
+                  }}>No</button>
+                </div>
+              </div>
+            )}
+
+            <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
+              <button onClick={() => setCadenceSetupOpen(true)} style={{
+                background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+                ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
+                color: tokens.whisper, textTransform: 'uppercase',
+              }}>Streak</button>
               <button onClick={() => setSettingsOpen(true)} style={{
                 background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
                 ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
                 color: tokens.whisper, textTransform: 'uppercase',
               }}>Settings</button>
             </div>
+
+            {/* ── Cadence setup modal ── */}
+            {cadenceSetupOpen && (
+              <div style={{
+                position: 'fixed', inset: 0, zIndex: 900,
+                background: 'rgba(15,21,35,0.7)',
+                display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+                padding: '0',
+              }} onClick={() => setCadenceSetupOpen(false)}>
+                <div onClick={e => e.stopPropagation()} style={{
+                  background: tokens.bg, borderRadius: '20px 20px 0 0',
+                  padding: '32px 28px 48px', width: '100%', maxWidth: '480px',
+                  borderTop: `1px solid ${tokens.goldFaint}`,
+                }}>
+                  <div style={{
+                    ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.22em',
+                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '16px',
+                  }}>Streak cadence</div>
+                  <Heading size="md" style={{ marginBottom: '8px' }}>
+                    How often are you committing?
+                  </Heading>
+                  <Body dim style={{ marginBottom: '24px', fontSize: '13.5px' }}>
+                    Your streak only counts — and the reminder only fires — on days you commit to.
+                  </Body>
+                  {[
+                    { key: 'daily',    label: 'Every day' },
+                    { key: 'weekdays', label: 'Weekdays (Mon–Fri)' },
+                    { key: '3x',       label: '3× a week (Mon · Wed · Fri)' },
+                  ].map(opt => (
+                    <button key={opt.key} onClick={async () => {
+                      await saveCadence(opt.key, null)
+                      setCadenceSetupOpen(false)
+                    }} style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      width: '100%', background: streak?.cadence === opt.key ? tokens.goldTint : '#FFFFFF',
+                      border: `1px solid ${streak?.cadence === opt.key ? tokens.goldChrome : tokens.goldFaint}`,
+                      borderRadius: '10px', padding: '16px 20px', marginBottom: '10px',
+                      cursor: 'pointer', textAlign: 'left',
+                    }}>
+                      <span style={{ ...body, fontSize: '14.5px', color: tokens.meta }}>{opt.label}</span>
+                      {streak?.cadence === opt.key && (
+                        <span style={{ color: tokens.gold, fontSize: '14px' }}>✓</span>
+                      )}
+                    </button>
+                  ))}
+
+                  {streak && (
+                    <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: `1px solid ${tokens.goldFaint}` }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: tokens.gold, marginBottom: '4px' }}>Current streak</div>
+                          <div style={{ ...body, fontSize: '22px', fontWeight: 600, color: tokens.meta }}>{streak.streak_current} <span style={{ fontSize: '14px', color: tokens.ghost }}>days</span></div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: tokens.gold, marginBottom: '4px' }}>Personal best</div>
+                          <div style={{ ...body, fontSize: '22px', fontWeight: 600, color: tokens.meta }}>{streak.streak_longest} <span style={{ fontSize: '14px', color: tokens.ghost }}>days</span></div>
+                        </div>
+                      </div>
+                      <div style={{ marginTop: '16px' }}>
+                        <div style={{ height: '4px', background: tokens.goldFaint, borderRadius: '2px', overflow: 'hidden' }}>
+                          <div style={{
+                            height: '100%', borderRadius: '2px',
+                            background: tokens.goldChrome,
+                            width: `${Math.min(100, (streak.streak_current / 21) * 100)}%`,
+                            transition: 'width 0.4s ease',
+                          }} />
+                        </div>
+                        <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: tokens.ghost, marginTop: '6px' }}>
+                          {streak.streak_current < 21
+                            ? `${21 - streak.streak_current} days to the 21-day milestone`
+                            : streak.streak_current < 40
+                            ? `${40 - streak.streak_current} days to the 40-day milestone`
+                            : '40-day milestone reached ✦'}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
           </div>
         )}
 
