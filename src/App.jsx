@@ -78,6 +78,7 @@ import PracticeDetail         from './app/pages/PracticeDetail'
 import PracticeContribute     from './app/pages/PracticeContribute'
 import { InvitationPage }     from './app/pages/Invitation'
 import { InvitationIndexPage } from './app/pages/InvitationIndex'
+import InstallPage             from './app/pages/InstallPage'
 
 // ── Begin / Build ────────────────────────────────────────────────
 import { BeginBuildOrgPage }      from './pages/begin-build/Org'
@@ -285,6 +286,9 @@ function AppInner() {
 
         {/* ── Legacy redirects — clean once confirmed dead ── */}
         <Route path="/life-os"             element={<Navigate to="/nextus-self" replace />} />
+
+        {/* ── Install / PWA ── */}
+        <Route path="/app"             element={<InstallPage />} />
 
         {/* ── Admin ── */}
         <Route path="/admin"           element={<AdminConsolePage />} />
