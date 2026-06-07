@@ -193,13 +193,17 @@ function ShareIcon() {
 // ── Android panel ─────────────────────────────────────────────
 function AndroidPanel({ deferredPrompt, onInstalled }) {
   const [installing, setInstalling] = useState(false)
-  const [noPrompt, setNoPrompt] = useState(!deferredPrompt)
+  // Wait up to 2s for the prompt before showing manual fallback
+  const [timedOut, setTimedOut] = useState(false)
+
+  useEffect(() => {
+    if (deferredPrompt) return // prompt arrived, no need to time out
+    const t = setTimeout(() => setTimedOut(true), 2000)
+    return () => clearTimeout(t)
+  }, [deferredPrompt])
 
   async function handleInstall() {
-    if (!deferredPrompt) {
-      setNoPrompt(true)
-      return
-    }
+    if (!deferredPrompt) return
     setInstalling(true)
     deferredPrompt.prompt()
     const { outcome } = await deferredPrompt.userChoice
@@ -209,6 +213,8 @@ function AndroidPanel({ deferredPrompt, onInstalled }) {
       setInstalling(false)
     }
   }
+
+  const noPrompt = timedOut && !deferredPrompt
 
   if (noPrompt) {
     // Already installed or prompt not available — show manual fallback
