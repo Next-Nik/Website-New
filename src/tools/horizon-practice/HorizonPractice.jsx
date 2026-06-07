@@ -25,7 +25,6 @@ import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
 import { supabase } from '../../hooks/useSupabase'
-import { useStreak } from './useStreak'
 
 // ─── Design tokens ──────────────────────────────────────────────────────────
 const tokens = {
@@ -61,17 +60,6 @@ function getLocalDateStr(date = new Date()) {
 function getGreeting() {
   const h = new Date().getHours()
   return h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening'
-}
-
-function extractIamLine(text) {
-  if (!text) return ''
-  // Take everything up to and including the first sentence-ending punctuation
-  const match = text.match(/^(.+?[.!?])(\s|$)/)
-  if (match) return match[1].trim()
-  // Fallback: hard cap at 120 chars on a word boundary
-  if (text.length <= 120) return text.trim()
-  const cut = text.slice(0, 120).replace(/\s+\S+$/, '')
-  return cut.trim() + '…'
 }
 
 function relativeDate(iso) {
@@ -337,7 +325,7 @@ function inputStyle() {
 // Five-Beat Tracker
 // ────────────────────────────────────────────────────────────────────────────
 function FiveBeatTracker({ currentBeat, sweep = false }) {
-  const beats = ['Commit', 'Ground', 'I Am', 'Anchor', 'Plan', 'Act']
+  const beats = ['Commit', 'Ground', 'Plan', 'Anchor', 'Act']
   return (
     <div style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -358,7 +346,7 @@ function FiveBeatTracker({ currentBeat, sweep = false }) {
                 animation: here ? 'hp-dot-pulse 2.4s ease-in-out infinite' : 'none',
               }} />
               <span style={{
-                ...sc, fontSize: '9px', fontWeight: 600, letterSpacing: '0.12em',
+                ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
                 color: done || here ? tokens.gold : tokens.whisper,
                 textTransform: 'uppercase',
               }}>{name}</span>
@@ -778,16 +766,17 @@ function ManualThresholdAdd({ draftTitle, setDraftTitle, draftTime, setDraftTime
       />
       <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
         <input
-          type="time"
+          type="text"
           value={draftTime}
           onChange={e => setDraftTime(e.target.value)}
+          placeholder="Time (optional)"
           style={{ ...inputStyle(), minHeight: 'auto', padding: '10px 14px', width: '130px' }}
         />
         <input
           type="text"
           value={draftNote}
           onChange={e => setDraftNote(e.target.value)}
-          placeholder="Notes"
+          placeholder="What you know about this moment"
           style={{ ...inputStyle(), minHeight: 'auto', padding: '10px 14px', flex: 1 }}
         />
       </div>
@@ -799,755 +788,23 @@ function ManualThresholdAdd({ draftTitle, setDraftTitle, draftTime, setDraftTime
 }
 
 // ────────────────────────────────────────────────────────────────────────────
-// GroundBeat — two-stage animated breath timer
-//
-// Stage 1: Charge breath — 3 Tabata rounds × 20s fast / 10s rest
-//   Tabata-style with "Ready · 3 · 2 · 1 · Begin" / "Rest" / "Complete" audio cues
-//
-// Stage 2: Open breath — 3 rounds × 3 centres descending (chest → belly → pelvis)
-//   Each centre: deep breath in (4s) → hold (4s) → exhale with "ah" (6s) → hold (2s)
+// Morning Sequence — the five beats
 // ────────────────────────────────────────────────────────────────────────────
-
-const CHARGE_ROUNDS   = 3
-const CHARGE_WORK_S   = 20
-const CHARGE_REST_S   = 10
-const OPEN_ROUNDS     = 3
-const OPEN_CENTRES    = ['Chest / heart', 'Belly', 'Sacrum']
-const OPEN_PHASES     = [
-  { label: 'Breathe in',    dur: 5,  expand: true  },
-  { label: 'Hold',          dur: 4,  expand: true  },
-  { label: 'Exhale — "ah"', dur: 7,  expand: false },
-  { label: 'Hold',          dur: 4,  expand: false },
-]
-
-// Beep helpers (reuse Chimes ctx pattern)
-function makeBeep(freq, dur = 0.12, gain = 0.18) {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)()
-    const osc = ctx.createOscillator()
-    const g   = ctx.createGain()
-    osc.type = 'sine'; osc.frequency.value = freq
-    g.gain.setValueAtTime(0, ctx.currentTime)
-    g.gain.linearRampToValueAtTime(gain, ctx.currentTime + 0.008)
-    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur)
-    osc.connect(g); g.connect(ctx.destination)
-    osc.start(); osc.stop(ctx.currentTime + dur)
-    setTimeout(() => ctx.close(), dur * 1000 + 200)
-  } catch(e) {}
-}
-function beepLow()    { makeBeep(330, 0.14, 0.16) }
-function beepMid()    { makeBeep(523, 0.12, 0.18) }
-function beepHigh()   { makeBeep(880, 0.18, 0.20) }
-function beepReady()  { makeBeep(440, 0.22, 0.15) }
-function beepBegin()  {
-  makeBeep(523, 0.15, 0.20)
-  setTimeout(() => makeBeep(659, 0.15, 0.20), 160)
-  setTimeout(() => makeBeep(880, 0.28, 0.22), 320)
-}
-function beepEnd()    {
-  makeBeep(880, 0.15, 0.18)
-  setTimeout(() => makeBeep(659, 0.15, 0.18), 160)
-  setTimeout(() => makeBeep(523, 0.28, 0.20), 320)
-}
-
-function GroundBeat({ onComplete, onBack }) {
-  const [phase, setPhase]             = useState(() => {
-    const saved = loadGroundPhase()
-    // Only restore active phases — don't drop them into the middle of a timer
-    // Restore to the pre-phase card so they can deliberately resume
-    if (saved === 'charge-work' || saved === 'charge-rest' || saved === 'charge-ready') return 'intro'
-    if (saved === 'open-running') return 'charge-done'
-    return saved || 'intro'
-  })
-  const [chargeRound, setChargeRound] = useState(1)
-  const [tick, setTick]               = useState(0)
-  const [circleScale, setCircleScale] = useState(1)
-
-  const [paused, setPaused]           = useState(false)
-
-  const timerRef     = useRef(null)
-  const countRef     = useRef(null)
-  const remainingRef = useRef(0)
-  const resumeCtxRef = useRef(null)
-  const phaseRef     = useRef('intro')
-  const pausedRef    = useRef(false)
-
-  useEffect(() => { phaseRef.current = phase; saveGroundPhase(phase) }, [phase])
-  useEffect(() => { pausedRef.current = paused }, [paused])
-
-  function clearTimers() {
-    clearInterval(timerRef.current)
-    clearTimeout(countRef.current)
-  }
-
-  function doPause() {
-    if (pausedRef.current) return
-    clearTimers()
-    setPaused(true)
-  }
-
-  function doResume() {
-    setPaused(false)
-    const ctx = resumeCtxRef.current
-    if (!ctx) return
-    const rem = remainingRef.current
-    if (ctx.kind === 'charge-work') resumeChargeWork(ctx.round, rem)
-    else if (ctx.kind === 'charge-rest') resumeChargeRest(ctx.round, rem)
-    else if (ctx.kind === 'open') resumeOpenPhase(ctx.round, ctx.centre, ctx.phaseIdx, rem)
-  }
-
-  useEffect(() => {
-    function onVisibilityChange() {
-      const activePhases = ['charge-work','charge-rest','charge-ready','open-running']
-      if (document.hidden && activePhases.includes(phaseRef.current) && !pausedRef.current) {
-        doPause()
-      }
-    }
-    document.addEventListener('visibilitychange', onVisibilityChange)
-    return () => document.removeEventListener('visibilitychange', onVisibilityChange)
-  }, [])
-
-  // ── Charge breath ──────────────────────────────────────────────────────
-  function startChargeReady(round) {
-    clearTimers()
-    setChargeRound(round)
-
-    // Only round 1 gets the 3-2-1 countdown
-    if (round > 1) {
-      beepBegin()
-      startChargeWork(round)
-      return
-    }
-
-    setPhase('charge-ready')
-    beepReady()
-    let count = 3
-    setTick(count)
-    timerRef.current = setInterval(() => {
-      count--
-      if (count > 0) {
-        setTick(count)
-        beepMid()
-      } else {
-        clearInterval(timerRef.current)
-        beepBegin()
-        startChargeWork(round)
-      }
-    }, 1000)
-  }
-
-  function startChargeWork(round) {
-    setPhase('charge-work')
-    setTick(CHARGE_WORK_S)
-    setCircleScale(1)
-    resumeCtxRef.current = { kind: 'charge-work', round }
-    resumeChargeWork(round, CHARGE_WORK_S)
-  }
-
-  function resumeChargeWork(round, startAt) {
-    setPhase('charge-work')
-    setChargeRound(round)
-    let t = startAt
-    setTick(t)
-    let expanding = true
-    timerRef.current = setInterval(() => {
-      t--
-      remainingRef.current = t
-      setTick(t)
-      expanding = !expanding
-      setCircleScale(expanding ? 1.12 : 0.92)
-      if (t <= 0) {
-        clearInterval(timerRef.current)
-        setCircleScale(1)
-        if (round < CHARGE_ROUNDS) {
-          beepEnd()
-          startChargeRest(round)
-        } else {
-          beepEnd()
-          setPhase('charge-done')
-        }
-      }
-    }, 1000)
-  }
-
-  function startChargeRest(round) {
-    setPhase('charge-rest')
-    resumeCtxRef.current = { kind: 'charge-rest', round }
-    resumeChargeRest(round, CHARGE_REST_S)
-  }
-
-  function resumeChargeRest(round, startAt) {
-    setPhase('charge-rest')
-    setChargeRound(round)
-    let t = startAt
-    setTick(t)
-    timerRef.current = setInterval(() => {
-      t--
-      remainingRef.current = t
-      setTick(t)
-      if (t <= 0) {
-        clearInterval(timerRef.current)
-        startChargeReady(round + 1)
-      }
-    }, 1000)
-  }
-
-
-
-  useEffect(() => () => clearTimers(), [])
-
-  // ── Visual helpers ─────────────────────────────────────────────────────
-  const isCharging = phase === 'charge-work' || phase === 'charge-rest' || phase === 'charge-ready'
-  const circleColor = phase === 'charge-work' ? tokens.goldChrome : tokens.gold
-  const circleBg    = phase === 'charge-work' ? tokens.goldStrong : tokens.goldTint
-  const totalSecs   = phase === 'charge-work' ? CHARGE_WORK_S : phase === 'charge-rest' ? CHARGE_REST_S : 0
-  const elapsed     = totalSecs - tick
-  const progress    = totalSecs > 0 ? Math.min(elapsed / totalSecs, 1) : 0
-  const R = 88, C = 2 * Math.PI * R
-  const dashOffset  = C - progress * C
-
-  return (
-    <div className="hp-fade-in" style={{ maxWidth: '520px', margin: '0 auto' }}>
-      <Eyebrow style={{ marginBottom: '12px' }}>Ground</Eyebrow>
-      <Heading size="lg" style={{ marginBottom: '6px' }}>
-        Land in the body.
-      </Heading>
-
-      {/* ── Intro ── */}
-      {phase === 'intro' && (
-        <div className="hp-fade-in">
-          <Body dim style={{ marginBottom: '28px' }}>
-            Three rounds of charge breathing to wake the system.
-            Fast, deep breaths. Focus on the exhale.
-          </Body>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <GhostButton onClick={onBack}>← Back</GhostButton>
-            <SolidButton onClick={() => startChargeReady(1)}>Begin →</SolidButton>
-            <GhostButton onClick={() => { clearGroundPhase(); onComplete() }} style={{ marginLeft: 'auto' }}>Skip</GhostButton>
-          </div>
-        </div>
-      )}
-
-      {/* ── Charge: ready countdown ── */}
-      {phase === 'charge-ready' && (
-        <div className="hp-fade-in" style={{ textAlign: 'center', padding: '32px 0' }}>
-          <Eyebrow style={{ marginBottom: '16px' }}>
-            Round {chargeRound} of {CHARGE_ROUNDS} · Charge breath
-          </Eyebrow>
-          <div style={{
-            ...body, fontSize: 'clamp(60px, 14vw, 88px)', fontWeight: 300,
-            color: tokens.gold, lineHeight: 1, marginBottom: '16px',
-          }}>{tick}</div>
-          <Body dim style={{ margin: 0 }}>Ready…</Body>
-        </div>
-      )}
-
-      {/* ── Charge: work / rest ── */}
-      {(phase === 'charge-work' || phase === 'charge-rest') && (
-        <div className="hp-fade-in" style={{ textAlign: 'center', padding: '20px 0' }}>
-          <Eyebrow style={{ marginBottom: '20px' }}>
-            {phase === 'charge-work'
-              ? `Round ${chargeRound} of ${CHARGE_ROUNDS} · Charge`
-              : `Rest · Round ${chargeRound + 1} begins next`}
-          </Eyebrow>
-
-          {/* Animated circle */}
-          <div style={{ position: 'relative', width: '210px', height: '210px', margin: '0 auto 20px' }}>
-            <svg width="210" height="210" style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}>
-              <circle cx="105" cy="105" r={R} fill="none"
-                stroke={tokens.goldFaint} strokeWidth="3" />
-              <circle cx="105" cy="105" r={R} fill="none"
-                stroke={circleColor} strokeWidth="3"
-                strokeDasharray={C} strokeDashoffset={dashOffset}
-                style={{ transition: 'stroke-dashoffset 0.9s linear' }}
-              />
-            </svg>
-            <div style={{
-              position: 'absolute', inset: 0, display: 'flex',
-              flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              gap: '6px',
-            }}>
-              <div style={{
-                width: '80px', height: '80px', borderRadius: '50%',
-                background: phase === 'charge-work' ? circleBg : tokens.goldTint,
-                border: `2px solid ${circleColor}`,
-                transform: `scale(${circleScale})`,
-                transition: phase === 'charge-work' ? 'transform 0.45s ease-in-out' : 'transform 0.8s ease',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <span style={{
-                  ...body, fontSize: '28px', fontWeight: 300,
-                  color: circleColor, lineHeight: 1,
-                }}>{tick}</span>
-              </div>
-            </div>
-          </div>
-
-          <Body style={{ margin: 0 }} dim={phase === 'charge-rest'}>
-            {paused
-              ? 'Paused.'
-              : phase === 'charge-work'
-                ? 'Just breathe. Focus on the exhale.'
-                : 'Pause on the exhale.'}
-          </Body>
-        </div>
-      )}
-
-      {/* ── Charge done ── */}
-      {phase === 'charge-done' && (
-        <div className="hp-fade-in" style={{ textAlign: 'center', padding: '28px 0' }}>
-          <Eyebrow style={{ marginBottom: '14px' }}>Charged</Eyebrow>
-          <Heading size="md" style={{ marginBottom: '24px', color: tokens.gold }}>
-            System is awake.
-          </Heading>
-          <SolidButton onClick={() => { clearGroundPhase(); onComplete() }}>I Am →</SolidButton>
-        </div>
-      )}
-
-      {/* Skip always available during active phases */}
-      {isCharging && (
-        <div style={{ textAlign: 'center', marginTop: '28px', display: 'flex', justifyContent: 'center', gap: '20px', alignItems: 'center' }}>
-          <button onClick={paused ? doResume : doPause} style={{
-            background: paused ? tokens.goldChrome : 'transparent',
-            border: `1px solid ${paused ? tokens.goldChrome : tokens.goldFaint}`,
-            borderRadius: '40px', cursor: 'pointer',
-            ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-            color: paused ? '#FFFFFF' : tokens.gold, textTransform: 'uppercase',
-            padding: '8px 18px',
-          }}>{paused ? 'Resume →' : 'Pause'}</button>
-          <button onClick={() => { clearTimers(); clearGroundPhase(); onComplete() }} style={{
-            background: 'transparent', border: 'none', cursor: 'pointer',
-            ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-            color: tokens.whisper, textTransform: 'uppercase',
-          }}>Skip →</button>
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ────────────────────────────────────────────────────────────────────────────
-// ────────────────────────────────────────────────────────────────────────────
-// OpenBreathBeat — three-centre descending breath to anchor the I Am statements
-// Glow field · tick-dot canvas · phase-text animation · complete-pulse · 0.7s gap
-// ────────────────────────────────────────────────────────────────────────────
-function OpenBreathBeat({ onComplete, onBack }) {
-  const canvasRef      = useRef(null)
-  const glowRef        = useRef(null)
-  const phaseTextRef   = useRef(null)
-  const timerRef       = useRef(null)
-  const glowAnimRef    = useRef(null)
-  const pulseAnimRef   = useRef(null)
-  const currentGlowRef = useRef(0)
-  const transRef       = useRef(false)
-  const pausedRef      = useRef(false)
-
-  const [screen, setScreen]         = useState('intro')
-  const [paused, setPaused]         = useState(false)
-  const [openRound, setOpenRound]   = useState(1)
-  const [openCentre, setOpenCentre] = useState(0)
-  const [openPhase, setOpenPhase]   = useState(0)
-
-  useEffect(() => { pausedRef.current = paused }, [paused])
-
-  // ── Audio ───────────────────────────────────────────────────────────
-  function bpIn()    { makeBeep(523, 0.18, 0.12); setTimeout(() => makeBeep(659, 0.16, 0.10), 180) }
-  function bpTrans() { makeBeep(440, 0.22, 0.09) }
-  function bpDone()  { makeBeep(659, 0.20, 0.11); setTimeout(() => makeBeep(880, 0.30, 0.13), 220) }
-
-  // ── Glow ────────────────────────────────────────────────────────────
-  function setGlow(v) {
-    currentGlowRef.current = v
-    if (!glowRef.current) return
-    const a1 = 0.04 + v * 0.30
-    const a2 = 0.00 + v * 0.14
-    glowRef.current.style.background =
-      'radial-gradient(circle, rgba(200,146,42,' + a1 + ') 20%, rgba(200,146,42,' + a2 + ') 55%, transparent 78%)'
-  }
-
-  function animateGlowTo(from, to, durMs) {
-    cancelAnimationFrame(glowAnimRef.current)
-    let start = null
-    function step(ts) {
-      if (!start) start = ts
-      const t = Math.min((ts - start) / durMs, 1)
-      const e = t < 0.5 ? 2*t*t : -1 + (4-2*t)*t
-      setGlow(from + (to - from) * e)
-      if (t < 1) glowAnimRef.current = requestAnimationFrame(step)
-    }
-    glowAnimRef.current = requestAnimationFrame(step)
-  }
-
-  // ── Tick canvas ──────────────────────────────────────────────────────
-  function drawTicks(total, filled, pulse) {
-    pulse = pulse || 0
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    ctx.clearRect(0, 0, 220, 220)
-    const cx = 110, cy = 110, r = 96
-    const step = (Math.PI * 2) / total
-    const startA = -Math.PI / 2
-    const allFilled = filled >= total
-    for (let i = 0; i < total; i++) {
-      const angle = startA + i * step
-      const x = cx + r * Math.cos(angle)
-      const y = cy + r * Math.sin(angle)
-      const isLast = i === total - 1
-      const isFilled = i < filled
-      let dotR = 2.8
-      if (isLast && isFilled) dotR = 4.4
-      if (allFilled && pulse > 0) {
-        const p = Math.sin(pulse * Math.PI)
-        dotR += p * (isLast ? 3.2 : 1.6)
-      }
-      let alpha = isFilled ? 0.85 : 0.16
-      if (allFilled && pulse > 0) {
-        const p2 = Math.sin(pulse * Math.PI)
-        alpha = isFilled ? Math.min(1.0, 0.85 + p2 * 0.15) : 0.16 + p2 * 0.28
-      }
-      ctx.beginPath()
-      ctx.arc(x, y, dotR, 0, Math.PI * 2)
-      ctx.fillStyle = 'rgba(200,146,42,' + alpha + ')'
-      ctx.fill()
-    }
-  }
-
-  function runCompletePulse(total, onDone) {
-    cancelAnimationFrame(pulseAnimRef.current)
-    let start = null
-    const dur = 520
-    function step(ts) {
-      if (!start) start = ts
-      const t = Math.min((ts - start) / dur, 1)
-      drawTicks(total, total, t)
-      if (t < 1) { pulseAnimRef.current = requestAnimationFrame(step) }
-      else { drawTicks(total, total, 0); onDone() }
-    }
-    pulseAnimRef.current = requestAnimationFrame(step)
-  }
-
-  // ── Phase visuals ────────────────────────────────────────────────────
-  function applyPhaseVisuals(kind, durMs) {
-    const el = phaseTextRef.current
-    if (!el) return
-    if (kind === 'inhale') {
-      el.style.transition = 'opacity 0.3s ease, color 0.4s ease'
-      el.style.opacity = '1'; el.style.color = tokens.dark
-      el.style.fontSize = '17px'; el.style.letterSpacing = '0.03em'
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        el.style.transition =
-          'font-size ' + durMs + 'ms cubic-bezier(0.25,0,0.1,1), ' +
-          'letter-spacing ' + durMs + 'ms cubic-bezier(0.25,0,0.1,1), ' +
-          'opacity 0.3s ease, color 0.4s ease'
-        el.style.fontSize = '30px'; el.style.letterSpacing = '0.06em'
-      }))
-      animateGlowTo(0.05, 0.26, durMs)
-    } else if (kind === 'hold-in') {
-      el.style.transition = 'font-size 0.4s ease, letter-spacing 0.4s ease, opacity 0.3s ease, color 0.4s ease'
-      el.style.opacity = '1'; el.style.color = tokens.dark
-      el.style.fontSize = '30px'; el.style.letterSpacing = '0.10em'
-      animateGlowTo(0.26, 0.78, durMs)
-    } else if (kind === 'exhale') {
-      el.style.transition = 'opacity 0.3s ease, color 0.5s ease'
-      el.style.opacity = '0.88'; el.style.color = 'rgba(168,114,26,0.72)'
-      el.style.fontSize = '30px'; el.style.letterSpacing = '0.10em'
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        el.style.transition =
-          'font-size ' + durMs + 'ms cubic-bezier(0.0,0,0.2,1), ' +
-          'letter-spacing ' + (durMs * 1.15) + 'ms cubic-bezier(0.0,0,0.2,1), ' +
-          'opacity 0.3s ease, color 0.5s ease'
-        el.style.fontSize = '16px'; el.style.letterSpacing = '0.26em'
-      }))
-      animateGlowTo(0.78, 0.04, durMs)
-    } else if (kind === 'hold-out') {
-      el.style.transition = 'font-size 0.6s ease, letter-spacing 0.6s ease, opacity 0.7s ease, color 0.5s ease'
-      el.style.fontSize = '15px'; el.style.letterSpacing = '0.20em'
-      el.style.opacity = '0.48'; el.style.color = tokens.ghost
-      animateGlowTo(0.04, 0.02, durMs)
-    }
-  }
-
-  // ── Core timer ───────────────────────────────────────────────────────
-  function startPhase(r, c, p) {
-    if (transRef.current) return
-    setOpenRound(r); setOpenCentre(c); setOpenPhase(p)
-    clearInterval(timerRef.current)
-    const cfg = OPEN_PHASES[p]
-    let ticksLeft = cfg.dur
-    const total = cfg.dur
-    if (phaseTextRef.current) phaseTextRef.current.textContent = cfg.label
-    drawTicks(total, 0, 0)
-    applyPhaseVisuals(cfg.kind, cfg.dur * 1000)
-    if (p === 0) bpIn(); else bpTrans()
-    timerRef.current = setInterval(() => {
-      if (pausedRef.current) return
-      ticksLeft--
-      drawTicks(total, total - ticksLeft, 0)
-      if (ticksLeft <= 0) {
-        clearInterval(timerRef.current)
-        runCompletePulse(total, () => {
-          const el = phaseTextRef.current
-          if (el) { el.style.transition = 'opacity 0.25s ease'; el.style.opacity = '0.28' }
-          transRef.current = true
-          setTimeout(() => { transRef.current = false; advancePhase(r, c, p) }, 700)
-        })
-      }
-    }, 1000)
-  }
-
-  function advancePhase(r, c, p) {
-    const nextP = p + 1, nextC = c + 1, nextR = r + 1
-    if (nextP < OPEN_PHASES.length) { startPhase(r, c, nextP) }
-    else if (nextC < OPEN_CENTRES.length) { bpTrans(); startPhase(r, nextC, 0) }
-    else if (nextR <= OPEN_ROUNDS) { bpTrans(); startPhase(nextR, 0, 0) }
-    else {
-      bpDone()
-      const el = phaseTextRef.current
-      if (el) { el.style.transition = 'all 0.6s ease'; el.style.fontSize = '22px';
-        el.style.letterSpacing = '0.02em'; el.style.opacity = '1'; el.style.color = tokens.dark }
-      animateGlowTo(currentGlowRef.current, 0, 800)
-      setTimeout(() => setScreen('done'), 900)
-    }
-  }
-
-  function doStart() {
-    setScreen('running')
-    setTimeout(() => startPhase(1, 0, 0), 80)
-  }
-
-  function doPause() {
-    setPaused(p => {
-      const next = !p
-      pausedRef.current = next
-      if (next) cancelAnimationFrame(glowAnimRef.current)
-      return next
-    })
-  }
-
-  function doSkip() {
-    clearInterval(timerRef.current)
-    cancelAnimationFrame(glowAnimRef.current)
-    cancelAnimationFrame(pulseAnimRef.current)
-    onComplete()
-  }
-
-  useEffect(() => {
-    function onVis() {
-      if (document.hidden && !pausedRef.current) doPause()
-    }
-    document.addEventListener('visibilitychange', onVis)
-    return () => document.removeEventListener('visibilitychange', onVis)
-  }, [])
-
-  useEffect(() => () => {
-    clearInterval(timerRef.current)
-    cancelAnimationFrame(glowAnimRef.current)
-    cancelAnimationFrame(pulseAnimRef.current)
-  }, [])
-
-  // ── Render ───────────────────────────────────────────────────────────
-  return (
-    <div className="hp-fade-in" style={{ maxWidth: '480px', margin: '0 auto', textAlign: 'center' }}>
-      {screen === 'intro' && (
-        <>
-          <Eyebrow style={{ marginBottom: '6px' }}>Anchor</Eyebrow>
-          <Heading size="lg" style={{ marginBottom: '6px' }}>Let it land.</Heading>
-        </>
-      )}
-
-      {screen === 'intro' && (
-        <div className="hp-fade-in">
-          <div style={{
-            background: tokens.goldTint, border: '1px solid ' + tokens.goldFaint,
-            borderRadius: '14px', padding: '26px', margin: '28px 0', textAlign: 'left',
-          }}>
-            <Body dim style={{ marginBottom: '10px' }}>
-              Three centres, descending. Breathe in, hold, exhale with a voiced "ah", hold.
-            </Body>
-            <Body dim>Let each breath anchor what you just declared.</Body>
-          </div>
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-            <GhostButton onClick={onBack}>← Back</GhostButton>
-            <SolidButton onClick={doStart}>Begin →</SolidButton>
-            <button onClick={doSkip} style={{
-              background: 'transparent', border: 'none', cursor: 'pointer',
-              ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-              color: tokens.whisper, textTransform: 'uppercase',
-            }}>Skip</button>
-          </div>
-        </div>
-      )}
-
-      {screen === 'running' && (
-        <div className="hp-fade-in">
-          <div style={{
-            ...sc, fontSize: '13px', letterSpacing: '0.18em', color: tokens.ghost,
-            textTransform: 'uppercase', margin: '8px 0 36px',
-          }}>
-            {OPEN_CENTRES[openCentre]}
-          </div>
-
-          <div style={{
-            position: 'relative', width: '220px', height: '220px',
-            margin: '0 auto 36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <div ref={glowRef} style={{
-              position: 'absolute', inset: 0, borderRadius: '50%',
-              background: 'radial-gradient(circle, transparent 30%, transparent 100%)',
-              pointerEvents: 'none',
-            }} />
-            <canvas ref={canvasRef} width={220} height={220}
-              style={{ position: 'absolute', inset: 0 }} />
-            <div ref={phaseTextRef} style={{
-              ...body, fontWeight: 400, color: tokens.dark, fontSize: '22px',
-              letterSpacing: '0.02em', opacity: 1, lineHeight: 1.25,
-              position: 'relative', zIndex: 1,
-              transition: 'font-size 0.5s ease, letter-spacing 0.5s ease, opacity 0.4s ease, color 0.5s ease',
-            }}>
-              {OPEN_PHASES[openPhase]?.label}
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '6px' }}>
-            {[1,2,3].map(r => (
-              <div key={r} style={{
-                height: '4px', borderRadius: '2px',
-                width: r === openRound ? '24px' : '10px',
-                background: r <= openRound ? tokens.goldChrome : tokens.goldFaint,
-                transition: 'all 0.4s ease',
-              }} />
-            ))}
-          </div>
-          <div style={{
-            ...sc, fontSize: '10px', letterSpacing: '0.18em',
-            color: tokens.whisper, textTransform: 'uppercase', marginBottom: '36px',
-          }}>
-            Round {openRound} of {OPEN_ROUNDS}
-          </div>
-
-          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', alignItems: 'center' }}>
-            <button onClick={doPause} style={{
-              background: paused ? tokens.goldChrome : 'transparent',
-              border: '1px solid ' + (paused ? tokens.goldChrome : tokens.goldFaint),
-              borderRadius: '40px', cursor: 'pointer',
-              ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-              color: paused ? '#FFFFFF' : tokens.gold, textTransform: 'uppercase',
-              padding: '8px 18px',
-            }}>{paused ? 'Resume →' : 'Pause'}</button>
-            <button onClick={doSkip} style={{
-              background: 'transparent', border: 'none', cursor: 'pointer',
-              ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-              color: tokens.whisper, textTransform: 'uppercase',
-            }}>Skip →</button>
-          </div>
-        </div>
-      )}
-
-      {screen === 'done' && (
-        <div className="hp-fade-in" style={{ padding: '28px 0' }}>
-          <Eyebrow style={{ marginBottom: '12px' }}>Anchored</Eyebrow>
-          <Heading size="md" style={{ marginBottom: '24px', color: tokens.gold }}>
-            Locked in.
-          </Heading>
-          <SolidButton onClick={onComplete}>Plan →</SolidButton>
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ──────────────────────────────────────────────────────────────────────────── = 'hp_morning_progress'
-function saveMorningProgress(data) {
-  try {
-    localStorage.setItem(MORNING_STORAGE_KEY, JSON.stringify({ ...data, date: getLocalDateStr() }))
-  } catch (e) {}
-}
-
-// GroundBeat phase persisted separately so tab-close restores breath position
-const GROUND_STORAGE_KEY = 'hp_ground_phase'
-function saveGroundPhase(phase) {
-  try { localStorage.setItem(GROUND_STORAGE_KEY, phase) } catch (e) {}
-}
-function loadGroundPhase() {
-  try { return localStorage.getItem(GROUND_STORAGE_KEY) || 'intro' } catch (e) { return 'intro' }
-}
-function clearGroundPhase() {
-  try { localStorage.removeItem(GROUND_STORAGE_KEY) } catch (e) {}
-}
-function loadMorningProgress() {
-  try {
-    const raw = localStorage.getItem(MORNING_STORAGE_KEY)
-    if (!raw) return null
-    const data = JSON.parse(raw)
-    if (data.date !== getLocalDateStr()) { localStorage.removeItem(MORNING_STORAGE_KEY); return null }
-    return data
-  } catch (e) { return null }
-}
-function clearMorningProgress() {
-  try { localStorage.removeItem(MORNING_STORAGE_KEY) } catch (e) {}
-}
-
 function MorningSequence({ userId, iamStatements, horizonSelfStatement, protectorCovenant, icalUrl, onSaveIcalUrl, onComplete, onClose }) {
-  const _saved = loadMorningProgress()
-
-  const [beat, setBeatRaw] = useState(_saved?.beat || 1)
+  const [beat, setBeat] = useState(1)
   const [sweep, setSweep] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [runId, setRunIdRaw] = useState(_saved?.runId || null)
+  const [runId, setRunId] = useState(null)
 
   // Commit
-  const [answers, setAnswersRaw] = useState(_saved?.answers || { ready: null, allowed: null, choosing: null })
+  const [answers, setAnswers] = useState({ ready: null, allowed: null, choosing: null })
   const [showCovenant, setShowCovenant] = useState(false)
 
-  // Plan
-  const [thresholds, setThresholdsRaw] = useState(_saved?.thresholds || [])
-
-  // Persisting wrappers — use these instead of raw setters
-  const beatRef = useRef(beat)
-  const answersRef = useRef(answers)
-  const thresholdsRef = useRef(thresholds)
-  const runIdRef = useRef(runId)
-  useEffect(() => { beatRef.current = beat }, [beat])
-  useEffect(() => { answersRef.current = answers }, [answers])
-  useEffect(() => { thresholdsRef.current = thresholds }, [thresholds])
-  useEffect(() => { runIdRef.current = runId }, [runId])
-
-  function persist(overrides = {}) {
-    saveMorningProgress({
-      beat: beatRef.current,
-      answers: answersRef.current,
-      thresholds: thresholdsRef.current,
-      runId: runIdRef.current,
-      ...overrides,
-    })
-  }
-
-  function setBeat(v) { setBeatRaw(v); persist({ beat: v }) }
-  function setAnswers(fn) {
-    setAnswersRaw(prev => {
-      const next = typeof fn === 'function' ? fn(prev) : fn
-      answersRef.current = next
-      saveMorningProgress({
-        beat: beatRef.current,
-        answers: next,
-        thresholds: thresholdsRef.current,
-        runId: runIdRef.current,
-      })
-      return next
-    })
-  }
-  function setThresholds(fn) {
-    setThresholdsRaw(prev => {
-      const next = typeof fn === 'function' ? fn(prev) : fn
-      persist({ thresholds: next }); return next
-    })
-  }
-  function setRunId(v) { setRunIdRaw(v); persist({ runId: v }) }
+  // Plan — thresholds the user adds
+  const [thresholds, setThresholds] = useState([])
 
   // Anchor
   const [iamIdx, setIamIdx] = useState(0)
-  const [iamExpanded, setIamExpanded] = useState(false)
   const [voicedFinal, setVoicedFinal] = useState(false)
   const [pulseKey, setPulseKey] = useState(0)
   const [fastMode, setFastMode] = useState(false)
@@ -1555,13 +812,8 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
 
   // The seven iam statements ordered by DOMAIN_ORDER
   const orderedIam = DOMAIN_ORDER
-    .map(d => ({
-      domain: d,
-      label: DOMAIN_LABELS[d],
-      text: extractIamLine(iamStatements[d]),
-      full: iamStatements[d],
-    }))
-    .filter(s => s.full && s.full.trim())
+    .map(d => ({ domain: d, label: DOMAIN_LABELS[d], text: iamStatements[d] }))
+    .filter(s => s.text && s.text.trim())
 
   const allYes = answers.ready === 'yes' && answers.allowed === 'yes' && answers.choosing === 'yes'
   const anyNo  = Object.values(answers).includes('no')
@@ -1609,8 +861,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
     setBeat(2)
   }
 
-  async function moveToIAm() {
-    // Beat 2 → 3: Ground complete
+  async function moveToPlan() {
     const rid = await ensureRun()
     if (rid && userId) {
       await supabase.from('horizon_practice_morning_runs').update({
@@ -1620,23 +871,13 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
     setBeat(3)
   }
 
-  async function moveToAnchorBreath() {
-    // Beat 3 → 4: I Am voiced, move to open breath
-    setBeat(4)
-  }
-
-  async function moveToPlan() {
-    // Beat 4 → 5: Anchor (open breath) complete
-    setBeat(5)
-  }
-
-  async function moveToAct() {
-    // Beat 5 → 6: Plan complete, persist thresholds
+  async function moveToAnchor() {
     const rid = await ensureRun()
     if (rid && userId && thresholds.length > 0) {
+      // Persist thresholds to horizon_practice_thresholds
       const today = getLocalDateStr()
       const rows = thresholds
-        .filter(t => !t.id)
+        .filter(t => !t.id)  // only insert new ones
         .map(t => ({
           user_id: userId,
           morning_run_id: rid,
@@ -1651,6 +892,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
           .from('horizon_practice_thresholds')
           .insert(rows)
           .select('id, title')
+        // Update local with real ids
         if (inserted) {
           const updated = thresholds.map(t => {
             if (t.id) return t
@@ -1664,13 +906,12 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
         plan_threshold_count: thresholds.length,
       }).eq('id', rid)
     }
-    setBeat(6)
+    setBeat(4)
   }
 
   function handleIamVoiced() {
     Chimes.iamVoiced()
     setPulseKey(k => k + 1)
-    setIamExpanded(false)
     const currentDomain = orderedIam[iamIdx].domain
     if (!voicedDomainsRef.current.includes(currentDomain)) {
       voicedDomainsRef.current = [...voicedDomainsRef.current, currentDomain]
@@ -1695,7 +936,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
         anchor_whole_voiced: true,
       }).eq('id', runId)
     }
-    setTimeout(() => moveToAnchorBreath(), 800)
+    setTimeout(() => setBeat(5), 800)
   }
 
   async function handleActComplete() {
@@ -1710,7 +951,6 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
         completed_at: now,
       }).eq('id', runId)
     }
-    clearMorningProgress()
     setTimeout(() => onComplete(thresholds), 1500)
   }
 
@@ -1736,164 +976,173 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
       <FiveBeatTracker currentBeat={beat} sweep={sweep} />
 
       {/* ━━━ COMMIT ━━━ */}
-      {beat === 1 && (() => {
-        const COMMIT_QS = [
-          { key: 'ready',    label: 'Are you ready?' },
-          { key: 'allowed',  label: 'Are you allowed?' },
-          { key: 'choosing', label: 'Are you choosing this?' },
-        ]
-        // Find first unanswered question
-        const activeIdx = COMMIT_QS.findIndex(q => answers[q.key] === null)
-        const allAnswered = activeIdx === -1
-        const currentQ = allAnswered ? null : COMMIT_QS[activeIdx]
+      {beat === 1 && (
+        <div className="hp-fade-in">
+          <Eyebrow style={{ marginBottom: '12px' }}>Commit</Eyebrow>
+          <Heading size="lg" style={{ marginBottom: '16px' }}>
+            Ready to step into your{' '}
+            <em style={{ color: tokens.gold, fontStyle: 'italic' }}>Horizon</em>?
+          </Heading>
 
-        function handleAnswer(key, ans) {
-          setAnswers(a => ({ ...a, [key]: ans }))
-        }
-
-        return (
-          <div className="hp-fade-in">
-            <Eyebrow style={{ marginBottom: '12px' }}>Commit</Eyebrow>
-
-            {/* Horizon Self statement shown throughout */}
-            {horizonSelfStatement && (
-              <div style={{
-                padding: '22px 24px', marginBottom: '28px',
-                background: tokens.bgCard, border: `1px solid ${tokens.goldChrome}`,
-                borderRadius: '12px',
-              }}>
+          <div style={{ marginTop: '28px' }}>
+            {[
+              { key: 'ready',    label: 'Are you ready to step into your Horizon Self?' },
+              { key: 'allowed',  label: 'Are you allowed to live as your Horizon Self?' },
+              { key: 'choosing', label: 'Are you choosing to step into your Horizon Self?' },
+            ].map((q) => (
+              <Card key={q.key} style={{ marginBottom: '12px', padding: '18px 22px' }}>
                 <p style={{
-                  ...body, fontSize: 'clamp(15px, 2vw, 17px)', fontWeight: 400,
-                  color: tokens.dark, lineHeight: 1.55, margin: 0,
-                }}>{horizonSelfStatement}</p>
-              </div>
-            )}
-
-            {/* One question at a time */}
-            {!allAnswered && currentQ && (
-              <div key={currentQ.key} className="hp-fade-in">
-                {/* Progress dots */}
-                <div style={{ display: 'flex', gap: '6px', marginBottom: '20px' }}>
-                  {COMMIT_QS.map((q, i) => (
-                    <div key={q.key} style={{
-                      height: '3px', flex: 1, borderRadius: '2px',
-                      background: answers[q.key] !== null
-                        ? tokens.goldChrome
-                        : i === activeIdx ? tokens.goldFaint : tokens.goldFaint,
-                      transition: 'background 0.3s',
-                    }} />
-                  ))}
-                </div>
-
-                <p style={{
-                  ...body, fontSize: 'clamp(18px, 2.4vw, 22px)', fontWeight: 400,
-                  color: tokens.meta, margin: '0 0 28px', lineHeight: 1.45,
-                }}>{currentQ.label}</p>
-
-                <div style={{ display: 'flex', gap: '10px' }}>
+                  ...serif, fontStyle: 'italic', fontSize: '17px',
+                  color: tokens.meta, margin: '0 0 14px', lineHeight: 1.4,
+                }}>{q.label}</p>
+                <div style={{ display: 'flex', gap: '8px' }}>
                   {['yes', 'no'].map(ans => (
                     <button key={ans}
-                      onClick={() => handleAnswer(currentQ.key, ans)}
+                      onClick={() => setAnswers(a => ({ ...a, [q.key]: ans }))}
                       style={{
-                        flex: 1, padding: '14px 18px',
-                        background: ans === 'yes' ? tokens.goldChrome : 'transparent',
-                        color: ans === 'yes' ? '#FFFFFF' : tokens.ghost,
-                        border: `1px solid ${ans === 'yes' ? tokens.goldChrome : tokens.goldFaint}`,
-                        borderRadius: '40px',
-                        ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em',
+                        flex: 1,
+                        background: answers[q.key] === ans
+                          ? (ans === 'yes' ? tokens.goldChrome : tokens.ghost) : 'transparent',
+                        color: answers[q.key] === ans ? '#FFFFFF'
+                          : (ans === 'yes' ? tokens.gold : tokens.ghost),
+                        border: `1px solid ${answers[q.key] === ans
+                          ? (ans === 'yes' ? tokens.goldChrome : tokens.ghost) : tokens.goldFaint}`,
+                        borderRadius: '40px', padding: '10px 18px',
+                        ...sc, fontSize: '12px', fontWeight: 600, letterSpacing: '0.18em',
                         textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s',
-                      }}
-                    >{ans === 'yes' ? 'Yes' : 'No'}</button>
+                      }}>{ans}</button>
                   ))}
                 </div>
-              </div>
-            )}
-
-            {/* All answered */}
-            {allAnswered && (
-              <div className="hp-fade-in">
-                {anyNo ? (
-                  <Card style={{ background: tokens.goldTint, marginBottom: '24px' }}>
-                    <Eyebrow color="ghost" style={{ marginBottom: '8px', fontSize: '11px' }}>A no is data</Eyebrow>
-                    <Body dim style={{ margin: 0, fontSize: '14px' }}>
-                      Run lighter today. Or close and return.
-                    </Body>
-                  </Card>
-                ) : (
-                  <div style={{
-                    padding: '16px 20px', marginBottom: '24px',
-                    background: tokens.goldTint, borderRadius: '10px',
-                    textAlign: 'center',
-                  }}>
-                    <Body dim style={{ margin: 0, fontSize: '14px' }}>Ready.</Body>
-                  </div>
-                )}
-
-                {protectorCovenant && (
-                  <div style={{ marginBottom: '24px' }}>
-                    <button onClick={() => setShowCovenant(s => !s)} style={{
-                      background: 'transparent', border: 'none', padding: '8px 0',
-                      cursor: 'pointer', ...sc, fontSize: '11px', fontWeight: 600,
-                      letterSpacing: '0.18em', color: tokens.gold,
-                      borderBottom: `1px solid ${tokens.goldFaint}`,
-                    }}>{showCovenant ? '— Hide covenant' : '+ Covenant'}</button>
-                    {showCovenant && (
-                      <div style={{
-                        marginTop: '14px', padding: '20px 22px',
-                        background: tokens.goldTint,
-                        borderLeft: `2px solid ${tokens.goldChrome}`, borderRadius: '4px',
-                      }}>
-                        <p style={{
-                          margin: 0, ...body, fontSize: '16px',
-                          color: tokens.meta, lineHeight: 1.6,
-                        }}>{protectorCovenant}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <GhostButton onClick={() => setAnswers({ ready: null, allowed: null, choosing: null })}>
-                    ← Reset
-                  </GhostButton>
-                  <SolidButton onClick={moveToGround}>
-                    {anyNo ? 'Light run →' : 'Ground →'}
-                  </SolidButton>
-                </div>
-              </div>
-            )}
+              </Card>
+            ))}
           </div>
-        )
-      })()}
 
-      {/* ━━━ GROUND — two-stage breath ━━━ */}
-      {/* ━━━ GROUND ━━━ */}
-      {beat === 2 && (
-        <GroundBeat onComplete={moveToIAm} onBack={() => setBeat(1)} />
+          {protectorCovenant && (
+            <div style={{ marginTop: '8px', marginBottom: '24px' }}>
+              <button onClick={() => setShowCovenant(s => !s)} style={{
+                background: 'transparent', border: 'none', padding: '8px 0',
+                cursor: 'pointer', ...sc, fontSize: '11px', fontWeight: 600,
+                letterSpacing: '0.18em', color: tokens.gold,
+                borderBottom: `1px solid ${tokens.goldFaint}`,
+              }}>{showCovenant ? '— Hide covenant' : '+ Covenant'}</button>
+              {showCovenant && (
+                <div style={{
+                  marginTop: '14px', padding: '20px 22px',
+                  background: tokens.goldTint,
+                  borderLeft: `2px solid ${tokens.goldChrome}`, borderRadius: '4px',
+                }}>
+                  <p style={{
+                    margin: 0, ...serif, fontSize: '16px', fontStyle: 'italic',
+                    color: tokens.meta, lineHeight: 1.6,
+                  }}>{protectorCovenant}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {anyNo && (
+            <Card style={{ background: tokens.goldTint, marginBottom: '24px' }}>
+              <Eyebrow color="ghost" style={{ marginBottom: '8px', fontSize: '11px' }}>A no is data</Eyebrow>
+              <Body dim style={{ margin: 0, fontSize: '14px' }}>
+                Run lighter today. Or close and return.
+              </Body>
+            </Card>
+          )}
+
+          <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+            {anyNo && <GhostButton onClick={moveToGround}>Light run →</GhostButton>}
+            <SolidButton onClick={moveToGround} disabled={!allYes && !anyNo}
+              style={{ display: anyNo ? 'none' : 'inline-block' }}>Ground →</SolidButton>
+          </div>
+        </div>
       )}
 
-      {/* ━━━ I AM — beat 3 ━━━ */}
-      {beat === 3 && !voicedFinal && !fastMode && orderedIam.length > 0 && (
+      {/* ━━━ GROUND — three text steps ━━━ */}
+      {beat === 2 && (
+        <div className="hp-fade-in">
+          <Eyebrow style={{ marginBottom: '12px' }}>Ground</Eyebrow>
+          <Heading size="lg" style={{ marginBottom: '16px' }}>
+            Land in the <em style={{ color: tokens.gold, fontStyle: 'italic' }}>body</em>.
+          </Heading>
+
+          <Card style={{ marginTop: '28px', padding: '36px 32px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              {[
+                { num: '01', text: 'Feet on the floor.' },
+                { num: '02', text: 'Breath through the chest.' },
+                { num: '03', text: 'Notice the room.' },
+              ].map((step, i) => (
+                <div key={step.num}
+                  className="hp-ground-step"
+                  style={{
+                    display: 'flex', alignItems: 'baseline', gap: '20px',
+                    animationDelay: `${i * 0.35}s`,
+                  }}>
+                  <span style={{
+                    ...sc, fontSize: '11px', fontWeight: 600,
+                    letterSpacing: '0.20em', color: tokens.gold, minWidth: '24px',
+                  }}>{step.num}</span>
+                  <span style={{
+                    ...serif, fontStyle: 'italic', fontSize: '22px',
+                    color: tokens.meta, lineHeight: 1.4,
+                  }}>{step.text}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between',
+            alignItems: 'center', marginTop: '28px' }}>
+            <GhostButton onClick={() => setBeat(1)}>← Back</GhostButton>
+            <SolidButton onClick={moveToPlan}>Plan →</SolidButton>
+          </div>
+        </div>
+      )}
+
+      {/* ━━━ PLAN — threshold editor ━━━ */}
+      {beat === 3 && (
+        <div className="hp-fade-in">
+          <Eyebrow style={{ marginBottom: '12px' }}>Plan</Eyebrow>
+          <Heading size="lg" style={{ marginBottom: '16px' }}>
+            Lock the <em style={{ color: tokens.gold, fontStyle: 'italic' }}>thresholds</em>.
+          </Heading>
+          <Body dim>The moments your Horizon Self will be tested today.</Body>
+
+          <div style={{ marginTop: '24px' }}>
+            <CalendarPlanBeat
+              thresholds={thresholds}
+              onChange={setThresholds}
+              icalUrl={icalUrl}
+              onSaveIcalUrl={onSaveIcalUrl}
+              userId={userId}
+            />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between',
+            alignItems: 'center', marginTop: '28px' }}>
+            <GhostButton onClick={() => setBeat(2)}>← Back</GhostButton>
+            <SolidButton onClick={moveToAnchor}>
+              Anchor →
+            </SolidButton>
+          </div>
+        </div>
+      )}
+
+      {/* ━━━ ANCHOR — single statement ━━━ */}
+      {beat === 4 && !voicedFinal && !fastMode && orderedIam.length > 0 && (
         <div className="hp-fade-in">
           <div style={{ display: 'flex', justifyContent: 'space-between',
             alignItems: 'baseline', marginBottom: '12px' }}>
-            <Eyebrow>I Am · {orderedIam[iamIdx].label}</Eyebrow>
-            <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
-              <a href="/tools/map" style={{
-                ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.16em',
-                color: tokens.ghost, textDecoration: 'none',
-                borderBottom: `1px solid ${tokens.goldFaint}`, paddingBottom: '1px',
-              }}>Edit</a>
-              <button onClick={() => setFastMode(true)} style={{
-                background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-                ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-                color: tokens.ghost, textTransform: 'uppercase',
-                borderBottom: `1px solid ${tokens.goldFaint}`,
-              }}>Fast mode</button>
-            </div>
+            <Eyebrow>Anchor · {orderedIam[iamIdx].label}</Eyebrow>
+            <button onClick={() => setFastMode(true)} style={{
+              background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+              ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
+              color: tokens.ghost, textTransform: 'uppercase',
+              borderBottom: `1px solid ${tokens.goldFaint}`,
+            }}>Fast mode</button>
           </div>
           <Heading size="lg" style={{ marginBottom: '16px' }}>
-            Declare it aloud.
+            Declare it <em style={{ color: tokens.gold, fontStyle: 'italic' }}>aloud</em>.
           </Heading>
 
           <div
@@ -1905,20 +1154,10 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
               borderRadius: '14px',
             }}>
             <p style={{
-              ...body, fontSize: 'clamp(18px, 2.6vw, 24px)', fontWeight: 400,
-              color: tokens.dark, lineHeight: 1.5,
+              ...serif, fontSize: 'clamp(22px, 3.2vw, 28px)', fontWeight: 400,
+              fontStyle: 'italic', color: tokens.gold, lineHeight: 1.45,
               margin: 0, maxWidth: '460px', marginLeft: 'auto', marginRight: 'auto',
-            }}>
-              {iamExpanded ? orderedIam[iamIdx].full : orderedIam[iamIdx].text}
-            </p>
-            {orderedIam[iamIdx].full !== orderedIam[iamIdx].text && (
-              <button onClick={() => setIamExpanded(e => !e)} style={{
-                marginTop: '14px', background: 'transparent', border: 'none',
-                cursor: 'pointer', ...sc, fontSize: '10px', fontWeight: 600,
-                letterSpacing: '0.16em', color: tokens.ghost, textTransform: 'uppercase',
-                borderBottom: `1px solid ${tokens.goldFaint}`, paddingBottom: '1px',
-              }}>{iamExpanded ? 'Less' : 'More'}</button>
-            )}
+            }}>{orderedIam[iamIdx].text}</p>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', margin: '22px 0' }}>
@@ -1934,11 +1173,11 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <button onClick={() => {
               if (iamIdx > 0) setIamIdx(iamIdx - 1)
-              else setBeat(2)
+              else setBeat(3)
             }} style={{
               background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
               ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.ghost,
-            }}>← {iamIdx === 0 ? 'Ground' : 'Back'}</button>
+            }}>← {iamIdx === 0 ? 'Plan' : 'Back'}</button>
 
             <div style={{ display: 'flex', gap: '10px' }}>
               <GhostButton onClick={handleIamVoiced}>Skip</GhostButton>
@@ -1950,28 +1189,21 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
         </div>
       )}
 
-      {/* ━━━ I AM — fast mode ━━━ */}
-      {beat === 3 && !voicedFinal && fastMode && orderedIam.length > 0 && (
+      {/* ━━━ ANCHOR — fast mode ━━━ */}
+      {beat === 4 && !voicedFinal && fastMode && orderedIam.length > 0 && (
         <div className="hp-fade-in">
           <div style={{ display: 'flex', justifyContent: 'space-between',
             alignItems: 'baseline', marginBottom: '12px' }}>
-            <Eyebrow>I Am · fast run</Eyebrow>
-            <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
-              <a href="/tools/map" style={{
-                ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.16em',
-                color: tokens.ghost, textDecoration: 'none',
-                borderBottom: `1px solid ${tokens.goldFaint}`, paddingBottom: '1px',
-              }}>Edit</a>
-              <button onClick={() => setFastMode(false)} style={{
-                background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-                ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-                color: tokens.ghost, textTransform: 'uppercase',
-                borderBottom: `1px solid ${tokens.goldFaint}`,
-              }}>One at a time</button>
-            </div>
+            <Eyebrow>Anchor · fast run</Eyebrow>
+            <button onClick={() => setFastMode(false)} style={{
+              background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+              ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
+              color: tokens.ghost, textTransform: 'uppercase',
+              borderBottom: `1px solid ${tokens.goldFaint}`,
+            }}>One at a time</button>
           </div>
           <Heading size="lg" style={{ marginBottom: '16px' }}>
-            Declare them aloud.
+            Declare them <em style={{ color: tokens.gold, fontStyle: 'italic' }}>aloud</em>.
           </Heading>
 
           <div style={{ marginTop: '24px' }}>
@@ -1983,8 +1215,8 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
               }}>
                 <Eyebrow style={{ marginBottom: '4px', fontSize: '10px' }}>{stmt.label}</Eyebrow>
                 <p style={{
-                  ...body, fontSize: '16px', color: tokens.dark,
-                  lineHeight: 1.5, margin: 0,
+                  ...serif, fontSize: '17px', fontStyle: 'italic', color: tokens.gold,
+                  lineHeight: 1.45, margin: 0,
                 }}>{stmt.text}</p>
               </div>
             ))}
@@ -1992,18 +1224,18 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
 
           <div style={{ display: 'flex', justifyContent: 'space-between',
             alignItems: 'center', marginTop: '24px' }}>
-            <GhostButton onClick={() => setBeat(2)}>← Ground</GhostButton>
+            <GhostButton onClick={() => setBeat(3)}>← Plan</GhostButton>
             <SolidButton onClick={handleFastVoiced}>Locked · the whole →</SolidButton>
           </div>
         </div>
       )}
 
-      {/* ━━━ I AM — integrated Horizon Self ━━━ */}
-      {beat === 3 && voicedFinal && (
+      {/* ━━━ ANCHOR — synthesised Horizon Self ━━━ */}
+      {beat === 4 && voicedFinal && (
         <div className="hp-fade-in">
-          <Eyebrow style={{ marginBottom: '12px' }}>I Am · integrated</Eyebrow>
+          <Eyebrow style={{ marginBottom: '12px' }}>Anchor · integrated</Eyebrow>
           <Heading size="lg" style={{ marginBottom: '16px' }}>
-            Now the whole.
+            Now the <em style={{ color: tokens.gold, fontStyle: 'italic' }}>whole</em>.
           </Heading>
           <Body dim>Once. From the integrated state.</Body>
 
@@ -2017,8 +1249,8 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
                 borderRadius: '14px',
               }}>
               <p style={{
-                ...body, fontSize: 'clamp(17px, 2.4vw, 21px)', fontWeight: 400,
-                color: tokens.dark, lineHeight: 1.6, margin: 0,
+                ...serif, fontSize: 'clamp(19px, 2.6vw, 23px)', fontWeight: 400,
+                fontStyle: 'italic', color: tokens.gold, lineHeight: 1.55, margin: 0,
               }}>{horizonSelfStatement}</p>
             </div>
           ) : (
@@ -2035,52 +1267,17 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
               setVoicedFinal(false)
               if (!fastMode) setIamIdx(Math.max(0, orderedIam.length - 1))
             }}>← Back</GhostButton>
-            <SolidButton onClick={handleHorizonSelfVoiced}>Locked · Anchor →</SolidButton>
+            <SolidButton onClick={handleHorizonSelfVoiced}>Locked · Act →</SolidButton>
           </div>
         </div>
       )}
 
-      {/* ━━━ ANCHOR — open breath, beat 4 ━━━ */}
-      {beat === 4 && (
-        <OpenBreathBeat onComplete={moveToPlan} onBack={() => {
-          setVoicedFinal(true)
-          setBeat(3)
-        }} />
-      )}
-
-      {/* ━━━ PLAN — beat 5 ━━━ */}
+      {/* ━━━ ACT ━━━ */}
       {beat === 5 && (
-        <div className="hp-fade-in">
-          <Eyebrow style={{ marginBottom: '12px' }}>Plan</Eyebrow>
-          <Heading size="lg" style={{ marginBottom: '16px' }}>
-            Look at your day.
-          </Heading>
-          <p style={{ ...body, fontSize: '16px', color: tokens.dark, lineHeight: 1.6, margin: '0 0 24px' }}>Go through your get-to-do list and visualise meeting each moment as your Horizon Self.</p>
-
-          <div style={{ marginTop: '24px' }}>
-            <CalendarPlanBeat
-              thresholds={thresholds}
-              onChange={setThresholds}
-              icalUrl={icalUrl}
-              onSaveIcalUrl={onSaveIcalUrl}
-              userId={userId}
-            />
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between',
-            alignItems: 'center', marginTop: '28px' }}>
-            <GhostButton onClick={() => setBeat(4)}>← Back</GhostButton>
-            <SolidButton onClick={moveToAct}>Act →</SolidButton>
-          </div>
-        </div>
-      )}
-
-      {/* ━━━ ACT — beat 6 ━━━ */}
-      {beat === 6 && (
         <div className="hp-fade-in" style={{ textAlign: 'center', padding: '40px 0' }}>
           <Eyebrow style={{ marginBottom: '14px' }}>Act</Eyebrow>
           <Heading size="lg" style={{ marginBottom: '14px' }}>
-            You are live.
+            You are <em style={{ color: tokens.gold, fontStyle: 'italic' }}>live</em>.
           </Heading>
 
           {firstThreshold && (
@@ -2094,7 +1291,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
                 First threshold{firstThreshold.time_label ? ` · ${firstThreshold.time_label}` : ''}
               </Eyebrow>
               <p style={{
-                ...body, fontSize: '18px',
+                ...serif, fontSize: '18px', fontStyle: 'italic',
                 color: tokens.meta, margin: 0, lineHeight: 1.4,
               }}>{firstThreshold.title}</p>
             </div>
@@ -2118,13 +1315,13 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
 function HorizonSelfRefresh({ open, onClose, variant, prefilledTask, onComplete }) {
   const [step, setStep] = useState(1)
   const [task, setTask] = useState('')
-  const [response, setResponse] = useState('')
+  const [his, setHis] = useState('')
 
   useEffect(() => {
     if (open) {
       setStep(1)
       setTask(prefilledTask || '')
-      setResponse('')
+      setHis('')
     }
   }, [open, prefilledTask])
 
@@ -2134,7 +1331,7 @@ function HorizonSelfRefresh({ open, onClose, variant, prefilledTask, onComplete 
   function finish() {
     if (isCross) Chimes.cross()
     else Chimes.backIn()
-    onComplete({ task, response, variant })
+    onComplete({ task, his, variant })
   }
 
   return (
@@ -2150,7 +1347,7 @@ function HorizonSelfRefresh({ open, onClose, variant, prefilledTask, onComplete 
 
       {step === 1 && (
         <div className="hp-fade-in">
-          <Heading size="md" style={{ marginBottom: '24px' }}>
+          <Heading size="md" italic style={{ marginBottom: '24px' }}>
             What's in front of you?
           </Heading>
           <textarea value={task} onChange={e => setTask(e.target.value)} autoFocus
@@ -2163,22 +1360,22 @@ function HorizonSelfRefresh({ open, onClose, variant, prefilledTask, onComplete 
 
       {step === 2 && (
         <div className="hp-fade-in">
-          <Heading size="md" style={{ marginBottom: '24px' }}>
+          <Heading size="md" italic style={{ marginBottom: '24px' }}>
             How would your Horizon Self handle this?
           </Heading>
-          <textarea value={response} onChange={e => setResponse(e.target.value)} autoFocus
+          <textarea value={his} onChange={e => setHis(e.target.value)} autoFocus
             style={{ ...inputStyle(), minHeight: '110px' }}/>
           <div style={{ marginTop: '22px', display: 'flex', justifyContent: 'space-between' }}>
             <GhostButton onClick={() => setStep(1)}>← Back</GhostButton>
-            <SolidButton onClick={() => setStep(3)} disabled={!response.trim()}>Next →</SolidButton>
+            <SolidButton onClick={() => setStep(3)} disabled={!his.trim()}>Next →</SolidButton>
           </div>
         </div>
       )}
 
       {step === 3 && (
         <div className="hp-fade-in">
-          <Heading size="md" style={{ marginBottom: '8px' }}>
-            Anchor in. Execute as that version of you.
+          <Heading size="md" italic style={{ marginBottom: '8px' }}>
+            Anchor in. Execute as him.
           </Heading>
 
           <div style={{ marginTop: '24px' }}>
@@ -2189,13 +1386,13 @@ function HorizonSelfRefresh({ open, onClose, variant, prefilledTask, onComplete 
               borderLeft: `1px solid ${tokens.goldFaint}`,
             }}>{task}</p>
 
-            <Eyebrow style={{ marginBottom: '8px', fontSize: '11px' }}>Your approach</Eyebrow>
+            <Eyebrow style={{ marginBottom: '8px', fontSize: '11px' }}>Your move</Eyebrow>
             <p style={{
-              ...body, fontSize: '19px', fontWeight: 400, color: tokens.dark,
-              lineHeight: 1.55, margin: 0, padding: '20px 22px',
-              background: tokens.bgCard, borderRadius: '12px',
+              ...serif, fontStyle: 'italic', fontSize: '21px', color: tokens.gold,
+              lineHeight: 1.5, margin: 0, padding: '20px 22px',
+              background: tokens.goldTint, borderRadius: '12px',
               border: `1px solid ${tokens.goldChrome}`,
-            }}>{response}</p>
+            }}>{his}</p>
           </div>
 
           <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between' }}>
@@ -2222,13 +1419,13 @@ function HorizonSelfPanel({ statement, onRefresh }) {
       <Eyebrow style={{ marginBottom: '14px' }}>Your Horizon Self</Eyebrow>
       {statement ? (
         <p style={{
-          ...body, fontSize: 'clamp(17px, 2.4vw, 20px)', fontWeight: 400,
-          color: tokens.dark, lineHeight: 1.6,
+          ...serif, fontStyle: 'italic', fontSize: 'clamp(17px, 2.4vw, 20px)',
+          color: tokens.meta, lineHeight: 1.55,
           maxWidth: '520px', margin: '0 auto 24px',
         }}>{statement}</p>
       ) : (
         <p style={{
-          ...body, fontSize: '15px',
+          ...body, fontStyle: 'italic', fontSize: '15px',
           color: tokens.ghost, lineHeight: 1.5,
           maxWidth: '420px', margin: '0 auto 24px',
         }}>Your integrated statement lands here once your Map's synthesis runs.</p>
@@ -2243,122 +1440,70 @@ function HorizonSelfPanel({ statement, onRefresh }) {
 // ────────────────────────────────────────────────────────────────────────────
 // Active Thresholds — with Cross action
 // ────────────────────────────────────────────────────────────────────────────
-function TaskList({ thresholds, onComplete, onUncomplete, onCross }) {
+function ActiveThresholds({ thresholds, onCross }) {
   if (!thresholds || thresholds.length === 0) {
     return (
       <div>
-        <Eyebrow style={{ marginBottom: '12px' }}>Today's tasks</Eyebrow>
+        <Eyebrow style={{ marginBottom: '12px' }}>Active thresholds</Eyebrow>
         <Card style={{ textAlign: 'center', padding: '24px' }}>
           <Body dim italic style={{ margin: 0 }}>None set for today.</Body>
         </Card>
       </div>
     )
   }
-
-  const pending   = thresholds.filter(t => !t.completed_at)
-  const completed = thresholds.filter(t =>  t.completed_at)
-
-  const TaskRow = ({ t }) => {
-    const isDone    = !!t.completed_at
-    const isCrossed = !!t.crossed_at
-    const isCarried = !!t.carried_from_id
-
-    return (
-      <div style={{
-        display: 'flex', alignItems: 'flex-start', gap: '14px',
-        padding: '14px 0',
-        borderBottom: `1px solid ${tokens.goldFaint}`,
-        opacity: isDone ? 0.55 : 1,
-        transition: 'opacity 0.3s ease',
-      }}>
-        {/* Tick circle — borrowed from TargetSprint */}
-        <button
-          onClick={() => isDone ? onUncomplete(t) : onComplete(t)}
-          style={{
-            flexShrink: 0, marginTop: '2px',
-            width: '22px', height: '22px', borderRadius: '50%',
-            border: `1.5px solid ${isDone ? tokens.goldChrome : 'rgba(200,146,42,0.35)'}`,
-            background: isDone ? tokens.goldChrome : 'transparent',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', transition: 'all 0.2s ease',
-            padding: 0,
-          }}
-          aria-label={isDone ? 'Mark incomplete' : 'Mark complete'}
-        >
-          {isDone && (
-            <span style={{ color: '#FFFFFF', fontSize: '13px', lineHeight: 1 }}>✓</span>
-          )}
-        </button>
-
-        {/* Content */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
-            <span style={{
-              ...body, fontSize: '14.5px', color: tokens.meta, lineHeight: 1.4,
-              textDecoration: isDone ? 'line-through' : 'none',
-              textDecorationColor: tokens.goldFaint,
-            }}>{t.title}</span>
-            {isCarried && !isDone && (
-              <span style={{
-                ...sc, fontSize: '9px', letterSpacing: '0.16em',
-                color: tokens.ghost, textTransform: 'uppercase',
-              }}>carried</span>
-            )}
-          </div>
-          {(t.time_label || t.note) && (
-            <div style={{
-              ...body, fontSize: '12px', color: tokens.ghost,
-              marginTop: '3px', lineHeight: 1.4,
-            }}>
-              {[t.time_label, t.note].filter(Boolean).join(' · ')}
-            </div>
-          )}
-        </div>
-
-        {/* Cross button — only on pending, uncrossed tasks */}
-        {!isDone && !isCrossed && (
-          <button onClick={() => onCross(t)} style={{
-            flexShrink: 0,
-            background: 'transparent', color: tokens.gold,
-            border: `1px solid ${tokens.goldFaint}`, borderRadius: '40px',
-            padding: '5px 12px', ...sc, fontSize: '10px', fontWeight: 600,
-            letterSpacing: '0.14em', cursor: 'pointer', whiteSpace: 'nowrap',
-          }}>Cross →</button>
-        )}
-        {!isDone && isCrossed && (
-          <span style={{
-            flexShrink: 0,
-            ...sc, fontSize: '10px', fontWeight: 600,
-            letterSpacing: '0.18em', color: tokens.gold,
-          }}>crossed</span>
-        )}
-      </div>
-    )
-  }
-
   return (
     <div>
-      <Eyebrow style={{ marginBottom: '4px' }}>Today's tasks</Eyebrow>
-
-      <div style={{ marginBottom: completed.length > 0 ? '20px' : 0 }}>
-        {pending.map(t => <TaskRow key={t.id} t={t} />)}
-        {pending.length === 0 && (
-          <div style={{ padding: '16px 0' }}>
-            <Body dim italic style={{ margin: 0 }}>All done.</Body>
-          </div>
-        )}
+      <Eyebrow style={{ marginBottom: '12px' }}>Active thresholds</Eyebrow>
+      <div>
+        {thresholds.map((t) => {
+          const isCrossed = !!t.crossed_at
+          return (
+            <div key={t.id} style={{
+              padding: '14px 18px', marginBottom: '8px',
+              background: isCrossed ? tokens.goldTint : tokens.bgCard,
+              border: `1px solid ${tokens.goldFaint}`, borderRadius: '12px',
+              display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center', gap: '12px',
+              opacity: isCrossed ? 0.75 : 1, transition: 'all 0.4s ease',
+            }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{
+                  ...sc, fontSize: '10px', letterSpacing: '0.16em',
+                  color: tokens.gold, marginBottom: '4px',
+                }}>
+                  {t.time_label || 'No time set'}{isCrossed ? ' · CROSSED' : ''}
+                </div>
+                <div style={{
+                  ...body, fontSize: '14.5px', color: tokens.meta, lineHeight: 1.4,
+                  textDecoration: isCrossed ? 'line-through' : 'none',
+                  textDecorationColor: tokens.goldFaint,
+                }}>{t.title}</div>
+                {t.note && (
+                  <div style={{
+                    ...body, fontSize: '12.5px', fontStyle: 'italic',
+                    color: tokens.ghost, marginTop: '3px', lineHeight: 1.4,
+                  }}>{t.note}</div>
+                )}
+              </div>
+              {!isCrossed && (
+                <button onClick={() => onCross(t)} style={{
+                  background: 'transparent', color: tokens.gold,
+                  border: `1px solid ${tokens.goldFaint}`, borderRadius: '40px',
+                  padding: '6px 14px', ...sc, fontSize: '10.5px', fontWeight: 600,
+                  letterSpacing: '0.14em', cursor: 'pointer', whiteSpace: 'nowrap',
+                  position: 'relative', overflow: 'hidden',
+                }}>Cross →</button>
+              )}
+              {isCrossed && (
+                <span style={{
+                  ...sc, fontSize: '11px', fontWeight: 600,
+                  letterSpacing: '0.18em', color: tokens.gold,
+                }}>✓</span>
+              )}
+            </div>
+          )
+        })}
       </div>
-
-      {completed.length > 0 && (
-        <div style={{ marginTop: '8px' }}>
-          <div style={{
-            ...sc, fontSize: '9px', letterSpacing: '0.18em',
-            color: tokens.ghost, textTransform: 'uppercase',
-            marginBottom: '4px',
-          }}>Done</div>
-          {completed.map(t => <TaskRow key={t.id} t={t} />)}
-        </div>
-      )}
     </div>
   )
 }
@@ -2406,7 +1551,7 @@ function HitDriftBar({ onFlag, onCapture }) {
           onMouseEnter={e => e.currentTarget.style.background = tokens.goldGlow}
           onMouseLeave={e => e.currentTarget.style.background = tokens.goldTint}>
           <Eyebrow style={{ marginBottom: '6px', fontSize: '10px' }}>Hit</Eyebrow>
-          <span style={flagLabelStyle}>I showed up. World responded.</span>
+          <span style={flagLabelStyle}>I was him. World responded.</span>
         </button>
         <button onClick={(e) => handleFlag(e, 'drift')}
           style={flagBtnStyle('transparent', tokens.goldFaint)}
@@ -2581,8 +1726,8 @@ function AmbientStrip({ iam, listening }) {
           : `External read · ${item.from?.split(' ')[0] || 'they'}`}
       </Eyebrow>
       <p style={{
-        ...body, fontSize: '17px', fontWeight: 400,
-        color: tokens.dark, lineHeight: 1.55, margin: 0,
+        ...serif, fontStyle: 'italic', fontSize: '19px', fontWeight: 400,
+        color: tokens.gold, lineHeight: 1.5, margin: 0,
       }}>{item.text}</p>
       {!isIam && item.from && (
         <p style={{
@@ -2831,14 +1976,6 @@ export function HorizonPracticePage() {
   const { user, loading: authLoading } = useAuth()
   const { loading: accessLoading } = useAccess('horizon-practice')
 
-  // Streak
-  const {
-    streak, streakLoading, streakBroken, pendingMilestone,
-    isCadenceDay, recordEngagement, saveCadence, saveBadgePermission, clearMilestone,
-  } = useStreak(user)
-  const [cadenceSetupOpen, setCadenceSetupOpen] = useState(false)
-  const [badgeAsked, setBadgeAsked] = useState(false)
-
   // Profile data
   const [profileLoading, setProfileLoading] = useState(true)
   const [iamStatements, setIamStatements] = useState({})  // { path: '...', spark: '...' }
@@ -2852,10 +1989,7 @@ export function HorizonPracticePage() {
   const [todayRun, setTodayRun] = useState(null)
   const [thresholds, setThresholds] = useState([])
   const [entries, setEntries] = useState([])  // last ~30 days
-  const [view, setView] = useState('loading')  // loading | hub | morning | refresh | evening | log
-
-  // Sprint tile data
-  const [activeSprint, setActiveSprint] = useState(null)  // null | { domains, status }
+  const [view, setView] = useState('loading')  // loading | morning | day
 
   // Modal state
   const [refreshOpen, setRefreshOpen] = useState(false)
@@ -2946,53 +2080,6 @@ export function HorizonPracticePage() {
 
         if (thresholdRows) setThresholds(thresholdRows)
 
-        // ── Silent carryover: roll incomplete tasks from yesterday ──────────
-        // Only run if user exists and we have their id
-        if (user?.id) {
-          const yesterday = new Date()
-          yesterday.setDate(yesterday.getDate() - 1)
-          const yesterdayStr = getLocalDateStr(yesterday)
-
-          // Fetch yesterday's incomplete tasks (no completed_at)
-          const { data: yesterdayTasks } = await supabase
-            .from('horizon_practice_thresholds')
-            .select('id, title, time_label, note, source, source_ref')
-            .eq('user_id', user.id)
-            .eq('run_date', yesterdayStr)
-            .is('completed_at', null)
-          if (cancelled) return
-
-          if (yesterdayTasks?.length) {
-            // Find which ones are already carried into today (idempotent guard)
-            const alreadyCarried = (thresholdRows || [])
-              .filter(t => t.carried_from_id)
-              .map(t => t.carried_from_id)
-
-            const toCarry = yesterdayTasks.filter(t => !alreadyCarried.includes(t.id))
-
-            if (toCarry.length > 0) {
-              const newRows = toCarry.map(t => ({
-                user_id: user.id,
-                title: t.title,
-                time_label: t.time_label || null,
-                note: t.note || null,
-                source: t.source || 'manual',
-                source_ref: t.source_ref || null,
-                run_date: today,
-                carried_from_id: t.id,
-              }))
-              const { data: carried } = await supabase
-                .from('horizon_practice_thresholds')
-                .insert(newRows)
-                .select('*')
-              if (cancelled) return
-              if (carried) {
-                setThresholds(existing => [...(existing || []), ...carried])
-              }
-            }
-          }
-        }
-
         // Recent entries (last 30 days, capped at 100 for the log view)
         const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString()
         const { data: entryRows } = await supabase
@@ -3006,25 +2093,13 @@ export function HorizonPracticePage() {
 
         if (entryRows) setEntries(entryRows)
 
-        // Load active or draft sprint for hub tile
-        const { data: sprintRow } = await supabase
-          .from('target_sprint_sessions')
-          .select('id, domains, status')
-          .eq('user_id', user.id)
-          .in('status', ['active', 'draft'])
-          .order('updated_at', { ascending: false })
-          .limit(1)
-          .maybeSingle()
-        if (cancelled) return
-        if (sprintRow?.domains?.length) setActiveSprint(sprintRow)
-
-        // Always land on the hub
-        setView('hub')
-        recordEngagement()
+        // Determine initial view: if morning complete today, go to day surface
+        if (runRow?.completed_at) setView('day')
+        else setView('morning')
 
       } catch (err) {
         console.error('Horizon Practice load error:', err)
-        setView('hub')  // graceful fallback
+        setView('day')  // graceful fallback
       } finally {
         if (!cancelled) setProfileLoading(false)
       }
@@ -3055,8 +2130,7 @@ export function HorizonPracticePage() {
         .order('time_label', { ascending: true, nullsFirst: false })
       if (thresholdRows) setThresholds(thresholdRows)
     }
-    setView('hub')
-    recordEngagement()
+    setView('day')
   }
 
   async function handleHitOrDrift(kind, payload) {
@@ -3113,7 +2187,7 @@ export function HorizonPracticePage() {
     setReceiptOpen(false)
   }
 
-  async function handleRefreshComplete({ task, response, variant }) {
+  async function handleRefreshComplete({ task, his, variant }) {
     if (!user) return
     screenFlash()
     const isCross = variant === 'cross'
@@ -3122,9 +2196,9 @@ export function HorizonPracticePage() {
       .insert({
         user_id: user.id,
         kind: 'hit',
-        text: `${task} · ${response}`,
+        text: `${task} · ${his}`,
         refresh_task: task,
-        refresh_response: response,
+        refresh_his: his,
         refresh_variant: variant,
         threshold_id: isCross ? currentCrossingId : null,
       })
@@ -3154,30 +2228,6 @@ export function HorizonPracticePage() {
     setRefreshOpen(true)
   }
 
-  async function handleComplete(threshold) {
-    if (!user || !threshold.id) return
-    const now = new Date().toISOString()
-    await supabase
-      .from('horizon_practice_thresholds')
-      .update({ completed_at: now })
-      .eq('id', threshold.id)
-    Chimes.hit()
-    setThresholds(ts => ts.map(t =>
-      t.id === threshold.id ? { ...t, completed_at: now } : t
-    ))
-  }
-
-  async function handleUncomplete(threshold) {
-    if (!user || !threshold.id) return
-    await supabase
-      .from('horizon_practice_thresholds')
-      .update({ completed_at: null })
-      .eq('id', threshold.id)
-    setThresholds(ts => ts.map(t =>
-      t.id === threshold.id ? { ...t, completed_at: null } : t
-    ))
-  }
-
   function handleStandardRefresh() {
     setRefreshVariant('standard')
     setRefreshTask('')
@@ -3203,7 +2253,7 @@ export function HorizonPracticePage() {
   if (authLoading || accessLoading || profileLoading) {
     return (
       <div style={{ background: tokens.bg, minHeight: '100vh' }}>
-        <Nav activePath="nextus-self" hideHamburger={view === 'morning' || view === 'evening'} />
+        <Nav activePath="nextus-self" />
         <div className="loading" />
       </div>
     )
@@ -3211,7 +2261,7 @@ export function HorizonPracticePage() {
 
   return (
     <div style={{ background: tokens.bg, minHeight: '100vh' }}>
-        <Nav activePath="nextus-self" hideHamburger={view === 'morning' || view === 'evening'} />
+        <Nav activePath="nextus-self" />
 
         {/* Global animations */}
         <style>{`
@@ -3241,383 +2291,7 @@ export function HorizonPracticePage() {
           <MapRedirect onSkip={() => setSkipMap(true)} />
         )}
 
-        {/* ── Hub ── */}
-        {(hasMap || skipMap) && view === 'hub' && (
-          <div className="hp-fade-in" style={{
-            maxWidth: '640px', margin: '0 auto',
-            padding: 'clamp(88px, 10vw, 112px) clamp(20px, 4vw, 40px) 80px',
-          }}>
-
-            {/* ── Milestone celebration overlay ── */}
-            {pendingMilestone && (
-              <div style={{
-                position: 'fixed', inset: 0, zIndex: 1000,
-                background: 'rgba(15,21,35,0.85)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                padding: '24px',
-              }}>
-                <div className="hp-fade-in" style={{
-                  background: tokens.bg, borderRadius: '20px',
-                  padding: '48px 36px', maxWidth: '360px', width: '100%',
-                  textAlign: 'center',
-                  border: `1px solid ${tokens.goldChrome}`,
-                }}>
-                  <div style={{ fontSize: '3rem', marginBottom: '16px' }}>
-                    {pendingMilestone === 21 ? '✦' : '✦✦'}
-                  </div>
-                  <div style={{
-                    ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.22em',
-                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '12px',
-                  }}>
-                    {pendingMilestone} days
-                  </div>
-                  <Heading size="lg" style={{ marginBottom: '12px' }}>
-                    {pendingMilestone === 21
-                      ? 'The habit is taking root.'
-                      : 'Forty days. This is who you are now.'}
-                  </Heading>
-                  <Body dim style={{ marginBottom: '32px' }}>
-                    {pendingMilestone === 21
-                      ? 'Twenty-one consecutive days. The research says the groove is forming. Keep going.'
-                      : 'Forty days in. This is no longer something you do — it\'s something you are.'}
-                  </Body>
-                  <button onClick={clearMilestone} style={{
-                    background: tokens.gold, color: '#FFFFFF',
-                    border: 'none', borderRadius: '10px',
-                    padding: '14px 32px', cursor: 'pointer',
-                    ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em',
-                    textTransform: 'uppercase',
-                  }}>Continue →</button>
-                </div>
-              </div>
-            )}
-
-            {/* ── Return prompt (streak broken) ── */}
-            {streakBroken && (
-              <div style={{
-                background: '#FFFFFF',
-                border: `1px solid ${tokens.goldChrome}`,
-                borderRadius: '14px', padding: '22px 24px',
-                marginBottom: '28px',
-                display: 'flex', alignItems: 'center',
-                justifyContent: 'space-between', gap: '16px',
-              }}>
-                <div>
-                  <div style={{
-                    ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px',
-                  }}>Welcome back</div>
-                  <Body style={{ margin: 0, fontSize: '14.5px' }}>
-                    Your practice is here. Pick it back up.
-                  </Body>
-                </div>
-                <button onClick={() => setView('morning')} style={{
-                  flexShrink: 0,
-                  background: tokens.gold, color: '#FFFFFF',
-                  border: 'none', borderRadius: '8px',
-                  padding: '10px 18px', cursor: 'pointer',
-                  ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
-                }}>Begin →</button>
-              </div>
-            )}
-
-            {/* ── Greeting + streak counter ── */}
-            <div style={{ marginBottom: '40px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px' }}>
-              <Heading size="xl">
-                {getGreeting()}
-                {user && <>, <em style={{ color: tokens.gold, fontStyle: 'normal' }}>{
-                  user.user_metadata?.full_name?.split(' ')[0] ||
-                  user.user_metadata?.name?.split(' ')[0] ||
-                  (user.email.split('@')[0].charAt(0).toUpperCase() + user.email.split('@')[0].slice(1))
-                }</em></>}.
-              </Heading>
-              {streak && streak.streak_current > 0 && (
-                <button
-                  onClick={() => setCadenceSetupOpen(true)}
-                  title="Streak settings"
-                  style={{
-                    flexShrink: 0, marginTop: '6px',
-                    background: 'transparent', border: `1px solid ${tokens.goldFaint}`,
-                    borderRadius: '40px', padding: '6px 14px',
-                    display: 'flex', alignItems: 'center', gap: '6px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <span style={{ fontSize: '14px' }}>✦</span>
-                  <span style={{
-                    ...sc, fontSize: '11px', fontWeight: 700,
-                    letterSpacing: '0.12em', color: tokens.gold,
-                  }}>{streak.streak_current}</span>
-                </button>
-              )}
-              {streak && streak.streak_current === 0 && !streakLoading && (
-                <button
-                  onClick={() => setCadenceSetupOpen(true)}
-                  style={{
-                    flexShrink: 0, marginTop: '6px',
-                    background: 'transparent', border: `1px solid ${tokens.goldFaint}`,
-                    borderRadius: '40px', padding: '6px 14px',
-                    cursor: 'pointer',
-                    ...sc, fontSize: '10px', fontWeight: 600,
-                    letterSpacing: '0.14em', color: tokens.ghost,
-                    textTransform: 'uppercase',
-                  }}
-                >Set streak</button>
-              )}
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-
-              {/* Morning Practice */}
-              <button onClick={() => setView('morning')} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                background: todayRun?.completed_at ? tokens.bgCard : '#FFFFFF',
-                border: `1px solid ${todayRun?.completed_at ? tokens.goldFaint : tokens.goldChrome}`,
-                borderRadius: '12px', padding: '22px 26px',
-                cursor: 'pointer', textAlign: 'left', width: '100%',
-                transition: 'border-color 0.2s ease',
-              }}>
-                <div>
-                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em',
-                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
-                    Morning Practice
-                  </div>
-                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
-                    {todayRun?.completed_at ? 'Complete — run again' : 'Commit · Ground · I Am · Anchor · Plan · Act'}
-                  </div>
-                </div>
-                <span style={{ ...sc, fontSize: '18px', color: tokens.goldChrome, marginLeft: '16px' }}>→</span>
-              </button>
-
-              {/* Horizon Self Refresh */}
-              <button onClick={() => { setRefreshVariant('standard'); setRefreshTask(''); setRefreshOpen(true) }} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                background: '#FFFFFF',
-                border: `1px solid ${tokens.goldFaint}`,
-                borderRadius: '12px', padding: '22px 26px',
-                cursor: 'pointer', textAlign: 'left', width: '100%',
-                transition: 'border-color 0.2s ease',
-              }}>
-                <div>
-                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em',
-                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
-                    Horizon Self Refresh
-                  </div>
-                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
-                    What's in front of you. How your Horizon Self handles it.
-                  </div>
-                </div>
-                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
-              </button>
-
-              {/* Sprint */}
-              <button onClick={() => window.location.href = '/tools/target-sprint'} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                background: '#FFFFFF',
-                border: `1px solid ${tokens.goldFaint}`,
-                borderRadius: '12px', padding: '22px 26px',
-                cursor: 'pointer', textAlign: 'left', width: '100%',
-                transition: 'border-color 0.2s ease',
-              }}>
-                <div>
-                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em',
-                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
-                    {activeSprint?.status === 'active' ? 'Active Sprint' : activeSprint?.status === 'draft' ? 'Sprint in Setup' : 'Target Stretch'}
-                  </div>
-                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
-                    {activeSprint?.domains?.length
-                      ? activeSprint.domains.map(d => DOMAIN_LABELS[d] || d).join(' · ')
-                      : 'No active sprint — start one'}
-                  </div>
-                </div>
-                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
-              </button>
-
-              {/* Evening Integrate */}
-              <button onClick={() => setView('evening')} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                background: '#FFFFFF',
-                border: `1px solid ${tokens.goldFaint}`,
-                borderRadius: '12px', padding: '22px 26px',
-                cursor: 'pointer', textAlign: 'left', width: '100%',
-                transition: 'border-color 0.2s ease',
-              }}>
-                <div>
-                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em',
-                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
-                    Evening Integrate
-                  </div>
-                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
-                    Close the day. What landed. What to carry forward.
-                  </div>
-                </div>
-                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
-              </button>
-
-              {/* Journal / Log */}
-              <button onClick={() => setLogOpen(true)} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                background: '#FFFFFF',
-                border: `1px solid ${tokens.goldFaint}`,
-                borderRadius: '12px', padding: '22px 26px',
-                cursor: 'pointer', textAlign: 'left', width: '100%',
-                transition: 'border-color 0.2s ease',
-              }}>
-                <div>
-                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em',
-                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
-                    Journal
-                  </div>
-                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
-                    {entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length > 0
-                      ? `${entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length} entr${entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length === 1 ? 'y' : 'ies'} today`
-                      : 'Hits · Drifts · Receipts · Listening'}
-                  </div>
-                </div>
-                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
-              </button>
-
-            </div>
-
-            {/* Tasks — shown when any exist for today */}
-            {thresholds.length > 0 && (
-              <div style={{ marginTop: '36px' }}>
-                <TaskList
-                  thresholds={thresholds}
-                  onComplete={handleComplete}
-                  onUncomplete={handleUncomplete}
-                  onCross={handleCross}
-                />
-              </div>
-            )}
-
-            {/* ── Badge permission ask (Android, after first engagement) ── */}
-            {streak && streak.streak_current >= 1 && !streak.badge_permission && !badgeAsked && 'setAppBadge' in navigator && (
-              <div style={{
-                marginTop: '24px',
-                background: '#FFFFFF',
-                border: `1px solid ${tokens.goldFaint}`,
-                borderRadius: '12px', padding: '18px 20px',
-                display: 'flex', alignItems: 'center',
-                justifyContent: 'space-between', gap: '12px',
-              }}>
-                <Body dim style={{ margin: 0, fontSize: '13px', lineHeight: 1.5 }}>
-                  Show a reminder dot on the app icon when your practice is waiting?
-                </Body>
-                <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
-                  <button onClick={() => { setBadgeAsked(true); saveBadgePermission(true) }} style={{
-                    background: tokens.gold, color: '#FFF', border: 'none',
-                    borderRadius: '8px', padding: '8px 14px', cursor: 'pointer',
-                    ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.12em',
-                  }}>Yes</button>
-                  <button onClick={() => setBadgeAsked(true)} style={{
-                    background: 'transparent', color: tokens.ghost,
-                    border: `1px solid ${tokens.goldFaint}`,
-                    borderRadius: '8px', padding: '8px 14px', cursor: 'pointer',
-                    ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.12em',
-                  }}>No</button>
-                </div>
-              </div>
-            )}
-
-            <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
-              <button onClick={() => setCadenceSetupOpen(true)} style={{
-                background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-                ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-                color: tokens.whisper, textTransform: 'uppercase',
-              }}>Streak</button>
-              <button onClick={() => setSettingsOpen(true)} style={{
-                background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-                ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-                color: tokens.whisper, textTransform: 'uppercase',
-              }}>Settings</button>
-            </div>
-
-            {/* ── Cadence setup modal ── */}
-            {cadenceSetupOpen && (
-              <div style={{
-                position: 'fixed', inset: 0, zIndex: 900,
-                background: 'rgba(15,21,35,0.7)',
-                display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
-                padding: '0',
-              }} onClick={() => setCadenceSetupOpen(false)}>
-                <div onClick={e => e.stopPropagation()} style={{
-                  background: tokens.bg, borderRadius: '20px 20px 0 0',
-                  padding: '32px 28px 48px', width: '100%', maxWidth: '480px',
-                  borderTop: `1px solid ${tokens.goldFaint}`,
-                }}>
-                  <div style={{
-                    ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.22em',
-                    color: tokens.gold, textTransform: 'uppercase', marginBottom: '16px',
-                  }}>Streak cadence</div>
-                  <Heading size="md" style={{ marginBottom: '8px' }}>
-                    How often are you committing?
-                  </Heading>
-                  <Body dim style={{ marginBottom: '24px', fontSize: '13.5px' }}>
-                    Your streak only counts — and the reminder only fires — on days you commit to.
-                  </Body>
-                  {[
-                    { key: 'daily',    label: 'Every day' },
-                    { key: 'weekdays', label: 'Weekdays (Mon–Fri)' },
-                    { key: '3x',       label: '3× a week (Mon · Wed · Fri)' },
-                  ].map(opt => (
-                    <button key={opt.key} onClick={async () => {
-                      await saveCadence(opt.key, null)
-                      setCadenceSetupOpen(false)
-                    }} style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                      width: '100%', background: streak?.cadence === opt.key ? tokens.goldTint : '#FFFFFF',
-                      border: `1px solid ${streak?.cadence === opt.key ? tokens.goldChrome : tokens.goldFaint}`,
-                      borderRadius: '10px', padding: '16px 20px', marginBottom: '10px',
-                      cursor: 'pointer', textAlign: 'left',
-                    }}>
-                      <span style={{ ...body, fontSize: '14.5px', color: tokens.meta }}>{opt.label}</span>
-                      {streak?.cadence === opt.key && (
-                        <span style={{ color: tokens.gold, fontSize: '14px' }}>✓</span>
-                      )}
-                    </button>
-                  ))}
-
-                  {streak && (
-                    <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: `1px solid ${tokens.goldFaint}` }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: tokens.gold, marginBottom: '4px' }}>Current streak</div>
-                          <div style={{ ...body, fontSize: '22px', fontWeight: 600, color: tokens.meta }}>{streak.streak_current} <span style={{ fontSize: '14px', color: tokens.ghost }}>days</span></div>
-                        </div>
-                        <div style={{ textAlign: 'right' }}>
-                          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: tokens.gold, marginBottom: '4px' }}>Personal best</div>
-                          <div style={{ ...body, fontSize: '22px', fontWeight: 600, color: tokens.meta }}>{streak.streak_longest} <span style={{ fontSize: '14px', color: tokens.ghost }}>days</span></div>
-                        </div>
-                      </div>
-                      <div style={{ marginTop: '16px' }}>
-                        <div style={{ height: '4px', background: tokens.goldFaint, borderRadius: '2px', overflow: 'hidden' }}>
-                          <div style={{
-                            height: '100%', borderRadius: '2px',
-                            background: tokens.goldChrome,
-                            width: `${Math.min(100, (streak.streak_current / 21) * 100)}%`,
-                            transition: 'width 0.4s ease',
-                          }} />
-                        </div>
-                        <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: tokens.ghost, marginTop: '6px' }}>
-                          {streak.streak_current < 21
-                            ? `${21 - streak.streak_current} days to the 21-day milestone`
-                            : streak.streak_current < 40
-                            ? `${40 - streak.streak_current} days to the 40-day milestone`
-                            : '40-day milestone reached ✦'}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-          </div>
-        )}
-
-        {/* ── Morning Practice ── */}
+        {/* Morning view */}
         {(hasMap || skipMap) && view === 'morning' && (
           <div style={{ paddingTop: 'clamp(80px, 10vw, 110px)' }}>
             <MorningSequence
@@ -3628,29 +2302,94 @@ export function HorizonPracticePage() {
               icalUrl={icalUrl}
               onSaveIcalUrl={handleSaveIcalUrl}
               onComplete={handleMorningComplete}
-              onClose={() => setView('hub')}
+              onClose={() => setView('day')}
             />
           </div>
         )}
 
-        {/* ── Evening Integrate (placeholder) ── */}
-        {(hasMap || skipMap) && view === 'evening' && (
-          <div className="hp-fade-in" style={{
-            maxWidth: '520px', margin: '0 auto',
-            padding: 'clamp(88px, 10vw, 112px) clamp(20px, 4vw, 40px) 80px',
-          }}>
-            <Eyebrow style={{ marginBottom: '12px' }}>Evening Integrate</Eyebrow>
-            <Heading size="lg" style={{ marginBottom: '16px' }}>
-              Close the day.
-            </Heading>
-            <Card style={{ padding: '32px', marginBottom: '28px' }}>
-              <Body dim style={{ margin: 0 }}>
-                This is where you'll land the day — what showed up, what you met, what to carry forward.
-                Coming soon.
-              </Body>
-            </Card>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <GhostButton onClick={() => setView('hub')}>← Back</GhostButton>
+        {/* Day view */}
+        {(hasMap || skipMap) && view === 'day' && (
+          <div style={{ maxWidth: '760px', margin: '0 auto',
+            padding: 'clamp(88px, 10vw, 112px) clamp(20px, 4vw, 40px) 80px' }}>
+
+            <div style={{
+              ...sc, fontSize: '10px', letterSpacing: '0.20em',
+              color: tokens.whisper, textTransform: 'uppercase',
+              marginBottom: '36px', display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center', gap: '12px', flexWrap: 'wrap',
+            }}>
+              <span>{todayRun?.completed_at ? 'Active' : 'Day surface'}</span>
+              <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+                <button onClick={() => setSettingsOpen(true)} style={{
+                  background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+                  font: 'inherit', letterSpacing: 'inherit', color: tokens.gold,
+                }}>Settings</button>
+                <button onClick={() => setView('morning')} style={{
+                  background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+                  font: 'inherit', letterSpacing: 'inherit', color: tokens.gold,
+                }}>{todayRun?.completed_at ? '← Pre-flight' : '← Run pre-flight'}</button>
+              </div>
+            </div>
+
+            <div style={{ marginBottom: '32px' }}>
+              <Heading size="xl">
+                {getGreeting()}
+                {user?.email && <>, <em style={{ color: tokens.gold,
+                  fontStyle: 'italic' }}>{user.email.split('@')[0]}</em></>}.
+              </Heading>
+            </div>
+
+            <div style={{ marginBottom: '36px' }}>
+              <HorizonSelfPanel
+                statement={horizonSelfStatement}
+                onRefresh={handleStandardRefresh}
+              />
+            </div>
+
+            <div style={{ marginBottom: '36px' }}>
+              <ActiveThresholds thresholds={thresholds} onCross={handleCross} />
+            </div>
+
+            <div style={{ marginBottom: '36px' }}>
+              <HitDriftBar
+                onFlag={(k) => setFlagKind(k)}
+                onCapture={(k) => {
+                  if (k === 'listening') setListeningOpen(true)
+                  else if (k === 'receipt') setReceiptOpen(true)
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '36px' }}>
+              <AmbientStrip
+                iam={DOMAIN_ORDER
+                  .filter(d => iamStatements[d])
+                  .map(d => ({ domain: d, label: DOMAIN_LABELS[d], text: iamStatements[d] }))
+                }
+                listening={entries.filter(e => e.kind === 'listening_glow').slice(0, 5)
+                  .map(e => ({ text: e.text, from: e.from_who }))
+                }
+              />
+            </div>
+
+            <div style={{ marginBottom: '36px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between',
+                alignItems: 'baseline', marginBottom: '8px' }}>
+                <Eyebrow>Today's log</Eyebrow>
+                <button onClick={() => setLogOpen(true)} style={{
+                  background: 'transparent', border: 'none', padding: 0,
+                  ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.16em',
+                  color: tokens.gold, cursor: 'pointer',
+                  borderBottom: `1px solid ${tokens.goldFaint}`, paddingBottom: '2px',
+                }}>Full log →</button>
+              </div>
+              <RecentEntries
+                entries={entries.filter(e => {
+                  const d = new Date(e.occurred_at)
+                  return getLocalDateStr(d) === getLocalDateStr()
+                }).slice(0, 5)}
+                onOpenJournal={() => setLogOpen(true)}
+              />
             </div>
           </div>
         )}

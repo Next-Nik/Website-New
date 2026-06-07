@@ -133,8 +133,8 @@ function PathCard({ eyebrow, heading, bodyText, cta, href, image, imageSide, dar
       className={`path-card path-card--image-${imageSide}`}
       style={{ background: bg, border: dark ? 'none' : '1px solid rgba(200,146,42,0.12)' }}
     >
-      {imagePanel}
-      {copyPanel}
+      {imageSide === 'left' ? imagePanel : copyPanel}
+      {imageSide === 'left' ? copyPanel : imagePanel}
     </div>
   )
 }
@@ -427,93 +427,6 @@ export function MarketingHomePage() {
       <SiteFooter />
 
       <style>{`
-        /* ── Path cards ─────────────────────────── */
-        /* Desktop: two cards side by side, each with horizontal image|copy split */
-        .mh-cards {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 0;
-        }
-        .path-card {
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-          border-radius: 12px;
-        }
-        .path-card-image {
-          overflow: hidden;
-          flex-shrink: 0;
-        }
-        .path-card-image img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          display: block;
-        }
-        .path-card-copy {
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-start;
-          padding: 24px 20px 28px;
-          flex: 1;
-        }
-        /* Desktop: image fills top portion, fixed height */
-        @media (min-width: 681px) {
-          .mh-cards {
-            gap: clamp(12px,2vw,24px);
-            padding: 0 clamp(20px,5vw,40px);
-          }
-          .path-card-image {
-            height: clamp(180px,20vw,280px);
-          }
-          .path-card-copy {
-            padding: clamp(20px,2.5vw,36px) clamp(20px,2.5vw,36px) clamp(24px,3vw,40px);
-          }
-          .path-card-heading {
-            font-size: clamp(20px,2vw,28px) !important;
-          }
-        }
-        /* Mobile: two cards side by side, image top, copy below */
-        @media (max-width: 680px) {
-          .mh-cards {
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            padding: 0 12px;
-          }
-          .path-card {
-            border-radius: 10px;
-          }
-          .path-card-image {
-            height: 130px;
-          }
-          .path-card-copy {
-            padding: 12px 10px 16px;
-          }
-          .path-card-heading {
-            font-size: 16px !important;
-            line-height: 1.2 !important;
-            margin-bottom: 8px;
-          }
-          .path-card-body {
-            font-size: 12px !important;
-            line-height: 1.5 !important;
-            margin-bottom: 12px !important;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-          }
-          .path-card-cta {
-            padding: 8px 14px !important;
-            font-size: 11px !important;
-            letter-spacing: 0.1em !important;
-          }
-          .path-card-divider {
-            margin: 10px 0 10px !important;
-          }
-        }
-
-        /* ── How-it-works grid ──────────────────── */
         .hiw-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
