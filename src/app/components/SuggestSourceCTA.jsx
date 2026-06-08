@@ -146,7 +146,7 @@ export default function SuggestSourceCTA({
           style={{
             background: 'transparent',
             border: 'none',
-            color: 'rgba(15, 21, 35, 0.45)',
+            color: 'rgba(15, 21, 35, 0.55)',
             fontSize: '18px',
             cursor: 'pointer',
             padding: '0 0 0 8px',

@@ -82,7 +82,7 @@ function ActorCard({ actor }) {
             </span>
             {actor.type && (
               <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
-                color: 'rgba(15,21,35,0.45)', textTransform: 'uppercase' }}>
+                color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
                 {actor.type}
               </span>
             )}
@@ -90,7 +90,7 @@ function ActorCard({ actor }) {
               <>
                 <span style={{ color: 'rgba(200,146,42,0.30)', fontSize: '10px' }}>·</span>
                 <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em',
-                  color: 'rgba(15,21,35,0.45)' }}>
+                  color: 'rgba(15,21,35,0.55)' }}>
                   {actor.location_name}
                 </span>
               </>
@@ -157,7 +157,7 @@ function OfferOrNeedCard({ item, kind }) {
               style={{ width: '20px', height: '20px', objectFit: 'cover',
                 borderRadius: '50%', flexShrink: 0 }} />
           )}
-          <span style={{ ...body, fontSize: '12px',
+          <span style={{ ...body, fontSize: '13px',
             color: 'rgba(15,21,35,0.65)' }}>
             {item.actor_name}
           </span>
@@ -377,7 +377,7 @@ export function SearchPage() {
               style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
                 padding: '6px 12px', borderRadius: '40px',
                 background: 'none', border: 'none',
-                color: 'rgba(15,21,35,0.45)', cursor: 'pointer' }}>
+                color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}>
               Clear filters
             </button>
           )}
@@ -385,7 +385,7 @@ export function SearchPage() {
 
         {/* Results */}
         {loading && (
-          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.45)',
+          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
             margin: '24px 0' }}>
             Searching...
           </p>
@@ -408,7 +408,7 @@ export function SearchPage() {
         {!loading && results.length > 0 && (
           <>
             <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em',
-              color: 'rgba(15,21,35,0.45)', marginBottom: '14px' }}>
+              color: 'rgba(15,21,35,0.55)', marginBottom: '14px' }}>
               {results.length} {results.length === 1 ? 'result' : 'results'}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>

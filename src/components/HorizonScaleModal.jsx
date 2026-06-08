@@ -183,7 +183,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                 border:      'none',
                 cursor:      'pointer',
                 padding:     '4px 6px',
-                color:       'rgba(15,21,35,0.45)',
+                color:       'rgba(15,21,35,0.55)',
                 fontSize:    '1.5rem',
                 lineHeight:  1,
                 flexShrink:  0,
@@ -231,7 +231,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
               <span style={{
                 fontFamily: "'Lora', Georgia, serif",
                 fontSize:   '13px',
-                color:      'rgba(15,21,35,0.5)',
+                color:      'rgba(15,21,35,0.55)',
                 fontStyle:  'italic',
               }}>
                 {intro.aboveLine.note}
@@ -267,7 +267,7 @@ export function HorizonScaleModal({ open, onClose, system = 'self', anchorScore 
                       <span style={{
                         fontFamily: "'Lora', Georgia, serif",
                         fontSize:   '13px',
-                        color:      'rgba(15,21,35,0.5)',
+                        color:      'rgba(15,21,35,0.55)',
                         fontStyle:  'italic',
                       }}>
                         {intro.belowLine.note}

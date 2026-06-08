@@ -83,13 +83,13 @@ function OrderedList({ items, onReorder, onRemove, renderItem }) {
           <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
             {i > 0 && (
               <button onClick={() => onReorder(i, i - 1)}
-                style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}>
+                style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}>
                 ↑
               </button>
             )}
             {i < items.length - 1 && (
               <button onClick={() => onReorder(i, i + 1)}
-                style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}>
+                style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}>
                 ↓
               </button>
             )}
@@ -147,7 +147,7 @@ function ProblemChainEditor({ chains, onChange }) {
           Add
         </button>
       </div>
-      <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.45)', marginTop: '6px', lineHeight: 1.5 }}>
+      <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '6px', lineHeight: 1.5 }}>
         Format: civilisational level &gt; sector &gt; specific problem. Press Enter to add. First entry is primary.
       </p>
     </div>
@@ -268,7 +268,7 @@ export function OrgDomainsTab({ actorId, toast }) {
         <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '8px' }}>
           Where your work belongs in the civilisational map. Multi-residency is the default — most organisations touch more than one domain. The first item in each list is primary.
         </p>
-        <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.50)', lineHeight: 1.65 }}>
+        <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65 }}>
           Domains set the civilisational layer. Subdomains name the substrate. Lenses describe how you relate to it. Problem chains identify what you are solving, from civilisational to specific.
         </p>
       </SectionCard>
@@ -276,7 +276,7 @@ export function OrgDomainsTab({ actorId, toast }) {
       {/* ── DOMAINS ─────────────────────────────────────────── */}
       <SectionCard style={{ marginBottom: '20px' }}>
         <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '16px' }}>
-          Domains <span style={{ color: 'rgba(15,21,35,0.40)', fontSize: '11px' }}>(first = primary)</span>
+          Domains <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '11px' }}>(first = primary)</span>
         </p>
 
         {domains.length > 0 && (
@@ -305,7 +305,7 @@ export function OrgDomainsTab({ actorId, toast }) {
         )}
 
         {domains.length === 7 && (
-          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.50)' }}>Your work spans all seven domains.</p>
+          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>Your work spans all seven domains.</p>
         )}
 
         {/* Horizon goal preview */}
@@ -347,12 +347,12 @@ export function OrgDomainsTab({ actorId, toast }) {
       {domains.length > 0 && (
         <SectionCard style={{ marginBottom: '20px' }}>
           <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
-            Subdomains <span style={{ color: 'rgba(15,21,35,0.40)', fontSize: '11px' }}>(first = primary)</span>
+            Subdomains <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '11px' }}>(first = primary)</span>
           </p>
           <Hint>Select every subdomain your work genuinely addresses. First selected is primary.</Hint>
           <div style={{ marginTop: '12px' }}>
             {availableSubdomains.length === 0 ? (
-              <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.50)' }}>Select domains first.</p>
+              <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>Select domains first.</p>
             ) : (
               <ChipSelect
                 options={availableSubdomains}
@@ -363,7 +363,7 @@ export function OrgDomainsTab({ actorId, toast }) {
           </div>
           {subdomains.length > 1 && (
             <div style={{ marginTop: '12px' }}>
-              <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.40)', marginBottom: '8px' }}>Order — drag first to set primary</p>
+              <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>Order — drag first to set primary</p>
               <OrderedList
                 items={subdomains}
                 onReorder={(from, to) => reorderItem(subdomains, setSubdomains, from, to)}
@@ -379,7 +379,7 @@ export function OrgDomainsTab({ actorId, toast }) {
       {domains.length > 0 && (
         <SectionCard style={{ marginBottom: '20px' }}>
           <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
-            Lenses <span style={{ color: 'rgba(15,21,35,0.40)', fontSize: '11px' }}>(how you relate to the substrate)</span>
+            Lenses <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '11px' }}>(how you relate to the substrate)</span>
           </p>
           <Hint>Stable, few. Each domain has its own lens set. Select all that describe how your work operates.</Hint>
           <div style={{ marginTop: '12px' }}>
@@ -396,7 +396,7 @@ export function OrgDomainsTab({ actorId, toast }) {
       {/* ── PROBLEM CHAINS ───────────────────────────────────── */}
       <SectionCard style={{ marginBottom: '20px' }}>
         <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
-          Problem chains <span style={{ color: 'rgba(15,21,35,0.40)', fontSize: '11px' }}>(first = primary)</span>
+          Problem chains <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '11px' }}>(first = primary)</span>
         </p>
         <Hint>What specific problem are you solving? Use the hierarchy: civilisational level &gt; sector &gt; specific problem.</Hint>
         <div style={{ marginTop: '12px' }}>
@@ -469,7 +469,7 @@ export function OrgDomainsTab({ actorId, toast }) {
       </div>
 
       {domains.length === 0 && (
-        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.50)', marginTop: '10px' }}>
+        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '10px' }}>
           Add at least one domain to save.
         </p>
       )}

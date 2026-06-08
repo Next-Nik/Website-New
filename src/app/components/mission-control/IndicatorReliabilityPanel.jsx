@@ -82,7 +82,7 @@ export default function IndicatorReliabilityPanel({ hours = 24, className }) {
             ...sc,
             fontSize: '11px',
             letterSpacing: '0.08em',
-            color: 'rgba(15, 21, 35, 0.45)',
+            color: 'rgba(15, 21, 35, 0.55)',
           }}
         >
           last {window_hours}h
@@ -237,14 +237,14 @@ function FailureRow({ failure }) {
           ...sc,
           fontSize: '10px',
           letterSpacing: '0.08em',
-          color: 'rgba(15, 21, 35, 0.45)',
+          color: 'rgba(15, 21, 35, 0.55)',
           marginTop: '2px',
         }}
       >
         {failure.domain_id}
       </div>
       {failure.message && (
-        <p style={{ ...body, fontSize: '12px', color: 'rgba(15, 21, 35, 0.65)', margin: '4px 0 0 0', lineHeight: 1.4 }}>
+        <p style={{ ...body, fontSize: '13px', color: 'rgba(15, 21, 35, 0.65)', margin: '4px 0 0 0', lineHeight: 1.4 }}>
           {failure.message}
         </p>
       )}

@@ -411,7 +411,7 @@ function SlotCard({ slot, roster, resolved }) {
             Remove
           </button>
           {errMsg && (
-            <div style={{ ...body, fontSize: '12px', color: '#A23636', padding: '6px 8px' }}>{errMsg}</div>
+            <div style={{ ...body, fontSize: '13px', color: '#A23636', padding: '6px 8px' }}>{errMsg}</div>
           )}
         </div>
       )}

@@ -296,7 +296,7 @@ function IOSPanel() {
           </span>
         </li>
       </ol>
-      <p style={{ fontSize: '0.8rem', color: 'rgba(15,21,35,0.4)', textAlign: 'center', marginTop: 0 }}>
+      <p style={{ fontSize: '0.8rem', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginTop: 0 }}>
         This page must be open in Safari, not Chrome or another browser.
       </p>
     </>
@@ -322,7 +322,7 @@ function DesktopPanel() {
           style={{ borderRadius: 12, border: '1px solid rgba(200,146,42,0.25)' }}
         />
       </div>
-      <p style={{ fontSize: '0.8rem', color: 'rgba(15,21,35,0.4)', textAlign: 'center' }}>
+      <p style={{ fontSize: '0.8rem', color: 'rgba(15,21,35,0.55)', textAlign: 'center' }}>
         Works on Android and iPhone
       </p>
     </>

@@ -292,7 +292,7 @@ function ProfileTab({ actor, onSave, toast }) {
             </div>
             {actor.people_in_the_work_updated_at && (
               <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-                color: 'rgba(15,21,35,0.45)', textTransform: 'uppercase' }}>
+                color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
                 Last updated {new Date(actor.people_in_the_work_updated_at).toLocaleDateString()}
               </span>
             )}
@@ -343,7 +343,7 @@ function ProfileTab({ actor, onSave, toast }) {
         <div style={{ display: 'flex', gap: '12px' }}>
           <Btn onClick={save} disabled={saving} variant="solid">{saving ? 'Saving…' : 'Save profile'}</Btn>
           <Link to={`/org/${actor.id}`} target="_blank"
-            style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.25)', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
+            style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.55)', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
             View public profile →
           </Link>
         </div>
@@ -430,10 +430,10 @@ function OfferingCard({ offering, onEdit, onDelete, onToggleFlagship, saving }) 
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
             <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '4px', padding: '3px 10px' }}>{typeLabel}</span>
-            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.04)', border: '1px solid rgba(15,21,35,0.12)', borderRadius: '4px', padding: '3px 10px' }}>{modeLabel}</span>
-            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.04)', border: '1px solid rgba(15,21,35,0.12)', borderRadius: '4px', padding: '3px 10px' }}>{accessLabel}</span>
+            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.55)', border: '1px solid rgba(15,21,35,0.55)', borderRadius: '4px', padding: '3px 10px' }}>{modeLabel}</span>
+            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.55)', border: '1px solid rgba(15,21,35,0.55)', borderRadius: '4px', padding: '3px 10px' }}>{accessLabel}</span>
           </div>
-          <h4 style={{ ...body, fontSize: '18px', fontWeight: 300, color: dark, marginBottom: '6px', lineHeight: 1.3 }}>{offering.title}</h4>
+          <h4 style={{ ...body, fontSize: '18px', fontWeight: 400, color: dark, marginBottom: '6px', lineHeight: 1.3 }}>{offering.title}</h4>
           {offering.description && (
             <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.7, marginBottom: '8px' }}>
               {offering.description.slice(0, 160)}{offering.description.length > 160 ? '…' : ''}
@@ -442,7 +442,7 @@ function OfferingCard({ offering, onEdit, onDelete, onToggleFlagship, saving }) 
           {offering.domain_ids?.length > 0 && (
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '4px' }}>
               {offering.domain_ids.map(d => (
-                <span key={d} style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.50)', background: 'rgba(15,21,35,0.04)', borderRadius: '4px', padding: '2px 8px' }}>{DOMAIN_LABEL[d] || d}</span>
+                <span key={d} style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.55)', borderRadius: '4px', padding: '2px 8px' }}>{DOMAIN_LABEL[d] || d}</span>
               ))}
             </div>
           )}
@@ -693,17 +693,17 @@ function ContributorMatchCard({ match }) {
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
             <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.22)', borderRadius: '4px', padding: '2px 8px' }}>{typeLabel}</span>
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.04)', borderRadius: '4px', padding: '2px 8px' }}>{modeLabel}</span>
+            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'rgba(15,21,35,0.55)', borderRadius: '4px', padding: '2px 8px' }}>{modeLabel}</span>
             <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)' }}>{returnLabel}</span>
             {match.confirmed_contribution_count > 0 && <span style={{ ...sc, fontSize: '11px', color: '#2A6B3A' }}>{match.confirmed_contribution_count} confirmed</span>}
           </div>
           {match.display_name && (
-            <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: dark, marginBottom: '2px' }}>
+            <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: dark, marginBottom: '2px' }}>
               {match.display_name}
               {match.archetype && <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(168,114,26,0.70)', marginLeft: '10px' }}>{match.archetype}</span>}
             </p>
           )}
-          <p style={{ ...body, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.75)', marginBottom: match.description ? '4px' : 0 }}>{match.offer_title}</p>
+          <p style={{ ...body, fontSize: '15px', fontWeight: 400, color: 'rgba(15,21,35,0.75)', marginBottom: match.description ? '4px' : 0 }}>{match.offer_title}</p>
           {match.description && <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6 }}>{match.description.slice(0, 120)}{match.description.length > 120 ? '…' : ''}</p>}
           {match.best_need && <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', marginTop: '6px' }}>Matches your need: {match.best_need.title}</p>}
           {match.availability && <p style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>{match.availability}</p>}
@@ -893,7 +893,7 @@ export function OrgManagePage() {
         <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: gold, display: 'block', marginBottom: '10px' }}>
           Managing
         </span>
-        <h1 style={{ ...body, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 300, color: dark, lineHeight: 1.1, marginBottom: '40px' }}>
+        <h1 style={{ ...body, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 400, color: dark, lineHeight: 1.1, marginBottom: '40px' }}>
           {actor.name}
         </h1>
 

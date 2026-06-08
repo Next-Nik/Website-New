@@ -99,11 +99,11 @@ function OfferingCard({ offering, actor }) {
             borderRadius: '4px', padding: '2px 8px' }}>
             {typeLabel}
           </span>
-          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.45)',
+          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)',
             background: 'rgba(15,21,35,0.04)', borderRadius: '4px', padding: '2px 8px' }}>
             {modeLabel}
           </span>
-          <span style={{ ...sc, fontSize: '10px', color: 'rgba(15,21,35,0.45)' }}>
+          <span style={{ ...sc, fontSize: '10px', color: 'rgba(15,21,35,0.55)' }}>
             {accessLabel}
           </span>
         </div>
@@ -243,7 +243,7 @@ export function NextMarketPage() {
           {/* ── Filters ── */}
           <div style={{ marginBottom: '40px' }}>
             <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
-              color: 'rgba(15,21,35,0.45)', textTransform: 'uppercase', marginBottom: '10px' }}>
+              color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '10px' }}>
               Domain
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '20px' }}>
@@ -256,7 +256,7 @@ export function NextMarketPage() {
             </div>
 
             <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
-              color: 'rgba(15,21,35,0.45)', textTransform: 'uppercase', marginBottom: '10px' }}>
+              color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '10px' }}>
               Type
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -287,14 +287,14 @@ export function NextMarketPage() {
               <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.6, margin: '0 0 8px' }}>
                 Nothing in NextMarket matches these filters yet.
               </p>
-              <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.45)', margin: 0 }}>
+              <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: 0 }}>
                 This is early. More are being added as the Atlas grows.
               </p>
             </div>
           ) : (
             <>
               <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
-                color: 'rgba(15,21,35,0.50)', marginBottom: '18px' }}>
+                color: 'rgba(15,21,35,0.55)', marginBottom: '18px' }}>
                 {filtered.length} {filtered.length === 1 ? 'entry' : 'entries'}
               </div>
               <div style={{
@@ -313,7 +313,7 @@ export function NextMarketPage() {
           <div style={{
             marginTop: '80px', paddingTop: '32px',
             borderTop: '1px solid rgba(200,146,42,0.18)',
-            ...body, fontSize: '13px', color: 'rgba(15,21,35,0.50)', lineHeight: 1.7,
+            ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7,
           }}>
             Every link goes directly to the source. NextUs doesn't take a cut
             on these transactions — yet. Each entry is editorially placed.

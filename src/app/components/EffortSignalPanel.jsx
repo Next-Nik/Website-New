@@ -97,7 +97,7 @@ function DomainRow({ domainId, row }) {
       <div style={{ textAlign: 'right', flexShrink: 0 }}>
         <p style={{
           ...sc, fontSize: '10px', letterSpacing: '0.16em',
-          color: 'rgba(15,21,35,0.45)', textTransform: 'uppercase',
+          color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
           marginBottom: '4px',
         }}>
           People in the work
@@ -120,7 +120,7 @@ export function EffortSignalPanel({ variant = 'full' }) {
     return (
       <div style={{ padding: '40px 0', textAlign: 'center' }}>
         <p style={{ ...body, fontSize: '14px',
-          color: 'rgba(15,21,35,0.45)' }}>
+          color: 'rgba(15,21,35,0.55)' }}>
           Loading the effort signal…
         </p>
       </div>
@@ -148,7 +148,7 @@ export function EffortSignalPanel({ variant = 'full' }) {
         border: '1px dashed rgba(200,146,42,0.25)',
         borderRadius: '8px', textAlign: 'center' }}>
         <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.20em',
-          color: 'rgba(15,21,35,0.45)', textTransform: 'uppercase',
+          color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
           marginBottom: '8px' }}>
           The work in motion
         </p>
@@ -209,7 +209,7 @@ export function EffortSignalPanel({ variant = 'full' }) {
       {/* Snapshot date footer */}
       <p style={{
         ...sc, fontSize: '10px', letterSpacing: '0.20em',
-        color: 'rgba(15,21,35,0.40)', textTransform: 'uppercase',
+        color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
         textAlign: 'right', marginTop: '4px',
       }}>
         Snapshot {formatDate(data.snapshot_date)}

@@ -84,7 +84,7 @@ export function ScaleEmbedded() {
           <span style={{
             ...body,
             fontSize:  '13px',
-            color:     'rgba(15,21,35,0.5)',
+            color:     'rgba(15,21,35,0.55)',
             fontStyle: 'italic',
           }}>
             this domain is holding you up
@@ -118,7 +118,7 @@ export function ScaleEmbedded() {
                   <span style={{
                     ...body,
                     fontSize:  '13px',
-                    color:     'rgba(15,21,35,0.5)',
+                    color:     'rgba(15,21,35,0.55)',
                     fontStyle: 'italic',
                   }}>
                     this domain is asking for attention

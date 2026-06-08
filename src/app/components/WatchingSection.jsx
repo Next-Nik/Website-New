@@ -259,7 +259,7 @@ function WatchedRow({ watch, resolved, onRemove, type, resolving }) {
         style={{
           background: 'none',
           border: 'none',
-          color: 'rgba(15,21,35,0.45)',
+          color: 'rgba(15,21,35,0.55)',
           cursor: 'pointer',
           fontSize: '18px',
           lineHeight: 1,

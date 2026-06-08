@@ -58,7 +58,7 @@ function SprintCard({ sprint }) {
             ...sc,
             fontSize: '11px',
             letterSpacing: '0.12em',
-            color: days <= 14 ? '#8A3030' : 'rgba(15,21,35,0.45)',
+            color: days <= 14 ? '#8A3030' : 'rgba(15,21,35,0.55)',
             background: days <= 14 ? 'rgba(138,48,48,0.05)' : 'transparent',
             border: `1px solid ${days <= 14 ? 'rgba(138,48,48,0.20)' : 'rgba(15,21,35,0.10)'}`,
             borderRadius: '4px',
@@ -80,7 +80,7 @@ function SprintCard({ sprint }) {
               ...sc,
               fontSize: '11px',
               letterSpacing: '0.14em',
-              color: 'rgba(15,21,35,0.40)',
+              color: 'rgba(15,21,35,0.55)',
               marginBottom: '4px',
             }}>
               {domainLabel(id)}
@@ -88,7 +88,7 @@ function SprintCard({ sprint }) {
             <p style={{
               ...body,
               fontSize: '15px',
-              fontWeight: 300,
+              fontWeight: 400,
               color: '#0F1523',
               lineHeight: 1.65,
               margin: 0,
@@ -105,7 +105,7 @@ function SprintCard({ sprint }) {
           ...sc,
           fontSize: '11px',
           letterSpacing: '0.10em',
-          color: 'rgba(15,21,35,0.35)',
+          color: 'rgba(15,21,35,0.55)',
           marginTop: '14px',
         }}>
           Started {new Date(sprint.created_at).toLocaleDateString('en-GB', {
@@ -126,7 +126,7 @@ export function ProfileSprints({ activeSprints }) {
         ...sc,
         fontSize: '11px',
         letterSpacing: '0.22em',
-        color: 'rgba(15,21,35,0.40)',
+        color: 'rgba(15,21,35,0.55)',
         marginBottom: '24px',
         textTransform: 'uppercase',
       }}>

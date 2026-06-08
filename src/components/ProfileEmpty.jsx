@@ -15,7 +15,7 @@ export function ProfileEmpty({ displayName }) {
         <h2 style={{
           ...body,
           fontSize: 'clamp(28px, 4vw, 40px)',
-          fontWeight: 300,
+          fontWeight: 400,
           color: '#0F1523',
           margin: '0 0 20px',
           lineHeight: 1.15,
@@ -26,8 +26,8 @@ export function ProfileEmpty({ displayName }) {
       <p style={{
         ...body,
         fontSize: '17px',
-        fontWeight: 300,
-        color: 'rgba(15,21,35,0.45)',
+        fontWeight: 400,
+        color: 'rgba(15,21,35,0.55)',
         lineHeight: 1.75,
         margin: '0 auto',
         maxWidth: '340px',

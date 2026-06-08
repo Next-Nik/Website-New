@@ -167,7 +167,7 @@ export default function AttestationForm({ practice, supabase, user, onClose, onA
             </span>
           </label>
           {anonymous && (
-            <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, margin: '6px 0 0', paddingLeft: '26px' }}>
+            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, margin: '6px 0 0', paddingLeft: '26px' }}>
               Your name will not appear on the public attestation list. The platform still records your attestation for the count.
             </p>
           )}

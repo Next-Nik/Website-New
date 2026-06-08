@@ -1,3 +1,4 @@
+import { sc, body } from '../lib/designTokens'
 export function SiteFooter() {
   return (
     <footer data-site-footer style={{
@@ -14,7 +15,7 @@ export function SiteFooter() {
       `}</style>
       <div style={{ maxWidth: '820px', margin: '0 auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '40px', gap: '24px', flexWrap: 'wrap' }}>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.72)' }}>
+          <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>
             A life worth living. A future worth building.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexShrink: 0 }}>
@@ -34,18 +35,18 @@ export function SiteFooter() {
         </div>
         <div style={{ height: '1px', background: 'rgba(200,146,42,0.20)', marginBottom: '28px' }} />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap', marginBottom: '14px' }}>
-          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
+          <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
             {'\u00A9'} 2026 NextUs {'·'} Nik Wood
           </span>
           <div style={{ display: 'flex', gap: '20px' }}>
-            <a href="/faq" style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>FAQ</a>
-            <a href="/support" style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>Support Resources</a>
-            <a href="mailto:hello@nextus.world" style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>Contact</a>
-            <a href="/privacy" style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>Privacy</a>
-            <a href="/terms" style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>Terms</a>
+            <a href="/faq" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>FAQ</a>
+            <a href="/support" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>Support Resources</a>
+            <a href="mailto:hello@nextus.world" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>Contact</a>
+            <a href="/privacy" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>Privacy</a>
+            <a href="/terms" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>Terms</a>
           </div>
         </div>
-        <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '12px', color: 'rgba(15,21,35,0.40)', margin: 0, lineHeight: 1.5 }}>
+        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', margin: 0, lineHeight: 1.5 }}>
           By using NextUs you agree to our <a href="/terms" style={{ color: 'rgba(15,21,35,0.55)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>Terms</a> and <a href="/privacy" style={{ color: 'rgba(15,21,35,0.55)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>Privacy</a>.
         </p>
       </div>

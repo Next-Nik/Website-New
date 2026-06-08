@@ -467,7 +467,7 @@ function Question1({ focus, save }) {
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  color: 'rgba(15,21,35,0.45)',
+                  color: 'rgba(15,21,35,0.55)',
                   fontSize: '18px',
                   lineHeight: 1,
                   padding: '4px 8px',
@@ -783,7 +783,7 @@ function PickedChip({ label, onRemove }) {
         aria-label={`Remove ${label}`}
         style={{
           background: 'none', border: 'none', cursor: 'pointer',
-          color: 'rgba(15,21,35,0.45)', fontSize: '16px',
+          color: 'rgba(15,21,35,0.55)', fontSize: '16px',
           lineHeight: 1, padding: '0 2px',
         }}
       >

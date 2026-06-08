@@ -42,7 +42,7 @@ function TabBar({ activeTab, onChange }) {
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              color: active ? gold : 'rgba(15,21,35,0.50)',
+              color: active ? gold : 'rgba(15,21,35,0.55)',
               borderBottom: active ? `2px solid ${gold}` : '2px solid transparent',
               marginBottom: '-1px',
               textTransform: 'uppercase',
@@ -69,7 +69,7 @@ function TabExplainer({ tab, viewerCtx }) {
     <p style={{
       ...body,
       fontSize: '13px',
-      fontWeight: 300,
+      fontWeight: 400,
       color: 'rgba(15,21,35,0.55)',
       lineHeight: 1.65,
       margin: '0 0 28px',
@@ -120,7 +120,7 @@ function EmptyState({ tab, viewerCtx }) {
       <p style={{
         ...body,
         fontSize: '15px',
-        fontWeight: 300,
+        fontWeight: 400,
         color: 'rgba(15,21,35,0.55)',
         lineHeight: 1.75,
         margin: 0,
@@ -152,7 +152,7 @@ function LoadMoreButton({ onClick, page }) {
         ...sc,
         fontSize: '11px',
         letterSpacing: '0.14em',
-        color: 'rgba(15,21,35,0.40)',
+        color: 'rgba(15,21,35,0.55)',
         margin: '12px 0 0',
       }}>
         Page {page} of {MAX_PAGES}
@@ -172,7 +172,7 @@ function EndOfFeedNotice() {
       <p style={{
         ...body,
         fontSize: '17px',
-        fontWeight: 300,
+        fontWeight: 400,
         fontStyle: 'italic',
         color: 'rgba(15,21,35,0.65)',
         lineHeight: 1.7,
@@ -253,7 +253,7 @@ export function FeedPage() {
           <h1 style={{
             ...body,
             fontSize: 'clamp(32px, 5vw, 48px)',
-            fontWeight: 300,
+            fontWeight: 400,
             color: dark,
             lineHeight: 1.08,
             letterSpacing: '-0.01em',
@@ -272,7 +272,7 @@ export function FeedPage() {
         {/* Loading */}
         {showLoading && (
           <div style={{ padding: '48px 0', textAlign: 'center' }}>
-            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.45)' }}>
+            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
               Gathering the feed.
             </p>
           </div>
@@ -300,7 +300,7 @@ export function FeedPage() {
                 ...sc,
                 fontSize: '11px',
                 letterSpacing: '0.14em',
-                color: 'rgba(15,21,35,0.40)',
+                color: 'rgba(15,21,35,0.55)',
                 textAlign: 'center',
                 marginTop: '32px',
                 marginBottom: '0',

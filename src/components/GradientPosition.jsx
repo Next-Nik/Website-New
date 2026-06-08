@@ -94,7 +94,7 @@ export function GradientPosition({ position, trajectory, actorName, compact }) {
           ...sc,
           fontSize: `${fontSize}px`,
           letterSpacing: '0.12em',
-          color: 'rgba(15,21,35,0.40)',
+          color: 'rgba(15,21,35,0.55)',
         }}>
           Extractive
         </span>
@@ -129,7 +129,7 @@ export function GradientPosition({ position, trajectory, actorName, compact }) {
           ...sc,
           fontSize: `${fontSize}px`,
           letterSpacing: '0.12em',
-          color: 'rgba(15,21,35,0.40)',
+          color: 'rgba(15,21,35,0.55)',
         }}>
           Regenerative
         </span>

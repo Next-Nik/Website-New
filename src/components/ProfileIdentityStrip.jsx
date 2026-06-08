@@ -11,7 +11,7 @@ export function ProfileIdentityStrip({ displayName, focusName, headline, primary
       <h1 style={{
         ...body,
         fontSize: 'clamp(36px, 5vw, 54px)',
-        fontWeight: 300,
+        fontWeight: 400,
         color: '#0F1523',
         lineHeight: 1.06,
         letterSpacing: '-0.01em',
@@ -26,7 +26,7 @@ export function ProfileIdentityStrip({ displayName, focusName, headline, primary
           ...sc,
           fontSize: '13px',
           letterSpacing: '0.20em',
-          color: 'rgba(15,21,35,0.50)',
+          color: 'rgba(15,21,35,0.55)',
           marginBottom: '18px',
           textTransform: 'uppercase',
         }}>
@@ -39,7 +39,7 @@ export function ProfileIdentityStrip({ displayName, focusName, headline, primary
         <p style={{
           ...body,
           fontSize: 'clamp(17px, 2vw, 20px)',
-          fontWeight: 300,
+          fontWeight: 400,
           color: 'rgba(15,21,35,0.80)',
           lineHeight: 1.55,
           margin: '0 0 24px',
@@ -54,7 +54,7 @@ export function ProfileIdentityStrip({ displayName, focusName, headline, primary
         <p style={{
           ...body,
           fontSize: 'clamp(15px, 1.8vw, 17px)',
-          fontWeight: 300,
+          fontWeight: 400,
           fontStyle: 'italic',
           color: 'rgba(15,21,35,0.65)',
           lineHeight: 1.7,

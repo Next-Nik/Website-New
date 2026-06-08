@@ -152,7 +152,7 @@ function DuplicateCard({ actor }) {
       <div>
         <div style={{ ...body, fontSize: '14px', color: dark }}>{actor.name}</div>
         {actor.location_name && (
-          <div style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>{actor.location_name}</div>
+          <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{actor.location_name}</div>
         )}
       </div>
       <Link to={`/org/${actor.slug || actor.id}`} target="_blank"
@@ -193,7 +193,7 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
         </span>
         <span style={{ ...body, fontSize: '15px', color: dark }}>{proposal.name}</span>
         {proposal.alignment_score != null && (
-          <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.40)', marginLeft: 'auto' }}>
+          <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)', marginLeft: 'auto' }}>
             Score {proposal.alignment_score}
           </span>
         )}
@@ -678,7 +678,7 @@ export function AddPage() {
         <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.22)',
           borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
           <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.20em',
-            color: 'rgba(15,21,35,0.45)', textTransform: 'uppercase', marginBottom: '8px' }}>
+            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '8px' }}>
             Autofill from any source — optional
           </div>
           <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
@@ -736,7 +736,7 @@ export function AddPage() {
         <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.22)',
           borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
           <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.20em',
-            color: 'rgba(15,21,35,0.45)', textTransform: 'uppercase', marginBottom: '12px' }}>
+            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '12px' }}>
             Your relationship to this entry
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -804,7 +804,7 @@ export function AddPage() {
                 Already on the map
               </div>
               <button onClick={() => setDupDismissed(true)}
-                style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.45)',
+                style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
                   background: 'none', border: 'none', cursor: 'pointer' }}>
                 These are different, continue
               </button>
@@ -856,7 +856,7 @@ export function AddPage() {
                 background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)',
                 borderRadius: '8px' }}>
                 <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
-                  color: 'rgba(15,21,35,0.40)', marginBottom: '4px' }}>HORIZON GOAL</div>
+                  color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>HORIZON GOAL</div>
                 <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)',
                   lineHeight: 1.65, margin: 0 }}>{selectedGoal}</p>
               </div>
@@ -976,7 +976,7 @@ export function AddPage() {
               : 'Add to the Atlas'}
           </button>
 
-          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.45)',
+          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
             lineHeight: 1.55, textAlign: 'center', marginTop: '12px' }}>
             {represents
               ? 'Your entry goes live immediately. You can edit it any time.'

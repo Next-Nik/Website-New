@@ -63,7 +63,7 @@ function InvitationListCard({ invitation }) {
               ...sc,
               fontSize: '10px',
               letterSpacing: '0.16em',
-              color: i === 0 ? gold : 'rgba(15,21,35,0.45)',
+              color: i === 0 ? gold : 'rgba(15,21,35,0.55)',
               background: i === 0 ? 'rgba(200,146,42,0.08)' : 'rgba(15,21,35,0.04)',
               border: `1px solid ${i === 0 ? 'rgba(200,146,42,0.28)' : 'rgba(15,21,35,0.10)'}`,
               borderRadius: '4px',
@@ -79,7 +79,7 @@ function InvitationListCard({ invitation }) {
         <h3 style={{
           ...body,
           fontSize: 'clamp(18px, 2.2vw, 22px)',
-          fontWeight: 300,
+          fontWeight: 400,
           color: dark,
           lineHeight: 1.3,
           margin: '0 0 10px',
@@ -92,7 +92,7 @@ function InvitationListCard({ invitation }) {
           <p style={{
             ...body,
             fontSize: '14px',
-            fontWeight: 300,
+            fontWeight: 400,
             color: 'rgba(15,21,35,0.60)',
             lineHeight: 1.65,
             margin: '0 0 10px',
@@ -110,7 +110,7 @@ function InvitationListCard({ invitation }) {
               ...sc,
               fontSize: '10px',
               letterSpacing: '0.14em',
-              color: 'rgba(15,21,35,0.35)',
+              color: 'rgba(15,21,35,0.55)',
             }}>
               {String(i + 1).padStart(2, '0')} {label}
             </span>
@@ -141,7 +141,7 @@ function DomainFilter({ selected, onChange }) {
           cursor: 'pointer',
           border: selected === null ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.22)',
           background: selected === null ? 'rgba(200,146,42,0.10)' : 'transparent',
-          color: selected === null ? gold : 'rgba(15,21,35,0.50)',
+          color: selected === null ? gold : 'rgba(15,21,35,0.55)',
           transition: 'all 0.15s',
         }}
       >
@@ -162,7 +162,7 @@ function DomainFilter({ selected, onChange }) {
               cursor: 'pointer',
               border: on ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.18)',
               background: on ? 'rgba(200,146,42,0.10)' : 'transparent',
-              color: on ? gold : 'rgba(15,21,35,0.50)',
+              color: on ? gold : 'rgba(15,21,35,0.55)',
               transition: 'all 0.15s',
             }}
           >
@@ -182,7 +182,7 @@ function EmptyState({ domain }) {
       <p style={{
         ...body,
         fontSize: '17px',
-        fontWeight: 300,
+        fontWeight: 400,
         color: dark,
         lineHeight: 1.6,
         margin: '0 0 14px',
@@ -194,8 +194,8 @@ function EmptyState({ domain }) {
       <p style={{
         ...body,
         fontSize: '15px',
-        fontWeight: 300,
-        color: 'rgba(15,21,35,0.50)',
+        fontWeight: 400,
+        color: 'rgba(15,21,35,0.55)',
         lineHeight: 1.75,
         margin: 0,
         maxWidth: '400px',
@@ -269,7 +269,7 @@ export function InvitationIndexPage() {
           <h1 style={{
             ...body,
             fontSize: 'clamp(32px, 5vw, 52px)',
-            fontWeight: 300,
+            fontWeight: 400,
             color: dark,
             lineHeight: 1.06,
             letterSpacing: '-0.01em',
@@ -280,7 +280,7 @@ export function InvitationIndexPage() {
           <p style={{
             ...body,
             fontSize: 'clamp(15px, 1.8vw, 18px)',
-            fontWeight: 300,
+            fontWeight: 400,
             color: 'rgba(15,21,35,0.65)',
             lineHeight: 1.75,
             maxWidth: '540px',
@@ -312,7 +312,7 @@ export function InvitationIndexPage() {
             ...sc,
             fontSize: '11px',
             letterSpacing: '0.14em',
-            color: 'rgba(15,21,35,0.40)',
+            color: 'rgba(15,21,35,0.55)',
             marginTop: '28px',
           }}>
             {filtered.length} invitation{filtered.length !== 1 ? 's' : ''}

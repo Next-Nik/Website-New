@@ -88,7 +88,7 @@ function FreeTextField({ label, hint, value, placeholder, onSave, rows = 3 }) {
           ...sc,
           fontSize: '10px',
           letterSpacing: '0.1em',
-          color: saving ? '#A8721A' : savedRecently ? '#2D6A4F' : 'rgba(15,21,35,0.35)',
+          color: saving ? '#A8721A' : savedRecently ? '#2D6A4F' : 'rgba(15,21,35,0.55)',
           transition: 'color 200ms ease',
         }}>
           {saving ? 'Saving' : savedRecently ? 'Saved' : 'Auto-saves on blur'}

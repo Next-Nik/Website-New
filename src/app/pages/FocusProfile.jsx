@@ -168,7 +168,7 @@ function IdentityHeader({ focus, ancestors }) {
               >
                 {a.name}
               </Link>
-              {i < breadcrumbChain.length - 1 ? <span style={{ color: 'rgba(15,21,35,0.30)' }}> &nbsp;/&nbsp; </span> : null}
+              {i < breadcrumbChain.length - 1 ? <span style={{ color: 'rgba(15,21,35,0.55)' }}> &nbsp;/&nbsp; </span> : null}
             </span>
           ))}
         </div>
@@ -198,7 +198,7 @@ function IdentityHeader({ focus, ancestors }) {
         {typeLabel}
         {kindLabel && (
           <>
-            <span style={{ color: 'rgba(15,21,35,0.30)', margin: '0 10px' }}>·</span>
+            <span style={{ color: 'rgba(15,21,35,0.55)', margin: '0 10px' }}>·</span>
             <span style={{ color: 'rgba(15,21,35,0.72)' }}>{kindLabel}</span>
           </>
         )}
@@ -555,7 +555,7 @@ function NotFoundShell({ slug }) {
         <p style={{
           ...body,
           fontSize: '17px',
-          fontWeight: 300,
+          fontWeight: 400,
           color: 'rgba(15,21,35,0.55)',
           lineHeight: 1.75,
           marginBottom: '24px',

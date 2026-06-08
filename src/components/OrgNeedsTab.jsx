@@ -32,7 +32,7 @@ function NeedCard({ need, onUpdateStatus }) {
               <span style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>{need.time_estimate}</span>
             )}
           </div>
-          <h4 style={{ ...body, fontSize: '17px', fontWeight: 300, color: dark, marginBottom: '6px' }}>{need.title}</h4>
+          <h4 style={{ ...body, fontSize: '17px', fontWeight: 400, color: dark, marginBottom: '6px' }}>{need.title}</h4>
           {need.description && (
             <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.65 }}>
               {need.description.slice(0, 200)}{need.description.length > 200 ? '…' : ''}

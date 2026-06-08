@@ -58,7 +58,7 @@ export function TermsAcceptanceModal() {
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>
             Before you continue
           </span>
-          <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,32px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.15, margin: '0 0 12px' }}>
+          <h2 style={{ ...body, fontSize: 'clamp(24px,3vw,32px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.15, margin: '0 0 12px' }}>
             Please review our Terms of Service.
           </h2>
           <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, margin: 0 }}>

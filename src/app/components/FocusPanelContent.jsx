@@ -278,9 +278,9 @@ function CombinedAnchor({ focus, pp, onEditFocus, onEditPurposePiece }) {
           </div>
           <div style={{ fontSize: '15px', lineHeight: 1.55 }}>
             {archetype && <span>{archetype}</span>}
-            {archetype && ppDomainLabel && <span style={{ color: 'rgba(15,21,35,0.50)' }}> · </span>}
+            {archetype && ppDomainLabel && <span style={{ color: 'rgba(15,21,35,0.55)' }}> · </span>}
             {ppDomainLabel && <span>{ppDomainLabel}</span>}
-            {ppScale && <span style={{ color: 'rgba(15,21,35,0.50)' }}> · </span>}
+            {ppScale && <span style={{ color: 'rgba(15,21,35,0.55)' }}> · </span>}
             {ppScale && <span style={{ textTransform: 'capitalize' }}>{ppScale}</span>}
             {'  '}
             <button type="button" onClick={onEditPurposePiece} style={editLinkInlineStyle}>
@@ -300,20 +300,20 @@ function CombinedAnchor({ focus, pp, onEditFocus, onEditPurposePiece }) {
             <span>{places.map(p => p.name).join(', ')}</span>
           )}
           {places.length > 0 && (domainLabels.length > 0 || actors.length > 0) && (
-            <span style={{ color: 'rgba(15,21,35,0.50)' }}> · </span>
+            <span style={{ color: 'rgba(15,21,35,0.55)' }}> · </span>
           )}
           {domainLabels.length > 0 && (
             <span>{domainLabels.join(', ')}</span>
           )}
           {domainLabels.length > 0 && actors.length > 0 && (
-            <span style={{ color: 'rgba(15,21,35,0.50)' }}> · </span>
+            <span style={{ color: 'rgba(15,21,35,0.55)' }}> · </span>
           )}
           {actors.length > 0 && (
             <span>{actors.map(a => a.name).join(', ')}</span>
           )}
           {participationLabels.length > 0 && (
             <>
-              <span style={{ color: 'rgba(15,21,35,0.50)' }}> · </span>
+              <span style={{ color: 'rgba(15,21,35,0.55)' }}> · </span>
               <span style={{ fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>
                 {participationLabels.join(', ')}
               </span>
@@ -358,9 +358,9 @@ function PurposePieceSummary({ pp, onEdit }) {
       </div>
       <div style={{ fontSize: '15px', lineHeight: 1.55 }}>
         {archetype && <span>{archetype}</span>}
-        {archetype && ppDomainLabel && <span style={{ color: 'rgba(15,21,35,0.50)' }}> · </span>}
+        {archetype && ppDomainLabel && <span style={{ color: 'rgba(15,21,35,0.55)' }}> · </span>}
         {ppDomainLabel && <span>{ppDomainLabel}</span>}
-        {ppScale && <span style={{ color: 'rgba(15,21,35,0.50)' }}> · </span>}
+        {ppScale && <span style={{ color: 'rgba(15,21,35,0.55)' }}> · </span>}
         {ppScale && <span style={{ textTransform: 'capitalize' }}>{ppScale}</span>}
       </div>
     </div>
@@ -417,16 +417,16 @@ function FocusSummary({ focus, onEdit, onClear }) {
       <div style={{ fontSize: '15px', lineHeight: 1.55 }}>
         {places.length > 0 && <span>{places.map(p => p.name).join(', ')}</span>}
         {places.length > 0 && (domainLabels.length > 0 || actors.length > 0) && (
-          <span style={{ color: 'rgba(15,21,35,0.50)' }}> · </span>
+          <span style={{ color: 'rgba(15,21,35,0.55)' }}> · </span>
         )}
         {domainLabels.length > 0 && <span>{domainLabels.join(', ')}</span>}
         {domainLabels.length > 0 && actors.length > 0 && (
-          <span style={{ color: 'rgba(15,21,35,0.50)' }}> · </span>
+          <span style={{ color: 'rgba(15,21,35,0.55)' }}> · </span>
         )}
         {actors.length > 0 && <span>{actors.map(a => a.name).join(', ')}</span>}
         {participationLabels.length > 0 && (
           <>
-            <span style={{ color: 'rgba(15,21,35,0.50)' }}> · </span>
+            <span style={{ color: 'rgba(15,21,35,0.55)' }}> · </span>
             <span style={{ fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>
               {participationLabels.join(', ')}
             </span>

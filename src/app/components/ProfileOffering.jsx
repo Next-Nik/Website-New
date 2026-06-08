@@ -13,7 +13,7 @@ export function ProfileOffering({ countOnMeFor }) {
         ...sc,
         fontSize: '11px',
         letterSpacing: '0.22em',
-        color: 'rgba(15,21,35,0.40)',
+        color: 'rgba(15,21,35,0.55)',
         marginBottom: '20px',
         textTransform: 'uppercase',
       }}>
@@ -22,7 +22,7 @@ export function ProfileOffering({ countOnMeFor }) {
       <p style={{
         ...body,
         fontSize: '17px',
-        fontWeight: 300,
+        fontWeight: 400,
         color: 'rgba(15,21,35,0.75)',
         lineHeight: 1.75,
         margin: 0,

@@ -374,7 +374,7 @@ function AffiliationRow({ affiliation, focus, onUpdateVisibility, onRemove }) {
           onClick={() => setConfirmingDelete(true)}
           aria-label={`Remove ${focus.name}`}
           style={{
-            background: 'none', border: 'none', color: 'rgba(15,21,35,0.45)',
+            background: 'none', border: 'none', color: 'rgba(15,21,35,0.55)',
             cursor: 'pointer', fontSize: '18px', lineHeight: 1, padding: '0 4px',
           }}
         >

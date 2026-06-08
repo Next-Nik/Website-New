@@ -506,7 +506,7 @@ export function BilateralCardEditor({
         {onClose && (
           <button onClick={onClose} style={{
             background: 'none', border: 'none', cursor: 'pointer',
-            fontSize: '20px', color: 'rgba(15,21,35,0.40)', lineHeight: 1, padding: '0 0 0 16px',
+            fontSize: '20px', color: 'rgba(15,21,35,0.55)', lineHeight: 1, padding: '0 0 0 16px',
           }}>x</button>
         )}
       </div>

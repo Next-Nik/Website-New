@@ -108,7 +108,7 @@ export function DomainTooltip({ domainKey, label, system = 'nextus-self', positi
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', color: '#A8721A', display: 'block', marginBottom: '6px', fontWeight: 300 }}>
             {topLine}
           </span>
-          <span style={{ ...body, fontSize: '13px', fontWeight: 300, color: 'rgba(255,255,255,0.80)', lineHeight: 1.65, display: 'block' }}>
+          <span style={{ ...body, fontSize: '13px', fontWeight: 400, color: 'rgba(255,255,255,0.80)', lineHeight: 1.65, display: 'block' }}>
             {desc}
           </span>
         </span>

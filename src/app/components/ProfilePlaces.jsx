@@ -94,7 +94,7 @@ export function ProfilePlaces({ affiliations }) {
                 {rows.map((row, i) => (
                   <span key={row.id}>
                     <PlaceWithBreadcrumb focus={row.focus} ancestors={row.ancestors} />
-                    {i < rows.length - 1 ? <span style={{ color: 'rgba(15,21,35,0.45)' }}> &nbsp;·&nbsp; </span> : null}
+                    {i < rows.length - 1 ? <span style={{ color: 'rgba(15,21,35,0.55)' }}> &nbsp;·&nbsp; </span> : null}
                   </span>
                 ))}
               </span>

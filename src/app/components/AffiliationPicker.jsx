@@ -277,7 +277,7 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
             ...sc,
             fontSize: '13px',
             letterSpacing: '0.16em',
-            color: canSave ? '#FFFFFF' : 'rgba(15,21,35,0.42)',
+            color: canSave ? '#FFFFFF' : 'rgba(15,21,35,0.55)',
             background: canSave ? gold : 'rgba(15,21,35,0.06)',
             border: '1.5px solid ' + (canSave ? gold : 'rgba(15,21,35,0.10)'),
             borderRadius: '30px',

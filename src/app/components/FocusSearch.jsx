@@ -160,7 +160,7 @@ export function FocusSearch({
                       {labelFor(f)}
                     </span>
                     {f.kind && KIND_LABEL[f.kind] && f.type !== 'organisation' && (
-                      <span style={{ ...sc, fontSize: '9px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.45)' }}>
+                      <span style={{ ...sc, fontSize: '9px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
                         {KIND_LABEL[f.kind]}
                       </span>
                     )}

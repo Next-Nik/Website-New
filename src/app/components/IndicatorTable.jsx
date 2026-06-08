@@ -359,7 +359,7 @@ function Td({ children, align = 'left' }) {
 
 function formatLatest(row) {
   if (!row.value) {
-    return <span style={{ color: 'rgba(15, 21, 35, 0.45)' }}>—</span>
+    return <span style={{ color: 'rgba(15, 21, 35, 0.55)' }}>—</span>
   }
   const { numeric, text, observed_at } = row.value
   const valueStr = numeric != null
@@ -378,7 +378,7 @@ function formatLatest(row) {
             display: 'block',
             fontSize: '10px',
             letterSpacing: '0.08em',
-            color: 'rgba(15, 21, 35, 0.45)',
+            color: 'rgba(15, 21, 35, 0.55)',
             marginTop: '2px',
           }}
         >

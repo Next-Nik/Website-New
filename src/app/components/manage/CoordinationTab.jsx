@@ -253,7 +253,7 @@ function ItemCard({ item, kind, onEdit, onDelete, onToggleActive, saving }) {
         </h3>
         {!item.active && (
           <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
-            color: 'rgba(15,21,35,0.45)', textTransform: 'uppercase' }}>
+            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
             Inactive
           </span>
         )}
@@ -388,7 +388,7 @@ function ItemSection({ actorId, kind, toast }) {
       )}
 
       {loading ? (
-        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.45)' }}>Loading…</p>
+        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>Loading…</p>
       ) : items.length === 0 && editing !== 'new' ? (
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
           fontStyle: 'italic', margin: 0 }}>

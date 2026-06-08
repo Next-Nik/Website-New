@@ -298,7 +298,7 @@ function EventTypePicker({ selected, onChange }) {
               }}>
                 {t?.label || s.replace(/-/g, ' ')}
                 {t && !t.is_canonical && (
-                  <span style={{ fontSize: '9px', color: 'rgba(15,21,35,0.45)' }}>
+                  <span style={{ fontSize: '9px', color: 'rgba(15,21,35,0.55)' }}>
                     proposed
                   </span>
                 )}
@@ -346,7 +346,7 @@ function EventTypePicker({ selected, onChange }) {
               {!t.is_canonical && (
                 <span style={{
                   marginLeft: '8px', fontSize: '10px',
-                  color: 'rgba(15,21,35,0.45)',
+                  color: 'rgba(15,21,35,0.55)',
                 }}>
                   proposed
                 </span>

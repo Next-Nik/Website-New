@@ -85,7 +85,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
             onClick={onClose}
             style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              fontSize: '24px', color: 'rgba(15,21,35,0.40)',
+              fontSize: '24px', color: 'rgba(15,21,35,0.55)',
               lineHeight: 1, padding: '0 4px', flexShrink: 0,
             }}
             aria-label="Close"
@@ -109,7 +109,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
                 <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: dark, marginBottom: '2px' }}>
                   {row.label}
                 </div>
-                <div style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.5 }}>
+                <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.5 }}>
                   {row.detail}
                 </div>
               </div>
@@ -121,7 +121,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
                 }}>
                   {row.format(row.value)}
                 </div>
-                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.40)', marginTop: '4px' }}>
+                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
                   Current
                 </div>
               </div>
@@ -129,7 +129,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
                 <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1 }}>
                   &lt; {row.format(row.threshold)}
                 </div>
-                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.40)', marginTop: '4px' }}>
+                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
                   Threshold
                 </div>
               </div>
@@ -149,7 +149,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
             <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
               Contributor signals
             </div>
-            <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.55, margin: 0 }}>
+            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.55, margin: 0 }}>
               {payload.contributor_density} contributor{payload.contributor_density === 1 ? '' : 's'} {payload.contributor_signals_used > 0 ? 'feeding into the score' : `not yet feeding into the score (threshold: ${payload.thresholds?.contributor_density || '\u2014'})`}.
               {payload.contributor_signals_used === 0 && ' Tier 3 signals require a minimum density before they influence the domain score.'}
             </p>
@@ -172,7 +172,7 @@ export function GapSignalExplainer({ payload, domainId, focusName, onClose }) {
 
         {/* Footer — methodology link, indicator count */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)' }}>
+          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
             Computed from {payload.indicator_count} indicator{payload.indicator_count === 1 ? '' : 's'}
             {payload.fresh === false ? ' \u00b7 cached' : ' \u00b7 fresh'}
           </div>

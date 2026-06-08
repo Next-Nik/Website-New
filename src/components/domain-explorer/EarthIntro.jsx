@@ -108,7 +108,7 @@ export function EarthIntro({ onEntered }) {
             position: 'relative', zIndex: 2,
             fontFamily: "'Lora', Georgia, serif",
             fontSize: `${Math.max(8, globeSize * 0.17)}px`,
-            fontWeight: 300, color: '#A8721A',
+            fontWeight: 400, color: '#A8721A',
             textAlign: 'center', lineHeight: 1.3,
             letterSpacing: '0.04em', opacity: labelAlpha,
             userSelect: 'none',
@@ -129,7 +129,7 @@ export function EarthIntro({ onEntered }) {
       }}>
         <p style={{
           fontFamily: "'Lora', Georgia, serif",
-          fontSize: 'clamp(14px,2.8vw,19px)', fontWeight: 300,
+          fontSize: 'clamp(14px,2.8vw,19px)', fontWeight: 400,
           color: 'rgba(255,255,255,1)',
           lineHeight: 1.8, letterSpacing: '0.04em',
           margin: '0 0 28px',

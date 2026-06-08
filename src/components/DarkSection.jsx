@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+import { body, sc } from '../lib/designTokens'
 
 // ── Multiplane scroll hook ────────────────────────────────────────────────────
 // Tracks each section's position relative to the viewport centre so the
@@ -162,7 +160,7 @@ export function DarkEyebrow({ children }) {
 export function DarkHeading({ children, style = {} }) {
   return (
     <h2 style={{
-      ...body, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300,
+      ...body, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 400,
       color: '#FFFFFF', lineHeight: 1.1, marginBottom: '18px', ...style,
     }}>{children}</h2>
   )
@@ -172,7 +170,7 @@ export function DarkHeading({ children, style = {} }) {
 export function DarkBody({ children, style = {} }) {
   return (
     <p style={{
-      ...body, fontSize: '17px', fontWeight: 300,
+      ...body, fontSize: '17px', fontWeight: 400,
       color: '#FFFFFF', lineHeight: 1.8, marginBottom: '28px', ...style,
     }}>{children}</p>
   )
@@ -215,7 +213,7 @@ export function DarkPullQuote({ quote, attribution }) {
         color: 'rgba(200,146,42,0.45)', lineHeight: 0.8, marginBottom: '28px',
       }}>"</div>
       <p style={{
-        ...body, fontSize: 'clamp(18px,2.4vw,24px)', fontWeight: 300,
+        ...body, fontSize: 'clamp(18px,2.4vw,24px)', fontWeight: 400,
         color: '#FFFFFF', lineHeight: 1.75, marginBottom: '28px',
       }}>{quote}</p>
       {attribution && (

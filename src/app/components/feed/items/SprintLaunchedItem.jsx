@@ -45,7 +45,7 @@ export function SprintLaunchedItem({ item }) {
       <p style={{
         ...body,
         fontSize: '16px',
-        fontWeight: 300,
+        fontWeight: 400,
         fontStyle: 'italic',
         color: '#0F1523',
         lineHeight: 1.65,

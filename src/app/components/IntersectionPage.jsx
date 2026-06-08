@@ -161,7 +161,7 @@ function ActorsLayer({ field, atFocus, accentColor }) {
         ...sc, fontSize: '12px', letterSpacing: '0.18em',
         color: GOLD, textTransform: 'uppercase', marginBottom: '16px',
       }}>
-        Actors here {actors.length > 0 && <span style={{ color: 'rgba(15,21,35,0.40)' }}>· {actors.length}</span>}
+        Actors here {actors.length > 0 && <span style={{ color: 'rgba(15,21,35,0.55)' }}>· {actors.length}</span>}
       </div>
 
       {loading && (

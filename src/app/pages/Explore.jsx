@@ -279,7 +279,7 @@ function Breadcrumb({ level, domain, subdomain, field, atFocus }) {
       )}
       {atFocus && (
         <>
-          <span style={{ color: 'rgba(15,21,35,0.30)', margin: '0 14px' }}>·</span>
+          <span style={{ color: 'rgba(15,21,35,0.55)', margin: '0 14px' }}>·</span>
           <span style={{ color: GOLD, ...body, textTransform: 'none', letterSpacing: 'normal', fontStyle: 'italic' }}>
             in {atFocus.name}
           </span>
@@ -290,7 +290,7 @@ function Breadcrumb({ level, domain, subdomain, field, atFocus }) {
 }
 
 function Sep() {
-  return <span style={{ color: 'rgba(15,21,35,0.30)', margin: '0 8px' }}>/</span>
+  return <span style={{ color: 'rgba(15,21,35,0.55)', margin: '0 8px' }}>/</span>
 }
 
 function Header({ eyebrow, title, blurb, color = GOLD }) {

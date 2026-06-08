@@ -94,7 +94,7 @@ export function ClaimPage() {
         <Nav />
         <div style={{ maxWidth: '560px', margin: '0 auto',
           padding: '160px 24px', textAlign: 'center' }}>
-          <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.40)' }}>
+          <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
             Loading...
           </span>
         </div>
@@ -219,7 +219,7 @@ export function ClaimPage() {
           </Link>
         </div>
 
-        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.45)',
+        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
           lineHeight: 1.55, marginTop: '24px' }}>
           After claiming, you'll be taken to the Voice tab where you can add
           your mission, offers, needs, and other first-person content.

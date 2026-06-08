@@ -42,7 +42,7 @@ function GapBlock({ label, text }) {
         ...sc,
         fontSize: '11px',
         letterSpacing: '0.20em',
-        color: 'rgba(15,21,35,0.40)',
+        color: 'rgba(15,21,35,0.55)',
         textTransform: 'uppercase',
         marginBottom: '10px',
       }}>
@@ -51,7 +51,7 @@ function GapBlock({ label, text }) {
       <p style={{
         ...body,
         fontSize: '16px',
-        fontWeight: 300,
+        fontWeight: 400,
         color: 'rgba(15,21,35,0.80)',
         lineHeight: 1.75,
         margin: 0,
@@ -102,7 +102,7 @@ function InvitationActorCard({ actor, side }) {
               ...sc,
               fontSize: '11px',
               letterSpacing: '0.14em',
-              color: 'rgba(15,21,35,0.45)',
+              color: 'rgba(15,21,35,0.55)',
               marginTop: '4px',
             }}>
               {actor.location_name}
@@ -185,7 +185,7 @@ function NotFound() {
     <div style={{ background: parch, minHeight: '100vh' }}>
       <Nav activePath="" />
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '160px 24px', textAlign: 'center' }}>
-        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.45)', lineHeight: 1.75 }}>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 400, color: 'rgba(15,21,35,0.55)', lineHeight: 1.75 }}>
           This invitation does not exist or has been archived.
         </p>
         <Link to="/invitation" style={{
@@ -312,7 +312,7 @@ export function InvitationPage() {
 
         {/* Domain breadcrumb */}
         <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap' }}>
-          <Link to="/invitation" style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.45)', textDecoration: 'none' }}>
+          <Link to="/invitation" style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
             Invitations
           </Link>
           {primaryDomain && (
@@ -327,7 +327,7 @@ export function InvitationPage() {
             </>
           )}
           {domains.slice(1).map(d => (
-            <span key={d} style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.40)' }}>
+            <span key={d} style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
               · {CIV_DOMAIN_LABEL[d] || d}
             </span>
           ))}
@@ -337,7 +337,7 @@ export function InvitationPage() {
         <h1 style={{
           ...body,
           fontSize: 'clamp(28px, 4.5vw, 48px)',
-          fontWeight: 300,
+          fontWeight: 400,
           color: dark,
           lineHeight: 1.08,
           letterSpacing: '-0.01em',
@@ -350,7 +350,7 @@ export function InvitationPage() {
           <p style={{
             ...body,
             fontSize: 'clamp(16px, 2vw, 19px)',
-            fontWeight: 300,
+            fontWeight: 400,
             color: 'rgba(15,21,35,0.65)',
             lineHeight: 1.7,
             margin: '0 0 56px',
@@ -369,7 +369,7 @@ export function InvitationPage() {
             ...sc,
             fontSize: '11px',
             letterSpacing: '0.22em',
-            color: 'rgba(15,21,35,0.40)',
+            color: 'rgba(15,21,35,0.55)',
             textTransform: 'uppercase',
             marginBottom: '20px',
             fontWeight: 400,
@@ -380,7 +380,7 @@ export function InvitationPage() {
           <p style={{
             ...body,
             fontSize: 'clamp(16px, 2vw, 18px)',
-            fontWeight: 300,
+            fontWeight: 400,
             color: dark,
             lineHeight: 1.75,
             margin: '0 0 28px',
@@ -401,7 +401,7 @@ export function InvitationPage() {
             <p style={{
               ...body,
               fontSize: '14px',
-              color: 'rgba(15,21,35,0.45)',
+              color: 'rgba(15,21,35,0.55)',
               fontStyle: 'italic',
               lineHeight: 1.65,
             }}>
@@ -419,7 +419,7 @@ export function InvitationPage() {
             ...sc,
             fontSize: '11px',
             letterSpacing: '0.22em',
-            color: 'rgba(15,21,35,0.40)',
+            color: 'rgba(15,21,35,0.55)',
             textTransform: 'uppercase',
             marginBottom: '6px',
             fontWeight: 400,
@@ -430,7 +430,7 @@ export function InvitationPage() {
           <p style={{
             ...body,
             fontSize: '13px',
-            color: 'rgba(15,21,35,0.45)',
+            color: 'rgba(15,21,35,0.55)',
             lineHeight: 1.6,
             margin: '0 0 24px',
             fontStyle: 'italic',
@@ -441,7 +441,7 @@ export function InvitationPage() {
           <p style={{
             ...body,
             fontSize: 'clamp(16px, 2vw, 18px)',
-            fontWeight: 300,
+            fontWeight: 400,
             color: dark,
             lineHeight: 1.75,
             margin: '0 0 28px',
@@ -462,7 +462,7 @@ export function InvitationPage() {
             <p style={{
               ...body,
               fontSize: '14px',
-              color: 'rgba(15,21,35,0.45)',
+              color: 'rgba(15,21,35,0.55)',
               fontStyle: 'italic',
               lineHeight: 1.65,
             }}>
@@ -480,7 +480,7 @@ export function InvitationPage() {
             ...sc,
             fontSize: '11px',
             letterSpacing: '0.22em',
-            color: 'rgba(15,21,35,0.40)',
+            color: 'rgba(15,21,35,0.55)',
             textTransform: 'uppercase',
             marginBottom: '6px',
             fontWeight: 400,
@@ -490,7 +490,7 @@ export function InvitationPage() {
           <p style={{
             ...body,
             fontSize: '13px',
-            color: 'rgba(15,21,35,0.45)',
+            color: 'rgba(15,21,35,0.55)',
             lineHeight: 1.6,
             margin: '0 0 28px',
             fontStyle: 'italic',
@@ -519,7 +519,7 @@ export function InvitationPage() {
             ...sc,
             fontSize: '11px',
             letterSpacing: '0.22em',
-            color: 'rgba(15,21,35,0.40)',
+            color: 'rgba(15,21,35,0.55)',
             textTransform: 'uppercase',
             marginBottom: '20px',
             fontWeight: 400,
@@ -534,7 +534,7 @@ export function InvitationPage() {
             <p style={{
               ...body,
               fontSize: 'clamp(17px, 2vw, 20px)',
-              fontWeight: 300,
+              fontWeight: 400,
               color: dark,
               lineHeight: 1.80,
               margin: 0,
@@ -551,7 +551,7 @@ export function InvitationPage() {
                 ...sc,
                 fontSize: '11px',
                 letterSpacing: '0.18em',
-                color: 'rgba(15,21,35,0.40)',
+                color: 'rgba(15,21,35,0.55)',
                 marginBottom: '16px',
                 textTransform: 'uppercase',
               }}>
@@ -633,7 +633,7 @@ export function InvitationPage() {
                 ...sc,
                 fontSize: '12px',
                 letterSpacing: '0.16em',
-                color: 'rgba(15,21,35,0.45)',
+                color: 'rgba(15,21,35,0.55)',
                 textDecoration: 'none',
               }}
             >

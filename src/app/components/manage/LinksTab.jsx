@@ -118,7 +118,7 @@ function LinksSection({ actorId, toast }) {
 
       {/* Existing links */}
       {loading ? (
-        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.45)' }}>Loading…</p>
+        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>Loading…</p>
       ) : links.length === 0 ? (
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
           fontStyle: 'italic', margin: 0 }}>
@@ -147,7 +147,7 @@ function LinksSection({ actorId, toast }) {
                   )}
                 </div>
                 <a href={link.url} target="_blank" rel="noopener noreferrer"
-                  style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.55)',
+                  style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
                     textDecoration: 'none',
                     overflow: 'hidden', textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap', display: 'block' }}>
@@ -252,7 +252,7 @@ function PressSection({ actorId, toast }) {
 
       {/* Existing */}
       {loading ? (
-        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.45)' }}>Loading…</p>
+        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>Loading…</p>
       ) : press.length === 0 ? (
         <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
           fontStyle: 'italic', margin: 0 }}>
@@ -270,15 +270,15 @@ function PressSection({ actorId, toast }) {
                 {item.publication}
               </div>
               {item.title && (
-                <div style={{ ...body, fontSize: '12px',
+                <div style={{ ...body, fontSize: '13px',
                   color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
                   {item.title}
                 </div>
               )}
               {item.url && (
                 <a href={item.url} target="_blank" rel="noopener noreferrer"
-                  style={{ ...body, fontSize: '11px',
-                    color: 'rgba(15,21,35,0.45)', textDecoration: 'none',
+                  style={{ ...body, fontSize: '13px',
+                    color: 'rgba(15,21,35,0.55)', textDecoration: 'none',
                     overflow: 'hidden', textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap', display: 'block', marginTop: '2px' }}>
                   {item.url}

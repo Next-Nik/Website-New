@@ -340,7 +340,7 @@ export function NominatePage() {
                 border: '1px solid rgba(200,146,42,0.20)',
                 borderRadius: '8px',
               }}>
-                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginBottom: '4px' }}>
+                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
                   HORIZON GOAL
                 </div>
                 <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
@@ -473,7 +473,7 @@ export function NominatePage() {
             {saving ? 'Submitting...' : 'Nominate them'}
           </button>
 
-          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.45)', lineHeight: 1.55, textAlign: 'center', marginTop: '12px' }}>
+          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, textAlign: 'center', marginTop: '12px' }}>
             Submissions enter a review queue. The team reviews and places approved nominations on the map.
           </p>
         </form>

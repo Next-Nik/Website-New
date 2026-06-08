@@ -44,7 +44,7 @@ import { EventsSection } from '../components/EventsSection'
 function Eyebrow({ children, style = {} }) {
   return (
     <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
-      color: 'rgba(15,21,35,0.40)', textTransform: 'uppercase',
+      color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
       marginBottom: '18px', ...style }}>
       {children}
     </div>
@@ -61,8 +61,8 @@ function NotFound() {
     <div style={{ background: parch, minHeight: '100vh' }}>
       <Nav />
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '160px 24px', textAlign: 'center' }}>
-        <p style={{ ...body, fontSize: '17px', fontWeight: 300,
-          color: 'rgba(15,21,35,0.45)', lineHeight: 1.75 }}>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 400,
+          color: 'rgba(15,21,35,0.55)', lineHeight: 1.75 }}>
           This profile does not exist or is not publicly visible.
         </p>
       </div>
@@ -120,7 +120,7 @@ const LINK_PRIORITY = {
 const ACCEPTING_STATUS_LABEL = {
   yes:      { label: 'Accepting clients',     color: '#2A6B3A', bg: 'rgba(42,107,58,0.08)',  border: 'rgba(42,107,58,0.25)' },
   waitlist: { label: 'Waitlist',              color: '#A8721A', bg: 'rgba(168,114,26,0.08)', border: 'rgba(168,114,26,0.25)' },
-  not_now:  { label: 'Not accepting now',     color: 'rgba(15,21,35,0.55)', bg: 'rgba(15,21,35,0.04)', border: 'rgba(15,21,35,0.12)' },
+  not_now:  { label: 'Not accepting now',     color: 'rgba(15,21,35,0.55)', bg: 'rgba(15,21,35,0.55)', border: 'rgba(15,21,35,0.55)' },
 }
 
 const MEMBERSHIP_STATUS_LABEL = {
@@ -480,7 +480,7 @@ function Placement({ domains, subdomains }) {
       {subdomains?.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
           {subdomains.map(s => (
-            <span key={s} style={{ ...body, fontSize: '12px',
+            <span key={s} style={{ ...body, fontSize: '13px',
               color: 'rgba(15,21,35,0.55)',
               background: 'transparent',
               border: '1px solid rgba(200,146,42,0.18)',
@@ -1064,7 +1064,7 @@ function RelationshipsSection({ parent, children, partners }) {
       {parent && (
         <div style={{ marginBottom: children?.length || partners?.length ? '18px' : 0 }}>
           <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-            color: 'rgba(15,21,35,0.45)', marginBottom: '6px' }}>
+            color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>
             PART OF
           </div>
           <Link to={`/org/${parent.slug || parent.id}`}
@@ -1078,7 +1078,7 @@ function RelationshipsSection({ parent, children, partners }) {
       {children?.length > 0 && (
         <div style={{ marginBottom: partners?.length ? '18px' : 0 }}>
           <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-            color: 'rgba(15,21,35,0.45)', marginBottom: '8px' }}>
+            color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
             INCLUDES
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -1099,7 +1099,7 @@ function RelationshipsSection({ parent, children, partners }) {
       {partners?.length > 0 && (
         <div>
           <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-            color: 'rgba(15,21,35,0.45)', marginBottom: '8px' }}>
+            color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
             PARTNERS WITH
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -1289,7 +1289,7 @@ function TestimonialsSection({ testimonials, actorMode }) {
               )}
               {t.context && (
                 <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-                  color: 'rgba(15,21,35,0.45)', marginLeft: '10px' }}>
+                  color: 'rgba(15,21,35,0.55)', marginLeft: '10px' }}>
                   {t.context}
                 </span>
               )}
@@ -1403,7 +1403,7 @@ export function OrgPublicPage() {
         <Nav />
         <div style={{ maxWidth: '680px', margin: '0 auto',
           padding: '160px 24px', textAlign: 'center' }}>
-          <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.40)' }}>
+          <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
             Loading...
           </span>
         </div>

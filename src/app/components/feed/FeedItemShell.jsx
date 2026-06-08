@@ -55,7 +55,7 @@ export function FeedItemShell({
             ...sc,
             fontSize: '11px',
             letterSpacing: '0.12em',
-            color: 'rgba(15,21,35,0.40)',
+            color: 'rgba(15,21,35,0.55)',
           }}>
             {timeAgo(timestamp)}
           </span>

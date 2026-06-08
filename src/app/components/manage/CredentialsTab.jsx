@@ -79,7 +79,7 @@ function CredentialRow({ credential, onSave, onDelete, toast }) {
         gap: '14px' }}>
         <div style={{ flex: 1 }}>
           <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
-            color: 'rgba(15,21,35,0.45)', textTransform: 'uppercase',
+            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
             marginBottom: '4px' }}>
             {KIND_OPTIONS.find(k => k.value === credential.kind)?.label || credential.kind}
           </div>
@@ -266,7 +266,7 @@ export function CredentialsTab({ actorId, toast }) {
 
   if (loading) {
     return (
-      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.45)' }}>
+      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
         Loading…
       </p>
     )
@@ -289,7 +289,7 @@ export function CredentialsTab({ actorId, toast }) {
 
       {credentials.length === 0 && (
         <p style={{ ...body, fontSize: '15px',
-          color: 'rgba(15,21,35,0.45)', fontStyle: 'italic' }}>
+          color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
           No credentials yet.
         </p>
       )}

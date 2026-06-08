@@ -173,7 +173,7 @@ function ResourceCard({ resource, compact = false }) {
           {resource.name}
         </span>
         {resource.hours && (
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.50)' }}>
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
             {resource.hours}
           </span>
         )}
@@ -228,7 +228,7 @@ function FullDirectory({ resources, userCountry, setCountry }) {
     <div>
       {orderedCodes.map(cc => (
         <div key={cc} style={{ marginBottom: '40px' }}>
-          <h3 style={{ ...body, fontSize: '20px', fontWeight: 300, color: '#0F1523', marginBottom: '14px',
+          <h3 style={{ ...body, fontSize: '20px', fontWeight: 400, color: '#0F1523', marginBottom: '14px',
             paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.20)' }}>
             {countryName(cc)}
             {cc === userCountry && (

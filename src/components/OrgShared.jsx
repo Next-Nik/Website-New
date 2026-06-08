@@ -185,7 +185,7 @@ export function ModeSelector({ value, onChange }) {
 
 export function Eyebrow({ children, style = {} }) {
   return (
-    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: 'rgba(15,21,35,0.40)', textTransform: 'uppercase', ...style }}>
+    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', ...style }}>
       {children}
     </div>
   )

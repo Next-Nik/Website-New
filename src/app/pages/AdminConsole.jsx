@@ -315,7 +315,7 @@ function NowTab() {
 
   return (
     <div>
-      <h2 style={{ ...body, fontSize: '22px', fontWeight: 300, color: '#0F1523', marginBottom: '28px' }}>
+      <h2 style={{ ...body, fontSize: '22px', fontWeight: 400, color: '#0F1523', marginBottom: '28px' }}>
         Live snapshot
       </h2>
       {stats && (
@@ -327,7 +327,7 @@ function NowTab() {
             { label: 'Active sprints', value: stats.sprintCount },
           ].map(s => (
             <Card key={s.label} style={{ textAlign: 'center', padding: '18px 12px' }}>
-              <div style={{ ...body, fontSize: '32px', fontWeight: 300, color: '#0F1523', lineHeight: 1 }}>{s.value ?? 0}</div>
+              <div style={{ ...body, fontSize: '32px', fontWeight: 400, color: '#0F1523', lineHeight: 1 }}>{s.value ?? 0}</div>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginTop: '6px' }}>{s.label}</div>
             </Card>
           ))}
@@ -391,7 +391,7 @@ function PlatformTab() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '32px' }}>
         {statCards.map(s => (
           <Card key={s.label} style={{ textAlign: 'center', padding: '20px 12px' }}>
-            <div style={{ ...body, fontSize: '32px', fontWeight: 300, color: '#0F1523', lineHeight: 1 }}>{s.value ?? 0}</div>
+            <div style={{ ...body, fontSize: '32px', fontWeight: 400, color: '#0F1523', lineHeight: 1 }}>{s.value ?? 0}</div>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginTop: '6px' }}>{s.label}</div>
           </Card>
         ))}
@@ -418,25 +418,25 @@ function PlatformTab() {
                 {showScore ? (
                   <div>
                     <span style={{ ...sc, fontSize: '14px', color: gold }}>{d.gap_score}/10</span>
-                    <div style={{ ...body, fontSize: '11px', color: 'rgba(15,21,35,0.40)', marginTop: '2px' }}>
+                    <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>
                       Verified · {d.total_actors} actors
                     </div>
                   </div>
                 ) : showIllustrative ? (
                   <div>
-                    <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.35)' }}>
+                    <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
                       Illustrative
                     </span>
-                    <div style={{ ...body, fontSize: '11px', color: 'rgba(15,21,35,0.35)', marginTop: '2px' }}>
+                    <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>
                       {d.total_actors || 0} actor{(d.total_actors || 0) !== 1 ? 's' : ''} · not yet verified
                     </div>
                   </div>
                 ) : (
                   <div>
-                    <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.35)' }}>
+                    <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
                       Insufficient data
                     </span>
-                    <div style={{ ...body, fontSize: '11px', color: 'rgba(15,21,35,0.35)', marginTop: '2px' }}>
+                    <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>
                       {d.total_actors || 0} actor{(d.total_actors || 0) !== 1 ? 's' : ''}
                     </div>
                   </div>
@@ -794,7 +794,7 @@ function ActorsTab({ toast }) {
 
       {(mode === 'add' || mode === 'edit') && (
         <div style={{ maxWidth: '640px' }}>
-          <h3 style={{ ...body, fontSize: '20px', fontWeight: 300, color: '#0F1523', marginBottom: '24px' }}>
+          <h3 style={{ ...body, fontSize: '20px', fontWeight: 400, color: '#0F1523', marginBottom: '24px' }}>
             {mode === 'edit' ? 'Edit actor' : 'Add actor'}
           </h3>
 
@@ -927,7 +927,7 @@ function ActorsTab({ toast }) {
 
       {mode === 'claims' && (
         <div>
-          <h3 style={{ ...body, fontSize: '20px', fontWeight: 300, color: '#0F1523', marginBottom: '20px' }}>
+          <h3 style={{ ...body, fontSize: '20px', fontWeight: 400, color: '#0F1523', marginBottom: '20px' }}>
             Pending claims ({claims.length})
           </h3>
           {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
@@ -938,7 +938,7 @@ function ActorsTab({ toast }) {
               <div style={{ ...body, fontSize: '17px', color: '#0F1523', marginBottom: '4px', fontWeight: 500 }}>
                 {c.nextus_actors?.name}
               </div>
-              <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.50)', marginBottom: '16px' }}>
+              <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginBottom: '16px' }}>
                 {c.claimant_email || c.user_id}
                 {c.submitted_at && <span style={{ marginLeft: '12px' }}>{new Date(c.submitted_at).toLocaleDateString()}</span>}
               </div>
@@ -1026,7 +1026,7 @@ function DimPills({ label, values = [], color = gold }) {
   return (
     <div style={{ marginBottom: '6px' }}>
       <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'10px', letterSpacing:'0.16em',
-        color: 'rgba(15,21,35,0.45)', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>
+        color: 'rgba(15,21,35,0.55)', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>
         {label}
       </span>
       <div>
@@ -1094,11 +1094,11 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
             <ExLabelBadge label={proposal.label} />
             <ExTierBadge tier={proposal.placement_tier} />
             <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
-              letterSpacing:'0.10em', color:'rgba(15,21,35,0.50)' }}>
+              letterSpacing:'0.10em', color:'rgba(15,21,35,0.55)' }}>
               {proposal.confidence}% confidence
             </span>
           </div>
-          <div style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'19px', fontWeight:300,
+          <div style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'19px', fontWeight: 400,
             color:'#0F1523', marginBottom:'6px' }}>
             {proposal.name}
           </div>
@@ -1108,7 +1108,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
               {proposal.alignment_score}
             </span>
             <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'14px',
-              color:'rgba(15,21,35,0.35)' }}>/10</span>
+              color:'rgba(15,21,35,0.55)' }}>/10</span>
           </div>
 
           {proposal.score_reasoning && (
@@ -1129,7 +1129,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
             {problems.length > 0 && (
               <div style={{ marginBottom: '6px' }}>
                 <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'10px', letterSpacing:'0.16em',
-                  color: 'rgba(15,21,35,0.45)', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>
+                  color: 'rgba(15,21,35,0.55)', display: 'block', marginBottom: '4px', textTransform: 'uppercase' }}>
                   Problem chains
                 </span>
                 {problems.map((p, i) => (
@@ -1330,7 +1330,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
             <div style={{ paddingBottom:'2px' }}>
               {!isNaN(score) && <ExTierBadge tier={TIER_FROM_SCORE(score)} />}
               <span style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'13px',
-                color:'rgba(15,21,35,0.45)', marginLeft:'10px' }}>
+                color:'rgba(15,21,35,0.55)', marginLeft:'10px' }}>
                 Adjust if your read differs from the AI draft.
               </span>
             </div>
@@ -1494,7 +1494,7 @@ function AddTab({ toast }) {
         />
       )}
 
-      <h2 style={{ ...body, fontSize:'22px', fontWeight:300, color:'#0F1523', marginBottom:'8px' }}>
+      <h2 style={{ ...body, fontSize:'22px', fontWeight: 400, color:'#0F1523', marginBottom:'8px' }}>
         Add to the ecosystem
       </h2>
       <p style={{ ...body, fontSize:'14px', color:'rgba(15,21,35,0.55)', lineHeight:1.65, marginBottom:'28px' }}>
@@ -1591,7 +1591,7 @@ function AddTab({ toast }) {
                     color:'#FFFFFF', cursor: saving || selectedCount === 0 ? 'not-allowed' : 'pointer' }}>
                   {saving ? 'Saving...' : `Place ${selectedCount} selected`}
                 </button>
-                <p style={{ ...body, fontSize:'13px', color:'rgba(15,21,35,0.45)', margin:0 }}>
+                <p style={{ ...body, fontSize:'13px', color:'rgba(15,21,35,0.55)', margin:0 }}>
                   Horizon Floor check runs for each selected record.
                 </p>
               </div>
@@ -1931,7 +1931,7 @@ function FlagsTab({ toast }) {
                     </p>
                   </div>
                 )}
-                <p style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.45)', margin: 0 }}>
+                <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', margin: 0 }}>
                   Flagged {new Date(flag.created_at).toLocaleDateString('en-GB',
                     { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
@@ -2974,7 +2974,7 @@ function WaitlistTab({ toast }) {
             <span style={{ ...body, fontSize: '14px', color: '#0F1523' }}>{e.email}</span>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               {e.source && <Badge label={e.source} color="rgba(15,21,35,0.55)" />}
-              <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.45)' }}>{e.created_at?.slice(0, 10)}</span>
+              <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)' }}>{e.created_at?.slice(0, 10)}</span>
             </div>
           </div>
           {e.note && <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', margin: '4px 0 0', lineHeight: 1.5 }}>{e.note}</p>}
@@ -3100,7 +3100,7 @@ function EntitlementsTab({ toast }) {
             <span style={{ ...body, fontSize: '14px', color: '#0F1523' }}>{e.users?.email || e.user_id}</span>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <Badge label={e.entitlement_type} />
-              {e.expires_at && <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.45)' }}>exp: {e.expires_at?.slice(0,10)}</span>}
+              {e.expires_at && <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)' }}>exp: {e.expires_at?.slice(0,10)}</span>}
             </div>
           </div>
         </Card>
@@ -3178,7 +3178,7 @@ function GrantsTab() {
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <Badge label={g.tier || 'access'} />
               <Badge label={g.source || 'admin'} color="rgba(15,21,35,0.55)" />
-              <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.45)' }}>{g.granted_at?.slice(0,10)}</span>
+              <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)' }}>{g.granted_at?.slice(0,10)}</span>
             </div>
           </div>
         </Card>
@@ -3212,7 +3212,7 @@ export function AdminConsolePage() {
       <Nav />
       <div style={{ maxWidth: '1040px', margin: '0 auto', padding: '96px 40px 120px' }}>
         <Eyebrow>Admin Beta</Eyebrow>
-        <h1 style={{ ...body, fontSize: 'clamp(32px,4vw,48px)', fontWeight: 300,
+        <h1 style={{ ...body, fontSize: 'clamp(32px,4vw,48px)', fontWeight: 400,
           color: '#0F1523', marginBottom: '8px', lineHeight: 1.08 }}>
           Console
         </h1>

@@ -23,13 +23,11 @@ import {
 import { SCALES }           from '../constants/scales'
 import { LENSES_PER_DOMAIN } from '../constants/lenses'
 import { PLATFORM_PRINCIPLES } from '../constants/principles'
+import { serif, body, sc } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────
 // Design tokens (locked — do not deviate)
 // ─────────────────────────────────────────────────────────────
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold     = '#C8922A'
 const goldDark = '#A8721A'
 const dark  = '#0F1523'
@@ -240,7 +238,7 @@ function ActorPanel({ actor, onClose, navigate }) {
       boxShadow: '-4px 0 20px rgba(15,21,35,0.08)',
     }}>
       <div style={{ padding: '16px 16px 0', display: 'flex', justifyContent: 'flex-end' }}>
-        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '22px', color: 'rgba(15,21,35,0.40)', lineHeight: 1, padding: '0 2px' }}>×</button>
+        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '22px', color: 'rgba(15,21,35,0.55)', lineHeight: 1, padding: '0 2px' }}>×</button>
       </div>
 
       <div style={{ padding: '8px 22px 32px', flex: 1 }}>
@@ -252,7 +250,7 @@ function ActorPanel({ actor, onClose, navigate }) {
             return (
               <span key={d} style={{
                 ...sc, fontSize: '11px', letterSpacing: '0.14em',
-                color: i === 0 ? c : 'rgba(15,21,35,0.45)',
+                color: i === 0 ? c : 'rgba(15,21,35,0.55)',
                 background: i === 0 ? `${c}15` : 'rgba(15,21,35,0.05)',
                 border: `1px solid ${i === 0 ? c + '35' : 'rgba(15,21,35,0.12)'}`,
                 borderRadius: '4px', padding: '3px 9px',
@@ -264,22 +262,22 @@ function ActorPanel({ actor, onClose, navigate }) {
         </div>
 
         {/* Actor name */}
-        <h3 style={{ ...body, fontSize: '19px', fontWeight: 300, color: dark, lineHeight: 1.25, marginBottom: '8px' }}>
+        <h3 style={{ ...body, fontSize: '19px', fontWeight: 400, color: dark, lineHeight: 1.25, marginBottom: '8px' }}>
           {actor.name}
         </h3>
 
         {/* Type + scale + location */}
         <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
           {actor.type && (
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.50)' }}>{actor.type}</span>
+            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>{actor.type}</span>
           )}
           {actor.scale && (
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.50)' }}>
+            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
               · {SCALE_LABEL[actor.scale] || actor.scale}
             </span>
           )}
           {actor.location_name && (
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.50)' }}>
+            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
               · {actor.location_name}
             </span>
           )}
@@ -327,7 +325,7 @@ function ActorPanel({ actor, onClose, navigate }) {
         {/* ── Four-dimensional placement ── */}
         {(subdomains.length > 0 || fields.length > 0 || lenses.length > 0 || problems.length > 0) && (
           <div style={{ borderTop: `1px solid rgba(200,146,42,0.12)`, paddingTop: '14px', marginBottom: '16px' }}>
-            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.35)', marginBottom: '10px' }}>
+            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', marginBottom: '10px' }}>
               Placement
             </div>
 
@@ -361,16 +359,16 @@ function ActorPanel({ actor, onClose, navigate }) {
             {/* Problem chains */}
             {problems.length > 0 && (
               <div style={{ marginBottom: '10px' }}>
-                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.13em', color: 'rgba(15,21,35,0.40)', marginBottom: '5px' }}>Problem</div>
+                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.13em', color: 'rgba(15,21,35,0.55)', marginBottom: '5px' }}>Problem</div>
                 {problems.map((chain, i) => (
                   <div key={chain} style={{
-                    ...body, fontSize: '12px', color: i === 0 ? 'rgba(15,21,35,0.72)' : 'rgba(15,21,35,0.45)',
+                    ...body, fontSize: '13px', color: i === 0 ? 'rgba(15,21,35,0.72)' : 'rgba(15,21,35,0.55)',
                     lineHeight: 1.5, marginBottom: '3px',
                     paddingLeft: i === 0 ? '0' : '6px',
                   }}>
                     {chain.split('>').map((part, j) => (
                       <span key={j}>
-                        {j > 0 && <span style={{ color: 'rgba(15,21,35,0.25)', margin: '0 3px' }}>›</span>}
+                        {j > 0 && <span style={{ color: 'rgba(15,21,35,0.55)', margin: '0 3px' }}>›</span>}
                         {part.trim()}
                       </span>
                     ))}
@@ -384,7 +382,7 @@ function ActorPanel({ actor, onClose, navigate }) {
         {/* Platform principles tagged */}
         {principles.length > 0 && (
           <div style={{ marginBottom: '16px' }}>
-            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.35)', marginBottom: '7px' }}>
+            <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', marginBottom: '7px' }}>
               Principles
             </div>
             <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
@@ -424,12 +422,12 @@ function ActorPanel({ actor, onClose, navigate }) {
 function PlacementRow({ label, items, color }) {
   return (
     <div style={{ marginBottom: '10px' }}>
-      <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.13em', color: 'rgba(15,21,35,0.40)', marginBottom: '5px' }}>{label}</div>
+      <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.13em', color: 'rgba(15,21,35,0.55)', marginBottom: '5px' }}>{label}</div>
       <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
         {items.map(({ slug, label: itemLabel, primary }) => (
           <span key={slug} style={{
             ...sc, fontSize: '10px', letterSpacing: '0.10em',
-            color: primary ? color : 'rgba(15,21,35,0.45)',
+            color: primary ? color : 'rgba(15,21,35,0.55)',
             background: primary ? `${color}12` : 'rgba(15,21,35,0.05)',
             border: `1px solid ${primary ? color + '30' : 'rgba(15,21,35,0.10)'}`,
             borderRadius: '4px', padding: '2px 7px',
@@ -464,11 +462,11 @@ function ActorListItem({ actor, onClick }) {
         ))}
       </div>
       <div>
-        <div style={{ ...body, fontSize: '15px', fontWeight: 300, color: dark, marginBottom: '2px' }}>{actor.name}</div>
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.50)' }}>
+        <div style={{ ...body, fontSize: '15px', fontWeight: 400, color: dark, marginBottom: '2px' }}>{actor.name}</div>
+        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>
           {DOMAIN_LABEL[prim] || prim}
           {secondaries.length > 0 && (
-            <span style={{ color: 'rgba(15,21,35,0.30)' }}> +{secondaries.length}</span>
+            <span style={{ color: 'rgba(15,21,35,0.55)' }}> +{secondaries.length}</span>
           )}
           {actor.location_name && ` · ${actor.location_name}`}
           {actor.scale && ` · ${SCALE_LABEL[actor.scale] || actor.scale}`}
@@ -769,7 +767,7 @@ export function MapPage() {
                       }}
                     >
                       <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: isOn ? color : 'rgba(15,21,35,0.20)', flexShrink: 0 }} />
-                      <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.13em', color: isOn ? dark : 'rgba(15,21,35,0.40)' }}>
+                      <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.13em', color: isOn ? dark : 'rgba(15,21,35,0.55)' }}>
                         {DOMAIN_LABEL[domain]}
                       </span>
                     </button>
@@ -793,16 +791,16 @@ export function MapPage() {
                   </div>
                 )
               })}
-              <span style={{ color: 'rgba(15,21,35,0.20)', margin: '0 2px' }}>·</span>
+              <span style={{ color: 'rgba(15,21,35,0.55)', margin: '0 2px' }}>·</span>
               <button
                 onClick={() => { setActiveDomains(new Set(DOMAIN_SLUGS)); setFocusDomain(''); setFocusSubdomain('') }}
-                style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.40)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+                style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
               >
                 All
               </button>
               <button
                 onClick={() => { setActiveDomains(new Set()); setFocusDomain(''); setFocusSubdomain('') }}
-                style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.40)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
+                style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}
               >
                 None
               </button>
@@ -821,7 +819,7 @@ export function MapPage() {
               <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: DOMAIN_COLOR[focusDomain], marginRight: '2px' }}>
                 {DOMAIN_LABEL[focusDomain]}
               </span>
-              <span style={{ color: 'rgba(15,21,35,0.25)', fontSize: '12px' }}>›</span>
+              <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '12px' }}>›</span>
               {subdomainOptions.map(({ slug, label }) => {
                 const isActive = focusSubdomain === slug
                 const color    = DOMAIN_COLOR[focusDomain]
@@ -834,7 +832,7 @@ export function MapPage() {
                       padding: '4px 10px', borderRadius: '40px',
                       border: `1.5px solid ${isActive ? color : 'rgba(15,21,35,0.15)'}`,
                       background: isActive ? `${color}18` : 'white',
-                      color: isActive ? color : 'rgba(15,21,35,0.50)',
+                      color: isActive ? color : 'rgba(15,21,35,0.55)',
                       cursor: 'pointer', transition: 'all 0.15s',
                     }}
                   >
@@ -844,7 +842,7 @@ export function MapPage() {
               })}
               <button
                 onClick={() => { setFocusDomain(''); setFocusSubdomain('') }}
-                style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.35)', background: 'none', border: 'none', cursor: 'pointer', marginLeft: '4px' }}
+                style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', marginLeft: '4px' }}
               >
                 Clear ×
               </button>
@@ -854,7 +852,7 @@ export function MapPage() {
           {/* Stats + zoom info */}
           {!loading && (
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap' }}>
-              <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.50)' }}>
+              <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
                 {mappedVisible} on map · {filteredUnmapped.length} in list
               </span>
               {focusSubdomain && (
@@ -862,7 +860,7 @@ export function MapPage() {
                   Highlighting: {SUBDOMAIN_LABEL[focusSubdomain]}
                 </span>
               )}
-              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.30)' }}>
+              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
                 Zoom {Math.round(currentZoom)} · {visibleScales.map(s => SCALE_LABEL[s]?.split(' ')[0] || s).join(', ')}
                 {nextZoom !== undefined && ` · zoom to ${nextZoom}+ for local`}
               </span>
@@ -877,7 +875,7 @@ export function MapPage() {
 
             {!mapReady && (
               <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#E8E4DC', zIndex: 900 }}>
-                <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.50)' }}>Loading map…</p>
+                <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>Loading map…</p>
               </div>
             )}
 
@@ -891,7 +889,7 @@ export function MapPage() {
 
             {/* Scale legend */}
             <div className="beta-map-scale-legend" style={{ position: 'absolute', bottom: '32px', right: '10px', background: 'rgba(250,250,247,0.94)', border: `1px solid rgba(200,146,42,0.20)`, borderRadius: '8px', padding: '10px 13px', zIndex: 700, minWidth: '160px' }}>
-              <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.40)', marginBottom: '7px' }}>
+              <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '7px' }}>
                 Scale at zoom {Math.round(currentZoom)}
               </div>
               {SCALE_ORDER.map(s => {
@@ -899,7 +897,7 @@ export function MapPage() {
                 return (
                   <div key={s} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', opacity: visible ? 1 : 0.30 }}>
                     <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: visible ? goldDark : 'rgba(15,21,35,0.20)', flexShrink: 0 }} />
-                    <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: visible ? dark : 'rgba(15,21,35,0.35)' }}>
+                    <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: visible ? dark : 'rgba(15,21,35,0.55)' }}>
                       {SCALE_LABEL[s] || s}
                     </span>
                   </div>
@@ -938,9 +936,9 @@ export function MapPage() {
                   ? `${DOMAIN_LABEL[focusDomain]} actors`
                   : 'All actors'}
               </h2>
-              <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.50)' }}>{filteredUnmapped.length} listed</span>
+              <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{filteredUnmapped.length} listed</span>
             </div>
-            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.50)', marginBottom: '18px', lineHeight: 1.6 }}>
+            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '18px', lineHeight: 1.6 }}>
               Coordinates being added — these actors will appear on the map as they are geocoded.
             </p>
 
@@ -952,7 +950,7 @@ export function MapPage() {
                 <div key={domain} style={{ marginBottom: '28px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                     <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: DOMAIN_COLOR[domain] }} />
-                    <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.17em', color: 'rgba(15,21,35,0.50)' }}>
+                    <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.17em', color: 'rgba(15,21,35,0.55)' }}>
                       {DOMAIN_LABEL[domain]} · {domainActors.length}
                     </span>
                   </div>
@@ -975,7 +973,7 @@ export function MapPage() {
                 <div style={{ marginBottom: '28px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                     <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'rgba(15,21,35,0.25)' }} />
-                    <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.17em', color: 'rgba(15,21,35,0.50)' }}>
+                    <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.17em', color: 'rgba(15,21,35,0.55)' }}>
                       Unplaced · {noDomain.length}
                     </span>
                   </div>
@@ -994,7 +992,7 @@ export function MapPage() {
 
         {!loading && actors.length === 0 && (
           <div style={{ textAlign: 'center', padding: '60px 32px' }}>
-            <p style={{ ...serif, fontSize: '18px', fontWeight: 300, color: 'rgba(15,21,35,0.50)' }}>
+            <p style={{ ...serif, fontSize: '18px', fontWeight: 300, color: 'rgba(15,21,35,0.55)' }}>
               No actors on the map yet.
             </p>
           </div>

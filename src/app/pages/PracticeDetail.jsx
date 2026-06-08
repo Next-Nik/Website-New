@@ -106,18 +106,18 @@ function PlacementBreadcrumb({ practice }) {
       {primaryDomain ? primaryDomain.label : primaryDomainSlug}
       {primarySubdomainSlug && (
         <>
-          <span style={{ color: 'rgba(15,21,35,0.30)', margin: '0 8px' }}>›</span>
+          <span style={{ color: 'rgba(15,21,35,0.55)', margin: '0 8px' }}>›</span>
           {findSubdomainLabel(primaryDomainSlug, primarySubdomainSlug)}
         </>
       )}
       {primaryFieldSlug && (
         <>
-          <span style={{ color: 'rgba(15,21,35,0.30)', margin: '0 8px' }}>›</span>
+          <span style={{ color: 'rgba(15,21,35,0.55)', margin: '0 8px' }}>›</span>
           {primaryFieldSlug}
         </>
       )}
       {secondaryDomains.length > 0 && (
-        <span style={{ color: 'rgba(15,21,35,0.45)' }}>
+        <span style={{ color: 'rgba(15,21,35,0.55)' }}>
           {' '}({secondaryDomains.map(d => CIV_DOMAIN_BY_SLUG[d]?.label || d).join(', ')})
         </span>
       )}
@@ -504,7 +504,7 @@ export default function PracticeDetail() {
           <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>
             Contributed by {contributorName || 'an anonymous contributor'}
             {practice.contributor_role && (
-              <span style={{ color: 'rgba(15,21,35,0.45)' }}> · {practice.contributor_role}</span>
+              <span style={{ color: 'rgba(15,21,35,0.55)' }}> · {practice.contributor_role}</span>
             )}
           </span>
         </div>

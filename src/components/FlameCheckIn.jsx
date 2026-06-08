@@ -281,7 +281,7 @@ export function FlameSlider({ value, onChange, ghostValue = null }) {
                     fontFamily: "'Cormorant SC', Georgia, serif",
                     fontSize: isActive ? (isMobile ? '0.625rem' : '0.6875rem') : (isMobile ? '0.5rem' : '0.5625rem'),
                     letterSpacing: '0.1em',
-                    color: isActive ? color : isTheLine ? 'rgba(200,146,42,0.7)' : 'rgba(15,21,35,0.45)',
+                    color: isActive ? color : isTheLine ? 'rgba(200,146,42,0.7)' : 'rgba(15,21,35,0.55)',
                     whiteSpace: 'nowrap',
                     fontWeight: isActive ? 600 : 400,
                     transition: 'color 0.2s ease, font-size 0.15s ease',

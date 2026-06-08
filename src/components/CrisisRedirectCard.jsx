@@ -52,7 +52,7 @@ export function CrisisRedirectCard({ message, onExit }) {
             style={{
               ...body,
               fontSize: i === 0 ? 'clamp(18px,2.4vw,22px)' : 'clamp(16px,2vw,18px)',
-              fontWeight: 300,
+              fontWeight: 400,
               fontStyle: i === 0 ? 'italic' : 'normal',
               color: '#0F1523',
               lineHeight: 1.75,
@@ -67,7 +67,7 @@ export function CrisisRedirectCard({ message, onExit }) {
       {/* Resources section */}
       <div style={{ marginBottom: '40px' }}>
         <h3 style={{
-          ...body, fontSize: '20px', fontWeight: 300, color: '#0F1523',
+          ...body, fontSize: '20px', fontWeight: 400, color: '#0F1523',
           marginBottom: '8px',
         }}>
           People who are trained to help
@@ -106,7 +106,7 @@ export function CrisisRedirectCard({ message, onExit }) {
         </button>
         <p style={{
           ...body, fontSize: '13px', fontStyle: 'italic',
-          color: 'rgba(15,21,35,0.50)', textAlign: 'center', margin: 0,
+          color: 'rgba(15,21,35,0.55)', textAlign: 'center', margin: 0,
         }}>
           Your Map is saved. You can return to it any time.
         </p>

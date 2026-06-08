@@ -212,7 +212,7 @@ export function FocusIndex() {
             </Link>
             {breadcrumb.map(a => (
               <span key={a.id}>
-                <span style={{ color: 'rgba(15,21,35,0.30)', margin: '0 8px' }}>/</span>
+                <span style={{ color: 'rgba(15,21,35,0.55)', margin: '0 8px' }}>/</span>
                 <Link
                   to={`/focus?parent=${a.slug}`}
                   style={{ color: 'rgba(15,21,35,0.72)', textDecoration: 'none' }}

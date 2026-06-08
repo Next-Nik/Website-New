@@ -106,7 +106,7 @@ export function DomainPage() {
           padding: '18px 22px',
           marginBottom: '24px',
         }}>
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.50)', marginBottom: '8px' }}>
+          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
             Module 14 demonstration · pick a Focus
           </div>
           <select
@@ -138,7 +138,7 @@ export function DomainPage() {
           textAlign: 'center',
           marginBottom: '14px',
         }}>
-          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.50)', margin: 0 }}>
+          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: 0 }}>
             Actor grid · Module 11 ships this
           </p>
         </div>

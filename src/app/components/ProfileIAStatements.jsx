@@ -29,7 +29,7 @@ export function ProfileIAStatements({ iaStatements }) {
                 ...sc,
                 fontSize: '11px',
                 letterSpacing: '0.18em',
-                color: 'rgba(15,21,35,0.35)',
+                color: 'rgba(15,21,35,0.55)',
                 marginBottom: '6px',
                 textTransform: 'uppercase',
               }}>
@@ -39,7 +39,7 @@ export function ProfileIAStatements({ iaStatements }) {
             <p style={{
               ...body,
               fontSize: 'clamp(16px, 2vw, 19px)',
-              fontWeight: 300,
+              fontWeight: 400,
               fontStyle: 'italic',
               color: '#0F1523',
               lineHeight: 1.7,

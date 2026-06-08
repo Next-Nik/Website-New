@@ -61,8 +61,8 @@ function NotFound() {
         <p style={{
           ...body,
           fontSize: '17px',
-          fontWeight: 300,
-          color: 'rgba(15,21,35,0.45)',
+          fontWeight: 400,
+          color: 'rgba(15,21,35,0.55)',
           lineHeight: 1.75,
         }}>
           This profile does not exist or has not been made public.
@@ -92,8 +92,8 @@ function PrivateProfile() {
         <p style={{
           ...body,
           fontSize: '17px',
-          fontWeight: 300,
-          color: 'rgba(15,21,35,0.45)',
+          fontWeight: 400,
+          color: 'rgba(15,21,35,0.55)',
           lineHeight: 1.75,
         }}>
           This profile is private.

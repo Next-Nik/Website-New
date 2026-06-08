@@ -43,7 +43,7 @@ export function PracticeAttestedItem({ item }) {
           ...sc,
           fontSize: '11px',
           letterSpacing: '0.12em',
-          color: 'rgba(15,21,35,0.50)',
+          color: 'rgba(15,21,35,0.55)',
           margin: '8px 0 0',
         }}>
           {attesterRole}

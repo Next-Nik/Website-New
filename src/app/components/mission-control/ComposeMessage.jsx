@@ -154,7 +154,7 @@ export function ComposeMessage({
                     {recipient.name}
                   </div>
                   {recipient.tagline && (
-                    <div style={{ ...body, fontSize: '12px', color: TEXT_META,
+                    <div style={{ ...body, fontSize: '13px', color: TEXT_META,
                       fontStyle: 'italic' }}>
                       {recipient.tagline}
                     </div>
@@ -179,7 +179,7 @@ export function ComposeMessage({
                     color: TEXT_INK, outline: 'none', boxSizing: 'border-box' }}
                 />
                 {searching && (
-                  <p style={{ ...body, fontSize: '12px', color: TEXT_META,
+                  <p style={{ ...body, fontSize: '13px', color: TEXT_META,
                     marginTop: '8px' }}>Searching...</p>
                 )}
                 {searchResults.length > 0 && (
@@ -235,7 +235,7 @@ export function ComposeMessage({
                 color: TEXT_INK, outline: 'none', resize: 'vertical',
                 boxSizing: 'border-box', lineHeight: 1.55 }}
             />
-            <div style={{ ...body, fontSize: '11px', color: TEXT_META,
+            <div style={{ ...body, fontSize: '13px', color: TEXT_META,
               marginTop: '4px' }}>
               {body_text.length}/10000
             </div>

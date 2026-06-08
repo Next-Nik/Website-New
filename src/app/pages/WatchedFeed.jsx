@@ -199,7 +199,7 @@ function LoadMoreButton({ onClick, page }) {
       }}>
         Load more
       </button>
-      <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.40)', margin: '12px 0 0' }}>
+      <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', margin: '12px 0 0' }}>
         Page {page} of {MAX_PAGES}
       </p>
     </div>
@@ -210,7 +210,7 @@ function EndOfFeedNotice() {
   return (
     <div style={{ textAlign: 'center', padding: '56px 24px 24px', borderTop: '1px solid rgba(200,146,42,0.10)', marginTop: '32px' }}>
       <p style={{
-        ...body, fontSize: '17px', fontWeight: 300, fontStyle: 'italic',
+        ...body, fontSize: '17px', fontWeight: 400, fontStyle: 'italic',
         color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, margin: 0,
         maxWidth: '420px', marginLeft: 'auto', marginRight: 'auto',
       }}>

@@ -27,13 +27,13 @@ export function IAStatementItem({ item }) {
         <p style={{
           ...body,
           fontSize: 'clamp(16px, 1.8vw, 18px)',
-          fontWeight: 300,
+          fontWeight: 400,
           fontStyle: 'italic',
           color: '#0F1523',
           lineHeight: 1.7,
           margin: 0,
         }}>
-          <span style={{ color: 'rgba(15,21,35,0.50)', fontStyle: 'normal', fontSize: '14px', letterSpacing: '0.04em', marginRight: '6px' }}>
+          <span style={{ color: 'rgba(15,21,35,0.55)', fontStyle: 'normal', fontSize: '14px', letterSpacing: '0.04em', marginRight: '6px' }}>
             I am
           </span>
           {cleanStatement}

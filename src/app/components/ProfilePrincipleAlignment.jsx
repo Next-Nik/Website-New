@@ -15,7 +15,7 @@ export function ProfilePrincipleAlignment({ principleTaggings }) {
         ...sc,
         fontSize: '11px',
         letterSpacing: '0.18em',
-        color: 'rgba(15,21,35,0.35)',
+        color: 'rgba(15,21,35,0.55)',
         marginBottom: '12px',
         textTransform: 'uppercase',
       }}>

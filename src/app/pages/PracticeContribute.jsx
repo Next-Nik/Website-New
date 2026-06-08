@@ -545,7 +545,7 @@ export default function PracticeContribute() {
                       const next = form.problem_chains.filter((_, idx) => idx !== i)
                       set('problem_chains', next)
                     }}
-                    style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', background: 'transparent', border: '1px solid rgba(15,21,35,0.20)', borderRadius: '6px', padding: '6px 12px', cursor: 'pointer' }}>
+                    style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', background: 'transparent', border: '1px solid rgba(15,21,35,0.55)', borderRadius: '6px', padding: '6px 12px', cursor: 'pointer' }}>
                     Remove
                   </button>
                 )}

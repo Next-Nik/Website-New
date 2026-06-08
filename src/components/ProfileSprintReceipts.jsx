@@ -37,7 +37,7 @@ function ReceiptCard({ sprint }) {
             ...sc,
             fontSize: '11px',
             letterSpacing: '0.14em',
-            color: 'rgba(15,21,35,0.35)',
+            color: 'rgba(15,21,35,0.55)',
             marginBottom: '10px',
             textTransform: 'uppercase',
           }}>
@@ -75,7 +75,7 @@ function ReceiptCard({ sprint }) {
             <p key={id} style={{
               ...body,
               fontSize: '14px',
-              fontWeight: 300,
+              fontWeight: 400,
               color: 'rgba(15,21,35,0.65)',
               lineHeight: 1.6,
               margin: '0 0 6px',
@@ -98,7 +98,7 @@ export function ProfileSprintReceipts({ completedSprints }) {
         ...sc,
         fontSize: '11px',
         letterSpacing: '0.22em',
-        color: 'rgba(15,21,35,0.40)',
+        color: 'rgba(15,21,35,0.55)',
         marginBottom: '24px',
         textTransform: 'uppercase',
       }}>

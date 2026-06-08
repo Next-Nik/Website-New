@@ -142,7 +142,7 @@ export function DebriefPanel({ tool, toolContext, userId, mode = 'full', onCompl
               style={{
                 background: 'none', border: 'none',
                 ...body, fontSize: '1.0625rem',
-                color: 'rgba(15,21,35,0.42)',
+                color: 'rgba(15,21,35,0.55)',
                 cursor: 'pointer', padding: 0,
               }}
             >
@@ -226,7 +226,7 @@ export function DebriefPanel({ tool, toolContext, userId, mode = 'full', onCompl
             border: 'none',
             ...body,
             fontSize: '1.0625rem',
-            color: 'rgba(15,21,35,0.42)',
+            color: 'rgba(15,21,35,0.55)',
             cursor: 'pointer',
             padding: 0,
           }}

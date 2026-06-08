@@ -138,7 +138,7 @@ export default function IndicatorCard({ indicator, focusName, className }) {
               fontSize: 'clamp(34px, 5vw, 48px)',
               fontWeight: 300,
               lineHeight: 1,
-              color: hasValue ? '#0F1523' : 'rgba(15, 21, 35, 0.35)',
+              color: hasValue ? '#0F1523' : 'rgba(15, 21, 35, 0.55)',
             }}
           >
             {hasValue ? numberDisplay.value : '—'}

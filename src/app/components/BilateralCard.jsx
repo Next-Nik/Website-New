@@ -65,7 +65,7 @@ function PractitionerRelationshipDisplay({ payload }) {
         </p>
       )}
       {payload.started_at && (
-        <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.50)', marginBottom: '8px' }}>
+        <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
           Since {payload.started_at}
         </p>
       )}
@@ -118,7 +118,7 @@ function PodcastEmbedDisplay({ payload }) {
         </p>
       )}
       {payload.published_at && (
-        <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.50)', marginBottom: '8px' }}>
+        <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
           {payload.published_at}
         </p>
       )}
@@ -212,12 +212,12 @@ export function BilateralCard({
       <div style={{ marginBottom: '14px' }}>
         <span style={{
           ...sc, fontSize: '10px', letterSpacing: '0.20em',
-          color: isRevoked ? 'rgba(15,21,35,0.40)' : gold,
+          color: isRevoked ? 'rgba(15,21,35,0.55)' : gold,
           textTransform: 'uppercase', display: 'block', marginBottom: '8px',
         }}>
           {typeLabel}
           {isRevoked && (
-            <span style={{ marginLeft: '10px', color: 'rgba(15,21,35,0.40)' }}>Unpublished</span>
+            <span style={{ marginLeft: '10px', color: 'rgba(15,21,35,0.55)' }}>Unpublished</span>
           )}
         </span>
 
@@ -233,7 +233,7 @@ export function BilateralCard({
             <span style={{ ...body, fontSize: '15px', fontWeight: 400, color: dark }}>{partyAName}</span>
           )}
 
-          <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.50)' }}>and</span>
+          <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>and</span>
 
           {partyBId ? (
             <Link

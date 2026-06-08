@@ -63,7 +63,7 @@ function TestimonialRow({ testimonial, onSave, onDelete, toast }) {
 
         <p style={{ ...body, fontSize: '15.5px', fontStyle: 'italic',
           color: dark, lineHeight: 1.7, marginBottom: '10px',
-          fontWeight: 300 }}>
+          fontWeight: 400 }}>
           "{testimonial.quote}"
         </p>
 
@@ -77,7 +77,7 @@ function TestimonialRow({ testimonial, onSave, onDelete, toast }) {
             )}
             {testimonial.context && (
               <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-                color: 'rgba(15,21,35,0.45)', marginLeft: '10px' }}>
+                color: 'rgba(15,21,35,0.55)', marginLeft: '10px' }}>
                 {testimonial.context}
               </span>
             )}
@@ -287,7 +287,7 @@ export function TestimonialsTab({ actorId, toast }) {
 
   if (loading) {
     return (
-      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.45)' }}>
+      <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
         Loading…
       </p>
     )
@@ -310,7 +310,7 @@ export function TestimonialsTab({ actorId, toast }) {
 
       {testimonials.length === 0 && (
         <p style={{ ...body, fontSize: '15px',
-          color: 'rgba(15,21,35,0.45)', fontStyle: 'italic' }}>
+          color: 'rgba(15,21,35,0.55)', fontStyle: 'italic' }}>
           No testimonials yet.
         </p>
       )}

@@ -160,7 +160,7 @@ function SentDraftRow({ bilateral, partyBName, currentUserId, onWithdrawn, onEdi
       flexWrap: 'wrap',
     }}>
       <div>
-        <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.50)', marginBottom: '4px' }}>
+        <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
           {typeLabel} -- awaiting response
         </p>
         <p style={{ ...body, fontSize: '15px', color: dark }}>
@@ -257,7 +257,7 @@ export function BilateralInbox({ currentUserId, currentDisplayName }) {
         marginBottom: '24px',
       }}>
         <div>
-          <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: 'rgba(15,21,35,0.40)', textTransform: 'uppercase', marginBottom: '4px' }}>
+          <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '4px' }}>
             Bilateral cards
           </p>
           <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, maxWidth: '440px' }}>
@@ -328,7 +328,7 @@ export function BilateralInbox({ currentUserId, currentDisplayName }) {
       {/* Sent drafts awaiting response */}
       {sentDrafts.length > 0 && (
         <div style={{ marginBottom: '32px' }}>
-          <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.50)', marginBottom: '14px' }}>
+          <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', marginBottom: '14px' }}>
             Sent, awaiting response ({sentDrafts.length})
           </p>
           {sentDrafts.map(b => (
@@ -351,7 +351,7 @@ export function BilateralInbox({ currentUserId, currentDisplayName }) {
       {/* Published */}
       {published.length > 0 && (
         <div style={{ marginBottom: '32px' }}>
-          <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.50)', marginBottom: '14px' }}>
+          <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', marginBottom: '14px' }}>
             Published ({published.length})
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -381,7 +381,7 @@ export function BilateralInbox({ currentUserId, currentDisplayName }) {
             onClick={() => setShowRevoked(v => !v)}
             style={{
               ...sc, fontSize: '11px', letterSpacing: '0.16em',
-              color: 'rgba(15,21,35,0.45)', background: 'none',
+              color: 'rgba(15,21,35,0.55)', background: 'none',
               border: 'none', cursor: 'pointer', padding: '0 0 14px',
             }}
           >
@@ -412,7 +412,7 @@ export function BilateralInbox({ currentUserId, currentDisplayName }) {
 
       {/* Empty state */}
       {pendingForMe.length === 0 && sentDrafts.length === 0 && published.length === 0 && revoked.length === 0 && !creating && (
-        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.45)', lineHeight: 1.7 }}>
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
           No bilateral cards yet. Propose one to a person you have worked alongside, or someone you are sprinting with.
         </p>
       )}

@@ -107,7 +107,7 @@ function ThreadRow({ thread, onClick, onAction, isActive }) {
           {fmtTime(latestMessage?.created_at)}
         </span>
       </div>
-      <div style={{ ...body, fontSize: '12px', color: TEXT_META,
+      <div style={{ ...body, fontSize: '13px', color: TEXT_META,
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {latestMessage?.body?.slice(0, 100) || '—'}
       </div>

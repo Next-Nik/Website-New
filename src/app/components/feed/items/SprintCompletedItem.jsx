@@ -33,7 +33,7 @@ export function SprintCompletedItem({ item }) {
         <p style={{
           ...body,
           fontSize: '15px',
-          fontWeight: 300,
+          fontWeight: 400,
           color: '#0F1523',
           lineHeight: 1.7,
           margin: '8px 0 0',
@@ -43,7 +43,7 @@ export function SprintCompletedItem({ item }) {
           {outcome}
         </p>
       ) : (
-        <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.50)', margin: '8px 0 0' }}>
+        <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: '8px 0 0' }}>
           A sprint they have just finished.
         </p>
       )}

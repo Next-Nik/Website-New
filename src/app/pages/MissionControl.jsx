@@ -341,14 +341,14 @@ function ResourcesNextStepsInput({ onSubmit }) {
           onClick={() => { if (val.trim()) onSubmit(val.trim()) }}
           disabled={!val.trim()}
           style={{
-            background: val.trim() ? '#C8922A' : 'rgba(15,21,35,0.12)', color: val.trim() ? '#FFFFFF' : 'rgba(15,21,35,0.35)',
+            background: val.trim() ? '#C8922A' : 'rgba(15,21,35,0.55)', color: val.trim() ? '#FFFFFF' : 'rgba(15,21,35,0.55)',
             border: 'none', borderRadius: '3px', padding: '10px 16px', cursor: val.trim() ? 'pointer' : 'not-allowed',
             fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', letterSpacing: '0.16em', textTransform: 'uppercase',
             transition: 'background 0.15s', flexShrink: 0,
           }}
         >→</button>
       </div>
-      <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '12px', color: 'rgba(15,21,35,0.38)', marginTop: '6px', fontStyle: 'italic' }}>
+      <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '6px', fontStyle: 'italic' }}>
         Press enter or → to begin
       </div>
     </div>
@@ -1262,9 +1262,9 @@ export default function MissionControl() {
         <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', paddingTop: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <span style={{ color: '#A8721A', fontSize: '14px' }}>✦</span>
-            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.45)' }}>YOUR FEED</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.55)' }}>YOUR FEED</span>
           </div>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.38)', fontStyle: 'italic', margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', margin: 0, lineHeight: 1.6 }}>
             Articles, conversations, practitioners, and exercises — surfaced as your work moves.
           </p>
         </div>
