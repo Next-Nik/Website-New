@@ -24,10 +24,7 @@ import { ArrivalReflection } from './phases/ArrivalReflection'
 import { DomainLanding } from './phases/DomainLanding'
 import { PathView } from './phases/PathView'
 import { TrackLoop } from './phases/TrackLoop'
-
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
+import { serif, body, sc } from '../../lib/designTokens'
 
 export function NextStepsPage() {
   const { user, loading } = useAuth()

@@ -6,6 +6,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
 import { supabase } from '../../hooks/useSupabase'
 import { DebriefPanel } from '../../components/DebriefPanel'
+import { serif, body, sc } from '../../lib/designTokens'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -53,9 +54,6 @@ function getColor(n) {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = { color: '#A8721A' }
 const muted = { color: 'rgba(15,21,35,0.78)' }
 const meta  = { color: 'rgba(15,21,35,0.78)' }
@@ -904,7 +902,6 @@ function EditableList({ items, onSave, renderItem, addLabel = '+ Add', itemKey =
   )
 }
 
-
 // ─── Sprint Coach ──────────────────────────────────────────────────────────────
 
 function SprintCoach({ sprintContext, userId }) {
@@ -1604,7 +1601,7 @@ function PhaseSelect({ hasMapData, scores, horizonScores, iaStatements = {}, sel
                   </div>
                   <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '5px' }}>
                     <span style={{ color: col }}>{s}</span>
-                    <span style={{ color: 'rgba(15,21,35,0.3)' }}>→</span>
+                    <span style={{ color: 'rgba(15,21,35,0.55)' }}>→</span>
                     <span style={{ color: horizonScores[d.id] != null ? '#C8922A' : 'rgba(200,146,42,0.3)' }}>{horizonScores[d.id] != null ? horizonScores[d.id] : '?'}</span>
                     <span style={{ color: col, marginLeft: '2px' }}>· {getTierLabel(s)}</span>
                   </div>
@@ -2048,7 +2045,7 @@ export function TargetSprintPage() {
                 <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Rescore The Map</div>
                 <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>See what actually moved in ninety days.</div>
               </div>
-              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.4)', flexShrink: 0, marginLeft: '16px' }}>→</span>
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)', flexShrink: 0, marginLeft: '16px' }}>→</span>
             </a>
             <button
               onClick={handleStartNewSprint}
@@ -2058,7 +2055,7 @@ export function TargetSprintPage() {
                 <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Start a new sprint</div>
                 <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>Choose your next three domains.</div>
               </div>
-              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.4)', flexShrink: 0, marginLeft: '16px' }}>→</span>
+              <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)', flexShrink: 0, marginLeft: '16px' }}>→</span>
             </button>
           </div>
         </div>

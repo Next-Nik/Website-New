@@ -246,7 +246,7 @@ export function ArrivalReflection({ user, onReflectionLanded }) {
         .ns-input-row { flex-shrink:0; display:flex; gap:10px; align-items:flex-end; background:#FFFFFF; border-top:1px solid rgba(168,114,26,0.18); padding:14px 24px; max-width:680px; width:100%; margin:0 auto; box-sizing:border-box; }
         .ns-input { flex:1; border:1px solid rgba(168,114,26,0.25); border-radius:3px; outline:none; resize:none; font-family:'Lora',Georgia,serif; font-size:1rem; line-height:1.55; color:#0F1523; background:#FFFFFF; padding:10px 12px; min-height:44px; }
         .ns-input-row .ns-input { border:none; background:transparent; padding:4px 0; min-height:28px; }
-        .ns-input::placeholder { color:rgba(15,21,35,0.38); font-style:italic; }
+        .ns-input::placeholder { color:rgba(15,21,35,0.55); font-style:italic; }
         .ns-send { background:#C8922A; color:#FFFFFF; border:none; border-radius:3px; padding:10px 20px; font-family:'Cormorant SC',Georgia,serif; font-size:0.8rem; letter-spacing:0.16em; text-transform:uppercase; cursor:pointer; transition:background 0.15s; flex-shrink:0; height:44px; }
         .ns-send:hover:not(:disabled) { background:#A8721A; }
         .ns-send:disabled { background:rgba(15,21,35,0.15); cursor:not-allowed; }

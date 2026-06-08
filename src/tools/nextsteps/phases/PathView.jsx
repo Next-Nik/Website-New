@@ -345,7 +345,7 @@ export function PathView({ track, user, onBackToLoop }) {
         .ns-step-route { color: #A8721A; }
         .ns-step-state { color: rgba(15,21,35,0.55); }
         .ns-step-state-active { color: #5B8C5A; }
-        .ns-step-state-done { color: rgba(15,21,35,0.42); }
+        .ns-step-state-done { color: rgba(15,21,35,0.55); }
         .ns-step-description {
           font-family: 'Lora', Georgia, serif;
           font-size: 1.04rem;

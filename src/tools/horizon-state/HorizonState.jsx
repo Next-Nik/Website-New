@@ -7,6 +7,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { FlamePicker, FlameGlyph, FlameSlider } from '../../components/FlameCheckIn'
 import { ProtocolPanel } from '../../components/ProtocolPanel'
 import { DebriefPanel } from '../../components/DebriefPanel'
+import { serif, body, sc } from '../../lib/designTokens'
 
 const BUCKET = 'nextus-audio'
 
@@ -36,9 +37,6 @@ const PHASE_ADVANCE_THRESHOLD = {
   calibration: 40,
 }
 
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = { color: '#A8721A' }
 const muted = { color: 'rgba(15,21,35,0.72)' }
 const meta  = { color: 'rgba(15,21,35,0.78)' }
@@ -156,7 +154,6 @@ export async function writeSummary(user, allSessions, afterResult, beforeResult,
     console.warn('[Foundation] Summary write failed:', e)
   }
 }
-
 
 function periodLabel(type, id) {
   if (type === 'weekly') {
@@ -294,7 +291,7 @@ function AuthModal({ onDismiss }) {
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '36px 32px 28px', maxWidth: '400px', width: '100%' }}>
         <span style={{ display: 'block', ...sc, fontSize: '15px', letterSpacing: '0.2em', ...gold, textTransform: 'uppercase', marginBottom: '12px' }}>Foundation</span>
         <h2 style={{ ...sc, fontSize: '1.625rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.2, marginBottom: '10px' }}>Sign in to listen.</h2>
-        <p style={{ ...body, fontSize: '1.25rem', fontWeight: 300, ...meta, lineHeight: 1.7, marginBottom: '24px' }}>
+        <p style={{ ...body, fontSize: '1.25rem', fontWeight: 400, ...meta, lineHeight: 1.7, marginBottom: '24px' }}>
           Horizon State is part of the Horizon Suite {'—'} a free account keeps your progress and gives you access to the full protocol.
         </p>
         <a href={`/login?redirect=${returnUrl}`} style={{ display: 'block', width: '100%', padding: '14px', textAlign: 'center', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...sc, fontSize: '1.125rem', letterSpacing: '0.16em', ...gold, textDecoration: 'none', marginBottom: '12px' }}>
@@ -781,7 +778,7 @@ function FoundationLogs({ sessions }) {
               </div>
             )}
             {!before?.note && !after?.note && (
-              <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.4)', fontStyle: 'italic', margin: 0 }}>
+              <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', margin: 0 }}>
                 No notes recorded.
               </p>
             )}
@@ -1418,8 +1415,8 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
               <div style={{ height: '100%', width: mobilePct + '%', background: '#C8922A', borderRadius: '2px', transition: 'width 0.1s linear' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.4)' }}>{mobileFmt(mobileCurrent)}</span>
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.4)' }}>{mobileFmt(mobileDuration)}</span>
+              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>{mobileFmt(mobileCurrent)}</span>
+              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>{mobileFmt(mobileDuration)}</span>
             </div>
           </div>
         )}
@@ -1600,7 +1597,7 @@ export function HorizonStatePage() {
                           ...sc, fontSize: '12px', letterSpacing: '0.18em',
                           padding: '10px 14px',
                           background: 'none', border: 'none', cursor: 'pointer',
-                          color: isActiveView ? '#0F1523' : 'rgba(15,21,35,0.45)',
+                          color: isActiveView ? '#0F1523' : 'rgba(15,21,35,0.55)',
                           borderBottom: isActiveView ? '2px solid #A8721A' : '2px solid transparent',
                           marginBottom: '-1px',
                           transition: 'all 0.2s',
@@ -1699,7 +1696,7 @@ function PhaseAdvancePrompt({ currentPhase, nextPhaseKey, sessionCount, onAdvanc
       <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '10px', textTransform: 'uppercase' }}>
         Phase {nextPhase.number} available
       </span>
-      <p style={{ ...body, fontSize: '17px', fontWeight: 300, ...meta, lineHeight: 1.7, marginBottom: '20px' }}>
+      <p style={{ ...body, fontSize: '17px', fontWeight: 400, ...meta, lineHeight: 1.7, marginBottom: '20px' }}>
         {sessionCount} sessions in Phase {PHASES.find(p => p.key === currentPhase)?.number}. The next layer of the work is ready when you are.
       </p>
       <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '24px' }}>
@@ -1720,7 +1717,6 @@ function PhaseAdvancePrompt({ currentPhase, nextPhaseKey, sessionCount, onAdvanc
     </div>
   )
 }
-
 
 //
 // Renders only on the archive page when the user has zero foundation

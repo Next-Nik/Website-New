@@ -235,7 +235,7 @@ function HourglassPickerCompact({ onScore, currentScore }) {
             <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.62)' }}>— {LABEL_MAP[shown]}</span>
           </>
         ) : (
-          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.42)' }}>Hover a bar to see the tier · tap to set the score</span>
+          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>Hover a bar to see the tier · tap to set the score</span>
         )}
       </div>
 
@@ -1778,7 +1778,7 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, active }) {
         <button onClick={() => onToggle(sub.id)} style={{ width: '20px', height: '20px', borderRadius: '50%', border: btnBorder, background: active ? '#A8721A' : 'transparent', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {active && <span style={{ color: '#FFFFFF', fontSize: '12px', lineHeight: 1 }}>{'✓'}</span>}
         </button>
-        <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: active ? '#0F1523' : 'rgba(15,21,35,0.45)', flex: 1 }}>{sub.label}</span>
+        <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: active ? '#0F1523' : 'rgba(15,21,35,0.55)', flex: 1 }}>{sub.label}</span>
         {saved && <span style={{ ...sc, fontSize: '11px', color: '#A8721A', letterSpacing: '0.1em' }}>Saved</span>}
         {!saved && active && currentScore !== undefined && <span style={{ ...sc, fontSize: '13px', color: '#A8721A' }}>{currentScore}/10</span>}
       </div>
@@ -1786,7 +1786,7 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, active }) {
       {active && (
         <div style={{ padding: '0 18px 18px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
           <div style={{ marginTop: '14px', marginBottom: '16px' }}>
-            <button onClick={() => setShowContext(!showContext)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', padding: 0 }}>
+            <button onClick={() => setShowContext(!showContext)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', padding: 0 }}>
               {showContext ? '▾' : '▸'} What North Star should know about this area
             </button>
             {showContext && (
@@ -1915,7 +1915,7 @@ function MapNextSteps({ compact = false }) {
       <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
         What comes next
       </div>
-      <p style={{ ...body, fontSize: '1.25rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '28px' }}>
+      <p style={{ ...body, fontSize: '1.25rem', fontWeight: 400, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '28px' }}>
         The Map shows you the picture. The next tools help you move.
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1937,7 +1937,7 @@ function MapNextSteps({ compact = false }) {
             <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Horizon Practice</div>
             <div style={{ ...body, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>Build the daily practice that closes the gap.</div>
           </div>
-          <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.4)', flexShrink: 0, marginLeft: '16px' }}>→</span>
+          <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>
         <a href="/tools/purpose-piece"
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}
@@ -1947,7 +1947,7 @@ function MapNextSteps({ compact = false }) {
             <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Purpose Piece</div>
             <div style={{ ...body, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>Find your archetype, domain, and scale of contribution.</div>
           </div>
-          <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.4)', flexShrink: 0, marginLeft: '16px' }}>→</span>
+          <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>
         <a href="/dashboard"
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.55)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}

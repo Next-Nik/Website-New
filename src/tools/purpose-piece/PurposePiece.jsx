@@ -55,12 +55,10 @@ import { ToolCompassPanel } from '../../components/ToolCompassPanel'
 import { VoiceInput } from '../../components/VoiceInput'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
+import { body, sc } from '../../lib/designTokens'
 
 // ─── Shared styles ──────────────────────────────────────────────────────────
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const ser  = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
-
 const GOLD   = '#A8721A'
 const GOLD_L = '#C8922A'
 const FOREST = '#2D6A4F'
@@ -191,11 +189,11 @@ function Breadcrumb({ currentPhase, visible }) {
               fontSize: '12px',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
-              color: current ? GOLD : done ? 'rgba(15,21,35,0.55)' : 'rgba(15,21,35,0.32)',
+              color: current ? GOLD : done ? 'rgba(15,21,35,0.55)' : 'rgba(15,21,35,0.55)',
               fontWeight: current ? 600 : 400,
             }}>{p.label}</span>
             {i < PHASES.length - 1 && (
-              <span style={{ color: 'rgba(15,21,35,0.25)', fontSize: '11px' }}>→</span>
+              <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '11px' }}>→</span>
             )}
           </span>
         )
@@ -1185,7 +1183,7 @@ export function PurposePiecePage() {
         <div className="tool-header">
           <span className="tool-eyebrow">NextUs</span>
           <h1 className="tool-title">Purpose Piece</h1>
-          <p style={{ ...body, fontSize: '1.125rem', fontWeight: 300, color: MUTE, marginTop: '8px', lineHeight: 1.65, maxWidth: '540px' }}>
+          <p style={{ ...body, fontSize: '1.125rem', fontWeight: 400, color: MUTE, marginTop: '8px', lineHeight: 1.65, maxWidth: '540px' }}>
             {isComplete
               ? 'Your coordinates.'
               : 'A conversation that finds what you wish the world had more of, names the instinct you\'d use to create it, and shows you where that work is already happening.'}

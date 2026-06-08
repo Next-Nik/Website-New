@@ -117,7 +117,7 @@ export function NorthStarPage() {
         <div className="tool-header">
           <span className="tool-eyebrow">NextUs</span>
           <h1 className="tool-title">North Star</h1>
-          <p style={{ ...body, fontSize: '1.25rem', fontWeight: 300, ...meta, marginTop: '6px', lineHeight: 1.65, maxWidth: '420px' }}>
+          <p style={{ ...body, fontSize: '1.25rem', fontWeight: 400, ...meta, marginTop: '6px', lineHeight: 1.65, maxWidth: '420px' }}>
             A short conversation — three to five exchanges — that reads where you are and points you somewhere real. Your life, the planet, or both.
           </p>
         </div>
@@ -170,7 +170,7 @@ export function NorthStarPage() {
             borderRadius: '12px',
             textAlign: 'center',
           }}>
-            <p style={{ ...body, fontSize: '1.125rem', fontWeight: 300, ...meta, margin: '0 0 8px', lineHeight: 1.6 }}>
+            <p style={{ ...body, fontSize: '1.125rem', fontWeight: 400, ...meta, margin: '0 0 8px', lineHeight: 1.6 }}>
               Sign in and North Star carries what it's learned about you into every other tool.
             </p>
             <a href={`/login?redirect=${encodeURIComponent(window.location.href)}`}
