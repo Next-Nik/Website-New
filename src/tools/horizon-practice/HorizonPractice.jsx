@@ -25,6 +25,7 @@ import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
 import { supabase } from '../../hooks/useSupabase'
+import { useStreak } from './useStreak'
 
 // ─── Design tokens ──────────────────────────────────────────────────────────
 const tokens = {
@@ -1440,73 +1441,104 @@ function HorizonSelfPanel({ statement, onRefresh }) {
 // ────────────────────────────────────────────────────────────────────────────
 // Active Thresholds — with Cross action
 // ────────────────────────────────────────────────────────────────────────────
-function ActiveThresholds({ thresholds, onCross }) {
+function TaskList({ thresholds, onComplete, onUncomplete, onCross }) {
   if (!thresholds || thresholds.length === 0) {
     return (
       <div>
-        <Eyebrow style={{ marginBottom: '12px' }}>Active thresholds</Eyebrow>
+        <Eyebrow style={{ marginBottom: '12px' }}>Today's tasks</Eyebrow>
         <Card style={{ textAlign: 'center', padding: '24px' }}>
           <Body dim italic style={{ margin: 0 }}>None set for today.</Body>
         </Card>
       </div>
     )
   }
+
+  const pending   = thresholds.filter(t => !t.completed_at)
+  const completed = thresholds.filter(t =>  t.completed_at)
+
+  const TaskRow = ({ t }) => {
+    const isDone    = !!t.completed_at
+    const isCrossed = !!t.crossed_at
+    const isCarried = !!t.carried_from_id
+    return (
+      <div style={{
+        display: 'flex', alignItems: 'flex-start', gap: '14px',
+        padding: '14px 0',
+        borderBottom: `1px solid ${tokens.goldFaint}`,
+        opacity: isDone ? 0.55 : 1,
+        transition: 'opacity 0.3s ease',
+      }}>
+        <button
+          onClick={() => isDone ? onUncomplete(t) : onComplete(t)}
+          style={{
+            flexShrink: 0, marginTop: '2px',
+            width: '22px', height: '22px', borderRadius: '50%',
+            border: `1.5px solid ${isDone ? tokens.goldChrome : 'rgba(200,146,42,0.35)'}`,
+            background: isDone ? tokens.goldChrome : 'transparent',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer', transition: 'all 0.2s ease', padding: 0,
+          }}
+          aria-label={isDone ? 'Mark incomplete' : 'Mark complete'}
+        >
+          {isDone && <span style={{ color: '#FFFFFF', fontSize: '13px', lineHeight: 1 }}>✓</span>}
+        </button>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
+            <span style={{
+              ...body, fontSize: '14.5px', color: tokens.meta, lineHeight: 1.4,
+              textDecoration: isDone ? 'line-through' : 'none',
+              textDecorationColor: tokens.goldFaint,
+            }}>{t.title}</span>
+            {isCarried && !isDone && (
+              <span style={{
+                ...sc, fontSize: '9px', letterSpacing: '0.16em',
+                color: tokens.ghost, textTransform: 'uppercase',
+              }}>carried</span>
+            )}
+          </div>
+          {(t.time_label || t.note) && (
+            <div style={{ ...body, fontSize: '12px', color: tokens.ghost, marginTop: '3px', lineHeight: 1.4 }}>
+              {[t.time_label, t.note].filter(Boolean).join(' · ')}
+            </div>
+          )}
+        </div>
+        {!isDone && !isCrossed && (
+          <button onClick={() => onCross(t)} style={{
+            flexShrink: 0,
+            background: 'transparent', color: tokens.gold,
+            border: `1px solid ${tokens.goldFaint}`, borderRadius: '40px',
+            padding: '5px 12px', ...sc, fontSize: '10px', fontWeight: 600,
+            letterSpacing: '0.14em', cursor: 'pointer', whiteSpace: 'nowrap',
+          }}>Cross →</button>
+        )}
+        {!isDone && isCrossed && (
+          <span style={{ flexShrink: 0, ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.gold }}>crossed</span>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div>
-      <Eyebrow style={{ marginBottom: '12px' }}>Active thresholds</Eyebrow>
-      <div>
-        {thresholds.map((t) => {
-          const isCrossed = !!t.crossed_at
-          return (
-            <div key={t.id} style={{
-              padding: '14px 18px', marginBottom: '8px',
-              background: isCrossed ? tokens.goldTint : tokens.bgCard,
-              border: `1px solid ${tokens.goldFaint}`, borderRadius: '12px',
-              display: 'flex', justifyContent: 'space-between',
-              alignItems: 'center', gap: '12px',
-              opacity: isCrossed ? 0.75 : 1, transition: 'all 0.4s ease',
-            }}>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{
-                  ...sc, fontSize: '10px', letterSpacing: '0.16em',
-                  color: tokens.gold, marginBottom: '4px',
-                }}>
-                  {t.time_label || 'No time set'}{isCrossed ? ' · CROSSED' : ''}
-                </div>
-                <div style={{
-                  ...body, fontSize: '14.5px', color: tokens.meta, lineHeight: 1.4,
-                  textDecoration: isCrossed ? 'line-through' : 'none',
-                  textDecorationColor: tokens.goldFaint,
-                }}>{t.title}</div>
-                {t.note && (
-                  <div style={{
-                    ...body, fontSize: '12.5px', fontStyle: 'italic',
-                    color: tokens.ghost, marginTop: '3px', lineHeight: 1.4,
-                  }}>{t.note}</div>
-                )}
-              </div>
-              {!isCrossed && (
-                <button onClick={() => onCross(t)} style={{
-                  background: 'transparent', color: tokens.gold,
-                  border: `1px solid ${tokens.goldFaint}`, borderRadius: '40px',
-                  padding: '6px 14px', ...sc, fontSize: '10.5px', fontWeight: 600,
-                  letterSpacing: '0.14em', cursor: 'pointer', whiteSpace: 'nowrap',
-                  position: 'relative', overflow: 'hidden',
-                }}>Cross →</button>
-              )}
-              {isCrossed && (
-                <span style={{
-                  ...sc, fontSize: '11px', fontWeight: 600,
-                  letterSpacing: '0.18em', color: tokens.gold,
-                }}>✓</span>
-              )}
-            </div>
-          )
-        })}
+      <Eyebrow style={{ marginBottom: '4px' }}>Today's tasks</Eyebrow>
+      <div style={{ marginBottom: completed.length > 0 ? '20px' : 0 }}>
+        {pending.map(t => <TaskRow key={t.id} t={t} />)}
+        {pending.length === 0 && (
+          <div style={{ padding: '16px 0' }}>
+            <Body dim italic style={{ margin: 0 }}>All done.</Body>
+          </div>
+        )}
       </div>
+      {completed.length > 0 && (
+        <div style={{ marginTop: '8px' }}>
+          <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.18em', color: tokens.ghost, textTransform: 'uppercase', marginBottom: '4px' }}>Done</div>
+          {completed.map(t => <TaskRow key={t.id} t={t} />)}
+        </div>
+      )}
     </div>
   )
 }
+
 
 // ────────────────────────────────────────────────────────────────────────────
 // Hit / Drift bar + capture chips
@@ -1976,6 +2008,14 @@ export function HorizonPracticePage() {
   const { user, loading: authLoading } = useAuth()
   const { loading: accessLoading } = useAccess('horizon-practice')
 
+  // Streak
+  const {
+    streak, streakLoading, streakBroken, pendingMilestone,
+    isCadenceDay, recordEngagement, saveCadence, saveBadgePermission, clearMilestone,
+  } = useStreak(user)
+  const [cadenceSetupOpen, setCadenceSetupOpen] = useState(false)
+  const [badgeAsked, setBadgeAsked] = useState(false)
+
   // Profile data
   const [profileLoading, setProfileLoading] = useState(true)
   const [iamStatements, setIamStatements] = useState({})  // { path: '...', spark: '...' }
@@ -1989,7 +2029,8 @@ export function HorizonPracticePage() {
   const [todayRun, setTodayRun] = useState(null)
   const [thresholds, setThresholds] = useState([])
   const [entries, setEntries] = useState([])  // last ~30 days
-  const [view, setView] = useState('loading')  // loading | morning | day
+  const [view, setView] = useState('loading')  // loading | hub | morning | evening
+  const [activeSprint, setActiveSprint] = useState(null)
 
   // Modal state
   const [refreshOpen, setRefreshOpen] = useState(false)
@@ -2093,13 +2134,54 @@ export function HorizonPracticePage() {
 
         if (entryRows) setEntries(entryRows)
 
-        // Determine initial view: if morning complete today, go to day surface
-        if (runRow?.completed_at) setView('day')
-        else setView('morning')
+        // ── Load active sprint for hub tile ────────────────────────────────
+        const { data: sprintRow } = await supabase
+          .from('target_sprint_sessions')
+          .select('id, domains, status')
+          .eq('user_id', user.id)
+          .in('status', ['active', 'draft'])
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+        if (cancelled) return
+        if (sprintRow?.domains?.length) setActiveSprint(sprintRow)
+
+        // ── Silent carryover: roll incomplete tasks from yesterday ──────────
+        const yesterday = new Date()
+        yesterday.setDate(yesterday.getDate() - 1)
+        const yesterdayStr = getLocalDateStr(yesterday)
+        const { data: yesterdayTasks } = await supabase
+          .from('horizon_practice_thresholds')
+          .select('id, title, time_label, note, source, source_ref')
+          .eq('user_id', user.id)
+          .eq('run_date', yesterdayStr)
+          .is('completed_at', null)
+        if (cancelled) return
+        if (yesterdayTasks?.length) {
+          const alreadyCarried = (thresholdRows || [])
+            .filter(t => t.carried_from_id).map(t => t.carried_from_id)
+          const toCarry = yesterdayTasks.filter(t => !alreadyCarried.includes(t.id))
+          if (toCarry.length > 0) {
+            const newRows = toCarry.map(t => ({
+              user_id: user.id, title: t.title,
+              time_label: t.time_label || null, note: t.note || null,
+              source: t.source || 'manual', source_ref: t.source_ref || null,
+              run_date: today, carried_from_id: t.id,
+            }))
+            const { data: carried } = await supabase
+              .from('horizon_practice_thresholds').insert(newRows).select('*')
+            if (cancelled) return
+            if (carried) setThresholds(existing => [...(existing || []), ...carried])
+          }
+        }
+
+        // Always land on hub
+        setView('hub')
+        recordEngagement()
 
       } catch (err) {
         console.error('Horizon Practice load error:', err)
-        setView('day')  // graceful fallback
+        setView('hub')  // graceful fallback
       } finally {
         if (!cancelled) setProfileLoading(false)
       }
@@ -2130,7 +2212,32 @@ export function HorizonPracticePage() {
         .order('time_label', { ascending: true, nullsFirst: false })
       if (thresholdRows) setThresholds(thresholdRows)
     }
-    setView('day')
+    setView('hub')
+    recordEngagement()
+  }
+
+  async function handleComplete(threshold) {
+    if (!user || !threshold.id) return
+    const now = new Date().toISOString()
+    await supabase
+      .from('horizon_practice_thresholds')
+      .update({ completed_at: now })
+      .eq('id', threshold.id)
+    Chimes.hit()
+    setThresholds(ts => ts.map(t =>
+      t.id === threshold.id ? { ...t, completed_at: now } : t
+    ))
+  }
+
+  async function handleUncomplete(threshold) {
+    if (!user || !threshold.id) return
+    await supabase
+      .from('horizon_practice_thresholds')
+      .update({ completed_at: null })
+      .eq('id', threshold.id)
+    setThresholds(ts => ts.map(t =>
+      t.id === threshold.id ? { ...t, completed_at: null } : t
+    ))
   }
 
   async function handleHitOrDrift(kind, payload) {
@@ -2291,7 +2398,293 @@ export function HorizonPracticePage() {
           <MapRedirect onSkip={() => setSkipMap(true)} />
         )}
 
-        {/* Morning view */}
+        {/* ── Hub ── */}
+        {(hasMap || skipMap) && view === 'hub' && (
+          <div className="hp-fade-in" style={{
+            maxWidth: '640px', margin: '0 auto',
+            padding: 'clamp(88px, 10vw, 112px) clamp(20px, 4vw, 40px) 80px',
+          }}>
+
+            {/* Milestone overlay */}
+            {pendingMilestone && (
+              <div style={{
+                position: 'fixed', inset: 0, zIndex: 1000,
+                background: 'rgba(15,21,35,0.85)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                padding: '24px',
+              }}>
+                <div className="hp-fade-in" style={{
+                  background: tokens.bg, borderRadius: '20px',
+                  padding: '48px 36px', maxWidth: '360px', width: '100%',
+                  textAlign: 'center', border: `1px solid ${tokens.goldChrome}`,
+                }}>
+                  <div style={{ fontSize: '3rem', marginBottom: '16px' }}>
+                    {pendingMilestone === 21 ? '✦' : '✦✦'}
+                  </div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.22em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '12px' }}>
+                    {pendingMilestone} days
+                  </div>
+                  <Heading size="lg" style={{ marginBottom: '12px' }}>
+                    {pendingMilestone === 21 ? 'The habit is taking root.' : 'Forty days. The groove is deep now.'}
+                  </Heading>
+                  <Body dim style={{ marginBottom: '32px' }}>
+                    {pendingMilestone === 21
+                      ? 'Twenty-one consecutive days. The neural pathway is forming. Keep going.'
+                      : 'Forty days in. This is no longer something you do — it is something you are.'}
+                  </Body>
+                  <button onClick={clearMilestone} style={{
+                    background: tokens.gold, color: '#FFFFFF', border: 'none',
+                    borderRadius: '10px', padding: '14px 32px', cursor: 'pointer',
+                    ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase',
+                  }}>Continue →</button>
+                </div>
+              </div>
+            )}
+
+            {/* Return prompt */}
+            {streakBroken && (
+              <div style={{
+                background: '#FFFFFF', border: `1px solid ${tokens.goldChrome}`,
+                borderRadius: '14px', padding: '22px 24px', marginBottom: '28px',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px',
+              }}>
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Welcome back</div>
+                  <Body style={{ margin: 0, fontSize: '14.5px' }}>Your practice is here. Pick it back up.</Body>
+                </div>
+                <button onClick={() => setView('morning')} style={{
+                  flexShrink: 0, background: tokens.gold, color: '#FFFFFF',
+                  border: 'none', borderRadius: '8px', padding: '10px 18px', cursor: 'pointer',
+                  ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase',
+                }}>Begin →</button>
+              </div>
+            )}
+
+            {/* Greeting + streak counter */}
+            <div style={{ marginBottom: '40px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px' }}>
+              <Heading size="xl">
+                {getGreeting()}
+                {user && <>, <em style={{ color: tokens.gold, fontStyle: 'normal' }}>{
+                  user.user_metadata?.full_name?.split(' ')[0] ||
+                  user.user_metadata?.name?.split(' ')[0] ||
+                  (user.email.split('@')[0].charAt(0).toUpperCase() + user.email.split('@')[0].slice(1))
+                }</em></>}.
+              </Heading>
+              {streak && streak.streak_current > 0 && (
+                <button onClick={() => setCadenceSetupOpen(true)} style={{
+                  flexShrink: 0, marginTop: '6px',
+                  background: 'transparent', border: `1px solid ${tokens.goldFaint}`,
+                  borderRadius: '40px', padding: '6px 14px',
+                  display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
+                }}>
+                  <span style={{ fontSize: '14px' }}>✦</span>
+                  <span style={{ ...sc, fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', color: tokens.gold }}>{streak.streak_current}</span>
+                </button>
+              )}
+              {(!streak || streak.streak_current === 0) && !streakLoading && (
+                <button onClick={() => setCadenceSetupOpen(true)} style={{
+                  flexShrink: 0, marginTop: '6px',
+                  background: 'transparent', border: `1px solid ${tokens.goldFaint}`,
+                  borderRadius: '40px', padding: '6px 14px', cursor: 'pointer',
+                  ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.14em', color: tokens.ghost, textTransform: 'uppercase',
+                }}>Set streak</button>
+              )}
+            </div>
+
+            {/* Five tiles */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+
+              <button onClick={() => setView('morning')} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: todayRun?.completed_at ? tokens.bgCard : '#FFFFFF',
+                border: `1px solid ${todayRun?.completed_at ? tokens.goldFaint : tokens.goldChrome}`,
+                borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
+              }}>
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Morning Practice</div>
+                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
+                    {todayRun?.completed_at ? 'Complete — run again' : 'Commit · Ground · I Am · Anchor · Plan · Act'}
+                  </div>
+                </div>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.goldChrome, marginLeft: '16px' }}>→</span>
+              </button>
+
+              <button onClick={() => { setRefreshVariant('standard'); setRefreshTask(''); setRefreshOpen(true) }} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: '#FFFFFF', border: `1px solid ${tokens.goldFaint}`,
+                borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
+              }}>
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Horizon Self Refresh</div>
+                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>What's in front of you. How your Horizon Self handles it.</div>
+                </div>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
+              </button>
+
+              <button onClick={() => { window.location.href = '/tools/target-sprint' }} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: '#FFFFFF', border: `1px solid ${tokens.goldFaint}`,
+                borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
+              }}>
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
+                    {activeSprint?.status === 'active' ? 'Active Sprint' : activeSprint?.status === 'draft' ? 'Sprint in Setup' : 'Target Stretch'}
+                  </div>
+                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
+                    {activeSprint?.domains?.length ? activeSprint.domains.join(' · ') : 'No active sprint — start one'}
+                  </div>
+                </div>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
+              </button>
+
+              <button onClick={() => setView('evening')} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: '#FFFFFF', border: `1px solid ${tokens.goldFaint}`,
+                borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
+              }}>
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Evening Integrate</div>
+                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>Close the day. What landed. What to carry forward.</div>
+                </div>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
+              </button>
+
+              <button onClick={() => setLogOpen(true)} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: '#FFFFFF', border: `1px solid ${tokens.goldFaint}`,
+                borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
+              }}>
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Journal</div>
+                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
+                    {entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length > 0
+                      ? `${entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length} entr${entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length === 1 ? 'y' : 'ies'} today`
+                      : 'Hits · Drifts · Receipts · Listening'}
+                  </div>
+                </div>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
+              </button>
+
+            </div>
+
+            {/* Tasks */}
+            {thresholds.length > 0 && (
+              <div style={{ marginTop: '36px' }}>
+                <TaskList
+                  thresholds={thresholds}
+                  onComplete={handleComplete}
+                  onUncomplete={handleUncomplete}
+                  onCross={handleCross}
+                />
+              </div>
+            )}
+
+            {/* Badge permission ask */}
+            {streak && streak.streak_current >= 1 && !streak.badge_permission && !badgeAsked && 'setAppBadge' in navigator && (
+              <div style={{
+                marginTop: '24px', background: '#FFFFFF',
+                border: `1px solid ${tokens.goldFaint}`, borderRadius: '12px', padding: '18px 20px',
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
+              }}>
+                <Body dim style={{ margin: 0, fontSize: '13px', lineHeight: 1.5 }}>
+                  Show a reminder dot on the app icon when your practice is waiting?
+                </Body>
+                <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                  <button onClick={() => { setBadgeAsked(true); saveBadgePermission(true) }} style={{
+                    background: tokens.gold, color: '#FFF', border: 'none', borderRadius: '8px',
+                    padding: '8px 14px', cursor: 'pointer',
+                    ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.12em',
+                  }}>Yes</button>
+                  <button onClick={() => setBadgeAsked(true)} style={{
+                    background: 'transparent', color: tokens.ghost,
+                    border: `1px solid ${tokens.goldFaint}`, borderRadius: '8px',
+                    padding: '8px 14px', cursor: 'pointer',
+                    ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.12em',
+                  }}>No</button>
+                </div>
+              </div>
+            )}
+
+            <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
+              <button onClick={() => setCadenceSetupOpen(true)} style={{
+                background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+                ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.whisper, textTransform: 'uppercase',
+              }}>Streak</button>
+              <button onClick={() => setSettingsOpen(true)} style={{
+                background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+                ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.whisper, textTransform: 'uppercase',
+              }}>Settings</button>
+            </div>
+
+            {/* Cadence sheet */}
+            {cadenceSetupOpen && (
+              <div style={{
+                position: 'fixed', inset: 0, zIndex: 900, background: 'rgba(15,21,35,0.7)',
+                display: 'flex', alignItems: 'flex-end', justifyContent: 'center',
+              }} onClick={() => setCadenceSetupOpen(false)}>
+                <div onClick={e => e.stopPropagation()} style={{
+                  background: tokens.bg, borderRadius: '20px 20px 0 0',
+                  padding: '32px 28px 48px', width: '100%', maxWidth: '480px',
+                  borderTop: `1px solid ${tokens.goldFaint}`,
+                }}>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.22em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '16px' }}>Streak cadence</div>
+                  <Heading size="md" style={{ marginBottom: '8px' }}>How often are you committing?</Heading>
+                  <Body dim style={{ marginBottom: '24px', fontSize: '13.5px' }}>
+                    Your streak only counts — and the reminder only fires — on days you commit to.
+                  </Body>
+                  {[
+                    { key: 'daily',    label: 'Every day' },
+                    { key: 'weekdays', label: 'Weekdays (Mon–Fri)' },
+                    { key: '3x',       label: '3× a week (Mon · Wed · Fri)' },
+                  ].map(opt => (
+                    <button key={opt.key} onClick={async () => { await saveCadence(opt.key, null); setCadenceSetupOpen(false) }} style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      width: '100%', background: streak?.cadence === opt.key ? tokens.goldTint : '#FFFFFF',
+                      border: `1px solid ${streak?.cadence === opt.key ? tokens.goldChrome : tokens.goldFaint}`,
+                      borderRadius: '10px', padding: '16px 20px', marginBottom: '10px',
+                      cursor: 'pointer', textAlign: 'left',
+                    }}>
+                      <span style={{ ...body, fontSize: '14.5px', color: tokens.meta }}>{opt.label}</span>
+                      {streak?.cadence === opt.key && <span style={{ color: tokens.gold, fontSize: '14px' }}>✓</span>}
+                    </button>
+                  ))}
+                  {streak && (
+                    <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: `1px solid ${tokens.goldFaint}` }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: tokens.gold, marginBottom: '4px' }}>Current streak</div>
+                          <div style={{ ...body, fontSize: '22px', fontWeight: 600, color: tokens.meta }}>{streak.streak_current} <span style={{ fontSize: '14px', color: tokens.ghost }}>days</span></div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: tokens.gold, marginBottom: '4px' }}>Personal best</div>
+                          <div style={{ ...body, fontSize: '22px', fontWeight: 600, color: tokens.meta }}>{streak.streak_longest} <span style={{ fontSize: '14px', color: tokens.ghost }}>days</span></div>
+                        </div>
+                      </div>
+                      <div style={{ marginTop: '16px' }}>
+                        <div style={{ height: '4px', background: tokens.goldFaint, borderRadius: '2px', overflow: 'hidden' }}>
+                          <div style={{
+                            height: '100%', borderRadius: '2px', background: tokens.goldChrome,
+                            width: `${Math.min(100, (streak.streak_current / (streak.streak_current < 21 ? 21 : 40)) * 100)}%`,
+                            transition: 'width 0.4s ease',
+                          }} />
+                        </div>
+                        <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: tokens.ghost, marginTop: '6px' }}>
+                          {streak.streak_current < 21
+                            ? `${21 - streak.streak_current} days to the 21-day milestone`
+                            : streak.streak_current < 40
+                            ? `${40 - streak.streak_current} days to the 40-day milestone`
+                            : '40-day milestone reached ✦'}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Morning Practice ── */}
         {(hasMap || skipMap) && view === 'morning' && (
           <div style={{ paddingTop: 'clamp(80px, 10vw, 110px)' }}>
             <MorningSequence
@@ -2302,95 +2695,25 @@ export function HorizonPracticePage() {
               icalUrl={icalUrl}
               onSaveIcalUrl={handleSaveIcalUrl}
               onComplete={handleMorningComplete}
-              onClose={() => setView('day')}
+              onClose={() => setView('hub')}
             />
           </div>
         )}
 
-        {/* Day view */}
-        {(hasMap || skipMap) && view === 'day' && (
-          <div style={{ maxWidth: '760px', margin: '0 auto',
-            padding: 'clamp(88px, 10vw, 112px) clamp(20px, 4vw, 40px) 80px' }}>
-
-            <div style={{
-              ...sc, fontSize: '10px', letterSpacing: '0.20em',
-              color: tokens.whisper, textTransform: 'uppercase',
-              marginBottom: '36px', display: 'flex', justifyContent: 'space-between',
-              alignItems: 'center', gap: '12px', flexWrap: 'wrap',
-            }}>
-              <span>{todayRun?.completed_at ? 'Active' : 'Day surface'}</span>
-              <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
-                <button onClick={() => setSettingsOpen(true)} style={{
-                  background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-                  font: 'inherit', letterSpacing: 'inherit', color: tokens.gold,
-                }}>Settings</button>
-                <button onClick={() => setView('morning')} style={{
-                  background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-                  font: 'inherit', letterSpacing: 'inherit', color: tokens.gold,
-                }}>{todayRun?.completed_at ? '← Pre-flight' : '← Run pre-flight'}</button>
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '32px' }}>
-              <Heading size="xl">
-                {getGreeting()}
-                {user?.email && <>, <em style={{ color: tokens.gold,
-                  fontStyle: 'italic' }}>{user.email.split('@')[0]}</em></>}.
-              </Heading>
-            </div>
-
-            <div style={{ marginBottom: '36px' }}>
-              <HorizonSelfPanel
-                statement={horizonSelfStatement}
-                onRefresh={handleStandardRefresh}
-              />
-            </div>
-
-            <div style={{ marginBottom: '36px' }}>
-              <ActiveThresholds thresholds={thresholds} onCross={handleCross} />
-            </div>
-
-            <div style={{ marginBottom: '36px' }}>
-              <HitDriftBar
-                onFlag={(k) => setFlagKind(k)}
-                onCapture={(k) => {
-                  if (k === 'listening') setListeningOpen(true)
-                  else if (k === 'receipt') setReceiptOpen(true)
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '36px' }}>
-              <AmbientStrip
-                iam={DOMAIN_ORDER
-                  .filter(d => iamStatements[d])
-                  .map(d => ({ domain: d, label: DOMAIN_LABELS[d], text: iamStatements[d] }))
-                }
-                listening={entries.filter(e => e.kind === 'listening_glow').slice(0, 5)
-                  .map(e => ({ text: e.text, from: e.from_who }))
-                }
-              />
-            </div>
-
-            <div style={{ marginBottom: '36px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between',
-                alignItems: 'baseline', marginBottom: '8px' }}>
-                <Eyebrow>Today's log</Eyebrow>
-                <button onClick={() => setLogOpen(true)} style={{
-                  background: 'transparent', border: 'none', padding: 0,
-                  ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.16em',
-                  color: tokens.gold, cursor: 'pointer',
-                  borderBottom: `1px solid ${tokens.goldFaint}`, paddingBottom: '2px',
-                }}>Full log →</button>
-              </div>
-              <RecentEntries
-                entries={entries.filter(e => {
-                  const d = new Date(e.occurred_at)
-                  return getLocalDateStr(d) === getLocalDateStr()
-                }).slice(0, 5)}
-                onOpenJournal={() => setLogOpen(true)}
-              />
-            </div>
+        {/* ── Evening Integrate (placeholder) ── */}
+        {(hasMap || skipMap) && view === 'evening' && (
+          <div className="hp-fade-in" style={{
+            maxWidth: '520px', margin: '0 auto',
+            padding: 'clamp(88px, 10vw, 112px) clamp(20px, 4vw, 40px) 80px',
+          }}>
+            <Eyebrow style={{ marginBottom: '12px' }}>Evening Integrate</Eyebrow>
+            <Heading size="lg" style={{ marginBottom: '16px' }}>Close the day.</Heading>
+            <Card style={{ padding: '32px', marginBottom: '28px' }}>
+              <Body dim style={{ margin: 0 }}>
+                This is where you'll land the day — what showed up, what you met, what to carry forward. Coming soon.
+              </Body>
+            </Card>
+            <GhostButton onClick={() => setView('hub')}>← Back</GhostButton>
           </div>
         )}
 
