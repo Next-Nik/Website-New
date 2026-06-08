@@ -40,7 +40,7 @@ const tokens = {
   goldStrong: 'rgba(200,146,42,0.35)',
   meta: 'rgba(15,21,35,0.88)',
   ghost: 'rgba(15,21,35,0.55)',
-  whisper: 'rgba(15,21,35,0.30)',
+  whisper: 'rgba(15,21,35,0.55)',  // raised to opacity floor per design system
 }
 const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -234,8 +234,8 @@ function Body({ children, dim = false, italic = false, style = {} }) {
   return (
     <p style={{
       ...body, fontSize: '15.5px', fontWeight: 300,
-      color: dim ? tokens.ghost : tokens.meta, lineHeight: 1.7,
-      fontStyle: italic ? 'italic' : 'normal', margin: '0 0 12px', ...style,
+      color: dim ? tokens.ghost : tokens.meta, lineHeight: 1.65,
+      fontWeight: 400, fontStyle: italic ? 'italic' : 'normal', margin: '0 0 12px', ...style,
     }}>{children}</p>
   )
 }
@@ -525,7 +525,7 @@ function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId
                 {t.title}
               </div>
               {t.note && (
-                <div style={{ ...body, fontSize: '12px', fontStyle: 'italic',
+                <div style={{ ...body, fontSize: '13px',
                   color: tokens.ghost, marginTop: '2px', lineHeight: 1.4 }}>{t.note}</div>
               )}
             </div>
@@ -705,7 +705,7 @@ function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId
                 }}>{evt.title}</div>
                 {evt.note && (
                   <div style={{
-                    ...body, fontSize: '12px', fontStyle: 'italic',
+                    ...body, fontSize: '13px',
                     color: tokens.ghost, marginTop: '2px', lineHeight: 1.35,
                   }}>{evt.note}</div>
                 )}
@@ -993,8 +993,8 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
             ].map((q) => (
               <Card key={q.key} style={{ marginBottom: '12px', padding: '18px 22px' }}>
                 <p style={{
-                  ...serif, fontStyle: 'italic', fontSize: '17px',
-                  color: tokens.meta, margin: '0 0 14px', lineHeight: 1.4,
+                  ...serif, fontSize: '18px',
+                  color: tokens.dark, margin: '0 0 14px', lineHeight: 1.4, fontWeight: 300,
                 }}>{q.label}</p>
                 <div style={{ display: 'flex', gap: '8px' }}>
                   {['yes', 'no'].map(ans => (
@@ -1033,7 +1033,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
                   borderLeft: `2px solid ${tokens.goldChrome}`, borderRadius: '4px',
                 }}>
                   <p style={{
-                    margin: 0, ...serif, fontSize: '16px', fontStyle: 'italic',
+                    margin: 0, ...serif, fontSize: '18px', fontWeight: 300,
                     color: tokens.meta, lineHeight: 1.6,
                   }}>{protectorCovenant}</p>
                 </div>
@@ -1084,7 +1084,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
                     letterSpacing: '0.20em', color: tokens.gold, minWidth: '24px',
                   }}>{step.num}</span>
                   <span style={{
-                    ...serif, fontStyle: 'italic', fontSize: '22px',
+                    ...serif, fontSize: '22px', fontWeight: 300,
                     color: tokens.meta, lineHeight: 1.4,
                   }}>{step.text}</span>
                 </div>
@@ -1292,7 +1292,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
                 First threshold{firstThreshold.time_label ? ` · ${firstThreshold.time_label}` : ''}
               </Eyebrow>
               <p style={{
-                ...serif, fontSize: '18px', fontStyle: 'italic',
+                ...serif, fontSize: '18px', fontWeight: 300,
                 color: tokens.meta, margin: 0, lineHeight: 1.4,
               }}>{firstThreshold.title}</p>
             </div>
@@ -1485,13 +1485,13 @@ function TaskList({ thresholds, onComplete, onUncomplete, onCross }) {
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
             <span style={{
-              ...body, fontSize: '14.5px', color: tokens.meta, lineHeight: 1.4,
+              ...body, fontSize: '15px', fontWeight: 400, color: tokens.meta, lineHeight: 1.5,
               textDecoration: isDone ? 'line-through' : 'none',
               textDecorationColor: tokens.goldFaint,
             }}>{t.title}</span>
             {isCarried && !isDone && (
               <span style={{
-                ...sc, fontSize: '9px', letterSpacing: '0.16em',
+                ...sc, fontSize: '11px', letterSpacing: '0.16em',
                 color: tokens.ghost, textTransform: 'uppercase',
               }}>carried</span>
             )}
@@ -1531,7 +1531,7 @@ function TaskList({ thresholds, onComplete, onUncomplete, onCross }) {
       </div>
       {completed.length > 0 && (
         <div style={{ marginTop: '8px' }}>
-          <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.18em', color: tokens.ghost, textTransform: 'uppercase', marginBottom: '4px' }}>Done</div>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: tokens.ghost, textTransform: 'uppercase', marginBottom: '4px' }}>Done</div>
           {completed.map(t => <TaskRow key={t.id} t={t} />)}
         </div>
       )}
@@ -1562,8 +1562,8 @@ function HitDriftBar({ onFlag, onCapture }) {
     minHeight: '90px', cursor: 'pointer', position: 'relative', overflow: 'hidden',
   })
   const flagLabelStyle = {
-    ...serif, fontStyle: 'italic', fontSize: '15px',
-    color: tokens.dark, display: 'block', lineHeight: 1.35,
+    ...sc, fontSize: '15px', fontWeight: 600,
+    color: tokens.dark, display: 'block', lineHeight: 1.35, letterSpacing: '0.10em',
   }
   const captureChipStyle = {
     background: 'transparent', border: `1px solid ${tokens.goldFaint}`,
@@ -2502,7 +2502,7 @@ export function HorizonPracticePage() {
               }}>
                 <div>
                   <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Morning Practice</div>
-                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
+                  <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>
                     {todayRun?.completed_at ? 'Complete — run again' : 'Commit · Ground · I Am · Anchor · Plan · Act'}
                   </div>
                 </div>
@@ -2516,7 +2516,7 @@ export function HorizonPracticePage() {
               }}>
                 <div>
                   <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Horizon Self Refresh</div>
-                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>What's in front of you. How your Horizon Self handles it.</div>
+                  <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>What's in front of you. How your Horizon Self handles it.</div>
                 </div>
                 <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
               </button>
@@ -2530,7 +2530,7 @@ export function HorizonPracticePage() {
                   <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
                     {activeSprint?.status === 'active' ? 'Active Sprint' : activeSprint?.status === 'draft' ? 'Sprint in Setup' : 'Target Stretch'}
                   </div>
-                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
+                  <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>
                     {activeSprint?.domains?.length ? activeSprint.domains.join(' · ') : 'No active sprint — start one'}
                   </div>
                 </div>
@@ -2544,7 +2544,7 @@ export function HorizonPracticePage() {
               }}>
                 <div>
                   <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Evening Integrate</div>
-                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>Close the day. What landed. What to carry forward.</div>
+                  <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>Close the day. What landed. What to carry forward.</div>
                 </div>
                 <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
               </button>
@@ -2556,7 +2556,7 @@ export function HorizonPracticePage() {
               }}>
                 <div>
                   <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Journal</div>
-                  <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.4 }}>
+                  <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>
                     {entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length > 0
                       ? `${entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length} entr${entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length === 1 ? 'y' : 'ies'} today`
                       : 'Hits · Drifts · Receipts · Listening'}
@@ -2668,7 +2668,7 @@ export function HorizonPracticePage() {
                             transition: 'width 0.4s ease',
                           }} />
                         </div>
-                        <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.14em', color: tokens.ghost, marginTop: '6px' }}>
+                        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: tokens.ghost, marginTop: '6px' }}>
                           {streak.streak_current < 21
                             ? `${21 - streak.streak_current} days to the 21-day milestone`
                             : streak.streak_current < 40
@@ -2709,7 +2709,7 @@ export function HorizonPracticePage() {
             <Eyebrow style={{ marginBottom: '12px' }}>Evening Integrate</Eyebrow>
             <Heading size="lg" style={{ marginBottom: '16px' }}>Close the day.</Heading>
             <Card style={{ padding: '32px', marginBottom: '28px' }}>
-              <Body dim style={{ margin: 0 }}>
+              <Body dim style={{ margin: 0, fontSize: '16px' }}>
                 This is where you'll land the day — what showed up, what you met, what to carry forward. Coming soon.
               </Body>
             </Card>
