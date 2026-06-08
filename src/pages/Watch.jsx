@@ -3,10 +3,7 @@ import { Link } from 'react-router-dom'
 import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import { supabase } from '../hooks/useSupabase'
-
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
+import { serif, body, sc } from '../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────
 // /watch — the observer affordance
@@ -107,7 +104,7 @@ export function WatchPage() {
         <p style={{
           ...body,
           fontSize: '19px',
-          fontWeight: 300,
+          fontWeight: 400,
           color: 'rgba(15,21,35,0.8)',
           lineHeight: 1.75,
           marginBottom: '14px',
@@ -118,7 +115,7 @@ export function WatchPage() {
         <p style={{
           ...body,
           fontSize: '17px',
-          fontWeight: 300,
+          fontWeight: 400,
           color: 'rgba(15,21,35,0.6)',
           lineHeight: 1.75,
           maxWidth: '580px',
@@ -142,7 +139,7 @@ export function WatchPage() {
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '14px' }}>
           Territories you could wander into
         </span>
-        <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '28px', maxWidth: '560px' }}>
+        <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '28px', maxWidth: '560px' }}>
           Seven domains cover the full terrain of civilisational work. Follow one for a while. See what's there.
         </p>
 
@@ -178,10 +175,10 @@ export function WatchPage() {
               <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.72)', textTransform: 'uppercase', marginBottom: '6px' }}>
                 Domain
               </div>
-              <div style={{ ...body, fontSize: '19px', fontWeight: 300, color: '#0F1523', marginBottom: '8px', lineHeight: 1.2 }}>
+              <div style={{ ...body, fontSize: '19px', fontWeight: 400, color: '#0F1523', marginBottom: '8px', lineHeight: 1.2 }}>
                 {d.name}
               </div>
-              <div style={{ ...body, fontSize: '14px', fontWeight: 300, color: 'rgba(15,21,35,0.6)', lineHeight: 1.6 }}>
+              <div style={{ ...body, fontSize: '14px', fontWeight: 400, color: 'rgba(15,21,35,0.6)', lineHeight: 1.6 }}>
                 {d.short}
               </div>
             </Link>
@@ -190,7 +187,7 @@ export function WatchPage() {
 
         {/* A gentle link out to the broader actor browser — not a CTA, just a door left ajar */}
         {actorCount !== null && actorCount > 0 && (
-          <p style={{ ...body, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, marginTop: '24px', fontStyle: 'italic' }}>
+          <p style={{ ...body, fontSize: '15px', fontWeight: 400, color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, marginTop: '24px', fontStyle: 'italic' }}>
             {actorCount} organisation{actorCount === 1 ? '' : 's'} and practitioner{actorCount === 1 ? '' : 's'} have been placed on the map so far. You can{' '}
             <Link to="/nextus/actors" style={{ color: '#A8721A', fontStyle: 'normal', textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.35)' }}>
               browse who's here
@@ -216,10 +213,10 @@ export function WatchPage() {
         </span>
         {PODCAST_FALLBACK.map(p => (
           <div key={p.href} style={{ marginBottom: '16px' }}>
-            <div style={{ ...body, fontSize: '19px', fontWeight: 300, color: '#0F1523', marginBottom: '6px' }}>
+            <div style={{ ...body, fontSize: '19px', fontWeight: 400, color: '#0F1523', marginBottom: '6px' }}>
               {p.title}
             </div>
-            <p style={{ ...body, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '10px', maxWidth: '520px' }}>
+            <p style={{ ...body, fontSize: '15px', fontWeight: 400, color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '10px', maxWidth: '520px' }}>
               {p.desc}
             </p>
             <Link to={p.href} style={{
@@ -250,7 +247,7 @@ export function WatchPage() {
           border: '1px solid rgba(200,146,42,0.18)',
           borderRadius: '14px',
         }}>
-          <p style={{ ...body, fontSize: '17px', fontWeight: 300, fontStyle: 'italic', color: '#0F1523', lineHeight: 1.7, marginBottom: '14px', maxWidth: '520px' }}>
+          <p style={{ ...body, fontSize: '17px', fontWeight: 400, fontStyle: 'italic', color: '#0F1523', lineHeight: 1.7, marginBottom: '14px', maxWidth: '520px' }}>
             When something pulls — when you've watched enough and want to try something — the door home is just here.
           </p>
           <Link to="/" style={{

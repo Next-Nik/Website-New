@@ -5,17 +5,15 @@ import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { CivilisationalFramePanel } from '../components/CivilisationalFramePanel'
 import { TestimonialsPanel } from '../components/TestimonialsPanel'
 import { SiteFooter } from '../components/SiteFooter'
+import { serif, body, sc } from '../lib/designTokens'
 
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold  = { color: '#A8721A' }
 const meta  = { color: 'rgba(15,21,35,0.55)' }
 const dark  = { color: '#0F1523' }
 
 function P({ children, style = {} }) {
   return (
-    <p style={{ ...body, fontSize: '17px', fontWeight: 300, ...dark, lineHeight: 1.85, marginBottom: '20px', ...style }}>
+    <p style={{ ...body, fontSize: '17px', fontWeight: 400, ...dark, lineHeight: 1.85, marginBottom: '20px', ...style }}>
       {children}
     </p>
   )
@@ -102,7 +100,7 @@ export function AboutPage() {
               <a href="/" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(168,114,26,0.35)', paddingBottom: '2px' }}>
                 NextUs Self →
               </a>
-              <a href="/tools/north-star" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.20)', paddingBottom: '2px' }}>
+              <a href="/tools/north-star" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.55)', paddingBottom: '2px' }}>
                 North Star →
               </a>
             </div>
@@ -159,7 +157,7 @@ export function AboutPage() {
               <a href="/" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', borderBottom: '1px solid rgba(168,114,26,0.35)', paddingBottom: '2px' }}>
                 NextUs →
               </a>
-              <a href="/feed" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.20)', paddingBottom: '2px' }}>
+              <a href="/feed" style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', borderBottom: '1px solid rgba(15,21,35,0.55)', paddingBottom: '2px' }}>
                 Who's doing the work →
               </a>
             </div>

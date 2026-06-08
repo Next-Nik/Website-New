@@ -134,7 +134,7 @@ export function GroupJoinPage() {
           {state === 'idle' && !group && (
             <Card>
               <Eyebrow>Join a group</Eyebrow>
-              <h1 style={{ ...body, fontSize: '28px', fontWeight: 300, color: '#0F1523',
+              <h1 style={{ ...body, fontSize: '28px', fontWeight: 400, color: '#0F1523',
                 marginBottom: '20px', lineHeight: 1.2 }}>
                 Enter your access code.
               </h1>
@@ -160,7 +160,7 @@ export function GroupJoinPage() {
           {state === 'idle' && group && !user && (
             <Card>
               <Eyebrow>{group.name}</Eyebrow>
-              <h1 style={{ ...body, fontSize: '26px', fontWeight: 300, color: '#0F1523',
+              <h1 style={{ ...body, fontSize: '26px', fontWeight: 400, color: '#0F1523',
                 marginBottom: '10px', lineHeight: 1.2 }}>
                 Sign in to join.
               </h1>
@@ -179,7 +179,7 @@ export function GroupJoinPage() {
             <Card>
               <div style={{ fontSize: '32px', marginBottom: '16px' }}>✦</div>
               <Eyebrow>{group?.name}</Eyebrow>
-              <h1 style={{ ...body, fontSize: '26px', fontWeight: 300, color: '#0F1523',
+              <h1 style={{ ...body, fontSize: '26px', fontWeight: 400, color: '#0F1523',
                 marginBottom: '10px' }}>
                 You're in.
               </h1>
@@ -195,7 +195,7 @@ export function GroupJoinPage() {
           {state === 'pending' && (
             <Card>
               <Eyebrow>{group?.name}</Eyebrow>
-              <h1 style={{ ...body, fontSize: '26px', fontWeight: 300, color: '#0F1523',
+              <h1 style={{ ...body, fontSize: '26px', fontWeight: 400, color: '#0F1523',
                 marginBottom: '10px' }}>
                 Request received.
               </h1>
@@ -211,7 +211,7 @@ export function GroupJoinPage() {
           {state === 'already' && (
             <Card>
               <Eyebrow>{group?.name}</Eyebrow>
-              <h1 style={{ ...body, fontSize: '26px', fontWeight: 300, color: '#0F1523',
+              <h1 style={{ ...body, fontSize: '26px', fontWeight: 400, color: '#0F1523',
                 marginBottom: '10px' }}>
                 You're already a member.
               </h1>
@@ -226,7 +226,7 @@ export function GroupJoinPage() {
           {/* Not found */}
           {state === 'notfound' && (
             <Card>
-              <h1 style={{ ...body, fontSize: '26px', fontWeight: 300, color: '#0F1523',
+              <h1 style={{ ...body, fontSize: '26px', fontWeight: 400, color: '#0F1523',
                 marginBottom: '10px' }}>
                 Code not found.
               </h1>
@@ -243,7 +243,7 @@ export function GroupJoinPage() {
           {/* Error */}
           {state === 'error' && (
             <Card>
-              <h1 style={{ ...body, fontSize: '26px', fontWeight: 300, color: '#0F1523',
+              <h1 style={{ ...body, fontSize: '26px', fontWeight: 400, color: '#0F1523',
                 marginBottom: '10px' }}>
                 Something went wrong.
               </h1>

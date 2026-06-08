@@ -3,10 +3,7 @@ import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton } from
 import { SiteFooter } from '../components/SiteFooter'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { GlossaryPanel } from '../components/GlossaryPanel'
-
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { serif, body, sc } from '../lib/designTokens'
 
 const TOOLS = [
   {
@@ -61,7 +58,7 @@ function ToolRow({ tool }) {
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
           <span style={{ ...sc, fontSize: '19px', letterSpacing: '0.08em', color: '#A8721A' }}>{tool.name}</span>
-          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.35)', textTransform: 'uppercase' }}>{tool.time}</span>
+          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>{tool.time}</span>
         </div>
         <p style={{ ...serif, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.65, margin: 0, maxWidth: '540px' }}>
           {tool.one_line}

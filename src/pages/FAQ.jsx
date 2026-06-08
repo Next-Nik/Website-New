@@ -1,10 +1,7 @@
 import { useState } from 'react'
 import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
-
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
+import { serif, body, sc } from '../lib/designTokens'
 
 const FAQS = [
   {
@@ -167,7 +164,7 @@ function FAQItem({ q, a }) {
           display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px',
         }}
       >
-        <span style={{ ...body, fontSize: '17px', fontWeight: 300, color: '#0F1523', lineHeight: 1.5 }}>{q}</span>
+        <span style={{ ...body, fontSize: '17px', fontWeight: 400, color: '#0F1523', lineHeight: 1.5 }}>{q}</span>
         <span style={{
           flexShrink: 0, width: '20px', height: '20px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -179,7 +176,7 @@ function FAQItem({ q, a }) {
       </button>
       {open && (
         <p style={{
-          ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)',
+          ...body, fontSize: '16px', fontWeight: 400, color: 'rgba(15,21,35,0.72)',
           lineHeight: 1.8, margin: '0 0 20px', maxWidth: '620px',
         }}>
           {a}
@@ -239,7 +236,7 @@ export function FAQPage() {
           <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '10px' }}>
             Still have a question?
           </span>
-          <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '480px' }}>
+          <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px', maxWidth: '480px' }}>
             Reach out directly. Someone from the team will get back to you — no ticketing system, no bot.
           </p>
           <a

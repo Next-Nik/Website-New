@@ -3,9 +3,7 @@ import { DarkSection, DarkEyebrow, DarkHeading, DarkBody, DarkSolidButton, DarkG
 import { SiteFooter } from '../components/SiteFooter'
 import { ToolCompassPanel } from '../components/ToolCompassPanel'
 import { useAuth } from '../hooks/useAuth'
-
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { body, sc } from '../lib/designTokens'
 
 // ── Stripe Checkout links ──────────────────────────────────────────────────
 // Replace these with your real Stripe payment links once created.
@@ -46,7 +44,7 @@ function usePaymentLinks(userId) {
 function PriceTag({ amount, period, note }) {
   return (
     <div style={{ marginBottom: '6px' }}>
-      <span style={{ ...body, fontSize: '28px', fontWeight: 300, color: '#0F1523' }}>${amount}</span>
+      <span style={{ ...body, fontSize: '28px', fontWeight: 400, color: '#0F1523' }}>${amount}</span>
       {period && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginLeft: '6px' }}>{period}</span>}
       {note && <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>{note}</div>}
     </div>
@@ -74,7 +72,7 @@ function ToolCard({ name, desc, monthly, yearly, oneTime, monthlyLink, yearlyLin
         }}>Best value</div>
       )}
       <div style={{ ...sc, fontSize: '17px', letterSpacing: '0.10em', color: '#A8721A', marginBottom: '8px' }}>{name}</div>
-      <p style={{ ...body, fontSize: '15px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '20px', flex: 1 }}>{desc}</p>
+      <p style={{ ...body, fontSize: '15px', fontWeight: 400, color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '20px', flex: 1 }}>{desc}</p>
 
       {oneTime && (
         <>
@@ -124,10 +122,10 @@ export function PricingPage() {
 
         {/* Header */}
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Pricing</span>
-        <h1 style={{ ...body, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
+        <h1 style={{ ...body, fontSize: 'clamp(38px,5.5vw,64px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.02em', marginBottom: '20px' }}>
           Start where you are.<br /><em style={{ color: '#A8721A' }}>Go as far as you need.</em>
         </h1>
-        <p style={{ ...body, fontSize: '17px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '64px', maxWidth: '520px' }}>
+        <p style={{ ...body, fontSize: '17px', fontWeight: 400, color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '64px', maxWidth: '520px' }}>
           Every tool is available individually. Or get everything in one place with The Horizon Suite — designed to pay for itself from the first month.
         </p>
 
@@ -143,7 +141,7 @@ export function PricingPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '24px' }}>
               <div style={{ flex: '1 1 300px' }}>
                 <div style={{ ...sc, fontSize: '20px', letterSpacing: '0.10em', color: '#A8721A', marginBottom: '10px' }}>The Horizon Suite</div>
-                <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '16px', maxWidth: '440px' }}>
+                <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '16px', maxWidth: '440px' }}>
                   Horizon State · Purpose Piece · The Map · Target Sprint · Horizon Practice. All five tools. The full navigation system for your life. The bundle is designed so the maths is obvious — Horizon State and Horizon Practice subscriptions alone cost $44/month individually.
                 </p>
                 <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
@@ -152,11 +150,11 @@ export function PricingPage() {
               </div>
               <div style={{ flex: '0 1 220px' }}>
                 <div style={{ marginBottom: '8px' }}>
-                  <span style={{ ...body, fontSize: '32px', fontWeight: 300, color: '#0F1523' }}>$49</span>
+                  <span style={{ ...body, fontSize: '32px', fontWeight: 400, color: '#0F1523' }}>$49</span>
                   <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginLeft: '6px' }}>/ month</span>
                 </div>
                 <div style={{ marginBottom: '20px' }}>
-                  <span style={{ ...body, fontSize: '26px', fontWeight: 300, color: '#0F1523' }}>$399</span>
+                  <span style={{ ...body, fontSize: '26px', fontWeight: 400, color: '#0F1523' }}>$399</span>
                   <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginLeft: '6px' }}>/ year</span>
                   <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>save $189 vs monthly</div>
                 </div>
@@ -225,20 +223,20 @@ export function PricingPage() {
           <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '20px' }}>Group Horizon</span>
           <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
             <div style={{ flex: '1 1 320px' }}>
-              <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '12px' }}>
+              <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: '#0F1523', lineHeight: 1.8, marginBottom: '12px' }}>
                 A 12-week cohort for people ready to do real work in the company of others doing the same. Six to eight people. A defined arc — from honest mapping through to purpose, horizon, and a 90-day sprint forward. Facilitated by Nik. Small enough that everyone is genuinely seen.
               </p>
-              <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
+              <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
                 The Horizon Suite included for the duration. The Map and Purpose Piece completed before the cohort begins.
               </p>
             </div>
             <div style={{ flex: '0 1 220px' }}>
               <div style={{ marginBottom: '4px' }}>
-                <span style={{ ...body, fontSize: '32px', fontWeight: 300, color: '#0F1523' }}>$600</span>
+                <span style={{ ...body, fontSize: '32px', fontWeight: 400, color: '#0F1523' }}>$600</span>
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginLeft: '6px' }}>/ month</span>
               </div>
               <div style={{ marginBottom: '20px' }}>
-                <span style={{ ...body, fontSize: '20px', fontWeight: 300, color: '#0F1523' }}>$1,500</span>
+                <span style={{ ...body, fontSize: '20px', fontWeight: 400, color: '#0F1523' }}>$1,500</span>
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginLeft: '6px' }}>paid in full</span>
                 <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>save $300</div>
               </div>
@@ -267,16 +265,16 @@ export function PricingPage() {
           <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '20px' }}>1:1 Work with Nik</span>
           <div style={{ display: 'flex', gap: '40px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
             <div style={{ flex: '1 1 320px' }}>
-              <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.8, marginBottom: '12px' }}>
+              <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: '#0F1523', lineHeight: 1.8, marginBottom: '12px' }}>
                 One-on-one work for people pressing against the ceiling of their own excellence. Not a programme — a space calibrated precisely enough that something new becomes possible.
               </p>
-              <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
+              <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
                 "I'm 63 years old and just met myself for the first time working with Nik." — J.B.
               </p>
             </div>
             <div style={{ flex: '0 1 220px' }}>
               <div style={{ marginBottom: '6px' }}>
-                <span style={{ ...body, fontSize: '32px', fontWeight: 300, color: '#0F1523' }}>$3,500</span>
+                <span style={{ ...body, fontSize: '32px', fontWeight: 400, color: '#0F1523' }}>$3,500</span>
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginLeft: '6px' }}>/ month</span>
               </div>
               <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '20px' }}>
@@ -316,7 +314,7 @@ export function PricingPage() {
           ].map(({ q, a }) => (
             <div key={q} style={{ borderBottom: '1px solid rgba(200,146,42,0.08)', padding: '20px 0' }}>
               <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: '#0F1523', marginBottom: '8px' }}>{q}</div>
-              <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>{a}</p>
+              <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>{a}</p>
             </div>
           ))}
         </div>

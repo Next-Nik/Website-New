@@ -14,7 +14,7 @@ export function SupportResourcesPage() {
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>
           Support Resources
         </span>
-        <h1 style={{ ...body, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '24px' }}>
+        <h1 style={{ ...body, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '24px' }}>
           If you need someone<br />
           <em style={{ color: '#A8721A' }}>to talk to right now.</em>
         </h1>

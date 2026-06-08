@@ -125,7 +125,7 @@ export function BeginBuildGroupPage() {
                 Bring another formation  →
               </button>
               <button onClick={() => navigate('/')}
-                style={{ ...SC, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.30)', background: 'transparent', color: 'rgba(15,21,35,0.65)', cursor: 'pointer' }}>
+                style={{ ...SC, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.55)', background: 'transparent', color: 'rgba(15,21,35,0.65)', cursor: 'pointer' }}>
                 Back to home
               </button>
             </div>

@@ -12,11 +12,10 @@
 // the page shell, the form primitives, the typography — lives here.
 
 import { useState } from 'react'
+import { body as BODY, sc as SC, serif as SERIF } from '../../lib/designTokens'
 
 // ── Brand ─────────────────────────────────────────────────────────
-export const BODY  = { fontFamily: "'Lora', Georgia, serif" }
-export const SC    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-export const SERIF = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+export { BODY, SC, SERIF }
 export const GOLD  = '#A8721A'
 export const DARK  = '#0F1523'
 export const PARCH = '#FAFAF7'
@@ -116,7 +115,7 @@ export function LinkList({ value, onChange }) {
             <button
               type="button"
               onClick={() => remove(i)}
-              style={{ ...SC, fontSize: '12px', letterSpacing: '0.10em', padding: '0 14px', borderRadius: '8px', border: '1px solid rgba(15,21,35,0.20)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}
+              style={{ ...SC, fontSize: '12px', letterSpacing: '0.10em', padding: '0 14px', borderRadius: '8px', border: '1px solid rgba(15,21,35,0.55)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}
             >
               Remove
             </button>

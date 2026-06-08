@@ -142,7 +142,7 @@ function ProductsTab({ toast }) {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between',
         alignItems: 'center', marginBottom: '20px' }}>
-        <h2 style={{ ...body, fontSize: '22px', fontWeight: 300, color: '#0F1523' }}>
+        <h2 style={{ ...body, fontSize: '22px', fontWeight: 400, color: '#0F1523' }}>
           Products
         </h2>
         <Btn onClick={() => showForm ? cancel() : setShowForm(true)}>
@@ -296,7 +296,7 @@ function AnnouncementsTab({ toast }) {
       <div style={{ display: 'flex', justifyContent: 'space-between',
         alignItems: 'center', marginBottom: '20px' }}>
         <div>
-          <h2 style={{ ...body, fontSize: '22px', fontWeight: 300, color: '#0F1523', marginBottom: '4px' }}>
+          <h2 style={{ ...body, fontSize: '22px', fontWeight: 400, color: '#0F1523', marginBottom: '4px' }}>
             Announcements
           </h2>
           <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)' }}>
@@ -650,7 +650,7 @@ function AskTab() {
 
   return (
     <div>
-      <h2 style={{ ...body, fontSize: '22px', fontWeight: 300, color: '#0F1523', marginBottom: '6px' }}>
+      <h2 style={{ ...body, fontSize: '22px', fontWeight: 400, color: '#0F1523', marginBottom: '6px' }}>
         Ask
       </h2>
       <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)',
@@ -698,7 +698,7 @@ function AskTab() {
         <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)',
           borderRadius: '14px', padding: '24px' }}>
           <Eyebrow>Next-1</Eyebrow>
-          <div style={{ ...body, fontSize: '16px', fontWeight: 300,
+          <div style={{ ...body, fontSize: '16px', fontWeight: 400,
             color: '#0F1523', lineHeight: 1.75, whiteSpace: 'pre-wrap' }}>
             {answer}
           </div>
@@ -734,7 +734,7 @@ export function ContentEditorPage() {
           color: gold, textTransform: 'uppercase', display: 'block', marginBottom: '10px' }}>
           Founder
         </span>
-        <h1 style={{ ...body, fontSize: 'clamp(32px,4vw,48px)', fontWeight: 300,
+        <h1 style={{ ...body, fontSize: 'clamp(32px,4vw,48px)', fontWeight: 400,
           color: '#0F1523', marginBottom: '8px', lineHeight: 1.08 }}>
           Content Editor
         </h1>

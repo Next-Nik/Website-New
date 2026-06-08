@@ -44,7 +44,7 @@ function WelcomeCard({ type }) {
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>
           Welcome
         </span>
-        <h1 style={{ ...body, fontSize: '32px', fontWeight: 300, color: '#0F1523', marginBottom: '16px', lineHeight: 1.2 }}>
+        <h1 style={{ ...body, fontSize: '32px', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.2 }}>
           {heading}
         </h1>
         <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '36px', whiteSpace: 'pre-line' }}>
@@ -77,7 +77,7 @@ function StatusCard({ eyebrow, heading, body: bodyText, action }) {
         padding: '40px 36px', textAlign: 'center',
       }}>
         {eyebrow && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', display: 'block', marginBottom: '12px' }}>{eyebrow}</span>}
-        <h1 style={{ ...body, fontSize: '26px', fontWeight: 300, color: '#0F1523', marginBottom: '12px', lineHeight: 1.25 }}>{heading}</h1>
+        <h1 style={{ ...body, fontSize: '26px', fontWeight: 400, color: '#0F1523', marginBottom: '12px', lineHeight: 1.25 }}>{heading}</h1>
         {bodyText && <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, marginBottom: action ? '28px' : 0 }}>{bodyText}</p>}
         {action}
       </div>

@@ -1,8 +1,6 @@
 import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
-
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { body, sc } from '../lib/designTokens'
 
 // ── Versioning ──────────────────────────────────────────────
 // Bump this when Terms content changes materially.
@@ -15,7 +13,7 @@ function LegalWrap({ title, eyebrow, subtitle, active, children }) {
       <Nav activePath={active} />
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>{eyebrow}</span>
-        <h1 style={{ ...body, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '24px' }} dangerouslySetInnerHTML={{ __html: title }} />
+        <h1 style={{ ...body, fontSize: 'clamp(36px,5vw,52px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.08, letterSpacing: '-0.01em', marginBottom: '24px' }} dangerouslySetInnerHTML={{ __html: title }} />
         <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.55)', marginBottom: '48px' }}>{subtitle}</p>
         <hr style={{ border: 'none', borderTop: '1px solid rgba(200,146,42,0.20)', marginBottom: '48px' }} />
         {children}
@@ -26,13 +24,13 @@ function LegalWrap({ title, eyebrow, subtitle, active, children }) {
 }
 
 function H2({ children }) {
-  return <h2 style={{ ...body, fontSize: 'clamp(22px,3vw,28px)', fontWeight: 300, color: '#0F1523', lineHeight: 1.2, marginBottom: '14px', marginTop: '48px' }}>{children}</h2>
+  return <h2 style={{ ...body, fontSize: 'clamp(22px,3vw,28px)', fontWeight: 400, color: '#0F1523', lineHeight: 1.2, marginBottom: '14px', marginTop: '48px' }}>{children}</h2>
 }
 function P({ children }) {
-  return <p style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '18px', maxWidth: '600px' }}>{children}</p>
+  return <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: '#0F1523', lineHeight: 1.75, marginBottom: '18px', maxWidth: '600px' }}>{children}</p>
 }
 function UL({ items }) {
-  return <ul style={{ paddingLeft: '24px', marginBottom: '18px', maxWidth: '600px' }}>{items.map((item, i) => <li key={i} style={{ ...body, fontSize: '16px', fontWeight: 300, color: '#0F1523', lineHeight: 1.75, marginBottom: '6px' }} dangerouslySetInnerHTML={{ __html: item }} />)}</ul>
+  return <ul style={{ paddingLeft: '24px', marginBottom: '18px', maxWidth: '600px' }}>{items.map((item, i) => <li key={i} style={{ ...body, fontSize: '16px', fontWeight: 400, color: '#0F1523', lineHeight: 1.75, marginBottom: '6px' }} dangerouslySetInnerHTML={{ __html: item }} />)}</ul>
 }
 
 // ── Shared content components ───────────────────────────────

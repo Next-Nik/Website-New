@@ -185,7 +185,7 @@ export function BeginBuildOrgPage() {
             onSubmit={submit}
           />
 
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.45)', lineHeight: 1.55, textAlign: 'center', marginTop: '12px', fontStyle: 'italic' }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, textAlign: 'center', marginTop: '12px', fontStyle: 'italic' }}>
             Continue on the next page — there's a bit more to set, and a real human will see it before it goes live.
           </p>
         </form>

@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../hooks/useSupabase'
 import { markAsRecovery } from '../pages/AuthCallback'
-
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { body, sc } from '../lib/designTokens'
 
 function getIntendedDestination() {
   const params = new URLSearchParams(window.location.search)
@@ -147,7 +145,7 @@ function SignInScreen({ onSwitch, onDone, notice }) {
 
   return (
     <>
-      <h1 style={{ ...body, fontSize: '28px', fontWeight: 300, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Welcome.</h1>
+      <h1 style={{ ...body, fontSize: '28px', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Welcome.</h1>
       <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '24px', lineHeight: 1.5 }}>Sign in or create your account.</p>
       {notice && <NoticeMsg>{notice}</NoticeMsg>}
       <GoogleButton />
@@ -157,7 +155,7 @@ function SignInScreen({ onSwitch, onDone, notice }) {
       <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Password</label>
       <input type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} placeholder="••••••••" autoComplete="new-password" style={inputStyle} />
       <div style={{ textAlign: 'right', marginTop: '-4px', marginBottom: '20px' }}>
-        <button onClick={() => onSwitch('reset')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...body, fontSize: '13px', color: 'rgba(15,21,35,0.45)', textDecoration: 'underline' }}>Forgot password?</button>
+        <button onClick={() => onSwitch('reset')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', textDecoration: 'underline' }}>Forgot password?</button>
       </div>
       <PrimaryButton onClick={handleSubmit} loading={loading} label="Sign in →" />
       {error && <ErrorMsg>{error}</ErrorMsg>}
@@ -226,7 +224,7 @@ function SignUpScreen({ onSwitch, onDone }) {
 
   return (
     <>
-      <h1 style={{ ...body, fontSize: '28px', fontWeight: 300, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Create your account.</h1>
+      <h1 style={{ ...body, fontSize: '28px', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Create your account.</h1>
       <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '32px', lineHeight: 1.5 }}>You only do this once.</p>
       <GoogleButton />
       <Divider />
@@ -248,7 +246,7 @@ function SignUpScreen({ onSwitch, onDone }) {
       </div>
       <PrimaryButton onClick={handleSubmit} loading={loading} label="Create account →" />
       {error && <ErrorMsg>{error}</ErrorMsg>}
-      <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.45)', marginTop: '24px', textAlign: 'center' }}>
+      <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginTop: '24px', textAlign: 'center' }}>
         Already have an account?{' '}
         <button onClick={() => onSwitch('signin')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...body, fontSize: '14px', color: '#A8721A', textDecoration: 'underline' }}>Sign in</button>
       </p>
@@ -281,18 +279,18 @@ function ResetScreen({ onSwitch }) {
   if (sent) return (
     <div style={{ textAlign: 'center' }}>
       <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '22px' }}>✶</div>
-      <h2 style={{ ...body, fontSize: '24px', fontWeight: 300, color: '#0F1523', marginBottom: '10px' }}>Check your email.</h2>
+      <h2 style={{ ...body, fontSize: '24px', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>Check your email.</h2>
       <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
         If <span style={{ color: '#A8721A' }}>{email}</span> has an account, a reset link is on its way.
       </p>
-      <button onClick={() => onSwitch('signin')} style={{ marginTop: '24px', background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', textDecoration: 'underline' }}>Back to sign in</button>
+      <button onClick={() => onSwitch('signin')} style={{ marginTop: '24px', background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'underline' }}>Back to sign in</button>
     </div>
   )
 
   return (
     <>
-      <button onClick={() => onSwitch('signin')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '6px' }}>← Back</button>
-      <h1 style={{ ...body, fontSize: '28px', fontWeight: 300, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Reset password.</h1>
+      <button onClick={() => onSwitch('signin')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '6px' }}>← Back</button>
+      <h1 style={{ ...body, fontSize: '28px', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Reset password.</h1>
       <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '32px', lineHeight: 1.5 }}>We'll send a reset link to your email.</p>
       <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Email</label>
       <input type="email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} placeholder="your@email.com" autoComplete="email" style={inputStyle} />
@@ -344,7 +342,7 @@ function NewPasswordScreen({ onDone }) {
 
   if (expired && !ready) return (
     <>
-      <h1 style={{ ...body, fontSize: '24px', fontWeight: 300, color: '#0F1523', marginBottom: '10px' }}>Link expired.</h1>
+      <h1 style={{ ...body, fontSize: '24px', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>Link expired.</h1>
       <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '24px', lineHeight: 1.6 }}>
         Reset links expire after a short time. Request a new one and try again.
       </p>
@@ -358,7 +356,7 @@ function NewPasswordScreen({ onDone }) {
 
   return (
     <>
-      <h1 style={{ ...body, fontSize: '28px', fontWeight: 300, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Set new password.</h1>
+      <h1 style={{ ...body, fontSize: '28px', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Set new password.</h1>
       <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '32px', lineHeight: 1.5 }}>Choose something you'll remember.</p>
       <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>New password</label>
       <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 8 characters" autoComplete="new-password" style={inputStyle} />

@@ -8,10 +8,7 @@
 
 import { Nav }        from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
-
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { serif, body, sc } from '../lib/designTokens'
 
 const gold    = '#A8721A'
 const goldBdr = 'rgba(200,146,42,0.78)'
