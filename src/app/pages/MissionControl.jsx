@@ -1133,7 +1133,7 @@ export default function MissionControl() {
             onNext={handleSelfNext}
             onOpenMap={() => openPersonalPanel('map')}
             onOpenSprint={() => openPersonalPanel('target-sprint')}
-            onOpenPractice={() => openPersonalPanel('horizon-practice')}
+            onOpenPractice={() => navigate('/tools/horizon-practice')}
             onOpenHorizonState={() => openPersonalPanel('horizon-state')}
           />
         )}
