@@ -1,9 +1,7 @@
 import { Nav } from '../components/Nav'
 import { SiteFooter } from '../components/SiteFooter'
 import { CrisisResources } from '../components/CrisisResources'
-
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { body, sc } from '../lib/designTokens'
 
 export function SupportResourcesPage() {
   return (

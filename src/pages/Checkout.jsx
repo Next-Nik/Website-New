@@ -13,9 +13,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
 import { ROUTES } from '../constants/routes'
-
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { body, sc } from '../lib/designTokens'
 
 // Known beta codes that bypass Stripe — personal NextCore codes are validated server-side
 const BETA_CODES = new Set(['BETA50', 'BETACORE75', 'FRIEND'])

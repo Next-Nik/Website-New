@@ -3,9 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
 import { Nav } from '../components/Nav'
+import { body, sc } from '../lib/designTokens'
 
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = '#A8721A'
 
 /**

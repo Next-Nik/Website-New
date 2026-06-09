@@ -3,13 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { Nav } from '../components/Nav'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
+import { body, sc } from '../lib/designTokens'
 
 function isFounder(user) {
   return user?.user_metadata?.role === 'founder'
 }
 
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold  = '#A8721A'
 
 // ─── Shared primitives ────────────────────────────────────────
