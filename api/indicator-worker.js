@@ -40,6 +40,8 @@
 // Survival rule: a failing fetch must never flip is_current on prior good
 // data. That guarantees stale data over no data.
 
+export const config = { maxDuration: 60 }
+
 const { createClient } = require('@supabase/supabase-js')
 
 // ── Source registry ───────────────────────────────────────────

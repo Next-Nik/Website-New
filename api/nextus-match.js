@@ -21,6 +21,8 @@
 //
 // Returns results sorted by score descending, max 20.
 
+export const config = { maxDuration: 15 }
+
 const { createClient } = require('@supabase/supabase-js')
 
 const supabase = createClient(

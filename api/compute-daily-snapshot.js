@@ -27,6 +27,8 @@
 //
 // Re-running for the same day UPSERTs (replaces that row).
 
+export const config = { maxDuration: 30 }
+
 const { createClient } = require('@supabase/supabase-js')
 
 let _supabase = null

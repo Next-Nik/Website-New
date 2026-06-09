@@ -50,6 +50,8 @@
 //     the display layer applies the minimum-slice threshold (Lock 3).
 //   - Aggregates are domain-level; no cross-domain ranking is implied.
 
+export const config = { maxDuration: 30 }
+
 const { createClient } = require('@supabase/supabase-js')
 
 let _supabase = null

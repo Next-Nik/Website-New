@@ -22,6 +22,8 @@
 // discipline lift across. The reframe engine, two tone laws, diffuse branch,
 // subtle-case handling, and output contract are written fresh against v1.1.
 
+export const config = { maxDuration: 60 }
+
 const Anthropic = require("@anthropic-ai/sdk");
 const { getNorthStarContext, formatNorthStarContext } = require("./_north-star");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });

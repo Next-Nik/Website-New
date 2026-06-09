@@ -15,6 +15,8 @@
 // ref is optional. When supplied:
 //   - Stored in session metadata so the webhook can record who referred this user.
 
+export const config = { maxDuration: 15 }
+
 const Stripe = require('stripe')
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 

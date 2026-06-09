@@ -5,6 +5,8 @@
 // Step 3: The interruption (what fires in its place?)
 // Step 4: The replacement thought (what does the Horizon Self think instead?)
 
+export const config = { maxDuration: 60 }
+
 const Anthropic = require("@anthropic-ai/sdk");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const { getNorthStarContext, formatNorthStarContext } = require("./_north-star");

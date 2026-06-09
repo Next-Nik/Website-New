@@ -19,41 +19,6 @@
       "schedule": "45 3 * * *"
     }
   ],
-  "functions": {
-    "api/*.js": {
-      "maxDuration": 60
-    },
-    "api/compute-daily-snapshot.js": {
-      "maxDuration": 30
-    },
-    "api/compute-effort-signal.js": {
-      "maxDuration": 30
-    },
-    "api/nextus-match.js": {
-      "maxDuration": 15
-    },
-    "api/nextsteps-track.js": {
-      "maxDuration": 15
-    },
-    "api/nextsteps-actors-sample.js": {
-      "maxDuration": 15
-    },
-    "api/nextsteps-tag-actor.js": {
-      "maxDuration": 300
-    },
-    "api/stripe-webhook.js": {
-      "maxDuration": 30
-    },
-    "api/create-checkout.js": {
-      "maxDuration": 15
-    },
-    "api/podcast-feed.js": {
-      "maxDuration": 15
-    },
-    "api/ical-proxy.js": {
-      "maxDuration": 15
-    }
-  },
   "rewrites": [
     {
       "source": "/tools/north-star/api/chat",

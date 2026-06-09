@@ -15,6 +15,8 @@
 //
 // No auth required — this is public Atlas data.
 
+export const config = { maxDuration: 15 }
+
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(

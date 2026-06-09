@@ -23,6 +23,8 @@
 //
 // (Foundation: docs/NextSteps_Conceptual_Foundation_v1_1.md, Sections 2.4–2.5)
 
+export const config = { maxDuration: 60 }
+
 const Anthropic = require('@anthropic-ai/sdk');
 const { createClient } = require('@supabase/supabase-js');
 

@@ -11,6 +11,8 @@
 // lowercase short forms (human, society, nature, tech, finance, legacy,
 // vision). We accept these as authoritative.
 
+export const config = { maxDuration: 15 }
+
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(

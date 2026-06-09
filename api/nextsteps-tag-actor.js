@@ -23,6 +23,8 @@
 //      genuinely apply (no fishing — false positives are worse than misses).
 //   4. Write the result back to actor.problem_chains.
 
+export const config = { maxDuration: 300 }
+
 const Anthropic = require('@anthropic-ai/sdk');
 const { createClient } = require('@supabase/supabase-js');
 

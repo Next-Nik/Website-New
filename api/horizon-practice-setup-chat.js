@@ -4,6 +4,8 @@
 //   2. Skill suggestion — given horizon goals, suggests knowledge and skill gaps
 //   3. Triage — developmental sequencing to find the one right starting point
 
+export const config = { maxDuration: 60 }
+
 const Anthropic = require("@anthropic-ai/sdk");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const { getNorthStarContext, formatNorthStarContext } = require('./_north-star');

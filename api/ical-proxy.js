@@ -10,6 +10,8 @@
 // The caller is responsible for ensuring the user is authenticated before
 // calling this endpoint. The URL itself is the user's secret — we never log it.
 
+export const config = { maxDuration: 15 }
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })

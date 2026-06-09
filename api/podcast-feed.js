@@ -5,6 +5,8 @@
 // Add to vercel.json rewrites:
 //   { "source": "/api/podcast-feed", "destination": "/api/podcast-feed" }
 
+export const config = { maxDuration: 15 }
+
 const FEED_URL = 'http://feeds.libsyn.com/66392/rss';
 
 // Simple XML text extractor — no external dependencies

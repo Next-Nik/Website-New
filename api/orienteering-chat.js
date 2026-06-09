@@ -2,6 +2,8 @@
 // api/orienteering-chat.js
 // Serverless wrapper — keeps Anthropic API key off the client.
 
+export const config = { maxDuration: 60 }
+
 const Anthropic = require("@anthropic-ai/sdk");
 const { getNorthStarContext, formatNorthStarContext } = require("./_north-star");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });

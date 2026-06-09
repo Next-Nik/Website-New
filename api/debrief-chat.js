@@ -23,6 +23,8 @@
 // On completion North Star writes a synthesised note to north_star_notes
 // so the insight travels forward into every other tool.
 
+export const config = { maxDuration: 60 }
+
 const Anthropic = require('@anthropic-ai/sdk')
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 const { getNorthStarContext, formatNorthStarContext, writeNorthStarNote } = require('./_north-star')

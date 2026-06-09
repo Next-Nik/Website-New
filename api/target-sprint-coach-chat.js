@@ -2,6 +2,8 @@
 // North Star as execution coach throughout the 90-day sprint
 // Knows the full plan, tracks progress, supports execution
 
+export const config = { maxDuration: 60 }
+
 const Anthropic = require("@anthropic-ai/sdk");
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const { getNorthStarContext, formatNorthStarContext } = require('./_north-star');

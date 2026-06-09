@@ -7,6 +7,8 @@
 //
 // Each stage is handled by its own module. This dispatcher coordinates them.
 
+export const config = { maxDuration: 60 }
+
 const { handleWishStage }     = require('./_pp-wish-stage')
 const { handlePullStage }     = require('./_pp-pull-stage')
 const { handleInstinctStage } = require('./_pp-instinct-stage')

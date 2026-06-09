@@ -3,6 +3,8 @@
 // North Star synthesises the full picture across Intimate, Family,
 // Friendship, Collaborators, Community and any custom sub-domains.
 
+export const config = { maxDuration: 60 }
+
 const Anthropic = require('@anthropic-ai/sdk')
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 const { getNorthStarContext, formatNorthStarContext } = require('./_north-star')

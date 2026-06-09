@@ -9,6 +9,8 @@
 //   KIT_API_KEY             — Kit (ConvertKit) API key
 //   KIT_API_URL             — Kit API base URL (https://api.convertkit.com/v3)
 
+export const config = { maxDuration: 30 }
+
 const Stripe = require('stripe')
 const { createClient } = require('@supabase/supabase-js')
 

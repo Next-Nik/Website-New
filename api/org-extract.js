@@ -27,6 +27,8 @@
 //
 // Output is JSON only, validated and shape-enforced before return.
 
+export const config = { maxDuration: 60 }
+
 const Anthropic = require('@anthropic-ai/sdk')
 const { createClient } = require('@supabase/supabase-js')
 

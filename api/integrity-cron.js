@@ -27,6 +27,8 @@
 // POST /api/integrity-cron with header x-cron-secret matching
 // CRON_SECRET env var (for manual runs / testing).
 
+export const config = { maxDuration: 60 }
+
 const { createClient } = require('@supabase/supabase-js')
 
 const supabase = createClient(
