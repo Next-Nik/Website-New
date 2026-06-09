@@ -997,7 +997,7 @@ export default function MissionControl() {
               label="TASKS"
               state={null}
               onClick={() => navigate('/tools/horizon-practice?view=tasks')}
-              title="Tasks — your day\"s work"
+              title="Tasks"
             />
             <Tile
               glyph="✎"
