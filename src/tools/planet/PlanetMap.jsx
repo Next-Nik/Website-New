@@ -16,6 +16,7 @@ import { PlanetDomainCard } from './PlanetDomainCard'
 import { PlanetGapSignal } from './PlanetGapSignal'
 import { ActorClaimGate } from './ActorClaimGate'
 import { EffortSignalPanel } from '../../app/components/EffortSignalPanel'
+import { serif, body, sc } from '../../lib/designTokens'
 
 function isFounder(user) {
   return user?.user_metadata?.role === 'founder'
@@ -27,10 +28,6 @@ const TOOL_PATH = '/tools/planet'
 const NORTH_STAR_KEY = 'planet-map'
 // TODO: confirm table name against Supabase schema — create if not yet existing
 const TABLE = 'planet_map_results'
-
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 // Assessment steps
 const STEPS = {

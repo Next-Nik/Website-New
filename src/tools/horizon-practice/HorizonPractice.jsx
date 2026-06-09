@@ -2,7 +2,7 @@
 // Horizon Practice — the live tool.
 //
 // Expresses Horizon Practice Living Architecture v1.3:
-//   - The morning is six beats: Commit · Ground · I Am · Open Breath · Plan · Act
+//   - The morning is five beats: Commit · Ground · Plan · Anchor · Act
 //   - In-moment operation: the Horizon Self Refresh (3 screens, no jargon)
 //   - Four in-moment paths: Hit, Drift (flags) · Listening-Glow, Receipt (capture)
 //   - Capture-only Listening-Glow and Receipt (never prompted)
@@ -26,25 +26,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
 import { supabase } from '../../hooks/useSupabase'
 import { useStreak } from './useStreak'
-
-// ─── Design tokens ──────────────────────────────────────────────────────────
-const tokens = {
-  bg: '#FAFAF7',
-  bgCard: '#FFFFFF',
-  dark: '#0F1523',
-  gold: '#A8721A',
-  goldChrome: '#C8922A',
-  goldFaint: 'rgba(200,146,42,0.20)',
-  goldTint: 'rgba(200,146,42,0.05)',
-  goldGlow: 'rgba(200,146,42,0.10)',
-  goldStrong: 'rgba(200,146,42,0.35)',
-  meta: 'rgba(15,21,35,0.88)',
-  ghost: 'rgba(15,21,35,0.55)',
-  whisper: 'rgba(15,21,35,0.55)',  // raised to opacity floor per design system
-}
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
+import { tokens, serif, body, sc } from '../../lib/designTokens'
 
 // ─── Domain order (locked NextUs vocabulary) ────────────────────────────────
 const DOMAIN_ORDER = ['path', 'spark', 'body', 'finances', 'connection', 'inner_game', 'signal']
@@ -233,7 +215,7 @@ function Heading({ children, size = 'lg', italic = false, color, style = {} }) {
 function Body({ children, dim = false, italic = false, style = {} }) {
   return (
     <p style={{
-      ...body, fontSize: '15.5px', fontWeight: 300,
+      ...body, fontSize: '15.5px', fontWeight: 400,
       color: dim ? tokens.ghost : tokens.meta, lineHeight: 1.65,
       fontWeight: 400, fontStyle: italic ? 'italic' : 'normal', margin: '0 0 12px', ...style,
     }}>{children}</p>
@@ -326,7 +308,7 @@ function inputStyle() {
 // Five-Beat Tracker
 // ────────────────────────────────────────────────────────────────────────────
 function FiveBeatTracker({ currentBeat, sweep = false }) {
-  const beats = ['·', '·', '·', '·', '·', '·']
+  const beats = ['Commit', 'Ground', 'Plan', 'Anchor', 'Act']
   return (
     <div style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -791,664 +773,6 @@ function ManualThresholdAdd({ draftTitle, setDraftTitle, draftTime, setDraftTime
 // ────────────────────────────────────────────────────────────────────────────
 // Morning Sequence — the five beats
 // ────────────────────────────────────────────────────────────────────────────
-
-const GROUND_STORAGE_KEY = 'hp_ground_phase'
-function saveGroundPhase(phase) {
-  try { localStorage.setItem(GROUND_STORAGE_KEY, phase) } catch (e) {}
-}
-function loadGroundPhase() {
-  try { return localStorage.getItem(GROUND_STORAGE_KEY) || 'intro' } catch (e) { return 'intro' }
-}
-function clearGroundPhase() {
-  try { localStorage.removeItem(GROUND_STORAGE_KEY) } catch (e) {}
-}
-
-// GroundBeat — two-stage animated breath timer
-//
-// Stage 1: Charge breath — 3 Tabata rounds × 20s fast / 10s rest
-//   Tabata-style with "Ready · 3 · 2 · 1 · Begin" / "Rest" / "Complete" audio cues
-//
-// Stage 2: Open breath — 3 rounds × 3 centres descending (chest → belly → pelvis)
-//   Each centre: deep breath in (4s) → hold (4s) → exhale with "ah" (6s) → hold (2s)
-// ────────────────────────────────────────────────────────────────────────────
-
-const CHARGE_ROUNDS   = 3
-const CHARGE_WORK_S   = 20
-const CHARGE_REST_S   = 10
-const OPEN_ROUNDS     = 3
-const OPEN_CENTRES    = ['Chest / heart', 'Belly', 'Sacrum']
-const OPEN_PHASES     = [
-  { label: 'Breathe in',    dur: 5,  expand: true  },
-  { label: 'Hold',          dur: 4,  expand: true  },
-  { label: 'Exhale — "ah"', dur: 7,  expand: false },
-  { label: 'Hold',          dur: 4,  expand: false },
-]
-
-// Beep helpers (reuse Chimes ctx pattern)
-function makeBeep(freq, dur = 0.12, gain = 0.18) {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)()
-    const osc = ctx.createOscillator()
-    const g   = ctx.createGain()
-    osc.type = 'sine'; osc.frequency.value = freq
-    g.gain.setValueAtTime(0, ctx.currentTime)
-    g.gain.linearRampToValueAtTime(gain, ctx.currentTime + 0.008)
-    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur)
-    osc.connect(g); g.connect(ctx.destination)
-    osc.start(); osc.stop(ctx.currentTime + dur)
-    setTimeout(() => ctx.close(), dur * 1000 + 200)
-  } catch(e) {}
-}
-function beepLow()    { makeBeep(330, 0.14, 0.16) }
-function beepMid()    { makeBeep(523, 0.12, 0.18) }
-function beepHigh()   { makeBeep(880, 0.18, 0.20) }
-function beepReady()  { makeBeep(440, 0.22, 0.15) }
-function beepBegin()  {
-  makeBeep(523, 0.15, 0.20)
-  setTimeout(() => makeBeep(659, 0.15, 0.20), 160)
-  setTimeout(() => makeBeep(880, 0.28, 0.22), 320)
-}
-function beepEnd()    {
-  makeBeep(880, 0.15, 0.18)
-  setTimeout(() => makeBeep(659, 0.15, 0.18), 160)
-  setTimeout(() => makeBeep(523, 0.28, 0.20), 320)
-}
-
-function GroundBeat({ onComplete, onBack }) {
-  const [phase, setPhase]             = useState(() => {
-    const saved = loadGroundPhase()
-    // Skip intro entirely — start at the charge ready countdown
-    // Only restore if they were mid-session
-    if (saved === 'charge-work' || saved === 'charge-rest') return 'charge-ready'
-    if (saved === 'open-running') return 'charge-done'
-    if (saved && saved !== 'intro') return saved
-    return 'charge-ready'  // always skip intro
-  })
-  const [chargeRound, setChargeRound] = useState(1)
-  const [tick, setTick]               = useState(0)
-  const [circleScale, setCircleScale] = useState(1)
-
-  const [paused, setPaused]           = useState(false)
-
-  const timerRef     = useRef(null)
-  const countRef     = useRef(null)
-  const remainingRef = useRef(0)
-  const resumeCtxRef = useRef(null)
-  const phaseRef     = useRef('intro')
-  const pausedRef    = useRef(false)
-
-  useEffect(() => { phaseRef.current = phase; saveGroundPhase(phase) }, [phase])
-  useEffect(() => { pausedRef.current = paused }, [paused])
-
-  function clearTimers() {
-    clearInterval(timerRef.current)
-    clearTimeout(countRef.current)
-  }
-
-  function doPause() {
-    if (pausedRef.current) return
-    clearTimers()
-    setPaused(true)
-  }
-
-  function doResume() {
-    setPaused(false)
-    const ctx = resumeCtxRef.current
-    if (!ctx) return
-    const rem = remainingRef.current
-    if (ctx.kind === 'charge-work') resumeChargeWork(ctx.round, rem)
-    else if (ctx.kind === 'charge-rest') resumeChargeRest(ctx.round, rem)
-    else if (ctx.kind === 'open') resumeOpenPhase(ctx.round, ctx.centre, ctx.phaseIdx, rem)
-  }
-
-  useEffect(() => {
-    function onVisibilityChange() {
-      const activePhases = ['charge-work','charge-rest','charge-ready','open-running']
-      if (document.hidden && activePhases.includes(phaseRef.current) && !pausedRef.current) {
-        doPause()
-      }
-    }
-    document.addEventListener('visibilitychange', onVisibilityChange)
-    return () => document.removeEventListener('visibilitychange', onVisibilityChange)
-  }, [])
-
-  // ── Charge breath ──────────────────────────────────────────────────────
-  function startChargeReady(round) {
-    clearTimers()
-    setChargeRound(round)
-
-    // Only round 1 gets the 3-2-1 countdown
-    if (round > 1) {
-      beepBegin()
-      startChargeWork(round)
-      return
-    }
-
-    setPhase('charge-ready')
-    beepReady()
-    let count = 3
-    setTick(count)
-    timerRef.current = setInterval(() => {
-      count--
-      if (count > 0) {
-        setTick(count)
-        beepMid()
-      } else {
-        clearInterval(timerRef.current)
-        beepBegin()
-        startChargeWork(round)
-      }
-    }, 1000)
-  }
-
-  function startChargeWork(round) {
-    setPhase('charge-work')
-    setTick(CHARGE_WORK_S)
-    setCircleScale(1)
-    resumeCtxRef.current = { kind: 'charge-work', round }
-    resumeChargeWork(round, CHARGE_WORK_S)
-  }
-
-  function resumeChargeWork(round, startAt) {
-    setPhase('charge-work')
-    setChargeRound(round)
-    let t = startAt
-    setTick(t)
-    let expanding = true
-    timerRef.current = setInterval(() => {
-      t--
-      remainingRef.current = t
-      setTick(t)
-      expanding = !expanding
-      setCircleScale(expanding ? 1.12 : 0.92)
-      if (t <= 0) {
-        clearInterval(timerRef.current)
-        setCircleScale(1)
-        if (round < CHARGE_ROUNDS) {
-          beepEnd()
-          startChargeRest(round)
-        } else {
-          beepEnd()
-          setPhase('charge-done')
-        }
-      }
-    }, 1000)
-  }
-
-  function startChargeRest(round) {
-    setPhase('charge-rest')
-    resumeCtxRef.current = { kind: 'charge-rest', round }
-    resumeChargeRest(round, CHARGE_REST_S)
-  }
-
-  function resumeChargeRest(round, startAt) {
-    setPhase('charge-rest')
-    setChargeRound(round)
-    let t = startAt
-    setTick(t)
-    timerRef.current = setInterval(() => {
-      t--
-      remainingRef.current = t
-      setTick(t)
-      if (t <= 0) {
-        clearInterval(timerRef.current)
-        startChargeReady(round + 1)
-      }
-    }, 1000)
-  }
-
-
-
-  useEffect(() => () => clearTimers(), [])
-
-  // ── Visual helpers ─────────────────────────────────────────────────────
-  const isCharging = phase === 'charge-work' || phase === 'charge-rest' || phase === 'charge-ready'
-  const circleColor = phase === 'charge-work' ? tokens.goldChrome : tokens.gold
-  const circleBg    = phase === 'charge-work' ? tokens.goldStrong : tokens.goldTint
-  const totalSecs   = phase === 'charge-work' ? CHARGE_WORK_S : phase === 'charge-rest' ? CHARGE_REST_S : 0
-  const elapsed     = totalSecs - tick
-  const progress    = totalSecs > 0 ? Math.min(elapsed / totalSecs, 1) : 0
-  const R = 88, C = 2 * Math.PI * R
-  const dashOffset  = C - progress * C
-
-  return (
-    <div className="hp-fade-in" style={{ maxWidth: '520px', margin: '0 auto' }}>
-      <Eyebrow style={{ marginBottom: '12px' }}>Ground</Eyebrow>
-      <Heading size="lg" style={{ marginBottom: '6px' }}>
-        Land in the body.
-      </Heading>
-
-      {/* ── Charge: ready countdown ── */}
-      {phase === 'charge-ready' && (
-        <div className="hp-fade-in" style={{ textAlign: 'center', padding: '32px 0' }}>
-          <Eyebrow style={{ marginBottom: '8px' }}>
-            Round {chargeRound} of {CHARGE_ROUNDS} · Charge breath
-          </Eyebrow>
-          <Body dim style={{ margin: '0 0 20px', fontSize: '14px' }}>
-            Fast, deep breaths. Focus on the exhale.
-          </Body>
-          <div style={{
-            ...body, fontSize: 'clamp(60px, 14vw, 88px)', fontWeight: 300,
-            color: tokens.gold, lineHeight: 1, marginBottom: '16px',
-          }}>{tick}</div>
-          <Body dim style={{ margin: '0 0 28px' }}>Ready…</Body>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '12px' }}>
-            <GhostButton onClick={() => { clearGroundPhase(); onBack() }}>← Back</GhostButton>
-            <GhostButton onClick={() => { clearGroundPhase(); onComplete() }}>Skip</GhostButton>
-          </div>
-        </div>
-      )}
-
-      {/* ── Charge: work / rest ── */}
-      {(phase === 'charge-work' || phase === 'charge-rest') && (
-        <div className="hp-fade-in" style={{ textAlign: 'center', padding: '20px 0' }}>
-          <Eyebrow style={{ marginBottom: '20px' }}>
-            {phase === 'charge-work'
-              ? `Round ${chargeRound} of ${CHARGE_ROUNDS} · Charge`
-              : `Rest · Round ${chargeRound + 1} begins next`}
-          </Eyebrow>
-
-          {/* Animated circle */}
-          <div style={{ position: 'relative', width: '210px', height: '210px', margin: '0 auto 20px' }}>
-            <svg width="210" height="210" style={{ position: 'absolute', inset: 0, transform: 'rotate(-90deg)' }}>
-              <circle cx="105" cy="105" r={R} fill="none"
-                stroke={tokens.goldFaint} strokeWidth="3" />
-              <circle cx="105" cy="105" r={R} fill="none"
-                stroke={circleColor} strokeWidth="3"
-                strokeDasharray={C} strokeDashoffset={dashOffset}
-                style={{ transition: 'stroke-dashoffset 0.9s linear' }}
-              />
-            </svg>
-            <div style={{
-              position: 'absolute', inset: 0, display: 'flex',
-              flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              gap: '6px',
-            }}>
-              <div style={{
-                width: '80px', height: '80px', borderRadius: '50%',
-                background: phase === 'charge-work' ? circleBg : tokens.goldTint,
-                border: `2px solid ${circleColor}`,
-                transform: `scale(${circleScale})`,
-                transition: phase === 'charge-work' ? 'transform 0.45s ease-in-out' : 'transform 0.8s ease',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <span style={{
-                  ...body, fontSize: '28px', fontWeight: 300,
-                  color: circleColor, lineHeight: 1,
-                }}>{tick}</span>
-              </div>
-            </div>
-          </div>
-
-          <Body style={{ margin: 0 }} dim={phase === 'charge-rest'}>
-            {paused
-              ? 'Paused.'
-              : phase === 'charge-work'
-                ? 'Just breathe. Focus on the exhale.'
-                : 'Pause on the exhale.'}
-          </Body>
-        </div>
-      )}
-
-      {/* ── Charge done ── */}
-      {phase === 'charge-done' && (
-        <div className="hp-fade-in" style={{ textAlign: 'center', padding: '28px 0' }}>
-          <Eyebrow style={{ marginBottom: '14px' }}>Charged</Eyebrow>
-          <Heading size="md" style={{ marginBottom: '24px', color: tokens.gold }}>
-            System is awake.
-          </Heading>
-          <SolidButton onClick={() => { clearGroundPhase(); onComplete() }}>I Am →</SolidButton>
-        </div>
-      )}
-
-      {/* Skip always available during active phases */}
-      {isCharging && (
-        <div style={{ textAlign: 'center', marginTop: '28px', display: 'flex', justifyContent: 'center', gap: '20px', alignItems: 'center' }}>
-          <button onClick={paused ? doResume : doPause} style={{
-            background: paused ? tokens.goldChrome : 'transparent',
-            border: `1px solid ${paused ? tokens.goldChrome : tokens.goldFaint}`,
-            borderRadius: '40px', cursor: 'pointer',
-            ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-            color: paused ? '#FFFFFF' : tokens.gold, textTransform: 'uppercase',
-            padding: '8px 18px',
-          }}>{paused ? 'Resume →' : 'Pause'}</button>
-          <button onClick={() => { clearTimers(); clearGroundPhase(); onComplete() }} style={{
-            background: 'transparent', border: 'none', cursor: 'pointer',
-            ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-            color: tokens.whisper, textTransform: 'uppercase',
-          }}>Skip →</button>
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ────────────────────────────────────────────────────────────────────────────
-// ────────────────────────────────────────────────────────────────────────────
-// OpenBreathBeat — three-centre descending breath to anchor the I Am statements
-
-function OpenBreathBeat({ onComplete, onBack }) {
-  const canvasRef      = useRef(null)
-  const glowRef        = useRef(null)
-  const phaseTextRef   = useRef(null)
-  const timerRef       = useRef(null)
-  const glowAnimRef    = useRef(null)
-  const pulseAnimRef   = useRef(null)
-  const currentGlowRef = useRef(0)
-  const transRef       = useRef(false)
-  const pausedRef      = useRef(false)
-
-  const [screen, setScreen]         = useState('intro')
-  const [paused, setPaused]         = useState(false)
-  const [openRound, setOpenRound]   = useState(1)
-  const [openCentre, setOpenCentre] = useState(0)
-  const [openPhase, setOpenPhase]   = useState(0)
-
-  useEffect(() => { pausedRef.current = paused }, [paused])
-
-  // ── Audio ───────────────────────────────────────────────────────────
-  function bpIn()    { makeBeep(523, 0.18, 0.12); setTimeout(() => makeBeep(659, 0.16, 0.10), 180) }
-  function bpTrans() { makeBeep(440, 0.22, 0.09) }
-  function bpDone()  { makeBeep(659, 0.20, 0.11); setTimeout(() => makeBeep(880, 0.30, 0.13), 220) }
-
-  // ── Glow ────────────────────────────────────────────────────────────
-  function setGlow(v) {
-    currentGlowRef.current = v
-    if (!glowRef.current) return
-    const a1 = 0.04 + v * 0.30
-    const a2 = 0.00 + v * 0.14
-    glowRef.current.style.background =
-      'radial-gradient(circle, rgba(200,146,42,' + a1 + ') 20%, rgba(200,146,42,' + a2 + ') 55%, transparent 78%)'
-  }
-
-  function animateGlowTo(from, to, durMs) {
-    cancelAnimationFrame(glowAnimRef.current)
-    let start = null
-    function step(ts) {
-      if (!start) start = ts
-      const t = Math.min((ts - start) / durMs, 1)
-      const e = t < 0.5 ? 2*t*t : -1 + (4-2*t)*t
-      setGlow(from + (to - from) * e)
-      if (t < 1) glowAnimRef.current = requestAnimationFrame(step)
-    }
-    glowAnimRef.current = requestAnimationFrame(step)
-  }
-
-  // ── Tick canvas ──────────────────────────────────────────────────────
-  function drawTicks(total, filled, pulse) {
-    pulse = pulse || 0
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    ctx.clearRect(0, 0, 220, 220)
-    const cx = 110, cy = 110, r = 96
-    const step = (Math.PI * 2) / total
-    const startA = -Math.PI / 2
-    const allFilled = filled >= total
-    for (let i = 0; i < total; i++) {
-      const angle = startA + i * step
-      const x = cx + r * Math.cos(angle)
-      const y = cy + r * Math.sin(angle)
-      const isLast = i === total - 1
-      const isFilled = i < filled
-      let dotR = 2.8
-      if (isLast && isFilled) dotR = 4.4
-      if (allFilled && pulse > 0) {
-        const p = Math.sin(pulse * Math.PI)
-        dotR += p * (isLast ? 3.2 : 1.6)
-      }
-      let alpha = isFilled ? 0.85 : 0.16
-      if (allFilled && pulse > 0) {
-        const p2 = Math.sin(pulse * Math.PI)
-        alpha = isFilled ? Math.min(1.0, 0.85 + p2 * 0.15) : 0.16 + p2 * 0.28
-      }
-      ctx.beginPath()
-      ctx.arc(x, y, dotR, 0, Math.PI * 2)
-      ctx.fillStyle = 'rgba(200,146,42,' + alpha + ')'
-      ctx.fill()
-    }
-  }
-
-  function runCompletePulse(total, onDone) {
-    cancelAnimationFrame(pulseAnimRef.current)
-    let start = null
-    const dur = 520
-    function step(ts) {
-      if (!start) start = ts
-      const t = Math.min((ts - start) / dur, 1)
-      drawTicks(total, total, t)
-      if (t < 1) { pulseAnimRef.current = requestAnimationFrame(step) }
-      else { drawTicks(total, total, 0); onDone() }
-    }
-    pulseAnimRef.current = requestAnimationFrame(step)
-  }
-
-  // ── Phase visuals ────────────────────────────────────────────────────
-  function applyPhaseVisuals(kind, durMs) {
-    const el = phaseTextRef.current
-    if (!el) return
-    if (kind === 'inhale') {
-      el.style.transition = 'opacity 0.3s ease, color 0.4s ease'
-      el.style.opacity = '1'; el.style.color = tokens.dark
-      el.style.fontSize = '17px'; el.style.letterSpacing = '0.03em'
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        el.style.transition =
-          'font-size ' + durMs + 'ms cubic-bezier(0.25,0,0.1,1), ' +
-          'letter-spacing ' + durMs + 'ms cubic-bezier(0.25,0,0.1,1), ' +
-          'opacity 0.3s ease, color 0.4s ease'
-        el.style.fontSize = '30px'; el.style.letterSpacing = '0.06em'
-      }))
-      animateGlowTo(0.05, 0.26, durMs)
-    } else if (kind === 'hold-in') {
-      el.style.transition = 'font-size 0.4s ease, letter-spacing 0.4s ease, opacity 0.3s ease, color 0.4s ease'
-      el.style.opacity = '1'; el.style.color = tokens.dark
-      el.style.fontSize = '30px'; el.style.letterSpacing = '0.10em'
-      animateGlowTo(0.26, 0.78, durMs)
-    } else if (kind === 'exhale') {
-      el.style.transition = 'opacity 0.3s ease, color 0.5s ease'
-      el.style.opacity = '0.88'; el.style.color = 'rgba(168,114,26,0.72)'
-      el.style.fontSize = '30px'; el.style.letterSpacing = '0.10em'
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        el.style.transition =
-          'font-size ' + durMs + 'ms cubic-bezier(0.0,0,0.2,1), ' +
-          'letter-spacing ' + (durMs * 1.15) + 'ms cubic-bezier(0.0,0,0.2,1), ' +
-          'opacity 0.3s ease, color 0.5s ease'
-        el.style.fontSize = '16px'; el.style.letterSpacing = '0.26em'
-      }))
-      animateGlowTo(0.78, 0.04, durMs)
-    } else if (kind === 'hold-out') {
-      el.style.transition = 'font-size 0.6s ease, letter-spacing 0.6s ease, opacity 0.7s ease, color 0.5s ease'
-      el.style.fontSize = '15px'; el.style.letterSpacing = '0.20em'
-      el.style.opacity = '0.48'; el.style.color = tokens.ghost
-      animateGlowTo(0.04, 0.02, durMs)
-    }
-  }
-
-  // ── Core timer ───────────────────────────────────────────────────────
-  function startPhase(r, c, p) {
-    if (transRef.current) return
-    setOpenRound(r); setOpenCentre(c); setOpenPhase(p)
-    clearInterval(timerRef.current)
-    const cfg = OPEN_PHASES[p]
-    let ticksLeft = cfg.dur
-    const total = cfg.dur
-    if (phaseTextRef.current) phaseTextRef.current.textContent = cfg.label
-    drawTicks(total, 0, 0)
-    applyPhaseVisuals(cfg.kind, cfg.dur * 1000)
-    if (p === 0) bpIn(); else bpTrans()
-    timerRef.current = setInterval(() => {
-      if (pausedRef.current) return
-      ticksLeft--
-      drawTicks(total, total - ticksLeft, 0)
-      if (ticksLeft <= 0) {
-        clearInterval(timerRef.current)
-        runCompletePulse(total, () => {
-          const el = phaseTextRef.current
-          if (el) { el.style.transition = 'opacity 0.25s ease'; el.style.opacity = '0.28' }
-          transRef.current = true
-          setTimeout(() => { transRef.current = false; advancePhase(r, c, p) }, 700)
-        })
-      }
-    }, 1000)
-  }
-
-  function advancePhase(r, c, p) {
-    const nextP = p + 1, nextC = c + 1, nextR = r + 1
-    if (nextP < OPEN_PHASES.length) { startPhase(r, c, nextP) }
-    else if (nextC < OPEN_CENTRES.length) { bpTrans(); startPhase(r, nextC, 0) }
-    else if (nextR <= OPEN_ROUNDS) { bpTrans(); startPhase(nextR, 0, 0) }
-    else {
-      bpDone()
-      const el = phaseTextRef.current
-      if (el) { el.style.transition = 'all 0.6s ease'; el.style.fontSize = '22px';
-        el.style.letterSpacing = '0.02em'; el.style.opacity = '1'; el.style.color = tokens.dark }
-      animateGlowTo(currentGlowRef.current, 0, 800)
-      setTimeout(() => setScreen('done'), 900)
-    }
-  }
-
-  function doStart() {
-    setScreen('running')
-    setTimeout(() => startPhase(1, 0, 0), 80)
-  }
-
-  function doPause() {
-    setPaused(p => {
-      const next = !p
-      pausedRef.current = next
-      if (next) cancelAnimationFrame(glowAnimRef.current)
-      return next
-    })
-  }
-
-  function doSkip() {
-    clearInterval(timerRef.current)
-    cancelAnimationFrame(glowAnimRef.current)
-    cancelAnimationFrame(pulseAnimRef.current)
-    onComplete()
-  }
-
-  useEffect(() => {
-    function onVis() {
-      if (document.hidden && !pausedRef.current) doPause()
-    }
-    document.addEventListener('visibilitychange', onVis)
-    return () => document.removeEventListener('visibilitychange', onVis)
-  }, [])
-
-  useEffect(() => () => {
-    clearInterval(timerRef.current)
-    cancelAnimationFrame(glowAnimRef.current)
-    cancelAnimationFrame(pulseAnimRef.current)
-  }, [])
-
-  // ── Render ───────────────────────────────────────────────────────────
-  return (
-    <div className="hp-fade-in" style={{ maxWidth: '480px', margin: '0 auto', textAlign: 'center' }}>
-      <Eyebrow style={{ marginBottom: '6px' }}>Anchor</Eyebrow>
-      <Heading size="lg" style={{ marginBottom: '6px' }}>Let it land.</Heading>
-
-      {screen === 'intro' && (
-        <div className="hp-fade-in">
-          <div style={{
-            background: tokens.goldTint, border: '1px solid ' + tokens.goldFaint,
-            borderRadius: '14px', padding: '26px', margin: '28px 0', textAlign: 'left',
-          }}>
-            <Body dim style={{ marginBottom: '10px' }}>
-              Three centres, descending. Breathe in, hold, exhale with a voiced "ah", hold.
-            </Body>
-            <Body dim>Let each breath anchor what you just declared.</Body>
-          </div>
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-            <GhostButton onClick={onBack}>← Back</GhostButton>
-            <SolidButton onClick={doStart}>Begin →</SolidButton>
-            <button onClick={doSkip} style={{
-              background: 'transparent', border: 'none', cursor: 'pointer',
-              ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-              color: tokens.whisper, textTransform: 'uppercase',
-            }}>Skip</button>
-          </div>
-        </div>
-      )}
-
-      {screen === 'running' && (
-        <div className="hp-fade-in">
-          <div style={{
-            ...sc, fontSize: '13px', letterSpacing: '0.18em', color: tokens.ghost,
-            textTransform: 'uppercase', margin: '8px 0 36px',
-          }}>
-            {OPEN_CENTRES[openCentre]}
-          </div>
-
-          <div style={{
-            position: 'relative', width: '220px', height: '220px',
-            margin: '0 auto 36px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <div ref={glowRef} style={{
-              position: 'absolute', inset: 0, borderRadius: '50%',
-              background: 'radial-gradient(circle, transparent 30%, transparent 100%)',
-              pointerEvents: 'none',
-            }} />
-            <canvas ref={canvasRef} width={220} height={220}
-              style={{ position: 'absolute', inset: 0 }} />
-            <div ref={phaseTextRef} style={{
-              ...body, fontWeight: 400, color: tokens.dark, fontSize: '22px',
-              letterSpacing: '0.02em', opacity: 1, lineHeight: 1.25,
-              position: 'relative', zIndex: 1,
-              transition: 'font-size 0.5s ease, letter-spacing 0.5s ease, opacity 0.4s ease, color 0.5s ease',
-            }}>
-              {OPEN_PHASES[openPhase]?.label}
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '6px' }}>
-            {[1,2,3].map(r => (
-              <div key={r} style={{
-                height: '4px', borderRadius: '2px',
-                width: r === openRound ? '24px' : '10px',
-                background: r <= openRound ? tokens.goldChrome : tokens.goldFaint,
-                transition: 'all 0.4s ease',
-              }} />
-            ))}
-          </div>
-          <div style={{
-            ...sc, fontSize: '10px', letterSpacing: '0.18em',
-            color: tokens.whisper, textTransform: 'uppercase', marginBottom: '36px',
-          }}>
-            Round {openRound} of {OPEN_ROUNDS}
-          </div>
-
-          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', alignItems: 'center' }}>
-            <button onClick={doPause} style={{
-              background: paused ? tokens.goldChrome : 'transparent',
-              border: '1px solid ' + (paused ? tokens.goldChrome : tokens.goldFaint),
-              borderRadius: '40px', cursor: 'pointer',
-              ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-              color: paused ? '#FFFFFF' : tokens.gold, textTransform: 'uppercase',
-              padding: '8px 18px',
-            }}>{paused ? 'Resume →' : 'Pause'}</button>
-            <button onClick={doSkip} style={{
-              background: 'transparent', border: 'none', cursor: 'pointer',
-              ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
-              color: tokens.whisper, textTransform: 'uppercase',
-            }}>Skip →</button>
-          </div>
-        </div>
-      )}
-
-      {screen === 'done' && (
-        <div className="hp-fade-in" style={{ padding: '28px 0' }}>
-          <Eyebrow style={{ marginBottom: '12px' }}>Anchored</Eyebrow>
-          <Heading size="md" style={{ marginBottom: '24px', color: tokens.gold }}>
-            Locked in.
-          </Heading>
-          <SolidButton onClick={onComplete}>Plan →</SolidButton>
-        </div>
-      )}
-    </div>
-  )
-}
-
 function MorningSequence({ userId, iamStatements, horizonSelfStatement, protectorCovenant, icalUrl, onSaveIcalUrl, onComplete, onClose }) {
   const [beat, setBeat] = useState(1)
   const [sweep, setSweep] = useState(false)
@@ -1520,24 +844,14 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
     setBeat(2)
   }
 
-  async function moveToIAm() {
+  async function moveToPlan() {
     const rid = await ensureRun()
     if (rid && userId) {
       await supabase.from('horizon_practice_morning_runs').update({
         ground_confirmed_at: new Date().toISOString(),
       }).eq('id', rid)
     }
-    clearGroundPhase()
     setBeat(3)
-  }
-
-  async function moveToAnchorBreath() {
-    setBeat(4)
-  }
-
-
-  async function moveToPlan() {
-    setBeat(5)
   }
 
   async function moveToAnchor() {
@@ -1667,14 +981,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
                 <div style={{ display: 'flex', gap: '8px' }}>
                   {['yes', 'no'].map(ans => (
                     <button key={ans}
-                      onClick={() => {
-                        const next = { ...answers, [q.key]: ans }
-                        setAnswers(next)
-                        // Auto-advance when all three are yes
-                        if (ans === 'yes' && next.ready === 'yes' && next.allowed === 'yes' && next.choosing === 'yes') {
-                          setTimeout(() => moveToGround(), 320)
-                        }
-                      }}
+                      onClick={() => setAnswers(a => ({ ...a, [q.key]: ans }))}
                       style={{
                         flex: 1,
                         background: answers[q.key] === ans
@@ -1726,21 +1033,86 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
           )}
 
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-            {anyNo && <GhostButton onClick={moveToGround}>Continue →</GhostButton>}
+            {anyNo && <GhostButton onClick={moveToGround}>Light run →</GhostButton>}
             <SolidButton onClick={moveToGround} disabled={!allYes && !anyNo}
-              style={{ display: anyNo ? 'none' : 'inline-block' }}>Next →</SolidButton>
+              style={{ display: anyNo ? 'none' : 'inline-block' }}>Ground →</SolidButton>
           </div>
         </div>
       )}
 
-      {/* ━━━ GROUND ━━━ */}
-      {/* ━━━ GROUND — breath practice ━━━ */}
+      {/* ━━━ GROUND — three text steps ━━━ */}
       {beat === 2 && (
-        <GroundBeat onComplete={moveToIAm} onBack={() => setBeat(1)} />
+        <div className="hp-fade-in">
+          <Eyebrow style={{ marginBottom: '12px' }}>Ground</Eyebrow>
+          <Heading size="lg" style={{ marginBottom: '16px' }}>
+            Land in the <em style={{ color: tokens.gold, fontStyle: 'italic' }}>body</em>.
+          </Heading>
+
+          <Card style={{ marginTop: '28px', padding: '36px 32px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              {[
+                { num: '01', text: 'Feet on the floor.' },
+                { num: '02', text: 'Breath through the chest.' },
+                { num: '03', text: 'Notice the room.' },
+              ].map((step, i) => (
+                <div key={step.num}
+                  className="hp-ground-step"
+                  style={{
+                    display: 'flex', alignItems: 'baseline', gap: '20px',
+                    animationDelay: `${i * 0.35}s`,
+                  }}>
+                  <span style={{
+                    ...sc, fontSize: '11px', fontWeight: 600,
+                    letterSpacing: '0.20em', color: tokens.gold, minWidth: '24px',
+                  }}>{step.num}</span>
+                  <span style={{
+                    ...serif, fontSize: '22px', fontWeight: 300,
+                    color: tokens.meta, lineHeight: 1.4,
+                  }}>{step.text}</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between',
+            alignItems: 'center', marginTop: '28px' }}>
+            <GhostButton onClick={() => setBeat(1)}>← Back</GhostButton>
+            <SolidButton onClick={moveToPlan}>Plan →</SolidButton>
+          </div>
+        </div>
+      )}
+
+      {/* ━━━ PLAN — threshold editor ━━━ */}
+      {beat === 3 && (
+        <div className="hp-fade-in">
+          <Eyebrow style={{ marginBottom: '12px' }}>Plan</Eyebrow>
+          <Heading size="lg" style={{ marginBottom: '16px' }}>
+            Lock the <em style={{ color: tokens.gold, fontStyle: 'italic' }}>thresholds</em>.
+          </Heading>
+          <Body dim>The moments your Horizon Self will be tested today.</Body>
+
+          <div style={{ marginTop: '24px' }}>
+            <CalendarPlanBeat
+              thresholds={thresholds}
+              onChange={setThresholds}
+              icalUrl={icalUrl}
+              onSaveIcalUrl={onSaveIcalUrl}
+              userId={userId}
+            />
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between',
+            alignItems: 'center', marginTop: '28px' }}>
+            <GhostButton onClick={() => setBeat(2)}>← Back</GhostButton>
+            <SolidButton onClick={moveToAnchor}>
+              Anchor →
+            </SolidButton>
+          </div>
+        </div>
       )}
 
       {/* ━━━ ANCHOR — single statement ━━━ */}
-      {beat === 3 && !voicedFinal && !fastMode && orderedIam.length > 0 && (
+      {beat === 4 && !voicedFinal && !fastMode && orderedIam.length > 0 && (
         <div className="hp-fade-in">
           <div style={{ display: 'flex', justifyContent: 'space-between',
             alignItems: 'baseline', marginBottom: '12px' }}>
@@ -1784,11 +1156,11 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <button onClick={() => {
               if (iamIdx > 0) setIamIdx(iamIdx - 1)
-              else setBeat(2)
+              else setBeat(3)
             }} style={{
               background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
               ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.ghost,
-            }}>← {iamIdx === 0 ? 'Ground' : 'Back'}</button>
+            }}>← {iamIdx === 0 ? 'Plan' : 'Back'}</button>
 
             <div style={{ display: 'flex', gap: '10px' }}>
               <GhostButton onClick={handleIamVoiced}>Skip</GhostButton>
@@ -1801,7 +1173,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
       )}
 
       {/* ━━━ ANCHOR — fast mode ━━━ */}
-      {beat === 3 && !voicedFinal && fastMode && orderedIam.length > 0 && (
+      {beat === 4 && !voicedFinal && fastMode && orderedIam.length > 0 && (
         <div className="hp-fade-in">
           <div style={{ display: 'flex', justifyContent: 'space-between',
             alignItems: 'baseline', marginBottom: '12px' }}>
@@ -1835,14 +1207,14 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
 
           <div style={{ display: 'flex', justifyContent: 'space-between',
             alignItems: 'center', marginTop: '24px' }}>
-            <GhostButton onClick={() => setBeat(2)}>← Ground</GhostButton>
+            <GhostButton onClick={() => setBeat(3)}>← Plan</GhostButton>
             <SolidButton onClick={handleFastVoiced}>Locked · the whole →</SolidButton>
           </div>
         </div>
       )}
 
       {/* ━━━ ANCHOR — synthesised Horizon Self ━━━ */}
-      {beat === 3 && voicedFinal && (
+      {beat === 4 && voicedFinal && (
         <div className="hp-fade-in">
           <Eyebrow style={{ marginBottom: '12px' }}>Anchor · integrated</Eyebrow>
           <Heading size="lg" style={{ marginBottom: '16px' }}>
@@ -1883,41 +1255,8 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
         </div>
       )}
 
-      {/* ━━━ OPEN BREATH ━━━ */}
-      {beat === 4 && (
-        <OpenBreathBeat onComplete={moveToPlan} onBack={() => setBeat(3)} />
-      )}
-
-      {beat === 5 && (
-        <div className="hp-fade-in">
-          <Eyebrow style={{ marginBottom: '12px' }}>Plan</Eyebrow>
-          <Heading size="lg" style={{ marginBottom: '16px' }}>
-            Lock the <em style={{ color: tokens.gold, fontStyle: 'italic' }}>thresholds</em>.
-          </Heading>
-          <Body dim>The moments your Horizon Self will be tested today.</Body>
-
-          <div style={{ marginTop: '24px' }}>
-            <CalendarPlanBeat
-              thresholds={thresholds}
-              onChange={setThresholds}
-              icalUrl={icalUrl}
-              onSaveIcalUrl={onSaveIcalUrl}
-              userId={userId}
-            />
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between',
-            alignItems: 'center', marginTop: '28px' }}>
-            <GhostButton onClick={() => setBeat(4)}>← Back</GhostButton>
-            <SolidButton onClick={moveToAct}>Next →</SolidButton>
-          </div>
-        </div>
-      )}
-
-      {/* ━━━ PLAN ━━━ */}
-
       {/* ━━━ ACT ━━━ */}
-      {beat === 6 && (
+      {beat === 5 && (
         <div className="hp-fade-in" style={{ textAlign: 'center', padding: '40px 0' }}>
           <Eyebrow style={{ marginBottom: '14px' }}>Act</Eyebrow>
           <Heading size="lg" style={{ marginBottom: '14px' }}>
@@ -2084,555 +1423,107 @@ function HorizonSelfPanel({ statement, onRefresh }) {
 // ────────────────────────────────────────────────────────────────────────────
 // Active Thresholds — with Cross action
 // ────────────────────────────────────────────────────────────────────────────
-// ── Priority config ────────────────────────────────────────────────────────────
-const PRIORITY = {
-  1: { label: 'P1', color: '#C0392B', bg: 'rgba(192,57,43,0.08)', title: 'High' },
-  2: { label: 'P2', color: '#D4832A', bg: 'rgba(212,131,42,0.08)', title: 'Medium' },
-  3: { label: 'P3', color: '#2980B9', bg: 'rgba(41,128,185,0.08)', title: 'Low' },
-}
-
-function PriorityFlag({ priority, size = 14, onClick }) {
-  if (!priority) return (
-    <button onClick={onClick} style={{
-      background: 'transparent', border: 'none', padding: '2px', cursor: onClick ? 'pointer' : 'default',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.35,
-    }} title="Set priority">
-      <svg width={size} height={size} viewBox="0 0 14 14" fill="none">
-        <path d="M2 2h10v7H2z" stroke="currentColor" strokeWidth="1.2" fill="none"/>
-        <path d="M2 9v5" stroke="currentColor" strokeWidth="1.2"/>
-      </svg>
-    </button>
-  )
-  const p = PRIORITY[priority]
-  return (
-    <button onClick={onClick} style={{
-      background: p.bg, border: 'none', padding: '2px 6px', cursor: onClick ? 'pointer' : 'default',
-      borderRadius: '4px', display: 'flex', alignItems: 'center',
-    }} title={p.title}>
-      <span style={{ fontSize: '10px', fontWeight: 700, color: p.color, letterSpacing: '0.06em', fontFamily: 'Cormorant SC, Georgia, serif' }}>{p.label}</span>
-    </button>
-  )
-}
-
-
-function TasksView({ thresholds, userId, calEvents, calLoading, icalUrl,
-  tab, onTabChange, onComplete, onUncomplete, onCross,
-  onSomeday, onSetDueDate, onSetPriority, onDelete, onAdd, onBack }) {
-
-  const [newText, setNewText]     = useState('')
-  const [newDate, setNewDate]     = useState('')
-  const [newPriority, setNewPriority] = useState(null)  // 1|2|3|null
-  const [adding, setAdding]       = useState(false)
-  const [showDone, setShowDone]   = useState(false)
-
-  const today = getLocalDateStr()
-  const todayDate = new Date(today + 'T00:00:00')
-
-  // ── Derived task sets ──────────────────────────────────────────────────────
-
-  // Overdue: due_date before today, open
-  const overdue = thresholds.filter(t =>
-    t.status === 'open' && t.due_date && t.due_date < today
-  ).sort((a, b) => a.due_date.localeCompare(b.due_date))
-
-  // Today: run_date = today (no due_date) OR due_date = today, open
-  const todayTasks = thresholds.filter(t =>
-    t.status === 'open' &&
-    (!t.due_date && t.run_date === today) ||
-    (t.due_date === today)
-  )
-
-  // Upcoming: due_date > today, open — grouped by date
-  const upcomingTasks = thresholds.filter(t =>
-    t.status === 'open' && t.due_date && t.due_date > today
-  ).sort((a, b) => a.due_date.localeCompare(b.due_date))
-
-  // Group upcoming by date
-  const upcomingByDate = upcomingTasks.reduce((acc, t) => {
-    const d = t.due_date
-    if (!acc[d]) acc[d] = []
-    acc[d].push(t)
-    return acc
-  }, {})
-
-  // Backlog: open, no due_date, run_date = today or carried
-  const backlog = thresholds.filter(t =>
-    t.status === 'open' && !t.due_date && t.run_date !== today
-      ? false  // old undated tasks without carryover aren't shown
-      : t.status === 'someday'
-        ? false
-        : t.status === 'open' && !t.due_date
-  ).filter(t => t.run_date !== today || t.carried_from_id || !t.due_date)
-
-  // Someday
-  const someday = thresholds.filter(t => t.status === 'someday')
-
-  // Done: last 7 days
-  const sevenDaysAgo = new Date()
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-  const done = thresholds.filter(t =>
-    t.status === 'done' && t.completed_at &&
-    new Date(t.completed_at) >= sevenDaysAgo
-  ).sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at))
-
-  // ── Calendar + today tasks merged timeline ─────────────────────────────────
-  const scheduledToday = todayTasks.filter(t => t.time_label)
-  const unscheduledToday = todayTasks.filter(t => !t.time_label)
-
-  const timeline = [
-    ...calEvents.map(e => ({ _type: 'event', ...e })),
-    ...scheduledToday.map(t => ({ _type: 'task', ...t })),
-  ].sort((a, b) => (a.time_label || '').localeCompare(b.time_label || ''))
-
-  // ── Add task ───────────────────────────────────────────────────────────────
-  async function handleAdd() {
-    if (!newText.trim() || !userId) return
-    setAdding(true)
-    const { data: inserted } = await supabase
-      .from('horizon_practice_thresholds')
-      .insert({
-        user_id:   userId,
-        title:     newText.trim(),
-        run_date:  today,
-        due_date:  newDate || null,
-        priority:  newPriority || null,
-        status:    'open',
-        source:    'manual',
-      })
-      .select('*')
-      .maybeSingle()
-    setAdding(false)
-    if (inserted) { onAdd(inserted); setNewText(''); setNewDate(''); setNewPriority(null) }
-  }
-
-  // ── Format date label ──────────────────────────────────────────────────────
-  function fmtDate(d) {
-    if (!d) return ''
-    const dt = new Date(d + 'T00:00:00')
-    const diff = Math.round((dt - todayDate) / 86400000)
-    if (diff === 0) return 'Today'
-    if (diff === 1) return 'Tomorrow'
-    if (diff === -1) return 'Yesterday'
-    if (diff < -1) return `${Math.abs(diff)} days ago`
-    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
-    if (diff <= 6) return days[dt.getDay()]
-    return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-  }
-
-  // ── Due date urgency colour ───────────────────────────────────────────────
-  function dueDateColor(dueDate, status) {
-    if (!dueDate || status === 'done') return tokens.ghost
-    const diff = Math.round((new Date(dueDate + 'T00:00:00') - todayDate) / 86400000)
-    if (diff < 0)  return '#C0392B'   // overdue — red
-    if (diff === 0) return '#C0392B'  // due today — red
-    if (diff <= 2)  return '#D4832A'  // due soon — amber
-    return tokens.ghost               // fine — muted
-  }
-
-  // ── Shared styles ──────────────────────────────────────────────────────────
-  const tabStyle = (active) => ({
-    background: 'transparent',
-    border: 'none',
-    padding: '8px 16px',
-    cursor: 'pointer',
-    ...sc,
-    fontSize: '11px',
-    fontWeight: 600,
-    letterSpacing: '0.16em',
-    color: active ? tokens.gold : tokens.ghost,
-    borderBottom: `2px solid ${active ? tokens.gold : 'transparent'}`,
-    textTransform: 'uppercase',
-    transition: 'color 0.2s, border-color 0.2s',
-  })
-
-  return (
-    <div className="hp-fade-in" style={{
-      maxWidth: '640px', margin: '0 auto',
-      padding: 'clamp(88px, 10vw, 112px) clamp(20px, 4vw, 40px) 80px',
-    }}>
-
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-        <Heading size="lg">Tasks</Heading>
-        <GhostButton onClick={onBack}>← Back</GhostButton>
+function TaskList({ thresholds, onComplete, onUncomplete, onCross }) {
+  if (!thresholds || thresholds.length === 0) {
+    return (
+      <div>
+        <Eyebrow style={{ marginBottom: '12px' }}>Today's tasks</Eyebrow>
+        <Card style={{ textAlign: 'center', padding: '24px' }}>
+          <Body dim italic style={{ margin: 0 }}>None set for today.</Body>
+        </Card>
       </div>
+    )
+  }
 
-      {/* Add task */}
-      <div style={{
-        background: '#FFFFFF', border: `1px solid ${tokens.goldFaint}`,
-        borderRadius: '12px', padding: '14px 18px', marginBottom: '24px',
-      }}>
-        <div style={{ display: 'flex', gap: '10px', marginBottom: newDate !== undefined ? '10px' : 0 }}>
-          <input
-            value={newText}
-            onChange={e => setNewText(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleAdd()}
-            placeholder="Add a task…"
-            style={{
-              flex: 1, border: 'none', outline: 'none', background: 'transparent',
-              ...body, fontSize: '15px', color: tokens.meta, fontWeight: 400,
-            }}
-          />
-          <button onClick={handleAdd} disabled={!newText.trim() || adding} style={{
-            background: newText.trim() ? tokens.gold : tokens.goldFaint,
-            color: '#FFF', border: 'none', borderRadius: '8px',
-            padding: '8px 16px', cursor: newText.trim() ? 'pointer' : 'default',
-            ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.14em',
-            transition: 'background 0.2s',
-          }}>Add</button>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          <input
-            type="date"
-            value={newDate}
-            onChange={e => setNewDate(e.target.value)}
-            style={{
-              border: `1px solid ${tokens.goldFaint}`, borderRadius: '6px',
-              padding: '4px 8px', background: 'transparent',
-              ...sc, fontSize: '11px', color: newDate ? tokens.gold : tokens.ghost,
-              letterSpacing: '0.10em', outline: 'none', cursor: 'pointer',
-            }}
-          />
-          {newDate && (
-            <span style={{ ...sc, fontSize: '11px', color: tokens.gold, letterSpacing: '0.10em' }}>
-              {fmtDate(newDate)}
-            </span>
-          )}
-          <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
-            {[1,2,3].map(p => (
-              <button key={p} onClick={() => setNewPriority(newPriority === p ? null : p)} style={{
-                background: newPriority === p ? PRIORITY[p].bg : 'transparent',
-                border: `1px solid ${newPriority === p ? PRIORITY[p].color : tokens.goldFaint}`,
-                borderRadius: '4px', padding: '3px 8px', cursor: 'pointer',
-              }}>
-                <span style={{ fontSize: '10px', fontWeight: 700, color: newPriority === p ? PRIORITY[p].color : tokens.ghost, fontFamily: 'Cormorant SC, Georgia, serif', letterSpacing: '0.06em' }}>
-                  P{p}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+  const pending   = thresholds.filter(t => !t.completed_at)
+  const completed = thresholds.filter(t =>  t.completed_at)
 
-      {/* Tabs */}
+  const TaskRow = ({ t }) => {
+    const isDone    = !!t.completed_at
+    const isCrossed = !!t.crossed_at
+    const isCarried = !!t.carried_from_id
+    return (
       <div style={{
-        display: 'flex', gap: 0, marginBottom: '24px',
+        display: 'flex', alignItems: 'flex-start', gap: '14px',
+        padding: '14px 0',
         borderBottom: `1px solid ${tokens.goldFaint}`,
-        overflowX: 'auto',
+        opacity: isDone ? 0.55 : 1,
+        transition: 'opacity 0.3s ease',
       }}>
-        {[
-          { key: 'today',    label: `Today${overdue.length > 0 ? ` +${overdue.length}` : ''}` },
-          { key: 'upcoming', label: 'Upcoming' },
-          { key: 'backlog',  label: 'Backlog' },
-          { key: 'done',     label: 'Done' },
-        ].map(t => (
-          <button key={t.key} onClick={() => onTabChange(t.key)} style={tabStyle(tab === t.key)}>
-            {t.label}
-          </button>
-        ))}
-      </div>
-
-      {/* ── TODAY TAB ── */}
-      {tab === 'today' && (
-        <div>
-          {/* Overdue */}
-          {overdue.length > 0 && (
-            <div style={{ marginBottom: '28px' }}>
-              <Eyebrow style={{ marginBottom: '8px', color: '#C0392B' }}>Overdue</Eyebrow>
-              {overdue.map(t => (
-                <TaskRow key={t.id} task={t} fmtDate={fmtDate} dueDateColor={dueDateColor}
-                  onComplete={onComplete} onUncomplete={onUncomplete}
-                  onSomeday={onSomeday} onSetDueDate={onSetDueDate} onSetPriority={onSetPriority} onDelete={onDelete} />
-              ))}
-            </div>
-          )}
-
-          {/* Schedule (calendar + timed tasks) */}
-          {(timeline.length > 0 || calLoading) && (
-            <div style={{ marginBottom: '28px' }}>
-              <Eyebrow style={{ marginBottom: '8px' }}>Schedule</Eyebrow>
-              {calLoading && <Body dim style={{ margin: '0 0 8px', fontSize: '13px' }}>Loading calendar…</Body>}
-              {timeline.map((item, i) => item._type === 'event' ? (
-                <CalEventRow key={item.id || i} event={item} />
-              ) : (
-                <TaskRow key={item.id} task={item} fmtDate={fmtDate} dueDateColor={dueDateColor}
-                  onComplete={onComplete} onUncomplete={onUncomplete}
-                  onSomeday={onSomeday} onSetDueDate={onSetDueDate} onSetPriority={onSetPriority} onDelete={onDelete} />
-              ))}
-            </div>
-          )}
-
-          {/* Unscheduled today tasks */}
-          {unscheduledToday.length > 0 && (
-            <div style={{ marginBottom: '28px' }}>
-              {timeline.length > 0 && <Eyebrow style={{ marginBottom: '8px' }}>Tasks</Eyebrow>}
-              {unscheduledToday.map(t => (
-                <TaskRow key={t.id} task={t} fmtDate={fmtDate} dueDateColor={dueDateColor}
-                  onComplete={onComplete} onUncomplete={onUncomplete}
-                  onSomeday={onSomeday} onSetDueDate={onSetDueDate} onSetPriority={onSetPriority} onDelete={onDelete} />
-              ))}
-            </div>
-          )}
-
-          {/* Empty state */}
-          {overdue.length === 0 && timeline.length === 0 && unscheduledToday.length === 0 && !calLoading && (
-            <Card style={{ textAlign: 'center', padding: '32px' }}>
-              <Body dim style={{ margin: '0 0 6px' }}>
-                {icalUrl ? 'Nothing on for today.' : 'No tasks yet.'}
-              </Body>
-              {!icalUrl && (
-                <Body dim style={{ margin: 0, fontSize: '13px' }}>
-                  Connect your calendar in the morning Practice to see your day here.
-                </Body>
-              )}
-            </Card>
-          )}
-        </div>
-      )}
-
-      {/* ── UPCOMING TAB ── */}
-      {tab === 'upcoming' && (
-        <div>
-          {Object.keys(upcomingByDate).length === 0 ? (
-            <Card style={{ textAlign: 'center', padding: '32px' }}>
-              <Body dim style={{ margin: 0 }}>No upcoming tasks. Add one with a due date.</Body>
-            </Card>
-          ) : (
-            Object.entries(upcomingByDate).map(([date, tasks]) => (
-              <div key={date} style={{ marginBottom: '24px' }}>
-                <div style={{
-                  ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em',
-                  color: tokens.gold, textTransform: 'uppercase',
-                  marginBottom: '8px', paddingBottom: '6px',
-                  borderBottom: `1px solid ${tokens.goldFaint}`,
-                }}>
-                  {fmtDate(date)} <span style={{ color: tokens.ghost, fontWeight: 400 }}>· {date}</span>
-                </div>
-                {tasks.map(t => (
-                  <TaskRow key={t.id} task={t} fmtDate={fmtDate} dueDateColor={dueDateColor}
-                    onComplete={onComplete} onUncomplete={onUncomplete}
-                    onSomeday={onSomeday} onSetDueDate={onSetDueDate} onSetPriority={onSetPriority} onDelete={onDelete} />
-                ))}
-              </div>
-            ))
-          )}
-        </div>
-      )}
-
-      {/* ── BACKLOG TAB ── */}
-      {tab === 'backlog' && (
-        <div>
-          {backlog.length === 0 && someday.length === 0 ? (
-            <Card style={{ textAlign: 'center', padding: '32px' }}>
-              <Body dim style={{ margin: 0 }}>Backlog is clear.</Body>
-            </Card>
-          ) : (
-            <>
-              {backlog.length > 0 && (
-                <div style={{ marginBottom: '28px' }}>
-                  <Eyebrow style={{ marginBottom: '8px' }}>No date</Eyebrow>
-                  {backlog.map(t => (
-                    <TaskRow key={t.id} task={t} fmtDate={fmtDate} dueDateColor={dueDateColor}
-                      onComplete={onComplete} onUncomplete={onUncomplete}
-                      onSomeday={onSomeday} onSetDueDate={onSetDueDate} onSetPriority={onSetPriority} onDelete={onDelete} />
-                  ))}
-                </div>
-              )}
-              {someday.length > 0 && (
-                <div>
-                  <Eyebrow style={{ marginBottom: '8px' }}>Someday</Eyebrow>
-                  {someday.map(t => (
-                    <TaskRow key={t.id} task={t} fmtDate={fmtDate} dueDateColor={dueDateColor}
-                      onComplete={onComplete} onUncomplete={onUncomplete}
-                      onSomeday={onSomeday} onSetDueDate={onSetDueDate} onSetPriority={onSetPriority} onDelete={onDelete} />
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      )}
-
-      {/* ── DONE TAB ── */}
-      {tab === 'done' && (
-        <div>
-          {done.length === 0 ? (
-            <Card style={{ textAlign: 'center', padding: '32px' }}>
-              <Body dim style={{ margin: 0 }}>Nothing completed in the last 7 days.</Body>
-            </Card>
-          ) : (
-            done.map(t => (
-              <TaskRow key={t.id} task={t} fmtDate={fmtDate} dueDateColor={dueDateColor}
-                onComplete={onComplete} onUncomplete={onUncomplete}
-                onSomeday={onSomeday} onSetDueDate={onSetDueDate} onSetPriority={onSetPriority} onDelete={onDelete} />
-            ))
-          )}
-        </div>
-      )}
-    </div>
-  )
-}
-
-// ── Calendar event row ────────────────────────────────────────────────────────
-function CalEventRow({ event }) {
-  return (
-    <div style={{
-      display: 'flex', gap: '14px', alignItems: 'flex-start',
-      padding: '11px 0', borderBottom: `1px solid ${tokens.goldFaint}`,
-      opacity: 0.8,
-    }}>
-      <div style={{
-        minWidth: '44px', flexShrink: 0, paddingTop: '2px',
-        ...sc, fontSize: '11px', fontWeight: 600,
-        letterSpacing: '0.10em', color: tokens.ghost,
-      }}>{event.time_label || '·'}</div>
-      <div style={{ flex: 1 }}>
-        <div style={{ ...body, fontSize: '15px', color: tokens.meta, fontWeight: 400 }}>
-          {event.title}
-        </div>
-        {event.note && (
-          <div style={{ ...body, fontSize: '13px', color: tokens.ghost, marginTop: '2px' }}>
-            {event.note}
-          </div>
-        )}
-      </div>
-      <div style={{
-        flexShrink: 0, width: '5px', height: '5px', borderRadius: '50%',
-        background: tokens.goldFaint, marginTop: '7px',
-      }} />
-    </div>
-  )
-}
-
-// ── Task row — shared across all tabs ────────────────────────────────────────
-function TaskRow({ task, fmtDate, dueDateColor, onComplete, onUncomplete, onSomeday, onSetDueDate, onSetPriority, onDelete }) {
-  const [showActions, setShowActions] = useState(false)
-  const [editingDate, setEditingDate] = useState(false)
-
-  const isDone    = task.status === 'done' || !!task.completed_at
-  const isSomeday = task.status === 'someday'
-  const isCarried = !!task.carried_from_id
-
-  return (
-    <div style={{
-      borderBottom: `1px solid ${tokens.goldFaint}`,
-      opacity: isDone ? 0.5 : 1,
-      transition: 'opacity 0.3s',
-    }}>
-      <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '12px 0' }}>
-        {/* Priority flag */}
-        <PriorityFlag
-          priority={task.priority}
-          onClick={onSetPriority && !isDone ? () => {
-            const next = task.priority ? (task.priority < 3 ? task.priority + 1 : null) : 1
-            onSetPriority(task, next)
-          } : null}
-        />
-
-        {/* Tick */}
         <button
-          onClick={() => isDone ? onUncomplete(task) : onComplete(task)}
+          onClick={() => isDone ? onUncomplete(t) : onComplete(t)}
           style={{
             flexShrink: 0, marginTop: '2px',
-            width: '20px', height: '20px', borderRadius: '50%',
-            border: `1.5px solid ${isDone ? tokens.goldChrome : task.priority === 1 ? 'rgba(192,57,43,0.5)' : 'rgba(200,146,42,0.35)'}`,
+            width: '22px', height: '22px', borderRadius: '50%',
+            border: `1.5px solid ${isDone ? tokens.goldChrome : 'rgba(200,146,42,0.35)'}`,
             background: isDone ? tokens.goldChrome : 'transparent',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            cursor: 'pointer', transition: 'all 0.2s', padding: 0,
+            cursor: 'pointer', transition: 'all 0.2s ease', padding: 0,
           }}
+          aria-label={isDone ? 'Mark incomplete' : 'Mark complete'}
         >
-          {isDone && <span style={{ color: '#FFF', fontSize: '11px' }}>✓</span>}
+          {isDone && <span style={{ color: '#FFFFFF', fontSize: '13px', lineHeight: 1 }}>✓</span>}
         </button>
-
-        {/* Content */}
-        <div style={{ flex: 1, minWidth: 0 }} onClick={() => !isDone && setShowActions(s => !s)}>
+        <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
             <span style={{
-              ...body, fontSize: '15px', color: tokens.meta, fontWeight: 400, lineHeight: 1.4,
+              ...body, fontSize: '15px', fontWeight: 400, color: tokens.meta, lineHeight: 1.5,
               textDecoration: isDone ? 'line-through' : 'none',
-              textDecorationColor: tokens.goldFaint, cursor: isDone ? 'default' : 'pointer',
-            }}>{task.title}</span>
+              textDecorationColor: tokens.goldFaint,
+            }}>{t.title}</span>
             {isCarried && !isDone && (
-              <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: tokens.ghost }}>carried</span>
-            )}
-            {isSomeday && (
-              <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: tokens.ghost }}>someday</span>
+              <span style={{
+                ...sc, fontSize: '11px', letterSpacing: '0.16em',
+                color: tokens.ghost, textTransform: 'uppercase',
+              }}>carried</span>
             )}
           </div>
-          {(task.time_label || task.due_date || task.note) && (
-            <div style={{ ...body, fontSize: '12px', marginTop: '2px', display: 'flex', gap: '4px', flexWrap: 'wrap', alignItems: 'center' }}>
-              {task.time_label && (
-                <span style={{ color: tokens.ghost }}>{task.time_label}</span>
-              )}
-              {task.due_date && !isDone && (
-                <span style={{
-                  color: dueDateColor ? dueDateColor(task.due_date, task.status) : tokens.ghost,
-                  fontWeight: dueDateColor && dueDateColor(task.due_date, task.status) !== tokens.ghost ? 600 : 400,
-                }}>
-                  {fmtDate(task.due_date)}
-                </span>
-              )}
-              {task.note && <span style={{ color: tokens.ghost }}>{task.note}</span>}
+          {(t.time_label || t.note) && (
+            <div style={{ ...body, fontSize: '13px', color: tokens.ghost, marginTop: '3px', lineHeight: 1.4 }}>
+              {[t.time_label, t.note].filter(Boolean).join(' · ')}
             </div>
           )}
         </div>
-
-        {/* Cross indicator */}
-        {!isDone && task.crossed_at && (
-          <span style={{ flexShrink: 0, ...sc, fontSize: '10px', letterSpacing: '0.14em', color: tokens.gold }}>crossed</span>
+        {!isDone && !isCrossed && (
+          <button onClick={() => onCross(t)} style={{
+            flexShrink: 0,
+            background: 'transparent', color: tokens.gold,
+            border: `1px solid ${tokens.goldFaint}`, borderRadius: '40px',
+            padding: '5px 12px', ...sc, fontSize: '10px', fontWeight: 600,
+            letterSpacing: '0.14em', cursor: 'pointer', whiteSpace: 'nowrap',
+          }}>Cross →</button>
+        )}
+        {!isDone && isCrossed && (
+          <span style={{ flexShrink: 0, ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.gold }}>crossed</span>
         )}
       </div>
+    )
+  }
 
-      {/* Expanded actions */}
-      {showActions && !isDone && (
-        <div style={{
-          display: 'flex', gap: '8px', flexWrap: 'wrap',
-          padding: '0 0 12px 32px',
-        }}>
-          {!editingDate ? (
-            <button onClick={() => setEditingDate(true)} style={{
-              ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.14em',
-              color: tokens.gold, background: 'transparent',
-              border: `1px solid ${tokens.goldFaint}`, borderRadius: '20px',
-              padding: '4px 12px', cursor: 'pointer',
-            }}>
-              {task.due_date ? `📅 ${fmtDate(task.due_date)}` : '+ Date'}
-            </button>
-          ) : (
-            <input
-              type="date"
-              defaultValue={task.due_date || ''}
-              autoFocus
-              onBlur={e => { setEditingDate(false); if (e.target.value) onSetDueDate(task, e.target.value) }}
-              onChange={e => { if (e.target.value) { onSetDueDate(task, e.target.value); setEditingDate(false) } }}
-              style={{
-                border: `1px solid ${tokens.gold}`, borderRadius: '6px',
-                padding: '4px 8px', ...sc, fontSize: '11px', color: tokens.gold, outline: 'none',
-              }}
-            />
-          )}
-          {!isSomeday && (
-            <button onClick={() => { onSomeday(task); setShowActions(false) }} style={{
-              ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.14em',
-              color: tokens.ghost, background: 'transparent',
-              border: `1px solid ${tokens.goldFaint}`, borderRadius: '20px',
-              padding: '4px 12px', cursor: 'pointer',
-            }}>Someday</button>
-          )}
-          <button onClick={() => { onDelete(task); setShowActions(false) }} style={{
-            ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.14em',
-            color: '#C0392B', background: 'transparent',
-            border: '1px solid rgba(192,57,43,0.25)', borderRadius: '20px',
-            padding: '4px 12px', cursor: 'pointer',
-          }}>Delete</button>
+  return (
+    <div>
+      <Eyebrow style={{ marginBottom: '4px' }}>Today's tasks</Eyebrow>
+      <div style={{ marginBottom: completed.length > 0 ? '20px' : 0 }}>
+        {pending.map(t => <TaskRow key={t.id} t={t} />)}
+        {pending.length === 0 && (
+          <div style={{ padding: '16px 0' }}>
+            <Body dim italic style={{ margin: 0 }}>All done.</Body>
+          </div>
+        )}
+      </div>
+      {completed.length > 0 && (
+        <div style={{ marginTop: '8px' }}>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: tokens.ghost, textTransform: 'uppercase', marginBottom: '4px' }}>Done</div>
+          {completed.map(t => <TaskRow key={t.id} t={t} />)}
         </div>
       )}
     </div>
   )
 }
 
-
-
+// ────────────────────────────────────────────────────────────────────────────
+// Hit / Drift bar + capture chips
+// ────────────────────────────────────────────────────────────────────────────
 function HitDriftBar({ onFlag, onCapture }) {
   const ripple = useRipple()
   const handleFlag = (e, kind) => {
@@ -2884,7 +1775,7 @@ function RecentEntries({ entries, onOpenJournal }) {
               ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em',
               color: item.kind === 'drift' ? tokens.ghost : tokens.gold,
             }}>{labelForKind(item.kind)}</span>
-            <span style={{ ...body, fontSize: '12px', color: tokens.whisper }}>
+            <span style={{ ...body, fontSize: '13px', color: tokens.whisper }}>
               {relativeDate(item.occurred_at)}{item.from_who ? ` · ${item.from_who}` : ''}
             </span>
           </div>
@@ -2965,7 +1856,7 @@ function LogView({ open, onClose, entries }) {
                 }}>· {entry.from_who}</span>
               )}
             </div>
-            <span style={{ ...body, fontSize: '12px', color: tokens.whisper }}>
+            <span style={{ ...body, fontSize: '13px', color: tokens.whisper }}>
               {relativeDate(entry.occurred_at)}
             </span>
           </div>
@@ -3114,24 +2005,13 @@ export function HorizonPracticePage() {
   const [hasMap, setHasMap] = useState(false)
   const [skipMap, setSkipMap] = useState(false)
   const [icalUrl, setIcalUrl] = useState(null)
-  const [calEvents, setCalEvents] = useState([])
-  const [calLoading, setCalLoading] = useState(false)
 
   // Today's state
   const [todayRun, setTodayRun] = useState(null)
   const [thresholds, setThresholds] = useState([])
   const [entries, setEntries] = useState([])  // last ~30 days
-  const [view, setView] = useState('loading')  // loading | hub | morning | tasks | evening
-
-  // Respect ?view=tasks (or other) URL param for direct navigation from Mission Control
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const viewParam = params.get('view')
-    if (viewParam === 'tasks') setTaskTab('today')  // ensure correct tab
-    // view param is applied after load completes — see load function
-  }, [])
+  const [view, setView] = useState('loading')  // loading | hub | morning | evening
   const [activeSprint, setActiveSprint] = useState(null)
-  const [taskTab, setTaskTab] = useState('today')  // today | upcoming | backlog | done
 
   // Modal state
   const [refreshOpen, setRefreshOpen] = useState(false)
@@ -3247,38 +2127,27 @@ export function HorizonPracticePage() {
         if (cancelled) return
         if (sprintRow?.domains?.length) setActiveSprint(sprintRow)
 
-        // ── Silent carryover: roll incomplete tasks from last 7 days ──────────
-        const sevenDaysAgo = new Date()
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-        const sevenDaysAgoStr = getLocalDateStr(sevenDaysAgo)
+        // ── Silent carryover: roll incomplete tasks from yesterday ──────────
         const yesterday = new Date()
         yesterday.setDate(yesterday.getDate() - 1)
         const yesterdayStr = getLocalDateStr(yesterday)
-
-        const { data: overdueTasks } = await supabase
+        const { data: yesterdayTasks } = await supabase
           .from('horizon_practice_thresholds')
-          .select('id, title, time_label, note, source, source_ref, due_date')
+          .select('id, title, time_label, note, source, source_ref')
           .eq('user_id', user.id)
+          .eq('run_date', yesterdayStr)
           .is('completed_at', null)
-          .in('status', ['open'])
-          .gte('run_date', sevenDaysAgoStr)
-          .lte('run_date', yesterdayStr)
-          .is('due_date', null)  // tasks with due_date surface in their own view
         if (cancelled) return
-        if (overdueTasks?.length) {
+        if (yesterdayTasks?.length) {
           const alreadyCarried = (thresholdRows || [])
             .filter(t => t.carried_from_id).map(t => t.carried_from_id)
-          const alreadyTitles = (thresholdRows || []).map(t => t.title)
-          const toCarry = overdueTasks.filter(t =>
-            !alreadyCarried.includes(t.id) &&
-            !alreadyTitles.includes(t.title)
-          )
+          const toCarry = yesterdayTasks.filter(t => !alreadyCarried.includes(t.id))
           if (toCarry.length > 0) {
             const newRows = toCarry.map(t => ({
               user_id: user.id, title: t.title,
               time_label: t.time_label || null, note: t.note || null,
               source: t.source || 'manual', source_ref: t.source_ref || null,
-              run_date: today, carried_from_id: t.id, status: 'open',
+              run_date: today, carried_from_id: t.id,
             }))
             const { data: carried } = await supabase
               .from('horizon_practice_thresholds').insert(newRows).select('*')
@@ -3287,14 +2156,8 @@ export function HorizonPracticePage() {
           }
         }
 
-        // Check URL param for direct navigation
-        const params = new URLSearchParams(window.location.search)
-        const viewParam = params.get('view')
-        if (viewParam === 'tasks') {
-          setView('tasks')
-        } else {
-          setView('hub')
-        }
+        // Always land on hub
+        setView('hub')
         recordEngagement()
 
       } catch (err) {
@@ -3339,64 +2202,22 @@ export function HorizonPracticePage() {
     const now = new Date().toISOString()
     await supabase
       .from('horizon_practice_thresholds')
-      .update({ completed_at: now, status: 'done' })
+      .update({ completed_at: now })
       .eq('id', threshold.id)
     Chimes.hit()
     setThresholds(ts => ts.map(t =>
-      t.id === threshold.id ? { ...t, completed_at: now, status: 'done' } : t
+      t.id === threshold.id ? { ...t, completed_at: now } : t
     ))
-  }
-
-  async function handleSomeday(threshold) {
-    if (!user || !threshold.id) return
-    await supabase
-      .from('horizon_practice_thresholds')
-      .update({ status: 'someday', due_date: null })
-      .eq('id', threshold.id)
-    setThresholds(ts => ts.map(t =>
-      t.id === threshold.id ? { ...t, status: 'someday', due_date: null } : t
-    ))
-  }
-
-  async function handleSetPriority(threshold, priority) {
-    if (!user || !threshold.id) return
-    await supabase
-      .from('horizon_practice_thresholds')
-      .update({ priority })
-      .eq('id', threshold.id)
-    setThresholds(ts => ts.map(t =>
-      t.id === threshold.id ? { ...t, priority } : t
-    ))
-  }
-
-  async function handleSetDueDate(threshold, dueDate) {
-    if (!user || !threshold.id) return
-    await supabase
-      .from('horizon_practice_thresholds')
-      .update({ due_date: dueDate, status: 'open' })
-      .eq('id', threshold.id)
-    setThresholds(ts => ts.map(t =>
-      t.id === threshold.id ? { ...t, due_date: dueDate, status: 'open' } : t
-    ))
-  }
-
-  async function handleDelete(threshold) {
-    if (!user || !threshold.id) return
-    await supabase
-      .from('horizon_practice_thresholds')
-      .delete()
-      .eq('id', threshold.id)
-    setThresholds(ts => ts.filter(t => t.id !== threshold.id))
   }
 
   async function handleUncomplete(threshold) {
     if (!user || !threshold.id) return
     await supabase
       .from('horizon_practice_thresholds')
-      .update({ completed_at: null, status: 'open' })
+      .update({ completed_at: null })
       .eq('id', threshold.id)
     setThresholds(ts => ts.map(t =>
-      t.id === threshold.id ? { ...t, completed_at: null, status: 'open' } : t
+      t.id === threshold.id ? { ...t, completed_at: null } : t
     ))
   }
 
@@ -3515,27 +2336,6 @@ export function HorizonPracticePage() {
       .update({ ical_url: url })
       .eq('user_id', user.id)
   }
-
-  // Fetch today's calendar events at page level so they're available everywhere
-  useEffect(() => {
-    if (!icalUrl) return
-    let cancelled = false
-    setCalLoading(true)
-    const today = getLocalDateStr()
-    fetch('/api/ical-proxy', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ical_url: icalUrl, date: today }),
-    })
-      .then(r => r.json())
-      .then(data => {
-        if (cancelled) return
-        if (!data.error) setCalEvents(data.events || [])
-        setCalLoading(false)
-      })
-      .catch(() => { if (!cancelled) setCalLoading(false) })
-    return () => { cancelled = true }
-  }, [icalUrl])
 
   // ─── Render ─────────────────────────────────────────────────────────────
   if (authLoading || accessLoading || profileLoading) {
@@ -3672,93 +2472,93 @@ export function HorizonPracticePage() {
               )}
             </div>
 
-            {/* Tiles */}
+            {/* Five tiles */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
-              {/* Morning Practice */}
               <button onClick={() => setView('morning')} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 background: todayRun?.completed_at ? tokens.bgCard : '#FFFFFF',
                 border: `1px solid ${todayRun?.completed_at ? tokens.goldFaint : tokens.goldChrome}`,
-                borderRadius: '12px', padding: '20px 24px', cursor: 'pointer', textAlign: 'left', width: '100%',
+                borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
-                <span style={{ ...body, fontSize: '16px', fontWeight: 400, color: tokens.dark }}>
-                  Morning Practice {todayRun?.completed_at ? '✓' : ''}
-                </span>
-                <span style={{ ...sc, fontSize: '16px', color: tokens.goldChrome, marginLeft: '16px' }}>→</span>
-              </button>
-
-              {/* Tasks */}
-              <button onClick={() => setView('tasks')} style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                background: '#FFFFFF', border: `1px solid ${tokens.goldFaint}`,
-                borderRadius: '12px', padding: '20px 24px', cursor: 'pointer', textAlign: 'left', width: '100%',
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ ...body, fontSize: '16px', fontWeight: 400, color: tokens.dark }}>Tasks</span>
-                  {thresholds.filter(t => !t.completed_at).length > 0 && (
-                    <span style={{
-                      background: tokens.gold, color: '#FFF',
-                      borderRadius: '40px', padding: '2px 8px',
-                      ...sc, fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em',
-                    }}>{thresholds.filter(t => !t.completed_at).length}</span>
-                  )}
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Morning Practice</div>
+                  <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>
+                    {todayRun?.completed_at ? 'Complete — run again' : 'Commit · Ground · I Am · Anchor · Plan · Act'}
+                  </div>
                 </div>
-                <span style={{ ...sc, fontSize: '16px', color: tokens.gold, marginLeft: '16px' }}>→</span>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.goldChrome, marginLeft: '16px' }}>→</span>
               </button>
 
-              {/* Horizon Self Refresh */}
               <button onClick={() => { setRefreshVariant('standard'); setRefreshTask(''); setRefreshOpen(true) }} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 background: '#FFFFFF', border: `1px solid ${tokens.goldFaint}`,
-                borderRadius: '12px', padding: '20px 24px', cursor: 'pointer', textAlign: 'left', width: '100%',
+                borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
-                <span style={{ ...body, fontSize: '16px', fontWeight: 400, color: tokens.dark }}>Horizon Self Refresh</span>
-                <span style={{ ...sc, fontSize: '16px', color: tokens.gold, marginLeft: '16px' }}>→</span>
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Horizon Self Refresh</div>
+                  <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>What's in front of you. How your Horizon Self handles it.</div>
+                </div>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
               </button>
 
-              {/* Sprint */}
               <button onClick={() => { window.location.href = '/tools/target-sprint' }} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 background: '#FFFFFF', border: `1px solid ${tokens.goldFaint}`,
-                borderRadius: '12px', padding: '20px 24px', cursor: 'pointer', textAlign: 'left', width: '100%',
+                borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
-                <span style={{ ...body, fontSize: '16px', fontWeight: 400, color: tokens.dark }}>
-                  {activeSprint?.status === 'active' ? 'Active Sprint' : activeSprint?.status === 'draft' ? 'Sprint in Setup' : 'Target Stretch'}
-                </span>
-                <span style={{ ...sc, fontSize: '16px', color: tokens.gold, marginLeft: '16px' }}>→</span>
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
+                    {activeSprint?.status === 'active' ? 'Active Sprint' : activeSprint?.status === 'draft' ? 'Sprint in Setup' : 'Target Stretch'}
+                  </div>
+                  <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>
+                    {activeSprint?.domains?.length ? activeSprint.domains.join(' · ') : 'No active sprint — start one'}
+                  </div>
+                </div>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
               </button>
 
-              {/* Evening Integrate */}
               <button onClick={() => setView('evening')} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 background: '#FFFFFF', border: `1px solid ${tokens.goldFaint}`,
-                borderRadius: '12px', padding: '20px 24px', cursor: 'pointer', textAlign: 'left', width: '100%',
+                borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
-                <span style={{ ...body, fontSize: '16px', fontWeight: 400, color: tokens.dark }}>Evening Integrate</span>
-                <span style={{ ...sc, fontSize: '16px', color: tokens.gold, marginLeft: '16px' }}>→</span>
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Evening Integrate</div>
+                  <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>Close the day. What landed. What to carry forward.</div>
+                </div>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
               </button>
 
-              {/* Journal */}
               <button onClick={() => setLogOpen(true)} style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                 background: '#FFFFFF', border: `1px solid ${tokens.goldFaint}`,
-                borderRadius: '12px', padding: '20px 24px', cursor: 'pointer', textAlign: 'left', width: '100%',
+                borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ ...body, fontSize: '16px', fontWeight: 400, color: tokens.dark }}>Journal</span>
-                  {entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length > 0 && (
-                    <span style={{
-                      background: tokens.goldFaint, color: tokens.gold,
-                      borderRadius: '40px', padding: '2px 8px',
-                      ...sc, fontSize: '10px', fontWeight: 700, letterSpacing: '0.10em',
-                    }}>{entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length}</span>
-                  )}
+                <div>
+                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Journal</div>
+                  <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>
+                    {entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length > 0
+                      ? `${entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length} entr${entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length === 1 ? 'y' : 'ies'} today`
+                      : 'Hits · Drifts · Receipts · Listening'}
+                  </div>
                 </div>
-                <span style={{ ...sc, fontSize: '16px', color: tokens.gold, marginLeft: '16px' }}>→</span>
+                <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
               </button>
 
             </div>
+
+            {/* Tasks */}
+            {thresholds.length > 0 && (
+              <div style={{ marginTop: '36px' }}>
+                <TaskList
+                  thresholds={thresholds}
+                  onComplete={handleComplete}
+                  onUncomplete={handleUncomplete}
+                  onCross={handleCross}
+                />
+              </div>
+            )}
 
             {/* Badge permission ask */}
             {streak && streak.streak_current >= 1 && !streak.badge_permission && !badgeAsked && 'setAppBadge' in navigator && (
@@ -3879,28 +2679,6 @@ export function HorizonPracticePage() {
               onClose={() => setView('hub')}
             />
           </div>
-        )}
-
-        {/* ── Tasks ── */}
-        {(hasMap || skipMap) && view === 'tasks' && (
-          <TasksView
-            thresholds={thresholds}
-            userId={user?.id}
-            calEvents={calEvents}
-            calLoading={calLoading}
-            icalUrl={icalUrl}
-            tab={taskTab}
-            onTabChange={setTaskTab}
-            onComplete={handleComplete}
-            onUncomplete={handleUncomplete}
-            onCross={handleCross}
-            onSomeday={handleSomeday}
-            onSetDueDate={handleSetDueDate}
-            onSetPriority={handleSetPriority}
-            onDelete={handleDelete}
-            onAdd={(newTask) => setThresholds(ts => [newTask, ...ts])}
-            onBack={() => setView('hub')}
-          />
         )}
 
         {/* ── Evening Integrate (placeholder) ── */}

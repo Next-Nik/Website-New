@@ -5,10 +5,7 @@
 
 import { useState } from 'react'
 import { supabase } from '../../hooks/useSupabase'
-
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { serif, body, sc } from '../../lib/designTokens'
 
 const ACTOR_TYPES = [
   {

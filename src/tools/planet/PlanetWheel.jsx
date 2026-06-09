@@ -4,8 +4,7 @@
 // When nextusScores provided, renders two overlapping polygons (self + NextUs)
 
 import { PLANET_DOMAINS, getPlanetScoreColor } from '../../constants/horizonScalePlanet'
-
-const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { sc } from '../../lib/designTokens'
 
 const MAX_SCORE = 10
 const NUM_DOMAINS = 7

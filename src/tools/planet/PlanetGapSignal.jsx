@@ -3,10 +3,7 @@
 // The gap is a signal — not a judgment. Displayed when assessment_type = 'both'
 
 import { PLANET_DOMAINS, getPlanetScoreColor } from '../../constants/horizonScalePlanet'
-
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { serif, body, sc } from '../../lib/designTokens'
 
 export function PlanetGapSignal({ scores, nextusScores }) {
   const gaps = PLANET_DOMAINS.map(d => {
