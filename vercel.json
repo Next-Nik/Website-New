@@ -20,13 +20,7 @@
     }
   ],
   "functions": {
-    "api/integrity-cron.js": {
-      "maxDuration": 60
-    },
-    "api/indicator-cron.js": {
-      "maxDuration": 60
-    },
-    "api/indicator-worker.js": {
+    "api/*.js": {
       "maxDuration": 60
     },
     "api/compute-daily-snapshot.js": {
@@ -38,68 +32,14 @@
     "api/nextus-match.js": {
       "maxDuration": 15
     },
-    "api/org-extract.js": {
-      "maxDuration": 60
-    },
-    "api/map-chat.js": {
-      "maxDuration": 60
-    },
-    "api/map-avatar-chat.js": {
-      "maxDuration": 60
-    },
-    "api/map-scoring-chat.js": {
-      "maxDuration": 60
-    },
-    "api/map-synthesis-chat.js": {
-      "maxDuration": 60
-    },
-    "api/connection-synthesis-chat.js": {
-      "maxDuration": 60
-    },
-    "api/orienteering-chat.js": {
-      "maxDuration": 60
-    },
-    "api/nextsteps-chat.js": {
-      "maxDuration": 60
-    },
     "api/nextsteps-track.js": {
       "maxDuration": 15
-    },
-    "api/nextsteps-path.js": {
-      "maxDuration": 60
     },
     "api/nextsteps-actors-sample.js": {
       "maxDuration": 15
     },
     "api/nextsteps-tag-actor.js": {
       "maxDuration": 300
-    },
-    "api/horizon-state-chat.js": {
-      "maxDuration": 60
-    },
-    "api/purpose-piece-chat.js": {
-      "maxDuration": 60
-    },
-    "api/purpose-piece-chat-deep.js": {
-      "maxDuration": 60
-    },
-    "api/target-sprint-chat.js": {
-      "maxDuration": 60
-    },
-    "api/target-sprint-coach-chat.js": {
-      "maxDuration": 60
-    },
-    "api/debrief-chat.js": {
-      "maxDuration": 60
-    },
-    "api/horizon-practice-setup-chat.js": {
-      "maxDuration": 60
-    },
-    "api/horizon-practice-daily-chat.js": {
-      "maxDuration": 60
-    },
-    "api/horizon-practice-loop-chat.js": {
-      "maxDuration": 60
     },
     "api/stripe-webhook.js": {
       "maxDuration": 30
