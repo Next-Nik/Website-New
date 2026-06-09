@@ -124,11 +124,11 @@ function CoverScreen({ onBegin, logoB64 }) {
   return (
     <div style={{ ...s.screen, justifyContent: 'center', textAlign: 'center', paddingBottom: 'calc(60px + env(safe-area-inset-bottom))', paddingTop: 24 }}>
       <img src={`data:image/png;base64,${logoB64}`} alt="NextUs" style={{ width: 80, height: 80, objectFit: 'contain', margin: '0 auto 24px', display: 'block' }} />
-      <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.14em', color: 'rgba(15,21,35,0.42)', margin: '0 0 6px' }}>Welcome to</p>
+      <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.14em', color: 'rgba(15,21,35,0.65)', margin: '0 0 6px' }}>Welcome to</p>
       <h1 style={{ fontFamily: SC, fontSize: 46, letterSpacing: '0.04em', margin: '0 0 18px', color: INK }}>NextUs</h1>
-      <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', color: 'rgba(15,21,35,0.42)', margin: '0 0 6px' }}>Building the future for</p>
+      <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', color: 'rgba(15,21,35,0.65)', margin: '0 0 6px' }}>Building the future for</p>
       <h2 style={{ fontFamily: SERIF, fontWeight: 500, fontSize: 22, lineHeight: 1.1, margin: '0 0 32px', color: INK }}>The Person and the Planet.</h2>
-      <p style={{ fontFamily: LORA, fontSize: 15, color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, margin: '0 0 36px' }}>Let's find where you are.<br />Five minutes.</p>
+      <p style={{ fontFamily: LORA, fontSize: 15, color: 'rgba(15,21,35,0.7)', lineHeight: 1.6, margin: '0 0 36px' }}>Let's find where you are.<br />Five minutes.</p>
       <button style={{ ...s.btn, maxWidth: 180, margin: '0 auto', display: 'block' }} onClick={onBegin}>Begin</button>
     </div>
   )
@@ -136,8 +136,6 @@ function CoverScreen({ onBegin, logoB64 }) {
 
 // ── Screen 1: Personal domains ─────────────────────────────────
 function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) {
-  const anyMoved = Object.values(scores).some(v => v !== 5)
-
   function handleScore(key, val) {
     setScores(prev => ({ ...prev, [key]: parseInt(val) }))
   }
@@ -203,10 +201,7 @@ function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) 
       </div>
       <div style={s.foot}>
         <button style={s.ghost} onClick={onBack}>Back</button>
-        <button
-          style={{ ...s.btn, flex: 1, opacity: anyMoved ? 1 : 0.4 }}
-          onClick={anyMoved ? onNext : undefined}
-        >Next</button>
+        <button style={{ ...s.btn, flex: 1 }} onClick={onNext}>Next</button>
       </div>
     </>
   )
