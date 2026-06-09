@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
-import { useEffect, Component } from 'react'
+import { supabase } from './hooks/useSupabase'
+import { useEffect, useState, Component } from 'react'
 import { BottomTabs } from './components/BottomTabs'
 
 // Error boundary
@@ -49,6 +50,7 @@ import { WatchPage }              from './pages/Watch'
 // profiles, organisations, the Atlas (map / domain / actors / practices).
 import MissionControl         from './app/pages/MissionControl'
 import WelcomeStart           from './app/pages/WelcomeStart'
+import FirstLight             from './app/pages/FirstLight'
 import WelcomeSelf            from './app/pages/WelcomeSelf'
 import OrgWelcome             from './app/pages/OrgWelcome'
 import WelcomePractitioner    from './app/pages/WelcomePractitioner'
@@ -127,25 +129,39 @@ function ComingSoon({ name }) {
 // straight to Mission Control — they don't need a re-introduction.
 function RootRoute() {
   const { user, loading } = useAuth()
-  if (loading) return null
+  const [checking, setChecking] = useState(true)
+  const [needsFirstLight, setNeedsFirstLight] = useState(false)
+
+  useEffect(() => {
+    if (!user) { setChecking(false); return }
+    supabase
+      .from('users')
+      .select('first_light_completed_at')
+      .eq('id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        setNeedsFirstLight(!data?.first_light_completed_at)
+        setChecking(false)
+      })
+      .catch(() => setChecking(false))
+  }, [user])
+
+  if (loading || checking) return null
   if (!user) return <MarketingHomePage />
 
-  // Signed in. Look for fresh wrapper intent first — that's the
-  // only signal that justifies routing to the welcome flow.
+  // Gate: new or existing user who hasn't done First Light
+  if (needsFirstLight) return <Navigate to="/welcome/first-light" replace />
+
+  // Legacy wrapper welcome flow
   let welcomePath = null
   let seen = true
   try {
     welcomePath = window.localStorage.getItem('nextus.welcomePath')
     seen = window.localStorage.getItem('nextus.welcomeSeen') === '1'
-  } catch {
-    // localStorage blocked — fail open and skip the welcome.
-  }
+  } catch {}
 
-  // No wrapper intent OR welcome already seen → Mission Control.
   if (!welcomePath || seen) return <MissionControl />
 
-  // Brand-new user from the wrapper, never seen the welcome —
-  // route to the matching narrative.
   const path = ['org', 'practitioner', 'self'].includes(welcomePath)
     ? welcomePath
     : 'self'
@@ -216,6 +232,7 @@ function AppInner() {
         <Route path="/tools/planet"              element={<PlanetMap />} />  {/* founder-only beta — gate inside PlanetMap */}
 
         {/* ── Platform routes (beta prefix retired) ── */}
+        <Route path="/welcome/first-light"          element={<FirstLight />} />
         <Route path="/welcome"                      element={<WelcomeStart />} />
         <Route path="/welcome/self"                 element={<WelcomeSelf />} />
         <Route path="/welcome/org"                  element={<OrgWelcome />} />
