@@ -6,7 +6,7 @@ import {
   isValidPrincipleWeight,
 } from '../constants/principles'
 import { tagPrinciple, untagPrinciple } from '../hooks/useTaggedPrinciples'
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PrincipleAlignmentEditor

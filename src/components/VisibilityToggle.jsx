@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { sc } from '../lib/designTokens'
+import { sc } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // VisibilityToggle

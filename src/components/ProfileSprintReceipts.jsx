@@ -1,4 +1,4 @@
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 // src/beta/components/ProfileSprintReceipts.jsx
 // Sprint receipts: completed sprints marked visible.
 

@@ -5,7 +5,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { PRINCIPLE_BY_SLUG } from '../constants/principles'
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 
 // Visual weight differentiation comes from border + background only.
 // Text opacity is governed by the three-level rule (full / 0.72 / 0.55) and is

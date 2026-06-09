@@ -1,4 +1,4 @@
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 // src/beta/components/SprintSlate.jsx
 //
 // Three-slot sprint slate for Mission Control.

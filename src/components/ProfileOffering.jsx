@@ -1,4 +1,4 @@
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 // src/beta/components/ProfileOffering.jsx
 // "What I am offering" — count_on_me_for free-text.
 

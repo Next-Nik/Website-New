@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../hooks/useSupabase'
 import { fetchVisibilityMap, useArtefactVisibility } from '../hooks/useArtefactVisibility'
 import VisibilityToggle from './VisibilityToggle'
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SprintsVisibilitySection

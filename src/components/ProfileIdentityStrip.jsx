@@ -1,4 +1,4 @@
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 // src/beta/components/ProfileIdentityStrip.jsx
 // Identity strip: name, focus, headline, primary "I am" statement.
 

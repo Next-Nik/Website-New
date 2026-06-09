@@ -1,4 +1,4 @@
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 // src/beta/components/ProfileSprints.jsx
 // Up to three visible active sprints. Read-only. No engagement metrics.
 

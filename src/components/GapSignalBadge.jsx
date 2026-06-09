@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useGapSignal } from '../hooks/useGapSignal'
 import { GapSignalExplainer } from './GapSignalExplainer'
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 
 // Design tokens
 const goldDark = '#A8721A'

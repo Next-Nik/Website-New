@@ -48,7 +48,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { selfColor, SELF_KEYS_ORDERED } from '../../constants/domainColors'
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 
 const head = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 

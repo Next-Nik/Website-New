@@ -4,7 +4,7 @@
 
 import { ProfileIAStatements } from './ProfileIAStatements'
 import { ProfilePrincipleAlignment } from './ProfilePrincipleAlignment'
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 
 export function ProfileStands({ iaStatements, whatIStandFor, principleTaggings }) {
   const hasIA        = iaStatements && iaStatements.length > 0

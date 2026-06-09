@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import HorizonFloorCard from './HorizonFloorCard'
 import { isValidDomainSlug } from '../constants/horizonFloor'
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HorizonFloorAdmissionCheck

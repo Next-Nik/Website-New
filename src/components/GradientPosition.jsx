@@ -1,4 +1,4 @@
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 // src/beta/components/GradientPosition.jsx
 // Renders an actor's position on the extractive-to-regenerative gradient.
 // Used on invitation surfaces and org public pages.

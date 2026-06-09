@@ -13,7 +13,7 @@
 //   onToggleVisibility — () => void
 
 import { useState } from 'react'
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 
 export const CIV_DOMAINS = [
   { slug: 'human-being',     label: 'Human Being',     shortLabel: 'Human',   color: '#2A6B9E' },

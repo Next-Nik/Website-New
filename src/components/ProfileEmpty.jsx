@@ -1,4 +1,4 @@
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 // src/beta/components/ProfileEmpty.jsx
 // Empty profile state — sparse and intentional, not "you have nothing."
 

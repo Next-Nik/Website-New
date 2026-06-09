@@ -1,4 +1,4 @@
-import { body, sc } from '../lib/designTokens'
+import { body, sc } from '../../lib/designTokens'
 // src/beta/components/ProfileNotFor.jsx
 // "What I am not for" — dont_count_on_me_for free-text.
 
