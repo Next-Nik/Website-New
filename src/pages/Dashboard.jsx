@@ -257,15 +257,15 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
   if (!hasScores) {
     return (
       <div>
-        <Eyebrow>The Map</Eyebrow>
-        <NextUpBanner label="Begin The Map" sub="7 domains · 10–20 min" href="/tools/map" />
+        <Eyebrow>NextU</Eyebrow>
+        <NextUpBanner label="Begin NextU" sub="Your journey · The Map · I Am · Horizon Self" href="/tools/map" />
       </div>
     )
   }
 
   return (
     <div>
-      <Eyebrow>The Map</Eyebrow>
+      <Eyebrow>NextU</Eyebrow>
 
       {/* Life Horizon — same row structure and behaviour as domain rows */}
       {(() => {
@@ -489,9 +489,9 @@ function MapIAmView({ horizonProfile, hasScores, currentScores, horizonScores, d
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {[
-            { label: 'Horizon State', sub: 'Ground the baseline · daily regulation', href: '/tools/horizon-state' },
-            { label: 'Target Sprint', sub: 'Close the gap · 90-day focused sprint', href: '/tools/target-sprint' },
-            { label: 'Horizon Practice', sub: 'Daily becoming · T.E.A. practice', href: '/tools/horizon-practice' },
+            { label: 'Audio', sub: 'Ground the baseline · daily regulation', href: '/tools/horizon-state' },
+            { label: 'Tasks', sub: 'Close the gap · focused action', href: '/tools/target-sprint' },
+            { label: 'Daily', sub: 'Daily becoming · T.E.A. practice', href: '/tools/horizon-practice' },
           ].map(t => (
             <a key={t.href} href={t.href} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -800,7 +800,7 @@ function HorizonStatePanel({ foundationData }) {
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4" stroke="#A8721A" strokeWidth="1.5"/><circle cx="6" cy="6" r="1.5" fill="#A8721A"/></svg>
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: '#0F1523', fontWeight: 500 }}>Horizon State</div>
+          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: '#0F1523', fontWeight: 500 }}>Audio</div>
           <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '1px' }}>
             {practicedToday ? 'Done today ✓' : sessionsTotal > 0 ? 'Ready when you are' : 'Start your first session'}
           </div>
@@ -862,7 +862,7 @@ function HorizonStatePanel({ foundationData }) {
 function SprintCard({ sprintData }) {
   const [expanded, setExpanded] = useState(false)
   if (!sprintData || !sprintData.domains?.length) {
-    return <EmptySlot cta="Begin Target Sprint" ctaUrl="/tools/target-sprint" />
+    return <EmptySlot cta="Add your first task" ctaUrl="/tools/target-sprint" />
   }
 
   const dd = sprintData.domain_data ?? {}
@@ -909,7 +909,7 @@ function SprintCard({ sprintData }) {
         style={{ padding: '10px 12px', background: 'rgba(200,146,42,0.03)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
       >
         <div style={{ flex: 1 }}>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: '#0F1523', fontWeight: 500 }}>Target Sprint</div>
+          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: '#0F1523', fontWeight: 500 }}>Tasks</div>
           <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '1px' }}>{domainNames}</div>
         </div>
         {daysLabel && <Badge variant={daysUrgent ? 'red' : 'gold'}>{daysLabel}</Badge>}
@@ -966,7 +966,7 @@ function SprintCard({ sprintData }) {
 function PracticeCard({ practiceData }) {
   const [expanded, setExpanded] = useState(false)
   if (!practiceData) {
-    return <EmptySlot cta="Begin Horizon Practice" ctaUrl="/tools/horizon-practice" />
+    return <EmptySlot cta="Begin Daily" ctaUrl="/tools/horizon-practice" />
   }
 
   const today = practiceData?.today ?? {}
@@ -979,7 +979,7 @@ function PracticeCard({ practiceData }) {
         style={{ padding: '10px 12px', background: 'rgba(200,146,42,0.03)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px' }}
       >
         <div style={{ flex: 1 }}>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: '#0F1523', fontWeight: 500 }}>Horizon Practice</div>
+          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: '#0F1523', fontWeight: 500 }}>Daily</div>
           <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '1px' }}>
             {today?.focus ?? 'Daily T.E.A. practice'}
           </div>
@@ -1041,7 +1041,7 @@ function HorizonWheelMini({ currentScores, horizonScores, size = 180, onDomainCl
   const hasHorizon = Object.values(horizonScores).some(v => v > 0)
 
   return (
-    <div style={{margin:'0 auto',lineHeight:0,width:'fit-content',overflow:'visible'}}><svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} display="block">
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block', margin: '0 auto', overflow: 'visible' }}>
       {[2, 4, 6, 8, 10].map(v => {
         const pts = DOMAIN_KEYS.map((_, i) => pt(i, v).join(',')).join(' ')
         return <polygon key={v} points={pts} fill="none" stroke={v === 5 ? 'rgba(138,48,48,0.15)' : 'rgba(200,146,42,0.07)'} strokeWidth={v === 5 ? 1 : 0.5} strokeDasharray={v === 5 ? '2 2' : 'none'} />
@@ -1074,7 +1074,7 @@ function HorizonWheelMini({ currentScores, horizonScores, size = 180, onDomainCl
           </text>
         )
       })}
-    </svg></div>
+    </svg>
   )
 }
 
@@ -1570,7 +1570,7 @@ function SupportView({ user }) {
 }
 
 const RAIL_ITEMS = {
-  you:           [{ id: 'overview', label: 'Overview' }, { id: 'hs', label: 'Horizon State' }, { id: 'map', label: 'The Map' }, { id: 'sprint', label: 'Target Sprint' }, { id: 'practice', label: 'Horizon Practice' }, { id: 'purpose', label: 'Purpose Piece' }],
+  you:           [{ id: 'overview', label: 'Overview' }, { id: 'nextu', label: 'NextU' }, { id: 'audio', label: 'Audio' }, { id: 'practice', label: 'Daily' }, { id: 'sprint', label: 'Tasks' }, { id: 'journal', label: 'Journal' }, { id: 'purpose', label: 'Purpose Piece' }],
   work:          [{ id: 'overview', label: 'Overview' }, { id: 'orgs', label: 'Organisations' }, { id: 'offering', label: 'What I Offer' }, { id: 'needs', label: 'Where I\'m Needed' }],
   practitioners: [{ id: 'matched', label: 'Matched for You' }, { id: 'active', label: 'Active Methods' }, { id: 'browse', label: 'Browse All' }],
   planet:        [{ id: 'overview', label: 'Overview' }, { id: 'domains', label: 'Seven Domains' }, { id: 'orgs', label: 'Orgs and Individuals' }, { id: 'gap', label: 'Gap Signal' }],
@@ -1655,7 +1655,7 @@ export function DashboardPage() {
   const [activeZone, setActiveZone]   = useState('you')
   const [activeView, setActiveView]   = useState(() => {
     const v = searchParams.get('view')
-    const VALID = ['overview','hs','map','sprint','practice','purpose']
+    const VALID = ['overview','nextu','audio','practice','sprint','journal','purpose']
     return VALID.includes(v) ? v : 'overview'
   })
   const [showProfile, setShowProfile] = useState(false)
@@ -1804,7 +1804,7 @@ export function DashboardPage() {
 
         let focusLabel = null, focusSub = null, focusHref = '/tools/horizon-state', focusUrgent = false
         if (!practicedToday) {
-          focusLabel = 'Start with Horizon State'
+          focusLabel = 'Start with Audio'
           focusSub   = 'Ground first — everything else follows'
           focusHref  = '/tools/horizon-state'
         } else if (sprintData?.domains?.length) {
@@ -1819,9 +1819,8 @@ export function DashboardPage() {
               const lbl = idx >= 0 ? DOMAIN_LABELS[idx] : id
               const text = typeof first === 'string' ? first : first.text || first.label || ''
               focusLabel = text
-              focusSub   = `Sprint · ${lbl}`
+              focusSub   = `Tasks · ${lbl}`
               focusHref  = '/tools/target-sprint'
-              // Check days remaining
               if (sprintData.target_date) {
                 const days = Math.ceil((new Date(sprintData.target_date) - new Date()) / 86400000)
                 if (days <= 7) focusUrgent = true
@@ -1830,13 +1829,13 @@ export function DashboardPage() {
             }
           }
         } else if (!hasScores) {
-          focusLabel = 'Begin The Map'
-          focusSub   = '7 domains · honest read of where you are'
+          focusLabel = 'Begin NextU'
+          focusSub   = 'Your journey starts here — seven domains, honest read'
           focusHref  = '/tools/map'
         } else if (iaMissing) {
           focusLabel = 'Declare your I Am statements'
-          focusSub   = 'Step 2 — turn your horizon goals into declarations'
-          focusHref  = '/dashboard?view=map'
+          focusSub   = 'Step 2 of NextU — turn your horizon goals into declarations'
+          focusHref  = '/dashboard?view=nextu'
         }
 
         // ── Map staleness signal ────────────────────────────────────
@@ -1936,7 +1935,7 @@ export function DashboardPage() {
                     </a>
                   </div>
                 ) : (
-                  <NextUpBanner label="Begin The Map" sub="7 domains · 10–20 min" href="/tools/map" />
+                  <NextUpBanner label="Begin NextU" sub="Your journey · The Map · I Am · Horizon Self" href="/tools/map" />
                 )}
               </div>
 
@@ -1957,7 +1956,7 @@ export function DashboardPage() {
               {/* Panel 3: Sprint */}
               <div>
                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '6px' }}>
-                  <Eyebrow style={{ marginBottom: 0 }}>Active sprint</Eyebrow>
+                  <Eyebrow style={{ marginBottom: 0 }}>Tasks</Eyebrow>
                   {sprintHealth && (
                     <span style={{ ...sc, fontSize: '9px', letterSpacing: '0.1em', color: sprintHealth.color }}>
                       {sprintHealth.label}
@@ -1981,8 +1980,8 @@ export function DashboardPage() {
         )
       }
 
-      if (activeView === 'hs')       return <HorizonStatePanel foundationData={foundationData} />
-      if (activeView === 'map')      return (
+      if (activeView === 'audio')     return <HorizonStatePanel foundationData={foundationData} />
+      if (activeView === 'nextu')     return (
         <MapIAmView
           horizonProfile={horizonProfile}
           hasScores={hasScores}
@@ -1999,13 +1998,13 @@ export function DashboardPage() {
       )
       if (activeView === 'sprint')   return (
         <div>
-          <Eyebrow>Target Sprint</Eyebrow>
+          <Eyebrow>Tasks</Eyebrow>
           <SprintCard sprintData={sprintData} />
         </div>
       )
       if (activeView === 'practice') return (
         <div>
-          <Eyebrow>Horizon Practice</Eyebrow>
+          <Eyebrow>Daily</Eyebrow>
           <PracticeCard practiceData={practiceData} />
         </div>
       )
