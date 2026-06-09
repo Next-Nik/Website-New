@@ -47,12 +47,12 @@ const SELF_DOMAINS = [
 ]
 
 const CIV_DOMAINS = [
-  { key: 'society',  name: 'Society',           hex: '#D63838', twin: 'connection' },
-  { key: 'legacy',   name: 'Legacy',            hex: '#2767B8', twin: 'inner_game' },
   { key: 'vision',   name: 'Vision',            hex: '#6B1F2E', twin: 'path'       },
+  { key: 'human',    name: 'Human Being',       hex: '#E8722E', twin: 'spark'      },
   { key: 'nature',   name: 'Nature',            hex: '#2A8C4F', twin: 'body'       },
   { key: 'economy',  name: 'Finance & Economy', hex: '#E8B92E', twin: 'finances'   },
-  { key: 'human',    name: 'Human Being',       hex: '#E8722E', twin: 'spark'      },
+  { key: 'society',  name: 'Society',           hex: '#D63838', twin: 'connection' },
+  { key: 'legacy',   name: 'Legacy',            hex: '#2767B8', twin: 'inner_game' },
   { key: 'tech',     name: 'Technology',        hex: '#6B3FA8', twin: 'signal'     },
 ]
 
@@ -70,6 +70,7 @@ import { selfColor, civColor } from '../../constants/domainColors'
 function WheelSVG({ domains, scores, size = 240, isCiv = false }) {
   const cx = size / 2, cy = size / 2
   const maxR = (size / 2) * 0.78
+  const labelR = (size / 2) * 0.96
   const N = domains.length
 
   function angleFor(i) { return (Math.PI * 2 * i) / N - Math.PI / 2 }
@@ -94,7 +95,7 @@ function WheelSVG({ domains, scores, size = 240, isCiv = false }) {
   )
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block', overflow: 'visible' }}>
       {/* Outer ring */}
       <polygon
         points={ringPts}
@@ -135,6 +136,34 @@ function WheelSVG({ domains, scores, size = 240, isCiv = false }) {
           })}
         </>
       )}
+      {/* Domain labels */}
+      {domains.map((d, i) => {
+        const a = angleFor(i)
+        const lx = cx + labelR * Math.cos(a)
+        const ly = cy + labelR * Math.sin(a)
+        const anchor = Math.cos(a) > 0.2 ? 'start' : Math.cos(a) < -0.2 ? 'end' : 'middle'
+        const color = isCiv ? civColor(d.key).base : selfColor(d.key).base
+        return (
+          <text
+            key={d.key}
+            x={lx}
+            y={ly}
+            textAnchor={anchor}
+            dominantBaseline="middle"
+            style={{
+              fontFamily: "'Cormorant SC', Georgia, serif",
+              fontSize: size > 200 ? 11 : 8,
+              letterSpacing: '0.14em',
+              fill: color,
+              opacity: 0.9,
+              userSelect: 'none',
+              pointerEvents: 'none',
+            }}
+          >
+            {d.name.toUpperCase()}
+          </text>
+        )
+      })}
       {/* Centre */}
       <circle cx={cx} cy={cy} r={size * 0.06} fill="#C8922A" />
     </svg>
@@ -272,14 +301,14 @@ function ZoomScreen({ scores, onNext }) {
 
   return (
     <div style={{ ...s.screen, background: DARK, color: BG, justifyContent: 'center', alignItems: 'center', textAlign: 'center', paddingBottom: 'calc(50px + env(safe-area-inset-bottom))', paddingTop: 24 }}>
-      <div style={{ position: 'relative', width: 260, height: 260, margin: '0 auto 28px', flexShrink: 0 }}>
+      <div style={{ position: 'relative', width: 300, height: 300, margin: '0 auto 28px', flexShrink: 0 }}>
         {/* Planet wheel behind */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: planetOpacity, transition: 'opacity 1.4s 0.3s' }}>
-          <WheelSVG domains={CIV_DOMAINS} scores={{}} size={260} isCiv={true} />
+          <WheelSVG domains={CIV_DOMAINS} scores={{}} size={300} isCiv={true} />
         </div>
         {/* Personal wheel in front */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${personalScale})`, transition: 'transform 1.6s cubic-bezier(0.6,0.01,0.2,1)', opacity: phase === 'planet' ? 0.7 : 1 }}>
-          <WheelSVG domains={SELF_DOMAINS} scores={scores} size={260} />
+          <WheelSVG domains={SELF_DOMAINS} scores={scores} size={300} />
         </div>
       </div>
 
