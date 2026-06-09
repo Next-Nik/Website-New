@@ -5,6 +5,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { GapSignalBadge } from '../components/GapSignalBadge'
 import { CIV_DOMAINS } from '../constants/domains'
 import { ShareButton } from '../components/ShareButton'
+import { serif, body, sc } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────
 // Domain — Module 11 stub with Module 14 integration point.
@@ -26,9 +27,6 @@ import { ShareButton } from '../components/ShareButton'
 // Place near the actor grid. Component renders nothing when the
 // signal is not firing. No layout space reserved when silent.
 // ─────────────────────────────────────────────────────────────
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const dark     = '#0F1523'
 const goldDark = '#A8721A'
 

@@ -29,11 +29,9 @@ import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 import WorldMapSubstrate from '../components/mission-control/WorldMapSubstrate'
+import { body, sc } from '../../lib/designTokens'
 
-const body    = { fontFamily: "'Lora', Georgia, serif" }
 const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
-
 const tokens = {
   bg:        '#FAFAF7',
   ink:       '#0F1523',

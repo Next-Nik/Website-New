@@ -26,12 +26,9 @@ import SelfWheel from '../components/SelfWheel'
 import NextUsWheel from '../components/NextUsWheel'
 import SprintSlate from '../components/SprintSlate'
 import PrincipleBadge from '../components/PrincipleBadge'
+import { serif, body, sc } from '../../lib/designTokens'
 
 // ─── Font constants (canonical order: serif, body, sc) ─────────────────────────
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-
 // ─── Shared primitives ─────────────────────────────────────────────────────────
 
 function Eyebrow({ children, style = {} }) {

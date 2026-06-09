@@ -10,9 +10,8 @@ import { useSearchParams, Link } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { supabase } from '../../hooks/useSupabase'
 import { TYPE_LABEL } from '../components/FocusSearch'
+import { body, sc } from '../../lib/designTokens'
 
-const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body    = { fontFamily: "'Lora', Georgia, serif" }
 const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const gold    = '#A8721A'
 const dark    = '#0F1523'

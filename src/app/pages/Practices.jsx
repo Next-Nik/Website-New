@@ -21,9 +21,8 @@ import { CIV_DOMAINS, LENSES_PER_DOMAIN } from '../constants/domains'
 import { PRINCIPLES_ORDERED } from '../constants/principles'
 
 import PracticeCard from '../components/practices/PracticeCard'
+import { body, sc } from '../../lib/designTokens'
 
-const sc       = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body     = { fontFamily: "'Lora', Georgia, serif" }
 const garamond = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 // ─── Header ────────────────────────────────────────────────

@@ -17,9 +17,7 @@ import { ProfileNotFor }           from '../components/ProfileNotFor'
 import { ProfileSprintReceipts }   from '../components/ProfileSprintReceipts'
 import { ProfileEmpty }            from '../components/ProfileEmpty'
 import { WatchButton }             from '../components/WatchButton'
-
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+import { body, sc } from '../../lib/designTokens'
 
 function Divider() {
   return (

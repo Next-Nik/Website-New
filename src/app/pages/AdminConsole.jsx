@@ -49,6 +49,7 @@ import {
   SUBDOMAIN_MAP_BETA,
 } from '../constants/domains'
 import { PRINCIPLES_ORDERED } from '../constants/principles'
+import { body, sc } from '../../lib/designTokens'
 
 // ── Founder check ─────────────────────────────────────────────
 // Identical to original: uses user_metadata.role set in Supabase.
@@ -56,8 +57,6 @@ function isFounder(user) {
   return user?.user_metadata?.role === 'founder'
 }
 
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = '#A8721A'
 const bg    = '#FAFAF7'
 

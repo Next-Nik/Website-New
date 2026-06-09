@@ -25,10 +25,7 @@ import { CIV_DOMAINS } from '../components/NextUsWheel'
 import FilterPanel from '../components/contribution/FilterPanel'
 import NeedCard from '../components/contribution/NeedCard'
 import OfferingPanel from '../components/contribution/OfferingPanel'
-
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
+import { serif, body, sc } from '../../lib/designTokens'
 
 // ─── Tabs ──────────────────────────────────────────────────────
 

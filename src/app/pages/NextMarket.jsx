@@ -32,9 +32,8 @@ import {
   ACCESS_TYPES,
 } from '../components/OrgShared'
 import { CIV_DOMAINS } from '../constants/domains'
+import { body, sc } from '../../lib/designTokens'
 
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const heading = { fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300 }
 const gold  = '#A8721A'
 const goldB = '#C8922A'

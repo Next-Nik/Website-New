@@ -20,9 +20,8 @@ import { SiteFooter } from '../../components/SiteFooter'
 import { supabase } from '../../hooks/useSupabase'
 import { NavigatorWheel } from '../components/NavigatorWheel'
 import { IntersectionPage } from '../components/IntersectionPage'
+import { body, sc } from '../../lib/designTokens'
 
-const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body    = { fontFamily: "'Lora', Georgia, serif" }
 const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 const GOLD = '#A8721A'

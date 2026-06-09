@@ -20,10 +20,8 @@ import { supabase } from '../../hooks/useSupabase'
 import PrincipleStrip from '../components/PrincipleStrip'
 import { PRINCIPLES_ORDERED } from '../constants/principles'
 import { CIV_DOMAINS } from '../components/NextUsWheel'
+import { serif, body, sc } from '../../lib/designTokens'
 
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const gold  = '#A8721A'
 const dark  = '#0F1523'
 const parch = '#FAFAF7'

@@ -24,11 +24,9 @@ import { SiteFooter } from '../../components/SiteFooter'
 import { CIV_DOMAINS } from '../components/NextUsWheel'
 import { PRINCIPLES_ORDERED } from '../constants/principles'
 import PrincipleStrip from '../components/PrincipleStrip'
+import { serif, body, sc } from '../../lib/designTokens'
 
 // ── Design tokens ─────────────────────────────────────────────
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 const gold  = '#A8721A'
 const dark  = '#0F1523'
 const parch = '#FAFAF7'

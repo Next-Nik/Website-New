@@ -93,9 +93,7 @@ import { TargetSprintPage }                        from './tools/target-sprint/T
 import { HorizonPracticePage }                     from './tools/horizon-practice/HorizonPractice'
 import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import PlanetMap                                    from './tools/planet/PlanetMap'
-import JournalPage             from './app/pages/Journal'
-
-const body = { fontFamily: "'Lora', Georgia, serif" }
+import { body } from './lib/designTokens'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -109,7 +107,7 @@ function ComingSoon({ name }) {
     <div style={{ minHeight: '100vh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
       <div style={{ textAlign: 'center' }}>
         <span style={{ ...sc, fontSize: '17px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>Horizon Suite</span>
-        <h1 style={{ ...body, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>{name}</h1>
+        <h1 style={{ ...body, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 400, color: '#0F1523', marginBottom: '12px' }}>{name}</h1>
         <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)' }}>Coming soon.</p>
       </div>
     </div>
@@ -293,7 +291,6 @@ function AppInner() {
         <Route path="/auth/callback"   element={<AuthCallbackPage />} />
 
         {/* ── Fallback ── */}
-        <Route path="/journal"          element={<JournalPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 

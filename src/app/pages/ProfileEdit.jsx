@@ -13,6 +13,7 @@ import SprintsVisibilitySection from '../components/SprintsVisibilitySection'
 import { AffiliationManager } from '../components/AffiliationManager'
 import { WatchingSection } from '../components/WatchingSection'
 import { RosterSection } from '../components/RosterSection'
+import { body, sc } from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // /beta/profile/edit
@@ -28,8 +29,6 @@ import { RosterSection } from '../components/RosterSection'
 // References Module 1.5 for principle primitives.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body    = { fontFamily: "'Lora', Georgia, serif" }
 const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 const CIV_DOMAIN_OPTIONS = [
