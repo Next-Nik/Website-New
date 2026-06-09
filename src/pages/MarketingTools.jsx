@@ -258,10 +258,10 @@ export function MarketingToolsPage() {
             display: 'flex', alignItems: 'flex-start', gap: '12px',
             maxWidth: '400px',
           }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(15,21,35,0.35)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px' }}>
+            <span style={{flexShrink:0,marginTop:'2px',lineHeight:0,display:'inline-flex'}}><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(15,21,35,0.35)" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="9" cy="7" r="3"/><circle cx="15" cy="7" r="3"/>
               <path d="M3 20c0-4 2.7-7 6-7M15 13c3.3 0 6 3 6 7"/>
-            </svg>
+            </svg></span>
             <p style={{ ...body, fontSize: '14px', lineHeight: 1.7, color: inkDim, margin: 0 }}>
               <strong style={{ color: ink, fontWeight: 600 }}>Don't go it alone.</strong>{' '}
               <a href="/work-with-nik" style={{ color: gold, textDecoration: 'underline', textUnderlineOffset: '2px' }}>Talk to us</a>{' '}

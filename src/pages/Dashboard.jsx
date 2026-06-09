@@ -1041,7 +1041,7 @@ function HorizonWheelMini({ currentScores, horizonScores, size = 180, onDomainCl
   const hasHorizon = Object.values(horizonScores).some(v => v > 0)
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block', margin: '0 auto', overflow: 'visible' }}>
+    <div style={{margin:'0 auto',lineHeight:0,width:'fit-content',overflow:'visible'}}><svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} display="block">
       {[2, 4, 6, 8, 10].map(v => {
         const pts = DOMAIN_KEYS.map((_, i) => pt(i, v).join(',')).join(' ')
         return <polygon key={v} points={pts} fill="none" stroke={v === 5 ? 'rgba(138,48,48,0.15)' : 'rgba(200,146,42,0.07)'} strokeWidth={v === 5 ? 1 : 0.5} strokeDasharray={v === 5 ? '2 2' : 'none'} />
@@ -1074,7 +1074,7 @@ function HorizonWheelMini({ currentScores, horizonScores, size = 180, onDomainCl
           </text>
         )
       })}
-    </svg>
+    </svg></div>
   )
 }
 

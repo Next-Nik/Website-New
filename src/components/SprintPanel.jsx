@@ -54,7 +54,7 @@ function MiniWheel({ domains, currentScores, sprintScores }) {
   const hasSprint  = Object.values(sprintScores).some(v => v > 0)
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block', margin: '0 auto' }}>
+    <div style={{display:'block',margin:'0 auto',lineHeight:0,width:'fit-content'}}><svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       {[2, 4, 6, 8, 10].map(v => {
         const pts = domains.map((_, i) => pt(i, v).join(',')).join(' ')
         return <polygon key={v} points={pts} fill="none" stroke="rgba(200,146,42,0.10)" strokeWidth="1" />
@@ -79,7 +79,7 @@ function MiniWheel({ domains, currentScores, sprintScores }) {
           </text>
         )
       })}
-    </svg>
+    </svg></div>
   )
 }
 

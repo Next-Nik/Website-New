@@ -218,18 +218,18 @@ export default function NextUsWheel({
 
 function EyeIcon() {
   return (
-    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+    <span style={{flexShrink:0,lineHeight:0,display:'inline-flex'}}><svg width="12" height="12" viewBox="0 0 16 16" fill="none">
       <ellipse cx="8" cy="8" rx="6" ry="4" stroke="currentColor" strokeWidth="1.4" />
       <circle cx="8" cy="8" r="2" fill="currentColor" />
-    </svg>
+    </svg></span>
   )
 }
 
 function EyeOffIcon() {
   return (
-    <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+    <span style={{flexShrink:0,lineHeight:0,display:'inline-flex'}}><svg width="12" height="12" viewBox="0 0 16 16" fill="none">
       <line x1="2" y1="2" x2="14" y2="14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
       <ellipse cx="8" cy="8" rx="6" ry="4" stroke="currentColor" strokeWidth="1.4" opacity="0.4" />
-    </svg>
+    </svg></span>
   )
 }

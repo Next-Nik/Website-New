@@ -61,7 +61,7 @@ export default function GlanceWheel({ dimensions, horizons = {}, current = {}, s
   }, [dimensions, horizons, current, cx, cy, maxR])
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} display="block">
       {/* Outer heptagon */}
       <polygon
         points={ringPts}

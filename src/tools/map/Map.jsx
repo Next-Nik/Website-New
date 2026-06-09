@@ -385,7 +385,7 @@ export function MapWheel({ domainData, activeIndex, onSelect, totalSteps = 0, on
   }).join(' ')
 
   return (
-    <svg viewBox="0 0 480 480" style={{ width: '100%', maxWidth: '460px', display: 'block', margin: '0 auto' }}>
+    <div style={{width:'100%',maxWidth:'460px',margin:'0 auto',lineHeight:0}}><svg viewBox="0 0 480 480" width="100%">
       {/* Outer rings */}
       <circle cx={CX} cy={CY} r={RADIUS + 42} fill="none" stroke="rgba(200,146,42,0.05)" strokeWidth="1" />
       <circle cx={CX} cy={CY} r={RADIUS + 22} fill="none" stroke="rgba(200,146,42,0.07)" strokeWidth="0.5" />
@@ -538,7 +538,7 @@ strokeWidth="0.5"
           </g>
         )
       })()}
-    </svg>
+    </svg></div>
   )
 }
 

@@ -284,7 +284,7 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
   }
 
   return (
-    <svg viewBox={`0 0 ${size} ${size}`} style={{ width: '100%', maxWidth: `${size}px`, display: 'block', overflow: 'visible' }}>
+    <div style={{width:'100%',maxWidth:`${size}px`,lineHeight:0,overflow:'visible'}}><svg viewBox={`0 0 ${size} ${size}`} display="block" width="100%">
       <style>{`
         @keyframes tgPulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
         @keyframes tgGlow  { 0%,100%{opacity:0.2} 50%{opacity:0.5} }
@@ -372,7 +372,7 @@ function SprintWheelMini({ domains, domainData, activeDomainId, onDomainClick, o
         fontSize={size * 0.053} fontFamily="'Cormorant SC', Georgia, serif"
         fill={allComplete ? '#FFFFFF' : 'rgba(200,146,42,0.65)'}
         style={{ pointerEvents: 'none', userSelect: 'none' }}>{allComplete ? 'Sprint ✓' : 'Sprint'}</text>
-    </svg>
+    </svg></div>
   )
 }
 

@@ -141,7 +141,7 @@ function PurposeDisc({ active, complete, size = 180, compact = false }) {
   ]
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} display="block">
       {wedges.map(w => {
         const isComplete = complete?.[w.id]
         const isActive   = active === w.id
