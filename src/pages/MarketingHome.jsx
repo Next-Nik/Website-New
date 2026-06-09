@@ -173,7 +173,7 @@ const PLANET_STEPS = [
   },
 ]
 
-function HiwStep({ n, title, body }) {
+function HiwStep({ n, title, body: stepBody }) {
   return (
     <div className="hiw-step">
       <span className="hiw-step-n" style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold }}>{n}</span>
@@ -181,7 +181,7 @@ function HiwStep({ n, title, body }) {
         {title}
       </h4>
       <p style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: inkFaint, margin: 0 }}>
-        {body}
+        {stepBody}
       </p>
     </div>
   )
