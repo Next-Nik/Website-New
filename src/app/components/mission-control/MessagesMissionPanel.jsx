@@ -19,9 +19,10 @@
 import { useState, useMemo } from 'react'
 import { useMessages } from '../../hooks/useMessages'
 import { ComposeMessage } from './ComposeMessage'
-import {
   GOLD, GOLD_DK, GOLD_RULE, TEXT_INK, TEXT_META, FONT_DISPLAY,
 } from './tokens'
+import { body, sc } from '../../../lib/designTokens'
+import {
 
 const LANE_LABELS = {
   inner_circle: 'Inner circle',
@@ -31,9 +32,6 @@ const LANE_LABELS = {
   blocked:      'Blocked',
 }
 const VISIBLE_LANES = ['inner_circle', 'connections', 'general', 'restricted']
-
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 function fmtTime(ts) {
   if (!ts) return ''

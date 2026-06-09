@@ -23,9 +23,7 @@ import { supabase } from '../../../hooks/useSupabase'
 import {
   GOLD, GOLD_DK, GOLD_RULE, TEXT_INK, TEXT_META, FONT_DISPLAY,
 } from './tokens'
-
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { body, sc } from '../../../lib/designTokens'
 
 export function ComposeMessage({
   inboxes, defaultSenderInboxId,

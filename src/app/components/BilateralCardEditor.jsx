@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../../hooks/useSupabase'
+import { body, sc } from '../../lib/designTokens'
 import {
   ARTEFACT_TYPES,
   defaultPayload,
@@ -13,8 +14,6 @@ import {
   withdrawDraft,
 } from '../hooks/useBilateral'
 
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold = '#A8721A'
 const dark = '#0F1523'
 

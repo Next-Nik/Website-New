@@ -25,10 +25,10 @@ import OutcomeReportForm from '../components/practices/OutcomeReportForm'
 
 import { CIV_DOMAIN_BY_SLUG, SUBDOMAIN_MAP_BETA } from '../constants/domains'
 import {
-import { body, sc } from '../../lib/designTokens'
   PRACTICE_KIND_BY_SLUG,
   VETTING_BY_SLUG,
 } from '../constants/practices'
+import { body, sc } from '../../lib/designTokens'
 
 const garamond = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
