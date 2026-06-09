@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { body, sc } from '../lib/designTokens'
 
 // ─── InfoIcon ─────────────────────────────────────────────────────────────────
 // Click-open info panel. Matches DomainTooltip's small circular "i" affordance
@@ -17,9 +18,6 @@ import { useState, useEffect, useRef } from 'react'
 //     <h4>Why we do this</h4>
 //     <p>...</p>
 //   </InfoIcon>
-
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
 
 export function InfoIcon({ label = 'More info', title, children, align = 'right' }) {
   const [open, setOpen] = useState(false)

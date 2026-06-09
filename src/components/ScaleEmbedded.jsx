@@ -1,4 +1,5 @@
 import { SCALE_POINTS, TIER_MAP, LABEL_MAP, SIGNATURE_MAP, getScoreColor } from '../constants/horizonScale'
+import { body, sc } from '../lib/designTokens'
 
 // ─── ScaleEmbedded ───────────────────────────────────────────────────────────
 // The horizon scale, rendered inline rather than as a modal. Used on The Map's
@@ -11,9 +12,6 @@ import { SCALE_POINTS, TIER_MAP, LABEL_MAP, SIGNATURE_MAP, getScoreColor } from 
 //     keyboard close, anchor scrolling — none of which we want here.
 //   • The page-embedded version stays simple: header, intro, scale rows.
 //     Anything beyond that is the modal's job.
-
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
 
 export function ScaleEmbedded() {
   return (

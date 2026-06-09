@@ -1,10 +1,7 @@
 import { useState } from 'react'
 import styles from './SelfPanel.module.css'
 import { FRACTAL_MAP } from './selfData'
-
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+import { serif, body, sc } from '../../lib/designTokens'
 
 // ── DA PLACEHOLDER ────────────────────────────────────────────
 function DASection({ label }) {

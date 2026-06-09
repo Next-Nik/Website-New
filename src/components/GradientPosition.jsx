@@ -1,3 +1,4 @@
+import { body, sc } from '../lib/designTokens'
 // src/beta/components/GradientPosition.jsx
 // Renders an actor's position on the extractive-to-regenerative gradient.
 // Used on invitation surfaces and org public pages.
@@ -11,8 +12,6 @@
 // Greenwashing flag: position > 70 AND (trajectory === "stationary" || trajectory === "declining")
 // Links to /beta/domain/technology?lens=transition-accountability
 
-const body  = { fontFamily: "'Lora', Georgia, serif" }
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const gold  = '#A8721A'
 const dark  = '#0F1523'
 

@@ -1,8 +1,6 @@
 import { useAuth } from '../hooks/useAuth'
 import { useAccess, hasAccess } from '../hooks/useAccess'
-
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+import { serif, sc } from '../lib/designTokens'
 
 /**
  * AccessGate

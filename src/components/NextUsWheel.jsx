@@ -13,9 +13,7 @@
 //   onToggleVisibility — () => void
 
 import { useState } from 'react'
-
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { body, sc } from '../lib/designTokens'
 
 export const CIV_DOMAINS = [
   { slug: 'human-being',     label: 'Human Being',     shortLabel: 'Human',   color: '#2A6B9E' },

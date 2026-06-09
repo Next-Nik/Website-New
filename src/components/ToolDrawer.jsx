@@ -3,9 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
 import { TOOLS } from '../constants/tools'
-
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+import { body, sc } from '../lib/designTokens'
 
 const NEXTUS_PLATFORM = [
   {

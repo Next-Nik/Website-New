@@ -1,7 +1,5 @@
 import { CrisisResources } from './CrisisResources'
-
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { body, sc } from '../lib/designTokens'
 
 /**
  * CrisisRedirectCard

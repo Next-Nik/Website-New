@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../hooks/useSupabase'
-
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { body, sc } from '../lib/designTokens'
 
 // Map browser locale → country code
 function detectCountryFromLocale() {

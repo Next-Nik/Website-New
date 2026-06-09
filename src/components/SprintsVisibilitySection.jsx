@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../hooks/useSupabase'
 import { fetchVisibilityMap, useArtefactVisibility } from '../hooks/useArtefactVisibility'
 import VisibilityToggle from './VisibilityToggle'
+import { body, sc } from '../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SprintsVisibilitySection
@@ -21,9 +22,6 @@ import VisibilityToggle from './VisibilityToggle'
 //   userId    — current user id (required)
 //   className — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
-
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
 
 const COMPLETED_LIMIT = 6
 

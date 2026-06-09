@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { body, sc } from '../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // WheelsToggleSection
@@ -22,8 +23,6 @@ import { useState } from 'react'
 //   className     — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const sc      = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body    = { fontFamily: "'Lora', Georgia, serif" }
 const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 export default function WheelsToggleSection({

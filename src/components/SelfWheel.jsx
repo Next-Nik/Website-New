@@ -48,9 +48,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { selfColor, SELF_KEYS_ORDERED } from '../../constants/domainColors'
+import { body, sc } from '../lib/designTokens'
 
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const head = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 const SELF_LABELS = ['Path', 'Spark', 'Body', 'Finances', 'Connection', 'Inner Game', 'Signal']

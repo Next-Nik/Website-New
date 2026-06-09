@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { body, sc } from '../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // AutoSaveTextarea
@@ -28,9 +29,6 @@ import { useEffect, useRef, useState } from 'react'
 //   className      — passthrough
 //   debounceMs     — typing debounce window, default 1500
 // ─────────────────────────────────────────────────────────────────────────────
-
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
 
 export default function AutoSaveTextarea({
   value: persistedValue = '',

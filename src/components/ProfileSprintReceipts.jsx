@@ -1,8 +1,6 @@
+import { body, sc } from '../lib/designTokens'
 // src/beta/components/ProfileSprintReceipts.jsx
 // Sprint receipts: completed sprints marked visible.
-
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
 
 const SELF_DOMAIN_LABELS = {
   path:       'Path',

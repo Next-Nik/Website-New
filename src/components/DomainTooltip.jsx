@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { DOMAIN_COPY } from '../constants/domainCopy'
+import { body, sc } from '../lib/designTokens'
 
 // ─── Domain definitions ───────────────────────────────────────────────────────
 //
@@ -49,9 +50,6 @@ export const NEXTUS_LABEL_MAP = {
 }
 
 // ─── Shared tooltip component ─────────────────────────────────────────────────
-
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
 
 export function DomainTooltip({ domainKey, label, system = 'nextus-self', position = 'below' }) {
   const [show, setShow] = useState(false)

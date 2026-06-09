@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { sc } from '../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // VisibilityToggle
@@ -16,8 +17,6 @@ import { useState } from 'react'
 //   label         — optional, sits above the toggle as an eyebrow
 //   compact       — optional, tightens for inline use
 // ─────────────────────────────────────────────────────────────────────────────
-
-const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 export default function VisibilityToggle({
   value = 'private',

@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
-
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+import { body, sc } from '../lib/designTokens'
 
 function HomeIcon({ active }) {
   const c = active ? '#A8721A' : 'rgba(15,21,35,0.55)'

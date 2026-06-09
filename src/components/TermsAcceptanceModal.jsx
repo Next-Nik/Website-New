@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react'
 import { TermsContent } from '../pages/Legal'
 import { useTermsAcceptance } from '../hooks/useTermsAcceptance'
-
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
+import { body, sc } from '../lib/designTokens'
 
 export function TermsAcceptanceModal() {
   const { accepted, checked, user, accept, accepting } = useTermsAcceptance()

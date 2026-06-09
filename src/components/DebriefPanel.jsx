@@ -17,9 +17,8 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { ROUTES } from '../constants/routes'
+import { body, sc } from '../lib/designTokens'
 
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
 const gold  = { color: '#A8721A' }
 const muted = { color: 'rgba(15,21,35,0.78)' }
 

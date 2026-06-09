@@ -1,10 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
-
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const body  = { fontFamily: "'Lora', Georgia, serif" }
+import { serif, body, sc } from '../lib/designTokens'
 
 const GOLD      = '#C8922A'
 const GOLD_TEXT = '#A8721A'

@@ -9,9 +9,7 @@ import { useState, useEffect } from 'react'
 import { DomainTooltip } from './DomainTooltip'
 import { supabase } from '../hooks/useSupabase'
 import { useAuth } from '../hooks/useAuth'
-
-const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
+import { body, sc } from '../lib/designTokens'
 
 const DOMAINS = [
   { id: 'path',          label: 'Path' },

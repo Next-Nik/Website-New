@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { useGapSignal } from '../hooks/useGapSignal'
 import { GapSignalExplainer } from './GapSignalExplainer'
+import { body, sc } from '../lib/designTokens'
 
 // Design tokens
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const goldDark = '#A8721A'
 
 // ─────────────────────────────────────────────────────────────

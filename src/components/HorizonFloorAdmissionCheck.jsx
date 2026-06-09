@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import HorizonFloorCard from './HorizonFloorCard'
 import { isValidDomainSlug } from '../constants/horizonFloor'
+import { body, sc } from '../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HorizonFloorAdmissionCheck
@@ -38,9 +39,6 @@ import { isValidDomainSlug } from '../constants/horizonFloor'
 //   onCancel     — optional. If absent, the withdraw button is hidden.
 //   className    — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
-
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
 
 export default function HorizonFloorAdmissionCheck({
   domainSlug,

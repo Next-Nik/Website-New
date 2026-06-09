@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { body, sc } from '../lib/designTokens'
 
 const TESTIMONIALS = [
   { name: 'O.W.H.', quote: 'Nik really is a champion of your greatness. Working with him was truly an evolutionary experience. I felt so supported, honored and safe in his presence. He helped me learn about who I was at the core of my being — what I really wanted out of life — and how to live as the best version of myself. If you are ready to Up-Level and start truly winning in life, I highly recommend working with Nik.' },
@@ -21,9 +22,6 @@ const TESTIMONIALS = [
   { name: 'S.B.W.', quote: "Nik helped me to work these fears out for myself and work through them in a way which I felt comfortable and safe. It's changed my life." },
   { name: 'T.M.', quote: "I can't recommend this enough to anyone that wants to be the you that you aspire to be." },
 ]
-
-const sc = { fontFamily: "'Cormorant SC', Georgia, serif" }
-const body = { fontFamily: "'Lora', Georgia, serif" }
 
 export function TestimonialsPanel() {
   const [open, setOpen] = useState(false)

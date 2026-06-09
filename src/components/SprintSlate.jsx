@@ -1,3 +1,4 @@
+import { body, sc } from '../lib/designTokens'
 // src/beta/components/SprintSlate.jsx
 //
 // Three-slot sprint slate for Mission Control.
@@ -11,9 +12,6 @@
 //                       domain_data, target_date, status, id)
 //   visibility        — { [session_id]: 'private' | 'public' | 'sprint_buddies' | 'friends' }
 //   onToggleVisibility — (sessionId, currentVisibility) => void
-
-const body = { fontFamily: "'Lora', Georgia, serif" }
-const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 
 const SLOTS = [
   { index: 0, label: 'Personal',       hint: 'A sprint pointed inward.' },
