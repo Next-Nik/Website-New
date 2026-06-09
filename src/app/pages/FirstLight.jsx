@@ -42,13 +42,13 @@ const SELF_DOMAINS = [
   { key: 'body',       name: 'Body',        hex: '#2A8C4F', desc: 'Health, fitness, vitality',                                      cards: ['Energy', 'Sleep', 'Fitness', 'Health', 'How I feel'] },
   { key: 'finances',   name: 'Finances',    hex: '#E8B92E', desc: 'Money, personal power, wealth',                                  cards: ['Money stress', 'Financial security', 'Earning', 'Spending'] },
   { key: 'connection', name: 'Connection',  hex: '#D63838', desc: 'You with other people: romantic, friends, family',               cards: ['Friendships', 'Romantic relationship', 'Family', 'Loneliness', 'Feeling understood'] },
-  { key: 'inner',      name: 'Inner Game',  hex: '#2767B8', desc: 'Your relationship with yourself, values, standards',             cards: ['Self-confidence', 'Self-worth', 'Anxiety', 'Negative self-talk', 'Who I am'] },
+  { key: 'inner_game', name: 'Inner Game',  hex: '#2767B8', desc: 'Your relationship with yourself, values, standards',             cards: ['Self-confidence', 'Self-worth', 'Anxiety', 'Negative self-talk', 'Who I am'] },
   { key: 'signal',     name: 'Signal',      hex: '#6B3FA8', desc: "Your relationship with the world, how you're seen and show up",  cards: ['My impact', 'How I come across', "How I'm seen", 'Feeling heard'] },
 ]
 
 const CIV_DOMAINS = [
   { key: 'society',  name: 'Society',           hex: '#D63838', twin: 'connection' },
-  { key: 'legacy',   name: 'Legacy',            hex: '#2767B8', twin: 'inner'      },
+  { key: 'legacy',   name: 'Legacy',            hex: '#2767B8', twin: 'inner_game' },
   { key: 'vision',   name: 'Vision',            hex: '#6B1F2E', twin: 'path'       },
   { key: 'nature',   name: 'Nature',            hex: '#2A8C4F', twin: 'body'       },
   { key: 'economy',  name: 'Finance & Economy', hex: '#E8B92E', twin: 'finances'   },
@@ -63,30 +63,80 @@ const SCALE_OPTIONS = [
   { key: 'planet',  label: 'The whole planet'},
 ]
 
-// ── Wheel SVG ──────────────────────────────────────────────────
-function WheelSVG({ domains, scores, size = 240, dim = false }) {
-  const cx = size / 2, cy = size / 2, r = size * 0.42
-  const n = domains.length
+import { selfColor, civColor } from '../../constants/domainColors'
+
+// ── Wheel SVG — matches Mission Control GlanceWheel style ─────
+// Uses polygon area fill like the real wheel, with bolder lines
+function WheelSVG({ domains, scores, size = 240, isCiv = false }) {
+  const cx = size / 2, cy = size / 2
+  const maxR = (size / 2) * 0.78
+  const N = domains.length
+
+  function angleFor(i) { return (Math.PI * 2 * i) / N - Math.PI / 2 }
+
+  const ringPts = domains.map((_, i) => {
+    const a = angleFor(i)
+    return `${cx + maxR * Math.cos(a)},${cy + maxR * Math.sin(a)}`
+  }).join(' ')
+
+  const polyPts = domains.map((d, i) => {
+    const a = angleFor(i)
+    const score = scores?.[d.key] ?? 0
+    const ratio = score / 10
+    const r = Math.max(ratio * maxR, 0)
+    return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`
+  }).join(' ')
+
+  const hasData = domains.some(d => (scores?.[d.key] ?? 0) > 0)
+
+  const vertColors = domains.map(d =>
+    isCiv ? civColor(d.key).base : selfColor(d.key).base
+  )
+
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke={dim ? 'rgba(200,146,42,0.15)' : 'rgba(200,146,42,0.3)'} strokeWidth="1" />
-      {domains.map((d, i) => {
-        const a = (i / n) * Math.PI * 2 - Math.PI / 2
-        const score = scores?.[d.key] ?? 0
-        const frac = score / 10
-        const x = cx + Math.cos(a) * r * (dim ? 0.3 : Math.max(0.15, frac))
-        const xe = cx + Math.cos(a) * r
-        const y = cy + Math.sin(a) * r * (dim ? 0.3 : Math.max(0.15, frac))
-        const ye = cy + Math.sin(a) * r
-        const lit = score > 0 && !dim
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
+      {/* Outer ring */}
+      <polygon
+        points={ringPts}
+        fill="none"
+        stroke="rgba(200,146,42,0.32)"
+        strokeWidth="1.5"
+        strokeDasharray="3 4"
+      />
+      {/* Spokes */}
+      {domains.map((_, i) => {
+        const a = angleFor(i)
         return (
-          <g key={d.key}>
-            <line x1={cx} y1={cy} x2={xe} y2={ye} stroke={lit ? d.hex : 'rgba(200,146,42,0.2)'} strokeWidth={lit ? 2.5 : 1} />
-            <circle cx={x} cy={y} r={lit ? 6 : 3.5} fill={lit ? d.hex : 'rgba(200,146,42,0.25)'} />
-          </g>
+          <line
+            key={i}
+            x1={cx} y1={cy}
+            x2={cx + maxR * Math.cos(a)}
+            y2={cy + maxR * Math.sin(a)}
+            stroke="rgba(200,146,42,0.25)"
+            strokeWidth="1.5"
+          />
         )
       })}
-      <circle cx={cx} cy={cy} r={size * 0.07} fill={GC} />
+      {/* Filled polygon */}
+      {hasData && (
+        <>
+          <polygon
+            points={polyPts}
+            fill="rgba(200,146,42,0.14)"
+            stroke="rgba(200,146,42,0.8)"
+            strokeWidth="2.5"
+            strokeLinejoin="round"
+          />
+          {polyPts.split(' ').map((pt, i) => {
+            const [x, y] = pt.split(',').map(Number)
+            const score = scores?.[domains[i]?.key] ?? 0
+            if (score === 0) return null
+            return <circle key={i} cx={x} cy={y} r={5} fill={vertColors[i]} />
+          })}
+        </>
+      )}
+      {/* Centre */}
+      <circle cx={cx} cy={cy} r={size * 0.06} fill="#C8922A" />
     </svg>
   )
 }
@@ -225,15 +275,11 @@ function ZoomScreen({ scores, onNext }) {
       <div style={{ position: 'relative', width: 260, height: 260, margin: '0 auto 28px', flexShrink: 0 }}>
         {/* Planet wheel behind */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: planetOpacity, transition: 'opacity 1.4s 0.3s' }}>
-          <WheelSVG domains={CIV_DOMAINS} scores={{}} size={260} />
+          <WheelSVG domains={CIV_DOMAINS} scores={{}} size={260} isCiv={true} />
         </div>
         {/* Personal wheel in front */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${personalScale})`, transition: 'transform 1.6s cubic-bezier(0.6,0.01,0.2,1)', opacity: phase === 'planet' ? 0.7 : 1 }}>
-          <WheelSVG
-            domains={SELF_DOMAINS}
-            scores={scores}
-            size={260}
-          />
+          <WheelSVG domains={SELF_DOMAINS} scores={scores} size={260} />
         </div>
       </div>
 
@@ -426,7 +472,7 @@ export default function FirstLight() {
   const navigate = useNavigate()
 
   const [step, setStep]               = useState(0)
-  const [scores, setScores]           = useState({ path: 5, spark: 5, body: 5, finances: 5, connection: 5, inner: 5, signal: 5 })
+  const [scores, setScores]           = useState({ path: 5, spark: 5, body: 5, finances: 5, connection: 5, inner_game: 5, signal: 5 })
   const [cards, setCards]             = useState({})
   const [civInterests, setCivInterests] = useState({})
   const [scale, setScale]             = useState(null)
