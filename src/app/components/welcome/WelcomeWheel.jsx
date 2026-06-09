@@ -278,11 +278,24 @@ function applyScaleZoom(svg, cx, cy, maxR, timers, civData) {
 
   const primaryDot = svg.querySelector('.primary-domain-dot')
   if (primaryDot) {
-    primaryDot.style.transition = 'cx 0.9s cubic-bezier(0.4,0,0.2,1), cy 0.9s cubic-bezier(0.4,0,0.2,1)'
+    // cx/cy are SVG presentation attributes — not valid CSS transition properties.
+    // Chrome 148+ throws CSSStyleDeclaration indexed-setter error if set via style.transition.
+    // Animate via transform instead: translate from current position to new position.
+    const curX = parseFloat(primaryDot.getAttribute('cx') || cx)
+    const curY = parseFloat(primaryDot.getAttribute('cy') || cy)
+    const dx = newX - curX
+    const dy = newY - curY
+    primaryDot.style.transition = 'transform 0.9s cubic-bezier(0.4,0,0.2,1)'
     requestAnimationFrame(() => {
+      primaryDot.style.transform = `translate(${dx}px, ${dy}px)`
+    })
+    // After animation completes, snap cx/cy and clear transform
+    setTimeout(() => {
       primaryDot.setAttribute('cx', newX)
       primaryDot.setAttribute('cy', newY)
-    })
+      primaryDot.style.transition = ''
+      primaryDot.style.transform = ''
+    }, 950)
   }
 
   const t = setTimeout(() => {
