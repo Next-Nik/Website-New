@@ -180,7 +180,7 @@ function AppInner() {
   const { pathname } = useLocation()
   const { user } = useAuth()
   // Mission Control owns the whole viewport when signed in.
-  const hideBottomTabs = pathname === '/' && !!user
+  const hideBottomTabs = (pathname === '/' && !!user) || pathname === '/welcome/first-light'
 
   return (
     <>
