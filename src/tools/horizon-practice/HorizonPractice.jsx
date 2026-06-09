@@ -3682,7 +3682,7 @@ export function HorizonPracticePage() {
                 border: `1px solid ${todayRun?.completed_at ? tokens.goldFaint : tokens.goldChrome}`,
                 borderRadius: '12px', padding: '20px 24px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
-                <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', color: tokens.gold }}>
+                <span style={{ ...body, fontSize: '16px', fontWeight: 400, color: tokens.dark }}>
                   Morning Practice {todayRun?.completed_at ? '✓' : ''}
                 </span>
                 <span style={{ ...sc, fontSize: '16px', color: tokens.goldChrome, marginLeft: '16px' }}>→</span>
@@ -3695,7 +3695,7 @@ export function HorizonPracticePage() {
                 borderRadius: '12px', padding: '20px 24px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', color: tokens.gold }}>Tasks</span>
+                  <span style={{ ...body, fontSize: '16px', fontWeight: 400, color: tokens.dark }}>Tasks</span>
                   {thresholds.filter(t => !t.completed_at).length > 0 && (
                     <span style={{
                       background: tokens.gold, color: '#FFF',
@@ -3713,7 +3713,7 @@ export function HorizonPracticePage() {
                 background: '#FFFFFF', border: `1px solid ${tokens.goldFaint}`,
                 borderRadius: '12px', padding: '20px 24px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
-                <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', color: tokens.gold }}>Horizon Self Refresh</span>
+                <span style={{ ...body, fontSize: '16px', fontWeight: 400, color: tokens.dark }}>Horizon Self Refresh</span>
                 <span style={{ ...sc, fontSize: '16px', color: tokens.gold, marginLeft: '16px' }}>→</span>
               </button>
 
@@ -3723,7 +3723,7 @@ export function HorizonPracticePage() {
                 background: '#FFFFFF', border: `1px solid ${tokens.goldFaint}`,
                 borderRadius: '12px', padding: '20px 24px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
-                <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', color: tokens.gold }}>
+                <span style={{ ...body, fontSize: '16px', fontWeight: 400, color: tokens.dark }}>
                   {activeSprint?.status === 'active' ? 'Active Sprint' : activeSprint?.status === 'draft' ? 'Sprint in Setup' : 'Target Stretch'}
                 </span>
                 <span style={{ ...sc, fontSize: '16px', color: tokens.gold, marginLeft: '16px' }}>→</span>
@@ -3735,7 +3735,7 @@ export function HorizonPracticePage() {
                 background: '#FFFFFF', border: `1px solid ${tokens.goldFaint}`,
                 borderRadius: '12px', padding: '20px 24px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
-                <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', color: tokens.gold }}>Evening Integrate</span>
+                <span style={{ ...body, fontSize: '16px', fontWeight: 400, color: tokens.dark }}>Evening Integrate</span>
                 <span style={{ ...sc, fontSize: '16px', color: tokens.gold, marginLeft: '16px' }}>→</span>
               </button>
 
@@ -3746,7 +3746,7 @@ export function HorizonPracticePage() {
                 borderRadius: '12px', padding: '20px 24px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', color: tokens.gold }}>Journal</span>
+                  <span style={{ ...body, fontSize: '16px', fontWeight: 400, color: tokens.dark }}>Journal</span>
                   {entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length > 0 && (
                     <span style={{
                       background: tokens.goldFaint, color: tokens.gold,
