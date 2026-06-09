@@ -19,10 +19,10 @@
 import { useState, useMemo } from 'react'
 import { useMessages } from '../../hooks/useMessages'
 import { ComposeMessage } from './ComposeMessage'
+import {
   GOLD, GOLD_DK, GOLD_RULE, TEXT_INK, TEXT_META, FONT_DISPLAY,
 } from './tokens'
 import { body, sc } from '../../../lib/designTokens'
-import {
 
 const LANE_LABELS = {
   inner_circle: 'Inner circle',

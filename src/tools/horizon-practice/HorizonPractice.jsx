@@ -217,7 +217,7 @@ function Body({ children, dim = false, italic = false, style = {} }) {
     <p style={{
       ...body, fontSize: '15.5px', fontWeight: 400,
       color: dim ? tokens.ghost : tokens.meta, lineHeight: 1.65,
-      fontWeight: 400, fontStyle: italic ? 'italic' : 'normal', margin: '0 0 12px', ...style,
+      fontStyle: italic ? 'italic' : 'normal', margin: '0 0 12px', ...style,
     }}>{children}</p>
   )
 }
