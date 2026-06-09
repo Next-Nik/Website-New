@@ -1651,14 +1651,27 @@ export function DashboardPage() {
   const [referralCode,   setReferralCode]   = useState(null)
   const [betaGroup,      setBetaGroup]      = useState(null)
 
-  // Nav state — honour ?view= URL param on first load
-  const [activeZone, setActiveZone]   = useState('you')
+  // Nav state — honour ?view= URL param on first load, persist zone across navigations
+  const ZONE_KEY = 'nextus.activeZone'
+  const [activeZone, setActiveZone] = useState(() => {
+    try {
+      const saved = window.localStorage.getItem(ZONE_KEY)
+      return ['you','work','practitioners','planet'].includes(saved) ? saved : 'you'
+    } catch { return 'you' }
+  })
   const [activeView, setActiveView]   = useState(() => {
     const v = searchParams.get('view')
     const VALID = ['overview','nextu','audio','practice','sprint','journal','purpose']
     return VALID.includes(v) ? v : 'overview'
   })
   const [showProfile, setShowProfile] = useState(false)
+
+  function handleZoneChange(z) {
+    setActiveZone(z)
+    setActiveView(RAIL_ITEMS[z][0].id)
+    setShowProfile(false)
+    try { window.localStorage.setItem(ZONE_KEY, z) } catch {}
+  }
 
   useEffect(() => {
     if (authLoading) return
@@ -2102,7 +2115,7 @@ export function DashboardPage() {
               {ZONES.map(z => (
                 <button
                   key={z}
-                  onClick={() => { setActiveZone(z); setActiveView(RAIL_ITEMS[z][0].id); setShowProfile(false) }}
+                  onClick={() => handleZoneChange(z)}
                   style={{
                     ...sc, fontSize: '11px', letterSpacing: '0.1em', padding: '3px 10px',
                     borderRadius: '20px', border: `1px solid ${activeZone === z && !showProfile ? 'rgba(200,146,42,0.5)' : 'transparent'}`,
