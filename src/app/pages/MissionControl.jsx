@@ -930,13 +930,23 @@ export default function MissionControl() {
 
   const mapAudited = countPlaced(selfCurrent)
 
-  // ── Curriculum gate: map complete means all 7 domains have an
-  //    ia_statement on horizon_profile. Horizon Self lives in
-  //    mapResults.life_ia_statement (the integrated life-level IA).
-  //    Both are required before gated tools unlock.
+  // ── NextU journey progress ────────────────────────────────
+  // Step 1: Map scored (7 domains)
+  // Step 2: I Am Statements (7 ia_statements on horizon_profile)
+  // Step 3: Horizon Self (user_metadata.horizon_self populated)
   const iaCount = (data.mapData || []).filter(r => r.ia_statement).length
   const hasHorizonSelf = !!(data.mapResults?.life_ia_statement)
   const mapComplete = iaCount >= 7 && hasHorizonSelf
+  const hasHorizonSelfMeta = !!(data.user?.user_metadata?.horizon_self)
+  const nextUState = mapAudited === 0
+    ? null
+    : mapAudited < 7
+      ? `MAP ${mapAudited} OF 7`
+      : iaCount < 7
+        ? `I AM ${iaCount} OF 7`
+        : !hasHorizonSelfMeta
+          ? 'HORIZON SELF'
+          : 'COMPLETE'
 
   // Horizon State phase from users row (baseline | calibration | embodiment)
   const horizonStatePhase = data.userRow?.horizon_state_phase || 'baseline'
@@ -990,7 +1000,7 @@ export default function MissionControl() {
             <Tile
               glyph={<MapPinGlyph />}
               label="NextU"
-              state={mapAudited === 0 ? null : mapAudited === 7 ? 'COMPLETE' : `${mapAudited} OF 7`}
+              state={nextUState}
               onClick={() => openPersonalPanel('map')}
               title="NextU — your personal journey"
             />
