@@ -1369,7 +1369,7 @@ function HorizonSelfRefresh({ open, onClose, variant, prefilledTask, onComplete 
 
             <Eyebrow style={{ marginBottom: '8px', fontSize: '13px' }}>Your move</Eyebrow>
             <p style={{
-              ...serif fontSize: '21px', color: tokens.gold,
+              ...serif, fontSize: '21px', color: tokens.gold,
               lineHeight: 1.5, margin: 0, padding: '20px 22px',
               background: tokens.goldTint, borderRadius: '12px',
               border: `1px solid ${tokens.goldChrome}`,
@@ -1400,13 +1400,13 @@ function HorizonSelfPanel({ statement, onRefresh }) {
       <Eyebrow style={{ marginBottom: '14px' }}>Your Horizon Self</Eyebrow>
       {statement ? (
         <p style={{
-          ...serif fontSize: 'clamp(17px, 2.4vw, 20px)',
+          ...serif, fontSize: 'clamp(17px, 2.4vw, 20px)',
           color: tokens.meta, lineHeight: 1.55,
           maxWidth: '520px', margin: '0 auto 24px',
         }}>{statement}</p>
       ) : (
         <p style={{
-          ...body fontSize: '15px',
+          ...body, fontSize: '15px',
           color: tokens.ghost, lineHeight: 1.5,
           maxWidth: '420px', margin: '0 auto 24px',
         }}>Your integrated statement lands here once your Map's synthesis runs.</p>
@@ -1737,7 +1737,7 @@ function AmbientStrip({ iam, listening }) {
           : `External read · ${item.from?.split(' ')[0] || 'they'}`}
       </Eyebrow>
       <p style={{
-        ...serif fontSize: '19px', fontWeight: 400,
+        ...serif, fontSize: '19px', fontWeight: 400,
         color: tokens.gold, lineHeight: 1.5, margin: 0,
       }}>{item.text}</p>
       {!isIam && item.from && (
