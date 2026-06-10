@@ -14,7 +14,7 @@
 
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../../hooks/useSupabase'
+import { supabase } from '../../../hooks/useSupabase'
 import {
   GOLD, GOLD_DK, GOLD_RULE,
   TEXT_INK, TEXT_META, TEXT_FAINT,
