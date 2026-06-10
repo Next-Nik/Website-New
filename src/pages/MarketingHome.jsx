@@ -84,7 +84,7 @@ function PathCard({ eyebrow, heading, bodyText, cta, href, image, imageSide, dar
   const copyPanel = (
     <div className="path-card-copy">
       {eyebrow && (
-        <span className="path-card-eyebrow" style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '14px' }}>
+        <span className="path-card-eyebrow" style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '14px' }}>
           {eyebrow}
         </span>
       )}
@@ -190,7 +190,7 @@ function HiwStep({ n, title, body: stepBody }) {
 function HiwTrack({ label, heading, steps, closing, ctaLabel, ctaHref }) {
   return (
     <div className="hiw-track">
-      <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.24em', color: gold, display: 'block', marginBottom: '8px' }}>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.24em', color: gold, display: 'block', marginBottom: '8px' }}>
         {label}
       </span>
       <h3 style={{ ...serif, fontSize: 'clamp(24px,2.4vw,30px)', fontWeight: 400, color: ink, lineHeight: 1.15, margin: '0 0 24px' }}>
@@ -288,7 +288,7 @@ export function MarketingHomePage() {
         padding: 'clamp(56px,7vw,88px) clamp(20px,5vw,40px) clamp(40px,5vw,56px)',
       }}>
         <div style={{ textAlign: 'center', marginBottom: 'clamp(36px,4vw,52px)' }}>
-          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '14px' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '14px' }}>
             HOW IT WORKS
           </span>
           <p style={{ ...serif, fontSize: 'clamp(20px,2.6vw,28px)', fontWeight: 300, color: ink, lineHeight: 1.45, maxWidth: '560px', margin: '0 auto' }}>
@@ -348,7 +348,7 @@ export function MarketingHomePage() {
           pointerEvents: 'none',
         }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '20px' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '20px' }}>
             ALIGN WITH WHAT MATTERS
           </span>
           <p style={{
@@ -393,7 +393,7 @@ export function MarketingHomePage() {
           margin: '0 auto',
           textAlign: 'center',
         }}>
-          <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '14px' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '14px' }}>
             FOR MAKERS
           </span>
           <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 400, color: ink, lineHeight: 1.3, marginBottom: '12px' }}>

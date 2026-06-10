@@ -172,7 +172,7 @@ export function WatchPage() {
                 e.currentTarget.style.transform    = ''
               }}
             >
-              <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.72)', textTransform: 'uppercase', marginBottom: '6px' }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.72)', textTransform: 'uppercase', marginBottom: '6px' }}>
                 Domain
               </div>
               <div style={{ ...body, fontSize: '19px', fontWeight: 400, color: '#0F1523', marginBottom: '8px', lineHeight: 1.2 }}>

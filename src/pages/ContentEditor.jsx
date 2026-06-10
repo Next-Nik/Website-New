@@ -551,11 +551,11 @@ function FocusGoalsTab({ toast }) {
                   <div>
                     <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '14px', letterSpacing: '0.14em', color: gold }}>{domain.label}</span>
                     {isSet && (
-                      <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.14em', color: '#2A6B3A', background: 'rgba(42,107,58,0.08)', border: '1px solid rgba(42,107,58,0.25)', borderRadius: '40px', padding: '2px 8px', marginLeft: '10px' }}>Ratified</span>
+                      <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#2A6B3A', background: 'rgba(42,107,58,0.08)', border: '1px solid rgba(42,107,58,0.25)', borderRadius: '40px', padding: '2px 8px', marginLeft: '10px' }}>Ratified</span>
                     )}
                   </div>
                   {isSet && (
-                    <button onClick={() => deleteGoal(domain.id)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(180,40,40,0.60)', background: 'none', border: 'none', cursor: 'pointer' }}>Remove</button>
+                    <button onClick={() => deleteGoal(domain.id)} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(180,40,40,0.60)', background: 'none', border: 'none', cursor: 'pointer' }}>Remove</button>
                   )}
                 </div>
                 <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '12px' }}>

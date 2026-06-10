@@ -355,13 +355,13 @@ function EpisodeCard({ ep, isPlaying, onPlay }) {
           {/* Meta row */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px', flexWrap: 'wrap' }}>
             {ep.episodeNum && (
-              <span style={{ ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em', color: '#A8721A' }}>
+              <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', color: '#A8721A' }}>
                 EP {ep.episodeNum}
               </span>
             )}
-            <span style={{ ...sc, fontSize: '11px', fontWeight: 400, letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>{dateStr}</span>
+            <span style={{ ...sc, fontSize: '13px', fontWeight: 400, letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>{dateStr}</span>
             {ep.duration && (
-              <span style={{ ...sc, fontSize: '11px', fontWeight: 400, letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>{ep.duration}</span>
+              <span style={{ ...sc, fontSize: '13px', fontWeight: 400, letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)' }}>{ep.duration}</span>
             )}
           </div>
 
@@ -389,7 +389,7 @@ function EpisodeCard({ ep, isPlaying, onPlay }) {
               {ep.description.length > 180 && (
                 <button
                   onClick={() => setExpanded(v => !v)}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '12px', fontWeight: 600, letterSpacing: '0.14em', color: '#A8721A' }}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em', color: '#A8721A' }}
                 >
                   {expanded ? 'Show less' : 'Read more'}
                 </button>
@@ -449,12 +449,12 @@ function StickyPlayer({ episode, onClose }) {
         {playing ? <PauseIcon /> : <PlayIcon />}
       </button>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ ...sc, fontSize: '11px', color: '#A8721A', letterSpacing: '0.14em', marginBottom: '5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{episode.title}</div>
+        <div style={{ ...sc, fontSize: '13px', color: '#A8721A', letterSpacing: '0.14em', marginBottom: '5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{episode.title}</div>
         <div onClick={seek} style={{ width: '100%', height: '3px', background: 'rgba(200,146,42,0.20)', borderRadius: '2px', cursor: 'pointer', position: 'relative' }}>
           <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${progress}%`, background: '#C8922A', borderRadius: '2px' }} />
         </div>
       </div>
-      <span style={{ ...sc, fontSize: '11px', color: 'rgba(255,255,255,0.55)', flexShrink: 0 }}>{fmt(currentTime)} / {fmt(duration)}</span>
+      <span style={{ ...sc, fontSize: '13px', color: 'rgba(255,255,255,0.55)', flexShrink: 0 }}>{fmt(currentTime)} / {fmt(duration)}</span>
       <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', cursor: 'pointer', fontSize: '20px', lineHeight: 1, padding: '4px', flexShrink: 0 }} aria-label="Close player">×</button>
     </div>
   )

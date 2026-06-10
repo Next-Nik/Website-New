@@ -30,7 +30,7 @@ export const SHARED_CLOSER = `This is early. The room is being built as you walk
 
 export function Label({ children, required }) {
   return (
-    <label style={{ ...SC, fontSize: '12px', letterSpacing: '0.16em', color: GOLD, display: 'block', marginBottom: '6px' }}>
+    <label style={{ ...SC, fontSize: '13px', letterSpacing: '0.16em', color: GOLD, display: 'block', marginBottom: '6px' }}>
       {children}{required && <span style={{ color: '#8A3030', marginLeft: '4px' }}>*</span>}
     </label>
   )
@@ -115,7 +115,7 @@ export function LinkList({ value, onChange }) {
             <button
               type="button"
               onClick={() => remove(i)}
-              style={{ ...SC, fontSize: '12px', letterSpacing: '0.10em', padding: '0 14px', borderRadius: '8px', border: '1px solid rgba(15,21,35,0.55)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}
+              style={{ ...SC, fontSize: '13px', letterSpacing: '0.10em', padding: '0 14px', borderRadius: '8px', border: '1px solid rgba(15,21,35,0.55)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}
             >
               Remove
             </button>
@@ -125,7 +125,7 @@ export function LinkList({ value, onChange }) {
       <button
         type="button"
         onClick={add}
-        style={{ ...SC, fontSize: '12px', letterSpacing: '0.14em', padding: '8px 16px', borderRadius: '40px', border: '1px solid rgba(200,146,42,0.30)', background: 'rgba(200,146,42,0.04)', color: GOLD, cursor: 'pointer', marginTop: '4px' }}
+        style={{ ...SC, fontSize: '13px', letterSpacing: '0.14em', padding: '8px 16px', borderRadius: '40px', border: '1px solid rgba(200,146,42,0.30)', background: 'rgba(200,146,42,0.04)', color: GOLD, cursor: 'pointer', marginTop: '4px' }}
       >
         + Add another link
       </button>
@@ -155,7 +155,7 @@ export function PageShell({ children }) {
 export function PageHeader({ eyebrow, title, opener, sub }) {
   return (
     <header style={{ marginBottom: '48px' }}>
-      <span style={{ ...SC, fontSize: '11px', letterSpacing: '0.22em', color: GOLD, textTransform: 'uppercase', display: 'block', marginBottom: '14px' }}>
+      <span style={{ ...SC, fontSize: '13px', letterSpacing: '0.22em', color: GOLD, textTransform: 'uppercase', display: 'block', marginBottom: '14px' }}>
         {eyebrow}
       </span>
       <h1 style={{ ...SERIF, fontSize: 'clamp(30px, 5vw, 44px)', fontWeight: 300, color: DARK, lineHeight: 1.12, margin: '0 0 24px' }}>
@@ -174,7 +174,7 @@ export function PageHeader({ eyebrow, title, opener, sub }) {
 export function Beats({ items }) {
   return (
     <div style={{ marginBottom: '40px' }}>
-      <div style={{ ...SC, fontSize: '11px', letterSpacing: '0.20em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>
+      <div style={{ ...SC, fontSize: '13px', letterSpacing: '0.20em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>
         What's on the other side
       </div>
       <ol style={{ margin: 0, padding: 0, listStyle: 'none' }}>

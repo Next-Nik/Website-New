@@ -162,7 +162,7 @@ export function BeginBuildOrgPage() {
           </Field>
 
           <div style={{ paddingTop: '24px', borderTop: '1px solid rgba(200,146,42,0.18)', marginTop: '8px' }}>
-            <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>
+            <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>
               Your details
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>

@@ -152,7 +152,7 @@ function WheelPreview() {
         return (
           <text key={i} x={lx} y={ly}
             textAnchor="middle" dominantBaseline="middle"
-            style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '9px', letterSpacing: '0.08em' }}
+            style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.08em' }}
             fill="rgba(15,21,35,0.55)"
           >
             {p.label}
@@ -182,7 +182,7 @@ function ToolCard({ tool }) {
       <div style={{ ...sc, fontSize: '18px', letterSpacing: '0.06em', color: ink }}>
         {tool.name}
       </div>
-      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold }}>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold }}>
         {tool.promise}
       </div>
       <p style={{ ...body, fontSize: '14px', lineHeight: 1.7, color: 'rgba(15,21,35,0.65)', flex: 1, margin: 0 }}>
@@ -323,7 +323,7 @@ export function MarketingToolsPage() {
         }} className="mt-featured">
           {/* Copy */}
           <div style={{ padding: 'clamp(32px,4vw,48px)', display: 'flex', flexDirection: 'column', justifyContent: 'center', borderRight: '1px solid rgba(200,146,42,0.08)' }}>
-            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: gold, marginBottom: '14px', display: 'block' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold, marginBottom: '14px', display: 'block' }}>
               FEATURED TOOL
             </span>
             <h3 style={{ ...serif, fontSize: 'clamp(24px,3vw,36px)', fontWeight: 400, color: ink, marginBottom: '12px' }}>
@@ -392,7 +392,7 @@ export function MarketingToolsPage() {
           gap: '32px', flexWrap: 'wrap',
         }}>
           <div>
-            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '14px' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '14px' }}>
               BEYOND PERSONAL GROWTH
             </span>
             <h2 style={{ ...serif, fontSize: 'clamp(22px,3.5vw,38px)', fontWeight: 300, color: '#FAFAF7', lineHeight: 1.35, maxWidth: '480px' }}>
