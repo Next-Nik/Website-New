@@ -66,17 +66,17 @@ export const ONBOARDING_PATHS = [
 // ─── Suggested welcome screen copy ───────────────────────────────────────────
 
 /*
-  Eyebrow: "Welcome to NextUs"
+  Eyebrow: "Welcome to NextUs",
 
   Headline: "What brings you here?"
 
   Option 1 card:
-    Label: "My own growth"
+    Label: "My own growth",
     Subtext: "Personal navigation tools. Map your life, clarify your direction."
 
   Option 2 card:
-    Label: "My organisation"
-    Subtext: "Civilisational assessment. Seven domains. Where you stand and where you're going."
+    Label: "My organisation",
+    Subtext: "Civilisational assessment. Seven domains. Where you stand and where you're going.",
 
   Note: no third option shown here. If an individual wants to place themselves as an
   Atlas actor (practitioner), that comes through Purpose Piece → domain/scale → Atlas

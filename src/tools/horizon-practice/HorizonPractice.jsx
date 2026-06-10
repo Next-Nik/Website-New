@@ -1779,7 +1779,7 @@ function RecentEntries({ entries, onOpenJournal }) {
           </div>
           {item.text && (
             <div style={{
-              ...body, fontSize: '14px'
+              ...body, fontSize: '14px',
               color: tokens.meta, lineHeight: 1.6,
             }}>{item.text}</div>
           )}
@@ -1859,7 +1859,7 @@ function LogView({ open, onClose, entries }) {
             </span>
           </div>
           <div style={{
-            ...body, fontSize: '14.5px'
+            ...body, fontSize: '14.5px',
             color: tokens.meta, lineHeight: 1.65,
           }}>{entry.text}</div>
         </div>
