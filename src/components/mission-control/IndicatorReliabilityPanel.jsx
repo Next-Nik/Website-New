@@ -78,7 +78,7 @@ export default function IndicatorReliabilityPanel({ hours = 24, className }) {
         <span
           style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.08em',
             color: 'rgba(15, 21, 35, 0.55)',
           }}
@@ -115,7 +115,7 @@ export default function IndicatorReliabilityPanel({ hours = 24, className }) {
               background: 'transparent',
               border: 'none',
               color: '#A8721A',
-              fontSize: '12px',
+              fontSize: '13px',
               letterSpacing: '0.08em',
               fontWeight: 600,
               cursor: 'pointer',
@@ -189,7 +189,7 @@ function Stat({ label, value, colour }) {
       <div
         style={{
           ...sc,
-          fontSize: '11px',
+          fontSize: '13px',
           letterSpacing: '0.08em',
           color: 'rgba(15, 21, 35, 0.55)',
           marginTop: '2px',
@@ -220,7 +220,7 @@ function FailureRow({ failure }) {
         <div
           style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.08em',
             color: statusColour,
             fontWeight: 600,
@@ -233,7 +233,7 @@ function FailureRow({ failure }) {
       <div
         style={{
           ...sc,
-          fontSize: '10px',
+          fontSize: '13px',
           letterSpacing: '0.08em',
           color: 'rgba(15, 21, 35, 0.55)',
           marginTop: '2px',

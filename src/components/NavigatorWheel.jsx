@@ -189,7 +189,7 @@ export function NavigatorWheel({
             padding: '4px 10px',
             cursor: 'pointer',
             ...sc,
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             color: primary,
             textTransform: 'uppercase',

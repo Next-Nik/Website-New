@@ -17,19 +17,19 @@ function NeedCard({ need, onUpdateStatus }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
         <div style={{ flex: 1 }}>
           <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: statusC }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: statusC }}>
               {statusL}
             </span>
-            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
               {need.need_type} · {need.size}
             </span>
             {need.medium === 'in_person' && (
-              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: gold, background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '4px', padding: '2px 8px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: gold, background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '4px', padding: '2px 8px' }}>
                 In person
               </span>
             )}
             {need.time_estimate && (
-              <span style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>{need.time_estimate}</span>
+              <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{need.time_estimate}</span>
             )}
           </div>
           <h4 style={{ ...body, fontSize: '17px', fontWeight: 400, color: dark, marginBottom: '6px' }}>{need.title}</h4>
@@ -95,7 +95,7 @@ export function OrgNeedsTab({ actorId, navigate, toast }) {
   if (hasOfferings === false) {
     return (
       <SectionCard style={{ borderColor: 'rgba(200,146,42,0.35)', background: 'rgba(200,146,42,0.03)' }}>
-        <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>
+        <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>
           Add an offering first
         </p>
         <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px' }}>
@@ -136,7 +136,7 @@ export function OrgNeedsTab({ actorId, navigate, toast }) {
 
       {openNeeds.length > 0 && (
         <>
-          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '12px' }}>
+          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '12px' }}>
             Open ({openNeeds.length}) · In-person first
           </p>
           {openNeeds.map(n => <NeedCard key={n.id} need={n} onUpdateStatus={updateStatus} />)}
@@ -145,7 +145,7 @@ export function OrgNeedsTab({ actorId, navigate, toast }) {
 
       {inProgressNeeds.length > 0 && (
         <>
-          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginTop: '24px', marginBottom: '12px' }}>
+          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginTop: '24px', marginBottom: '12px' }}>
             In progress ({inProgressNeeds.length})
           </p>
           {inProgressNeeds.map(n => <NeedCard key={n.id} need={n} onUpdateStatus={updateStatus} />)}
@@ -154,7 +154,7 @@ export function OrgNeedsTab({ actorId, navigate, toast }) {
 
       {closedNeeds.length > 0 && (
         <>
-          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginTop: '24px', marginBottom: '12px' }}>
+          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginTop: '24px', marginBottom: '12px' }}>
             Fulfilled & closed ({closedNeeds.length})
           </p>
           {closedNeeds.map(n => <NeedCard key={n.id} need={n} onUpdateStatus={updateStatus} />)}

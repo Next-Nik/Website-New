@@ -53,7 +53,7 @@ export function SprintCompletedItem({ item }) {
           {domains.map(d => (
             <span key={d} style={{
               ...sc,
-              fontSize: '10px',
+              fontSize: '13px',
               letterSpacing: '0.14em',
               color: '#2D6A4F',
               background: 'rgba(45,106,79,0.06)',

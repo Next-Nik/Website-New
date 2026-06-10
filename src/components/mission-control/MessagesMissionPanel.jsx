@@ -68,7 +68,7 @@ function InboxTabs({ inboxes, active, onSelect, threadsByInbox }) {
             <span>{ibx.name}</span>
             {unread > 0 && (
               <span style={{
-                background: GOLD, color: '#FFFFFF', fontSize: '11px',
+                background: GOLD, color: '#FFFFFF', fontSize: '13px',
                 padding: '1px 7px', borderRadius: '40px',
                 fontFamily: "'Cormorant SC', Georgia, serif",
               }}>{unread}</span>
@@ -100,7 +100,7 @@ function ThreadRow({ thread, onClick, onAction, isActive }) {
           whiteSpace: 'nowrap', flex: 1 }}>
           {otherName}
         </span>
-        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.06em',
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em',
           color: TEXT_META, flexShrink: 0 }}>
           {fmtTime(latestMessage?.created_at)}
         </span>
@@ -151,7 +151,7 @@ function MessageDetail({
           <div style={{ ...body, fontSize: '15px', color: TEXT_INK }}>
             {thread.otherName}
           </div>
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em',
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
             color: TEXT_META, textTransform: 'uppercase' }}>
             {LANE_LABELS[thread.lane] || thread.lane}
           </div>
@@ -159,7 +159,7 @@ function MessageDetail({
         <div style={{ display: 'flex', gap: '6px' }}>
           {thread.lane !== 'inner_circle' && (
             <button onClick={() => onAction('promote_inner', thread.otherUserId)}
-              style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
                 padding: '4px 10px', borderRadius: '40px',
                 background: 'none', border: `1px solid ${GOLD_RULE}`,
                 color: GOLD_DK, cursor: 'pointer' }}>
@@ -168,7 +168,7 @@ function MessageDetail({
           )}
           {thread.lane !== 'restricted' && (
             <button onClick={() => onAction('restrict', thread.otherUserId)}
-              style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
                 padding: '4px 10px', borderRadius: '40px',
                 background: 'none', border: `1px solid ${GOLD_RULE}`,
                 color: TEXT_META, cursor: 'pointer' }}>
@@ -176,7 +176,7 @@ function MessageDetail({
             </button>
           )}
           <button onClick={() => onAction('block', thread.otherUserId)}
-            style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
               padding: '4px 10px', borderRadius: '40px',
               background: 'none', border: '1px solid rgba(138,48,48,0.30)',
               color: '#8A3030', cursor: 'pointer' }}>
@@ -210,7 +210,7 @@ function MessageDetail({
                 }}>
                   {m.body}
                 </div>
-                <div style={{ ...sc, fontSize: '9px', letterSpacing: '0.10em',
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
                   color: TEXT_META, marginTop: '3px', padding: '0 4px' }}>
                   {fmtTime(m.created_at)}
                   {m.sender_actor_id ? ' · as actor' : ''}
@@ -235,7 +235,7 @@ function MessageDetail({
             background: '#FFFFFF' }}
         />
         <button onClick={handleReply} disabled={!replyBody.trim() || sending}
-          style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em',
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
             padding: '10px 18px', borderRadius: '40px', border: 'none',
             background: !replyBody.trim() || sending ? GOLD_RULE : GOLD,
             color: '#FFFFFF',
@@ -298,7 +298,7 @@ export default function MessagesMissionPanel({ userId }) {
           Messages
         </h2>
         <button onClick={m.openCompose}
-          style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
             padding: '8px 18px', borderRadius: '40px',
             background: GOLD, color: '#FFFFFF', border: 'none',
             cursor: 'pointer' }}>
@@ -341,7 +341,7 @@ export default function MessagesMissionPanel({ userId }) {
               if (items.length === 0) return null
               return (
                 <div key={lane} style={{ marginBottom: '20px' }}>
-                  <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em',
+                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
                     color: TEXT_META, textTransform: 'uppercase',
                     padding: '0 14px', marginBottom: '6px' }}>
                     {LANE_LABELS[lane]} · {items.length}

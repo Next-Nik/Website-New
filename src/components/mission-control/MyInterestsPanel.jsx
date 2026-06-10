@@ -82,7 +82,7 @@ export default function MyInterestsPanel({ userId }) {
           { v: 'need',  label: `Needs (${items.filter(i => i.target_type === 'need').length})` },
         ].map(opt => (
           <button key={opt.v} onClick={() => setFilter(opt.v)}
-            style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em',
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
               padding: '6px 12px', borderRadius: '40px',
               border: filter === opt.v ? `1.5px solid ${GOLD}` : `1.5px solid ${GOLD_RULE}`,
               background: filter === opt.v ? 'rgba(200,146,42,0.07)' : 'transparent',
@@ -127,7 +127,7 @@ export default function MyInterestsPanel({ userId }) {
                           fontWeight: 500, marginBottom: '2px' }}>
                         {item.title}
                       </Link>
-                      <div style={{ ...sc, fontSize: '11px',
+                      <div style={{ ...sc, fontSize: '13px',
                         letterSpacing: '0.08em', color: TEXT_META }}>
                         From {item.actor_name} · pulled {fmtDate(item.pull_created_at)}
                       </div>
@@ -144,7 +144,7 @@ export default function MyInterestsPanel({ userId }) {
                   )}
                   <div style={{ display: 'flex', gap: '8px',
                     alignItems: 'center', flexWrap: 'wrap' }}>
-                    <span style={{ ...sc, fontSize: '10px',
+                    <span style={{ ...sc, fontSize: '13px',
                       letterSpacing: '0.10em',
                       color: accent,
                       border: `1px solid ${accent}30`,
@@ -154,7 +154,7 @@ export default function MyInterestsPanel({ userId }) {
                       {item.target_type}
                     </span>
                     {item.active === false && (
-                      <span style={{ ...sc, fontSize: '10px',
+                      <span style={{ ...sc, fontSize: '13px',
                         letterSpacing: '0.10em',
                         color: TEXT_META, fontStyle: 'italic' }}>
                         no longer active
@@ -162,7 +162,7 @@ export default function MyInterestsPanel({ userId }) {
                     )}
                     <div style={{ flex: 1 }} />
                     <button onClick={() => release(item)}
-                      style={{ ...sc, fontSize: '10px',
+                      style={{ ...sc, fontSize: '13px',
                         letterSpacing: '0.10em',
                         color: TEXT_META,
                         background: 'none', border: 'none',

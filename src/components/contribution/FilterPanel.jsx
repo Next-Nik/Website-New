@@ -41,7 +41,7 @@ function SectionLabel({ children }) {
   return (
     <span style={{
       ...sc,
-      fontSize: '10px',
+      fontSize: '13px',
       letterSpacing: '0.18em',
       color: 'rgba(15,21,35,0.55)',
       textTransform: 'uppercase',
@@ -61,7 +61,7 @@ function ToggleChip({ label, active, onClick, color = '#A8721A' }) {
       aria-pressed={active}
       style={{
         ...sc,
-        fontSize: '12px',
+        fontSize: '13px',
         letterSpacing: '0.04em',
         color: active ? color : 'rgba(15,21,35,0.72)',
         background: active ? 'rgba(200,146,42,0.08)' : '#FFFFFF',
@@ -156,7 +156,7 @@ export default function FilterPanel({
             />
             <span style={{
               ...sc,
-              fontSize: '12px',
+              fontSize: '13px',
               letterSpacing: '0.1em',
               color: filters.nearMeFirst && userHasFocus ? '#A8721A' : 'rgba(15,21,35,0.72)',
               fontWeight: filters.nearMeFirst && userHasFocus ? 600 : 400,
@@ -168,7 +168,7 @@ export default function FilterPanel({
           {!userHasFocus && (
             <span style={{
               ...body,
-              fontSize: '12px',
+              fontSize: '13px',
               color: 'rgba(15,21,35,0.55)',
             }}>
               Set your focus on profile to enable.
@@ -189,7 +189,7 @@ export default function FilterPanel({
               })}
               style={{
                 ...sc,
-                fontSize: '11px',
+                fontSize: '13px',
                 letterSpacing: '0.1em',
                 color: 'rgba(15,21,35,0.55)',
                 background: 'transparent',
@@ -207,7 +207,7 @@ export default function FilterPanel({
             onClick={() => setExpanded(v => !v)}
             style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.14em',
               color: '#A8721A',
               background: 'transparent',

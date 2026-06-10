@@ -129,7 +129,7 @@ export function FocusSearch({
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.55)', background: 'rgba(200,146,42,0.04)' }}>
           <div>
             <span style={{ ...body, fontSize: '15px', color: '#0F1523' }}>{value.name}</span>
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold, marginLeft: '10px' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, marginLeft: '10px' }}>
               {labelFor(value)}
             </span>
           </div>
@@ -156,11 +156,11 @@ export function FocusSearch({
                 >
                   <span style={{ ...body, fontSize: '15px', color: '#0F1523' }}>{f.name}</span>
                   <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
-                    <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold }}>
+                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold }}>
                       {labelFor(f)}
                     </span>
                     {f.kind && KIND_LABEL[f.kind] && f.type !== 'organisation' && (
-                      <span style={{ ...sc, fontSize: '9px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
+                      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
                         {KIND_LABEL[f.kind]}
                       </span>
                     )}

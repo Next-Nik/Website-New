@@ -53,7 +53,7 @@ export default function HorizonFloorCard({
           style={{
             ...sc,
             display: 'block',
-            fontSize: '12px',
+            fontSize: '13px',
             letterSpacing: '0.08em',
             color: '#A8721A',
             fontWeight: 600,

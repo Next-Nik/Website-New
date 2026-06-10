@@ -71,7 +71,7 @@ function Header({ domain, subdomain, field, atFocus }) {
   return (
     <header style={{ marginBottom: '40px' }}>
       <div style={{
-        ...sc, fontSize: '11px', letterSpacing: '0.20em',
+        ...sc, fontSize: '13px', letterSpacing: '0.20em',
         color: domain.color, textTransform: 'uppercase', marginBottom: '8px',
       }}>
         {domain.name} · {subdomain.name}
@@ -94,7 +94,7 @@ function Header({ domain, subdomain, field, atFocus }) {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '14px' }}>
           {field.topics.map((t, i) => (
             <span key={i} style={{
-              ...body, fontSize: '12.5px',
+              ...body, fontSize: '13px',
               color: 'rgba(15,21,35,0.72)',
               background: 'rgba(200,146,42,0.04)',
               border: '1px solid rgba(200,146,42,0.18)',
@@ -157,7 +157,7 @@ function ActorsLayer({ field, atFocus, accentColor }) {
   return (
     <section style={{ marginBottom: '56px' }}>
       <div style={{
-        ...sc, fontSize: '12px', letterSpacing: '0.18em',
+        ...sc, fontSize: '13px', letterSpacing: '0.18em',
         color: GOLD, textTransform: 'uppercase', marginBottom: '16px',
       }}>
         Actors here {actors.length > 0 && <span style={{ color: 'rgba(15,21,35,0.55)' }}>· {actors.length}</span>}
@@ -191,7 +191,7 @@ function ActorsLayer({ field, atFocus, accentColor }) {
             .map(scale => (
               <div key={scale}>
                 <div style={{
-                  ...sc, fontSize: '11px', letterSpacing: '0.16em',
+                  ...sc, fontSize: '13px', letterSpacing: '0.16em',
                   color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
                   marginBottom: '10px',
                 }}>
@@ -229,7 +229,7 @@ function ActorCard({ actor, accentColor }) {
           {actor.name}
         </div>
         {actor.kind && (
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: accentColor || GOLD, textTransform: 'uppercase' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: accentColor || GOLD, textTransform: 'uppercase' }}>
             {actor.kind}
           </div>
         )}
@@ -322,7 +322,7 @@ function ActivityLayer({ field, atFocus }) {
 function SectionHeader({ label }) {
   return (
     <div style={{
-      ...sc, fontSize: '12px', letterSpacing: '0.18em',
+      ...sc, fontSize: '13px', letterSpacing: '0.18em',
       color: GOLD, textTransform: 'uppercase', marginBottom: '16px',
     }}>
       {label}

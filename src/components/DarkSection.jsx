@@ -150,7 +150,7 @@ export function DarkSection({ children, topColor = '#FAFAF7', bottomColor = '#FA
 export function DarkEyebrow({ children }) {
   return (
     <span style={{
-      ...sc, fontSize: '12px', fontWeight: 600, letterSpacing: '0.22em',
+      ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.22em',
       color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '14px',
     }}>{children}</span>
   )
@@ -218,7 +218,7 @@ export function DarkPullQuote({ quote, attribution }) {
       }}>{quote}</p>
       {attribution && (
         <span style={{
-          ...sc, fontSize: '12px', letterSpacing: '0.18em',
+          ...sc, fontSize: '13px', letterSpacing: '0.18em',
           color: '#A8721A', textTransform: 'uppercase',
         }}>{attribution}</span>
       )}

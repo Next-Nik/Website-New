@@ -101,7 +101,7 @@ export function InfoButton({ title, children, size = 'sm', ariaLabel }) {
           {title && (
             <div style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.18em',
               color: '#A8721A',
               marginBottom: '10px',

@@ -28,7 +28,7 @@ function SprintBuddyDisplay({ payload }) {
   return (
     <>
       {payload.sprint_window && (
-        <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
+        <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
           {payload.sprint_window}
         </p>
       )}
@@ -41,7 +41,7 @@ function SprintBuddyDisplay({ payload }) {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
           {payload.shared_domains.map(d => (
             <span key={d} style={{
-              ...sc, fontSize: '10px', letterSpacing: '0.12em', color: gold,
+              ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold,
               background: 'rgba(200,146,42,0.07)',
               border: '1px solid rgba(200,146,42,0.22)',
               borderRadius: '4px', padding: '2px 8px',
@@ -64,7 +64,7 @@ function PractitionerRelationshipDisplay({ payload }) {
         </p>
       )}
       {payload.started_at && (
-        <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
+        <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
           Since {payload.started_at}
         </p>
       )}
@@ -94,7 +94,7 @@ function CollaborationCardDisplay({ payload }) {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
           {payload.domain_tags.map(d => (
             <span key={d} style={{
-              ...sc, fontSize: '10px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)',
+              ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)',
               background: 'rgba(15,21,35,0.04)',
               border: '1px solid rgba(15,21,35,0.10)',
               borderRadius: '4px', padding: '2px 8px',
@@ -117,7 +117,7 @@ function PodcastEmbedDisplay({ payload }) {
         </p>
       )}
       {payload.published_at && (
-        <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
+        <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
           {payload.published_at}
         </p>
       )}
@@ -131,7 +131,7 @@ function PodcastEmbedDisplay({ payload }) {
           href={payload.episode_url}
           target="_blank"
           rel="noopener noreferrer"
-          style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}
         >
           Listen
         </a>
@@ -210,7 +210,7 @@ export function BilateralCard({
       {/* Header: type eyebrow + party names */}
       <div style={{ marginBottom: '14px' }}>
         <span style={{
-          ...sc, fontSize: '10px', letterSpacing: '0.20em',
+          ...sc, fontSize: '13px', letterSpacing: '0.20em',
           color: isRevoked ? 'rgba(15,21,35,0.55)' : gold,
           textTransform: 'uppercase', display: 'block', marginBottom: '8px',
         }}>
@@ -269,7 +269,7 @@ export function BilateralCard({
               onClick={handleRevoke}
               disabled={acting}
               style={{
-                ...sc, fontSize: '12px', letterSpacing: '0.12em',
+                ...sc, fontSize: '13px', letterSpacing: '0.12em',
                 padding: '7px 16px', borderRadius: '40px', cursor: 'pointer',
                 background: 'rgba(138,48,48,0.04)',
                 border: '1px solid rgba(138,48,48,0.30)',
@@ -283,7 +283,7 @@ export function BilateralCard({
               onClick={handleRepublish}
               disabled={acting}
               style={{
-                ...sc, fontSize: '12px', letterSpacing: '0.12em',
+                ...sc, fontSize: '13px', letterSpacing: '0.12em',
                 padding: '7px 16px', borderRadius: '40px', cursor: 'pointer',
                 background: 'rgba(200,146,42,0.05)',
                 border: '1px solid rgba(200,146,42,0.40)',

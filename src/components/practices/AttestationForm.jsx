@@ -102,7 +102,7 @@ export default function AttestationForm({ practice, supabase, user, onClose, onA
           boxShadow: '0 24px 64px rgba(15,21,35,0.28)',
         }}
       >
-        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
           Attest
         </span>
         <h2 style={{ ...garamond, fontSize: '26px', fontWeight: 400, color: '#0F1523', margin: '0 0 8px', lineHeight: 1.2 }}>
@@ -114,7 +114,7 @@ export default function AttestationForm({ practice, supabase, user, onClose, onA
 
         {/* Roles */}
         <div style={{ marginBottom: '20px' }}>
-          <label style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: '#A8721A', display: 'block', marginBottom: '10px' }}>
+          <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', display: 'block', marginBottom: '10px' }}>
             Your relationship to this practice
           </label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -134,7 +134,7 @@ export default function AttestationForm({ practice, supabase, user, onClose, onA
 
         {/* Attestation text */}
         <div style={{ marginBottom: '20px' }}>
-          <label style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: '#A8721A', display: 'block', marginBottom: '6px' }}>
+          <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', display: 'block', marginBottom: '6px' }}>
             What did this practice do for you, or for those you serve?
           </label>
           <textarea

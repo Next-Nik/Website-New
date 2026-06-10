@@ -184,7 +184,7 @@ function BudgetHeader({ spent, free, wasted, cap }) {
     <div style={{ marginBottom: '24px' }}>
       <div style={{
         ...sc,
-        fontSize: '12px',
+        fontSize: '13px',
         letterSpacing: '0.16em',
         color: 'rgba(15,21,35,0.72)',
         textTransform: 'uppercase',
@@ -236,7 +236,7 @@ function TierRow({ tier, roster, resolved, addingHere, onAdd, onAddCancel, watch
         <div>
           <span style={{
             ...sc,
-            fontSize: '12px',
+            fontSize: '13px',
             letterSpacing: '0.18em',
             color: gold,
             textTransform: 'uppercase',
@@ -247,7 +247,7 @@ function TierRow({ tier, roster, resolved, addingHere, onAdd, onAddCancel, watch
             {cost} spoons each &middot; {TIER_DESCRIPTION[tier]}
           </span>
         </div>
-        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
           {filled.length} of {cap}
         </span>
       </div>
@@ -268,7 +268,7 @@ function TierRow({ tier, roster, resolved, addingHere, onAdd, onAddCancel, watch
             onClick={onAdd}
             style={{
               ...sc,
-              fontSize: '12px',
+              fontSize: '13px',
               letterSpacing: '0.14em',
               color: gold,
               background: 'rgba(200,146,42,0.04)',
@@ -374,7 +374,7 @@ function SlotCard({ slot, roster, resolved }) {
           minWidth: '160px',
           zIndex: 60,
         }}>
-          <div style={{ ...sc, fontSize: '10.5px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', padding: '4px 8px', marginBottom: '4px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', padding: '4px 8px', marginBottom: '4px' }}>
             Move to
           </div>
           {roster.tierOrder
@@ -489,7 +489,7 @@ function RosterPicker({ tier, roster, watches, resolved, onCancel, onAdded }) {
       border: '1.5px solid rgba(200,146,42,0.30)',
       borderRadius: '10px',
     }}>
-      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '10px' }}>
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '10px' }}>
         Add to {TIER_LABEL[tier]} ({cost} spoons)
       </div>
 
@@ -544,7 +544,7 @@ function RosterPicker({ tier, roster, watches, resolved, onCancel, onAdded }) {
               }}
             >
               <span>{name}</span>
-              <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em', color: gold, textTransform: 'uppercase' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, textTransform: 'uppercase' }}>
                 {c.entity_type}
               </span>
             </button>
@@ -561,7 +561,7 @@ function RosterPicker({ tier, roster, watches, resolved, onCancel, onAdded }) {
           type="button"
           onClick={onCancel}
           style={{
-            ...sc, fontSize: '12px', letterSpacing: '0.14em',
+            ...sc, fontSize: '13px', letterSpacing: '0.14em',
             color: 'rgba(15,21,35,0.55)', background: 'none',
             border: 'none', cursor: 'pointer', padding: '4px 0',
             textTransform: 'uppercase',

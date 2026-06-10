@@ -29,7 +29,7 @@ export function CrisisRedirectCard({ message, onExit }) {
 
       {/* Eyebrow */}
       <span style={{
-        ...sc, fontSize: '12px', letterSpacing: '0.20em',
+        ...sc, fontSize: '13px', letterSpacing: '0.20em',
         color: '#A8721A', display: 'block', marginBottom: '16px',
         textAlign: 'center',
       }}>

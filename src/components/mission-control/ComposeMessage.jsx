@@ -109,7 +109,7 @@ export function ComposeMessage({
 
           {/* Sending as */}
           <div style={{ marginBottom: '18px' }}>
-            <label style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em',
+            <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
               color: TEXT_META, textTransform: 'uppercase',
               display: 'block', marginBottom: '6px' }}>
               Sending as
@@ -133,7 +133,7 @@ export function ComposeMessage({
 
           {/* Recipient picker */}
           <div style={{ marginBottom: '18px' }}>
-            <label style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em',
+            <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
               color: TEXT_META, textTransform: 'uppercase',
               display: 'block', marginBottom: '6px' }}>
               To
@@ -159,7 +159,7 @@ export function ComposeMessage({
                   )}
                 </div>
                 <button onClick={() => { setRecipient(null); setSearch('') }}
-                  style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em',
+                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
                     color: GOLD_DK, background: 'none', border: 'none',
                     cursor: 'pointer' }}>
                   Change
@@ -203,7 +203,7 @@ export function ComposeMessage({
                         <div style={{ flex: 1 }}>
                           <div style={{ ...body, fontSize: '13px',
                             color: TEXT_INK }}>{r.name}</div>
-                          <div style={{ ...sc, fontSize: '10px',
+                          <div style={{ ...sc, fontSize: '13px',
                             letterSpacing: '0.08em', color: TEXT_META,
                             textTransform: 'uppercase' }}>{r.type}</div>
                         </div>
@@ -217,7 +217,7 @@ export function ComposeMessage({
 
           {/* Body */}
           <div style={{ marginBottom: '16px' }}>
-            <label style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em',
+            <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
               color: TEXT_META, textTransform: 'uppercase',
               display: 'block', marginBottom: '6px' }}>
               Message
@@ -254,7 +254,7 @@ export function ComposeMessage({
           borderTop: `1px solid ${GOLD_RULE}`,
           display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
           <button onClick={onClose}
-            style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
               padding: '10px 18px', borderRadius: '40px',
               background: 'none', border: `1px solid ${GOLD_RULE}`,
               color: TEXT_META, cursor: 'pointer' }}>
@@ -262,7 +262,7 @@ export function ComposeMessage({
           </button>
           <button onClick={handleSend}
             disabled={!recipient || !body_text.trim() || sending}
-            style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
               padding: '10px 20px', borderRadius: '40px', border: 'none',
               background: (!recipient || !body_text.trim() || sending) ? GOLD_RULE : GOLD,
               color: '#FFFFFF',

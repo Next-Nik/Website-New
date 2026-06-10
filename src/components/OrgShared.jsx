@@ -104,7 +104,7 @@ export const CONTRIBUTION_TYPE_LABEL = {
 
 export function Label({ children, required }) {
   return (
-    <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '6px' }}>
+    <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '6px' }}>
       {children}{required && <span style={{ color: '#8A3030', marginLeft: '4px' }}>*</span>}
     </label>
   )
@@ -174,7 +174,7 @@ export function ModeSelector({ value, onChange }) {
         return (
           <button key={m.value} type="button" onClick={() => onChange(m.value)}
             style={{ textAlign: 'left', padding: '12px 14px', borderRadius: '10px', cursor: 'pointer', border: on ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.20)', background: on ? 'rgba(200,146,42,0.07)' : '#FFFFFF', transition: 'all 0.15s' }}>
-            <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: on ? gold : 'rgba(15,21,35,0.70)', marginBottom: '3px' }}>{m.label}</div>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: on ? gold : 'rgba(15,21,35,0.70)', marginBottom: '3px' }}>{m.label}</div>
             <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.4 }}>{m.desc}</div>
           </button>
         )
@@ -185,7 +185,7 @@ export function ModeSelector({ value, onChange }) {
 
 export function Eyebrow({ children, style = {} }) {
   return (
-    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', ...style }}>
+    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', ...style }}>
       {children}
     </div>
   )

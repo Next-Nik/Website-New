@@ -71,7 +71,7 @@ function InvitationCard({ bilateral, partyAName, onAccepted, onDeclined }) {
       borderRadius: '12px',
       marginBottom: '12px',
     }}>
-      <p style={{ ...sc, fontSize: '10px', letterSpacing: '0.20em', color: gold, marginBottom: '8px' }}>
+      <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: gold, marginBottom: '8px' }}>
         Invitation -- {typeLabel}
       </p>
 
@@ -159,7 +159,7 @@ function SentDraftRow({ bilateral, partyBName, currentUserId, onWithdrawn, onEdi
       flexWrap: 'wrap',
     }}>
       <div>
-        <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
+        <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
           {typeLabel} -- awaiting response
         </p>
         <p style={{ ...body, fontSize: '15px', color: dark }}>
@@ -170,7 +170,7 @@ function SentDraftRow({ bilateral, partyBName, currentUserId, onWithdrawn, onEdi
         <button
           onClick={() => onEditOpen(bilateral)}
           style={{
-            ...sc, fontSize: '12px', letterSpacing: '0.12em',
+            ...sc, fontSize: '13px', letterSpacing: '0.12em',
             padding: '7px 16px', borderRadius: '40px', cursor: 'pointer',
             background: 'rgba(200,146,42,0.05)',
             border: '1px solid rgba(200,146,42,0.35)',
@@ -182,7 +182,7 @@ function SentDraftRow({ bilateral, partyBName, currentUserId, onWithdrawn, onEdi
         <button
           onClick={() => onWithdrawn(bilateral.id)}
           style={{
-            ...sc, fontSize: '12px', letterSpacing: '0.12em',
+            ...sc, fontSize: '13px', letterSpacing: '0.12em',
             padding: '7px 16px', borderRadius: '40px', cursor: 'pointer',
             background: 'rgba(138,48,48,0.04)',
             border: '1px solid rgba(138,48,48,0.28)',
@@ -256,7 +256,7 @@ export function BilateralInbox({ currentUserId, currentDisplayName }) {
         marginBottom: '24px',
       }}>
         <div>
-          <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '4px' }}>
+          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '4px' }}>
             Bilateral cards
           </p>
           <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, maxWidth: '440px' }}>
@@ -267,7 +267,7 @@ export function BilateralInbox({ currentUserId, currentDisplayName }) {
           <button
             onClick={() => setCreating(true)}
             style={{
-              ...sc, fontSize: '12px', letterSpacing: '0.14em',
+              ...sc, fontSize: '13px', letterSpacing: '0.14em',
               padding: '10px 20px', borderRadius: '40px', cursor: 'pointer',
               background: 'rgba(200,146,42,0.05)',
               border: '1.5px solid rgba(200,146,42,0.55)',
@@ -309,7 +309,7 @@ export function BilateralInbox({ currentUserId, currentDisplayName }) {
       {/* Pending invitations */}
       {pendingForMe.length > 0 && (
         <div style={{ marginBottom: '32px' }}>
-          <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '14px' }}>
+          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '14px' }}>
             Invitations for you ({pendingForMe.length})
           </p>
           {pendingForMe.map(b => (
@@ -327,7 +327,7 @@ export function BilateralInbox({ currentUserId, currentDisplayName }) {
       {/* Sent drafts awaiting response */}
       {sentDrafts.length > 0 && (
         <div style={{ marginBottom: '32px' }}>
-          <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', marginBottom: '14px' }}>
+          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', marginBottom: '14px' }}>
             Sent, awaiting response ({sentDrafts.length})
           </p>
           {sentDrafts.map(b => (
@@ -350,7 +350,7 @@ export function BilateralInbox({ currentUserId, currentDisplayName }) {
       {/* Published */}
       {published.length > 0 && (
         <div style={{ marginBottom: '32px' }}>
-          <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', marginBottom: '14px' }}>
+          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', marginBottom: '14px' }}>
             Published ({published.length})
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -379,7 +379,7 @@ export function BilateralInbox({ currentUserId, currentDisplayName }) {
           <button
             onClick={() => setShowRevoked(v => !v)}
             style={{
-              ...sc, fontSize: '11px', letterSpacing: '0.16em',
+              ...sc, fontSize: '13px', letterSpacing: '0.16em',
               color: 'rgba(15,21,35,0.55)', background: 'none',
               border: 'none', cursor: 'pointer', padding: '0 0 14px',
             }}

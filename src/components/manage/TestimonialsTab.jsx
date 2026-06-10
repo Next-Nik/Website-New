@@ -70,13 +70,13 @@ function TestimonialRow({ testimonial, onSave, onDelete, toast }) {
         {(testimonial.attribution || testimonial.context) && (
           <div style={{ marginBottom: '10px' }}>
             {testimonial.attribution && (
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em',
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
                 color: gold, textTransform: 'uppercase' }}>
                 — {testimonial.attribution}
               </span>
             )}
             {testimonial.context && (
-              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
                 color: 'rgba(15,21,35,0.55)', marginLeft: '10px' }}>
                 {testimonial.context}
               </span>
@@ -87,7 +87,7 @@ function TestimonialRow({ testimonial, onSave, onDelete, toast }) {
         <div style={{ display: 'flex', gap: '8px',
           alignItems: 'center', flexWrap: 'wrap' }}>
           {testimonial.featured && (
-            <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em',
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
               color: gold, textTransform: 'uppercase',
               padding: '3px 10px', borderRadius: '40px',
               background: 'rgba(200,146,42,0.10)',
@@ -96,7 +96,7 @@ function TestimonialRow({ testimonial, onSave, onDelete, toast }) {
             </span>
           )}
           {!testimonial.active && (
-            <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em',
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
               color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
               padding: '3px 10px', borderRadius: '40px',
               background: 'rgba(15,21,35,0.04)',
@@ -105,14 +105,14 @@ function TestimonialRow({ testimonial, onSave, onDelete, toast }) {
             </span>
           )}
           <button onClick={() => setEditing(true)}
-            style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
               padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
               border: '1px solid rgba(200,146,42,0.30)',
               background: 'rgba(200,146,42,0.04)', color: gold }}>
             Edit
           </button>
           <button onClick={remove}
-            style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
               padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
               border: '1px solid rgba(138,48,48,0.30)',
               background: 'rgba(138,48,48,0.04)', color: '#8A3030' }}>

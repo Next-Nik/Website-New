@@ -122,7 +122,7 @@ function ItemForm({ initial, onSave, onCancel, saving, kind }) {
             const on = (form.domains || []).includes(d.slug)
             return (
               <button key={d.slug} type="button" onClick={() => toggleDomain(d.slug)}
-                style={{ ...sc, fontSize: '12px', letterSpacing: '0.06em',
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em',
                   padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
                   border: on ? `1.5px solid ${accent}` : '1.5px solid rgba(200,146,42,0.25)',
                   background: on ? `${accent}10` : 'transparent',
@@ -252,7 +252,7 @@ function ItemCard({ item, kind, onEdit, onDelete, onToggleActive, saving }) {
           {item.title}
         </h3>
         {!item.active && (
-          <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
             color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
             Inactive
           </span>
@@ -266,19 +266,19 @@ function ItemCard({ item, kind, onEdit, onDelete, onToggleActive, saving }) {
       )}
       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
         <button onClick={() => onEdit(item)} disabled={saving}
-          style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
             color: gold, background: 'none', border: 'none',
             cursor: 'pointer', padding: '4px 0', textDecoration: 'underline' }}>
           Edit
         </button>
         <button onClick={() => onToggleActive(item)} disabled={saving}
-          style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
             color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none',
             cursor: 'pointer', padding: '4px 0', textDecoration: 'underline' }}>
           {item.active ? 'Deactivate' : 'Reactivate'}
         </button>
         <button onClick={() => onDelete(item)} disabled={saving}
-          style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
             color: '#8A3030', background: 'none', border: 'none',
             cursor: 'pointer', padding: '4px 0', textDecoration: 'underline' }}>
           Delete
@@ -370,7 +370,7 @@ function ItemSection({ actorId, kind, toast }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em',
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em',
           color: kind === 'offer' ? '#2A6B3A' : '#2A4A8A',
           textTransform: 'uppercase' }}>
           {kind === 'offer' ? 'Your offers' : 'Your needs'}

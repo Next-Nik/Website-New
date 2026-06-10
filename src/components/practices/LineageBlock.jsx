@@ -31,7 +31,7 @@ export default function LineageBlock({ text, forceTraditional = false, className
     <div className={className} style={{ marginTop: '4px' }}>
       <span style={{
         ...sc,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.18em',
         color: 'rgba(15,21,35,0.55)',
         textTransform: 'uppercase',

@@ -110,10 +110,10 @@ function VenuePicker({ value, onChange, focus }) {
             {selected.name}
           </div>
           {selected.is_online ? (
-            <div style={{ fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>Online</div>
+            <div style={{ fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>Online</div>
           ) : (
             selected.address && (
-              <div style={{ fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>
+              <div style={{ fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
                 {selected.address}
               </div>
             )
@@ -122,7 +122,7 @@ function VenuePicker({ value, onChange, focus }) {
         <button
           type="button" onClick={() => { setSelected(null); onChange(null) }}
           style={{
-            ...sc, fontSize: '11px', letterSpacing: '0.12em',
+            ...sc, fontSize: '13px', letterSpacing: '0.12em',
             color: gold, background: 'transparent', border: 'none',
             cursor: 'pointer', textTransform: 'uppercase',
           }}
@@ -155,7 +155,7 @@ function VenuePicker({ value, onChange, focus }) {
             >
               <div>{v.name}</div>
               {v.address && (
-                <div style={{ fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>
+                <div style={{ fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
                   {v.address}
                 </div>
               )}
@@ -168,7 +168,7 @@ function VenuePicker({ value, onChange, focus }) {
         <button
           type="button" onClick={() => { setShowCreate(true); setCreateName(query) }}
           style={{
-            ...sc, fontSize: '11px', letterSpacing: '0.14em',
+            ...sc, fontSize: '13px', letterSpacing: '0.14em',
             color: gold, background: 'transparent', border: 'none',
             cursor: 'pointer', marginTop: '8px', textTransform: 'uppercase',
           }}
@@ -291,14 +291,14 @@ function EventTypePicker({ selected, onChange }) {
             const t = allTypes.find(x => x.slug === s)
             return (
               <span key={s} style={{
-                ...sc, fontSize: '11px', letterSpacing: '0.12em',
+                ...sc, fontSize: '13px', letterSpacing: '0.12em',
                 padding: '4px 10px', borderRadius: '40px',
                 background: 'rgba(168,114,26,0.10)', color: gold,
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
               }}>
                 {t?.label || s.replace(/-/g, ' ')}
                 {t && !t.is_canonical && (
-                  <span style={{ fontSize: '9px', color: 'rgba(15,21,35,0.55)' }}>
+                  <span style={{ fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
                     proposed
                   </span>
                 )}
@@ -345,7 +345,7 @@ function EventTypePicker({ selected, onChange }) {
               {t.label}
               {!t.is_canonical && (
                 <span style={{
-                  marginLeft: '8px', fontSize: '10px',
+                  marginLeft: '8px', fontSize: '13px',
                   color: 'rgba(15,21,35,0.55)',
                 }}>
                   proposed
@@ -360,7 +360,7 @@ function EventTypePicker({ selected, onChange }) {
         <button
           type="button" onClick={propose} disabled={proposing}
           style={{
-            ...sc, fontSize: '11px', letterSpacing: '0.14em',
+            ...sc, fontSize: '13px', letterSpacing: '0.14em',
             color: gold, background: 'transparent', border: 'none',
             cursor: 'pointer', marginTop: '8px', textTransform: 'uppercase',
           }}
@@ -407,7 +407,7 @@ function DomainPlacementPicker({ placements, onChange, actorDomains = [] }) {
               key={d.value} type="button"
               onClick={() => togglePresence(d.value)}
               style={{
-                ...sc, fontSize: '12px', letterSpacing: '0.12em',
+                ...sc, fontSize: '13px', letterSpacing: '0.12em',
                 padding: '6px 14px', borderRadius: '40px', cursor: 'pointer',
                 border: on
                   ? (isPrimary ? '2px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.40)')
@@ -420,7 +420,7 @@ function DomainPlacementPicker({ placements, onChange, actorDomains = [] }) {
               {d.label}
               {isPrimary && (
                 <span style={{
-                  marginLeft: '6px', fontSize: '9px', fontWeight: 700,
+                  marginLeft: '6px', fontSize: '13px', fontWeight: 700,
                 }}>
                   ★
                 </span>
@@ -439,7 +439,7 @@ function DomainPlacementPicker({ placements, onChange, actorDomains = [] }) {
                 <button
                   key={p.slug} type="button" onClick={() => setPrimary(p.slug)}
                   style={{
-                    ...sc, fontSize: '11px', letterSpacing: '0.12em',
+                    ...sc, fontSize: '13px', letterSpacing: '0.12em',
                     padding: '4px 10px', borderRadius: '40px', cursor: 'pointer',
                     border: p.is_primary ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.25)',
                     background: p.is_primary ? 'rgba(200,146,42,0.14)' : 'transparent',
@@ -808,7 +808,7 @@ export function EventForm({ actor, initial, onSubmitDone, toast }) {
           />
           <span>
             <strong>This is a historical Event</strong>
-            <div style={{ fontSize: '12px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>
+            <div style={{ fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '2px' }}>
               Tick this when seeding past Events for archival completeness — old tour
               stops, past Story Slams, last year's gatherings. Past Events from this year
               will be sorted accordingly without this flag.

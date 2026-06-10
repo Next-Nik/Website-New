@@ -22,7 +22,7 @@ const dark = '#0F1523'
 function Label({ children, required }) {
   return (
     <label style={{
-      ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold,
+      ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold,
       display: 'block', marginBottom: '6px',
     }}>
       {children}
@@ -223,7 +223,7 @@ function SprintBuddyFields({ payload, onChange, locked }) {
                 disabled={locked}
                 onClick={() => toggleDomain(d.value)}
                 style={{
-                  ...sc, fontSize: '11px', letterSpacing: '0.12em',
+                  ...sc, fontSize: '13px', letterSpacing: '0.12em',
                   padding: '5px 12px', borderRadius: '40px', cursor: locked ? 'default' : 'pointer',
                   border: on ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.25)',
                   background: on ? 'rgba(200,146,42,0.10)' : 'transparent',
@@ -334,7 +334,7 @@ function CollaborationCardFields({ payload, onChange, locked }) {
                 disabled={locked}
                 onClick={() => toggleDomain(d.value)}
                 style={{
-                  ...sc, fontSize: '11px', letterSpacing: '0.12em',
+                  ...sc, fontSize: '13px', letterSpacing: '0.12em',
                   padding: '5px 12px', borderRadius: '40px', cursor: locked ? 'default' : 'pointer',
                   border: on ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.25)',
                   background: on ? 'rgba(200,146,42,0.10)' : 'transparent',
@@ -493,7 +493,7 @@ export function BilateralCardEditor({
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
         <div>
-          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: gold, marginBottom: '6px' }}>
+          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: gold, marginBottom: '6px' }}>
             {isEdit ? 'Edit bilateral card' : 'Propose a bilateral card'}
           </p>
           <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, maxWidth: '440px' }}>
@@ -523,7 +523,7 @@ export function BilateralCardEditor({
                 disabled={isEdit}
                 onClick={() => setArtefactType(t.value)}
                 style={{
-                  ...sc, fontSize: '12px', letterSpacing: '0.12em',
+                  ...sc, fontSize: '13px', letterSpacing: '0.12em',
                   padding: '10px 14px', borderRadius: '10px',
                   cursor: isEdit ? 'default' : 'pointer',
                   border: on ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.20)',
@@ -559,7 +559,7 @@ export function BilateralCardEditor({
             With{' '}
             <strong>{existingBilateral?._partyBName || 'the other person'}</strong>
             {locked && (
-              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: '#2D6A4F', marginLeft: '10px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: '#2D6A4F', marginLeft: '10px' }}>
                 Accepted -- read only
               </span>
             )}

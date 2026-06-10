@@ -73,7 +73,7 @@ function OrderedList({ items, onReorder, onRemove, renderItem }) {
           borderRadius: '8px',
         }}>
           {i === 0 && (
-            <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', background: '#C8922A', color: '#FFFFFF', padding: '2px 8px', borderRadius: '40px', flexShrink: 0 }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', background: '#C8922A', color: '#FFFFFF', padding: '2px 8px', borderRadius: '40px', flexShrink: 0 }}>
               Primary
             </span>
           )}
@@ -83,18 +83,18 @@ function OrderedList({ items, onReorder, onRemove, renderItem }) {
           <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
             {i > 0 && (
               <button onClick={() => onReorder(i, i - 1)}
-                style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}>
+                style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}>
                 ↑
               </button>
             )}
             {i < items.length - 1 && (
               <button onClick={() => onReorder(i, i + 1)}
-                style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}>
+                style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 6px' }}>
                 ↓
               </button>
             )}
             <button onClick={() => onRemove(i)}
-              style={{ ...sc, fontSize: '12px', color: '#8A3030', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 8px' }}>
+              style={{ ...sc, fontSize: '13px', color: '#8A3030', background: 'none', border: 'none', cursor: 'pointer', padding: '2px 8px' }}>
               ×
             </button>
           </div>
@@ -143,7 +143,7 @@ function ProblemChainEditor({ chains, onChange }) {
           style={{ ...body, fontSize: '14px', color: dark, padding: '9px 14px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', flex: 1 }}
         />
         <button onClick={add} disabled={!draft.trim()}
-          style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', padding: '9px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.60)', background: 'rgba(200,146,42,0.05)', color: gold, cursor: 'pointer' }}>
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '9px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.60)', background: 'rgba(200,146,42,0.05)', color: gold, cursor: 'pointer' }}>
           Add
         </button>
       </div>
@@ -262,7 +262,7 @@ export function OrgDomainsTab({ actorId, toast }) {
 
       {/* Explainer */}
       <SectionCard style={{ marginBottom: '28px', background: 'rgba(200,146,42,0.02)' }}>
-        <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>
+        <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>
           Four-dimensional placement
         </p>
         <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, marginBottom: '8px' }}>
@@ -275,8 +275,8 @@ export function OrgDomainsTab({ actorId, toast }) {
 
       {/* ── DOMAINS ─────────────────────────────────────────── */}
       <SectionCard style={{ marginBottom: '20px' }}>
-        <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '16px' }}>
-          Domains <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '11px' }}>(first = primary)</span>
+        <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '16px' }}>
+          Domains <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '13px' }}>(first = primary)</span>
         </p>
 
         {domains.length > 0 && (
@@ -311,7 +311,7 @@ export function OrgDomainsTab({ actorId, toast }) {
         {/* Horizon goal preview */}
         {previewDomain && DOMAIN_HORIZON[previewDomain] && (
           <div style={{ marginTop: '16px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '10px', padding: '14px 18px' }}>
-            <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, marginBottom: '6px' }}>
+            <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: gold, marginBottom: '6px' }}>
               {DOMAIN_LABEL[previewDomain]} Horizon Goal
             </p>
             <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, margin: 0 }}>
@@ -346,8 +346,8 @@ export function OrgDomainsTab({ actorId, toast }) {
       {/* ── SUBDOMAINS ───────────────────────────────────────── */}
       {domains.length > 0 && (
         <SectionCard style={{ marginBottom: '20px' }}>
-          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
-            Subdomains <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '11px' }}>(first = primary)</span>
+          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
+            Subdomains <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '13px' }}>(first = primary)</span>
           </p>
           <Hint>Select every subdomain your work genuinely addresses. First selected is primary.</Hint>
           <div style={{ marginTop: '12px' }}>
@@ -363,7 +363,7 @@ export function OrgDomainsTab({ actorId, toast }) {
           </div>
           {subdomains.length > 1 && (
             <div style={{ marginTop: '12px' }}>
-              <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>Order — drag first to set primary</p>
+              <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>Order — drag first to set primary</p>
               <OrderedList
                 items={subdomains}
                 onReorder={(from, to) => reorderItem(subdomains, setSubdomains, from, to)}
@@ -378,8 +378,8 @@ export function OrgDomainsTab({ actorId, toast }) {
       {/* ── LENSES ───────────────────────────────────────────── */}
       {domains.length > 0 && (
         <SectionCard style={{ marginBottom: '20px' }}>
-          <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
-            Lenses <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '11px' }}>(how you relate to the substrate)</span>
+          <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
+            Lenses <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '13px' }}>(how you relate to the substrate)</span>
           </p>
           <Hint>Stable, few. Each domain has its own lens set. Select all that describe how your work operates.</Hint>
           <div style={{ marginTop: '12px' }}>
@@ -395,8 +395,8 @@ export function OrgDomainsTab({ actorId, toast }) {
 
       {/* ── PROBLEM CHAINS ───────────────────────────────────── */}
       <SectionCard style={{ marginBottom: '20px' }}>
-        <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
-          Problem chains <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '11px' }}>(first = primary)</span>
+        <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
+          Problem chains <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '13px' }}>(first = primary)</span>
         </p>
         <Hint>What specific problem are you solving? Use the hierarchy: civilisational level &gt; sector &gt; specific problem.</Hint>
         <div style={{ marginTop: '12px' }}>
@@ -406,7 +406,7 @@ export function OrgDomainsTab({ actorId, toast }) {
 
       {/* ── PLATFORM PRINCIPLES ─────────────────────────────── */}
       <SectionCard style={{ marginBottom: '20px' }}>
-        <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
+        <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
           Platform principles
         </p>
         <Hint>Which of the four cross-domain principles does your work materially engage?</Hint>

@@ -25,7 +25,7 @@ export function GeocodeBtn({ locationName, onResult }) {
   return (
     <button onClick={run} disabled={status === 'loading'}
       style={{
-        ...sc, fontSize: '11px', letterSpacing: '0.13em',
+        ...sc, fontSize: '13px', letterSpacing: '0.13em',
         padding: '11px 13px', borderRadius: '8px', flexShrink: 0,
         border: `1px solid ${status === 'ok' ? '#2A6B3A' : status === 'err' ? '#8A3030' : 'rgba(200,146,42,0.40)'}`,
         background: 'transparent',

@@ -102,7 +102,7 @@ export function ShareButton({
           color: copied ? activeColor : baseColor,
           cursor: 'pointer',
           ...sc,
-          fontSize: '12px',
+          fontSize: '13px',
           letterSpacing: '0.12em',
           transition: 'all 0.18s ease',
         }}
@@ -159,7 +159,7 @@ export function ShareButton({
           right: 0,
           background: 'rgba(15,21,35,0.92)',
           color: '#FAFAF7',
-          fontSize: '11px',
+          fontSize: '13px',
           letterSpacing: '0.08em',
           padding: '4px 10px',
           borderRadius: '6px',

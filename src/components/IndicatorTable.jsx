@@ -221,7 +221,7 @@ function Row({ row }) {
             style={{
               ...sc,
               display: 'block',
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.06em',
               color: 'rgba(15, 21, 35, 0.55)',
               marginTop: '2px',
@@ -238,7 +238,7 @@ function Row({ row }) {
             style={{
               ...sc,
               display: 'block',
-              fontSize: '10px',
+              fontSize: '13px',
               letterSpacing: '0.08em',
               color: 'rgba(15, 21, 35, 0.55)',
               marginTop: '4px',
@@ -310,7 +310,7 @@ function Pill({ text, colour, bg, tooltip }) {
         background: bg,
         color: colour,
         borderRadius: '999px',
-        fontSize: '10px',
+        fontSize: '13px',
         letterSpacing: '0.08em',
         fontWeight: 600,
         cursor: tooltip ? 'help' : 'default',
@@ -326,7 +326,7 @@ function Th({ children, align = 'left' }) {
     <th
       style={{
         ...sc,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.08em',
         color: 'rgba(15, 21, 35, 0.72)',
         fontWeight: 600,
@@ -374,7 +374,7 @@ function formatLatest(row) {
           style={{
             ...sc,
             display: 'block',
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.08em',
             color: 'rgba(15, 21, 35, 0.55)',
             marginTop: '2px',

@@ -39,7 +39,7 @@ export function FeedItemShell({
         {eyebrow && (
           <span style={{
             ...sc,
-            fontSize: '10px',
+            fontSize: '13px',
             letterSpacing: '0.20em',
             color: accent,
             textTransform: 'uppercase',
@@ -53,7 +53,7 @@ export function FeedItemShell({
         {timestamp && (
           <span style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.12em',
             color: 'rgba(15,21,35,0.55)',
           }}>

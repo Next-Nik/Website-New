@@ -87,7 +87,7 @@ export function CrisisResources({ variant = 'compact', defaultCountry = null }) 
       )}
 
       <div style={{ borderTop: '1px solid rgba(200,146,42,0.20)', paddingTop: '20px' }}>
-        <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '12px' }}>
+        <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', marginBottom: '12px' }}>
           International
         </p>
         {intlResources.map(r => <ResourceCard key={r.id} resource={r} compact />)}
@@ -98,7 +98,7 @@ export function CrisisResources({ variant = 'compact', defaultCountry = null }) 
           <button
             onClick={() => setShowOther(!showOther)}
             style={{
-              ...sc, fontSize: '12px', letterSpacing: '0.14em',
+              ...sc, fontSize: '13px', letterSpacing: '0.14em',
               background: 'none', border: 'none', cursor: 'pointer',
               color: 'rgba(15,21,35,0.55)', padding: 0,
             }}
@@ -109,7 +109,7 @@ export function CrisisResources({ variant = 'compact', defaultCountry = null }) 
             <div style={{ marginTop: '16px' }}>
               {otherCountries.map(cc => (
                 <div key={cc} style={{ marginBottom: '20px' }}>
-                  <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '8px' }}>
+                  <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '8px' }}>
                     {countryName(cc)}
                   </p>
                   {resources.filter(r => r.country_code === cc).map(r => (
@@ -132,7 +132,7 @@ function CountrySelect({ country, setCountry, resources }) {
 
   return (
     <div style={{ marginBottom: '20px' }}>
-      <label style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: '#A8721A', display: 'block', marginBottom: '6px' }}>
+      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', display: 'block', marginBottom: '6px' }}>
         Your region
       </label>
       <select
@@ -171,7 +171,7 @@ function ResourceCard({ resource, compact = false }) {
           {resource.name}
         </span>
         {resource.hours && (
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>
             {resource.hours}
           </span>
         )}
@@ -230,7 +230,7 @@ function FullDirectory({ resources, userCountry, setCountry }) {
             paddingBottom: '8px', borderBottom: '1px solid rgba(200,146,42,0.20)' }}>
             {countryName(cc)}
             {cc === userCountry && (
-              <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: '#A8721A', marginLeft: '12px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', marginLeft: '12px' }}>
                 YOUR REGION
               </span>
             )}

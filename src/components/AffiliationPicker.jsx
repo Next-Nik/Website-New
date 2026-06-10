@@ -132,7 +132,7 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
     }}>
       <div style={{
         ...sc,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.18em',
         color: gold,
         textTransform: 'uppercase',
@@ -207,7 +207,7 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
               onClick={switchToCountry}
               style={{
                 ...sc,
-                fontSize: '12px',
+                fontSize: '13px',
                 letterSpacing: '0.14em',
                 color: gold,
                 background: 'rgba(200,146,42,0.10)',
@@ -224,7 +224,7 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
               onClick={() => setDismissedCitizenNudge(true)}
               style={{
                 ...sc,
-                fontSize: '12px',
+                fontSize: '13px',
                 letterSpacing: '0.14em',
                 color: 'rgba(15,21,35,0.55)',
                 background: 'none',
@@ -257,7 +257,7 @@ export function AffiliationPicker({ userId, onSaved, onCancel, existingPairs, in
                 <span>
                   <span style={{ ...body, fontSize: '14.5px', color: dark }}>{v.label}</span>
                   <br />
-                  <span style={{ ...body, fontSize: '12.5px', color: 'rgba(15,21,35,0.72)', fontStyle: 'italic' }}>
+                  <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', fontStyle: 'italic' }}>
                     {v.helper}
                   </span>
                 </span>
@@ -321,7 +321,7 @@ function FieldLabel({ n, children }) {
   return (
     <div style={{
       ...sc,
-      fontSize: '11px',
+      fontSize: '13px',
       letterSpacing: '0.16em',
       color: 'rgba(15,21,35,0.72)',
       textTransform: 'uppercase',
@@ -340,7 +340,7 @@ function Chip({ selected, onClick, children }) {
       onClick={onClick}
       style={{
         ...sc,
-        fontSize: '12px',
+        fontSize: '13px',
         letterSpacing: '0.14em',
         color: selected ? '#FFFFFF' : gold,
         background: selected ? gold : 'rgba(200,146,42,0.04)',

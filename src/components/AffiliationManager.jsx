@@ -248,7 +248,7 @@ export function AffiliationManager({ userId }) {
           onClick={() => setAddingNew(true)}
           style={{
             ...sc,
-            fontSize: '12px',
+            fontSize: '13px',
             letterSpacing: '0.16em',
             color: gold,
             background: 'rgba(200,146,42,0.04)',
@@ -270,7 +270,7 @@ function RelationshipGroup({ relationshipType, affiliations, focusCache, onUpdat
     <div style={{ marginBottom: '18px' }}>
       <div style={{
         ...sc,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.16em',
         color: 'rgba(15,21,35,0.72)',
         textTransform: 'uppercase',
@@ -322,7 +322,7 @@ function AffiliationRow({ affiliation, focus, onUpdateVisibility, onRemove }) {
             onClick={() => onUpdateVisibility(affiliation.id, v)}
             style={{
               ...sc,
-              fontSize: '10.5px',
+              fontSize: '13px',
               letterSpacing: '0.12em',
               color: affiliation.visibility === v ? '#FFFFFF' : gold,
               background: affiliation.visibility === v ? gold : 'rgba(200,146,42,0.06)',
@@ -341,14 +341,14 @@ function AffiliationRow({ affiliation, focus, onUpdateVisibility, onRemove }) {
       {/* Remove */}
       {confirmingDelete ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ ...body, fontSize: '12.5px', color: 'rgba(15,21,35,0.72)' }}>
+          <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)' }}>
             Remove?
           </span>
           <button
             type="button"
             onClick={() => onRemove(affiliation.id)}
             style={{
-              ...sc, fontSize: '10.5px', letterSpacing: '0.12em',
+              ...sc, fontSize: '13px', letterSpacing: '0.12em',
               color: '#A23636', background: 'rgba(162,54,54,0.06)',
               border: '1px solid rgba(162,54,54,0.45)', borderRadius: '20px',
               padding: '5px 10px', cursor: 'pointer', textTransform: 'uppercase',
@@ -360,7 +360,7 @@ function AffiliationRow({ affiliation, focus, onUpdateVisibility, onRemove }) {
             type="button"
             onClick={() => setConfirmingDelete(false)}
             style={{
-              ...sc, fontSize: '10.5px', letterSpacing: '0.12em',
+              ...sc, fontSize: '13px', letterSpacing: '0.12em',
               color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none',
               padding: '5px 4px', cursor: 'pointer', textTransform: 'uppercase',
             }}

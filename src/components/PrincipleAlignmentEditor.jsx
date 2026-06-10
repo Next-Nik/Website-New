@@ -248,7 +248,7 @@ export default function PrincipleAlignmentEditor({
                 style={{
                   ...sc,
                   display: 'block',
-                  fontSize: '12px',
+                  fontSize: '13px',
                   letterSpacing: '0.06em',
                   color: 'rgba(15, 21, 35, 0.72)',
                   fontWeight: 600,
@@ -297,7 +297,7 @@ export default function PrincipleAlignmentEditor({
         <span
           style={{
             ...sc,
-            fontSize: '12px',
+            fontSize: '13px',
             letterSpacing: '0.06em',
             color: 'rgba(15, 21, 35, 0.55)',
           }}
@@ -380,7 +380,7 @@ function WeightSelect({ value, onChange }) {
               border: 'none',
               borderRadius: '40px',
               padding: '4px 12px',
-              fontSize: '12px',
+              fontSize: '13px',
               letterSpacing: '0.06em',
               fontWeight: active ? 600 : 400,
               cursor: 'pointer',

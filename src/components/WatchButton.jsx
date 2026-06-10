@@ -112,7 +112,7 @@ export function WatchButton({ entityType, entityId, entityName, size = 'md' }) {
       </InfoButton>
 
       {errMsg && (
-        <span style={{ ...body, fontSize: '12.5px', color: '#A23636' }}>
+        <span style={{ ...body, fontSize: '13px', color: '#A23636' }}>
           {errMsg}
         </span>
       )}

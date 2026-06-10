@@ -39,7 +39,7 @@ function SprintCard({ sprint }) {
         {domains.map(id => (
           <span key={id} style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.14em',
             color: '#A8721A',
             background: 'rgba(200,146,42,0.07)',
@@ -54,7 +54,7 @@ function SprintCard({ sprint }) {
         {days != null && (
           <span style={{
             ...sc,
-            fontSize: '11px',
+            fontSize: '13px',
             letterSpacing: '0.12em',
             color: days <= 14 ? '#8A3030' : 'rgba(15,21,35,0.55)',
             background: days <= 14 ? 'rgba(138,48,48,0.05)' : 'transparent',
@@ -76,7 +76,7 @@ function SprintCard({ sprint }) {
           <div key={id} style={{ marginBottom: '10px' }}>
             <div style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.14em',
               color: 'rgba(15,21,35,0.55)',
               marginBottom: '4px',
@@ -101,7 +101,7 @@ function SprintCard({ sprint }) {
       {sprint.created_at && (
         <div style={{
           ...sc,
-          fontSize: '11px',
+          fontSize: '13px',
           letterSpacing: '0.10em',
           color: 'rgba(15,21,35,0.55)',
           marginTop: '14px',
@@ -122,7 +122,7 @@ export function ProfileSprints({ activeSprints }) {
     <div style={{ marginBottom: '72px' }}>
       <div style={{
         ...sc,
-        fontSize: '11px',
+        fontSize: '13px',
         letterSpacing: '0.22em',
         color: 'rgba(15,21,35,0.55)',
         marginBottom: '24px',

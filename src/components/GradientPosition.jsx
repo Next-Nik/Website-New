@@ -148,7 +148,7 @@ export function GradientPosition({ position, trajectory, actorName, compact }) {
           >
             <span style={{
               ...sc,
-              fontSize: '10px',
+              fontSize: '13px',
               letterSpacing: '0.16em',
               color: '#8A3030',
               background: 'rgba(138,48,48,0.06)',
@@ -160,7 +160,7 @@ export function GradientPosition({ position, trajectory, actorName, compact }) {
             </span>
             <span style={{
               ...body,
-              fontSize: '12px',
+              fontSize: '13px',
               color: 'rgba(138,48,48,0.70)',
               lineHeight: 1.4,
             }}>

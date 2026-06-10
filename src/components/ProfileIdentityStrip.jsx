@@ -69,7 +69,7 @@ export function ProfileIdentityStrip({ displayName, focusName, headline, primary
           {[archetype, civDomain, scale].filter(Boolean).map((v, i) => (
             <span key={i} style={{
               ...sc,
-              fontSize: '11px',
+              fontSize: '13px',
               letterSpacing: '0.14em',
               color: '#A8721A',
               background: 'rgba(200,146,42,0.06)',
