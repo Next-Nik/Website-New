@@ -64,6 +64,8 @@ const SCALE_OPTIONS = [
 ]
 
 import { selfColor, civColor } from '../../constants/domainColors'
+import GlanceWheel from '../components/mission-control/GlanceWheel'
+import WorldWheel from '../components/mission-control/WorldWheel'
 
 // ── Wheel SVG — matches Mission Control GlanceWheel style ─────
 // Uses polygon area fill like the real wheel, with bolder lines
@@ -315,16 +317,29 @@ function ZoomScreen({ scores, onNext }) {
       <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', flexShrink: 0 }}>
         {/* Planet wheel — fades in */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: planetOpacity, transition: 'opacity 1.4s 0.3s' }}>
-          <WheelSVG domains={CIV_DOMAINS} scores={{}} size={160} isCiv={true} dark={true} />
+          <WorldWheel
+            dimensions={CIV_DOMAINS.map(d => ({ slug: d.key, label: d.name, color: d.hex }))}
+            size={256}
+          />
         </div>
         {/* Personal wheel — scales down and fades out */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${personalScale})`, transition: 'transform 1.6s cubic-bezier(0.6,0.01,0.2,1), opacity 0.4s 1.2s', opacity: personalOpacity }}>
-          <WheelSVG domains={SELF_DOMAINS} scores={scores} size={160} dark={false} />
+          <GlanceWheel
+            dimensions={SELF_DOMAINS.map(d => ({ key: d.key, label: d.name }))}
+            horizons={Object.fromEntries(SELF_DOMAINS.map(d => [d.key, 10]))}
+            current={scores}
+            size={180}
+          />
         </div>
         {/* Spacer */}
         
         <div style={{ visibility: 'hidden' }}>
-          <WheelSVG domains={SELF_DOMAINS} scores={scores} size={160} dark={false} />
+          <GlanceWheel
+            dimensions={SELF_DOMAINS.map(d => ({ key: d.key, label: d.name }))}
+            horizons={Object.fromEntries(SELF_DOMAINS.map(d => [d.key, 10]))}
+            current={scores}
+            size={180}
+          />
         </div>
       </div>
 
@@ -335,7 +350,7 @@ function ZoomScreen({ scores, onNext }) {
           <button
             style={{ ...s.btn, background: 'transparent', border: `1px solid rgba(15,21,35,0.3)`, color: INK, letterSpacing: '0.14em' }}
             onClick={handleZoom}
-          >Zoom out</button>
+          >Next</button>
         </div>
       )}
 
@@ -345,6 +360,7 @@ function ZoomScreen({ scores, onNext }) {
 
       {phase === 'planet' && (
         <div style={{ opacity: textVisible ? 1 : 0, transition: 'opacity 1s 0.3s' }}>
+          <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.18em', color: GC, textTransform: 'uppercase', margin: '0 0 10px' }}>Our planet</p>
           <p style={{ fontFamily: SERIF, fontSize: 22, lineHeight: 1.4, margin: '0 0 6px', color: BG }}>The same seven domains.</p>
           <p style={{ fontFamily: SERIF, fontSize: 22, lineHeight: 1.4, margin: '0 0 16px', color: BG }}>One person. One planet.</p>
           <p style={{ fontFamily: LORA, fontSize: 14, lineHeight: 1.6, margin: '0 0 8px', color: 'rgba(250,250,247,0.65)' }}>The current state of the planet is a reflection of the average of all the people on it.</p>
