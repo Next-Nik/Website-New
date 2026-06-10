@@ -66,7 +66,7 @@ export function PlanetDomainCard({
         <div style={{ flex: 1 }}>
           <p style={{
             ...sc,
-            fontSize: 11,
+            fontSize: 13,
             letterSpacing: '0.08em',
             color: domain.color,
             marginBottom: 2,
@@ -96,7 +96,7 @@ export function PlanetDomainCard({
             </p>
             <p style={{
               ...sc,
-              fontSize: 10,
+              fontSize: 13,
               letterSpacing: '0.06em',
               color: 'rgba(15,21,35,0.55)',
             }}>
@@ -106,7 +106,7 @@ export function PlanetDomainCard({
         ) : (
           <p style={{
             ...sc,
-            fontSize: 11,
+            fontSize: 13,
             letterSpacing: '0.08em',
             color: 'rgba(15,21,35,0.55)',
           }}>
@@ -128,7 +128,7 @@ export function PlanetDomainCard({
             borderBottom: '1px solid rgba(200,146,42,0.12)',
             marginBottom: 20,
           }}>
-            <span style={{ ...sc, fontSize: 10, letterSpacing: '0.08em', color: '#A8721A', display: 'block', marginBottom: 4 }}>
+            <span style={{ ...sc, fontSize: 13, letterSpacing: '0.08em', color: '#A8721A', display: 'block', marginBottom: 4 }}>
               HORIZON GOAL
             </span>
             {domain.horizonGoal}
@@ -137,7 +137,7 @@ export function PlanetDomainCard({
           {/* Score selector — 1 through 10 */}
           <p style={{
             ...sc,
-            fontSize: 11,
+            fontSize: 13,
             letterSpacing: '0.08em',
             color: 'rgba(15,21,35,0.72)',
             marginBottom: 12,
@@ -158,7 +158,7 @@ export function PlanetDomainCard({
                 title={label}
                 style={{
                   ...sc,
-                  fontSize: 11,
+                  fontSize: 13,
                   letterSpacing: '0.06em',
                   padding: '10px 4px',
                   background: currentScore === score
@@ -179,7 +179,7 @@ export function PlanetDomainCard({
                 <span style={{ fontSize: 16, fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
                   {score}
                 </span>
-                <span style={{ fontSize: 9 }}>{label}</span>
+                <span style={{ fontSize: 13 }}>{label}</span>
               </button>
             ))}
           </div>
@@ -188,7 +188,7 @@ export function PlanetDomainCard({
           <div>
             <label style={{
               ...sc,
-              fontSize: 10,
+              fontSize: 13,
               letterSpacing: '0.08em',
               color: 'rgba(15,21,35,0.55)',
               display: 'block',

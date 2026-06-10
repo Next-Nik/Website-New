@@ -309,7 +309,7 @@ export function PathView({ track, user, onBackToLoop }) {
         }
         .ns-step-done {
           opacity: 0.7;
-          border-color: rgba(168,114,26,0.10);
+          border-color: rgba(168,114,26,0.55);
         }
         .ns-step-active {
           border-color: #C8922A;

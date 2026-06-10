@@ -626,7 +626,7 @@ function FoundationReports({ user, sessions, phase = 'baseline' }) {
 
       {/* Current period state */}
       <div style={{ padding: '20px 24px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '14px', marginBottom: '24px' }}>
-        <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', ...gold, display: 'block', marginBottom: '6px', textTransform: 'uppercase' }}>
           {periodMeta.label} {'·'} {periodLabel(activePeriod, periodMeta.id)}
         </span>
         <p style={{ ...body, fontSize: '15px', ...muted, lineHeight: 1.6, margin: '0 0 12px 0' }}>
@@ -650,7 +650,7 @@ function FoundationReports({ user, sessions, phase = 'baseline' }) {
       {/* Active reflection (current period — fresh or stored) */}
       {reviewBelow && (
         <div style={{ borderLeft: '2px solid rgba(200,146,42,0.35)', padding: '4px 0 4px 20px', marginBottom: '24px' }}>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: 'rgba(168,114,26,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(168,114,26,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
             {reviewLabel}
           </span>
           <p style={{ ...body, fontSize: '17px', lineHeight: 1.85, ...meta, margin: 0, whiteSpace: 'pre-wrap' }}>{reviewBelow}</p>
@@ -675,13 +675,13 @@ function FoundationReports({ user, sessions, phase = 'baseline' }) {
       {/* Past reflections in this period type */}
       {pastPeriodReviews.length > 0 && (
         <div>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: 'rgba(168,114,26,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '14px' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: 'rgba(168,114,26,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '14px' }}>
             Earlier {periodMeta.label.toLowerCase()} reflections
           </span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {pastPeriodReviews.map(r => (
               <div key={r.period_id} style={{ borderLeft: '2px solid rgba(200,146,42,0.18)', padding: '4px 0 4px 18px' }}>
-                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>
                   {r.period_label}
                 </span>
                 <p style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: 'rgba(15,21,35,0.65)', margin: 0, whiteSpace: 'pre-wrap' }}>{r.review_text}</p>
@@ -753,7 +753,7 @@ function FoundationLogs({ sessions }) {
               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase' }}>
                 {formatDate(day.date)}
               </span>
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: deltaColor }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: deltaColor }}>
                 {before ? `${before.value}` : '—'}
                 {' → '}
                 {after ? `${after.value}` : '—'}
@@ -767,13 +767,13 @@ function FoundationLogs({ sessions }) {
 
             {before?.note && (
               <div style={{ marginBottom: after?.note ? '10px' : 0 }}>
-                <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em', color: 'rgba(168,114,26,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Before</span>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(168,114,26,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Before</span>
                 <p style={{ ...body, fontSize: '15px', lineHeight: 1.6, ...muted, margin: 0, whiteSpace: 'pre-wrap' }}>{before.note}</p>
               </div>
             )}
             {after?.note && (
               <div>
-                <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.2em', color: 'rgba(168,114,26,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>After</span>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'rgba(168,114,26,0.7)', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>After</span>
                 <p style={{ ...body, fontSize: '15px', lineHeight: 1.6, ...muted, margin: 0, whiteSpace: 'pre-wrap' }}>{after.note}</p>
               </div>
             )}
@@ -1250,7 +1250,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
             onClick={() => setSaveError('')}
             aria-label="Dismiss"
             style={{
-              ...sc, fontSize: '10px', letterSpacing: '0.18em',
+              ...sc, fontSize: '13px', letterSpacing: '0.18em',
               background: 'transparent', border: 'none', cursor: 'pointer',
               color: '#7A2D08', flexShrink: 0, padding: '2px 6px',
             }}
@@ -1270,11 +1270,11 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
               Check in to unlock the audio.
             </span>
           ) : !afterUnlocked ? (
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase' }}>
               Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
             </span>
           ) : (
-            <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase' }}>
               Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
             </span>
           )}
@@ -1285,7 +1285,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
 
           {/* Before flame */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: beforeDone ? 'rgba(168,114,26,0.55)' : '#A8721A', textTransform: 'uppercase', marginBottom: '8px' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: beforeDone ? 'rgba(168,114,26,0.55)' : '#A8721A', textTransform: 'uppercase', marginBottom: '8px' }}>
               Starting State
             </span>
             <div style={{ pointerEvents: beforeDone ? 'none' : 'auto', opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
@@ -1323,7 +1323,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
 
           {/* After flame */}
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', opacity: afterUnlocked ? 1 : 0.22, transition: 'opacity 0.8s ease', pointerEvents: afterUnlocked ? 'auto' : 'none' }}>
-            <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '8px' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '8px' }}>
               After State
             </span>
             <FlameSlider value={afterValue} onChange={setAfterValue} ghostValue={beforeDone ? beforeValue : null} />
@@ -1400,7 +1400,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
         {/* Audio scrubber — below journal, visible once before is done */}
         {beforeDone && audioUrl && (
           <div style={{ marginTop: '4px', marginBottom: '8px' }}>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: '#A8721A', textAlign: 'center', marginBottom: '8px' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', textAlign: 'center', marginBottom: '8px' }}>
               Horizon State {'·'} {PHASES.find(p => p.key === currentPhase)?.label || 'Foundation'} {'·'} {PHASE_DURATION[currentPhase] || '20 min'}
             </div>
             <div
@@ -1415,8 +1415,8 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
               <div style={{ height: '100%', width: mobilePct + '%', background: '#C8922A', borderRadius: '2px', transition: 'width 0.1s linear' }} />
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>{mobileFmt(mobileCurrent)}</span>
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>{mobileFmt(mobileDuration)}</span>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>{mobileFmt(mobileCurrent)}</span>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>{mobileFmt(mobileDuration)}</span>
             </div>
           </div>
         )}
@@ -1429,7 +1429,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
         {/* Before */}
         <div className="hs-col-before-desktop" style={{ flexDirection: 'column', alignItems: 'center', opacity: beforeDone ? 0.38 : 1, transition: 'opacity 0.5s ease' }}>
           <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>Starting State</span>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>Foundation</span>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>Foundation</span>
           <div style={{ pointerEvents: beforeDone ? 'none' : 'auto', marginBottom: '14px' }}>
             <FlameSlider value={beforeValue} onChange={setBeforeValue} ghostValue={null} />
           </div>
@@ -1463,7 +1463,7 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
         {/* After */}
         <div className="hs-col-after-desktop" style={{ flexDirection: 'column', alignItems: 'center', opacity: afterUnlocked ? 1 : 0.22, transition: 'opacity 0.8s ease', pointerEvents: afterUnlocked ? 'auto' : 'none' }}>
           <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '4px' }}>After State</span>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>Foundation</span>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(168,114,26,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>Foundation</span>
           <div style={{ marginBottom: '14px' }}>
             <FlameSlider value={afterValue} onChange={setAfterValue} ghostValue={beforeDone ? beforeValue : null} />
           </div>
@@ -1560,12 +1560,12 @@ export function HorizonStatePage() {
                   transition: 'all 0.2s',
                 }}
               >
-                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: 'inherit', display: 'block', marginBottom: '2px', opacity: 0.7 }}>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: 'inherit', display: 'block', marginBottom: '2px', opacity: 0.7 }}>
                   Phase {p.number}
                 </span>
                 {p.label}
                 {!accessible && (
-                  <span style={{ display: 'inline-block', marginLeft: '6px', fontSize: '10px', opacity: 0.5 }}>·</span>
+                  <span style={{ display: 'inline-block', marginLeft: '6px', fontSize: '13px', opacity: 0.5 }}>·</span>
                 )}
               </button>
             )
@@ -1594,7 +1594,7 @@ export function HorizonStatePage() {
                         key={v.key}
                         onClick={() => setActiveView(v.key)}
                         style={{
-                          ...sc, fontSize: '12px', letterSpacing: '0.18em',
+                          ...sc, fontSize: '13px', letterSpacing: '0.18em',
                           padding: '10px 14px',
                           background: 'none', border: 'none', cursor: 'pointer',
                           color: isActiveView ? '#0F1523' : 'rgba(15,21,35,0.55)',
@@ -1693,7 +1693,7 @@ function PhaseAdvancePrompt({ currentPhase, nextPhaseKey, sessionCount, onAdvanc
 
   return (
     <div style={{ marginTop: '40px', padding: '28px 32px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '14px' }}>
-      <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '10px', textTransform: 'uppercase' }}>
+      <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '10px', textTransform: 'uppercase' }}>
         Phase {nextPhase.number} available
       </span>
       <p style={{ ...body, fontSize: '17px', fontWeight: 400, ...meta, lineHeight: 1.7, marginBottom: '20px' }}>

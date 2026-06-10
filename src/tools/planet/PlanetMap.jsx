@@ -233,7 +233,7 @@ function LandingView({ user, actorRecord, hasExistingScores, onBegin }) {
       {/* Eyebrow */}
       <p style={{
         ...sc,
-        fontSize: 11,
+        fontSize: 13,
         letterSpacing: '0.12em',
         color: '#A8721A',
         textTransform: 'uppercase',
@@ -282,7 +282,7 @@ function LandingView({ user, actorRecord, hasExistingScores, onBegin }) {
         {PLANET_DOMAINS.map(d => (
           <span key={d.key} style={{
             ...sc,
-            fontSize: 11,
+            fontSize: 13,
             letterSpacing: '0.08em',
             color: d.color,
             border: `1px solid ${d.color}`,
@@ -347,7 +347,7 @@ function AssessmentView({ actorRecord, scores, activeDomain, onSetActiveDomain, 
       <div style={{ marginBottom: 48 }}>
         <p style={{
           ...sc,
-          fontSize: 11,
+          fontSize: 13,
           letterSpacing: '0.12em',
           color: '#A8721A',
           textTransform: 'uppercase',
@@ -447,7 +447,7 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
       {/* Eyebrow */}
       <p style={{
         ...sc,
-        fontSize: 11,
+        fontSize: 13,
         letterSpacing: '0.12em',
         color: '#A8721A',
         textTransform: 'uppercase',
@@ -523,7 +523,7 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
                   flexShrink: 0,
                 }} />
                 <div style={{ flex: 1 }}>
-                  <p style={{ ...sc, fontSize: 11, letterSpacing: '0.08em', color: domain.color, marginBottom: 2 }}>
+                  <p style={{ ...sc, fontSize: 13, letterSpacing: '0.08em', color: domain.color, marginBottom: 2 }}>
                     {domain.label}
                   </p>
                   <p style={{ ...body, fontSize: 13, color: 'rgba(15,21,35,0.72)' }}>
@@ -532,7 +532,7 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
                 </div>
                 <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
                   <div style={{ textAlign: 'center' }}>
-                    <p style={{ ...sc, fontSize: 10, color: 'rgba(15,21,35,0.55)', marginBottom: 2 }}>Self</p>
+                    <p style={{ ...sc, fontSize: 13, color: 'rgba(15,21,35,0.55)', marginBottom: 2 }}>Self</p>
                     <p style={{
                       ...serif,
                       fontSize: 28,
@@ -546,7 +546,7 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
                   {nextusScore != null && (
                     <>
                       <div style={{ textAlign: 'center' }}>
-                        <p style={{ ...sc, fontSize: 10, color: 'rgba(15,21,35,0.55)', marginBottom: 2 }}>NextUs</p>
+                        <p style={{ ...sc, fontSize: 13, color: 'rgba(15,21,35,0.55)', marginBottom: 2 }}>NextUs</p>
                         <p style={{
                           ...serif,
                           fontSize: 28,
@@ -558,7 +558,7 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
                         </p>
                       </div>
                       <div style={{ textAlign: 'center' }}>
-                        <p style={{ ...sc, fontSize: 10, color: 'rgba(15,21,35,0.55)', marginBottom: 2 }}>Gap</p>
+                        <p style={{ ...sc, fontSize: 13, color: 'rgba(15,21,35,0.55)', marginBottom: 2 }}>Gap</p>
                         <p style={{
                           ...serif,
                           fontSize: 22,
@@ -590,7 +590,7 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
         }}>
           <p style={{
             ...sc,
-            fontSize: 11,
+            fontSize: 13,
             letterSpacing: '0.12em',
             color: '#A8721A',
             textTransform: 'uppercase',

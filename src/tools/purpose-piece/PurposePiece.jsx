@@ -159,7 +159,7 @@ function PurposeDisc({ active, complete, size = 180, compact = false }) {
               <text
                 x={w.labelA[0]} y={w.labelA[1]}
                 textAnchor="middle" dominantBaseline="middle"
-                style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', fill: isComplete || isActive ? '#FFFFFF' : 'rgba(15,21,35,0.55)' }}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', fill: isComplete || isActive ? '#FFFFFF' : 'rgba(15,21,35,0.55)' }}
               >{w.labelB.toUpperCase()}</text>
             )}
           </g>
@@ -186,14 +186,14 @@ function Breadcrumb({ currentPhase, visible }) {
           <span key={p.id} style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
             <span style={{
               ...sc,
-              fontSize: '12px',
+              fontSize: '13px',
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
               color: current ? GOLD : done ? 'rgba(15,21,35,0.55)' : 'rgba(15,21,35,0.55)',
               fontWeight: current ? 600 : 400,
             }}>{p.label}</span>
             {i < PHASES.length - 1 && (
-              <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '11px' }}>→</span>
+              <span style={{ color: 'rgba(15,21,35,0.55)', fontSize: '13px' }}>→</span>
             )}
           </span>
         )
@@ -224,7 +224,7 @@ function QuestionLabel({ text }) {
   return (
     <div style={{
       ...sc,
-      fontSize: '12px',
+      fontSize: '13px',
       letterSpacing: '0.2em',
       textTransform: 'uppercase',
       color: GOLD,
@@ -378,7 +378,7 @@ export function ProfileCard({ profile, civilisationalStatement, horizonGoal }) {
 
       {horizonGoal && (
         <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: `1px solid rgba(200,146,42,0.22)` }}>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', marginBottom: '6px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', marginBottom: '6px' }}>
             Your domain's horizon
           </div>
           <p style={{ ...body, fontSize: '16px', lineHeight: 1.75, color: MUTE, fontStyle: 'italic', margin: 0 }}>
@@ -443,7 +443,7 @@ export function PlacementCard({ placement, session, onChooseReadiness }) {
           borderRadius: '10px',
           marginBottom: '24px',
         }}>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: MUTE, textTransform: 'uppercase', marginBottom: '6px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: MUTE, textTransform: 'uppercase', marginBottom: '6px' }}>
             Mode — how your contribution travels
           </div>
           <p style={{ ...body, fontSize: '16px', lineHeight: 1.75, color: INK, margin: 0 }}>
@@ -454,7 +454,7 @@ export function PlacementCard({ placement, session, onChooseReadiness }) {
 
       {/* Readiness fork */}
       <div style={{ marginBottom: '20px' }}>
-        <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', marginBottom: '10px' }}>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', marginBottom: '10px' }}>
           Which path is yours?
         </div>
         {placement.readiness_reasoning && (
@@ -526,7 +526,7 @@ export function PlacementCard({ placement, session, onChooseReadiness }) {
       {/* Resource guidance */}
       {placement.resource_guidance && (
         <div style={{ padding: '16px 20px', background: 'rgba(200,146,42,0.04)', borderRadius: '10px', marginBottom: '20px' }}>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', marginBottom: '6px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', marginBottom: '6px' }}>
             Reading the territory
           </div>
           <p style={{ ...body, fontSize: '15px', color: INK, lineHeight: 1.75, margin: 0 }}>
@@ -544,7 +544,7 @@ export function PlacementCard({ placement, session, onChooseReadiness }) {
           borderRadius: '10px',
           marginBottom: '20px',
         }}>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', marginBottom: '6px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', marginBottom: '6px' }}>
             A note
           </div>
           <p style={{ ...body, fontSize: '15px', color: INK, lineHeight: 1.8, margin: 0, fontStyle: 'italic' }}>

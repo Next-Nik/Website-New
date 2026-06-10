@@ -231,11 +231,11 @@ function HourglassPickerCompact({ onScore, currentScore }) {
         {shown !== undefined && shown !== null ? (
           <>
             <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '14px', fontWeight: 600, color: getScoreColor(shown), letterSpacing: '0.04em' }}>{shown}</span>
-            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.10em', color: getScoreColor(shown) }}>{TIER_MAP[shown]}</span>
+            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.10em', color: getScoreColor(shown) }}>{TIER_MAP[shown]}</span>
             <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.62)' }}>— {LABEL_MAP[shown]}</span>
           </>
         ) : (
-          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>Hover a bar to see the tier · tap to set the score</span>
+          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>Hover a bar to see the tier · tap to set the score</span>
         )}
       </div>
 
@@ -283,7 +283,7 @@ function HourglassPickerCompact({ onScore, currentScore }) {
           const isCur  = currentScore === n
           const isLine = n === 5
           return (
-            <div key={n} style={{ flex: 1, textAlign: 'center', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.04em', color: isLine ? '#A8721A' : (isHov || isCur) ? getScoreColor(n) : 'rgba(15,21,35,0.55)', fontWeight: (isHov || isCur || isLine) ? 600 : 400 }}>{n}</div>
+            <div key={n} style={{ flex: 1, textAlign: 'center', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.04em', color: isLine ? '#A8721A' : (isHov || isCur) ? getScoreColor(n) : 'rgba(15,21,35,0.55)', fontWeight: (isHov || isCur || isLine) ? 600 : 400 }}>{n}</div>
           )
         })}
       </div>
@@ -753,7 +753,7 @@ function ProposedDraftAccept({ proposedDraft, accepted, onAccept }) {
       }}>
         <span style={{
           fontFamily: "'Cormorant SC', Georgia, serif",
-          fontSize: '12px',
+          fontSize: '13px',
           letterSpacing: '0.14em',
           color: '#A8721A',
         }}>
@@ -769,7 +769,7 @@ function ProposedDraftAccept({ proposedDraft, accepted, onAccept }) {
               background: '#C8922A',
               color: '#FFFFFF',
               fontFamily: "'Cormorant SC', Georgia, serif",
-              fontSize: '12px',
+              fontSize: '13px',
               letterSpacing: '0.12em',
               cursor: 'pointer',
             }}
@@ -1408,7 +1408,7 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
               </p>
 
               {horizonMsgs.some(m => m.accepted) && (
-                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '12px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>
+                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>
                   ✓ Saved from North Star — edit freely, then lock
                 </div>
               )}
@@ -1776,17 +1776,17 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, active }) {
     <div style={{ border: '1px solid ' + borderColor, borderRadius: '10px', marginBottom: '8px', overflow: 'hidden', opacity: active ? 1 : 0.6 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '14px 18px', background: active ? 'rgba(200,146,42,0.03)' : 'transparent' }}>
         <button onClick={() => onToggle(sub.id)} style={{ width: '20px', height: '20px', borderRadius: '50%', border: btnBorder, background: active ? '#A8721A' : 'transparent', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {active && <span style={{ color: '#FFFFFF', fontSize: '12px', lineHeight: 1 }}>{'✓'}</span>}
+          {active && <span style={{ color: '#FFFFFF', fontSize: '13px', lineHeight: 1 }}>{'✓'}</span>}
         </button>
         <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: active ? '#0F1523' : 'rgba(15,21,35,0.55)', flex: 1 }}>{sub.label}</span>
-        {saved && <span style={{ ...sc, fontSize: '11px', color: '#A8721A', letterSpacing: '0.1em' }}>Saved</span>}
+        {saved && <span style={{ ...sc, fontSize: '13px', color: '#A8721A', letterSpacing: '0.1em' }}>Saved</span>}
         {!saved && active && currentScore !== undefined && <span style={{ ...sc, fontSize: '13px', color: '#A8721A' }}>{currentScore}/10</span>}
       </div>
 
       {active && (
         <div style={{ padding: '0 18px 18px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
           <div style={{ marginTop: '14px', marginBottom: '16px' }}>
-            <button onClick={() => setShowContext(!showContext)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', padding: 0 }}>
+            <button onClick={() => setShowContext(!showContext)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', padding: 0 }}>
               {showContext ? '▾' : '▸'} What North Star should know about this area
             </button>
             {showContext && (
@@ -1801,7 +1801,7 @@ function ConnectionSubDomainCard({ sub, data, onToggle, onUpdate, active }) {
           </div>
 
           <div style={{ marginBottom: '4px' }}>
-            <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>Where are you now?</div>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>Where are you now?</div>
             <HourglassPickerCompact
               currentScore={currentScore}
               onScore={n => { setCurrentScore(n); save({ currentScore: n }) }}
@@ -1869,7 +1869,7 @@ function ConnectionLandscapeStep({ subDomains, setSubDomains, onLock }) {
       {/* Average preview — appears once anything is scored */}
       {average !== undefined && (
         <div style={{ marginTop: '20px', padding: '14px 18px', background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '10px' }}>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>Your Connection score</div>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>Your Connection score</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
             <span style={{ ...sc, fontSize: '1.75rem', fontWeight: 600, color: '#A8721A', letterSpacing: '0.02em' }}>{average}</span>
             <span style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.60)', fontStyle: 'italic' }}>

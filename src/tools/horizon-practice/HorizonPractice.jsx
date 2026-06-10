@@ -329,7 +329,7 @@ function FiveBeatTracker({ currentBeat, sweep = false }) {
                 animation: here ? 'hp-dot-pulse 2.4s ease-in-out infinite' : 'none',
               }} />
               <span style={{
-                ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
+                ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em',
                 color: done || here ? tokens.gold : tokens.whisper,
                 textTransform: 'uppercase',
               }}>{name}</span>
@@ -500,7 +500,7 @@ function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId
           }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               {t.time_label && (
-                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em',
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
                   color: tokens.gold, marginBottom: '3px' }}>{t.time_label}</div>
               )}
               <div style={{ ...body, fontSize: '14.5px', color: tokens.meta, lineHeight: 1.4 }}>
@@ -513,7 +513,7 @@ function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId
             </div>
             <button onClick={() => removeThreshold(i)} style={{
               background: 'transparent', border: 'none', cursor: 'pointer',
-              ...sc, fontSize: '10px', letterSpacing: '0.16em',
+              ...sc, fontSize: '13px', letterSpacing: '0.16em',
               color: tokens.ghost, padding: '4px 8px',
             }}>✕</button>
           </div>
@@ -529,7 +529,7 @@ function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId
         <SelectedThresholds />
 
         <Card style={{ padding: '24px 26px' }}>
-          <Eyebrow style={{ marginBottom: '8px', fontSize: '11px' }}>Connect your calendar</Eyebrow>
+          <Eyebrow style={{ marginBottom: '8px', fontSize: '13px' }}>Connect your calendar</Eyebrow>
           <Body dim style={{ fontSize: '14px', margin: '0 0 20px' }}>
             Paste your private iCal URL and your calendar shows up here every morning.
             One-time setup, works with any calendar.
@@ -542,7 +542,7 @@ function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId
                 padding: '6px 12px', borderRadius: '40px',
                 background: activeGuide === i ? tokens.goldTint : 'transparent',
                 border: `1px solid ${activeGuide === i ? tokens.goldChrome : tokens.goldFaint}`,
-                ...sc, fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.14em',
+                ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em',
                 color: activeGuide === i ? tokens.gold : tokens.ghost, cursor: 'pointer',
               }}>{g.icon} {g.name}</button>
             ))}
@@ -558,7 +558,7 @@ function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId
                 display: 'flex', gap: '12px', marginBottom: i < ICAL_SETUP_GUIDES[activeGuide].steps.length - 1 ? '12px' : 0,
               }}>
                 <span style={{
-                  ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
+                  ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em',
                   color: tokens.gold, minWidth: '20px', paddingTop: '2px',
                 }}>{String(i + 1).padStart(2, '0')}</span>
                 <span style={{ ...body, fontSize: '13.5px', color: tokens.meta, lineHeight: 1.5, margin: 0 }}>
@@ -616,12 +616,12 @@ function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           background: tokens.bgCard,
         }}>
-          <Eyebrow style={{ fontSize: '11px' }}>
+          <Eyebrow style={{ fontSize: '13px' }}>
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </Eyebrow>
           <button onClick={() => setShowSetup(true)} style={{
             background: 'transparent', border: 'none', cursor: 'pointer',
-            ...sc, fontSize: '9px', letterSpacing: '0.16em',
+            ...sc, fontSize: '13px', letterSpacing: '0.16em',
             color: tokens.whisper, textTransform: 'uppercase',
           }}>Change calendar</button>
         </div>
@@ -641,7 +641,7 @@ function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId
             </Body>
             <button onClick={() => setShowSetup(true)} style={{
               background: 'transparent', border: 'none', cursor: 'pointer',
-              ...sc, fontSize: '11px', letterSpacing: '0.16em',
+              ...sc, fontSize: '13px', letterSpacing: '0.16em',
               color: tokens.gold, borderBottom: `1px solid ${tokens.goldFaint}`,
             }}>Update iCal URL</button>
           </div>
@@ -671,7 +671,7 @@ function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId
             >
               {/* Time */}
               <div style={{
-                ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.14em',
+                ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em',
                 color: isSelected ? tokens.gold : tokens.ghost,
                 minWidth: '42px', flexShrink: 0,
               }}>
@@ -716,7 +716,7 @@ function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId
       <button onClick={() => setShowManual(s => !s)} style={{
         background: 'transparent', border: `1px dashed ${tokens.goldFaint}`,
         borderRadius: '12px', width: '100%', padding: '12px',
-        ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.16em',
+        ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em',
         color: tokens.gold, cursor: 'pointer', marginBottom: showManual ? '12px' : 0,
       }}>
         {showManual ? '− Close' : '+ Add a threshold not on my calendar'}
@@ -945,7 +945,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
       padding: 'clamp(28px, 5vw, 48px) clamp(20px, 4vw, 36px) 80px' }}>
 
       <div style={{
-        ...sc, fontSize: '10px', letterSpacing: '0.20em',
+        ...sc, fontSize: '13px', letterSpacing: '0.20em',
         color: tokens.whisper, textTransform: 'uppercase',
         marginBottom: '20px', display: 'flex', justifyContent: 'space-between',
       }}>
@@ -964,7 +964,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
           <Eyebrow style={{ marginBottom: '12px' }}>Commit</Eyebrow>
           <Heading size="lg" style={{ marginBottom: '16px' }}>
             Ready to step into your{' '}
-            <em style={{ color: tokens.gold, fontStyle: 'italic' }}>Horizon</em>?
+            <em style={{ color: tokens.gold }}>Horizon</em>?
           </Heading>
 
           <div style={{ marginTop: '28px' }}>
@@ -991,7 +991,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
                         border: `1px solid ${answers[q.key] === ans
                           ? (ans === 'yes' ? tokens.goldChrome : tokens.ghost) : tokens.goldFaint}`,
                         borderRadius: '40px', padding: '10px 18px',
-                        ...sc, fontSize: '12px', fontWeight: 600, letterSpacing: '0.18em',
+                        ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em',
                         textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s',
                       }}>{ans}</button>
                   ))}
@@ -1004,7 +1004,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
             <div style={{ marginTop: '8px', marginBottom: '24px' }}>
               <button onClick={() => setShowCovenant(s => !s)} style={{
                 background: 'transparent', border: 'none', padding: '8px 0',
-                cursor: 'pointer', ...sc, fontSize: '11px', fontWeight: 600,
+                cursor: 'pointer', ...sc, fontSize: '13px', fontWeight: 600,
                 letterSpacing: '0.18em', color: tokens.gold,
                 borderBottom: `1px solid ${tokens.goldFaint}`,
               }}>{showCovenant ? '— Hide covenant' : '+ Covenant'}</button>
@@ -1025,7 +1025,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
 
           {anyNo && (
             <Card style={{ background: tokens.goldTint, marginBottom: '24px' }}>
-              <Eyebrow color="ghost" style={{ marginBottom: '8px', fontSize: '11px' }}>A no is data</Eyebrow>
+              <Eyebrow color="ghost" style={{ marginBottom: '8px', fontSize: '13px' }}>A no is data</Eyebrow>
               <Body dim style={{ margin: 0, fontSize: '14px' }}>
                 Run lighter today. Or close and return.
               </Body>
@@ -1045,7 +1045,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
         <div className="hp-fade-in">
           <Eyebrow style={{ marginBottom: '12px' }}>Ground</Eyebrow>
           <Heading size="lg" style={{ marginBottom: '16px' }}>
-            Land in the <em style={{ color: tokens.gold, fontStyle: 'italic' }}>body</em>.
+            Land in the <em style={{ color: tokens.gold }}>body</em>.
           </Heading>
 
           <Card style={{ marginTop: '28px', padding: '36px 32px' }}>
@@ -1062,7 +1062,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
                     animationDelay: `${i * 0.35}s`,
                   }}>
                   <span style={{
-                    ...sc, fontSize: '11px', fontWeight: 600,
+                    ...sc, fontSize: '13px', fontWeight: 600,
                     letterSpacing: '0.20em', color: tokens.gold, minWidth: '24px',
                   }}>{step.num}</span>
                   <span style={{
@@ -1087,7 +1087,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
         <div className="hp-fade-in">
           <Eyebrow style={{ marginBottom: '12px' }}>Plan</Eyebrow>
           <Heading size="lg" style={{ marginBottom: '16px' }}>
-            Lock the <em style={{ color: tokens.gold, fontStyle: 'italic' }}>thresholds</em>.
+            Lock the <em style={{ color: tokens.gold }}>thresholds</em>.
           </Heading>
           <Body dim>The moments your Horizon Self will be tested today.</Body>
 
@@ -1119,13 +1119,13 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
             <Eyebrow>Anchor · {orderedIam[iamIdx].label}</Eyebrow>
             <button onClick={() => setFastMode(true)} style={{
               background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-              ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
+              ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em',
               color: tokens.ghost, textTransform: 'uppercase',
               borderBottom: `1px solid ${tokens.goldFaint}`,
             }}>Fast mode</button>
           </div>
           <Heading size="lg" style={{ marginBottom: '16px' }}>
-            Declare it <em style={{ color: tokens.gold, fontStyle: 'italic' }}>aloud</em>.
+            Declare it <em style={{ color: tokens.gold }}>aloud</em>.
           </Heading>
 
           <div
@@ -1137,8 +1137,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
               borderRadius: '14px',
             }}>
             <p style={{
-              ...serif, fontSize: 'clamp(22px, 3.2vw, 28px)', fontWeight: 400,
-              fontStyle: 'italic', color: tokens.gold, lineHeight: 1.45,
+              ...serif, fontSize: 'clamp(22px, 3.2vw, 28px)', fontWeight: 400 color: tokens.gold, lineHeight: 1.45,
               margin: 0, maxWidth: '460px', marginLeft: 'auto', marginRight: 'auto',
             }}>{orderedIam[iamIdx].text}</p>
           </div>
@@ -1159,7 +1158,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
               else setBeat(3)
             }} style={{
               background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-              ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.ghost,
+              ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.ghost,
             }}>← {iamIdx === 0 ? 'Plan' : 'Back'}</button>
 
             <div style={{ display: 'flex', gap: '10px' }}>
@@ -1180,13 +1179,13 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
             <Eyebrow>Anchor · fast run</Eyebrow>
             <button onClick={() => setFastMode(false)} style={{
               background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-              ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em',
+              ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em',
               color: tokens.ghost, textTransform: 'uppercase',
               borderBottom: `1px solid ${tokens.goldFaint}`,
             }}>One at a time</button>
           </div>
           <Heading size="lg" style={{ marginBottom: '16px' }}>
-            Declare them <em style={{ color: tokens.gold, fontStyle: 'italic' }}>aloud</em>.
+            Declare them <em style={{ color: tokens.gold }}>aloud</em>.
           </Heading>
 
           <div style={{ marginTop: '24px' }}>
@@ -1196,9 +1195,9 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
                 background: tokens.goldTint,
                 borderLeft: `2px solid ${tokens.goldChrome}`, borderRadius: '4px',
               }}>
-                <Eyebrow style={{ marginBottom: '4px', fontSize: '10px' }}>{stmt.label}</Eyebrow>
+                <Eyebrow style={{ marginBottom: '4px', fontSize: '13px' }}>{stmt.label}</Eyebrow>
                 <p style={{
-                  ...serif, fontSize: '17px', fontStyle: 'italic', color: tokens.gold,
+                  ...serif, fontSize: '17px' color: tokens.gold,
                   lineHeight: 1.45, margin: 0,
                 }}>{stmt.text}</p>
               </div>
@@ -1218,7 +1217,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
         <div className="hp-fade-in">
           <Eyebrow style={{ marginBottom: '12px' }}>Anchor · integrated</Eyebrow>
           <Heading size="lg" style={{ marginBottom: '16px' }}>
-            Now the <em style={{ color: tokens.gold, fontStyle: 'italic' }}>whole</em>.
+            Now the <em style={{ color: tokens.gold }}>whole</em>.
           </Heading>
           <Body dim>Once. From the integrated state.</Body>
 
@@ -1232,8 +1231,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
                 borderRadius: '14px',
               }}>
               <p style={{
-                ...serif, fontSize: 'clamp(19px, 2.6vw, 23px)', fontWeight: 400,
-                fontStyle: 'italic', color: tokens.gold, lineHeight: 1.55, margin: 0,
+                ...serif, fontSize: 'clamp(19px, 2.6vw, 23px)', fontWeight: 400 color: tokens.gold, lineHeight: 1.55, margin: 0,
               }}>{horizonSelfStatement}</p>
             </div>
           ) : (
@@ -1260,7 +1258,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
         <div className="hp-fade-in" style={{ textAlign: 'center', padding: '40px 0' }}>
           <Eyebrow style={{ marginBottom: '14px' }}>Act</Eyebrow>
           <Heading size="lg" style={{ marginBottom: '14px' }}>
-            You are <em style={{ color: tokens.gold, fontStyle: 'italic' }}>live</em>.
+            You are <em style={{ color: tokens.gold }}>live</em>.
           </Heading>
 
           {firstThreshold && (
@@ -1270,7 +1268,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
               background: tokens.goldTint, border: `1px solid ${tokens.goldFaint}`,
               borderRadius: '12px', textAlign: 'left',
             }}>
-              <Eyebrow style={{ marginBottom: '6px', fontSize: '10px' }}>
+              <Eyebrow style={{ marginBottom: '6px', fontSize: '13px' }}>
                 First threshold{firstThreshold.time_label ? ` · ${firstThreshold.time_label}` : ''}
               </Eyebrow>
               <p style={{
@@ -1320,7 +1318,7 @@ function HorizonSelfRefresh({ open, onClose, variant, prefilledTask, onComplete 
   return (
     <ModalShell open={true} onClose={onClose}>
       <div style={{
-        ...sc, fontSize: '10px', letterSpacing: '0.20em',
+        ...sc, fontSize: '13px', letterSpacing: '0.20em',
         color: tokens.whisper, textTransform: 'uppercase',
         marginBottom: '14px', display: 'flex', justifyContent: 'space-between',
       }}>
@@ -1362,16 +1360,16 @@ function HorizonSelfRefresh({ open, onClose, variant, prefilledTask, onComplete 
           </Heading>
 
           <div style={{ marginTop: '24px' }}>
-            <Eyebrow style={{ marginBottom: '8px', fontSize: '11px' }}>What's in front of you</Eyebrow>
+            <Eyebrow style={{ marginBottom: '8px', fontSize: '13px' }}>What's in front of you</Eyebrow>
             <p style={{
               ...body, fontSize: '14.5px', color: tokens.ghost, lineHeight: 1.5,
               margin: '0 0 22px', paddingLeft: '14px',
               borderLeft: `1px solid ${tokens.goldFaint}`,
             }}>{task}</p>
 
-            <Eyebrow style={{ marginBottom: '8px', fontSize: '11px' }}>Your move</Eyebrow>
+            <Eyebrow style={{ marginBottom: '8px', fontSize: '13px' }}>Your move</Eyebrow>
             <p style={{
-              ...serif, fontStyle: 'italic', fontSize: '21px', color: tokens.gold,
+              ...serif fontSize: '21px', color: tokens.gold,
               lineHeight: 1.5, margin: 0, padding: '20px 22px',
               background: tokens.goldTint, borderRadius: '12px',
               border: `1px solid ${tokens.goldChrome}`,
@@ -1402,13 +1400,13 @@ function HorizonSelfPanel({ statement, onRefresh }) {
       <Eyebrow style={{ marginBottom: '14px' }}>Your Horizon Self</Eyebrow>
       {statement ? (
         <p style={{
-          ...serif, fontStyle: 'italic', fontSize: 'clamp(17px, 2.4vw, 20px)',
+          ...serif fontSize: 'clamp(17px, 2.4vw, 20px)',
           color: tokens.meta, lineHeight: 1.55,
           maxWidth: '520px', margin: '0 auto 24px',
         }}>{statement}</p>
       ) : (
         <p style={{
-          ...body, fontStyle: 'italic', fontSize: '15px',
+          ...body fontSize: '15px',
           color: tokens.ghost, lineHeight: 1.5,
           maxWidth: '420px', margin: '0 auto 24px',
         }}>Your integrated statement lands here once your Map's synthesis runs.</p>
@@ -1473,7 +1471,7 @@ function TaskList({ thresholds, onComplete, onUncomplete, onCross }) {
             }}>{t.title}</span>
             {isCarried && !isDone && (
               <span style={{
-                ...sc, fontSize: '11px', letterSpacing: '0.16em',
+                ...sc, fontSize: '13px', letterSpacing: '0.16em',
                 color: tokens.ghost, textTransform: 'uppercase',
               }}>carried</span>
             )}
@@ -1489,12 +1487,12 @@ function TaskList({ thresholds, onComplete, onUncomplete, onCross }) {
             flexShrink: 0,
             background: 'transparent', color: tokens.gold,
             border: `1px solid ${tokens.goldFaint}`, borderRadius: '40px',
-            padding: '5px 12px', ...sc, fontSize: '10px', fontWeight: 600,
+            padding: '5px 12px', ...sc, fontSize: '13px', fontWeight: 600,
             letterSpacing: '0.14em', cursor: 'pointer', whiteSpace: 'nowrap',
           }}>Cross →</button>
         )}
         {!isDone && isCrossed && (
-          <span style={{ flexShrink: 0, ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.gold }}>crossed</span>
+          <span style={{ flexShrink: 0, ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.gold }}>crossed</span>
         )}
       </div>
     )
@@ -1513,7 +1511,7 @@ function TaskList({ thresholds, onComplete, onUncomplete, onCross }) {
       </div>
       {completed.length > 0 && (
         <div style={{ marginTop: '8px' }}>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: tokens.ghost, textTransform: 'uppercase', marginBottom: '4px' }}>Done</div>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: tokens.ghost, textTransform: 'uppercase', marginBottom: '4px' }}>Done</div>
           {completed.map(t => <TaskRow key={t.id} t={t} />)}
         </div>
       )}
@@ -1549,7 +1547,7 @@ function HitDriftBar({ onFlag, onCapture }) {
   const captureChipStyle = {
     background: 'transparent', border: `1px solid ${tokens.goldFaint}`,
     borderRadius: '40px', padding: '6px 14px',
-    ...sc, fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.14em',
+    ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em',
     color: tokens.gold, cursor: 'pointer', transition: 'all 0.2s',
     position: 'relative', overflow: 'hidden',
   }
@@ -1563,21 +1561,21 @@ function HitDriftBar({ onFlag, onCapture }) {
           style={flagBtnStyle(tokens.goldTint, tokens.goldChrome)}
           onMouseEnter={e => e.currentTarget.style.background = tokens.goldGlow}
           onMouseLeave={e => e.currentTarget.style.background = tokens.goldTint}>
-          <Eyebrow style={{ marginBottom: '6px', fontSize: '10px' }}>Hit</Eyebrow>
+          <Eyebrow style={{ marginBottom: '6px', fontSize: '13px' }}>Hit</Eyebrow>
           <span style={flagLabelStyle}>I was him. World responded.</span>
         </button>
         <button onClick={(e) => handleFlag(e, 'drift')}
           style={flagBtnStyle('transparent', tokens.goldFaint)}
           onMouseEnter={e => e.currentTarget.style.borderColor = tokens.goldChrome}
           onMouseLeave={e => e.currentTarget.style.borderColor = tokens.goldFaint}>
-          <Eyebrow color="ghost" style={{ marginBottom: '6px', fontSize: '10px' }}>Drift</Eyebrow>
+          <Eyebrow color="ghost" style={{ marginBottom: '6px', fontSize: '13px' }}>Drift</Eyebrow>
           <span style={flagLabelStyle}>Old self took the wheel.</span>
         </button>
       </div>
 
       <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
         <span style={{
-          ...sc, fontSize: '10px', letterSpacing: '0.18em',
+          ...sc, fontSize: '13px', letterSpacing: '0.18em',
           color: tokens.whisper, textTransform: 'uppercase',
         }}>Archive ·</span>
         <button onClick={(e) => handleCapture(e, 'listening')} style={captureChipStyle}>
@@ -1655,12 +1653,12 @@ function ListeningCapture({ open, onClose, onSave }) {
         Paste their words. Joins the ambient layer.
       </Body>
       <div style={{ marginBottom: '14px' }}>
-        <Eyebrow style={{ marginBottom: '6px', fontSize: '11px' }}>From</Eyebrow>
+        <Eyebrow style={{ marginBottom: '6px', fontSize: '13px' }}>From</Eyebrow>
         <input type="text" value={from} onChange={e => setFrom(e.target.value)}
           style={{ ...inputStyle(), minHeight: 'auto', padding: '10px 14px' }}/>
       </div>
       <div style={{ marginBottom: '20px' }}>
-        <Eyebrow style={{ marginBottom: '6px', fontSize: '11px' }}>Their words</Eyebrow>
+        <Eyebrow style={{ marginBottom: '6px', fontSize: '13px' }}>Their words</Eyebrow>
         <textarea value={text} onChange={e => setText(e.target.value)} autoFocus
           style={{ ...inputStyle(), minHeight: '110px' }}/>
       </div>
@@ -1688,12 +1686,12 @@ function ReceiptCapture({ open, onClose, onSave }) {
         Specific. Recent. Lived.
       </Body>
       <div style={{ marginBottom: '14px' }}>
-        <Eyebrow style={{ marginBottom: '6px', fontSize: '11px' }}>I used to...</Eyebrow>
+        <Eyebrow style={{ marginBottom: '6px', fontSize: '13px' }}>I used to...</Eyebrow>
         <input type="text" value={used} onChange={e => setUsed(e.target.value)} autoFocus
           style={{ ...inputStyle(), minHeight: 'auto', padding: '10px 14px' }}/>
       </div>
       <div style={{ marginBottom: '20px' }}>
-        <Eyebrow style={{ marginBottom: '6px', fontSize: '11px' }}>Now I...</Eyebrow>
+        <Eyebrow style={{ marginBottom: '6px', fontSize: '13px' }}>Now I...</Eyebrow>
         <textarea value={now} onChange={e => setNow(e.target.value)}
           style={{ ...inputStyle(), minHeight: '90px' }}/>
       </div>
@@ -1733,18 +1731,18 @@ function AmbientStrip({ iam, listening }) {
       background: tokens.bgCard, border: `1px solid ${tokens.goldFaint}`,
       borderRadius: '14px', padding: '24px 26px', textAlign: 'center',
     }}>
-      <Eyebrow style={{ marginBottom: '12px', fontSize: '11px' }}>
+      <Eyebrow style={{ marginBottom: '12px', fontSize: '13px' }}>
         {isIam
           ? `Domain · ${item.label}`
           : `External read · ${item.from?.split(' ')[0] || 'they'}`}
       </Eyebrow>
       <p style={{
-        ...serif, fontStyle: 'italic', fontSize: '19px', fontWeight: 400,
+        ...serif fontSize: '19px', fontWeight: 400,
         color: tokens.gold, lineHeight: 1.5, margin: 0,
       }}>{item.text}</p>
       {!isIam && item.from && (
         <p style={{
-          ...sc, fontSize: '11px', letterSpacing: '0.18em',
+          ...sc, fontSize: '13px', letterSpacing: '0.18em',
           color: tokens.whisper, marginTop: '10px', marginBottom: 0,
         }}>— {item.from}</p>
       )}
@@ -1772,7 +1770,7 @@ function RecentEntries({ entries, onOpenJournal }) {
           <div style={{ display: 'flex', justifyContent: 'space-between',
             alignItems: 'baseline', marginBottom: '4px', gap: '8px' }}>
             <span style={{
-              ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em',
+              ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em',
               color: item.kind === 'drift' ? tokens.ghost : tokens.gold,
             }}>{labelForKind(item.kind)}</span>
             <span style={{ ...body, fontSize: '13px', color: tokens.whisper }}>
@@ -1781,7 +1779,7 @@ function RecentEntries({ entries, onOpenJournal }) {
           </div>
           {item.text && (
             <div style={{
-              ...body, fontSize: '14px', fontStyle: 'italic',
+              ...body, fontSize: '14px'
               color: tokens.meta, lineHeight: 1.6,
             }}>{item.text}</div>
           )}
@@ -1835,7 +1833,7 @@ function LogView({ open, onClose, entries }) {
             color: filter === key ? '#FFFFFF' : tokens.gold,
             border: `1px solid ${filter === key ? tokens.goldChrome : tokens.goldFaint}`,
             borderRadius: '40px',
-            ...sc, fontSize: '10.5px', fontWeight: 600, letterSpacing: '0.14em',
+            ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em',
             cursor: 'pointer',
           }}>{label}</button>
         ))}
@@ -1847,12 +1845,12 @@ function LogView({ open, onClose, entries }) {
             alignItems: 'baseline', marginBottom: '6px', gap: '8px', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'baseline', flexWrap: 'wrap' }}>
               <span style={{
-                ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em',
+                ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em',
                 color: entry.kind === 'drift' ? tokens.ghost : tokens.gold,
               }}>{labelForKind(entry.kind)}</span>
               {entry.from_who && (
                 <span style={{
-                  ...sc, fontSize: '10px', letterSpacing: '0.16em', color: tokens.gold,
+                  ...sc, fontSize: '13px', letterSpacing: '0.16em', color: tokens.gold,
                 }}>· {entry.from_who}</span>
               )}
             </div>
@@ -1861,7 +1859,7 @@ function LogView({ open, onClose, entries }) {
             </span>
           </div>
           <div style={{
-            ...body, fontSize: '14.5px', fontStyle: 'italic',
+            ...body, fontSize: '14.5px'
             color: tokens.meta, lineHeight: 1.65,
           }}>{entry.text}</div>
         </div>
@@ -1920,7 +1918,7 @@ function SettingsModal({ open, onClose }) {
         <div style={{ display: 'flex', justifyContent: 'space-between',
           alignItems: 'center', marginBottom: '8px' }}>
           <span style={{ ...serif, fontSize: '17px', color: tokens.meta }}>Volume</span>
-          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em',
             color: tokens.gold }}>{Math.round(volume * 100)}%</span>
         </div>
         <input type="range" min="0" max="1" step="0.05" value={volume}
@@ -1964,7 +1962,7 @@ function MapRedirect({ onSkip }) {
       <Eyebrow style={{ marginBottom: '14px' }}>Horizon Practice</Eyebrow>
       <Heading size="xl" style={{ marginBottom: '20px' }}>
         Start with{' '}
-        <em style={{ color: tokens.gold, fontStyle: 'italic' }}>The Map</em>.
+        <em style={{ color: tokens.gold }}>The Map</em>.
       </Heading>
       <Body>
         Horizon Practice activates your <em>I am</em> statements daily. Those statements come from The Map — your honest read across the seven domains and what each of them looks like at full power.
@@ -2402,7 +2400,7 @@ export function HorizonPracticePage() {
                   <div style={{ fontSize: '3rem', marginBottom: '16px' }}>
                     {pendingMilestone === 21 ? '✦' : '✦✦'}
                   </div>
-                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.22em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '12px' }}>
+                  <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.22em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '12px' }}>
                     {pendingMilestone} days
                   </div>
                   <Heading size="lg" style={{ marginBottom: '12px' }}>
@@ -2416,7 +2414,7 @@ export function HorizonPracticePage() {
                   <button onClick={clearMilestone} style={{
                     background: tokens.gold, color: '#FFFFFF', border: 'none',
                     borderRadius: '10px', padding: '14px 32px', cursor: 'pointer',
-                    ...sc, fontSize: '11px', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase',
+                    ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase',
                   }}>Continue →</button>
                 </div>
               </div>
@@ -2430,13 +2428,13 @@ export function HorizonPracticePage() {
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px',
               }}>
                 <div>
-                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Welcome back</div>
+                  <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Welcome back</div>
                   <Body style={{ margin: 0, fontSize: '14.5px' }}>Your practice is here. Pick it back up.</Body>
                 </div>
                 <button onClick={() => setView('morning')} style={{
                   flexShrink: 0, background: tokens.gold, color: '#FFFFFF',
                   border: 'none', borderRadius: '8px', padding: '10px 18px', cursor: 'pointer',
-                  ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase',
+                  ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase',
                 }}>Begin →</button>
               </div>
             )}
@@ -2459,7 +2457,7 @@ export function HorizonPracticePage() {
                   display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer',
                 }}>
                   <span style={{ fontSize: '14px' }}>✦</span>
-                  <span style={{ ...sc, fontSize: '11px', fontWeight: 700, letterSpacing: '0.12em', color: tokens.gold }}>{streak.streak_current}</span>
+                  <span style={{ ...sc, fontSize: '13px', fontWeight: 700, letterSpacing: '0.12em', color: tokens.gold }}>{streak.streak_current}</span>
                 </button>
               )}
               {(!streak || streak.streak_current === 0) && !streakLoading && (
@@ -2467,7 +2465,7 @@ export function HorizonPracticePage() {
                   flexShrink: 0, marginTop: '6px',
                   background: 'transparent', border: `1px solid ${tokens.goldFaint}`,
                   borderRadius: '40px', padding: '6px 14px', cursor: 'pointer',
-                  ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.14em', color: tokens.ghost, textTransform: 'uppercase',
+                  ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em', color: tokens.ghost, textTransform: 'uppercase',
                 }}>Set streak</button>
               )}
             </div>
@@ -2482,7 +2480,7 @@ export function HorizonPracticePage() {
                 borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
                 <div>
-                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Morning Practice</div>
+                  <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Morning Practice</div>
                   <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>
                     {todayRun?.completed_at ? 'Complete — run again' : 'Commit · Ground · I Am · Anchor · Plan · Act'}
                   </div>
@@ -2496,7 +2494,7 @@ export function HorizonPracticePage() {
                 borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
                 <div>
-                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Horizon Self Refresh</div>
+                  <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Horizon Self Refresh</div>
                   <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>What's in front of you. How your Horizon Self handles it.</div>
                 </div>
                 <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
@@ -2508,7 +2506,7 @@ export function HorizonPracticePage() {
                 borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
                 <div>
-                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
+                  <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
                     {activeSprint?.status === 'active' ? 'Active Sprint' : activeSprint?.status === 'draft' ? 'Sprint in Setup' : 'Target Stretch'}
                   </div>
                   <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>
@@ -2524,7 +2522,7 @@ export function HorizonPracticePage() {
                 borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
                 <div>
-                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Evening Integrate</div>
+                  <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Evening Integrate</div>
                   <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>Close the day. What landed. What to carry forward.</div>
                 </div>
                 <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
@@ -2536,7 +2534,7 @@ export function HorizonPracticePage() {
                 borderRadius: '12px', padding: '22px 26px', cursor: 'pointer', textAlign: 'left', width: '100%',
               }}>
                 <div>
-                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Journal</div>
+                  <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Journal</div>
                   <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>
                     {entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length > 0
                       ? `${entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length} entr${entries.filter(e => getLocalDateStr(new Date(e.occurred_at)) === getLocalDateStr()).length === 1 ? 'y' : 'ies'} today`
@@ -2574,13 +2572,13 @@ export function HorizonPracticePage() {
                   <button onClick={() => { setBadgeAsked(true); saveBadgePermission(true) }} style={{
                     background: tokens.gold, color: '#FFF', border: 'none', borderRadius: '8px',
                     padding: '8px 14px', cursor: 'pointer',
-                    ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.12em',
+                    ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.12em',
                   }}>Yes</button>
                   <button onClick={() => setBadgeAsked(true)} style={{
                     background: 'transparent', color: tokens.ghost,
                     border: `1px solid ${tokens.goldFaint}`, borderRadius: '8px',
                     padding: '8px 14px', cursor: 'pointer',
-                    ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.12em',
+                    ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.12em',
                   }}>No</button>
                 </div>
               </div>
@@ -2589,11 +2587,11 @@ export function HorizonPracticePage() {
             <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
               <button onClick={() => setCadenceSetupOpen(true)} style={{
                 background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-                ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.whisper, textTransform: 'uppercase',
+                ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.whisper, textTransform: 'uppercase',
               }}>Streak</button>
               <button onClick={() => setSettingsOpen(true)} style={{
                 background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
-                ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.whisper, textTransform: 'uppercase',
+                ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em', color: tokens.whisper, textTransform: 'uppercase',
               }}>Settings</button>
             </div>
 
@@ -2608,7 +2606,7 @@ export function HorizonPracticePage() {
                   padding: '32px 28px 48px', width: '100%', maxWidth: '480px',
                   borderTop: `1px solid ${tokens.goldFaint}`,
                 }}>
-                  <div style={{ ...sc, fontSize: '10px', fontWeight: 600, letterSpacing: '0.22em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '16px' }}>Streak cadence</div>
+                  <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.22em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '16px' }}>Streak cadence</div>
                   <Heading size="md" style={{ marginBottom: '8px' }}>How often are you committing?</Heading>
                   <Body dim style={{ marginBottom: '24px', fontSize: '13.5px' }}>
                     Your streak only counts — and the reminder only fires — on days you commit to.
@@ -2633,11 +2631,11 @@ export function HorizonPracticePage() {
                     <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: `1px solid ${tokens.goldFaint}` }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: tokens.gold, marginBottom: '4px' }}>Current streak</div>
+                          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: tokens.gold, marginBottom: '4px' }}>Current streak</div>
                           <div style={{ ...body, fontSize: '22px', fontWeight: 600, color: tokens.meta }}>{streak.streak_current} <span style={{ fontSize: '14px', color: tokens.ghost }}>days</span></div>
                         </div>
                         <div style={{ textAlign: 'right' }}>
-                          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: tokens.gold, marginBottom: '4px' }}>Personal best</div>
+                          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: tokens.gold, marginBottom: '4px' }}>Personal best</div>
                           <div style={{ ...body, fontSize: '22px', fontWeight: 600, color: tokens.meta }}>{streak.streak_longest} <span style={{ fontSize: '14px', color: tokens.ghost }}>days</span></div>
                         </div>
                       </div>
@@ -2649,7 +2647,7 @@ export function HorizonPracticePage() {
                             transition: 'width 0.4s ease',
                           }} />
                         </div>
-                        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: tokens.ghost, marginTop: '6px' }}>
+                        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginTop: '6px' }}>
                           {streak.streak_current < 21
                             ? `${21 - streak.streak_current} days to the 21-day milestone`
                             : streak.streak_current < 40

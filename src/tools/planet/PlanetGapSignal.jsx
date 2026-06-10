@@ -25,7 +25,7 @@ export function PlanetGapSignal({ scores, nextusScores }) {
         borderRadius: 6,
         marginBottom: 40,
       }}>
-        <p style={{ ...sc, fontSize: 11, letterSpacing: '0.1em', color: '#7B9E87', marginBottom: 8 }}>
+        <p style={{ ...sc, fontSize: 13, letterSpacing: '0.1em', color: '#7B9E87', marginBottom: 8 }}>
           GAP SIGNAL
         </p>
         <p style={{ ...body, fontSize: 15, color: '#0F1523', lineHeight: 1.65 }}>
@@ -45,7 +45,7 @@ export function PlanetGapSignal({ scores, nextusScores }) {
         borderRadius: 6,
         marginBottom: 16,
       }}>
-        <p style={{ ...sc, fontSize: 11, letterSpacing: '0.1em', color: '#C0392B', marginBottom: 12 }}>
+        <p style={{ ...sc, fontSize: 13, letterSpacing: '0.1em', color: '#C0392B', marginBottom: 12 }}>
           GAP SIGNAL — {significantGaps.length} domain{significantGaps.length > 1 ? 's' : ''} with significant divergence
         </p>
         <p style={{ ...body, fontSize: 15, color: '#0F1523', lineHeight: 1.65, marginBottom: 20 }}>
@@ -62,7 +62,7 @@ export function PlanetGapSignal({ scores, nextusScores }) {
           }}>
             <div style={{ width: 3, height: 32, background: domain.color, borderRadius: 2, flexShrink: 0 }} />
             <div style={{ flex: 1 }}>
-              <p style={{ ...sc, fontSize: 11, color: domain.color, letterSpacing: '0.06em' }}>
+              <p style={{ ...sc, fontSize: 13, color: domain.color, letterSpacing: '0.06em' }}>
                 {domain.label}
               </p>
             </div>
@@ -76,7 +76,7 @@ export function PlanetGapSignal({ scores, nextusScores }) {
               </span>
               <span style={{
                 ...sc,
-                fontSize: 11,
+                fontSize: 13,
                 padding: '2px 8px',
                 borderRadius: 3,
                 background: gap > 0 ? 'rgba(192,57,43,0.08)' : 'rgba(92,138,92,0.08)',

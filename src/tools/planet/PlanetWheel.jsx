@@ -165,7 +165,7 @@ export function PlanetWheel({ scores, nextusScores, size = 400 }) {
               textAnchor={textAnchor}
               style={{
                 fontFamily: "'Cormorant SC', Georgia, serif",
-                fontSize: 10,
+                fontSize: 13,
                 letterSpacing: '0.06em',
                 fill: d.color,
               }}
@@ -197,9 +197,9 @@ export function PlanetWheel({ scores, nextusScores, size = 400 }) {
       {nextusPath && (
         <g transform={`translate(${size - 130}, ${size - 48})`}>
           <line x1={0} y1={8} x2={18} y2={8} stroke="#C8922A" strokeWidth={2} />
-          <text x={22} y={12} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: 10, fill: 'rgba(15,21,35,0.72)' }}>Self</text>
+          <text x={22} y={12} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: 13, fill: 'rgba(15,21,35,0.72)' }}>Self</text>
           <line x1={0} y1={22} x2={18} y2={22} stroke="rgba(92,138,184,0.7)" strokeWidth={1.5} strokeDasharray="4 3" />
-          <text x={22} y={26} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: 10, fill: 'rgba(15,21,35,0.72)' }}>NextUs</text>
+          <text x={22} y={26} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: 13, fill: 'rgba(15,21,35,0.72)' }}>NextUs</text>
         </g>
       )}
     </svg>

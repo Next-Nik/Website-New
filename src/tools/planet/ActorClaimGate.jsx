@@ -77,7 +77,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
         onClick={onBack}
         style={{
           ...sc,
-          fontSize: 11,
+          fontSize: 13,
           letterSpacing: '0.08em',
           color: '#A8721A',
           background: 'transparent',
@@ -92,7 +92,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
 
       <p style={{
         ...sc,
-        fontSize: 11,
+        fontSize: 13,
         letterSpacing: '0.12em',
         color: '#A8721A',
         textTransform: 'uppercase',
@@ -139,7 +139,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
               textAlign: 'left',
             }}
           >
-            <span style={{ ...sc, fontSize: 12, letterSpacing: '0.08em', color: actorType === type.key ? '#A8721A' : '#0F1523' }}>
+            <span style={{ ...sc, fontSize: 13, letterSpacing: '0.08em', color: actorType === type.key ? '#A8721A' : '#0F1523' }}>
               {type.label}
             </span>
             <span style={{ ...body, fontSize: 13, color: 'rgba(15,21,35,0.72)' }}>
@@ -153,7 +153,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
       <div style={{ marginBottom: 16 }}>
         <label style={{
           ...sc,
-          fontSize: 10,
+          fontSize: 13,
           letterSpacing: '0.08em',
           color: 'rgba(15,21,35,0.55)',
           display: 'block',
@@ -185,7 +185,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
       <div style={{ marginBottom: 32 }}>
         <label style={{
           ...sc,
-          fontSize: 10,
+          fontSize: 13,
           letterSpacing: '0.08em',
           color: 'rgba(15,21,35,0.55)',
           display: 'block',
@@ -239,7 +239,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
 
       <p style={{
         ...body,
-        fontSize: 12,
+        fontSize: 13,
         color: 'rgba(15,21,35,0.55)',
         marginTop: 16,
         lineHeight: 1.5,
