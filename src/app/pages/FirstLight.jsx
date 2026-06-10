@@ -67,7 +67,7 @@ import { selfColor, civColor } from '../../constants/domainColors'
 
 // ── Wheel SVG — matches Mission Control GlanceWheel style ─────
 // Uses polygon area fill like the real wheel, with bolder lines
-function WheelSVG({ domains, scores, size = 240, isCiv = false }) {
+function WheelSVG({ domains, scores, size = 240, isCiv = false, dark = false }) {
   const PAD = 48  // padding for labels
   const vb = size + PAD * 2
   const cx = vb / 2, cy = vb / 2
@@ -149,7 +149,8 @@ function WheelSVG({ domains, scores, size = 240, isCiv = false }) {
         const lx = cx + labelR * Math.cos(a)
         const ly = cy + labelR * Math.sin(a)
         const anchor = Math.cos(a) > 0.2 ? 'start' : Math.cos(a) < -0.2 ? 'end' : 'middle'
-        const color = 'rgba(250,250,247,0.75)'
+        const domainColor = isCiv ? civColor(d.key).base : selfColor(d.key).base
+        const color = dark ? 'rgba(250,250,247,0.8)' : domainColor
         return (
           <text
             key={d.key}
@@ -306,27 +307,30 @@ function ZoomScreen({ scores, onNext }) {
   const personalScale = phase === 'zooming' ? 0.34 : 1
   const planetOpacity = phase === 'planet' ? 1 : 0
 
+  const bgColor = phase === 'personal' ? BG : DARK
+  const textColor = phase === 'personal' ? INK : BG
+
   return (
-    <div style={{ ...s.screen, background: DARK, color: BG, justifyContent: 'center', alignItems: 'center', textAlign: 'center', paddingBottom: 'calc(50px + env(safe-area-inset-bottom))', paddingTop: 24 }}>
+    <div style={{ ...s.screen, background: bgColor, color: textColor, justifyContent: 'center', alignItems: 'center', textAlign: 'center', paddingBottom: 'calc(50px + env(safe-area-inset-bottom))', paddingTop: 24, transition: 'background 1s 0.4s' }}>
       <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', flexShrink: 0 }}>
         {/* Planet wheel behind */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: planetOpacity, transition: 'opacity 1.4s 0.3s' }}>
-          <WheelSVG domains={CIV_DOMAINS} scores={{}} size={200} isCiv={true} />
+          <WheelSVG domains={CIV_DOMAINS} scores={{}} size={200} isCiv={true} dark={true} />
         </div>
         {/* Personal wheel in front */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${personalScale})`, transition: 'transform 1.6s cubic-bezier(0.6,0.01,0.2,1)', opacity: phase === 'planet' ? 0.7 : 1 }}>
-          <WheelSVG domains={SELF_DOMAINS} scores={scores} size={200} />
+          <WheelSVG domains={SELF_DOMAINS} scores={scores} size={200} dark={false} />
         </div>
         {/* Spacer to give the absolute-positioned wheels height */}
-        <WheelSVG domains={SELF_DOMAINS} scores={scores} size={200} style={{ visibility: 'hidden' }} />
+        <WheelSVG domains={SELF_DOMAINS} scores={scores} size={200} dark={false} style={{ visibility: 'hidden' }} />
       </div>
 
       {phase === 'personal' && (
         <div style={{ animation: 'fadein 0.6s ease' }}>
-          <p style={{ fontFamily: SERIF, fontSize: 18, lineHeight: 1.5, margin: '0 0 8px', color: 'rgba(250,250,247,0.7)' }}>This is your map.</p>
-          <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(250,250,247,0.45)', margin: '0 0 32px' }}>Take a moment with it.</p>
+          <p style={{ fontFamily: SERIF, fontSize: 18, lineHeight: 1.5, margin: '0 0 8px', color: 'rgba(15,21,35,0.7)' }}>This is your map.</p>
+          <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.45)', margin: '0 0 32px' }}>Take a moment with it.</p>
           <button
-            style={{ ...s.btn, background: 'transparent', border: '1px solid rgba(200,146,42,0.5)', color: GC, letterSpacing: '0.14em' }}
+            style={{ ...s.btn, background: 'transparent', border: `1px solid rgba(15,21,35,0.3)`, color: INK, letterSpacing: '0.14em' }}
             onClick={handleZoom}
           >Zoom out</button>
         </div>
