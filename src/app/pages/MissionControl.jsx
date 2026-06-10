@@ -1001,7 +1001,7 @@ export default function MissionControl() {
               glyph={<MapPinGlyph />}
               label="NextU"
               state={nextUState}
-              onClick={() => openPersonalPanel('map')}
+              onClick={() => navigate('/nextu')}
               title="NextU — your personal journey"
             />
             <Tile
@@ -1438,9 +1438,9 @@ export default function MissionControl() {
       >
         <CurriculumGatePanel
           toolName="Horizon Practice"
-          reason="Horizon Practice uses your I Am statements — the ones you build inside The Map. Complete The Map first, and the full practice sequence unlocks."
-          ctaLabel="Open The Map →"
-          ctaPath="/tools/map"
+          reason="Your morning practice voices your I Am statements — the ones you declare in Chapters One and Two of your journey. The full sequence begins the moment they're declared."
+          ctaLabel="Continue your journey →"
+          ctaPath="/nextu"
         />
       </Panel>
 

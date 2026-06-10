@@ -96,6 +96,11 @@ import { HorizonPracticePage }                     from './tools/horizon-practic
 import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import JournalPage                                 from './app/pages/Journal'
 import PlanetMap                                    from './tools/planet/PlanetMap'
+import { NextUJourneyPage }                        from './tools/nextu/NextUJourney'
+import { IAmChapterPage }                          from './tools/nextu/IAmChapter'
+import { HorizonSelfOnboardingPage }               from './tools/nextu/HorizonSelfOnboarding'
+import { HorizonBiographyPage }                    from './tools/nextu/HorizonBiography'
+import NextUShell                                  from './tools/nextu/NextUShell'
 import { body } from './lib/designTokens'
 
 function ScrollToTop() {
@@ -220,10 +225,17 @@ function AppInner() {
         <Route path="/content-editor"  element={<ContentEditorPage />} />
         <Route path="/watch"           element={<WatchPage />} />
 
+        {/* ── NextU — the journey (Chapters One–Four) ── */}
+        <Route path="/nextu"              element={<NextUJourneyPage />} />
+        <Route path="/nextu/map"          element={<NextUShell chapter={1} chapterTitle="THE MAP"><MapPage /></NextUShell>} />
+        <Route path="/nextu/i-am"         element={<IAmChapterPage />} />
+        <Route path="/nextu/horizon-self" element={<HorizonSelfOnboardingPage />} />
+        <Route path="/nextu/biography"    element={<HorizonBiographyPage />} />
+
         {/* ── Tools ── */}
         <Route path="/tools/north-star"          element={<NorthStarPage />} />
         <Route path="/tools/orienteering"        element={<Navigate to="/tools/north-star" replace />} />
-        <Route path="/tools/map"                 element={<MapPage />} />
+        <Route path="/tools/map"                 element={<Navigate to="/nextu/map" replace />} />  {/* re-homed — Chapter One */}
         <Route path="/tools/horizon-state"       element={<HorizonStatePage />} />
         <Route path="/tools/nextsteps"           element={<NextStepsPage />} />
         <Route path="/tools/purpose-piece"       element={<PurposePiecePage />} />

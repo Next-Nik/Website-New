@@ -1891,7 +1891,10 @@ function ConnectionLandscapeStep({ subDomains, setSubDomains, onLock }) {
 }
 
 
-// ─── MapNextSteps — end this + bridge to next tools ─────────────────────────
+// ─── MapNextSteps — the hand-off to Chapter Two ─────────────────────────────
+// The Map is Chapter One of the NextU journey. Completion leads with the
+// journey's next station — I Am Statements — with Purpose Piece kept as the
+// optional side-path. Forward language; the thread continues, nothing ends.
 function MapNextSteps({ compact = false }) {
   const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
   const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -1900,11 +1903,11 @@ function MapNextSteps({ compact = false }) {
   if (compact) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
-        <a href="/tools/target-sprint" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 18px', display: 'inline-block' }}>
-          Start a Target Sprint →
+        <a href="/nextu/i-am" style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: '#A8721A', textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 18px', display: 'inline-block' }}>
+          Continue your journey — I Am Statements →
         </a>
-        <a href="/tools/horizon-practice" style={{ ...body, fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', display: 'inline-block' }}>
-          Or begin your daily practice →
+        <a href="/nextu" style={{ ...body, fontSize: '1rem', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', display: 'inline-block' }}>
+          Or see the whole journey →
         </a>
       </div>
     )
@@ -1913,29 +1916,29 @@ function MapNextSteps({ compact = false }) {
   return (
     <div style={{ marginTop: '32px', padding: '32px 28px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.18)', borderLeft: '3px solid rgba(200,146,42,0.45)', borderRadius: '12px' }}>
       <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '16px' }}>
-        What comes next
+        Chapter One complete
       </div>
-      <p style={{ ...body, fontSize: '1.25rem', fontWeight: 400, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8, marginBottom: '28px' }}>
-        The Map shows you the picture. The next tools help you move.
+      <p style={{ ...serif, fontSize: '1.35rem', fontWeight: 300, color: '#0F1523', lineHeight: 1.6, marginBottom: '28px' }}>
+        The Map shows you the picture. Chapter Two puts it in your own words.
       </p>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <a href="/tools/target-sprint"
+        <a href="/nextu/i-am"
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.55)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}
           onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
           onMouseLeave={e => e.currentTarget.style.transform = ''}>
           <div>
-            <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#A8721A', marginBottom: '4px' }}>Target Sprint</div>
-            <div style={{ ...body, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>Three areas. Ninety days. A clear level-up.</div>
+            <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#A8721A', marginBottom: '4px' }}>I Am Statements</div>
+            <div style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)' }}>Seven declarations, present tense — Chapter Two of your journey.</div>
           </div>
           <span style={{ ...sc, fontSize: '1.25rem', color: '#A8721A', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>
-        <a href="/tools/horizon-practice"
+        <a href="/nextu"
           style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}
           onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
           onMouseLeave={e => e.currentTarget.style.transform = ''}>
           <div>
-            <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Horizon Practice</div>
-            <div style={{ ...body, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>Build the daily practice that closes the gap.</div>
+            <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Your journey</div>
+            <div style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)' }}>See the four chapters and where you stand on the thread.</div>
           </div>
           <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>
@@ -1945,19 +1948,9 @@ function MapNextSteps({ compact = false }) {
           onMouseLeave={e => e.currentTarget.style.transform = ''}>
           <div>
             <div style={{ ...sc, fontSize: '1.125rem', letterSpacing: '0.1em', color: '#0F1523', marginBottom: '4px' }}>Purpose Piece</div>
-            <div style={{ ...body, fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>Find your archetype, domain, and scale of contribution.</div>
+            <div style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.55)' }}>An optional side-path — your archetype, domain, and scale of contribution.</div>
           </div>
           <span style={{ ...sc, fontSize: '1.25rem', color: 'rgba(15,21,35,0.55)', flexShrink: 0, marginLeft: '16px' }}>→</span>
-        </a>
-        <a href="/dashboard"
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.55)', borderRadius: '10px', textDecoration: 'none', transition: 'transform 0.15s' }}
-          onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-          onMouseLeave={e => e.currentTarget.style.transform = ''}>
-          <div>
-            <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.1em', color: '#A8721A', marginBottom: '4px' }}>Mission Control</div>
-            <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '1.0625rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.55)' }}>See your map, write your I am statements, act on the gap.</div>
-          </div>
-          <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', color: '#A8721A', flexShrink: 0, marginLeft: '16px' }}>→</span>
         </a>
       </div>
     </div>
