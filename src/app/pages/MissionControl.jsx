@@ -1015,7 +1015,7 @@ export default function MissionControl() {
               glyph="≡"
               label="Journal"
               state={null}
-              onClick={() => openPersonalPanel('journal')}
+              onClick={() => navigate('/journal')}
               title="Journal — your record of becoming"
             />
             <Tile
@@ -1416,27 +1416,6 @@ export default function MissionControl() {
           userId={data.user?.id}
           sprintData={data.sprintData}
         />
-      </Panel>
-
-      {/* ── Journal ───────────────────────────────────────── */}
-      <Panel
-        open={activePanel === 'journal'}
-        onClose={closePanel}
-        eyebrow="YOUR RECORD · JOURNAL"
-        title="Your becoming"
-        actions={[
-          { label: 'OPEN JOURNAL →', primary: true,
-            onClick: () => navigate('/journal') },
-          { label: 'CLOSE', onClick: closePanel },
-        ]}
-      >
-        <div style={{ padding: '20px 24px' }}>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px',
-            color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>
-            Your Journal holds everything — what you wrote, how you arrived each day,
-            what the practice revealed. Open it to write or read your record.
-          </p>
-        </div>
       </Panel>
 
       {/* ── Horizon Practice gate (map not yet complete) ─── */}
