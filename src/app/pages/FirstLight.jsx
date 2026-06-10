@@ -283,7 +283,7 @@ function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) 
             </div>
           </div>
         ))}
-        <div style={{ height: 100 }} />
+        <div style={{ height: 24 }} />
       </div>
       <div style={s.foot}>
         <button style={s.ghost} onClick={onBack}>Back</button>
@@ -388,7 +388,7 @@ function PlanetScreen({ civInterests, setCivInterests, onNext, onBack }) {
             </div>
           </div>
         ))}
-        <div style={{ height: 100 }} />
+        <div style={{ height: 24 }} />
       </div>
       <div style={s.foot}>
         <button style={s.ghost} onClick={onBack}>Back</button>
