@@ -61,7 +61,7 @@ const DOCK_TILE_CSS = `
 
 .mc-utility-label {
   font-family: ${FONT_SC};
-  font-size: 10px;
+  font-size: 13px;
   letter-spacing: 0.2em;
   color: ${GOLD_DK};
   margin-bottom: 3px;
