@@ -308,15 +308,17 @@ function ZoomScreen({ scores, onNext }) {
 
   return (
     <div style={{ ...s.screen, background: DARK, color: BG, justifyContent: 'center', alignItems: 'center', textAlign: 'center', paddingBottom: 'calc(50px + env(safe-area-inset-bottom))', paddingTop: 24 }}>
-      <div style={{ position: 'relative', width: 300, height: 300, margin: '0 auto 28px', flexShrink: 0 }}>
+      <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', flexShrink: 0 }}>
         {/* Planet wheel behind */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: planetOpacity, transition: 'opacity 1.4s 0.3s' }}>
-          <WheelSVG domains={CIV_DOMAINS} scores={{}} size={300} isCiv={true} />
+          <WheelSVG domains={CIV_DOMAINS} scores={{}} size={200} isCiv={true} />
         </div>
         {/* Personal wheel in front */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${personalScale})`, transition: 'transform 1.6s cubic-bezier(0.6,0.01,0.2,1)', opacity: phase === 'planet' ? 0.7 : 1 }}>
-          <WheelSVG domains={SELF_DOMAINS} scores={scores} size={300} />
+          <WheelSVG domains={SELF_DOMAINS} scores={scores} size={200} />
         </div>
+        {/* Spacer to give the absolute-positioned wheels height */}
+        <WheelSVG domains={SELF_DOMAINS} scores={scores} size={200} style={{ visibility: 'hidden' }} />
       </div>
 
       {phase === 'personal' && (
