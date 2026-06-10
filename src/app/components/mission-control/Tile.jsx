@@ -148,21 +148,29 @@ const TILE_CSS = `
 
 .mc-rail-label {
   font-family: ${FONT_SC};
-  font-size: 13px;
+  font-size: 11px;
+  font-weight: 600;
   letter-spacing: 0.18em;
   color: ${TEXT_WHITE};
   line-height: 1.2;
   text-transform: uppercase;
 }
-[data-stage="dark"] .mc-rail-label { color: ${TEXT_INK}; }
+[data-stage="dark"] .mc-rail-label {
+  color: ${TEXT_INK};
+  font-weight: 700;
+}
 
 .mc-rail-state {
   font-family: ${FONT_SC};
-  font-size: 13px;
+  font-size: 9px;
+  font-weight: 600;
   letter-spacing: 0.12em;
   color: ${TEXT_WHITE_META};
 }
-[data-stage="dark"] .mc-rail-state { color: ${TEXT_META}; }
+[data-stage="dark"] .mc-rail-state {
+  color: ${TEXT_INK};
+  opacity: 0.72;
+}
 
 /* On larger screens, tiles get more breathing room and labels can
    sit on a single line where they fit. */
@@ -190,11 +198,11 @@ const TILE_CSS = `
     min-height: 22px;
   }
   .mc-rail-label {
-    font-size: 13px;
+    font-size: 11px;
     letter-spacing: 0.10em;
   }
   .mc-rail-state {
-    font-size: 13px;
+    font-size: 9px;
     letter-spacing: 0.08em;
   }
 }
