@@ -47,12 +47,12 @@ const SELF_DOMAINS = [
 ]
 
 const CIV_DOMAINS = [
-  { key: 'society',  name: 'Society',           hex: '#D63838', twin: 'connection' },
-  { key: 'legacy',   name: 'Legacy',            hex: '#2767B8', twin: 'inner_game' },
   { key: 'vision',   name: 'Vision',            hex: '#6B1F2E', twin: 'path'       },
+  { key: 'human',    name: 'Human Being',       hex: '#E8722E', twin: 'spark'      },
   { key: 'nature',   name: 'Nature',            hex: '#2A8C4F', twin: 'body'       },
   { key: 'economy',  name: 'Finance & Economy', hex: '#E8B92E', twin: 'finances'   },
-  { key: 'human',    name: 'Human Being',       hex: '#E8722E', twin: 'spark'      },
+  { key: 'society',  name: 'Society',           hex: '#D63838', twin: 'connection' },
+  { key: 'legacy',   name: 'Legacy',            hex: '#2767B8', twin: 'inner_game' },
   { key: 'tech',     name: 'Technology',        hex: '#6B3FA8', twin: 'signal'     },
 ]
 
