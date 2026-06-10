@@ -22,7 +22,7 @@ import {
   GOLD, GOLD_DK, GOLD_LT, GOLD_RULE,
   BG_CARD, BG_INK_SOFT,
   TEXT_INK, TEXT_META, TEXT_WHITE, TEXT_WHITE_META, TEXT_FAINT, TEXT_WHITE_FAINT,
-  FONT_DISPLAY, FONT_SC,
+  FONT_DISPLAY, FONT_SC, FONT_BODY,
 } from './tokens'
 
 // Treat these strings as "no real state to report" — same posture
@@ -147,10 +147,10 @@ const TILE_CSS = `
 [data-stage="dark"] .mc-rail-glyph { color: ${TEXT_INK}; }
 
 .mc-rail-label {
-  font-family: ${FONT_SC};
+  font-family: ${FONT_BODY};
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.04em;
   color: ${TEXT_WHITE};
   line-height: 1.2;
   text-transform: uppercase;
@@ -161,10 +161,10 @@ const TILE_CSS = `
 }
 
 .mc-rail-state {
-  font-family: ${FONT_SC};
+  font-family: ${FONT_BODY};
   font-size: 9px;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.04em;
   color: ${TEXT_WHITE_META};
 }
 [data-stage="dark"] .mc-rail-state {
