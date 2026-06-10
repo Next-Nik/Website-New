@@ -305,6 +305,7 @@ function ZoomScreen({ scores, onNext }) {
 
   const personalScale = phase === 'zooming' ? 0.34 : 1
   const planetOpacity = phase === 'planet' ? 1 : 0
+  const personalOpacity = phase === 'planet' ? 0 : 1
 
   const bgColor = phase === 'personal' ? BG : DARK
   const textColor = phase === 'personal' ? INK : BG
@@ -312,16 +313,16 @@ function ZoomScreen({ scores, onNext }) {
   return (
     <div style={{ ...s.screen, background: bgColor, color: textColor, justifyContent: 'center', alignItems: 'center', textAlign: 'center', paddingBottom: 'calc(50px + env(safe-area-inset-bottom))', paddingTop: 24, transition: 'background 1s 0.4s' }}>
       <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', flexShrink: 0 }}>
-        {/* Planet wheel behind */}
+        {/* Planet wheel — fades in */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: planetOpacity, transition: 'opacity 1.4s 0.3s' }}>
-          <WheelSVG domains={CIV_DOMAINS} scores={{}} size={200} isCiv={true} dark={true} />
+          <WheelSVG domains={CIV_DOMAINS} scores={{}} size={160} isCiv={true} dark={true} />
         </div>
-        {/* Personal wheel in front */}
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${personalScale})`, transition: 'transform 1.6s cubic-bezier(0.6,0.01,0.2,1)', opacity: phase === 'planet' ? 0.7 : 1 }}>
-          <WheelSVG domains={SELF_DOMAINS} scores={scores} size={200} dark={false} />
+        {/* Personal wheel — scales down and fades out */}
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${personalScale})`, transition: 'transform 1.6s cubic-bezier(0.6,0.01,0.2,1), opacity 0.4s 1.2s', opacity: personalOpacity }}>
+          <WheelSVG domains={SELF_DOMAINS} scores={scores} size={160} dark={false} />
         </div>
-        {/* Spacer to give the absolute-positioned wheels height */}
-        <WheelSVG domains={SELF_DOMAINS} scores={scores} size={200} dark={false} style={{ visibility: 'hidden' }} />
+        {/* Spacer */}
+        <WheelSVG domains={SELF_DOMAINS} scores={scores} size={160} dark={false} style={{ visibility: 'hidden' }} />
       </div>
 
       {phase === 'personal' && (
