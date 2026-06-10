@@ -316,8 +316,8 @@ function ZoomScreen({ scores, onNext }) {
   return (
     <div style={{ ...s.screen, background: bgColor, color: textColor, justifyContent: 'center', alignItems: 'center', textAlign: 'center', paddingBottom: 'calc(50px + env(safe-area-inset-bottom))', paddingTop: 24, transition: 'background 1s 0.4s' }}>
       <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', flexShrink: 0 }}>
-        {/* Planet wheel — fades in */}
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: planetOpacity, transition: 'opacity 1.4s 0.3s' }}>
+        {/* Planet wheel — fades in; overflow:visible so labels aren't clipped */}
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: planetOpacity, transition: 'opacity 1.4s 0.3s', overflow: 'visible' }}>
           <WorldWheel
             dimensions={CIV_DOMAINS.map(d => ({ slug: d.key, label: d.name, color: d.hex }))}
             size={256}
@@ -332,14 +332,11 @@ function ZoomScreen({ scores, onNext }) {
             size={180}
           />
         </div>
-        {/* Spacer */}
-        
+        {/* Spacer sized to WorldWheel so the container is tall enough */}
         <div style={{ visibility: 'hidden' }}>
-          <GlanceWheel
-            dimensions={SELF_DOMAINS.map(d => ({ key: d.key, label: d.name }))}
-            horizons={Object.fromEntries(SELF_DOMAINS.map(d => [d.key, 10]))}
-            current={scores}
-            size={180}
+          <WorldWheel
+            dimensions={CIV_DOMAINS.map(d => ({ slug: d.key, label: d.name, color: d.hex }))}
+            size={256}
           />
         </div>
       </div>
@@ -374,10 +371,21 @@ function ZoomScreen({ scores, onNext }) {
   )
 }
 
-// ── Screen 3: Planetary interest overlay ──────────────────────
+// ── CIV domain descriptions for PlanetScreen ─────────────────
+const CIV_DESC = {
+  vision:   'The direction humanity is heading — shared purpose, leadership, and collective vision.',
+  human:    'What it means to be human — rights, dignity, creativity, and human flourishing.',
+  nature:   'The living world — biodiversity, climate, ecosystems, and our relationship with the Earth.',
+  economy:  'How we create and share value — financial systems, inequality, and economic justice.',
+  society:  'How we live together — community, culture, belonging, and social cohesion.',
+  legacy:   'What we leave behind — wisdom, institutions, and the world we pass to future generations.',
+  tech:     'The tools we build and how they shape us — AI, communication, and technological futures.',
+}
+
+// ── Screen 3: Planetary interest ──────────────────────────────
 function PlanetScreen({ civInterests, setCivInterests, onNext, onBack }) {
-  function handleSlider(key, val) {
-    setCivInterests(prev => ({ ...prev, [key]: parseInt(val) }))
+  function toggle(key) {
+    setCivInterests(prev => ({ ...prev, [key]: (prev[key] ?? 0) > 0 ? 0 : 10 }))
   }
 
   return (
@@ -385,29 +393,52 @@ function PlanetScreen({ civInterests, setCivInterests, onNext, onBack }) {
       <div style={{ flexShrink: 0, padding: '20px 24px 0' }}>
         <p style={s.eyebrow}>The World</p>
         <h1 style={{ ...s.prompt, fontSize: 24 }}>Where does your energy want to go?</h1>
-        <p style={s.sub}>Stretch the sliders toward what matters to you. The further out, the stronger your pull.</p>
+        <p style={s.sub}>Tap the areas that matter to you. You can pick as many as you like.</p>
       </div>
       <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', padding: '0 24px' }}>
-        {CIV_DOMAINS.map(d => (
-          <div key={d.key} style={{ borderLeft: `3px solid ${d.hex}`, paddingLeft: 16, marginBottom: 28 }}>
-            <div style={{ fontFamily: SC, fontSize: 15, letterSpacing: '0.1em', color: INK, marginBottom: 12 }}>{d.name.toUpperCase()}</div>
-            <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-              <input
-                type="range" min="0" max="10" step="1"
-                value={civInterests[d.key] ?? 0}
-                onChange={e => handleSlider(d.key, e.target.value)}
-                style={{ flex: 1, accentColor: d.hex, height: 4 }}
-              />
-              <div style={{ minWidth: 40, fontFamily: SC, fontSize: 22, fontWeight: 600, color: (civInterests[d.key] ?? 0) > 0 ? d.hex : 'rgba(15,21,35,0.55)' }}>
-                {civInterests[d.key] ?? 0}
+        {CIV_DOMAINS.map(d => {
+          const selected = (civInterests[d.key] ?? 0) > 0
+          return (
+            <div
+              key={d.key}
+              onClick={() => toggle(d.key)}
+              style={{
+                display: 'flex', alignItems: 'flex-start', gap: 14,
+                padding: '14px 16px',
+                marginBottom: 10,
+                borderRadius: 12,
+                border: selected ? `1.5px solid ${d.hex}` : '1.5px solid rgba(15,21,35,0.1)',
+                background: selected ? `${d.hex}12` : 'transparent',
+                cursor: 'pointer', transition: 'all 0.18s',
+              }}
+            >
+              {/* Colour dot */}
+              <div style={{
+                width: 10, height: 10, borderRadius: '50%',
+                background: d.hex, flexShrink: 0, marginTop: 5,
+                opacity: selected ? 1 : 0.4, transition: 'opacity 0.18s',
+              }} />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', color: selected ? d.hex : INK, marginBottom: 4, transition: 'color 0.18s' }}>
+                  {d.name.toUpperCase()}
+                </div>
+                <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)', margin: 0, lineHeight: 1.5 }}>
+                  {CIV_DESC[d.key]}
+                </p>
+              </div>
+              {/* Tick */}
+              <div style={{
+                width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
+                border: selected ? `2px solid ${d.hex}` : '2px solid rgba(15,21,35,0.18)',
+                background: selected ? d.hex : 'transparent',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'all 0.18s', marginTop: 2,
+              }}>
+                {selected && <span style={{ color: '#fff', fontSize: 11, lineHeight: 1 }}>✓</span>}
               </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-              <span style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)' }}>Not right now</span>
-              <span style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)' }}>All in</span>
-            </div>
-          </div>
-        ))}
+          )
+        })}
         <div style={{ height: 24 }} />
       </div>
       <div style={s.foot}>
