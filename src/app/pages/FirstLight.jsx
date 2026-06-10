@@ -139,7 +139,7 @@ function WheelSVG({ scores, size = 200 }) {
 
 // ── Shared styles ──────────────────────────────────────────────
 const s = {
-  app:   { maxWidth: 430, margin: '0 auto', height: '100%', display: 'flex', flexDirection: 'column', background: BG, overscrollBehavior: 'none' },
+  app:   { maxWidth: 430, margin: '0 auto', height: '100%', display: 'flex', flexDirection: 'column', background: 'transparent', overscrollBehavior: 'none' },
   eyebrow: { fontFamily: SC, fontSize: 13, letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', margin: '0 0 6px' },
   btn:   { fontFamily: SC, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '15px 24px', borderRadius: 30, border: 'none', cursor: 'pointer', background: INK, color: '#fff', transition: 'all 0.2s' },
   ghost: { fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '15px 0', border: 'none', cursor: 'pointer', background: 'transparent', color: 'rgba(15,21,35,0.55)' },
@@ -279,8 +279,6 @@ function ZoomScreen({ scores, onNext }) {
       textAlign: 'center',
       background: bgColor,
       transition: 'background 0.9s 0.5s',
-      // No overflow — this is a cinematic screen with no scrollable content
-      overflow: 'hidden',
       padding: '24px 0 calc(40px + env(safe-area-inset-bottom))',
     }}>
 
