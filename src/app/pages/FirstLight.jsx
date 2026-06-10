@@ -237,7 +237,7 @@ function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) 
   }
 
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
       <div style={{ flexShrink: 0, padding: '20px 24px 0' }}>
         <p style={s.eyebrow}>Where you are</p>
         <h1 style={{ ...s.prompt, fontSize: 24 }}>Seven areas of your life.</h1>
@@ -292,7 +292,7 @@ function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) 
         <button style={s.ghost} onClick={onBack}>Back</button>
         <button style={{ ...s.btn, flex: 1 }} onClick={onNext}>Next</button>
       </div>
-    </>
+    </div>
   )
 }
 
