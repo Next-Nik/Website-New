@@ -1,13 +1,10 @@
 // ─────────────────────────────────────────────────────────────
 // FirstLight.jsx  —  /welcome/first-light
 //
-// The entry experience for every new NextUs user.
 // Four screens: Cover → Personal → Zoom → Placement
-// On completion writes to:
-//   users (scores, challenges, first_light_completed_at)
-//   contributor_profiles_beta (vision, concerns, scale, location_focus_id)
-// Then fires a background concern-resolution call (→ problem_chains)
-// and redirects to Mission Control.
+// Writes to: users + contributor_profiles_beta
+// Fires background concern-resolution → problem_chains
+// Redirects to Mission Control on completion.
 // ─────────────────────────────────────────────────────────────
 
 import { useState } from 'react'
@@ -16,6 +13,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 import { FocusSearch } from '../components/FocusSearch'
 import WorldWheel from '../components/mission-control/WorldWheel'
+import { useCivDomainScores } from '../hooks/useDomainIndicators'
 
 // ── Design tokens ──────────────────────────────────────────────
 const BG   = '#FAFAF7'
@@ -30,11 +28,11 @@ const LORA  = "'Lora', Georgia, serif"
 
 // ── Scale labels ───────────────────────────────────────────────
 const SCALE_LABELS = {
-  10: 'The best there is',    9: 'Really, really good',
-  8:  'Solid',                7: 'Getting there',
-  6:  'Getting by',           5: 'The Pass/Fail Mark',
+  10: 'The best there is',     9: 'Really, really good',
+  8:  'Solid',                 7: 'Getting there',
+  6:  'Getting by',            5: 'The Pass/Fail Mark',
   4:  'Trying but not moving', 3: 'Pretty rough',
-  2:  'Barely holding on',    1: 'Really struggling',
+  2:  'Barely holding on',     1: 'Really struggling',
   0:  'Zero',
 }
 
@@ -49,15 +47,19 @@ const SELF_DOMAINS = [
   { key: 'signal',     name: 'Signal',     hex: '#6B3FA8', desc: "Your relationship with the world, how you're seen and show up", cards: ['My impact', 'How I come across', "How I'm seen", 'Feeling heard'] },
 ]
 
+// CIV_DOMAINS keys match useCivDomainScores return shape exactly.
+// 'finance' not 'economy' — aligned to the indicator rollup.
 const CIV_DOMAINS = [
-  { key: 'vision',  name: 'Vision',            hex: '#6B1F2E' },
-  { key: 'human',   name: 'Human Being',       hex: '#E8722E' },
-  { key: 'nature',  name: 'Nature',            hex: '#2A8C4F' },
-  { key: 'economy', name: 'Finance & Economy', hex: '#E8B92E' },
-  { key: 'society', name: 'Society',           hex: '#D63838' },
-  { key: 'legacy',  name: 'Legacy',            hex: '#2767B8' },
-  { key: 'tech',    name: 'Technology',        hex: '#6B3FA8' },
+  { key: 'vision',  name: 'Vision',      hex: '#6B1F2E' },
+  { key: 'human',   name: 'Human Being', hex: '#E8722E' },
+  { key: 'nature',  name: 'Nature',      hex: '#2A8C4F' },
+  { key: 'finance', name: 'Economy',     hex: '#E8B92E' },
+  { key: 'society', name: 'Society',     hex: '#D63838' },
+  { key: 'legacy',  name: 'Legacy',      hex: '#2767B8' },
+  { key: 'tech',    name: 'Technology',  hex: '#6B3FA8' },
 ]
+
+const CIV_DIMS = CIV_DOMAINS.map(d => ({ slug: d.key, label: d.name, color: d.hex }))
 
 const SCALE_OPTIONS = [
   { key: 'circle',  label: 'My circle'  },
@@ -66,39 +68,36 @@ const SCALE_OPTIONS = [
   { key: 'planet',  label: 'My planet'  },
 ]
 
-// ── WheelSVG — personal wheel with domain labels ───────────────
-// Used on the Zoom screen. Separate from the Mission Control
-// GlanceWheel so we can show domain name labels at this size.
-function WheelSVG({ scores, size = 220 }) {
-  const N = 7
-  const PAD = 56
-  const vb = size + PAD * 2
-  const cx = vb / 2
-  const cy = vb / 2
-  const maxR = (size / 2) * 0.78
-  const labelR = (size / 2) * 1.22
+// ── WheelSVG — personal wheel with labelled spokes ─────────────
+// Self-contained SVG with generous padding so domain labels never clip.
+function WheelSVG({ scores, size = 200 }) {
+  const N      = 7
+  const PAD    = 64
+  const VB     = size + PAD * 2
+  const cx     = VB / 2
+  const cy     = VB / 2
+  const maxR   = (size / 2) * 0.78
+  const labelR = (size / 2) + 44
 
   function angleFor(i) { return (Math.PI * 2 * i) / N - Math.PI / 2 }
 
   const ringPts = SELF_DOMAINS.map((_, i) => {
     const a = angleFor(i)
-    return `${cx + maxR * Math.cos(a)},${cy + maxR * Math.sin(a)}`
+    return `${(cx + maxR * Math.cos(a)).toFixed(2)},${(cy + maxR * Math.sin(a)).toFixed(2)}`
   }).join(' ')
 
   const polyPts = SELF_DOMAINS.map((d, i) => {
-    const a = angleFor(i)
-    const ratio = (scores?.[d.key] ?? 0) / 10
-    const r = Math.max(ratio * maxR, 0)
-    return `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`
+    const a     = angleFor(i)
+    const ratio = (scores?.[d.key] ?? 5) / 10
+    const r     = Math.max(ratio * maxR, maxR * 0.06)
+    return `${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`
   }).join(' ')
-
-  const hasData = SELF_DOMAINS.some(d => (scores?.[d.key] ?? 0) > 0)
 
   return (
     <svg
-      width={size + PAD * 2}
-      height={size + PAD * 2}
-      viewBox={`0 0 ${vb} ${vb}`}
+      width={VB}
+      height={VB}
+      viewBox={`0 0 ${VB} ${VB}`}
       style={{ display: 'block', overflow: 'visible' }}
     >
       <polygon points={ringPts} fill="none" stroke="rgba(200,146,42,0.32)" strokeWidth="1.5" strokeDasharray="3 4" />
@@ -106,29 +105,28 @@ function WheelSVG({ scores, size = 220 }) {
         const a = angleFor(i)
         return <line key={i} x1={cx} y1={cy} x2={cx + maxR * Math.cos(a)} y2={cy + maxR * Math.sin(a)} stroke="rgba(200,146,42,0.25)" strokeWidth="1.5" />
       })}
-      {hasData && (
-        <>
-          <polygon points={polyPts} fill="rgba(200,146,42,0.14)" stroke="rgba(200,146,42,0.8)" strokeWidth="2.5" strokeLinejoin="round" />
-          {polyPts.split(' ').map((pt, i) => {
-            const [x, y] = pt.split(',').map(Number)
-            const score = scores?.[SELF_DOMAINS[i]?.key] ?? 0
-            if (score === 0) return null
-            return <circle key={i} cx={x} cy={y} r={5} fill={SELF_DOMAINS[i].hex} />
-          })}
-        </>
-      )}
+      <polygon points={polyPts} fill="rgba(200,146,42,0.15)" stroke="rgba(200,146,42,0.85)" strokeWidth="2.5" strokeLinejoin="round" />
       {SELF_DOMAINS.map((d, i) => {
-        const a = angleFor(i)
-        const lx = cx + labelR * Math.cos(a)
-        const ly = cy + labelR * Math.sin(a)
-        const anchor = Math.cos(a) > 0.2 ? 'start' : Math.cos(a) < -0.2 ? 'end' : 'middle'
+        const a     = angleFor(i)
+        const ratio = (scores?.[d.key] ?? 5) / 10
+        const r     = Math.max(ratio * maxR, maxR * 0.06)
+        return <circle key={d.key} cx={cx + r * Math.cos(a)} cy={cy + r * Math.sin(a)} r={5} fill={d.hex} />
+      })}
+      {SELF_DOMAINS.map((d, i) => {
+        const a      = angleFor(i)
+        const lx     = cx + labelR * Math.cos(a)
+        const ly     = cy + labelR * Math.sin(a)
+        const anchor = Math.cos(a) > 0.25 ? 'start' : Math.cos(a) < -0.25 ? 'end' : 'middle'
         return (
           <text
             key={d.key}
             x={lx} y={ly}
             textAnchor={anchor}
             dominantBaseline="middle"
-            style={{ fontFamily: LORA, fontSize: 13, letterSpacing: '0.06em', fill: d.hex, userSelect: 'none', pointerEvents: 'none' }}
+            fontFamily={LORA}
+            fontSize={13}
+            letterSpacing="0.06em"
+            fill={d.hex}
           >
             {d.name.toUpperCase()}
           </text>
@@ -141,18 +139,15 @@ function WheelSVG({ scores, size = 220 }) {
 
 // ── Shared styles ──────────────────────────────────────────────
 const s = {
-  app:    { maxWidth: 430, margin: '0 auto', height: '100%', display: 'flex', flexDirection: 'column', background: BG, overscrollBehavior: 'none' },
-  screen: { flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', padding: '0 24px' },
-  eyebrow:{ fontFamily: SC, fontSize: 13, letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', margin: '0 0 6px' },
-  prompt: { fontFamily: SERIF, fontSize: 27, fontWeight: 500, lineHeight: 1.08, margin: '0 0 6px' },
-  sub:    { fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, margin: '0 0 20px' },
-  btn:    { fontFamily: SC, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '15px', borderRadius: 30, border: 'none', cursor: 'pointer', background: INK, color: '#fff', transition: 'all 0.2s' },
-  ghost:  { fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '15px 0', border: 'none', cursor: 'pointer', background: 'transparent', color: 'rgba(15,21,35,0.55)' },
-  foot:   { flexShrink: 0, display: 'flex', gap: 12, alignItems: 'center', padding: '16px 24px', paddingBottom: 'calc(28px + env(safe-area-inset-bottom))', background: BG },
-  card:   { fontFamily: LORA, fontSize: 14, padding: '8px 13px', border: '1px solid rgba(15,21,35,0.14)', borderRadius: 20, background: 'transparent', color: INK, cursor: 'pointer', transition: 'all 0.15s', lineHeight: 1 },
+  app:   { maxWidth: 430, margin: '0 auto', height: '100%', display: 'flex', flexDirection: 'column', background: BG, overscrollBehavior: 'none' },
+  eyebrow: { fontFamily: SC, fontSize: 13, letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', margin: '0 0 6px' },
+  btn:   { fontFamily: SC, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '15px 24px', borderRadius: 30, border: 'none', cursor: 'pointer', background: INK, color: '#fff', transition: 'all 0.2s' },
+  ghost: { fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '15px 0', border: 'none', cursor: 'pointer', background: 'transparent', color: 'rgba(15,21,35,0.55)' },
+  foot:  { flexShrink: 0, display: 'flex', gap: 12, alignItems: 'center', padding: '16px 24px', paddingBottom: 'calc(28px + env(safe-area-inset-bottom))', background: BG },
+  card:  { fontFamily: LORA, fontSize: 14, padding: '8px 13px', border: '1px solid rgba(15,21,35,0.14)', borderRadius: 20, background: 'transparent', color: INK, cursor: 'pointer', transition: 'all 0.15s', lineHeight: 1 },
 }
 
-// ── Progress bar ───────────────────────────────────────────────
+// ── Progress bar — shown only on Personal and Placement screens ─
 function Progress({ step, total }) {
   return (
     <div style={{ display: 'flex', gap: 4, padding: '14px 24px 10px', flexShrink: 0 }}>
@@ -170,23 +165,24 @@ function Progress({ step, total }) {
 // ── Screen 0: Cover ────────────────────────────────────────────
 function CoverScreen({ onBegin }) {
   return (
-    <div style={{ ...s.screen, justifyContent: 'center', textAlign: 'center', paddingBottom: 'calc(60px + env(safe-area-inset-bottom))', paddingTop: 24 }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center', padding: '24px 32px', paddingBottom: 'calc(60px + env(safe-area-inset-bottom))' }}>
       <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.14em', color: 'rgba(15,21,35,0.65)', margin: '0 0 6px' }}>Welcome to</p>
       <h1 style={{ fontFamily: SC, fontSize: 46, letterSpacing: '0.04em', margin: '0 0 18px', color: INK }}>NextUs</h1>
       <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', color: 'rgba(15,21,35,0.65)', margin: '0 0 6px' }}>Building the future for</p>
       <h2 style={{ fontFamily: SERIF, fontWeight: 500, fontSize: 22, lineHeight: 1.1, margin: '0 0 32px', color: INK }}>The Person and the Planet.</h2>
-      <p style={{ fontFamily: LORA, fontSize: 15, color: 'rgba(15,21,35,0.7)', lineHeight: 1.6, margin: '0 0 36px' }}>Let's find where you are.<br />Five minutes.</p>
-      <button style={{ ...s.btn, maxWidth: 180, margin: '0 auto', display: 'block' }} onClick={onBegin}>Begin</button>
-      <div style={{ height: 60 }} />
+      <p style={{ fontFamily: LORA, fontSize: 15, color: 'rgba(15,21,35,0.7)', lineHeight: 1.6, margin: '0 0 40px' }}>
+        Let's find where you are.<br />Five minutes.
+      </p>
+      <button style={{ ...s.btn, maxWidth: 160, margin: '0 auto', display: 'block' }} onClick={onBegin}>
+        Begin
+      </button>
     </div>
   )
 }
 
 // ── Screen 1: Personal domains ─────────────────────────────────
 function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) {
-  function handleScore(key, val) {
-    setScores(prev => ({ ...prev, [key]: parseInt(val) }))
-  }
+  function handleScore(key, val) { setScores(prev => ({ ...prev, [key]: parseInt(val) })) }
   function toggleCard(key, label) {
     setCards(prev => {
       const cur = prev[key] || []
@@ -197,49 +193,44 @@ function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) 
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
       <div style={{ flexShrink: 0, padding: '20px 24px 0' }}>
         <p style={s.eyebrow}>Where you are</p>
-        <h1 style={{ ...s.prompt, fontSize: 24 }}>Seven areas of your life.</h1>
-        <p style={s.sub}>For each one, tap what feels relevant right now, then slide to show where you are on a scale of 0 to 10.</p>
-        <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)', margin: '0 0 24px', lineHeight: 1.5 }}>Honest beats optimistic.</p>
+        <h1 style={{ fontFamily: SERIF, fontSize: 24, fontWeight: 500, lineHeight: 1.1, margin: '0 0 6px', color: INK }}>Seven areas of your life.</h1>
+        <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, margin: '0 0 6px' }}>Tap what feels relevant, then slide to show where you are.</p>
+        <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.45)', margin: '0 0 20px' }}>Honest beats optimistic.</p>
       </div>
       <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', padding: '0 24px' }}>
         {SELF_DOMAINS.map(d => (
           <div key={d.key} style={{ borderLeft: `3px solid ${d.hex}`, paddingLeft: 16, marginBottom: 32 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-              <span style={{ fontFamily: SC, fontSize: 15, letterSpacing: '0.1em', color: INK }}>{d.name.toUpperCase()}</span>
-            </div>
+            <span style={{ fontFamily: SC, fontSize: 15, letterSpacing: '0.1em', color: INK, display: 'block', marginBottom: 4 }}>{d.name.toUpperCase()}</span>
             <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.5)', margin: '0 0 12px', lineHeight: 1.4 }}>{d.desc}</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 16 }}>
               {d.cards.map(label => {
                 const sel = (cards[d.key] || []).includes(label)
                 return (
-                  <button
-                    key={label}
+                  <button key={label} onClick={() => toggleCard(d.key, label)}
                     style={{ ...s.card, background: sel ? d.hex : 'transparent', color: sel ? '#fff' : INK, borderColor: sel ? 'transparent' : 'rgba(15,21,35,0.14)' }}
-                    onClick={() => toggleCard(d.key, label)}
                   >{label}</button>
                 )
               })}
             </div>
-            <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', margin: '0 0 10px' }}>Where are you right now?</p>
+            <p style={{ fontFamily: SC, fontSize: 12, letterSpacing: '0.14em', color: 'rgba(15,21,35,0.5)', textTransform: 'uppercase', margin: '0 0 10px' }}>Where are you right now?</p>
             <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-              <input
-                type="range" min="0" max="10" step="1"
+              <input type="range" min="0" max="10" step="1"
                 value={scores[d.key] ?? 5}
                 onChange={e => handleScore(d.key, e.target.value)}
                 style={{ flex: 1, accentColor: d.hex, height: 4 }}
               />
-              <div style={{ minWidth: 80 }}>
+              <div style={{ minWidth: 82 }}>
                 <div style={{ fontFamily: SC, fontSize: 24, fontWeight: 600, color: d.hex, lineHeight: 1 }}>
-                  {scores[d.key] ?? 5}<span style={{ fontFamily: SC, fontSize: 13, color: 'rgba(15,21,35,0.55)', letterSpacing: '0.1em' }}> *</span>
+                  {scores[d.key] ?? 5}<span style={{ fontFamily: SC, fontSize: 12, color: 'rgba(15,21,35,0.5)', letterSpacing: '0.1em' }}> *</span>
                 </div>
-                <div style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)', lineHeight: 1.3, marginTop: 2 }}>
+                <div style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.5)', lineHeight: 1.3, marginTop: 2 }}>
                   {SCALE_LABELS[scores[d.key] ?? 5]}
                 </div>
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-              <span style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)' }}>Zero</span>
-              <span style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)' }}>The best there is</span>
+              <span style={{ fontFamily: LORA, fontSize: 12, color: 'rgba(15,21,35,0.45)' }}>Zero</span>
+              <span style={{ fontFamily: LORA, fontSize: 12, color: 'rgba(15,21,35,0.45)' }}>The best there is</span>
             </div>
           </div>
         ))}
@@ -254,101 +245,138 @@ function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) 
 }
 
 // ── Screen 2: The Zoom ─────────────────────────────────────────
+// No progress bar. No overflow. Vertically centred.
+// Planet wheel shows live civ domain scores from useCivDomainScores.
 function ZoomScreen({ scores, onNext }) {
-  const [phase, setPhase] = useState('personal')
-  const [textVisible, setTextVisible] = useState(false)
+  const [phase, setPhase]           = useState('personal')
+  const [planetVisible, setPlanetVisible] = useState(false)
+  const { scores: civScores }       = useCivDomainScores()
+
+  // Build the current scores object for WorldWheel
+  const civCurrent = {}
+  CIV_DOMAINS.forEach(d => {
+    if (civScores?.[d.key] != null) civCurrent[d.key] = civScores[d.key]
+  })
 
   function handleZoom() {
     setPhase('zooming')
-    setTimeout(() => { setPhase('planet'); setTextVisible(true) }, 1600)
+    setTimeout(() => { setPhase('planet'); setPlanetVisible(true) }, 1600)
   }
 
-  const personalScale   = phase === 'zooming' ? 0.34 : 1
-  const planetOpacity   = phase === 'planet'   ? 1 : 0
-  const personalOpacity = phase === 'planet'   ? 0 : 1
+  const personalScale   = phase === 'zooming' ? 0.32 : 1
+  const personalOpacity = phase === 'planet'  ? 0    : 1
+  const planetOpacity   = phase === 'planet'  ? 1    : 0
   const bgColor         = phase === 'personal' ? BG   : DARK
-  const textColor       = phase === 'personal' ? INK  : BG
+  const isLight         = phase === 'personal'
 
-  // Zoom screen has no scrollable content — no overflow constraint
   return (
     <div style={{
       flex: 1,
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'center',
       alignItems: 'center',
+      justifyContent: 'center',
       textAlign: 'center',
-      paddingBottom: 'calc(50px + env(safe-area-inset-bottom))',
-      paddingTop: 24,
       background: bgColor,
-      color: textColor,
-      transition: 'background 1s 0.4s',
+      transition: 'background 0.9s 0.5s',
+      // No overflow — this is a cinematic screen with no scrollable content
       overflow: 'hidden',
+      padding: '24px 0 calc(40px + env(safe-area-inset-bottom))',
     }}>
-      {/* Wheel container — sized by the planet wheel spacer */}
-      <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 28, flexShrink: 0 }}>
-        {/* Planet wheel */}
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: planetOpacity, transition: 'opacity 1.4s 0.3s', overflow: 'visible' }}>
-          <div style={{ overflow: 'visible' }}>
-            <WorldWheel
-              dimensions={CIV_DOMAINS.map(d => ({ slug: d.key, label: d.name, color: d.hex }))}
-              size={220}
-              dark
-            />
-          </div>
-        </div>
-        {/* Personal wheel — scales down and fades */}
-        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${personalScale})`, transition: 'transform 1.6s cubic-bezier(0.6,0.01,0.2,1), opacity 0.4s 1.2s', opacity: personalOpacity }}>
-          <WheelSVG scores={scores} size={180} />
-        </div>
-        {/* Invisible spacer — sets container height to match planet wheel */}
-        <div style={{ visibility: 'hidden', overflow: 'visible', pointerEvents: 'none' }}>
+
+      {/* Wheel stack — uses a fixed height to avoid layout shift */}
+      <div style={{ position: 'relative', width: '100%', height: 340, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+
+        {/* Planet wheel — fades in */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          opacity: planetOpacity, transition: 'opacity 1.4s 0.4s',
+          overflow: 'visible',
+        }}>
           <WorldWheel
-            dimensions={CIV_DOMAINS.map(d => ({ slug: d.key, label: d.name, color: d.hex }))}
-            size={220}
+            dimensions={CIV_DIMS}
+            current={civCurrent}
+            size={210}
+            dark
           />
+        </div>
+
+        {/* Personal wheel — scales down and fades out */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transform: `scale(${personalScale})`,
+          transition: 'transform 1.6s cubic-bezier(0.6,0.01,0.2,1), opacity 0.5s 1.1s',
+          opacity: personalOpacity,
+          overflow: 'visible',
+        }}>
+          <WheelSVG scores={scores} size={180} />
         </div>
       </div>
 
-      {phase === 'personal' && (
-        <div style={{ animation: 'fadein 0.6s ease', padding: '0 24px' }}>
-          <p style={{ fontFamily: SERIF, fontSize: 18, lineHeight: 1.5, margin: '0 0 8px', color: 'rgba(15,21,35,0.7)' }}>This is your map.</p>
-          <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.55)', margin: '0 0 32px' }}>Take a moment with it.</p>
-          <button
-            style={{ ...s.btn, background: 'transparent', border: `1px solid rgba(15,21,35,0.3)`, color: INK, letterSpacing: '0.14em' }}
-            onClick={handleZoom}
-          >Next</button>
-        </div>
-      )}
+      {/* Text content — switches between phases */}
+      <div style={{ padding: '0 32px', width: '100%', boxSizing: 'border-box' }}>
 
-      {phase === 'zooming' && (
-        <p style={{ fontFamily: SERIF, fontSize: 18, color: 'rgba(250,250,247,0.5)', margin: 0 }}> </p>
-      )}
+        {phase === 'personal' && (
+          <div style={{ animation: 'fl-fadein 0.7s ease' }}>
+            <p style={{ fontFamily: SERIF, fontSize: 20, lineHeight: 1.5, margin: '0 0 6px', color: 'rgba(15,21,35,0.72)' }}>
+              This is your map.
+            </p>
+            <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.5)', margin: '0 0 28px' }}>
+              Take a moment with it.
+            </p>
+            <button
+              style={{ ...s.btn, background: 'transparent', border: '1px solid rgba(15,21,35,0.28)', color: INK }}
+              onClick={handleZoom}
+            >
+              Next
+            </button>
+          </div>
+        )}
 
-      {phase === 'planet' && (
-        <div style={{ opacity: textVisible ? 1 : 0, transition: 'opacity 1s 0.3s', padding: '0 24px' }}>
-          <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.18em', color: GC, textTransform: 'uppercase', margin: '0 0 10px' }}>Our planet</p>
-          <p style={{ fontFamily: SERIF, fontSize: 22, lineHeight: 1.4, margin: '0 0 16px', color: BG }}>The seven domains of life on Earth.</p>
-          <p style={{ fontFamily: LORA, fontSize: 14, lineHeight: 1.6, margin: '0 0 8px', color: 'rgba(250,250,247,0.65)' }}>The current state of the planet is a reflection of the average of all the people on it.</p>
-          <p style={{ fontFamily: SERIF, fontSize: 18, color: GC, margin: '0 0 32px', lineHeight: 1.4 }}>Where would you like to see the world?</p>
-          <button style={{ ...s.btn, maxWidth: 260, margin: '0 auto', display: 'block' }} onClick={onNext}>What future are you helping to build?</button>
-        </div>
-      )}
+        {phase === 'zooming' && (
+          <div style={{ height: 96 }} />
+        )}
 
-      <style>{`@keyframes fadein { from { opacity:0; transform:translateY(8px) } to { opacity:1; transform:none } }`}</style>
+        {phase === 'planet' && (
+          <div style={{ opacity: planetVisible ? 1 : 0, transition: 'opacity 1s 0.4s', animation: planetVisible ? 'fl-fadein 1s ease' : 'none' }}>
+            <p style={{ fontFamily: SC, fontSize: 12, letterSpacing: '0.2em', color: GC, textTransform: 'uppercase', margin: '0 0 10px' }}>
+              Our planet
+            </p>
+            <p style={{ fontFamily: SERIF, fontSize: 22, lineHeight: 1.4, margin: '0 0 14px', color: BG }}>
+              The seven domains of life on Earth.
+            </p>
+            <p style={{ fontFamily: LORA, fontSize: 14, lineHeight: 1.65, margin: '0 0 10px', color: 'rgba(250,250,247,0.6)' }}>
+              The current state of the planet is a reflection of the average of all the people on it.
+            </p>
+            <p style={{ fontFamily: SERIF, fontSize: 17, color: GC, margin: '0 0 28px', lineHeight: 1.4, fontStyle: 'italic' }}>
+              Where would you like to see the world?
+            </p>
+            <button
+              style={{ ...s.btn, background: BG, color: INK, display: 'block', margin: '0 auto', maxWidth: 280 }}
+              onClick={onNext}
+            >
+              What future are you helping to build?
+            </button>
+          </div>
+        )}
+      </div>
+
+      <style>{`
+        @keyframes fl-fadein {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: none; }
+        }
+      `}</style>
     </div>
   )
 }
 
 // ── Screen 3: Placement ────────────────────────────────────────
 function PlacementScreen({ vision, setVision, concerns, setConcerns, location, setLocation, scale, setScale, onFinish, saving }) {
-  // concerns is an array of strings, max 3
   function setConcern(i, val) {
-    setConcerns(prev => {
-      const next = [...prev]
-      next[i] = val
-      return next
-    })
+    setConcerns(prev => { const n = [...prev]; n[i] = val; return n })
   }
   function addConcern() {
     if (concerns.length < 3) setConcerns(prev => [...prev, ''])
@@ -363,30 +391,14 @@ function PlacementScreen({ vision, setVision, concerns, setConcerns, location, s
     && scale !== null
 
   const textareaBase = {
-    width: '100%',
-    fontFamily: LORA,
-    fontSize: 15,
-    lineHeight: 1.6,
-    color: INK,
-    background: 'transparent',
-    border: 'none',
-    borderBottom: `1px solid rgba(15,21,35,0.18)`,
-    borderRadius: 0,
-    padding: '8px 0',
-    resize: 'none',
-    outline: 'none',
-    boxSizing: 'border-box',
-    display: 'block',
+    width: '100%', fontFamily: LORA, fontSize: 15, lineHeight: 1.6,
+    color: INK, background: 'transparent', border: 'none',
+    borderBottom: '1px solid rgba(15,21,35,0.18)', borderRadius: 0,
+    padding: '8px 0', resize: 'none', outline: 'none', boxSizing: 'border-box', display: 'block',
   }
-
   const promptLabel = {
-    fontFamily: SERIF,
-    fontSize: 17,
-    fontWeight: 400,
-    color: 'rgba(15,21,35,0.45)',
-    lineHeight: 1.5,
-    display: 'block',
-    marginBottom: 4,
+    fontFamily: SERIF, fontSize: 17, fontWeight: 400,
+    color: 'rgba(15,21,35,0.42)', lineHeight: 1.5, display: 'block', marginBottom: 4,
   }
 
   return (
@@ -397,10 +409,7 @@ function PlacementScreen({ vision, setVision, concerns, setConcerns, location, s
         <div style={{ marginBottom: 40 }}>
           <p style={s.eyebrow}>Your world</p>
           <span style={promptLabel}>I want to live in a world where...</span>
-          <textarea
-            rows={3}
-            value={vision}
-            onChange={e => setVision(e.target.value)}
+          <textarea rows={3} value={vision} onChange={e => setVision(e.target.value)}
             placeholder="people feel they belong to something larger than themselves"
             style={textareaBase}
           />
@@ -413,33 +422,24 @@ function PlacementScreen({ vision, setVision, concerns, setConcerns, location, s
             <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 16 }}>
               <div style={{ flex: 1 }}>
                 <span style={promptLabel}>{i === 0 ? 'Issues I care most about...' : '...'}</span>
-                <textarea
-                  rows={2}
-                  value={c}
-                  onChange={e => setConcern(i, e.target.value)}
-                  placeholder={
-                    i === 0 ? 'e.g. climate breakdown, inequality, loneliness...'
-                    : i === 1 ? 'Another issue...'
-                    : 'One more...'
-                  }
+                <textarea rows={2} value={c} onChange={e => setConcern(i, e.target.value)}
+                  placeholder={i === 0 ? 'e.g. climate breakdown, inequality, loneliness...' : i === 1 ? 'Another issue...' : 'One more...'}
                   style={textareaBase}
                 />
               </div>
               {i > 0 && (
-                <button
-                  onClick={() => removeConcern(i)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(15,21,35,0.35)', fontSize: 18, padding: '6px 0', marginTop: 24, lineHeight: 1 }}
+                <button onClick={() => removeConcern(i)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(15,21,35,0.35)', fontSize: 20, padding: '6px 0', marginTop: 22, lineHeight: 1 }}
                   aria-label="Remove"
                 >×</button>
               )}
             </div>
           ))}
           {concerns.length < 3 && (
-            <button
-              onClick={addConcern}
+            <button onClick={addConcern}
               style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', color: GOLD, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', display: 'flex', alignItems: 'center', gap: 6 }}
             >
-              <span style={{ fontSize: 18, lineHeight: 1 }}>+</span> Add another
+              <span style={{ fontSize: 20, lineHeight: 1 }}>+</span> Add another
             </button>
           )}
         </div>
@@ -453,11 +453,6 @@ function PlacementScreen({ vision, setVision, concerns, setConcerns, location, s
             onChange={setLocation}
             placeholder="Search — e.g. Mexico City, Canada, East Africa…"
           />
-          {location && (
-            <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)', margin: '8px 0 0' }}>
-              {location.name}{location.type ? ` · ${location.type}` : ''}
-            </p>
-          )}
         </div>
 
         {/* Scale */}
@@ -466,9 +461,7 @@ function PlacementScreen({ vision, setVision, concerns, setConcerns, location, s
           <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.55)', margin: '0 0 16px', lineHeight: 1.5 }}>Where do you want to show up?</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {SCALE_OPTIONS.map(o => (
-              <button
-                key={o.key}
-                onClick={() => setScale(o.key)}
+              <button key={o.key} onClick={() => setScale(o.key)}
                 style={{
                   fontFamily: LORA, fontSize: 16, padding: '14px 20px',
                   border: `1px solid ${scale === o.key ? GC : 'rgba(15,21,35,0.14)'}`,
@@ -483,16 +476,15 @@ function PlacementScreen({ vision, setVision, concerns, setConcerns, location, s
           </div>
         </div>
 
-        <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.4)', margin: '0 0 8px', lineHeight: 1.5 }}>
-          * Provisional scores — these are your starting point. Begin NextU for your full map.
+        <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.38)', margin: '0 0 8px', lineHeight: 1.5 }}>
+          * Provisional scores — your starting point. Begin NextU for your full map.
         </p>
-
         <div style={{ height: 24 }} />
       </div>
 
       <div style={s.foot}>
         <button
-          style={{ ...s.btn, flex: 1, opacity: canFinish && !saving ? 1 : 0.4, cursor: canFinish && !saving ? 'pointer' : 'default' }}
+          style={{ ...s.btn, flex: 1, opacity: canFinish && !saving ? 1 : 0.38, cursor: canFinish && !saving ? 'pointer' : 'default' }}
           onClick={canFinish && !saving ? onFinish : undefined}
         >
           {saving ? 'Stepping in…' : 'Step into NextUs'}
@@ -502,15 +494,10 @@ function PlacementScreen({ vision, setVision, concerns, setConcerns, location, s
   )
 }
 
-// ── LOGO ───────────────────────────────────────────────────────
-const LOGO_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAq0AAAMECAYAAACVOBw5AAAACXBIWXMAAC4jAAAuIwF4pT92AAART2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDUgNzkuMTYzNDk5LCAyMDE4LzA4LzEzLTE2OjQwOjIyICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIiB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyIgeG1wTU06RG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOmViMjIwOWUwLWJlZjQtNDg0OS1hYjlmLTQ3Yjc5ZjU3ZGRmOCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozYjVjNjY1Mi1iMzNiLTRjYjctODllZi1mYWM0OTdlNzhlZWQiIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0iOEE4Njc2QkEzNzFEQjVGMEY2RTMwNTI0Nzk3QTRFNDkiIGRjOmZvcm1hdD0iaW1hZ2UvcG5nIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIiBwaG90b3Nob3A6SUNDUHJvZmlsZT0iIiB4bXA6Q3JlYXRlRGF0ZT0iMjAyNS0xMS0xNlQyMDowODoyOS0wNjowMCIgeG1wOk1vZGlmeURhdGU9IjIwMjYtMDYtMDdUMTY6NTM6MzctMDY6MDAiIHhtcDpNZXRhZGF0YURhdGU9IjIwMjYtMDYtMDdUMTY6NTM6MzctMDY6MDAiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTkgKE1hY2ludG9zaCkiIHRpZmY6SW1hZ2VXaWR0aD0iMTE1MiIgdGlmZjpJbWFnZUxlbmd0aD0iMTE0MyIgdGlmZjpQaG90b21ldHJpY0ludGVycHJldGF0aW9uPSIyIiB0aWZmOk9yaWVudGF0aW9uPSIxIiB0aWZmOlNhbXBsZXNQZXJQaXhlbD0iMyIgdGlmZjpYUmVzb2x1dGlvbj0iMzAwMDAwMC8xMDAwMCIgdGlmZjpZUmVzb2x1dGlvbj0iMzAwMDAwMC8xMDAwMCIgdGlmZjpSZXNvbHV0aW9uVW5pdD0iMiIgZXhpZjpFeGlmVmVyc2lvbj0iMDIyMSIgZXhpZjpDb2xvclNwYWNlPSI2NTUzNSIgZXhpZjpQaXhlbFhEaW1lbnNpb249IjY4NSIgZXhpZjpQaXhlbFlEaW1lbnNpb249Ijc3MiI+IDx4bXBNTTpIaXN0b3J5PiA8cmRmOlNlcT4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOmQ2MjA1YzgwLTY1OTQtNDZjZS1hNTQwLWEwNDZhM2Q2NzM3YSIgc3RFdnQ6d2hlbj0iMjAyNS0xMS0xNlQyMDoxMToxMC0wNjowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTkgKE1hY2ludG9zaCkiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249ImNvbnZlcnRlZCIgc3RFdnQ6cGFyYW1ldGVycz0iZnJvbSBpbWFnZS9qcGVnIHRvIGFwcGxpY2F0aW9uL3ZuZC5hZG9iZS5waG90b3Nob3AiLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249ImRlcml2ZWQiIHN0RXZ0OnBhcmFtZXRlcnM9ImNvbnZlcnRlZCBmcm9tIGltYWdlL2pwZWcgdG8gYXBwbGljYXRpb24vdm5kLmFkb2JlLnBob3Rvc2hvcCIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6ODFkMDQzMDUtODgyNS00NzdiLWJiNGItNmJhMDkzYmM5ZGJmIiBzdEV2dDp3aGVuPSIyMDI1LTExLTE2VDIwOjExOjEwLTA2OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxOSAoTWFjaW50b3NoKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6MTZjNGNjNjctZWIyNS00ZjI4LWEwYTctOTkxNDUyNWI4N2I0IiBzdEV2dDp3aGVuPSIyMDI1LTExLTE2VDIwOjU0OjEyLTA2OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxOSAoTWFjaW50b3NoKSIgc3RFdnQ6Y2hhbmdlZD0iLyIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY29udmVydGVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJmcm9tIGFwcGxpY2F0aW9uL3ZuZC5hZG9iZS5waG90b3Nob3AgdG8gaW1hZ2UvanBlZyIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iZGVyaXZlZCIgc3RFdnQ6cGFyYW1ldGVycz0iY29udmVydGVkIGZyb20gYXBwbGljYXRpb24vdm5kLmFkb2JlLnBob3Rvc2hvcCB0byBpbWFnZS9qcGVnIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJzYXZlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDpjNTMxNjc2NS04ZTg5LTRhZmMtYjBmNi1jZTk2OWZiN2IzZTkiIHN0RXZ0OndoZW49IjIwMjUtMTEtMTZUMjA6NTQ6MTItMDY6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE5IChNYWNpbnRvc2gpIiBzdEV2dDpjaGFuZ2VkPSIvIi8+IDxyZGY6bGkgc3RFdnQ6YWN0aW9uPSJkZXJpdmVkIiBzdEV2dDpwYXJhbWV0ZXJzPSJjb252ZXJ0ZWQgZnJvbSBpbWFnZS9qcGVnIHRvIGFwcGxpY2F0aW9uL3ZuZC5hZG9iZS5waG90b3Nob3AiLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjIyNWJhMWU5LWYwNTEtNGEwZi1iZDYwLWIzZTk5MDA2ZWE5MyIgc3RFdnQ6d2hlbj0iMjAyNS0xMS0xOFQxMzo0NTowMy0wNjowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTkgKE1hY2ludG9zaCkiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOmNjYWQ4ZmY1LWQ5M2ItNDVjMS1iZjdhLTljMDU2YjM0YjgxZiIgc3RFdnQ6d2hlbj0iMjAyNi0wNi0wN1QxNjo1MzozNy0wNjowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTkgKE1hY2ludG9zaCkiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249ImNvbnZlcnRlZCIgc3RFdnQ6cGFyYW1ldGVycz0iZnJvbSBhcHBsaWNhdGlvbi92bmQuYWRvYmUucGhvdG9zaG9wIHRvIGltYWdlL3BuZyIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iZGVyaXZlZCIgc3RFdnQ6cGFyYW1ldGVycz0iY29udmVydGVkIGZyb20gYXBwbGljYXRpb24vdm5kLmFkb2JlLnBob3Rvc2hvcCB0byBpbWFnZS9wbmciLz4gPHJkZjpsaSBzdEV2dDphY3Rpb249InNhdmVkIiBzdEV2dDppbnN0YW5jZUlEPSJ4bXAuaWlkOjNiNWM2NjUyLWIzM2ItNGNiNy04OWVmLWZhYzQ5N2U3OGVlZCIgc3RFdnQ6d2hlbj0iMjAyNi0wNi0wN1QxNjo1MzozNy0wNjowMCIgc3RFdnQ6c29mdHdhcmVBZ2VudD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTkgKE1hY2ludG9zaCkiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPC9yZGY6U2VxPiA8L3htcE1NOkhpc3Rvcnk+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOmNjYWQ4ZmY1LWQ5M2ItNDVjMS1iZjdhLTljMDU2YjM0YjgxZiIgc3RSZWY6ZG9jdW1lbnRJRD0iYWRvYmU6ZG9jaWQ6cGhvdG9zaG9wOmRmZmIzOGJiLWQwZmQtNjY0My1hY2YyLWE1ZWE3ZjQzNjM0YiIgc3RSZWY6b3JpZ2luYWxEb2N1bWVudElEPSI4QTg2NzZCQTM3MURCNUYwRjZFMzA1MjQ3OTdBNEU0OSIvPiA8cGhvdG9zaG9wOkRvY3VtZW50QW5jZXN0b3JzPiA8cmRmOkJhZz4gPHJkZjpsaT41NkREMkNCNzFFQTBGMzc0RDhGMUU3NTcyRTc0QjVBRTwvcmRmOmxpPiA8cmRmOmxpPjVERDE4Nzg1OThEQzg5QUIyQkZGN0E1OTJCMkMxQzg5PC9yZGY6bGk+IDxyZGY6bGk+QjcwRDU5NTFBNjE2NDZGMkRENTk4QTU3NTAyMkExQzc8L3JkZjpsaT4gPHJkZjpsaT5GQkNGMDBCMjY4REREMUYzQ0IyNThERjE4MDUxMEVERDwvcmRmOmxpPiA8L3JkZjpCYWc+IDwvcGhvdG9zaG9wOkRvY3VtZW50QW5jZXN0b3JzPiA8dGlmZjpCaXRzUGVyU2FtcGxlPiA8cmRmOlNlcT4gPHJkZjpsaT44PC9yZGY6bGk+IDxyZGY6bGk+ODwvcmRmOmxpPiA8cmRmOmxpPjg8L3JkZjpsaT4gPC9yZGY6U2VxPiA8L3RpZmY6Qml0c1BlclNhbXBsZT4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz4Xlon8AALLLUlEQVR4nOzdd5xc5XX4/8/td/psb9qVVr0XRBEgylDNgnvFsZ3Y48ROnMRfx0l+X3fHTu/lGzuxs3Ec944Lg6lDFSBAgBDqWpXtfXq/9/7+eGYlwGBjJFhJPO/Xa0G7Ozt7n7u7M2fOPc85yjff1YokSZJ0asSTiX/QlNofqYpL1TX/uT/W95H5PiZJkqTTzY1fG/+1v0Z9GY5DkiTp1SxiqFX8eh6gY74PRpIk6Wwhg1ZJkqRTTFVcVMUB8M33sUiSJJ0tZNAqSZJ0ar3zvNZ7eNvS/wJ4XTyZWDLfByRJknQ2kEGrJEnSKRJPJhYAvkWhg6xpeHzuw1vn8ZAkSZLOGjJolSRJOnVsgKg1jd/IzX2sd/4OR5Ik6ewhg1ZJkqRTxwawtBIK3tzHeubvcCRJks4eMmiVJEk6dRaCCFoBTLUC0DSPxyNJknTWkEGrJEnSqdMJoCs1AFp8owCN83g8kiRJZw0ZtEqSJJ0agbm+rIahYliiPMBn5AG0eDIhA1dJkqSTIINWSZKkU6MNAINea/ANKA7KJuQKoOkIYSB7sAlSGQJXRMoJOiJfuCnqQQFRNNAVqCbAJaWBCKdBMEOlcO0JOiJfDokPe7c0ALxVKT0lslkVqH8y4wdOc8T6f/YqKaSmf/PzNiNimf/lJJXZfJfQAp43bVGQAAPWQhipCZQdK3EL0VqAAoUMpJI+8YFvIPSkEPe9BNm6kfwkDX2mmmcN+Bse/lX5W4nIbkr/qmcLFe73HaH5H8oKwMO7DwgHHkEWo3ZJN+WU2S3FmQFnZbPPnMxDEcX9NJC4YPEKbv1x0XmVOC4u5GCkNB5B9kDLzn0FJA'
-
 // ── Main component ─────────────────────────────────────────────
-const TOTAL_STEPS = 4 // screens 0–3
-
 export default function FirstLight() {
   const { user } = useAuth()
-  const navigate  = useNavigate()
+  const navigate = useNavigate()
 
   const [step, setStep]         = useState(0)
   const [scores, setScores]     = useState({ path: 5, spark: 5, body: 5, finances: 5, connection: 5, inner_game: 5, signal: 5 })
@@ -527,14 +514,12 @@ export default function FirstLight() {
     try {
       const cleanConcerns = concerns.map(c => c.trim()).filter(Boolean)
 
-      // 1. Write to users table
       await supabase.from('users').update({
         first_light_completed_at: new Date().toISOString(),
         welcome_scores:           scores,
         welcome_challenges:       cards,
       }).eq('id', user.id)
 
-      // 2. Upsert to contributor_profiles_beta
       const cp = {
         id:               user.id,
         welcome_vision:   vision.trim(),
@@ -545,13 +530,12 @@ export default function FirstLight() {
       if (location?.id) cp.location_focus_id = location.id
       await supabase.from('contributor_profiles_beta').upsert(cp, { onConflict: 'id' })
 
-      // 3. Fire-and-forget: resolve concerns → problem_chains
       if (cleanConcerns.length > 0) {
         fetch('/api/firstlight-resolve-concerns', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ user_id: user.id, vision: vision.trim(), concerns: cleanConcerns }),
-        }).catch(() => {}) // non-blocking — matching improves in background
+        }).catch(() => {})
       }
     } catch (e) {
       console.error('First Light save error:', e)
@@ -561,14 +545,17 @@ export default function FirstLight() {
     }
   }
 
-  const next = () => setStep(s => Math.min(s + 1, TOTAL_STEPS - 1))
+  const next = () => setStep(s => Math.min(s + 1, 3))
   const back = () => setStep(s => Math.max(s - 1, 0))
 
-  return (
-    <div style={{ height: '100dvh', background: BG, overscrollBehavior: 'none' }}>
-      <div style={s.app}>
-        {step > 0 && step < TOTAL_STEPS - 1 && <Progress step={step - 1} total={2} />}
+  // Progress: show on Personal (step 1) and Placement (step 3) only.
+  // Cover and Zoom are full-bleed — no progress bar.
+  const showProgress = step === 1 || step === 3
 
+  return (
+    <div style={{ height: '100dvh', background: step === 2 ? DARK : BG, overscrollBehavior: 'none', transition: 'background 0.9s 0.5s' }}>
+      <div style={s.app}>
+        {showProgress && <Progress step={step === 1 ? 0 : 1} total={2} />}
         {step === 0 && <CoverScreen onBegin={next} />}
         {step === 1 && <PersonalScreen scores={scores} setScores={setScores} cards={cards} setCards={setCards} onNext={next} onBack={back} />}
         {step === 2 && <ZoomScreen scores={scores} onNext={next} />}
