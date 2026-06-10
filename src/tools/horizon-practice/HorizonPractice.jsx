@@ -1137,7 +1137,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
               borderRadius: '14px',
             }}>
             <p style={{
-              ...serif, fontSize: 'clamp(22px, 3.2vw, 28px)', fontWeight: 400 color: tokens.gold, lineHeight: 1.45,
+              ...serif, fontSize: 'clamp(22px, 3.2vw, 28px)', fontWeight: 400, color: tokens.gold, lineHeight: 1.45,
               margin: 0, maxWidth: '460px', marginLeft: 'auto', marginRight: 'auto',
             }}>{orderedIam[iamIdx].text}</p>
           </div>
