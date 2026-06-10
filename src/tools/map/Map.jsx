@@ -8,6 +8,8 @@ import { supabase } from '../../hooks/useSupabase'
 import { HorizonScaleModal, SCALE_LINK_STYLE } from '../../components/HorizonScaleModal'
 import { DebriefPanel } from '../../components/DebriefPanel'
 import { CrisisRedirectCard } from '../../components/CrisisRedirectCard'
+import Pathways from '../../components/pathways/Pathways'
+import { computeNeeds } from '../../components/pathways/pathwaysRules'
 
 // ─── Mobile hook ─────────────────────────────────────────────────────────────
 
@@ -2558,6 +2560,22 @@ export function MapPage() {
               horizonScores={horizonScores}
             />
             <MapNextSteps />
+            {/* Pathways — below all reflection content, results only.
+                Never mid-Map, never on any crisis-gate path. Renders for
+                the primary need domain (largest gap) when an active need
+                exists; otherwise nothing. Reads scores only. */}
+            {!crisisGate && (() => {
+              const scores = {}
+              for (const [key, d] of Object.entries(domainData || {})) {
+                if (d?.currentScore != null) {
+                  scores[key] = { current: d.currentScore, horizon: d.horizonScore ?? null }
+                }
+              }
+              const { primaryNeed } = computeNeeds(scores)
+              return primaryNeed
+                ? <Pathways domain={primaryNeed} surface="map_debrief" />
+                : null
+            })()}
           </>
         )}
 

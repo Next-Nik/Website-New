@@ -53,6 +53,7 @@ import {
   FONT_DISPLAY, FONT_SC, FONT_BODY,
 } from './tokens'
 import SelfDomainResources from './SelfDomainResources'
+import Pathways from '../../../components/pathways/Pathways'
 import { getCuratedFor, scoreToBand } from '../../constants/selfResources'
 
 const STEP_TYPE_LABELS = {
@@ -667,6 +668,11 @@ export default function SelfDomainPanel({
                 />
               )
             })()}
+
+            {/* Pathways — standing rail for the featured domain.
+                Journey first, practitioners alongside. Reads scores
+                only; never Journal, never Horizon State sessions. */}
+            <Pathways domain={itemForDisplay.id} surface="mc_domain" />
           </div>
         )}
 

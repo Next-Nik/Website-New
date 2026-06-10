@@ -356,7 +356,38 @@ function ProfileTab({ actor, onSave, toast }) {
 
 const EMPTY_OFFERING = {
   title: '', offering_type: 'tool', contribution_mode: 'functional',
-  description: '', url: '', access_type: 'free', domain_ids: [], is_flagship: false,
+  description: '', url: '', access_type: 'free', domain_ids: [], personal_domains: [], is_flagship: false,
+}
+
+// Personal-side domain tags — read by Pathways to surface accepting
+// practitioners. Owner-entered only; the extractor never writes these.
+const PERSONAL_DOMAIN_OPTIONS = [
+  { value: 'path',       label: 'Path' },
+  { value: 'spark',      label: 'Spark' },
+  { value: 'body',       label: 'Body' },
+  { value: 'finances',   label: 'Finances' },
+  { value: 'connection', label: 'Connection' },
+  { value: 'inner_game', label: 'Inner Game' },
+  { value: 'signal',     label: 'Signal' },
+]
+
+function PersonalDomainChips({ selected = [], onChange }) {
+  function toggle(val) {
+    onChange(selected.includes(val) ? selected.filter(v => v !== val) : [...selected, val])
+  }
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+      {PERSONAL_DOMAIN_OPTIONS.map(d => {
+        const on = selected.includes(d.value)
+        return (
+          <button key={d.value} type="button" onClick={() => toggle(d.value)}
+            style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', padding: '6px 14px', borderRadius: '40px', cursor: 'pointer', border: on ? '1.5px solid rgba(200,146,42,0.78)' : '1.5px solid rgba(200,146,42,0.25)', background: on ? 'rgba(200,146,42,0.10)' : 'transparent', color: on ? gold : 'rgba(15,21,35,0.55)', transition: 'all 0.15s' }}>
+            {d.label}
+          </button>
+        )
+      })}
+    </div>
+  )
 }
 
 function OfferingForm({ initial = EMPTY_OFFERING, onSave, onCancel, saving }) {
@@ -393,11 +424,18 @@ function OfferingForm({ initial = EMPTY_OFFERING, onSave, onCancel, saving }) {
         <Label>URL</Label>
         <TextInput value={form.url} onChange={v => set('url', v)} placeholder="https://…" />
       </div>
-      <div style={{ marginBottom: '20px' }}>
+      <div style={{ marginBottom: '18px' }}>
         <Label>Domains this offering serves</Label>
         <div style={{ marginTop: '10px' }}>
           <DomainChips selected={form.domain_ids} onChange={v => set('domain_ids', v)} />
         </div>
+      </div>
+      <div style={{ marginBottom: '20px' }}>
+        <Label>Personal domains this offering serves</Label>
+        <div style={{ marginTop: '10px' }}>
+          <PersonalDomainChips selected={form.personal_domains} onChange={v => set('personal_domains', v)} />
+        </div>
+        <Hint>People exploring a personal domain can find this offering through Pathways.</Hint>
       </div>
       <div style={{ marginBottom: '24px' }}>
         <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
@@ -480,7 +518,7 @@ function OfferingsTab({ actorId, toast }) {
   async function saveNew(form) {
     if (!form.title.trim()) { toast('Title is required'); return }
     setSaving(true)
-    await supabase.from('nextus_actor_offerings').insert({ actor_id: actorId, title: form.title.trim(), offering_type: form.offering_type, contribution_mode: form.contribution_mode, description: form.description.trim() || null, url: form.url.trim() || null, access_type: form.access_type, domain_ids: form.domain_ids, is_flagship: form.is_flagship })
+    await supabase.from('nextus_actor_offerings').insert({ actor_id: actorId, title: form.title.trim(), offering_type: form.offering_type, contribution_mode: form.contribution_mode, description: form.description.trim() || null, url: form.url.trim() || null, access_type: form.access_type, domain_ids: form.domain_ids, personal_domains: form.personal_domains || [], is_flagship: form.is_flagship })
     setSaving(false)
     toast('Offering added')
     setAdding(false)
@@ -490,7 +528,7 @@ function OfferingsTab({ actorId, toast }) {
   async function saveEdit(form) {
     if (!form.title.trim()) { toast('Title is required'); return }
     setSaving(true)
-    await supabase.from('nextus_actor_offerings').update({ title: form.title.trim(), offering_type: form.offering_type, contribution_mode: form.contribution_mode, description: form.description.trim() || null, url: form.url.trim() || null, access_type: form.access_type, domain_ids: form.domain_ids, is_flagship: form.is_flagship, updated_at: new Date().toISOString() }).eq('id', form.id)
+    await supabase.from('nextus_actor_offerings').update({ title: form.title.trim(), offering_type: form.offering_type, contribution_mode: form.contribution_mode, description: form.description.trim() || null, url: form.url.trim() || null, access_type: form.access_type, domain_ids: form.domain_ids, personal_domains: form.personal_domains || [], is_flagship: form.is_flagship, updated_at: new Date().toISOString() }).eq('id', form.id)
     setSaving(false)
     toast('Offering updated')
     setEditing(null)
