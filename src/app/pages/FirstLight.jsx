@@ -195,13 +195,13 @@ function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) 
         <p style={s.eyebrow}>Where you are</p>
         <h1 style={{ fontFamily: SERIF, fontSize: 24, fontWeight: 500, lineHeight: 1.1, margin: '0 0 6px', color: INK }}>Seven areas of your life.</h1>
         <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, margin: '0 0 6px' }}>Tap what feels relevant, then slide to show where you are.</p>
-        <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.45)', margin: '0 0 20px' }}>Honest beats optimistic.</p>
+        <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)', margin: '0 0 20px' }}>Honest beats optimistic.</p>
       </div>
       <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', padding: '0 24px' }}>
         {SELF_DOMAINS.map(d => (
           <div key={d.key} style={{ borderLeft: `3px solid ${d.hex}`, paddingLeft: 16, marginBottom: 32 }}>
             <span style={{ fontFamily: SC, fontSize: 15, letterSpacing: '0.1em', color: INK, display: 'block', marginBottom: 4 }}>{d.name.toUpperCase()}</span>
-            <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.5)', margin: '0 0 12px', lineHeight: 1.4 }}>{d.desc}</p>
+            <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)', margin: '0 0 12px', lineHeight: 1.4 }}>{d.desc}</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 16 }}>
               {d.cards.map(label => {
                 const sel = (cards[d.key] || []).includes(label)
@@ -212,7 +212,7 @@ function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) 
                 )
               })}
             </div>
-            <p style={{ fontFamily: SC, fontSize: 12, letterSpacing: '0.14em', color: 'rgba(15,21,35,0.5)', textTransform: 'uppercase', margin: '0 0 10px' }}>Where are you right now?</p>
+            <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', margin: '0 0 10px' }}>Where are you right now?</p>
             <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
               <input type="range" min="0" max="10" step="1"
                 value={scores[d.key] ?? 5}
@@ -221,16 +221,16 @@ function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) 
               />
               <div style={{ minWidth: 82 }}>
                 <div style={{ fontFamily: SC, fontSize: 24, fontWeight: 600, color: d.hex, lineHeight: 1 }}>
-                  {scores[d.key] ?? 5}<span style={{ fontFamily: SC, fontSize: 12, color: 'rgba(15,21,35,0.5)', letterSpacing: '0.1em' }}> *</span>
+                  {scores[d.key] ?? 5}<span style={{ fontFamily: SC, fontSize: 13, color: 'rgba(15,21,35,0.55)', letterSpacing: '0.1em' }}> *</span>
                 </div>
-                <div style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.5)', lineHeight: 1.3, marginTop: 2 }}>
+                <div style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)', lineHeight: 1.3, marginTop: 2 }}>
                   {SCALE_LABELS[scores[d.key] ?? 5]}
                 </div>
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-              <span style={{ fontFamily: LORA, fontSize: 12, color: 'rgba(15,21,35,0.45)' }}>Zero</span>
-              <span style={{ fontFamily: LORA, fontSize: 12, color: 'rgba(15,21,35,0.45)' }}>The best there is</span>
+              <span style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)' }}>Zero</span>
+              <span style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)' }}>The best there is</span>
             </div>
           </div>
         ))}
@@ -321,7 +321,7 @@ function ZoomScreen({ scores, onNext }) {
             <p style={{ fontFamily: SERIF, fontSize: 20, lineHeight: 1.5, margin: '0 0 6px', color: 'rgba(15,21,35,0.72)' }}>
               This is your map.
             </p>
-            <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.5)', margin: '0 0 28px' }}>
+            <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.55)', margin: '0 0 28px' }}>
               Take a moment with it.
             </p>
             <button
@@ -339,7 +339,7 @@ function ZoomScreen({ scores, onNext }) {
 
         {phase === 'planet' && (
           <div style={{ opacity: planetVisible ? 1 : 0, transition: 'opacity 1s 0.4s', animation: planetVisible ? 'fl-fadein 1s ease' : 'none' }}>
-            <p style={{ fontFamily: SC, fontSize: 12, letterSpacing: '0.2em', color: GC, textTransform: 'uppercase', margin: '0 0 10px' }}>
+            <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.2em', color: GC, textTransform: 'uppercase', margin: '0 0 10px' }}>
               Our planet
             </p>
             <p style={{ fontFamily: SERIF, fontSize: 22, lineHeight: 1.4, margin: '0 0 14px', color: BG }}>
@@ -348,7 +348,7 @@ function ZoomScreen({ scores, onNext }) {
             <p style={{ fontFamily: LORA, fontSize: 14, lineHeight: 1.65, margin: '0 0 10px', color: 'rgba(250,250,247,0.6)' }}>
               The current state of the planet is a reflection of the average of all the people on it.
             </p>
-            <p style={{ fontFamily: SERIF, fontSize: 17, color: GC, margin: '0 0 28px', lineHeight: 1.4, fontStyle: 'italic' }}>
+            <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.12em', color: GC, margin: '0 0 28px', lineHeight: 1.5, textTransform: 'uppercase' }}>
               Where would you like to see the world?
             </p>
             <button
@@ -395,8 +395,8 @@ function PlacementScreen({ vision, setVision, concerns, setConcerns, location, s
     padding: '8px 0', resize: 'none', outline: 'none', boxSizing: 'border-box', display: 'block',
   }
   const promptLabel = {
-    fontFamily: SERIF, fontSize: 17, fontWeight: 400,
-    color: 'rgba(15,21,35,0.42)', lineHeight: 1.5, display: 'block', marginBottom: 4,
+    fontFamily: LORA, fontSize: 15, fontWeight: 400,
+    color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, display: 'block', marginBottom: 4,
   }
 
   return (
@@ -427,7 +427,7 @@ function PlacementScreen({ vision, setVision, concerns, setConcerns, location, s
               </div>
               {i > 0 && (
                 <button onClick={() => removeConcern(i)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(15,21,35,0.35)', fontSize: 20, padding: '6px 0', marginTop: 22, lineHeight: 1 }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(15,21,35,0.55)', fontSize: 20, padding: '6px 0', marginTop: 22, lineHeight: 1 }}
                   aria-label="Remove"
                 >×</button>
               )}
@@ -474,7 +474,7 @@ function PlacementScreen({ vision, setVision, concerns, setConcerns, location, s
           </div>
         </div>
 
-        <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.38)', margin: '0 0 8px', lineHeight: 1.5 }}>
+        <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)', margin: '0 0 8px', lineHeight: 1.5 }}>
           * Provisional scores — your starting point. Begin NextU for your full map.
         </p>
         <div style={{ height: 24 }} />
