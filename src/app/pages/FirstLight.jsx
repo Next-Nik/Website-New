@@ -72,7 +72,7 @@ function WheelSVG({ domains, scores, size = 240, isCiv = false, dark = false }) 
   const vb = size + PAD * 2
   const cx = vb / 2, cy = vb / 2
   const maxR = (size / 2) * 0.78
-  const labelR = (size / 2) * 1.05
+  const labelR = (size / 2) * 1.18
   const N = domains.length
 
   function angleFor(i) { return (Math.PI * 2 * i) / N - Math.PI / 2 }
@@ -159,11 +159,10 @@ function WheelSVG({ domains, scores, size = 240, isCiv = false, dark = false }) 
             textAnchor={anchor}
             dominantBaseline="middle"
             style={{
-              fontFamily: "'Cormorant SC', Georgia, serif",
-              fontSize: 10,
-              letterSpacing: '0.14em',
-              fill: color,
-              opacity: 0.9,
+              fontFamily: "'Lora', Georgia, serif",
+              fontSize: 13,
+              letterSpacing: '0.08em',
+              fill: dark ? '#FFFFFF' : domainColor,
               userSelect: 'none',
               pointerEvents: 'none',
             }}
