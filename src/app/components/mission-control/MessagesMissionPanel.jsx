@@ -295,7 +295,7 @@ export default function MessagesMissionPanel({ userId }) {
         alignItems: 'center', marginBottom: '14px' }}>
         <h2 style={{ fontFamily: FONT_DISPLAY, fontSize: '22px',
           fontWeight: 500, color: TEXT_INK, margin: 0 }}>
-          Messages
+          Mail
         </h2>
         <button onClick={m.openCompose}
           style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',

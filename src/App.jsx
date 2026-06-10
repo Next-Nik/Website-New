@@ -94,6 +94,7 @@ import { PurposePiecePage, PurposePieceDeepPage }  from './tools/purpose-piece/P
 import { TargetSprintPage }                        from './tools/target-sprint/TargetSprint'
 import { HorizonPracticePage }                     from './tools/horizon-practice/HorizonPractice'
 import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
+import JournalPage                                 from './app/pages/Journal'
 import PlanetMap                                    from './tools/planet/PlanetMap'
 import { body } from './lib/designTokens'
 
@@ -229,6 +230,7 @@ function AppInner() {
         <Route path="/tools/purpose-piece/deep"  element={<PurposePieceDeepPage />} />
         <Route path="/tools/target-sprint"       element={<TargetSprintPage />} />
         <Route path="/tools/horizon-practice"    element={<HorizonPracticePage />} />
+        <Route path="/journal"                   element={<JournalPage />} />
         <Route path="/tools/planet"              element={<PlanetMap />} />  {/* founder-only beta — gate inside PlanetMap */}
 
         {/* ── Platform routes (beta prefix retired) ── */}

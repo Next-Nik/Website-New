@@ -146,7 +146,7 @@ export default function useMissionControlData() {
           // than re-querying.
           supabase
             .from('users')
-            .select('mission_control_scopes, location, region, dismissed_rail_tools, first_light_completed_at, welcome_scores, welcome_civ_interests, welcome_scale')
+            .select('mission_control_scopes, location, region, dismissed_rail_tools, first_light_completed_at, welcome_scores, welcome_civ_interests, welcome_scale, horizon_state_phase')
             .eq('id', user.id)
             .maybeSingle(),
         ])

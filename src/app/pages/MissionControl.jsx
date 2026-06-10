@@ -56,6 +56,8 @@ import HorizonStateMissionPanel   from '../components/mission-control/HorizonSta
 import ProfileMissionPanel        from '../components/mission-control/ProfileMissionPanel'
 import SettingsMissionPanel       from '../components/mission-control/SettingsMissionPanel'
 import WorldViewMissionPanel      from '../components/mission-control/WorldViewMissionPanel'
+import GetToDoMissionPanel        from '../components/mission-control/GetToDoMissionPanel'
+import CurriculumGatePanel        from '../components/mission-control/CurriculumGatePanel'
 import AddOverlay                 from '../components/AddOverlay'
 import FocusPanelContent          from '../components/FocusPanelContent'
 import { useActiveFocus }         from '../hooks/useActiveFocus'
@@ -927,6 +929,20 @@ export default function MissionControl() {
   const hpState = data.practiceData?.check_date ? 'RECENT' : null
 
   const mapAudited = countPlaced(selfCurrent)
+
+  // ── Curriculum gate: map complete means all 7 domains have an
+  //    ia_statement on horizon_profile. Horizon Self lives in
+  //    mapResults.life_ia_statement (the integrated life-level IA).
+  //    Both are required before gated tools unlock.
+  const iaCount = (data.mapData || []).filter(r => r.ia_statement).length
+  const hasHorizonSelf = !!(data.mapResults?.life_ia_statement)
+  const mapComplete = iaCount >= 7 && hasHorizonSelf
+
+  // Horizon State phase from users row (baseline | calibration | embodiment)
+  const horizonStatePhase = data.userRow?.horizon_state_phase || 'baseline'
+  const hsPhase2Locked = !mapComplete && horizonStatePhase !== 'baseline'
+  // Phase 2+ is gated — only baseline (Phase 1) is always open.
+  // The tile opens regardless; the panel shows the gate if needed.
   const mapState = mapAudited === 0
     ? null
     : mapAudited === 7
@@ -973,38 +989,41 @@ export default function MissionControl() {
           <SideRail side="left">
             <Tile
               glyph={<MapPinGlyph />}
-              label={<>THE<br/>MAP</>}
-              state={mapState}
+              label="NextU"
+              state={mapAudited === 0 ? null : mapAudited === 7 ? 'COMPLETE' : `${mapAudited} OF 7`}
               onClick={() => openPersonalPanel('map')}
-              title="The Map — your seven domains"
+              title="NextU — your personal journey"
             />
             <Tile
               glyph={<HorizonStateGauge />}
-              label={<>HORIZON<br/>STATE</>}
+              label="Daily"
               state={hsState}
               onClick={() => openPersonalPanel('horizon-state')}
-              title="Horizon State — daily check-in"
+              title="Daily — Horizon State + Practice"
             />
             <Tile
               glyph="✦"
-              label={<>HORIZON<br/>PRACTICE</>}
+              label={<>GET TO<br/>DO</>}
               state={hpState}
-              onClick={() => navigate('/tools/horizon-practice')}
-              title="Horizon Practice"
+              onClick={() => mapComplete
+                ? openPersonalPanel('get-to-do')
+                : openPersonalPanel('horizon-practice-gate')
+              }
+              title="Get To Do — your stretch items and calendar"
             />
             <Tile
               glyph="≡"
-              label="TOOLS"
+              label="Journal"
               state={null}
-              onClick={() => openPersonalPanel('resources')}
-              title="Resources for self"
+              onClick={() => openPersonalPanel('journal')}
+              title="Journal — your record of becoming"
             />
             <Tile
               glyph={<MessagesIcon />}
-              label="MAIL"
+              label="Mail"
               state={null}
               onClick={() => setActivePanel('messages')}
-              title="Messages — your inboxes per hat"
+              title="Mail — your inboxes"
             />
           </SideRail>
 
@@ -1220,6 +1239,10 @@ export default function MissionControl() {
         actions={[
           { label: 'REPORTS & LOGS →', primary: true,
             onClick: () => navigate('/tools/horizon-state') },
+          ...(!mapComplete ? [] : [
+            { label: 'HORIZON PRACTICE →',
+              onClick: () => navigate('/tools/horizon-practice') },
+          ]),
           { label: 'CLOSE', onClick: closePanel },
         ]}
       >
@@ -1227,6 +1250,32 @@ export default function MissionControl() {
           user={data.user}
           onNavigate={navigate}
         />
+        {/* Phase 2/3 gate — shown below baseline content when map not complete */}
+        {!mapComplete && horizonStatePhase === 'baseline' && (
+          <div style={{
+            margin: '24px 0 0', padding: '18px 20px',
+            borderTop: '1px solid rgba(200,146,42,0.18)',
+          }}>
+            <div style={{ fontFamily: "'Cormorant SC', Georgia, serif",
+              fontSize: '10px', letterSpacing: '0.18em',
+              color: 'rgba(15,21,35,0.45)', marginBottom: '8px' }}>
+              PHASES 2 & 3
+            </div>
+            <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13.5px',
+              color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, margin: '0 0 12px' }}>
+              Calibration and Embodiment unlock once your Map is complete
+              and your I Am statements are in place.
+            </p>
+            <button onClick={() => { closePanel(); navigate('/tools/map') }}
+              style={{ fontFamily: "'Cormorant SC', Georgia, serif",
+                fontSize: '11px', letterSpacing: '0.14em',
+                background: 'none', border: '1px solid rgba(200,146,42,0.30)',
+                borderRadius: '40px', padding: '7px 16px',
+                color: '#A8721A', cursor: 'pointer' }}>
+              OPEN THE MAP →
+            </button>
+          </div>
+        )}
       </Panel>
 
       <Panel
@@ -1337,10 +1386,10 @@ export default function MissionControl() {
       <Panel
         open={activePanel === 'map'}
         onClose={closePanel}
-        eyebrow="FOUNDATION · THE MAP"
+        eyebrow="YOUR JOURNEY · NextU"
         title="Your seven domains"
         actions={[
-          { label: placedCount === 7 ? 'REVISIT A DOMAIN' : 'OPEN THE MAP →', primary: true,
+          { label: mapAudited === 7 ? 'REVISIT A DOMAIN' : 'OPEN THE MAP →', primary: true,
             onClick: () => navigate('/tools/map') },
           { label: 'CLOSE', onClick: closePanel },
         ]}
@@ -1348,6 +1397,61 @@ export default function MissionControl() {
         <MapMissionPanel
           user={data.user}
           onNavigate={navigate}
+        />
+      </Panel>
+
+      {/* ── Get To Do ─────────────────────────────────────── */}
+      <Panel
+        open={activePanel === 'get-to-do'}
+        onClose={closePanel}
+        eyebrow="YOUR STRETCH · GET TO DO"
+        title="What's yours to do today"
+        actions={[
+          { label: 'TARGET STRETCH →', primary: true,
+            onClick: () => navigate('/tools/target-sprint') },
+          { label: 'CLOSE', onClick: closePanel },
+        ]}
+      >
+        <GetToDoMissionPanel
+          userId={data.user?.id}
+          sprintData={data.sprintData}
+        />
+      </Panel>
+
+      {/* ── Journal ───────────────────────────────────────── */}
+      <Panel
+        open={activePanel === 'journal'}
+        onClose={closePanel}
+        eyebrow="YOUR RECORD · JOURNAL"
+        title="Your becoming"
+        actions={[
+          { label: 'OPEN JOURNAL →', primary: true,
+            onClick: () => navigate('/journal') },
+          { label: 'CLOSE', onClick: closePanel },
+        ]}
+      >
+        <div style={{ padding: '20px 24px' }}>
+          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px',
+            color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>
+            Your Journal holds everything — what you wrote, how you arrived each day,
+            what the practice revealed. Open it to write or read your record.
+          </p>
+        </div>
+      </Panel>
+
+      {/* ── Horizon Practice gate (map not yet complete) ─── */}
+      <Panel
+        open={activePanel === 'horizon-practice-gate'}
+        onClose={closePanel}
+        eyebrow="DAILY · HORIZON PRACTICE"
+        title="Horizon Practice"
+        actions={[{ label: 'CLOSE', onClick: closePanel }]}
+      >
+        <CurriculumGatePanel
+          toolName="Horizon Practice"
+          reason="Horizon Practice uses your I Am statements — the ones you build inside The Map. Complete The Map first, and the full practice sequence unlocks."
+          ctaLabel="Open The Map →"
+          ctaPath="/tools/map"
         />
       </Panel>
 
