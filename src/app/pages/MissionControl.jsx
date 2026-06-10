@@ -994,14 +994,14 @@ export default function MissionControl() {
             />
             <Tile
               glyph="≡"
-              label="RESOURCES"
+              label="TOOLS"
               state={null}
               onClick={() => openPersonalPanel('resources')}
               title="Resources for self"
             />
             <Tile
               glyph={<MessagesIcon />}
-              label="MESSAGES"
+              label="MAIL"
               state={null}
               onClick={() => setActivePanel('messages')}
               title="Messages — your inboxes per hat"
