@@ -68,9 +68,11 @@ import { selfColor, civColor } from '../../constants/domainColors'
 // ── Wheel SVG — matches Mission Control GlanceWheel style ─────
 // Uses polygon area fill like the real wheel, with bolder lines
 function WheelSVG({ domains, scores, size = 240, isCiv = false }) {
-  const cx = size / 2, cy = size / 2
+  const PAD = 48  // padding for labels
+  const vb = size + PAD * 2
+  const cx = vb / 2, cy = vb / 2
   const maxR = (size / 2) * 0.78
-  const labelR = (size / 2) * 0.96
+  const labelR = (size / 2) * 1.05
   const N = domains.length
 
   function angleFor(i) { return (Math.PI * 2 * i) / N - Math.PI / 2 }
@@ -95,7 +97,12 @@ function WheelSVG({ domains, scores, size = 240, isCiv = false }) {
   )
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block', overflow: 'visible' }}>
+    <svg
+      width={size + PAD * 2}
+      height={size + PAD * 2}
+      viewBox={`0 0 ${vb} ${vb}`}
+      style={{ display: 'block', overflow: 'visible' }}
+    >
       {/* Outer ring */}
       <polygon
         points={ringPts}
@@ -142,7 +149,7 @@ function WheelSVG({ domains, scores, size = 240, isCiv = false }) {
         const lx = cx + labelR * Math.cos(a)
         const ly = cy + labelR * Math.sin(a)
         const anchor = Math.cos(a) > 0.2 ? 'start' : Math.cos(a) < -0.2 ? 'end' : 'middle'
-        const color = isCiv ? civColor(d.key).base : selfColor(d.key).base
+        const color = 'rgba(250,250,247,0.75)'
         return (
           <text
             key={d.key}
@@ -152,7 +159,7 @@ function WheelSVG({ domains, scores, size = 240, isCiv = false }) {
             dominantBaseline="middle"
             style={{
               fontFamily: "'Cormorant SC', Georgia, serif",
-              fontSize: size > 200 ? 11 : 8,
+              fontSize: 10,
               letterSpacing: '0.14em',
               fill: color,
               opacity: 0.9,
