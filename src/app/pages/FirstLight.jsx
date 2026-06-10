@@ -68,7 +68,7 @@ import { selfColor, civColor } from '../../constants/domainColors'
 // ── Wheel SVG — matches Mission Control GlanceWheel style ─────
 // Uses polygon area fill like the real wheel, with bolder lines
 function WheelSVG({ domains, scores, size = 240, isCiv = false, dark = false }) {
-  const PAD = 48  // padding for labels
+  const PAD = 64  // padding for labels
   const vb = size + PAD * 2
   const cx = vb / 2, cy = vb / 2
   const maxR = (size / 2) * 0.78
@@ -150,7 +150,7 @@ function WheelSVG({ domains, scores, size = 240, isCiv = false, dark = false }) 
         const ly = cy + labelR * Math.sin(a)
         const anchor = Math.cos(a) > 0.2 ? 'start' : Math.cos(a) < -0.2 ? 'end' : 'middle'
         const domainColor = isCiv ? civColor(d.key).base : selfColor(d.key).base
-        const color = dark ? 'rgba(250,250,247,0.8)' : domainColor
+
         return (
           <text
             key={d.key}
@@ -181,11 +181,11 @@ function WheelSVG({ domains, scores, size = 240, isCiv = false, dark = false }) 
 const s = {
   app:      { maxWidth: 430, margin: '0 auto', height: '100%', display: 'flex', flexDirection: 'column', background: BG, overscrollBehavior: 'none' },
   screen:   { flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', padding: '0 24px' },
-  eyebrow:  { fontFamily: SC, fontSize: 11, letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', margin: '0 0 6px' },
+  eyebrow:  { fontFamily: SC, fontSize: 13, letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', margin: '0 0 6px' },
   prompt:   { fontFamily: SERIF, fontSize: 27, fontWeight: 500, lineHeight: 1.08, margin: '0 0 6px' },
   sub:      { fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, margin: '0 0 20px' },
   btn:      { fontFamily: SC, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '15px', borderRadius: 30, border: 'none', cursor: 'pointer', background: INK, color: '#fff', transition: 'all 0.2s' },
-  ghost:    { fontFamily: SC, fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '15px 0', border: 'none', cursor: 'pointer', background: 'transparent', color: 'rgba(15,21,35,0.4)' },
+  ghost:    { fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '15px 0', border: 'none', cursor: 'pointer', background: 'transparent', color: 'rgba(15,21,35,0.55)' },
   foot:     { flexShrink: 0, display: 'flex', gap: 12, alignItems: 'center', padding: '16px 24px', paddingBottom: 'calc(28px + env(safe-area-inset-bottom))', background: BG },
   card:     { fontFamily: LORA, fontSize: 14, padding: '8px 13px', border: '1px solid rgba(15,21,35,0.14)', borderRadius: 20, background: 'transparent', color: INK, cursor: 'pointer', transition: 'all 0.15s', lineHeight: 1 },
 }
@@ -239,7 +239,7 @@ function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) 
         <p style={s.eyebrow}>Where you are</p>
         <h1 style={{ ...s.prompt, fontSize: 24 }}>Seven areas of your life.</h1>
         <p style={s.sub}>For each one, tap the cards that feel relevant right now, then slide to show where you are on a scale of 0 to 10.</p>
-        <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.4)', fontStyle: 'italic', margin: '0 0 24px', lineHeight: 1.5 }}>The cards help the platform understand what matters to you. The slider is your honest score. Honest beats optimistic.</p>
+        <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)', margin: '0 0 24px', lineHeight: 1.5 }}>The cards help the platform understand what matters to you. The slider is your honest score. Honest beats optimistic.</p>
       </div>
       <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', padding: '0 24px' }}>
         {SELF_DOMAINS.map(d => (
@@ -260,7 +260,7 @@ function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) 
                 )
               })}
             </div>
-            <p style={{ fontFamily: SC, fontSize: 10, letterSpacing: '0.14em', color: 'rgba(15,21,35,0.4)', textTransform: 'uppercase', margin: '0 0 10px' }}>Where are you right now?</p>
+            <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', margin: '0 0 10px' }}>Where are you right now?</p>
             <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
               <input
                 type="range" min="0" max="10" step="1"
@@ -270,16 +270,16 @@ function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) 
               />
               <div style={{ minWidth: 80 }}>
                 <div style={{ fontFamily: SC, fontSize: 24, fontWeight: 600, color: d.hex, lineHeight: 1 }}>
-                  {scores[d.key] ?? 5}<span style={{ fontFamily: SC, fontSize: 11, color: 'rgba(15,21,35,0.4)', letterSpacing: '0.1em' }}> *</span>
+                  {scores[d.key] ?? 5}<span style={{ fontFamily: SC, fontSize: 13, color: 'rgba(15,21,35,0.55)', letterSpacing: '0.1em' }}> *</span>
                 </div>
-                <div style={{ fontFamily: LORA, fontSize: 11, color: 'rgba(15,21,35,0.5)', lineHeight: 1.3, marginTop: 2 }}>
+                <div style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)', lineHeight: 1.3, marginTop: 2 }}>
                   {SCALE_LABELS[scores[d.key] ?? 5]}
                 </div>
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-              <span style={{ fontFamily: LORA, fontSize: 10, color: 'rgba(15,21,35,0.3)' }}>Zero</span>
-              <span style={{ fontFamily: LORA, fontSize: 10, color: 'rgba(15,21,35,0.3)' }}>The best there is</span>
+              <span style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)' }}>Zero</span>
+              <span style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)' }}>The best there is</span>
             </div>
           </div>
         ))}
@@ -322,13 +322,16 @@ function ZoomScreen({ scores, onNext }) {
           <WheelSVG domains={SELF_DOMAINS} scores={scores} size={160} dark={false} />
         </div>
         {/* Spacer */}
-        <WheelSVG domains={SELF_DOMAINS} scores={scores} size={160} dark={false} style={{ visibility: 'hidden' }} />
+        
+        <div style={{ visibility: 'hidden' }}>
+          <WheelSVG domains={SELF_DOMAINS} scores={scores} size={160} dark={false} />
+        </div>
       </div>
 
       {phase === 'personal' && (
         <div style={{ animation: 'fadein 0.6s ease' }}>
           <p style={{ fontFamily: SERIF, fontSize: 18, lineHeight: 1.5, margin: '0 0 8px', color: 'rgba(15,21,35,0.7)' }}>This is your map.</p>
-          <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.45)', margin: '0 0 32px' }}>Take a moment with it.</p>
+          <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.55)', margin: '0 0 32px' }}>Take a moment with it.</p>
           <button
             style={{ ...s.btn, background: 'transparent', border: `1px solid rgba(15,21,35,0.3)`, color: INK, letterSpacing: '0.14em' }}
             onClick={handleZoom}
@@ -345,7 +348,7 @@ function ZoomScreen({ scores, onNext }) {
           <p style={{ fontFamily: SERIF, fontSize: 22, lineHeight: 1.4, margin: '0 0 6px', color: BG }}>The same seven domains.</p>
           <p style={{ fontFamily: SERIF, fontSize: 22, lineHeight: 1.4, margin: '0 0 16px', color: BG }}>One person. One planet.</p>
           <p style={{ fontFamily: LORA, fontSize: 14, lineHeight: 1.6, margin: '0 0 8px', color: 'rgba(250,250,247,0.65)' }}>The current state of the planet is a reflection of the average of all the people on it.</p>
-          <p style={{ fontFamily: SERIF, fontSize: 18, fontStyle: 'italic', color: GC, margin: '0 0 32px', lineHeight: 1.4 }}>Where would you like to see the world?</p>
+          <p style={{ fontFamily: SERIF, fontSize: 18, color: GC, margin: '0 0 32px', lineHeight: 1.4 }}>Where would you like to see the world?</p>
           <button style={{ ...s.btn, maxWidth: 220, margin: '0 auto', display: 'block' }} onClick={onNext}>Keep going</button>
         </div>
       )}
@@ -379,13 +382,13 @@ function PlanetScreen({ civInterests, setCivInterests, onNext, onBack }) {
                 onChange={e => handleSlider(d.key, e.target.value)}
                 style={{ flex: 1, accentColor: d.hex, height: 4 }}
               />
-              <div style={{ minWidth: 40, fontFamily: SC, fontSize: 22, fontWeight: 600, color: (civInterests[d.key] ?? 0) > 0 ? d.hex : 'rgba(15,21,35,0.2)' }}>
+              <div style={{ minWidth: 40, fontFamily: SC, fontSize: 22, fontWeight: 600, color: (civInterests[d.key] ?? 0) > 0 ? d.hex : 'rgba(15,21,35,0.55)' }}>
                 {civInterests[d.key] ?? 0}
               </div>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-              <span style={{ fontFamily: LORA, fontSize: 10, color: 'rgba(15,21,35,0.3)' }}>Not right now</span>
-              <span style={{ fontFamily: LORA, fontSize: 10, color: 'rgba(15,21,35,0.3)' }}>All in</span>
+              <span style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)' }}>Not right now</span>
+              <span style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)' }}>All in</span>
             </div>
           </div>
         ))}
@@ -476,7 +479,7 @@ function ReflectionScreen({ scores, civInterests, scale, onFinish }) {
         <p style={{ fontFamily: SERIF, fontSize: 22, lineHeight: 1.5, margin: '0 0 28px', color: INK }}>{mirror}</p>
 
         <div style={{ marginBottom: 28 }}>
-          <p style={{ fontFamily: SC, fontSize: 10, letterSpacing: '0.16em', color: 'rgba(15,21,35,0.4)', textTransform: 'uppercase', margin: '0 0 10px' }}>Your platform is ready</p>
+          <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', margin: '0 0 10px' }}>Your platform is ready</p>
           {seeds.map((seed, i) => (
             <div key={seed.label} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 0', borderTop: '1px solid rgba(15,21,35,0.08)', opacity: 0, animation: `seedin 0.5s ${i * 0.12}s forwards` }}>
               <div style={{ width: 28, height: 28, borderRadius: 7, background: 'rgba(200,146,42,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>{seed.icon}</div>
