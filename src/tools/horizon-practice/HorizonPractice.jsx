@@ -1197,7 +1197,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
               }}>
                 <Eyebrow style={{ marginBottom: '4px', fontSize: '13px' }}>{stmt.label}</Eyebrow>
                 <p style={{
-                  ...serif, fontSize: '17px' color: tokens.gold,
+                  ...serif, fontSize: '17px', color: tokens.gold,
                   lineHeight: 1.45, margin: 0,
                 }}>{stmt.text}</p>
               </div>
@@ -1231,7 +1231,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
                 borderRadius: '14px',
               }}>
               <p style={{
-                ...serif, fontSize: 'clamp(19px, 2.6vw, 23px)', fontWeight: 400 color: tokens.gold, lineHeight: 1.55, margin: 0,
+                ...serif, fontSize: 'clamp(19px, 2.6vw, 23px)', fontWeight: 400, color: tokens.gold, lineHeight: 1.55, margin: 0,
               }}>{horizonSelfStatement}</p>
             </div>
           ) : (
