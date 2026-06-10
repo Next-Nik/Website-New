@@ -316,12 +316,14 @@ function ZoomScreen({ scores, onNext }) {
   return (
     <div style={{ ...s.screen, background: bgColor, color: textColor, justifyContent: 'center', alignItems: 'center', textAlign: 'center', paddingBottom: 'calc(50px + env(safe-area-inset-bottom))', paddingTop: 24, transition: 'background 1s 0.4s' }}>
       <div style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', flexShrink: 0 }}>
-        {/* Planet wheel — fades in; overflow:visible so labels aren't clipped */}
+        {/* Planet wheel — overflow:visible so labels aren't clipped by SVG bounds */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: planetOpacity, transition: 'opacity 1.4s 0.3s', overflow: 'visible' }}>
-          <WorldWheel
-            dimensions={CIV_DOMAINS.map(d => ({ slug: d.key, label: d.name, color: d.hex }))}
-            size={256}
-          />
+          <div style={{ overflow: 'visible' }}>
+            <WorldWheel
+              dimensions={CIV_DOMAINS.map(d => ({ slug: d.key, label: d.name, color: d.hex }))}
+              size={220}
+            />
+          </div>
         </div>
         {/* Personal wheel — scales down and fades out */}
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', transform: `scale(${personalScale})`, transition: 'transform 1.6s cubic-bezier(0.6,0.01,0.2,1), opacity 0.4s 1.2s', opacity: personalOpacity }}>
@@ -332,11 +334,11 @@ function ZoomScreen({ scores, onNext }) {
             size={180}
           />
         </div>
-        {/* Spacer sized to WorldWheel so the container is tall enough */}
-        <div style={{ visibility: 'hidden' }}>
+        {/* Spacer sized to planet wheel so container height is right */}
+        <div style={{ visibility: 'hidden', overflow: 'visible' }}>
           <WorldWheel
             dimensions={CIV_DOMAINS.map(d => ({ slug: d.key, label: d.name, color: d.hex }))}
-            size={256}
+            size={220}
           />
         </div>
       </div>
@@ -371,15 +373,15 @@ function ZoomScreen({ scores, onNext }) {
   )
 }
 
-// ── CIV domain descriptions for PlanetScreen ─────────────────
+// ── CIV domain descriptions ───────────────────────────────────
 const CIV_DESC = {
-  vision:   'The direction humanity is heading — shared purpose, leadership, and collective vision.',
-  human:    'What it means to be human — rights, dignity, creativity, and human flourishing.',
-  nature:   'The living world — biodiversity, climate, ecosystems, and our relationship with the Earth.',
+  vision:   'The direction humanity is heading — shared purpose and collective vision.',
+  human:    'What it means to be human — rights, dignity, creativity, and flourishing.',
+  nature:   'The living world — biodiversity, climate, and our relationship with the Earth.',
   economy:  'How we create and share value — financial systems, inequality, and economic justice.',
   society:  'How we live together — community, culture, belonging, and social cohesion.',
-  legacy:   'What we leave behind — wisdom, institutions, and the world we pass to future generations.',
-  tech:     'The tools we build and how they shape us — AI, communication, and technological futures.',
+  legacy:   'What we leave behind — wisdom, institutions, and the world we pass on.',
+  tech:     'The tools we build and how they shape us — AI, connection, and technological futures.',
 }
 
 // ── Screen 3: Planetary interest ──────────────────────────────
@@ -389,11 +391,11 @@ function PlanetScreen({ civInterests, setCivInterests, onNext, onBack }) {
   }
 
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
       <div style={{ flexShrink: 0, padding: '20px 24px 0' }}>
         <p style={s.eyebrow}>The World</p>
         <h1 style={{ ...s.prompt, fontSize: 24 }}>Where does your energy want to go?</h1>
-        <p style={s.sub}>Tap the areas that matter to you. You can pick as many as you like.</p>
+        <p style={s.sub}>Tap the areas that matter to you. Pick as many as you like.</p>
       </div>
       <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', padding: '0 24px' }}>
         {CIV_DOMAINS.map(d => {
@@ -404,20 +406,13 @@ function PlanetScreen({ civInterests, setCivInterests, onNext, onBack }) {
               onClick={() => toggle(d.key)}
               style={{
                 display: 'flex', alignItems: 'flex-start', gap: 14,
-                padding: '14px 16px',
-                marginBottom: 10,
-                borderRadius: 12,
+                padding: '14px 16px', marginBottom: 10, borderRadius: 12,
                 border: selected ? `1.5px solid ${d.hex}` : '1.5px solid rgba(15,21,35,0.1)',
-                background: selected ? `${d.hex}12` : 'transparent',
+                background: selected ? `${d.hex}18` : 'transparent',
                 cursor: 'pointer', transition: 'all 0.18s',
               }}
             >
-              {/* Colour dot */}
-              <div style={{
-                width: 10, height: 10, borderRadius: '50%',
-                background: d.hex, flexShrink: 0, marginTop: 5,
-                opacity: selected ? 1 : 0.4, transition: 'opacity 0.18s',
-              }} />
+              <div style={{ width: 10, height: 10, borderRadius: '50%', background: d.hex, flexShrink: 0, marginTop: 5, opacity: selected ? 1 : 0.4, transition: 'opacity 0.18s' }} />
               <div style={{ flex: 1 }}>
                 <div style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', color: selected ? d.hex : INK, marginBottom: 4, transition: 'color 0.18s' }}>
                   {d.name.toUpperCase()}
@@ -426,14 +421,7 @@ function PlanetScreen({ civInterests, setCivInterests, onNext, onBack }) {
                   {CIV_DESC[d.key]}
                 </p>
               </div>
-              {/* Tick */}
-              <div style={{
-                width: 20, height: 20, borderRadius: '50%', flexShrink: 0,
-                border: selected ? `2px solid ${d.hex}` : '2px solid rgba(15,21,35,0.18)',
-                background: selected ? d.hex : 'transparent',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'all 0.18s', marginTop: 2,
-              }}>
+              <div style={{ width: 20, height: 20, borderRadius: '50%', flexShrink: 0, border: selected ? `2px solid ${d.hex}` : '2px solid rgba(15,21,35,0.18)', background: selected ? d.hex : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.18s', marginTop: 2 }}>
                 {selected && <span style={{ color: '#fff', fontSize: 11, lineHeight: 1 }}>✓</span>}
               </div>
             </div>
@@ -441,11 +429,11 @@ function PlanetScreen({ civInterests, setCivInterests, onNext, onBack }) {
         })}
         <div style={{ height: 24 }} />
       </div>
-      <div style={s.foot}>
+      <div style={{ ...s.foot, background: BG }}>
         <button style={s.ghost} onClick={onBack}>Back</button>
         <button style={{ ...s.btn, flex: 1 }} onClick={onNext}>Next</button>
       </div>
-    </>
+    </div>
   )
 }
 
