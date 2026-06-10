@@ -218,6 +218,7 @@ function CoverScreen({ onBegin, logoB64 }) {
       <h2 style={{ fontFamily: SERIF, fontWeight: 500, fontSize: 22, lineHeight: 1.1, margin: '0 0 32px', color: INK }}>The Person and the Planet.</h2>
       <p style={{ fontFamily: LORA, fontSize: 15, color: 'rgba(15,21,35,0.7)', lineHeight: 1.6, margin: '0 0 36px' }}>Let's find where you are.<br />Five minutes.</p>
       <button style={{ ...s.btn, maxWidth: 180, margin: '0 auto', display: 'block' }} onClick={onBegin}>Begin</button>
+      <div style={{ height: 60 }} />
     </div>
   )
 }
@@ -361,11 +362,10 @@ function ZoomScreen({ scores, onNext }) {
       {phase === 'planet' && (
         <div style={{ opacity: textVisible ? 1 : 0, transition: 'opacity 1s 0.3s' }}>
           <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.18em', color: GC, textTransform: 'uppercase', margin: '0 0 10px' }}>Our planet</p>
-          <p style={{ fontFamily: SERIF, fontSize: 22, lineHeight: 1.4, margin: '0 0 6px', color: BG }}>The same seven domains.</p>
-          <p style={{ fontFamily: SERIF, fontSize: 22, lineHeight: 1.4, margin: '0 0 16px', color: BG }}>One person. One planet.</p>
+          <p style={{ fontFamily: SERIF, fontSize: 22, lineHeight: 1.4, margin: '0 0 16px', color: BG }}>The seven domains of life on Earth.</p>
           <p style={{ fontFamily: LORA, fontSize: 14, lineHeight: 1.6, margin: '0 0 8px', color: 'rgba(250,250,247,0.65)' }}>The current state of the planet is a reflection of the average of all the people on it.</p>
           <p style={{ fontFamily: SERIF, fontSize: 18, color: GC, margin: '0 0 32px', lineHeight: 1.4 }}>Where would you like to see the world?</p>
-          <button style={{ ...s.btn, maxWidth: 220, margin: '0 auto', display: 'block' }} onClick={onNext}>Keep going</button>
+          <button style={{ ...s.btn, maxWidth: 220, margin: '0 auto', display: 'block' }} onClick={onNext}>What future are you helping to build?</button>
         </div>
       )}
 
