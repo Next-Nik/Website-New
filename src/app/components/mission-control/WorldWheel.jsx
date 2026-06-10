@@ -11,6 +11,7 @@
 //   current:    Object<dimensionSlug, number>   // not used today; reserved for engaged-domain rendering
 //   placement:  string | null                   // slug of currently-placed domain
 //   size:       number (default 320)            // px square
+//   dark:       boolean (default false)         // true = light labels for dark backgrounds
 // ─────────────────────────────────────────────────────────────
 
 import { useMemo } from 'react'
@@ -41,8 +42,9 @@ function labelPositionFor(idx, tipX, tipY) {
  * @param {Array<{slug: string, label: string, color?: string}>} props.dimensions
  * @param {string|null} [props.placement]
  * @param {number} [props.size]
+ * @param {boolean} [props.dark]
  */
-export default function WorldWheel({ dimensions, placement = null, size = 320 }) {
+export default function WorldWheel({ dimensions, placement = null, size = 320, dark = false }) {
   const cx = size / 2
   const cy = size / 2 + 10
   const maxR = (size / 2) * 0.58
@@ -123,7 +125,7 @@ export default function WorldWheel({ dimensions, placement = null, size = 320 })
             fontSize: 13,
             fontWeight: 600,
             letterSpacing: '0.16em',
-            fill: l.active ? GOLD_DK : TEXT_META,
+            fill: l.active ? GOLD_DK : (dark ? 'rgba(250,250,247,0.82)' : TEXT_META),
             textTransform: 'uppercase',
           }}
         >

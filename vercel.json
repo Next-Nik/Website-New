@@ -45,6 +45,10 @@
       "destination": "/api/nextsteps-tag-actor"
     },
     {
+      "source": "/api/firstlight-resolve-concerns",
+      "destination": "/api/firstlight-resolve-concerns"
+    },
+    {
       "source": "/tools/map/api/chat",
       "destination": "/api/map-chat"
     },
