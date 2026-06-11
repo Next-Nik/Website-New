@@ -10,6 +10,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 import { Nav } from '../../components/Nav'
 import { AuthGate } from '../../components/AuthGate'
+import { PulseStrip } from '../../app/components/pulse/PulseStrip'
 import { PLANET_DOMAINS, PLANET_SCALE, PLANET_SCALE_BY_SCORE, getPlanetScoreColor } from '../../constants/horizonScalePlanet'
 import { PlanetWheel } from './PlanetWheel'
 import { PlanetDomainCard } from './PlanetDomainCard'
@@ -174,6 +175,14 @@ export default function PlanetMap() {
   return (
     <div style={{ minHeight: '100vh', background: '#FAFAF7' }}>
       <Nav activePath="nextus-self" />
+
+      {/* The pulse — the ecosystem's heartbeat, above the map.
+          Landing only: working steps stay uncrowded. */}
+      {step === STEPS.LANDING && (
+        <div style={{ maxWidth: '860px', margin: '0 auto', padding: 'clamp(88px,10vw,110px) clamp(20px,5vw,40px) 0' }}>
+          <PulseStrip />
+        </div>
+      )}
 
       {/* Auth gate — fires when unauthenticated user tries to begin */}
       <AuthGate
