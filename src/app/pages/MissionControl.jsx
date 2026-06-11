@@ -33,7 +33,6 @@
 //     those tools land in tile/panel surfaces instead.
 // ──────────────────────────────────────────────────────────────
 
-import { PulseStrip } from '../components/pulse/PulseStrip'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -54,6 +53,8 @@ import MapMissionPanel            from '../components/mission-control/MapMission
 import TargetSprintMissionPanel   from '../components/mission-control/TargetSprintMissionPanel'
 import PurposePieceMissionPanel   from '../components/mission-control/PurposePieceMissionPanel'
 import HorizonStateMissionPanel   from '../components/mission-control/HorizonStateMissionPanel'
+import HorizonPracticeMissionPanel from '../components/mission-control/HorizonPracticeMissionPanel'
+import DailyChooserPanel          from '../components/mission-control/DailyChooserPanel'
 import ProfileMissionPanel        from '../components/mission-control/ProfileMissionPanel'
 import SettingsMissionPanel       from '../components/mission-control/SettingsMissionPanel'
 import WorldViewMissionPanel      from '../components/mission-control/WorldViewMissionPanel'
@@ -363,6 +364,9 @@ export default function MissionControl() {
   const location = useLocation()
   const data = useMissionControlData()
   const [activePanel, setActivePanel] = useState(null)
+  // Which view the Daily panel is showing: 'chooser' | 'state' | 'practice'.
+  // The Daily tile always opens on the chooser — the user picks the tool.
+  const [dailyView, setDailyView] = useState('chooser')
   const { focus: activeFocus, hasFocus: hasActiveFocus } = useActiveFocus()
 
   // Map the user's saved focus_domain_slugs (e.g. 'human-being',
@@ -922,6 +926,14 @@ export default function MissionControl() {
     setActivePanel(key)
   }
 
+  // Open the Daily panel at a given view. The tile opens the chooser;
+  // deep links (e.g. SelfDomainPanel's Horizon State affordance) can
+  // land directly on a tool view.
+  const openDaily = (view = 'chooser') => {
+    setDailyView(view)
+    openPersonalPanel('daily')
+  }
+
   // ─── Rail states ─────────────────────────────────────────────
   const hsState = data.foundationData?.streak_days
     ? `${data.foundationData.streak_days}D STREAK`
@@ -1009,8 +1021,8 @@ export default function MissionControl() {
               glyph={<HorizonStateGauge />}
               label="Daily"
               state={hsState}
-              onClick={() => openPersonalPanel('horizon-state')}
-              title="Daily — Horizon State + Practice"
+              onClick={() => openDaily('chooser')}
+              title="Daily — choose your tool: Horizon State or Horizon Practice"
             />
             <Tile
               glyph="✦"
@@ -1163,14 +1175,9 @@ export default function MissionControl() {
             onNext={handleSelfNext}
             onOpenMap={() => openPersonalPanel('map')}
             onOpenSprint={() => openPersonalPanel('target-sprint')}
-            onOpenPractice={() => navigate('/tools/horizon-practice')}
-            onOpenHorizonState={() => openPersonalPanel('horizon-state')}
+            onOpenPractice={() => openDaily('practice')}
+            onOpenHorizonState={() => openDaily('state')}
           />
-        )}
-        {isCiv && (
-          <div style={{ maxWidth: '760px', margin: '18px auto 0', padding: '0 24px' }}>
-            <PulseStrip compact dark />
-          </div>
         )}
         {isCiv && (
           <CivDomainPanel
@@ -1247,50 +1254,111 @@ export default function MissionControl() {
         </div>
       </Panel>
 
+      {/* ── Daily — chooser + the two tools ─────────────────
+          The Daily tile lands here on the chooser: both daily
+          tools clearly marked, user picks. Tool views carry a
+          back link to return to the chooser. */}
       <Panel
-        open={activePanel === 'horizon-state'}
+        open={activePanel === 'daily'}
         onClose={closePanel}
-        eyebrow="DAILY · HORIZON STATE"
-        title="How are you arriving today?"
-        actions={[
-          { label: 'REPORTS & LOGS →', primary: true,
-            onClick: () => navigate('/tools/horizon-state') },
-          ...(!mapComplete ? [] : [
-            { label: 'HORIZON PRACTICE →',
-              onClick: () => navigate('/tools/horizon-practice') },
-          ]),
-          { label: 'CLOSE', onClick: closePanel },
-        ]}
+        eyebrow={
+          dailyView === 'state'    ? 'DAILY · HORIZON STATE' :
+          dailyView === 'practice' ? 'DAILY · HORIZON PRACTICE' :
+                                     'DAILY · YOUR TOOLS'
+        }
+        title={
+          dailyView === 'state'    ? 'How are you arriving today?' :
+          dailyView === 'practice' ? "Today's practice" :
+                                     'Choose your daily tool'
+        }
+        actions={
+          dailyView === 'state' ? [
+            { label: 'REPORTS & LOGS →', primary: true,
+              onClick: () => navigate('/tools/horizon-state') },
+            { label: 'CLOSE', onClick: closePanel },
+          ] :
+          dailyView === 'practice' ? [
+            ...(mapComplete ? [
+              { label: 'OPEN HORIZON PRACTICE →', primary: true,
+                onClick: () => navigate('/tools/horizon-practice') },
+            ] : []),
+            { label: 'CLOSE', onClick: closePanel },
+          ] : [
+            { label: 'CLOSE', onClick: closePanel },
+          ]
+        }
       >
-        <HorizonStateMissionPanel
-          user={data.user}
-          onNavigate={navigate}
-        />
-        {/* Phase 2/3 gate — shown below baseline content when map not complete */}
-        {!mapComplete && horizonStatePhase === 'baseline' && (
-          <div style={{
-            margin: '24px 0 0', padding: '18px 20px',
-            borderTop: '1px solid rgba(200,146,42,0.18)',
-          }}>
-            <div style={{ fontFamily: "'Cormorant SC', Georgia, serif",
-              fontSize: '10px', letterSpacing: '0.18em',
-              color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
-              PHASES 2 & 3
-            </div>
-            <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13.5px',
-              color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, margin: '0 0 12px' }}>
-              Calibration and Embodiment unlock once your Map is complete
-              and your I Am statements are in place.
-            </p>
-            <button onClick={() => { closePanel(); navigate('/tools/map') }}
-              style={{ fontFamily: "'Cormorant SC', Georgia, serif",
-                fontSize: '11px', letterSpacing: '0.14em',
-                background: 'none', border: '1px solid rgba(200,146,42,0.30)',
-                borderRadius: '40px', padding: '7px 16px',
-                color: '#A8721A', cursor: 'pointer' }}>
-              OPEN THE MAP →
-            </button>
-          </div>
+        {dailyView === 'chooser' && (
+          <DailyChooserPanel
+            foundationData={data.foundationData}
+            practiceData={data.practiceData}
+            mapComplete={mapComplete}
+            onSelectState={() => setDailyView('state')}
+            onSelectPractice={() => setDailyView('practice')}
+          />
+        )}
+
+        {dailyView !== 'chooser' && (
+          <button
+            type="button"
+            onClick={() => setDailyView('chooser')}
+            style={{ fontFamily: "'Cormorant SC', Georgia, serif",
+              fontSize: '10.5px', letterSpacing: '0.18em',
+              background: 'none', border: 'none', padding: '0 0 14px',
+              color: '#A8721A', cursor: 'pointer' }}>
+            ← ALL DAILY TOOLS
+          </button>
+        )}
+
+        {dailyView === 'state' && (
+          <>
+            <HorizonStateMissionPanel
+              user={data.user}
+              onNavigate={navigate}
+            />
+            {/* Phase 2/3 gate — shown below baseline content when map not complete */}
+            {!mapComplete && horizonStatePhase === 'baseline' && (
+              <div style={{
+                margin: '24px 0 0', padding: '18px 20px',
+                borderTop: '1px solid rgba(200,146,42,0.18)',
+              }}>
+                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif",
+                  fontSize: '10px', letterSpacing: '0.18em',
+                  color: 'rgba(15,21,35,0.45)', marginBottom: '8px' }}>
+                  PHASES 2 & 3
+                </div>
+                <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13.5px',
+                  color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, margin: '0 0 12px' }}>
+                  Calibration and Embodiment unlock once your Map is complete
+                  and your I Am statements are in place.
+                </p>
+                <button onClick={() => { closePanel(); navigate('/tools/map') }}
+                  style={{ fontFamily: "'Cormorant SC', Georgia, serif",
+                    fontSize: '11px', letterSpacing: '0.14em',
+                    background: 'none', border: '1px solid rgba(200,146,42,0.30)',
+                    borderRadius: '40px', padding: '7px 16px',
+                    color: '#A8721A', cursor: 'pointer' }}>
+                  OPEN THE MAP →
+                </button>
+              </div>
+            )}
+          </>
+        )}
+
+        {dailyView === 'practice' && (
+          mapComplete ? (
+            <HorizonPracticeMissionPanel
+              user={data.user}
+              onNavigate={navigate}
+            />
+          ) : (
+            <CurriculumGatePanel
+              toolName="Horizon Practice"
+              reason="Your morning practice voices your I Am statements — the ones you declare in Chapters One and Two of your journey. The full sequence begins the moment they're declared."
+              ctaLabel="Continue your journey →"
+              ctaPath="/nextu"
+            />
+          )
         )}
       </Panel>
 
@@ -1355,7 +1423,7 @@ export default function MissionControl() {
         title="Quests in your range"
         dark
       >
-        <p>Planet Sprint is Target Stretch pointed outward. Same architecture, civilisational target. Quests are sprints offered by orgs and other actors, ready to accept. Time-frames vary: a doc edit by Tuesday, a community garden build over six weeks, a multi-month policy push.</p>
+        <p>Planet Sprint is Target Sprint pointed outward. Same architecture, civilisational target. Quests are sprints offered by orgs and other actors, ready to accept. Time-frames vary: a doc edit by Tuesday, a community garden build over six weeks, a multi-month policy push.</p>
         <div className="mc-panel-build-edge">
           Building in progress. Quest feed, accept-quest flow, and contribution log render here once orgs start posting.
         </div>
