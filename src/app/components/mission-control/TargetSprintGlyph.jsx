@@ -1,12 +1,12 @@
 // ─────────────────────────────────────────────────────────────
-// TargetSprintGlyph — rail tile artwork for Target Sprint.
+// TargetSprintGlyph — rail tile artwork for Target Stretch.
 //
 // Wraps /public/target-sprint-logo.png (the bullseye + compass
 // rose + 13-week grid logo). The full logo carries: aim
 // (bullseye), bearing (compass spokes), and time (the grid).
 //
 // Static — no animation. Only the Horizon State gauge animates,
-// because state is its meaning. Target Sprint's surface meaning
+// because state is its meaning. Target Stretch's surface meaning
 // lives in the state line below the glyph (WEEK N / 13).
 //
 // Sizing matches the rail-glyph cascade: 28 / 24 / 22.

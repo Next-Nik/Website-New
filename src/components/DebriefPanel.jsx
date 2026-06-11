@@ -1,6 +1,6 @@
 // ─── DebriefPanel ─────────────────────────────────────────────────────────────
 // Shared post-tool debrief component. Used by:
-//   Target Sprint  — full debrief (6 questions)
+//   Target Stretch  — full debrief (6 questions)
 //   The Map        — full debrief (6 questions)
 //   Purpose Piece  — full debrief (6 questions)
 //   Horizon Practice — light debrief (3 questions, optional, skip available)

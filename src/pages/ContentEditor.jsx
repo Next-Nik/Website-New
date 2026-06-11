@@ -623,7 +623,7 @@ function AskTab() {
 - Total users: ${totalUsers ?? 0}
 - Completed Maps: ${mapCount ?? 0}
 - Purpose Pieces completed: ${ppCount ?? 0}
-- Active Target Sprints: ${sprintCount ?? 0}
+- Active Target Stretchs: ${sprintCount ?? 0}
 - Recent signups (last 20): ${recentActivity?.map(u => u.email).join(', ') || 'none'}`
 
       const res = await fetch('https://api.anthropic.com/v1/messages', {

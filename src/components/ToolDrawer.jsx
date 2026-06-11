@@ -285,12 +285,14 @@ export function ToolDrawer({ open, onClose }) {
             alignItems: 'flex-start',
             gap: '14px',
           }}>
+            <span style={{ flexShrink: 0, marginTop: '2px', lineHeight: 0, display: 'inline-flex' }}>
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
               stroke="#A8721A" strokeWidth="1.2" strokeLinecap="round"
-              strokeLinejoin="round" style={{ flexShrink: 0, marginTop: '2px', opacity: 0.75 }}>
+              strokeLinejoin="round" opacity="0.75">
               <circle cx="9" cy="7" r="3"/><circle cx="15" cy="7" r="3"/>
               <path d="M3 20c0-4 2.7-7 6-7M15 13c3.3 0 6 3 6 7"/>
             </svg>
+            </span>
             <div style={{ flex: 1 }}>
               <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.08em', color: '#0F1523', fontWeight: 600, marginBottom: '4px' }}>
                 Don't go it alone.

@@ -71,7 +71,7 @@ export function PrivacyContent() {
       <P>The short version: we collect what we need to make the tools work and remember your progress. We don't sell your data. We don't share it with advertisers. We don't use it to build profiles for anyone other than you.</P>
       <H2>What we collect</H2>
       <P>When you create an account, we store your email address and a secure identifier. That's the minimum needed to keep your work attached to you across sessions.</P>
-      <P>When you use the Horizon Suite tools, we store the outputs {'—'} your domain scores from The Map, your archetype and coordinates from Purpose Piece, your sprint data from Target Sprint. This is what makes your profile possible.</P>
+      <P>When you use the Horizon Suite tools, we store the outputs {'—'} your domain scores from The Map, your archetype and coordinates from Purpose Piece, your stretch data from Target Stretch. This is what makes your profile possible.</P>
       <P>We also store anything you write in the manual fields {'—'} your own words, your horizon statements, your notes. These are yours. They're stored so you can return to them.</P>
       <P>When you sign in via Google, Google provides us with your email address and basic profile information. We don't receive anything beyond what you explicitly authorise.</P>
       <H2>What we don't collect</H2>

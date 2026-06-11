@@ -109,7 +109,7 @@ export default function useMissionControlData() {
 
           // Active sprints. The original beta planned three slots
           // (Personal/Relational/Civilisational, slot_index 0/1/2),
-          // but the Target Sprint page never sets slot_index when
+          // but the Target Stretch page never sets slot_index when
           // creating a sprint — every row in production has a null
           // slot_index. So we cannot filter on it. Accept anything
           // with status in ['started','active'], ordered most recent

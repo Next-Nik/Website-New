@@ -66,7 +66,7 @@ export function PlanetWheel({ scores, nextusScores, size = 400 }) {
       width={size}
       height={size}
       viewBox={`0 0 ${size} ${size}`}
-      style={{ overflow: 'visible' }}
+      overflow="visible"
     >
       <defs>
         {/* Outer ring glow */}

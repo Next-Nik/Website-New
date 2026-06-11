@@ -632,7 +632,7 @@ export default function SelfDomainPanel({
                     className="mc-self-btn mc-self-btn-primary"
                     onClick={onOpenSprint}
                   >
-                    {hasActiveSprint ? 'Active Sprint' : 'Start a Target Sprint here'}
+                    {hasActiveSprint ? 'Active Stretch' : 'Start a Target Stretch here'}
                   </button>
                 )
               })()}

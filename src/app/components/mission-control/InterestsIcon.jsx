@@ -17,7 +17,7 @@ export default function InterestsIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      style={{ display: 'block' }}
+      display="block"
     >
       {/* Paper rectangle */}
       <path d="M5 3.5h14v12.5H5z" />

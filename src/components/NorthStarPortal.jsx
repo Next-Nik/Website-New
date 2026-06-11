@@ -153,7 +153,9 @@ function PortalOval({ onFirstSend, portalOpacity, boldRingRef, faintRingRef, hor
     >
       <svg
         viewBox="0 0 900 400"
-        style={{ width: '100%', display: 'block', overflow: 'visible' }}
+        width="100%"
+        display="block"
+        overflow="visible"
         aria-hidden="true"
       >
         <defs>

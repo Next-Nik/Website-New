@@ -19,7 +19,7 @@ export default function SearchGlyph() {
       strokeWidth="1.5"
       strokeLinecap="round"
       aria-hidden="true"
-      style={{ display: 'block' }}
+      display="block"
     >
       <circle cx="10.5" cy="10.5" r="6.5" />
       <line x1="15.2" y1="15.2" x2="20" y2="20" />

@@ -142,7 +142,7 @@ export function SprintPanel({ context = 'default' }) {
       {/* Left edge tab */}
       <button
         onClick={() => setOpen(true)}
-        aria-label="Open Target Sprint"
+        aria-label="Open Target Stretch"
         style={{
           position: 'fixed',
           left: open ? '-60px' : '-14px',
@@ -213,7 +213,7 @@ export function SprintPanel({ context = 'default' }) {
                   Horizon Suite
                 </span>
                 <h2 style={{ ...sc, fontSize: '1.125rem', fontWeight: 400, color: '#0F1523', lineHeight: 1.1 }}>
-                  Target Sprint
+                  Target Stretch
                 </h2>
               </div>
               <button onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(15,21,35,0.55)', fontSize: '1.25rem', lineHeight: 1, padding: '4px', marginTop: '2px' }}>
@@ -241,7 +241,7 @@ export function SprintPanel({ context = 'default' }) {
                     ...sc, fontSize: '1.25rem', letterSpacing: '0.12em',
                     color: '#A8721A', textDecoration: 'none',
                   }}>
-                    Begin Target Sprint {'→'}
+                    Begin Target Stretch {'→'}
                   </a>
 
                   <div style={{ marginTop: '36px', paddingTop: '24px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>

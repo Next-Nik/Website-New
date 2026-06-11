@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────
 // TargetSprintMissionPanel.jsx
 //
-// The live in-dashboard readout of Target Sprint. Replaces the
+// The live in-dashboard readout of Target Stretch. Replaces the
 // previous TargetSprintSlider with a fuller view that includes:
 //
 //   • Sprint switcher — when 1–3 active sprints (slot 0/1/2),

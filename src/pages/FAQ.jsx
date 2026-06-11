@@ -9,7 +9,7 @@ const FAQS = [
     items: [
       {
         q: 'Where do I begin?',
-        a: 'If you\'re not sure, start with North Star — a short conversation that reads where you are and points you toward the right tool. If you\'d rather just dive in, The Map is a good first move: ten minutes, seven domains, an honest picture of where things actually stand.',
+        a: 'If you\'re not sure, start with North Star — a short conversation that reads where you are and points you toward the right tool. If you\'d rather just dive in, The Map is a good first move: seven domains, an honest picture of where things actually stand. It\'s deliberate work — give a first pass an honest hour.',
       },
       {
         q: 'Do I need to use all the tools?',
@@ -17,7 +17,7 @@ const FAQS = [
       },
       {
         q: 'What order should I use the tools in?',
-        a: 'There\'s no prescribed sequence, but the tools are built with a logic. Horizon State builds the regulated ground everything else stands on. The Map tells you where you are. Purpose Piece surfaces your contribution pattern. Target Sprint gives you a ninety-day operational arc. Horizon Practice keeps the daily thread. If you\'re new, North Star will suggest a starting point based on where you actually are.',
+        a: 'There\'s no prescribed sequence, but the tools are built with a logic. Horizon State builds the regulated ground everything else stands on. The Map tells you where you are. Purpose Piece surfaces your contribution pattern. Target Stretch gives you a ninety-day operational arc. Horizon Practice keeps the daily thread. If you\'re new, North Star will suggest a starting point based on where you actually are.',
       },
       {
         q: 'Is this a self-help programme?',
@@ -41,7 +41,7 @@ const FAQS = [
         a: 'A daily twenty-minute guided audio practice for nervous system regulation. Not meditation in the traditional sense — it\'s a baseline practice. The floor beneath everything else. You cannot build on depleted ground, and most people are trying to.',
       },
       {
-        q: 'What is Target Sprint?',
+        q: 'What is Target Stretch?',
         a: 'A ninety-day sprint across three domains. You set a horizon goal, identify where you are now, and the tool reverse-engineers a route. Not a to-do list — a focused arc with a clear win condition. Built for people who know what they want and need an operational structure to move toward it.',
       },
       {

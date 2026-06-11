@@ -32,7 +32,7 @@ const TOOLS = [
   },
   {
     id: 'target-sprint',
-    name: 'Target Sprint',
+    name: 'Target Stretch',
     one_line: 'Three key areas, 90 days, level up.',
     url: '/tools/target-sprint',
     auth: true,

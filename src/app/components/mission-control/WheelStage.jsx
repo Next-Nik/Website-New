@@ -104,14 +104,25 @@ const WHEEL_STAGE_CSS = `
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transform: scale(0.96);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: opacity 0.65s ease, transform 0.65s ease;
   pointer-events: none;
 }
+/* The fractal zoom — the pole flip is one continuous camera move
+   through scales. The personal wheel rests SMALL (your life, held
+   inside the world); the civ wheel rests LARGE (the scale beyond
+   the frame). Flipping self→planet reads as zooming out; planet→
+   self as zooming back in. Same geometry, two altitudes. */
+.mc-wheel-frame:first-of-type      { transform: scale(0.45); }  /* personal, inactive */
+.mc-wheel-frame:last-of-type       { transform: scale(1.45); }  /* civ, inactive */
 .mc-wheel-frame.mc-active {
   opacity: 1;
   transform: scale(1);
   pointer-events: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mc-wheel-frame,
+  .mc-wheel-frame:first-of-type,
+  .mc-wheel-frame:last-of-type { transform: none; transition: opacity 0.4s ease; }
 }
 
 .mc-wheel-svg {
@@ -124,6 +135,7 @@ const WHEEL_STAGE_CSS = `
 }
 
 .mc-wheel-svg > svg {
+  touch-action: manipulation;
   width: 100%;
   height: 100%;
   max-width: 100%;

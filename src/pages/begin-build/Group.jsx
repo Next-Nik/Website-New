@@ -149,7 +149,7 @@ export function BeginBuildGroupPage() {
         />
 
         <Beats items={[
-          'A surface for running your formation through the same tools the rest of the platform uses — Map, Target Sprint, the architecture you already trust for individuals, scaled to a group.',
+          'A surface for running your formation through the same tools the rest of the platform uses — Map, Target Stretch, the architecture you already trust for individuals, scaled to a group.',
           'A way for the formation to be visible as a formation. Not seven individual profiles tagged with the same hashtag. One coordinate, with the people inside it.',
           "A direct line to us as we build it. The formations who come in early get to push back, ask for what's missing, and shape what ships.",
         ]} />

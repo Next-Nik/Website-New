@@ -89,7 +89,9 @@ export default function NextUsWheel({
           width={size}
           height={size}
           viewBox={`0 0 ${size} ${size}`}
-          style={{ display: 'block', overflow: 'visible', opacity: !hasAny ? 0.35 : 1 }}
+          display="block"
+      overflow="visible"
+      opacity={!hasAny ? 0.35 : 1}
         >
           {/* Grid rings */}
           {[0.25, 0.5, 0.75, 1].map(frac => {

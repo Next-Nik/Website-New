@@ -142,7 +142,7 @@ export function PricingPage() {
               <div style={{ flex: '1 1 300px' }}>
                 <div style={{ ...sc, fontSize: '20px', letterSpacing: '0.10em', color: '#A8721A', marginBottom: '10px' }}>The Horizon Suite</div>
                 <p style={{ ...body, fontSize: '16px', fontWeight: 400, color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, marginBottom: '16px', maxWidth: '440px' }}>
-                  Horizon State · Purpose Piece · The Map · Target Sprint · Horizon Practice. All five tools. The full navigation system for your life. The bundle is designed so the maths is obvious — Horizon State and Horizon Practice subscriptions alone cost $44/month individually.
+                  Horizon State · Purpose Piece · The Map · Target Stretch · Horizon Practice. All five tools. The full navigation system for your life. The bundle is designed so the maths is obvious — Horizon State and Horizon Practice subscriptions alone cost $44/month individually.
                 </p>
                 <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
                   Includes everything. Nothing else to buy.
@@ -203,7 +203,7 @@ export function PricingPage() {
             oneTimeLink={L.purpose_piece}
           />
           <ToolCard
-            name="Target Sprint"
+            name="Target Stretch"
             desc="Three domains. Ninety days. A route reverse-engineered from where you want to be."
             oneTime={29}
             oneTimeLink={L.target_sprint}
@@ -293,11 +293,11 @@ export function PricingPage() {
           {[
             {
               q: 'Can I use a one-time tool more than once?',
-              a: 'Yes. Purpose Piece and The Map are yours to return to as many times as you like — life changes, and your answers will too. Target Sprint is a one-time purchase per sprint; past sprints are always available to review.',
+              a: 'Yes. Purpose Piece and The Map are yours to return to as many times as you like — life changes, and your answers will too. Target Stretch is a one-time purchase per stretch; past stretches are always available to review.',
             },
             {
               q: "What's included in The Horizon Suite?",
-              a: 'All five tools — Horizon State, Purpose Piece, The Map, Target Sprint, and Horizon Practice — for as long as your subscription is active. Nothing else to buy.',
+              a: 'All five tools — Horizon State, Purpose Piece, The Map, Target Stretch, and Horizon Practice — for as long as your subscription is active. Nothing else to buy.',
             },
             {
               q: "What's Group Horizon?",

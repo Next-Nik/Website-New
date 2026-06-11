@@ -78,11 +78,12 @@ export function NavigatorWheel({
 
   return (
     <div style={{ position: 'relative', display: 'inline-block' }}>
-      <svg
+      <div style={{ background: PARCH, borderRadius: '50%', lineHeight: 0, width: 'fit-content' }}>
+    <svg
         width={size}
         height={size}
         viewBox={`0 0 ${size} ${size}`}
-        style={{ display: 'block', background: PARCH, borderRadius: '50%' }}
+        display="block"
       >
         {/* Outer guide ring */}
         <circle
@@ -172,6 +173,7 @@ export function NavigatorWheel({
           )
         })}
       </svg>
+    </div>
 
       {/* Expand affordance — only shown if onExpand provided */}
       {onExpand && (

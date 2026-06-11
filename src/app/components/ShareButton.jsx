@@ -32,7 +32,7 @@ function ShareGlyph({ size = 16 }) {
       strokeWidth="1.5"
       strokeLinecap="round"
       aria-hidden="true"
-      style={{ display: 'block' }}
+      display="block"
     >
       {/* Three nodes connected by two lines */}
       <circle cx="6"  cy="12" r="2.5" />

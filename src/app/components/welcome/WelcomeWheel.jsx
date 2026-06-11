@@ -376,7 +376,7 @@ export default function WelcomeWheel({ kind, mode, selfData, civData }) {
       width="310"
       height="260"
       viewBox="-40 -10 310 260"
-      style={{ display: 'block' }}
+      display="block"
     />
   )
 }

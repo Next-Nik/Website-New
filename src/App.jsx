@@ -73,6 +73,9 @@ import { DomainPage } from './app/pages/Domain'
 import { FocusProfile } from './app/pages/FocusProfile'
 import { FocusIndex } from './app/pages/FocusIndex'
 import { Explore } from './app/pages/Explore'
+import { SearchPage } from './app/pages/Search'
+import { ClaimPage } from './app/pages/Claim'
+import InstallPage from './app/pages/InstallPage'
 import WatchedFeed from './app/pages/WatchedFeed'
 import CuratedFeed from './app/pages/CuratedFeed'
 import Practices              from './app/pages/Practices'
@@ -258,6 +261,9 @@ function AppInner() {
         <Route path="/feed"                         element={<FeedPage />} />
         <Route path="/contribution"                 element={<Contribution />} />
         <Route path="/org/:slug"                    element={<OrgPublicPage />} />
+        <Route path="/org/:id/claim"                element={<ClaimPage />} />
+        <Route path="/search"                       element={<SearchPage />} />
+        <Route path="/app"                          element={<InstallPage />} />
         <Route path="/org/:slug/manage"             element={<OrgManagePage />} />
         <Route path="/org/:slug/events/new"             element={<EventManagePage />} />
         <Route path="/org/:slug/events/:eventId/edit"   element={<EventManagePage />} />

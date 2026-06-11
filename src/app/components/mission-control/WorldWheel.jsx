@@ -116,7 +116,8 @@ export default function WorldWheel({ dimensions, current = {}, placement = null,
       width={VB}
       height={VB}
       viewBox={`0 0 ${VB} ${VB}`}
-      style={{ display: 'block', overflow: 'visible' }}
+      display="block"
+      overflow="visible"
     >
       {/* Outer heptagon */}
       <polygon points={geometry.outerPts} fill="none" stroke={outerColor} strokeWidth="1" strokeDasharray="3 3" />

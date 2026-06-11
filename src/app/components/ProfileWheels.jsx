@@ -44,11 +44,12 @@ function SpiderWheel({ domains, currentScores, horizonScores, colorFn, size = 22
     .join(' ')
 
   return (
+    <div style={{ margin: '0 auto', width: 'fit-content', lineHeight: 0 }}>
     <svg
       width={size}
       height={size}
       viewBox={`0 0 ${size} ${size}`}
-      style={{ display: 'block', margin: '0 auto', overflow: 'visible' }}
+      display="block" overflow="visible"
     >
       {/* Grid rings */}
       {[2, 4, 6, 8, 10].map(v => {
@@ -113,6 +114,7 @@ function SpiderWheel({ domains, currentScores, horizonScores, colorFn, size = 22
         )
       })}
     </svg>
+    </div>
   )
 }
 

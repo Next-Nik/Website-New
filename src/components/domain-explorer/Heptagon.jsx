@@ -243,17 +243,21 @@ export default function Heptagon({
 
 
   return (
-    <svg
-      className={styles.svg}
-      viewBox="0 0 540 540"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-label="NextUs Seven Domains"
+    <div
       style={{
         transform: bloomed ? 'scale(1)' : `scale(${0.15 + bloomT * 0.85})`,
         transformOrigin: 'center center',
         opacity: bloomed ? 1 : bloomT,
         transition: bloomed ? 'none' : undefined,
+        width: '100%',
+        lineHeight: 0,
       }}
+    >
+    <svg
+      className={styles.svg}
+      viewBox="0 0 540 540"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="NextUs Seven Domains"
     >
       <defs>
         <radialGradient id="orbIdle" cx="33%" cy="26%" r="75%">
@@ -441,5 +445,6 @@ export default function Heptagon({
         )}
       </g>
     </svg>
+    </div>
   )
 }

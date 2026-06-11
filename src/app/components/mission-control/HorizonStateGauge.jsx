@@ -72,7 +72,7 @@ export default function HorizonStateGauge() {
         viewBox="0 0 56 56"
         width="100%"
         height="100%"
-        style={{ display: 'block', overflow: 'visible' }}
+        display="block" overflow="visible"
       >
         {/* Half-arc dial — bottom half of the circle */}
         <path

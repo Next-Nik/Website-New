@@ -16,14 +16,191 @@
 // marketing surface is readable without it.
 // ─────────────────────────────────────────────────────────────
 
+import { useEffect, useState } from 'react'
 import { Nav }         from '../components/Nav'
 import { SiteFooter }  from '../components/SiteFooter'
 import { serif, body, sc } from '../lib/designTokens'
+import { supabase }    from '../hooks/useSupabase'
+import { WheelSVG }    from '../app/components/WheelSVG'
+import WorldWheel      from '../app/components/mission-control/WorldWheel'
 
 const gold      = '#A8721A'
 const goldBdr   = 'rgba(200,146,42,0.78)'
 const ink       = '#0F1523'
 const inkFaint  = 'rgba(15,21,35,0.72)'
+
+// ── Fractal hero data ────────────────────────────────────────
+// Illustrative scores only — this is the signed-out front door,
+// not live data. Shapes chosen to read as honest, not perfect.
+const HERO_SELF_SCORES = {
+  path: 7, spark: 6, body: 5, finances: 6, connection: 8, inner_game: 5, signal: 6,
+}
+const HERO_CIV_DIMS = [
+  { slug: 'vision',  label: 'Vision',      color: '#6B1F2E' },
+  { slug: 'human',   label: 'Human Being', color: '#E8722E' },
+  { slug: 'nature',  label: 'Nature',      color: '#2A8C4F' },
+  { slug: 'finance', label: 'Economy',     color: '#E8B92E' },
+  { slug: 'society', label: 'Society',     color: '#D63838' },
+  { slug: 'legacy',  label: 'Legacy',      color: '#2767B8' },
+  { slug: 'tech',    label: 'Technology',  color: '#6B3FA8' },
+]
+const HERO_CIV_SCORES = {
+  vision: 4, human: 6, nature: 4, finance: 5, society: 5, legacy: 5, tech: 7,
+}
+
+// ── Fractal hero visual — the two wheels, one geometry ───────
+// Slow alternating emphasis between the personal and world wheel,
+// joined by a single line. Static side-by-side when the user
+// prefers reduced motion (handled in CSS).
+function FractalWheels() {
+  return (
+    <div className="fractal-wheels" aria-hidden="true">
+      <div className="fractal-wheel fractal-wheel--self">
+        <WheelSVG scores={HERO_SELF_SCORES} size={170} />
+        <span className="fractal-wheel-label" style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: inkFaint }}>
+          YOUR LIFE
+        </span>
+      </div>
+      <div className="fractal-link" />
+      <div className="fractal-wheel fractal-wheel--world">
+        <WorldWheel dimensions={HERO_CIV_DIMS} current={HERO_CIV_SCORES} size={206} />
+        <span className="fractal-wheel-label" style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: inkFaint }}>
+          YOUR WORLD
+        </span>
+      </div>
+    </div>
+  )
+}
+
+// ── Proof-of-life strip ──────────────────────────────────────
+// Live public counts + three featured actors. Renders nothing on
+// error — never zeros, never placeholders. Public data only; this
+// page is signed-out.
+const PROVENANCE_LABELS = {
+  self:      'Self-declared',
+  community: 'Community-added',
+  nextus:    'Seeded by NextUs',
+}
+
+function provenanceFor(actor) {
+  const base = PROVENANCE_LABELS[actor.seeded_by]
+  if (!base) return null
+  if (actor.seeded_by === 'nextus' && actor.profile_owner) {
+    return 'Seeded by NextUs · Claimed and managed by the actor'
+  }
+  if (actor.seeded_by === 'community' && actor.profile_owner) {
+    return 'Community-added · Claimed and managed by the actor'
+  }
+  return base
+}
+
+function ProofOfLife() {
+  const [counts, setCounts] = useState(null)
+  const [actors, setActors] = useState([])
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function load() {
+      try {
+        const [actorsCount, practicesCount, focusesCount, featured] = await Promise.all([
+          supabase.from('nextus_actors').select('id', { count: 'exact', head: true }).eq('status', 'live'),
+          supabase.from('practices_beta').select('id', { count: 'exact', head: true }),
+          supabase.from('nextus_focuses').select('id', { count: 'exact', head: true }),
+          supabase.from('nextus_actors')
+            .select('slug, name, tagline, image_url, seeded_by, profile_owner, updated_at')
+            .eq('status', 'live')
+            .not('image_url', 'is', null)
+            .not('tagline', 'is', null)
+            .order('updated_at', { ascending: false })
+            .limit(3),
+        ])
+        if (cancelled) return
+
+        const c = {}
+        if (!actorsCount.error    && actorsCount.count    > 0) c.actors    = actorsCount.count
+        if (!practicesCount.error && practicesCount.count > 0) c.practices = practicesCount.count
+        if (!focusesCount.error   && focusesCount.count   > 0) c.focuses   = focusesCount.count
+        setCounts(Object.keys(c).length ? c : null)
+        if (!featured.error && featured.data?.length) setActors(featured.data)
+      } catch {
+        // Render nothing on failure — never fake numbers.
+      }
+    }
+    load()
+    return () => { cancelled = true }
+  }, [])
+
+  if (!counts && !actors.length) return null
+
+  const countItems = []
+  if (counts?.actors)    countItems.push({ n: counts.actors,    label: counts.actors === 1 ? 'builder on the map' : 'builders on the map' })
+  if (counts?.practices) countItems.push({ n: counts.practices, label: counts.practices === 1 ? 'practice in the library' : 'practices in the library' })
+  if (counts?.focuses)   countItems.push({ n: counts.focuses,   label: counts.focuses === 1 ? 'place in focus' : 'places in focus' })
+
+  return (
+    <section style={{
+      maxWidth: '1100px',
+      margin: '0 auto',
+      padding: 'clamp(40px,5vw,64px) clamp(20px,5vw,40px)',
+      borderTop: '1px solid rgba(200,146,42,0.10)',
+    }}>
+      <div style={{ textAlign: 'center', marginBottom: countItems.length ? 'clamp(28px,3vw,40px)' : 0 }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '14px' }}>
+          ALREADY ON THE MAP
+        </span>
+        {counts?.actors && (
+          <p style={{ ...serif, fontSize: 'clamp(20px,2.6vw,28px)', fontWeight: 300, color: ink, lineHeight: 1.45, maxWidth: '560px', margin: '0 auto' }}>
+            The first {counts.actors} builders are on the map.
+          </p>
+        )}
+      </div>
+
+      {countItems.length > 1 && (
+        <div className="pol-counts">
+          {countItems.map(item => (
+            <div key={item.label} className="pol-count">
+              <span style={{ ...serif, fontSize: 'clamp(28px,3.4vw,40px)', fontWeight: 300, color: ink, lineHeight: 1, display: 'block' }}>
+                {item.n}
+              </span>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: inkFaint, display: 'block', marginTop: '6px' }}>
+                {item.label.toUpperCase()}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {actors.length > 0 && (
+        <div className="pol-actors">
+          {actors.map(actor => {
+            const prov = provenanceFor(actor)
+            return (
+              <a key={actor.slug} href={`/org/${actor.slug}`} className="pol-actor-card">
+                <div className="pol-actor-image">
+                  <img src={actor.image_url} alt={actor.name} loading="lazy" />
+                </div>
+                <div className="pol-actor-copy">
+                  <h4 style={{ ...serif, fontSize: '19px', fontWeight: 400, color: ink, lineHeight: 1.2, margin: '0 0 6px' }}>
+                    {actor.name}
+                  </h4>
+                  <p style={{ ...body, fontSize: '14px', lineHeight: 1.55, color: inkFaint, margin: '0 0 10px' }}>
+                    {actor.tagline}
+                  </p>
+                  {prov && (
+                    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(168,114,26,0.85)' }}>
+                      {prov}
+                    </span>
+                  )}
+                </div>
+              </a>
+            )
+          })}
+        </div>
+      )}
+    </section>
+  )
+}
 
 // ── Reusable pill button ─────────────────────────────────────
 function PillButton({ href, children, light }) {
@@ -210,7 +387,7 @@ function HiwTrack({ label, heading, steps, closing, ctaLabel, ctaHref }) {
 // ── Main ────────────────────────────────────────────────────
 export function MarketingHomePage() {
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav />
 
       {/* ── Hero ─────────────────────────────────── */}
@@ -227,15 +404,18 @@ export function MarketingHomePage() {
           className="mh-hero-title"
           style={{
             ...serif,
-            fontSize: 'clamp(38px,5.5vw,64px)',
+            fontSize: 'clamp(36px,5vw,58px)',
             fontWeight: 400,
             color: ink,
-            lineHeight: 1.08,
+            lineHeight: 1.1,
             letterSpacing: '-0.01em',
             marginBottom: 'clamp(20px,2.4vw,28px)',
+            maxWidth: '880px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
           }}
         >
-          See your life clearly.<br />Build toward what matters.
+          Your life and the world run on the same seven domains.
         </h1>
         <p
           className="mh-hero-subtitle"
@@ -249,8 +429,9 @@ export function MarketingHomePage() {
             margin: '0 auto',
           }}
         >
-          NextUs is a suite of tools for orienting a whole life. An honest picture of where you stand, a clear sense of where you want to go, and a way to connect with the people and work already building that future. The same tools run at two scales: your own life, and the wider world.
+          NextUs is built on that. An honest picture of where you stand, a clear direction for where you're going, and the people already building the future you want to live in. One set of tools, two scales: your life, and your world.
         </p>
+        <FractalWheels />
       </section>
 
       {/* ── Two doors ────────────────────────────── */}
@@ -259,9 +440,14 @@ export function MarketingHomePage() {
         margin: '0 auto',
         padding: '0 clamp(20px,5vw,40px)',
       }}>
+        <div style={{ textAlign: 'center', marginBottom: 'clamp(20px,2.4vw,28px)' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A' }}>
+            THE PERSON AND THE PLANET · BUILT FOR BOTH, BUILDING BOTH
+          </span>
+        </div>
         <div className="mh-cards">
           <PathCard
-            heading="Personal Transformation"
+            heading="Your life"
             bodyText="Get an honest read on your life and a practice for closing the gap between where you are and where you mean to be."
             cta="START"
             href="/login?path=self"
@@ -270,10 +456,10 @@ export function MarketingHomePage() {
             dark={false}
           />
           <PathCard
-            heading="Changing the World"
+            heading="Your world"
             bodyText="Find the people, organisations, and work already building the future you want to live in, and add your own."
-            cta="START"
-            href="/login?path=civ"
+            cta="EXPLORE"
+            href="/explore"
             image="/hero-civ.jpg"
             imageSide="right"
             dark={true}
@@ -311,7 +497,7 @@ export function MarketingHomePage() {
             steps={PLANET_STEPS}
             closing="Start by naming one part of the future you want. What you get back is a map of who is already building it, and a place to add your own."
             ctaLabel="EXPLORE THE ATLAS →"
-            ctaHref="/login?path=civ"
+            ctaHref="/explore"
           />
         </div>
 
@@ -329,6 +515,9 @@ export function MarketingHomePage() {
           </a>
         </div>
       </section>
+
+      {/* ── Proof of life ────────────────────────── */}
+      <ProofOfLife />
 
       {/* ── Align band ───────────────────────────── */}
       <section style={{
@@ -377,7 +566,42 @@ export function MarketingHomePage() {
             onMouseEnter={e => { e.currentTarget.style.background = '#A8721A' }}
             onMouseLeave={e => { e.currentTarget.style.background = '#C8922A' }}
           >
-            DREAM BIGGER →
+            SEE THE WHOLE PICTURE →
+          </a>
+        </div>
+      </section>
+
+      {/* ── Founder band ──────────────────────────── */}
+      <section style={{
+        background: '#FAFAF7',
+        padding: 'clamp(28px,3.5vw,40px) clamp(20px,5vw,40px)',
+        borderTop: '1px solid rgba(200,146,42,0.10)',
+      }}>
+        <div style={{ maxWidth: '720px', margin: '0 auto', textAlign: 'center' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '10px' }}>
+            FROM THE FOUNDER
+          </span>
+          <h3 style={{ ...serif, fontSize: 'clamp(20px,2.4vw,26px)', fontWeight: 400, color: ink, lineHeight: 1.3, marginBottom: '8px' }}>
+            Work with Nik
+          </h3>
+          <p style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: inkFaint, maxWidth: '520px', margin: '0 auto 18px' }}>
+            Vision and embodiment coaching for people who are ready to move — not just understand.
+          </p>
+          <a
+            href="/work-with-nik"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '8px',
+              padding: '12px 26px', borderRadius: '40px',
+              border: `1.5px solid ${goldBdr}`,
+              background: 'rgba(200,146,42,0.05)',
+              ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em',
+              color: gold, textDecoration: 'none',
+              transition: 'background 0.18s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.12)' }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.05)' }}
+          >
+            SEE THE WORK →
           </a>
         </div>
       </section>
@@ -424,6 +648,117 @@ export function MarketingHomePage() {
       <SiteFooter />
 
       <style>{`
+        /* ── Fractal hero wheels ─────────────────── */
+        .fractal-wheels {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: clamp(8px,2.5vw,32px);
+          margin-top: clamp(28px,3.5vw,44px);
+        }
+        .fractal-wheel {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 4px;
+        }
+        .fractal-wheel-label {
+          display: block;
+        }
+        .fractal-link {
+          width: clamp(36px,6vw,88px);
+          height: 1px;
+          background: linear-gradient(90deg, rgba(200,146,42,0.15), rgba(200,146,42,0.6), rgba(200,146,42,0.15));
+          flex-shrink: 0;
+          margin-bottom: 28px;
+        }
+        /* Slow alternating emphasis — one breath, ~14s */
+        @media (prefers-reduced-motion: no-preference) {
+          .fractal-wheel--self  { animation: fractalBreathA 14s ease-in-out infinite; }
+          .fractal-wheel--world { animation: fractalBreathB 14s ease-in-out infinite; }
+        }
+        @keyframes fractalBreathA {
+          0%, 100% { opacity: 1; }
+          50%      { opacity: 0.45; }
+        }
+        @keyframes fractalBreathB {
+          0%, 100% { opacity: 0.45; }
+          50%      { opacity: 1; }
+        }
+        @media (max-width: 560px) {
+          .fractal-wheels {
+            flex-direction: column;
+            gap: 4px;
+          }
+          .fractal-link {
+            width: 1px;
+            height: 32px;
+            background: linear-gradient(180deg, rgba(200,146,42,0.15), rgba(200,146,42,0.6), rgba(200,146,42,0.15));
+            margin-bottom: 0;
+          }
+        }
+
+        /* ── Proof-of-life strip ─────────────────── */
+        .pol-counts {
+          display: flex;
+          justify-content: center;
+          gap: clamp(32px,6vw,80px);
+          text-align: center;
+          margin-bottom: clamp(32px,4vw,48px);
+        }
+        .pol-actors {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: clamp(14px,2vw,24px);
+          max-width: 980px;
+          margin: 0 auto;
+        }
+        .pol-actor-card {
+          display: flex;
+          flex-direction: column;
+          background: #FFFFFF;
+          border: 1px solid rgba(200,146,42,0.12);
+          border-radius: 12px;
+          overflow: hidden;
+          text-decoration: none;
+          transition: border-color 0.18s, box-shadow 0.18s;
+        }
+        .pol-actor-card:hover {
+          border-color: rgba(200,146,42,0.4);
+          box-shadow: 0 2px 12px rgba(15,21,35,0.06);
+        }
+        .pol-actor-image {
+          height: 150px;
+          overflow: hidden;
+          flex-shrink: 0;
+          background: rgba(15,21,35,0.04);
+        }
+        .pol-actor-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+        .pol-actor-copy {
+          padding: 16px 18px 18px;
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+        }
+        @media (max-width: 680px) {
+          .pol-counts {
+            gap: 24px;
+            flex-wrap: wrap;
+          }
+          .pol-actors {
+            grid-template-columns: 1fr;
+            max-width: 420px;
+          }
+          .pol-actor-image {
+            height: 130px;
+          }
+        }
+
         /* ── Path cards ─────────────────────────── */
         /* Desktop: two cards side by side, each with horizontal image|copy split */
         .mh-cards {

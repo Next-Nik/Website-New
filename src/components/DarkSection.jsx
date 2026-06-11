@@ -42,7 +42,7 @@ export function ArcEntry({ topColor = '#FAFAF7', bottomColor = '#0F1523' }) {
   return (
     <div style={{ display: 'block', lineHeight: 0, fontSize: 0, margin: 0, padding: 0 }}>
       <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none"
-        style={{ display: 'block' }} aria-hidden="true">
+        display="block" aria-hidden="true">
         <path d={`M0,${FLAT} Q${W/2},${peak} ${W},${FLAT} L${W},${H} L0,${H} Z`} fill={bottomColor} />
         {/* Gold stroke — the border of the dark section */}
         <path d={`M0,${FLAT} Q${W/2},${peak} ${W},${FLAT}`}
@@ -66,7 +66,7 @@ export function ArcExit({ topColor = '#0F1523', bottomColor = '#FAFAF7' }) {
   return (
     <div style={{ display: 'block', lineHeight: 0, fontSize: 0, margin: 0, padding: 0 }}>
       <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none"
-        style={{ display: 'block' }} aria-hidden="true">
+        display="block" aria-hidden="true">
         <path d={`M0,0 L${W},0 L${W},${start} Q${W/2},${nadir} 0,${start} Z`} fill={topColor} />
         {/* Gold stroke — the border of the dark section */}
         <path d={`M0,${start} Q${W/2},${nadir} ${W},${start}`}

@@ -34,7 +34,7 @@
 //   horizonScores         — same shape; Horizon target per domain (from the Map)
 //   horizonGoals          — same shape; user's written Horizon goal text per domain
 //   currentReflections    — same shape; user's written current-state text per domain
-//   activeSprintDomains   — array of domain keys with an active Target Sprint
+//   activeSprintDomains   — array of domain keys with an active Target Stretch
 //   size                  — number (default 220)
 //   visible               — boolean; visibility toggle state
 //   onToggleVisibility    — () => void
@@ -383,7 +383,8 @@ export default function SelfWheel({
           width={responsiveSize}
           height={responsiveSize}
           viewBox={`0 0 ${responsiveSize} ${responsiveSize}`}
-          style={{ display: 'block', overflow: 'visible' }}
+          display="block"
+          overflow="visible"
         >
           {/* Sun glow filter */}
           <defs>

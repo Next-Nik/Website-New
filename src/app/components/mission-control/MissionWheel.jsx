@@ -293,7 +293,9 @@ function SelfWheel({
       height="100%"
       viewBox={SVG_VIEWBOX}
       preserveAspectRatio="xMidYMid meet"
-      style={{ display: 'block', overflow: 'visible', touchAction: 'manipulation' }}
+      display="block"
+      overflow="visible"
+      className="mw-svg"
       aria-label="Your seven domains"
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -917,7 +919,9 @@ function CivWheel({
       height="100%"
       viewBox={SVG_VIEWBOX}
       preserveAspectRatio="xMidYMid meet"
-      style={{ display: 'block', overflow: 'visible', touchAction: 'manipulation' }}
+      display="block"
+      overflow="visible"
+      className="mw-svg"
       aria-label="The seven civilisational domains"
     >
       {/* Label legibility filter */}

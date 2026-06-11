@@ -41,7 +41,7 @@ export default function MapPinGlyph() {
         viewBox="0 0 56 56"
         width="100%"
         height="100%"
-        style={{ display: 'block', overflow: 'visible' }}
+        display="block" overflow="visible"
       >
         {/* Pin silhouette — round head from y≈4 down to y≈30, then
             tapering tail to a point at y≈52. Single closed path with

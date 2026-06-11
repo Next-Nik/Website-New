@@ -1355,7 +1355,7 @@ export default function MissionControl() {
         title="Quests in your range"
         dark
       >
-        <p>Planet Sprint is Target Sprint pointed outward. Same architecture, civilisational target. Quests are sprints offered by orgs and other actors, ready to accept. Time-frames vary: a doc edit by Tuesday, a community garden build over six weeks, a multi-month policy push.</p>
+        <p>Planet Sprint is Target Stretch pointed outward. Same architecture, civilisational target. Quests are sprints offered by orgs and other actors, ready to accept. Time-frames vary: a doc edit by Tuesday, a community garden build over six weeks, a multi-month policy push.</p>
         <div className="mc-panel-build-edge">
           Building in progress. Quest feed, accept-quest flow, and contribution log render here once orgs start posting.
         </div>

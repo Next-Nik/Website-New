@@ -1673,7 +1673,7 @@ function MapWelcomeModal({ onBegin }) {
         <span style={{ display: 'block', ...sc, fontSize: '17px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>The Map</span>
         <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>An honest read.</h2>
         <p style={{ ...body, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
-          Seven domains of your life. Where you are, where you want to be, and what the gap is telling you. Takes about ten minutes. The only instruction: answer from where you actually are.
+          Seven domains of your life. Where you are, where you want to be, and what the gap is telling you. This is deliberate work — give a first pass an honest hour, and come back domain by domain. The only instruction: answer from where you actually are.
         </p>
         <button onClick={onBegin} style={{
           display: 'block', width: '100%', padding: '15px 24px', borderRadius: '40px',
@@ -2199,7 +2199,7 @@ export function MapPage() {
         try { await supabase.from('north_star_notes').insert(notes.map(n => ({ user_id: user.id, ...n }))) } catch {}
       }
 
-      // Write all 7 domains to horizon_profile so Target Sprint, feed,
+      // Write all 7 domains to horizon_profile so Target Stretch, feed,
       // public profile, and _north-star.js can all read from one source.
       const DOMAIN_KEYS = ['path','spark','body','finances','connection','inner_game','signal']
       const profileRows = DOMAIN_KEYS

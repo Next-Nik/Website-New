@@ -73,17 +73,18 @@ export function FlameGlyph({ value = 5, size = 64, ghost = false }) {
   const rAmp = (fi * 9).toFixed(1)
 
   return (
+    <span style={{
+      display: 'inline-block', lineHeight: 0,
+      opacity: ghost ? 0.3 : 1,
+      filter: ghost
+        ? 'none'
+        : `drop-shadow(0 0 ${(8 * fi).toFixed(0)}px ${color}) drop-shadow(0 0 ${(18 * fi).toFixed(0)}px ${glow})`,
+      transition: 'filter 0.5s ease, opacity 0.4s ease',
+    }}>
     <svg
       width={size} height={size}
       viewBox="0 0 64 64"
-      style={{
-        display: 'block',
-        opacity: ghost ? 0.3 : 1,
-        filter: ghost
-          ? 'none'
-          : `drop-shadow(0 0 ${(8 * fi).toFixed(0)}px ${color}) drop-shadow(0 0 ${(18 * fi).toFixed(0)}px ${glow})`,
-        transition: 'filter 0.5s ease, opacity 0.4s ease',
-      }}
+      display="block"
     >
       <defs>
         <radialGradient id={`${uid}-g`} cx="50%" cy="85%" r="65%">
@@ -156,6 +157,7 @@ export function FlameGlyph({ value = 5, size = 64, ghost = false }) {
         </>
       )}
     </svg>
+    </span>
   )
 }
 
