@@ -17,6 +17,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../hooks/useSupabase'
+import { WatchButton } from './WatchButton'
+import { LadderRail } from './LadderRail'
 import { useViewerContext } from '../hooks/useViewerContext'
 import { useFeed } from '../hooks/useFeed'
 import { FeedItem } from './feed/FeedItem'
@@ -63,6 +65,11 @@ export function IntersectionPage({ domain, subdomain, field, atFocus }) {
         field={field}
         atFocus={atFocus}
       />
+
+      {/* The join-in ladder — the gradient from spectator to builder.
+          Tune-in lives in the header (one WatchButton per page, so the
+          toggle state never splits); the rail carries the other rungs. */}
+      <LadderRail exploreHref="/search" />
     </div>
   )
 }
@@ -90,6 +97,15 @@ function Header({ domain, subdomain, field, atFocus }) {
           </span>
         )}
       </h1>
+
+      {/* The TED moment: the talk ends, and there's an entry point —
+          tune in to the field itself. Aggregates only downstream;
+          tuning in stays private. */}
+      {field.id && (
+        <div style={{ margin: '2px 0 14px' }}>
+          <WatchButton entityType="field" entityId={field.id} entityName={field.name} size="sm" />
+        </div>
+      )}
 
       {field.topics && field.topics.length > 0 && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '14px' }}>
@@ -212,23 +228,25 @@ function ActorsLayer({ field, atFocus, accentColor }) {
 }
 
 function ActorCard({ actor, accentColor }) {
+  // Card is a div (not a Link) so the per-actor tune-in can live
+  // inside it without nesting interactive elements.
   return (
-    <Link
-      to={`/org/${actor.slug || actor.id}`}
+    <div
       style={{
-        display: 'block',
         padding: '14px 16px',
         background: '#FFFFFF',
         border: '1px solid rgba(200,146,42,0.18)',
         borderRadius: '8px',
-        textDecoration: 'none',
         color: INK,
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '12px', flexWrap: 'wrap' }}>
-        <div style={{ ...body, fontSize: '15.5px', fontWeight: 400, color: INK }}>
+        <Link
+          to={`/org/${actor.slug || actor.id}`}
+          style={{ ...body, fontSize: '15.5px', fontWeight: 400, color: INK, textDecoration: 'none' }}
+        >
           {actor.name}
-        </div>
+        </Link>
         {actor.kind && (
           <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: accentColor || GOLD, textTransform: 'uppercase' }}>
             {actor.kind}
@@ -240,7 +258,10 @@ function ActorCard({ actor, accentColor }) {
           {actor.short_description}
         </div>
       )}
-    </Link>
+      <div style={{ marginTop: '10px' }}>
+        <WatchButton entityType="actor" entityId={actor.id} entityName={actor.name} size="sm" />
+      </div>
+    </div>
   )
 }
 

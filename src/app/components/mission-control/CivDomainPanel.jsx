@@ -48,6 +48,8 @@ import {
 } from './tokens'
 import { HORIZON_DECOMPOSITIONS } from '../../constants/horizonDecompositions'
 import { HorizonScaleModal, SCALE_LINK_STYLE } from '../../../components/HorizonScaleModal'
+import { FacesRow, LadderRail } from '../LadderRail'
+import { supabase } from '../../../hooks/useSupabase'
 
 const CIV_STEP_TYPE_LABELS = {
   action:       'DO',
@@ -548,10 +550,51 @@ export default function CivDomainPanel({
               </button>
             </div>
 
+            {/* ── Company — people before structure ──
+                Faces of live actors working in this domain, the
+                tune-in rung, and the join-in ladder. Top level
+                only: itemForDisplay.id is the civ slug there
+                (human-being … vision), which is what actor
+                domains[] arrays and the taxonomy table key on. */}
+            {levelPath.length === 0 && itemForDisplay?.id && (
+              <CivDomainCompany domainSlug={itemForDisplay.id} domainName={itemForDisplay.name} />
+            )}
+
           </div>
         )}
 
       </div>
+    </div>
+  )
+}
+
+// ── CivDomainCompany — faces + ladder for a top-level domain ──
+// Resolves the taxonomy uuid for the domain slug (watches store
+// uuids), then renders the FacesRow and the join-in LadderRail in
+// the panel's dark palette.
+function CivDomainCompany({ domainSlug, domainName }) {
+  const [domainUuid, setDomainUuid] = useState(null)
+
+  useEffect(() => {
+    let cancelled = false
+    setDomainUuid(null)
+    supabase
+      .from('nextus_domains')
+      .select('id')
+      .eq('slug', domainSlug)
+      .maybeSingle()
+      .then(({ data }) => { if (!cancelled) setDomainUuid(data?.id || null) })
+    return () => { cancelled = true }
+  }, [domainSlug])
+
+  return (
+    <div style={{ marginTop: '22px' }}>
+      <FacesRow level="domains" slug={domainSlug} limit={8} dark />
+      <LadderRail
+        dark
+        watchEntity={domainUuid ? { type: 'domain', id: domainUuid, name: domainName } : null}
+        exploreHref={`/explore/${domainSlug}`}
+      />
     </div>
   )
 }

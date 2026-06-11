@@ -18,6 +18,7 @@ import { useState } from 'react'
 import { useWatch } from '../hooks/useWatch'
 import { useAuth } from '../../hooks/useAuth'
 import { InfoButton } from './InfoButton'
+import { logActivity } from './pulse/logActivity'
 
 const sc   = { fontFamily: "'Cormorant SC', Georgia, serif" }
 const body = { fontFamily: "'Lora', Georgia, serif" }
@@ -40,7 +41,18 @@ export function WatchButton({ entityType, entityId, entityName, size = 'md' }) {
     setErrMsg(null)
     setBusy(true)
     try {
-      await toggle(entityType, entityId)
+      const result = await toggle(entityType, entityId)
+      // The pulse: anonymous motion only. The activity row names the
+      // SUBJECT tuned into, never the person tuning in (the table has
+      // no user column — see migration 109).
+      if (result?.added) {
+        logActivity({
+          eventType: 'tune_in',
+          subjectType: entityType,
+          subjectId: entityId,
+          subjectName: entityName,
+        })
+      }
     } catch (e) {
       if (e.code === 'WATCH_CAP_REACHED') {
         setErrMsg('Your Tuned In list is full. Manage it from your profile.')

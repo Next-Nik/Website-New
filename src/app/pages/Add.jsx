@@ -15,6 +15,7 @@
 //   "I'm adding to the ecosystem" → seeded_by: 'community', profile_owner: null
 //   "I represent this org"        → seeded_by: 'self',      profile_owner: user.id
 
+import { logActivity } from '../components/pulse/logActivity'
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../hooks/useSupabase'
@@ -500,6 +501,15 @@ export function AddPage() {
     if (pErr) { setError('Error saving: ' + pErr.message); setSaving(false); return }
     results.push({ id: primary.id, slug: primary.slug, name: form.name, label: 'Primary' })
     nameToId[form.name.trim().toLowerCase()] = primary.id
+    // The pulse: a new actor is live on the Atlas (public entity).
+    logActivity({
+      eventType: 'actor_added',
+      subjectType: 'actor',
+      subjectId: primary.id,
+      subjectName: primary.name || form.name,
+      subjectSlug: primary.slug,
+      domain: form.primary_domain || null,
+    })
 
     // Save aux data for primary (from AI-populated form, if any)
     if (extras.length > 0 || aiUsed) {

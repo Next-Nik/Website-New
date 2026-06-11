@@ -33,6 +33,7 @@
 //     those tools land in tile/panel surfaces instead.
 // ──────────────────────────────────────────────────────────────
 
+import { PulseStrip } from '../components/pulse/PulseStrip'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -1165,6 +1166,11 @@ export default function MissionControl() {
             onOpenPractice={() => navigate('/tools/horizon-practice')}
             onOpenHorizonState={() => openPersonalPanel('horizon-state')}
           />
+        )}
+        {isCiv && (
+          <div style={{ maxWidth: '760px', margin: '18px auto 0', padding: '0 24px' }}>
+            <PulseStrip compact dark />
+          </div>
         )}
         {isCiv && (
           <CivDomainPanel

@@ -18,6 +18,7 @@
 // admission check. Slug is derived from title; collisions append a numeric
 // suffix.
 
+import { logActivity } from '../components/pulse/logActivity'
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
@@ -293,6 +294,15 @@ export default function PracticeContribute() {
       return
     }
 
+    // The pulse: a practice was contributed (public entity).
+    logActivity({
+      eventType: 'practice_added',
+      subjectType: 'practice',
+      subjectId: null, // insert returns slug only
+      subjectName: payload.title,
+      subjectSlug: inserted.slug,
+      domain: Array.isArray(payload.domains) && payload.domains.length ? payload.domains[0] : null,
+    })
     setSavedSlug(inserted.slug)
   }
 
