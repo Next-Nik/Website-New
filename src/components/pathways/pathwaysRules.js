@@ -67,8 +67,8 @@ export const JOURNEY_CARD = {
 // non-negotiable — it is the rule for any future placement tier.
 //
 // founderDomains: the domains the founder card appears in.
-// Nik's coaching is whole-person — it begins with The Map across
-// all seven domains — so the list ships with all seven. Trim here.
+// Nik's coaching is vision and embodiment — both overlap every
+// domain — so the card is whole-platform and ships with all seven.
 export const FOUNDER_CARD = {
   label:    'FROM THE FOUNDER',
   name:     'Work with Nik',
@@ -84,7 +84,7 @@ export const FOUNDER_CARD = {
 // ─── Rail framing copy (the partnership line) ────────────────
 export const RAIL_COPY = {
   eyebrow: 'PATHWAYS',
-  framing: 'Your journey continues here — and specialists serve this domain while you walk it.',
+  framing: 'Your journey continues here — and specialists who serve this domain can work alongside it, often in tandem.',
 }
 
 // ─── Priming explainer (first render, once, acknowledged) ────
@@ -92,8 +92,8 @@ export const RAIL_COPY = {
 // card ever shows, so the first practitioner card reads as "this
 // is how NextU works," not as an ad.
 export const PRIMING = {
-  line1: 'NextU is your spine.',
-  line2: 'Specialists walk alongside it.',
+  line1: 'NextU is a frame that works alongside specialists and other methodologies.',
+  line2: 'The platform connects you with them when appropriate — they can often work in tandem.',
   action: 'GOT IT',
   storageKey: 'pathways_primed', // signed-out fallback only
 }
