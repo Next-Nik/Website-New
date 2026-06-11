@@ -1500,6 +1500,7 @@ export function TargetSprintPage() {
   const [showSprintDone,  setShowSprintDone]   = useState(false)
   const [showDebrief,     setShowDebrief]      = useState(false)
   const [domainData,      setDomainData]       = useState({})
+  const [restoring,       setRestoring]        = useState(true)
   const loadedRef = useRef(false)
 
   const selectedDomain = selectedDomains[0] || null
@@ -1516,7 +1517,7 @@ export function TargetSprintPage() {
   useEffect(() => {
     if (!user || loadedRef.current) return
     loadedRef.current = true
-    loadSprintData()
+    loadSprintData().finally(() => setRestoring(false))
     loadMapData()
     loadPracticeStreak()
   }, [user])
@@ -1761,8 +1762,16 @@ export function TargetSprintPage() {
 
       <div className="ts-tool-wrap" style={{ padding: 'clamp(0px,2vw,16px) clamp(20px,4vw,40px) 100px' }}>
 
+        {/* ── Restoring gate — signed-in users wait one beat while we check
+              for an active stretch, so the select screen never flashes ── */}
+        {user && restoring && !showDebrief && !showSprintDone && (
+          <div style={{ textAlign: 'center', padding: '120px 0', ...sc, fontSize: '15px', letterSpacing: '0.2em', color: tokens.ghost }}>
+            TARGET STRETCH
+          </div>
+        )}
+
         {/* ── Select phase ──────────────────────────────────────────────── */}
-        {phase === 'select' && !showDebrief && !showSprintDone && (
+        {phase === 'select' && !(user && restoring) && !showDebrief && !showSprintDone && (
           <PhaseSelect hasMapData={hasMapData} scores={scores} horizonScores={horizonScores} iaStatements={iaStatements} selectedDomain={selectedDomain} setSelectedDomain={setSelectedDomain} recommendation={recommendation} onContinue={() => setPhase('planet')} />
         )}
 
