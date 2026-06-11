@@ -129,7 +129,7 @@ export function AuthCallbackPage() {
   }, [])
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ minHeight: '100dvh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <div style={{ textAlign: 'center' }}>
         <img src="/logo_nav.png" alt="NextUs" style={{ width: '44px', height: '44px', objectFit: 'contain', marginBottom: '28px', opacity: 0.7 }} />
         <div style={{ width: '28px', height: '28px', margin: '0 auto', border: '2px solid rgba(200,146,42,0.18)', borderTopColor: '#C8922A', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />

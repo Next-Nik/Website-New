@@ -59,7 +59,7 @@
   font-family: var(--font-sc);
   font-size: 12px;
   letter-spacing: 0.14em;
-  color: rgba(15,21,35,0.45);
+  color: rgba(15,21,35,0.55);
   margin-bottom: 20px;
   line-height: 1.6;
 }
@@ -91,7 +91,7 @@
 
 .comingSoon {
   font-style: normal;
-  color: rgba(15,21,35,0.45);
+  color: rgba(15,21,35,0.55);
   font-size: 15px;
 }
 
@@ -123,7 +123,7 @@
   font-family: var(--font-sc);
   font-size: 11px;
   letter-spacing: 0.16em;
-  color: rgba(15,21,35,0.45);
+  color: rgba(15,21,35,0.55);
   text-transform: uppercase;
   flex-shrink: 0;
 }
@@ -139,7 +139,7 @@
 .fractalNote {
   font-family: var(--font-body);
   font-size: 13px;
-  color: rgba(15,21,35,0.45);
+  color: rgba(15,21,35,0.55);
 }
 
 /* ── SECTION LABEL ── */
@@ -182,7 +182,7 @@
   font-size: 14px;
   font-weight: 300;
   font-style: italic;
-  color: rgba(15,21,35,0.45);
+  color: rgba(15,21,35,0.55);
   margin-bottom: 14px;
   line-height: 1.6;
 }
@@ -283,7 +283,7 @@
   font-size: 13px;
   font-weight: 300;
   font-style: italic;
-  color: rgba(15,21,35,0.30);
+  color: rgba(15,21,35,0.55);
   margin: 0;
 }
 
@@ -318,7 +318,7 @@
 }
 
 .mailingInput:focus { border-color: #A8721A; }
-.mailingInput::placeholder { color: rgba(15,21,35,0.35); }
+.mailingInput::placeholder { color: rgba(15,21,35,0.55); }
 
 .mailingBtn {
   background: #0F1523;

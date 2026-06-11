@@ -123,10 +123,10 @@ export function GroupJoinPage() {
   }
 
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav />
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center',
-        minHeight: 'calc(100vh - 64px)', padding: '40px 24px' }}>
+        minHeight: 'calc(100dvh - 64px)', padding: '40px 24px' }}>
         <div style={{ width: '100%', maxWidth: '420px' }}>
 
           {/* Idle — no group identified yet, or group found but user not signed in */}

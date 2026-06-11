@@ -1274,7 +1274,7 @@ export default function MissionControl() {
           }}>
             <div style={{ fontFamily: "'Cormorant SC', Georgia, serif",
               fontSize: '10px', letterSpacing: '0.18em',
-              color: 'rgba(15,21,35,0.45)', marginBottom: '8px' }}>
+              color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
               PHASES 2 & 3
             </div>
             <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13.5px',

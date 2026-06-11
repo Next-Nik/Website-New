@@ -726,7 +726,7 @@ export function ContentEditorPage() {
   if (loading || !user || !isFounder(user)) return <div className="loading" />
 
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav />
       <div style={{ maxWidth: '1040px', margin: '0 auto', padding: '96px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '17px', fontWeight: 600, letterSpacing: '0.20em',

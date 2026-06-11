@@ -360,7 +360,7 @@ export default function Practices() {
     (filters.principles?.length || 0) > 0
 
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav />
 
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: 'clamp(72px, 10vw, 96px) 24px 60px' }}>

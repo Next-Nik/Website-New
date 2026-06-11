@@ -508,7 +508,7 @@ export default function Contribution() {
   // ── Render ────────────────────────────────────────────────────
 
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav />
 
       <style>{`

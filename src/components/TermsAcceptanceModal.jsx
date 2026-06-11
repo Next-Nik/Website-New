@@ -45,7 +45,7 @@ export function TermsAcceptanceModal() {
         borderRadius: '14px',
         maxWidth: '720px',
         width: '100%',
-        maxHeight: 'calc(100vh - 48px)',
+        maxHeight: 'calc(100dvh - 48px)',
         display: 'flex', flexDirection: 'column',
         boxShadow: '0 20px 60px rgba(15, 21, 35, 0.30)',
         overflow: 'hidden',

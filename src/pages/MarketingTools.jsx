@@ -208,7 +208,7 @@ function ToolCard({ tool }) {
 // ── Main ────────────────────────────────────────────────────
 export function MarketingToolsPage() {
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav activePath="tools" />
 
       {/* ── Hero ── */}

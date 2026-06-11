@@ -9,7 +9,7 @@ export const TERMS_VERSION = '2026-04-23'
 
 function LegalWrap({ title, eyebrow, subtitle, active, children }) {
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav activePath={active} />
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: '112px 40px 120px' }}>
         <span style={{ ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.2em', color: '#A8721A', display: 'block', marginBottom: '16px' }}>{eyebrow}</span>

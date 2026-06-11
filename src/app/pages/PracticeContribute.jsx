@@ -310,7 +310,7 @@ export default function PracticeContribute() {
 
   if (savedSlug) {
     return (
-      <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+      <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
         <Nav />
         <div style={{ maxWidth: '560px', margin: '0 auto', padding: '120px 24px 60px', textAlign: 'center' }}>
           <div style={{
@@ -352,7 +352,7 @@ export default function PracticeContribute() {
 
   if (showFloor) {
     return (
-      <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+      <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
         <Nav />
         <div style={{ maxWidth: '600px', margin: '0 auto', padding: 'clamp(72px, 10vw, 96px) 24px 60px' }}>
           <div style={{ marginBottom: '24px' }}>
@@ -388,7 +388,7 @@ export default function PracticeContribute() {
   // ── The form ──
 
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav />
 
       <div style={{ maxWidth: '680px', margin: '0 auto', padding: 'clamp(72px, 10vw, 96px) 24px 60px' }}>

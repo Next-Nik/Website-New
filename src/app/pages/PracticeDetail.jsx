@@ -347,7 +347,7 @@ export default function PracticeDetail() {
 
   if (loading) {
     return (
-      <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+      <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
         <Nav />
         <div style={{ maxWidth: '760px', margin: '0 auto', padding: '120px 24px 60px' }}>
           <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>
@@ -358,7 +358,7 @@ export default function PracticeDetail() {
 
   if (notFound) {
     return (
-      <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+      <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
         <Nav />
         <div style={{ maxWidth: '560px', margin: '0 auto', padding: '120px 24px 60px', textAlign: 'center' }}>
           <h1 style={{ ...garamond, fontSize: '32px', fontWeight: 300, color: '#0F1523', marginBottom: '12px' }}>
@@ -380,7 +380,7 @@ export default function PracticeDetail() {
   const contributorName = profiles[practice.contributor_id] || null
 
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav />
 
       {/* Modals */}

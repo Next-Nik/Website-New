@@ -32,7 +32,7 @@ function Divider() {
 function LoadingState() {
   return (
     <div style={{
-      minHeight: '100vh',
+      minHeight: '100dvh',
       background: '#FAFAF7',
       display: 'flex',
       alignItems: 'center',
@@ -46,7 +46,7 @@ function LoadingState() {
 function NotFound() {
   return (
     <div style={{
-      minHeight: '100vh',
+      minHeight: '100dvh',
       background: '#FAFAF7',
     }}>
       <Nav activePath="" />
@@ -77,7 +77,7 @@ function NotFound() {
 function PrivateProfile() {
   return (
     <div style={{
-      minHeight: '100vh',
+      minHeight: '100dvh',
       background: '#FAFAF7',
     }}>
       <Nav activePath="" />
@@ -147,7 +147,7 @@ export function PublicProfile() {
   const standsIAStatements = iaStatements.slice(primaryIAStatement === iaStatements[0]?.statement ? 1 : 0)
 
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav activePath="" />
 
       <div style={{

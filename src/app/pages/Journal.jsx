@@ -258,7 +258,7 @@ export default function Journal() {
   }
 
   return (
-    <div style={{ ...body, background: tokens.bg, minHeight: '100vh', color: tokens.ink, position: 'relative' }}>
+    <div style={{ ...body, background: tokens.bg, minHeight: '100dvh', color: tokens.ink, position: 'relative' }}>
       <WorldMapSubstrate />
       <Nav />
 

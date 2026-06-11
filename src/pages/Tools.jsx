@@ -88,7 +88,7 @@ function ToolRow({ tool }) {
 
 export function ToolsPage() {
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav activePath="nextus-self" />
 
       <div style={{ maxWidth: '820px', margin: '0 auto', padding: 'clamp(88px,10vw,112px) clamp(20px,5vw,40px) 120px' }}>

@@ -143,7 +143,7 @@ export function PageShell({ children }) {
           .begin-main { padding-left: 20px !important; padding-right: 20px !important; }
         }
       `}</style>
-      <div style={{ background: PARCH, minHeight: '100vh' }}>
+      <div style={{ background: PARCH, minHeight: '100dvh' }}>
         <div className="begin-main" style={{ maxWidth: '640px', margin: '0 auto', padding: '80px 40px 120px' }}>
           {children}
         </div>

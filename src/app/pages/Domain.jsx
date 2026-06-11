@@ -58,7 +58,7 @@ export function DomainPage() {
   if (!domain) {
     return (
       <Layout>
-        <div style={{ minHeight: 'calc(100vh - 80px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
+        <div style={{ minHeight: 'calc(100dvh - 80px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
           <div style={{ textAlign: 'center', maxWidth: '480px' }}>
             <span style={{ ...sc, fontSize: '14px', letterSpacing: '0.2em', color: goldDark, display: 'block', marginBottom: '16px' }}>Module 11</span>
             <h1 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: dark, marginBottom: '12px' }}>Unknown domain</h1>

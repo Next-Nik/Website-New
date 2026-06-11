@@ -1018,7 +1018,7 @@
   font-size: 14px;
   font-weight: 300;
   font-style: italic;
-  color: rgba(15,21,35,0.35);
+  color: rgba(15,21,35,0.55);
   margin: 0;
 }
 
@@ -1119,7 +1119,7 @@
   font-family: var(--font-sc);
   font-size: 11px;
   letter-spacing: 0.18em;
-  color: rgba(15,21,35,0.40);
+  color: rgba(15,21,35,0.55);
   text-transform: uppercase;
 }
 

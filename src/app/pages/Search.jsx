@@ -260,7 +260,7 @@ export function SearchPage() {
   const hasFilters = !!(domain || actorType || scale)
 
   return (
-    <div style={{ background: parch, minHeight: '100vh' }}>
+    <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav />
       <div style={{ maxWidth: '760px', margin: '0 auto',
         padding: '96px 24px 120px', position: 'relative' }}>

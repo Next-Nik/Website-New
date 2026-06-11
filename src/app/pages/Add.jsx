@@ -614,7 +614,7 @@ export function AddPage() {
   // ── Done state ───────────────────────────────────────────────
   if (saved.length > 0) {
     return (
-      <div style={{ background: parch, minHeight: '100vh' }}>
+      <div style={{ background: parch, minHeight: '100dvh' }}>
         <Nav />
         <div style={{ maxWidth: '560px', margin: '0 auto', padding: '120px 24px 80px', textAlign: 'center' }}>
           <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: gold,
@@ -662,10 +662,10 @@ export function AddPage() {
     )
   }
 
-  if (authLoading) return <div style={{ background: parch, minHeight: '100vh' }}><Nav /></div>
+  if (authLoading) return <div style={{ background: parch, minHeight: '100dvh' }}><Nav /></div>
 
   return (
-    <div style={{ background: parch, minHeight: '100vh' }}>
+    <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav />
       <div style={{ maxWidth: '640px', margin: '0 auto', padding: '96px 24px 120px' }}>
 

@@ -56,7 +56,7 @@
   font-family: var(--font-body);
   font-size: 18px;
   font-weight: 300;
-  color: rgba(15,21,35,0.45);
+  color: rgba(15,21,35,0.55);
   margin-top: 10px;
   text-align: center;
 }
@@ -146,7 +146,7 @@
   font-family: var(--font-sc);
   font-size: 11px;
   letter-spacing: 0.14em;
-  color: rgba(15,21,35,0.45);
+  color: rgba(15,21,35,0.55);
   text-transform: uppercase;
 }
 
@@ -193,7 +193,7 @@
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.20em;
-  color: rgba(15,21,35,0.45);
+  color: rgba(15,21,35,0.55);
   text-transform: uppercase;
   margin-bottom: 16px;
 }
@@ -232,6 +232,6 @@
   font-size: 13px;
   font-weight: 300;
   font-style: italic;
-  color: rgba(15,21,35,0.45);
+  color: rgba(15,21,35,0.55);
   line-height: 1.5;
 }

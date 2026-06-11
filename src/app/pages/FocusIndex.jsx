@@ -179,7 +179,7 @@ export function FocusIndex() {
   }, [children, selectedDomains])
 
   return (
-    <div style={{ background: parch, minHeight: '100vh' }}>
+    <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav activePath="" />
 
       <div style={{

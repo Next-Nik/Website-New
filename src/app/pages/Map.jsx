@@ -689,7 +689,7 @@ export function MapPage() {
   // ── Render ───────────────────────────────────────────────────
   return (
     <Layout activePath="beta-map">
-      <div style={{ background: parch, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ background: parch, minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
 
         <style>{`
           .beta-map-tooltip {

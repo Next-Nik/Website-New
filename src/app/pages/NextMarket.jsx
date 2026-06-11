@@ -220,7 +220,7 @@ export function NextMarketPage() {
     <>
       <Nav />
       <div style={{
-        minHeight: '100vh', background: bg, color: ink,
+        minHeight: '100dvh', background: bg, color: ink,
         padding: '80px 24px 60px',
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>

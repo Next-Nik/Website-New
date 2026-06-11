@@ -173,7 +173,7 @@ export default function PlanetMap() {
   if (!isFounder(user)) return null  // founder-only beta
 
   return (
-    <div style={{ minHeight: '100vh', background: '#FAFAF7' }}>
+    <div style={{ minHeight: '100dvh', background: '#FAFAF7' }}>
       <Nav activePath="nextus-self" />
 
       {/* The pulse — the ecosystem's heartbeat, above the map.
@@ -645,13 +645,13 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
 
 function LoadingShell() {
   return (
-    <div style={{ minHeight: '100vh', background: '#FAFAF7' }}>
+    <div style={{ minHeight: '100dvh', background: '#FAFAF7' }}>
       <Nav activePath="nextus-self" />
       <div style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        height: 'calc(100vh - 64px)',
+        height: 'calc(100dvh - 64px)',
       }}>
         <p style={{
           fontFamily: "'Cormorant SC', Georgia, serif",

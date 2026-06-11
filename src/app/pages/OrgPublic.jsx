@@ -58,7 +58,7 @@ function Rule() {
 
 function NotFound() {
   return (
-    <div style={{ background: parch, minHeight: '100vh' }}>
+    <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav />
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '160px 24px', textAlign: 'center' }}>
         <p style={{ ...body, fontSize: '17px', fontWeight: 400,
@@ -1399,7 +1399,7 @@ export function OrgPublicPage() {
 
   if (loading) {
     return (
-      <div style={{ background: parch, minHeight: '100vh' }}>
+      <div style={{ background: parch, minHeight: '100dvh' }}>
         <Nav />
         <div style={{ maxWidth: '680px', margin: '0 auto',
           padding: '160px 24px', textAlign: 'center' }}>
@@ -1519,7 +1519,7 @@ export function OrgPublicPage() {
   const SECTIONS_WITHOUT_TRAILING_RULE = new Set(['events', 'provenance'])
 
   return (
-    <div style={{ background: parch, minHeight: '100vh' }}>
+    <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav />
 
       <style>{`

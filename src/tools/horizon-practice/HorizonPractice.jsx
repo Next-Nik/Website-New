@@ -2338,7 +2338,7 @@ export function HorizonPracticePage() {
   // ─── Render ─────────────────────────────────────────────────────────────
   if (authLoading || accessLoading || profileLoading) {
     return (
-      <div style={{ background: tokens.bg, minHeight: '100vh' }}>
+      <div style={{ background: tokens.bg, minHeight: '100dvh' }}>
         <Nav activePath="nextus-self" />
         <div className="loading" />
       </div>
@@ -2346,7 +2346,7 @@ export function HorizonPracticePage() {
   }
 
   return (
-    <div style={{ background: tokens.bg, minHeight: '100vh' }}>
+    <div style={{ background: tokens.bg, minHeight: '100dvh' }}>
         <Nav activePath="nextus-self" />
 
         {/* Global animations */}

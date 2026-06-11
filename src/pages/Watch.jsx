@@ -68,7 +68,7 @@ export function WatchPage() {
   }, [])
 
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav activePath="home" />
 
       <style>{`

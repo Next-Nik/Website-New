@@ -109,7 +109,7 @@ export function PricingPage() {
   const { user } = useAuth()
   const L = usePaymentLinks(user?.id)
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav />
       <style>{`
         @media (max-width: 640px) {

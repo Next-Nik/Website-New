@@ -175,13 +175,13 @@ function HourglassPicker({ onScore, horizonMode = false, currentScore }) {
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '6px' }}>
             <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', fontWeight: 600, color: getScoreColor(hovered) }}>{hovered}</span>
             <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.08em', color: getScoreColor(hovered) }}>{TIER_MAP[hovered]}</span>
-            <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>{LABEL_MAP[hovered]}</span>
+            <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.72)' }}>{LABEL_MAP[hovered]}</span>
           </div>
           <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.65, margin: 0 }}>
             {SIGNATURE_MAP[hovered]}
           </p>
           {hovered >= 9.5 && (
-            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', fontStyle: 'italic', color: 'rgba(168,114,26,0.70)', lineHeight: 1.65, marginTop: '6px', marginBottom: 0 }}>
+            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', color: 'rgba(168,114,26,0.70)', lineHeight: 1.65, marginTop: '6px', marginBottom: 0 }}>
               {HORIZON_NOTE}
             </p>
           )}
@@ -234,7 +234,7 @@ function HourglassPickerCompact({ onScore, currentScore }) {
           <>
             <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '14px', fontWeight: 600, color: getScoreColor(shown), letterSpacing: '0.04em' }}>{shown}</span>
             <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.10em', color: getScoreColor(shown) }}>{TIER_MAP[shown]}</span>
-            <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', fontStyle: 'italic', color: 'rgba(15,21,35,0.62)' }}>— {LABEL_MAP[shown]}</span>
+            <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.62)' }}>— {LABEL_MAP[shown]}</span>
           </>
         ) : (
           <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>Hover a bar to see the tier · tap to set the score</span>
@@ -615,7 +615,7 @@ export function DomainThreadPanel({ domainData, activeIndex, onSelect, forceOpen
                     )}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>
+                    <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>
                       {STAGE_LABELS[stage]}
                     </span>
                     {horizon !== undefined && (
@@ -1145,7 +1145,7 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
             <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A' }}>● Complete</span>
           )}
         </div>
-        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
           {domain.question}
         </p>
         {flagReview && step !== 'done' && (
@@ -1187,7 +1187,7 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '8px' }}>
                 The list is raw material, not a shrine. You're not asking "which of these people do you want to be" — you're asking "what character emerges when you take the best of what each of these people represents and forge it into something that doesn't exist yet."
               </p>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px' }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px' }}>
                 The character is the destination. The references are the ingredients.
               </p>
 
@@ -1197,7 +1197,7 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                   {/* Doc header bar */}
                   <div style={{ background: 'rgba(200,146,42,0.05)', borderBottom: '1px solid rgba(200,146,42,0.12)', padding: '10px 18px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A' }}>AVATAR DRAFT</span>
-                    <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', fontStyle: 'italic' }}>{'·'} {domain.label}</span>
+                    <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', }}>{'·'} {domain.label}</span>
                   </div>
 
                   {/* Section 1 */}
@@ -1538,7 +1538,7 @@ export function ResultsCard({ mapData, domainData, currentScores, horizonScores 
           <div style={{ display: 'inline-block', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '6px', padding: '4px 14px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.16em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '10px' }}>{mapData.stage}</div>
         )}
         {mapData?.stage_description && (
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75 }}>{mapData.stage_description}</p>
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75 }}>{mapData.stage_description}</p>
         )}
       </div>
 
@@ -1567,7 +1567,7 @@ export function ResultsCard({ mapData, domainData, currentScores, horizonScores 
                   {h && <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '15px', color: 'rgba(200,146,42,0.85)', marginLeft: '4px' }}>{'→'}{h}</span>}
                 </div>
               </div>
-              {isFocus && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)' }}>{d.question}</div>}
+              {isFocus && <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '0.9375rem', color: 'rgba(15,21,35,0.72)' }}>{d.question}</div>}
             </div>
           )
         })}
@@ -1584,7 +1584,7 @@ export function ResultsCard({ mapData, domainData, currentScores, horizonScores 
           <div style={{ padding: '16px 28px', borderBottom: '1px solid rgba(200,146,42,0.07)', background: 'rgba(200,146,42,0.05)' }}>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
               <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', background: 'rgba(200,146,42,0.12)', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '40px', padding: '3px 10px', flexShrink: 0, marginTop: '2px', whiteSpace: 'nowrap' }}>System drag</span>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, margin: 0 }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, margin: 0 }}>
                 {dragDomains.map(d => d.label).join(', ')} {dragDomains.length === 1 ? 'is' : 'are'} pulling on the rest of your life. A domain below 5 creates drag across everything else — this is the place to start.
               </p>
             </div>
@@ -1644,12 +1644,12 @@ export function ResultsCard({ mapData, domainData, currentScores, horizonScores 
             )}
             {horizonLocked && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', margin: 0 }}>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', margin: 0 }}>
                   <span style={{ color: '#A8721A', fontStyle: 'normal', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.25rem', letterSpacing: '0.1em' }}>✓ Locked.</span>{' '}This is your Life Horizon.
                 </p>
                 <button
                   onClick={() => { userEditingRef.current = true; setHorizonLocked(false) }}
-                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontStyle: 'italic', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(200,146,42,0.4)', flexShrink: 0 }}>
+                  style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', color: '#A8721A', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline', textDecorationColor: 'rgba(200,146,42,0.4)', flexShrink: 0 }}>
                   Edit
                 </button>
               </div>
@@ -1672,7 +1672,7 @@ function MapWelcomeModal({ onBegin }) {
       <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '460px', width: '100%', textAlign: 'center' }}>
         <span style={{ display: 'block', ...sc, fontSize: '17px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>The Map</span>
         <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>An honest read.</h2>
-        <p style={{ ...body, fontSize: '1.125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
+        <p style={{ ...body, fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
           Seven domains of your life. Where you are, where you want to be, and what the gap is telling you. This is deliberate work — give a first pass an honest hour, and come back domain by domain. The only instruction: answer from where you actually are.
         </p>
         <button onClick={onBegin} style={{
@@ -1853,7 +1853,7 @@ function ConnectionLandscapeStep({ subDomains, setSubDomains, onLock }) {
       <p style={{ ...serif, fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '8px' }}>
         Your relational landscape. Activate the areas of connection that matter to you, score each, and add any context North Star should know.
       </p>
-      <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '20px', fontStyle: 'italic' }}>
+      <p style={{ ...serif, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginBottom: '20px', }}>
         Your Connection score on the wheel is the average across the areas you score.
       </p>
 
@@ -1874,7 +1874,7 @@ function ConnectionLandscapeStep({ subDomains, setSubDomains, onLock }) {
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>Your Connection score</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
             <span style={{ ...sc, fontSize: '1.75rem', fontWeight: 600, color: '#A8721A', letterSpacing: '0.02em' }}>{average}</span>
-            <span style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.60)', fontStyle: 'italic' }}>
+            <span style={{ ...serif, fontSize: '14px', color: 'rgba(15,21,35,0.60)', }}>
               average across {scoredSubs.length} of {activeSubs.length} active {activeSubs.length === 1 ? 'area' : 'areas'}
             </span>
           </div>
@@ -2256,7 +2256,7 @@ export function MapPage() {
         <div className="tool-header">
           <span className="tool-eyebrow">Horizon Suite · The Map</span>
           <h1 className="tool-title">From where you are<br />to where you want to be.</h1>
-          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontWeight: 300, fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontWeight: 300, color: 'rgba(15,21,35,0.72)', marginTop: '6px', lineHeight: 1.6 }}>
             An honest picture. Seven domains. Three steps each.
           </p>
         </div>
@@ -2268,13 +2268,13 @@ export function MapPage() {
               <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', marginBottom: '16px' }}>
                 I’m North Star. I’ll be with you throughout this process.
               </p>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(1.375rem, 3vw, 1.625rem)', fontWeight: 300, fontStyle: 'italic', color: '#0F1523', lineHeight: 1.9, marginBottom: '12px' }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 'clamp(1.375rem, 3vw, 1.625rem)', fontWeight: 300, color: '#0F1523', lineHeight: 1.9, marginBottom: '12px' }}>
                 This is not a report card. It is a coherence map — showing you where the gaps exist between who you’re becoming and how you’re currently living.
               </p>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '12px', fontStyle: 'italic' }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '12px', }}>
                 The Map takes you through the version of your life on the other side of the things you’ve been wanting to fix, change, alter, improve, repair, and heal.
               </p>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: '#A8721A', lineHeight: 1.7, marginBottom: '28px', fontStyle: 'italic' }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', fontWeight: 300, color: '#A8721A', lineHeight: 1.7, marginBottom: '28px', }}>
                 If that work was done — what life would you be living, and who would you be?
               </p>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.8, marginBottom: '28px' }}>
@@ -2365,14 +2365,14 @@ export function MapPage() {
                       onComplete={handleDomainComplete}
                     />
                   ) : (
-                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.78)', textAlign: 'center', padding: '20px 0' }}>
+                    <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', textAlign: 'center', padding: '20px 0' }}>
                       Tap a domain to begin.
                     </p>
                   )}
                   {allComplete && (
                     <div style={{ marginTop: '24px', padding: '20px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', textAlign: 'center' }}>
                       <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>ALL SEVEN DOMAINS COMPLETE</p>
-                      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginBottom: '14px' }}>
+                      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', marginBottom: '14px' }}>
                         Take your time. Edit anything you want. When you're ready —
                       </p>
                       <button onClick={runSynthesis} style={{ ...btnStyle, fontSize: '1.125rem', padding: '14px 28px', marginBottom: '12px', display: 'block', width: '100%' }}>
@@ -2467,7 +2467,7 @@ export function MapPage() {
                     {allComplete && (
                       <div style={{ marginTop: '24px', padding: '20px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', textAlign: 'center' }}>
                         <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>ALL SEVEN DOMAINS COMPLETE</p>
-                        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', fontStyle: 'italic', color: 'rgba(15,21,35,0.72)', marginBottom: '14px' }}>
+                        <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.3125rem', color: 'rgba(15,21,35,0.72)', marginBottom: '14px' }}>
                           Take your time. Edit anything you want. When you're ready —
                         </p>
                         <button onClick={runSynthesis} style={{ ...btnStyle, fontSize: '1.125rem', padding: '14px 28px', marginBottom: '12px' }}>

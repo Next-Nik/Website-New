@@ -129,7 +129,7 @@ function CalendlyEmbed() {
 export function WorkWithNikPage() {
   const [scaleOpen, setScaleOpen] = useState(false)
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <style>{`@media (max-width: 640px) { .wap-main { padding-left: 24px !important; padding-right: 24px !important; } .wap-dark { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
       <Nav activePath="work-with-nik" />
       <div className="wap-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>
@@ -576,7 +576,7 @@ export function PodcastPage() {
   ]
 
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <style>{`@media (max-width: 640px) { .pod-main { padding-left: 24px !important; padding-right: 24px !important; } }`}</style>
       <Nav activePath="podcast" />
       <div className="pod-main" style={{ maxWidth: '820px', margin: '0 auto', padding: '112px 40px 120px' }}>

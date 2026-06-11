@@ -5,7 +5,7 @@ import { body, sc } from '../lib/designTokens'
 
 export function SupportResourcesPage() {
   return (
-    <div style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav activePath="" />
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '112px 40px 120px' }}>
 

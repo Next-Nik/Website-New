@@ -88,7 +88,7 @@ export function ClaimPage() {
 
   if (authLoading || loading) {
     return (
-      <div style={{ background: parch, minHeight: '100vh' }}>
+      <div style={{ background: parch, minHeight: '100dvh' }}>
         <Nav />
         <div style={{ maxWidth: '560px', margin: '0 auto',
           padding: '160px 24px', textAlign: 'center' }}>
@@ -102,7 +102,7 @@ export function ClaimPage() {
 
   if (error && !actor) {
     return (
-      <div style={{ background: parch, minHeight: '100vh' }}>
+      <div style={{ background: parch, minHeight: '100dvh' }}>
         <Nav />
         <div style={{ maxWidth: '520px', margin: '0 auto', padding: '120px 24px',
           textAlign: 'center' }}>
@@ -119,7 +119,7 @@ export function ClaimPage() {
   if (!actor) return null
 
   return (
-    <div style={{ background: parch, minHeight: '100vh' }}>
+    <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav />
       <div style={{ maxWidth: '600px', margin: '0 auto',
         padding: '96px 24px 120px' }}>

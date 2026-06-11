@@ -29,7 +29,7 @@ function WelcomeCard({ type }) {
 
   return (
     <div style={{
-      minHeight: '100vh', background: '#FAFAF7',
+      minHeight: '100dvh', background: '#FAFAF7',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       padding: '40px 24px',
     }}>
@@ -64,7 +64,7 @@ function WelcomeCard({ type }) {
 function StatusCard({ eyebrow, heading, body: bodyText, action }) {
   return (
     <div style={{
-      minHeight: '100vh', background: '#FAFAF7',
+      minHeight: '100dvh', background: '#FAFAF7',
       display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
       padding: '40px 24px',
     }}>
@@ -98,7 +98,7 @@ function GoldButton({ href, onClick, children, disabled }) {
 
 function Spinner({ label }) {
   return (
-    <div style={{ minHeight: '100vh', background: '#FAFAF7', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+    <div style={{ minHeight: '100dvh', background: '#FAFAF7', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
       <img src="/logo_nav.png" alt="NextUs" style={{ width: '44px', height: '44px', objectFit: 'contain', opacity: 0.6 }} />
       <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)' }}>{label}</span>
     </div>

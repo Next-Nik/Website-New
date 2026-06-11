@@ -219,7 +219,7 @@ export function NominatePage() {
 
   if (done) {
     return (
-      <div style={{ background: parch, minHeight: '100vh' }}>
+      <div style={{ background: parch, minHeight: '100dvh' }}>
         <Nav />
         <div style={{ maxWidth: '560px', margin: '0 auto', padding: '120px 40px', textAlign: 'center' }}>
           <div style={{
@@ -273,7 +273,7 @@ export function NominatePage() {
   const scaleOptions = SCALES
 
   return (
-    <div style={{ background: parch, minHeight: '100vh' }}>
+    <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav />
 
       <style>{`

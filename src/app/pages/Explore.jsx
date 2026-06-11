@@ -145,7 +145,7 @@ export function Explore() {
     0
 
   return (
-    <div style={{ background: PARCH, minHeight: '100vh' }}>
+    <div style={{ background: PARCH, minHeight: '100dvh' }}>
       <Nav activePath="" />
 
       <div style={{

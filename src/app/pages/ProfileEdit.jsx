@@ -485,7 +485,7 @@ function PageShell({ children }) {
       <main
         style={{
           background: '#FAFAF7',
-          minHeight: '100vh',
+          minHeight: '100dvh',
           paddingTop: '32px',
           paddingBottom: '64px',
         }}

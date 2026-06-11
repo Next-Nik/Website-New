@@ -190,7 +190,7 @@ function EndOfFeedNotice() {
 function NotSignedIn() {
   const navigate = useNavigate()
   return (
-    <div style={{ background: parch, minHeight: '100vh' }}>
+    <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav activePath="" />
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '160px 24px', textAlign: 'center' }}>
         <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, marginBottom: '20px' }}>
@@ -222,7 +222,7 @@ export function FeedPage() {
   const isEmpty     = !showLoading && items.length === 0
 
   return (
-    <div style={{ background: parch, minHeight: '100vh' }}>
+    <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav activePath="" />
 
       <style>{`

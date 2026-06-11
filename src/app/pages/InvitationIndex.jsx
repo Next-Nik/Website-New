@@ -237,7 +237,7 @@ export function InvitationIndexPage() {
     : invitations
 
   return (
-    <div style={{ background: parch, minHeight: '100vh' }}>
+    <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav activePath="" />
 
       <style>{`

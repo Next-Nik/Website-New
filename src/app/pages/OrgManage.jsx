@@ -886,7 +886,7 @@ export function OrgManagePage() {
 
   if (loading || authLoading) {
     return (
-      <div style={{ background: parch, minHeight: '100vh' }}>
+      <div style={{ background: parch, minHeight: '100dvh' }}>
         <Nav activePath="nextus" />
         <div style={{ maxWidth: '820px', margin: '0 auto', padding: '120px 40px' }}>
           <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.55)' }}>Loading…</p>
@@ -897,7 +897,7 @@ export function OrgManagePage() {
 
   if (!actor) {
     return (
-      <div style={{ background: parch, minHeight: '100vh' }}>
+      <div style={{ background: parch, minHeight: '100dvh' }}>
         <Nav activePath="nextus" />
         <div style={{ maxWidth: '560px', margin: '0 auto', padding: '160px 24px', textAlign: 'center' }}>
           <p style={{ ...body, fontSize: '17px', fontWeight: 400, color: 'rgba(15,21,35,0.55)', lineHeight: 1.55 }}>
@@ -909,7 +909,7 @@ export function OrgManagePage() {
   }
 
   return (
-    <div style={{ background: parch, minHeight: '100vh' }}>
+    <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav activePath="nextus" />
 
       {toast && <OrgToast message={toast} onClose={() => setToast(null)} />}

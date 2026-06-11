@@ -173,7 +173,7 @@ export function ToolDrawer({ open, onClose }) {
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         animation: 'drawerSlideDown 0.25s cubic-bezier(0.16,1,0.3,1) both',
-        maxHeight: 'calc(100vh - 64px)',
+        maxHeight: 'calc(100dvh - 64px)',
         overflowY: 'auto',
       }}>
         <div style={{ maxWidth: '960px', margin: '0 auto', padding: '32px 40px 40px' }}>

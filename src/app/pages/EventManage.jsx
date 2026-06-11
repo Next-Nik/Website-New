@@ -110,7 +110,7 @@ export function EventManagePage() {
 
   if (authLoading || loading) {
     return (
-      <div style={{ minHeight: '100vh', background: parch }}>
+      <div style={{ minHeight: '100dvh', background: parch }}>
         <Nav activePath="" />
         <div style={{ maxWidth: '720px', margin: '0 auto', padding: '80px 24px' }}>
           <div style={{ color: 'rgba(15,21,35,0.55)', fontSize: '14px' }}>Loading…</div>
@@ -121,7 +121,7 @@ export function EventManagePage() {
 
   if (denied) {
     return (
-      <div style={{ minHeight: '100vh', background: parch }}>
+      <div style={{ minHeight: '100dvh', background: parch }}>
         <Nav activePath="" />
         <div style={{ maxWidth: '720px', margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
           <h1 style={{ ...sc, fontSize: '20px', letterSpacing: '0.18em', color: gold, textTransform: 'uppercase', margin: '0 0 16px 0' }}>
@@ -140,7 +140,7 @@ export function EventManagePage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: parch }}>
+    <div style={{ minHeight: '100dvh', background: parch }}>
       <Nav activePath="" />
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '48px 24px 80px' }}>
         <div style={{ marginBottom: '24px' }}>

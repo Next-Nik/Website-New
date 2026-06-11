@@ -163,7 +163,7 @@ export function NextStepsPage() {
   }
 
   return (
-    <div className="page-shell" style={{ background: '#FAFAF7', minHeight: '100vh' }}>
+    <div className="page-shell" style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav activePath="nextsteps" />
 
       <NextStepsHeader phase={phase} hasOtherTracks={tracks.length > 0} onBackToLoop={handleBackToLoop} />

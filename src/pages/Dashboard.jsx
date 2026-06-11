@@ -1799,7 +1799,7 @@ export function DashboardPage() {
 
   if (authLoading || dataLoading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100dvh', background: '#FAFAF7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A' }}>Loading…</div>
       </div>
     )
@@ -2062,7 +2062,7 @@ export function DashboardPage() {
   const s = {
     wrap: {
       background: '#FAFAF7',
-      minHeight: '100vh',
+      minHeight: '100dvh',
     },
     shell: {
       maxWidth: '1100px',
@@ -2070,7 +2070,7 @@ export function DashboardPage() {
       display: 'grid',
       gridTemplateColumns: '200px 1fr',
       gridTemplateRows: '48px 1fr',
-      height: 'calc(100vh - 60px)',
+      height: 'calc(100dvh - 60px)',
       border: '1px solid rgba(200,146,42,0.18)',
       borderRadius: '12px',
       overflow: 'hidden',

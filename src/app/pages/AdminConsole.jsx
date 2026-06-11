@@ -3203,11 +3203,11 @@ export function AdminConsolePage() {
   }, [user, loading, navigate])
 
   if (loading || !user || !isFounder(user)) {
-    return <div style={{ background: '#FAFAF7', minHeight: '100vh' }}><Nav /></div>
+    return <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}><Nav /></div>
   }
 
   return (
-    <div style={{ background: bg, minHeight: '100vh' }}>
+    <div style={{ background: bg, minHeight: '100dvh' }}>
       <Nav />
       <div style={{ maxWidth: '1040px', margin: '0 auto', padding: '96px 40px 120px' }}>
         <Eyebrow>Admin Beta</Eyebrow>

@@ -58,7 +58,7 @@ export function FocusProfile() {
   const { focus, ancestors, children, touches, affiliationCounts, actors } = data
 
   return (
-    <div style={{ background: parch, minHeight: '100vh' }}>
+    <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav activePath="" />
 
       <div style={{
@@ -525,7 +525,7 @@ function Divider() {
 
 function LoadingShell() {
   return (
-    <div style={{ minHeight: '100vh', background: parch }}>
+    <div style={{ minHeight: '100dvh', background: parch }}>
       <Nav activePath="" />
       <div style={{
         maxWidth: '760px',
@@ -543,7 +543,7 @@ function LoadingShell() {
 
 function NotFoundShell({ slug }) {
   return (
-    <div style={{ minHeight: '100vh', background: parch }}>
+    <div style={{ minHeight: '100dvh', background: parch }}>
       <Nav activePath="" />
       <div style={{
         maxWidth: '560px',

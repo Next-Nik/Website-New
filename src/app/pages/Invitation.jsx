@@ -181,7 +181,7 @@ function SectionRule() {
 
 function NotFound() {
   return (
-    <div style={{ background: parch, minHeight: '100vh' }}>
+    <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav activePath="" />
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '160px 24px', textAlign: 'center' }}>
         <p style={{ ...body, fontSize: '17px', fontWeight: 400, color: 'rgba(15,21,35,0.55)', lineHeight: 1.75 }}>
@@ -264,7 +264,7 @@ export function InvitationPage() {
 
   if (loading) {
     return (
-      <div style={{ background: parch, minHeight: '100vh' }}>
+      <div style={{ background: parch, minHeight: '100dvh' }}>
         <Nav activePath="" />
         <div style={{ maxWidth: '680px', margin: '0 auto', padding: '160px 24px', textAlign: 'center' }}>
           <div className="loading" />
@@ -294,7 +294,7 @@ export function InvitationPage() {
   const principleSlugs = invitation.platform_principles || []
 
   return (
-    <div style={{ background: parch, minHeight: '100vh' }}>
+    <div style={{ background: parch, minHeight: '100dvh' }}>
       <Nav activePath="" />
 
       <style>{`
