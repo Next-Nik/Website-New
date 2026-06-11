@@ -52,9 +52,7 @@ import MyOrgMissionPanel          from '../components/mission-control/MyOrgMissi
 import MapMissionPanel            from '../components/mission-control/MapMissionPanel'
 import TargetSprintMissionPanel   from '../components/mission-control/TargetSprintMissionPanel'
 import PurposePieceMissionPanel   from '../components/mission-control/PurposePieceMissionPanel'
-import HorizonStateMissionPanel   from '../components/mission-control/HorizonStateMissionPanel'
-import HorizonPracticeMissionPanel from '../components/mission-control/HorizonPracticeMissionPanel'
-import DailyChooserPanel          from '../components/mission-control/DailyChooserPanel'
+import DailySessionPanel          from '../components/daily/DailySessionPanel'
 import ProfileMissionPanel        from '../components/mission-control/ProfileMissionPanel'
 import SettingsMissionPanel       from '../components/mission-control/SettingsMissionPanel'
 import WorldViewMissionPanel      from '../components/mission-control/WorldViewMissionPanel'
@@ -364,9 +362,6 @@ export default function MissionControl() {
   const location = useLocation()
   const data = useMissionControlData()
   const [activePanel, setActivePanel] = useState(null)
-  // Which view the Daily panel is showing: 'chooser' | 'state' | 'practice'.
-  // The Daily tile always opens on the chooser — the user picks the tool.
-  const [dailyView, setDailyView] = useState('chooser')
   const { focus: activeFocus, hasFocus: hasActiveFocus } = useActiveFocus()
 
   // Map the user's saved focus_domain_slugs (e.g. 'human-being',
@@ -926,13 +921,9 @@ export default function MissionControl() {
     setActivePanel(key)
   }
 
-  // Open the Daily panel at a given view. The tile opens the chooser;
-  // deep links (e.g. SelfDomainPanel's Horizon State affordance) can
-  // land directly on a tool view.
-  const openDaily = (view = 'chooser') => {
-    setDailyView(view)
-    openPersonalPanel('daily')
-  }
+  // Open the Daily panel. The session inside resumes wherever the
+  // user's day actually is (arrive → deck → embark → seal).
+  const openDaily = () => openPersonalPanel('daily')
 
   // ─── Rail states ─────────────────────────────────────────────
   const hsState = data.foundationData?.streak_days
@@ -1021,8 +1012,8 @@ export default function MissionControl() {
               glyph={<HorizonStateGauge />}
               label="Daily"
               state={hsState}
-              onClick={() => openDaily('chooser')}
-              title="Daily — choose your tool: Horizon State or Horizon Practice"
+              onClick={openDaily}
+              title="Daily — arrive, work, embark"
             />
             <Tile
               glyph="✦"
@@ -1175,8 +1166,8 @@ export default function MissionControl() {
             onNext={handleSelfNext}
             onOpenMap={() => openPersonalPanel('map')}
             onOpenSprint={() => openPersonalPanel('target-sprint')}
-            onOpenPractice={() => openDaily('practice')}
-            onOpenHorizonState={() => openDaily('state')}
+            onOpenPractice={() => navigate('/tools/horizon-practice')}
+            onOpenHorizonState={openDaily}
           />
         )}
         {isCiv && (
@@ -1254,111 +1245,29 @@ export default function MissionControl() {
         </div>
       </Panel>
 
-      {/* ── Daily — chooser + the two tools ─────────────────
-          The Daily tile lands here on the chooser: both daily
-          tools clearly marked, user picks. Tool views carry a
-          back link to return to the chooser. */}
+      {/* ── Daily — the session: Arrive → Deck → Embark → Seal.
+          The slider sandwich wraps the whole morning; the deck
+          inside it offers every daily tool in any order. The
+          component owns its own headers and buttons; the Panel
+          provides only chrome and close. */}
       <Panel
         open={activePanel === 'daily'}
         onClose={closePanel}
-        eyebrow={
-          dailyView === 'state'    ? 'DAILY · HORIZON STATE' :
-          dailyView === 'practice' ? 'DAILY · HORIZON PRACTICE' :
-                                     'DAILY · YOUR TOOLS'
-        }
-        title={
-          dailyView === 'state'    ? 'How are you arriving today?' :
-          dailyView === 'practice' ? "Today's practice" :
-                                     'Choose your daily tool'
-        }
-        actions={
-          dailyView === 'state' ? [
-            { label: 'REPORTS & LOGS →', primary: true,
-              onClick: () => navigate('/tools/horizon-state') },
-            { label: 'CLOSE', onClick: closePanel },
-          ] :
-          dailyView === 'practice' ? [
-            ...(mapComplete ? [
-              { label: 'OPEN HORIZON PRACTICE →', primary: true,
-                onClick: () => navigate('/tools/horizon-practice') },
-            ] : []),
-            { label: 'CLOSE', onClick: closePanel },
-          ] : [
-            { label: 'CLOSE', onClick: closePanel },
-          ]
-        }
+        eyebrow="DAILY"
+        actions={[
+          { label: 'REPORTS & LOGS →',
+            onClick: () => navigate('/tools/horizon-state') },
+          { label: 'CLOSE', onClick: closePanel },
+        ]}
       >
-        {dailyView === 'chooser' && (
-          <DailyChooserPanel
-            foundationData={data.foundationData}
+        {activePanel === 'daily' && (
+          <DailySessionPanel
+            user={data.user}
+            sprintData={data.sprintData}
             practiceData={data.practiceData}
             mapComplete={mapComplete}
-            onSelectState={() => setDailyView('state')}
-            onSelectPractice={() => setDailyView('practice')}
+            onNavigate={(path) => { closePanel(); navigate(path) }}
           />
-        )}
-
-        {dailyView !== 'chooser' && (
-          <button
-            type="button"
-            onClick={() => setDailyView('chooser')}
-            style={{ fontFamily: "'Cormorant SC', Georgia, serif",
-              fontSize: '10.5px', letterSpacing: '0.18em',
-              background: 'none', border: 'none', padding: '0 0 14px',
-              color: '#A8721A', cursor: 'pointer' }}>
-            ← ALL DAILY TOOLS
-          </button>
-        )}
-
-        {dailyView === 'state' && (
-          <>
-            <HorizonStateMissionPanel
-              user={data.user}
-              onNavigate={navigate}
-            />
-            {/* Phase 2/3 gate — shown below baseline content when map not complete */}
-            {!mapComplete && horizonStatePhase === 'baseline' && (
-              <div style={{
-                margin: '24px 0 0', padding: '18px 20px',
-                borderTop: '1px solid rgba(200,146,42,0.18)',
-              }}>
-                <div style={{ fontFamily: "'Cormorant SC', Georgia, serif",
-                  fontSize: '10px', letterSpacing: '0.18em',
-                  color: 'rgba(15,21,35,0.45)', marginBottom: '8px' }}>
-                  PHASES 2 & 3
-                </div>
-                <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13.5px',
-                  color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, margin: '0 0 12px' }}>
-                  Calibration and Embodiment unlock once your Map is complete
-                  and your I Am statements are in place.
-                </p>
-                <button onClick={() => { closePanel(); navigate('/tools/map') }}
-                  style={{ fontFamily: "'Cormorant SC', Georgia, serif",
-                    fontSize: '11px', letterSpacing: '0.14em',
-                    background: 'none', border: '1px solid rgba(200,146,42,0.30)',
-                    borderRadius: '40px', padding: '7px 16px',
-                    color: '#A8721A', cursor: 'pointer' }}>
-                  OPEN THE MAP →
-                </button>
-              </div>
-            )}
-          </>
-        )}
-
-        {dailyView === 'practice' && (
-          mapComplete ? (
-            <HorizonPracticeMissionPanel
-              user={data.user}
-              onNavigate={navigate}
-            />
-          ) : (
-            <CurriculumGatePanel
-              toolName="Horizon Practice"
-              reason="Your morning practice voices your I Am statements — the ones you declare in Chapters One and Two of your journey. The full sequence begins the moment they're declared."
-              ctaLabel="Continue your journey →"
-              ctaPath="/nextu"
-            />
-          )
         )}
       </Panel>
 
