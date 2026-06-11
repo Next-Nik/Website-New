@@ -733,6 +733,96 @@ function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId
 }
 
 // ────────────────────────────────────────────────────────────────────────────
+// StretchTasksRail — the Target Stretch bridge inside the Plan beat.
+//
+// The stretch is what the Horizon Self does; the practice is who they are
+// each morning. The two must CLEARLY overlap: this rail surfaces the active
+// stretch's current-month tasks (personal arc + Planet Sprint) as one-tap
+// thresholds, source-tagged 'target_stretch' so the link is traceable.
+// ────────────────────────────────────────────────────────────────────────────
+function StretchTasksRail({ activeSprint, thresholds, onChange }) {
+  if (!activeSprint?.domain_data || !Array.isArray(activeSprint.domains) || !activeSprint.domains.length) return null
+
+  const domainId = activeSprint.domains[0]
+  const dd = activeSprint.domain_data[domainId] || {}
+  const ps = activeSprint.domain_data.__planet_sprint__ || {}
+
+  // Current month = first milestone not yet checked off
+  const milestones = dd.milestones || []
+  let monthIdx = milestones.findIndex((_, mi) => !dd.milestoneChecked?.[mi])
+  if (monthIdx === -1) monthIdx = Math.max(0, milestones.length - 1)
+
+  const items = []
+  ;(dd.tasks || []).forEach((t, i) => {
+    if (t.milestone !== monthIdx) return
+    if (dd.taskChecked?.[i]) return
+    items.push({ ref: `stretch:${activeSprint.id}:${domainId}:${i}`, text: t.text, label: DOMAIN_LABELS[domainId] || domainId })
+  })
+  ;(ps.tasks || []).forEach((t, i) => {
+    if (ps.taskChecked?.[i]) return
+    items.push({ ref: `stretch:${activeSprint.id}:planet:${i}`, text: t.text, label: 'Planet Sprint' })
+  })
+
+  if (!items.length) return null
+  const shown = items.slice(0, 6)
+
+  function toggle(item) {
+    const existing = thresholds.find(t => t.source_ref === item.ref)
+    if (existing) {
+      onChange(thresholds.filter(t => t.source_ref !== item.ref))
+    } else {
+      onChange([...thresholds, {
+        title: item.text,
+        time_label: '',
+        note: `${item.label} · Target Stretch`,
+        source: 'target_stretch',
+        source_ref: item.ref,
+      }])
+    }
+  }
+
+  return (
+    <Card style={{ padding: '18px 20px', marginBottom: '16px', borderLeft: `3px solid ${tokens.goldChrome}` }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase' }}>
+          From your Target Stretch
+        </div>
+        <a href="/tools/target-sprint" style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.ghost, textDecoration: 'none' }}>
+          Open →
+        </a>
+      </div>
+      <div style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.6, marginBottom: '12px' }}>
+        Month {monthIdx + 1} moves your Horizon Self can take today. Tap to pull one into the plan.
+      </div>
+      {shown.map(item => {
+        const added = thresholds.some(t => t.source_ref === item.ref)
+        return (
+          <button key={item.ref} type="button" onClick={() => toggle(item)} style={{
+            display: 'flex', alignItems: 'flex-start', gap: '10px', width: '100%', textAlign: 'left',
+            background: added ? 'rgba(200,146,42,0.07)' : 'transparent',
+            border: `1px solid ${added ? 'rgba(200,146,42,0.4)' : 'rgba(200,146,42,0.16)'}`,
+            borderRadius: '8px', padding: '10px 12px', marginBottom: '6px', cursor: 'pointer', transition: 'all 0.2s',
+          }}>
+            <span style={{
+              width: '16px', height: '16px', borderRadius: '50%', flexShrink: 0, marginTop: '2px',
+              border: `1px solid ${added ? tokens.goldChrome : 'rgba(200,146,42,0.35)'}`,
+              background: added ? tokens.goldChrome : 'transparent',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              {added && <span style={{ color: '#FFFFFF', fontSize: '11px', lineHeight: 1 }}>✓</span>}
+            </span>
+            <span style={{ flex: 1 }}>
+              <span style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.5, display: 'block' }}>{item.text}</span>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.ghost }}>{item.label}</span>
+            </span>
+          </button>
+        )
+      })}
+    </Card>
+  )
+}
+
+// ────────────────────────────────────────────────────────────────────────────
 // Manual threshold add — used by CalendarPlanBeat in both states
 // ────────────────────────────────────────────────────────────────────────────
 function ManualThresholdAdd({ draftTitle, setDraftTitle, draftTime, setDraftTime, draftNote, setDraftNote, onAdd }) {
@@ -773,7 +863,7 @@ function ManualThresholdAdd({ draftTitle, setDraftTitle, draftTime, setDraftTime
 // ────────────────────────────────────────────────────────────────────────────
 // Morning Sequence — the five beats
 // ────────────────────────────────────────────────────────────────────────────
-function MorningSequence({ userId, iamStatements, horizonSelfStatement, protectorCovenant, icalUrl, onSaveIcalUrl, onComplete, onClose }) {
+function MorningSequence({ userId, iamStatements, horizonSelfStatement, protectorCovenant, icalUrl, onSaveIcalUrl, activeSprint, onComplete, onClose }) {
   const [beat, setBeat] = useState(1)
   const [sweep, setSweep] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -867,7 +957,8 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
           title: t.title,
           time_label: t.time_label || null,
           note: t.note || null,
-          source: 'manual',
+          source: t.source || 'manual',
+          source_ref: t.source_ref || null,
           run_date: today,
         }))
       if (rows.length > 0) {
@@ -1092,6 +1183,11 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
           <Body dim>The moments your Horizon Self will be tested today.</Body>
 
           <div style={{ marginTop: '24px' }}>
+            <StretchTasksRail
+              activeSprint={activeSprint}
+              thresholds={thresholds}
+              onChange={setThresholds}
+            />
             <CalendarPlanBeat
               thresholds={thresholds}
               onChange={setThresholds}
@@ -2113,10 +2209,10 @@ export function HorizonPracticePage() {
 
         if (entryRows) setEntries(entryRows)
 
-        // ── Load active sprint for hub tile ────────────────────────────────
+        // ── Load active stretch for hub tile + Plan-beat bridge ─────────────
         const { data: sprintRow } = await supabase
           .from('target_sprint_sessions')
-          .select('id, domains, status')
+          .select('id, domains, status, domain_data, target_date')
           .eq('user_id', user.id)
           .in('status', ['active', 'draft'])
           .order('updated_at', { ascending: false })
@@ -2507,10 +2603,12 @@ export function HorizonPracticePage() {
               }}>
                 <div>
                   <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>
-                    {activeSprint?.status === 'active' ? 'Active Sprint' : activeSprint?.status === 'draft' ? 'Sprint in Setup' : 'Target Stretch'}
+                    {activeSprint?.status === 'active' ? 'Active Stretch' : activeSprint?.status === 'draft' ? 'Stretch in Setup' : 'Target Stretch'}
                   </div>
                   <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>
-                    {activeSprint?.domains?.length ? activeSprint.domains.join(' · ') : 'No active sprint — start one'}
+                    {activeSprint?.domains?.length
+                      ? activeSprint.domains.map(d => DOMAIN_LABELS[d] || d).join(' · ') + (activeSprint?.domain_data?.__planet_sprint__?.commitment ? ' · Planet Sprint' : '')
+                      : 'No active stretch — start one'}
                   </div>
                 </div>
                 <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
@@ -2673,6 +2771,7 @@ export function HorizonPracticePage() {
               protectorCovenant={protectorCovenant}
               icalUrl={icalUrl}
               onSaveIcalUrl={handleSaveIcalUrl}
+              activeSprint={activeSprint}
               onComplete={handleMorningComplete}
               onClose={() => setView('hub')}
             />

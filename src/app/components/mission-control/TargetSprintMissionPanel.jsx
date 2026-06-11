@@ -233,6 +233,7 @@ function SprintView({ user, sprint, sprintIdx, sprintCount, onSwitchSprint, onNa
       if (type === 'goal')      dd.goalChecked      = checked
       if (type === 'milestone') dd.milestoneChecked = { ...(dd.milestoneChecked || {}), [milestoneIdx]: checked }
       if (type === 'task')      dd.taskChecked      = { ...(dd.taskChecked || {}), [taskIdx]: checked }
+      if (type === 'planet')    dd.taskChecked      = { ...(dd.taskChecked || {}), [taskIdx]: checked }
       return { ...prev, [domainId]: dd }
     })
   }
