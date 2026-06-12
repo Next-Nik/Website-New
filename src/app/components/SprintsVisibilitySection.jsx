@@ -48,11 +48,15 @@ async function fetchSprints(userId) {
     return { active: [], completed: [], tableMissing: true }
   }
 
+  // Civ-scale sibling rows (Planet Sprint, domains=[]) are not personal
+  // sprint artefacts — exclude them from visibility management.
+  const rows = (data || []).filter(r => !Array.isArray(r.domains) || r.domains.length > 0)
+
   const completionCol = COMPLETION_COLUMNS.find((c) =>
-    (data || []).some((row) => row[c] != null),
+    rows.some((row) => row[c] != null),
   )
   const titleCol = TITLE_COLUMNS.find((c) =>
-    (data || []).some((row) => row[c] != null),
+    rows.some((row) => row[c] != null),
   ) || null
 
   function display(row) {
@@ -64,7 +68,7 @@ async function fetchSprints(userId) {
     }
   }
 
-  const all = (data || []).map(display)
+  const all = rows.map(display)
   const active = all.filter((r) => !r.completed_at)
   const completed = all
     .filter((r) => r.completed_at)

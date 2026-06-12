@@ -193,7 +193,7 @@ export function usePublicProfile(userId) {
         })
 
         // Filter sprints by visibility — default private
-        const allSprints = sprintsRes.data || []
+        const allSprints = (sprintsRes.data || []).filter(r => Array.isArray(r.domains) && r.domains.length > 0)  // civ sibling rows stay private
         const publicSprints = allSprints.filter(s => {
           const key = `sprint:${s.id}`
           const vis = visibilityMap[key]

@@ -141,8 +141,7 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
             .eq('user_id', user.id)
             .in('status', ['active', 'started'])
             .order('created_at', { ascending: false })
-            .limit(1)
-            .maybeSingle(),
+            .limit(3),
         ])
 
         if (cancelled) return
@@ -179,8 +178,10 @@ export default function HorizonPracticeMissionPanel({ user, onNavigate }) {
           })
         }
 
-        if (sprintRes.data?.domains) {
-          setActiveSprintDomains(sprintRes.data.domains)
+        // Sibling civ rows carry domains=[] — pick the personal row.
+        const sprintRow = (sprintRes.data || []).find(r => Array.isArray(r.domains) && r.domains.length > 0)
+        if (sprintRow?.domains) {
+          setActiveSprintDomains(sprintRow.domains)
         }
       } catch (err) {
         if (!cancelled) setError(err)

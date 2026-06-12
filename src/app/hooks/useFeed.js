@@ -210,6 +210,7 @@ async function fetchSprintItems(userIds, visibilityMap, profileMap) {
 
   const items = []
   for (const s of (data || [])) {
+    if (!Array.isArray(s.domains) || !s.domains.length) continue  // civ sibling rows stay private
     if (!isPublic(visibilityMap, s.user_id, 'sprint', s.id)) continue
     const actor = profileMap.get(s.user_id) || { user_id: s.user_id }
     const actorObj = { id: s.user_id, display_name: actor.display_name }

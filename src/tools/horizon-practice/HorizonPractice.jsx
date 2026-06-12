@@ -740,12 +740,16 @@ function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId
 // stretch's current-month tasks (personal arc + Planet Sprint) as one-tap
 // thresholds, source-tagged 'target_stretch' so the link is traceable.
 // ────────────────────────────────────────────────────────────────────────────
-function StretchTasksRail({ activeSprint, thresholds, onChange }) {
-  if (!activeSprint?.domain_data || !Array.isArray(activeSprint.domains) || !activeSprint.domains.length) return null
+function StretchTasksRail({ activeSprint, civSprint, thresholds, onChange }) {
+  const hasSelf = !!(activeSprint?.domain_data && Array.isArray(activeSprint.domains) && activeSprint.domains.length)
+  const ps = civSprint?.domain_data?.__planet_sprint__
+    || activeSprint?.domain_data?.__planet_sprint__   // legacy embedded blob
+    || {}
+  if (!hasSelf && !ps.commitment) return null
 
-  const domainId = activeSprint.domains[0]
-  const dd = activeSprint.domain_data[domainId] || {}
-  const ps = activeSprint.domain_data.__planet_sprint__ || {}
+  const domainId = hasSelf ? activeSprint.domains[0] : null
+  const dd = hasSelf ? (activeSprint.domain_data[domainId] || {}) : {}
+  const planetOwnerId = civSprint?.id || activeSprint?.id
 
   // Current month = first milestone not yet checked off
   const milestones = dd.milestones || []
@@ -760,7 +764,7 @@ function StretchTasksRail({ activeSprint, thresholds, onChange }) {
   })
   ;(ps.tasks || []).forEach((t, i) => {
     if (ps.taskChecked?.[i]) return
-    items.push({ ref: `stretch:${activeSprint.id}:planet:${i}`, text: t.text, label: 'Planet Sprint' })
+    items.push({ ref: `stretch:${planetOwnerId}:planet:${i}`, text: t.text, label: 'Planet Sprint' })
   })
 
   if (!items.length) return null
@@ -792,7 +796,7 @@ function StretchTasksRail({ activeSprint, thresholds, onChange }) {
         </a>
       </div>
       <div style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.6, marginBottom: '12px' }}>
-        Month {monthIdx + 1} moves your Horizon Self can take today. Tap to pull one into the plan.
+        {hasSelf ? `Month ${monthIdx + 1} moves` : 'Moves'} your Horizon Self can take today. Tap to pull one into the plan.
       </div>
       {shown.map(item => {
         const added = thresholds.some(t => t.source_ref === item.ref)
@@ -863,7 +867,7 @@ function ManualThresholdAdd({ draftTitle, setDraftTitle, draftTime, setDraftTime
 // ────────────────────────────────────────────────────────────────────────────
 // Morning Sequence — the five beats
 // ────────────────────────────────────────────────────────────────────────────
-function MorningSequence({ userId, iamStatements, horizonSelfStatement, protectorCovenant, icalUrl, onSaveIcalUrl, activeSprint, onComplete, onClose }) {
+function MorningSequence({ userId, iamStatements, horizonSelfStatement, protectorCovenant, icalUrl, onSaveIcalUrl, activeSprint, civSprint, onComplete, onClose }) {
   const [beat, setBeat] = useState(1)
   const [sweep, setSweep] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -1185,6 +1189,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
           <div style={{ marginTop: '24px' }}>
             <StretchTasksRail
               activeSprint={activeSprint}
+              civSprint={civSprint}
               thresholds={thresholds}
               onChange={setThresholds}
             />
@@ -2106,6 +2111,7 @@ export function HorizonPracticePage() {
   const [entries, setEntries] = useState([])  // last ~30 days
   const [view, setView] = useState('loading')  // loading | hub | morning | evening
   const [activeSprint, setActiveSprint] = useState(null)
+  const [civSprint,    setCivSprint]    = useState(null)   // Planet Sprint sibling row (scale='civ')
 
   // Modal state
   const [refreshOpen, setRefreshOpen] = useState(false)
@@ -2210,14 +2216,18 @@ export function HorizonPracticePage() {
         if (entryRows) setEntries(entryRows)
 
         // ── Load active stretch for hub tile + Plan-beat bridge ─────────────
-        const { data: sprintRow } = await supabase
+        const { data: sprintRows } = await supabase
           .from('target_sprint_sessions')
-          .select('id, domains, status, domain_data, target_date')
+          .select('*')
           .eq('user_id', user.id)
           .in('status', ['active', 'draft'])
           .order('updated_at', { ascending: false })
-          .limit(1)
-          .maybeSingle()
+          .limit(6)
+        // Sibling sessions (B1): split self/civ client-side so this works
+        // whether or not the scale column has landed.
+        const sprintRow = (sprintRows || []).find(r => (r.scale ?? 'self') === 'self' && Array.isArray(r.domains) && r.domains.length)
+        const civRow    = (sprintRows || []).find(r => r.scale === 'civ' && r.status === 'active')
+        if (civRow) setCivSprint(civRow)
         if (cancelled) return
         if (sprintRow?.domains?.length) setActiveSprint(sprintRow)
 
@@ -2606,9 +2616,13 @@ export function HorizonPracticePage() {
                     {activeSprint?.status === 'active' ? 'Active Stretch' : activeSprint?.status === 'draft' ? 'Stretch in Setup' : 'Target Stretch'}
                   </div>
                   <div style={{ ...body, fontSize: '16px', color: tokens.meta, lineHeight: 1.5 }}>
-                    {activeSprint?.domains?.length
-                      ? activeSprint.domains.map(d => DOMAIN_LABELS[d] || d).join(' · ') + (activeSprint?.domain_data?.__planet_sprint__?.commitment ? ' · Planet Sprint' : '')
-                      : 'No active stretch — start one'}
+                    {(() => {
+                      const hasPlanet = civSprint?.domain_data?.__planet_sprint__?.commitment || activeSprint?.domain_data?.__planet_sprint__?.commitment
+                      if (activeSprint?.domains?.length)
+                        return activeSprint.domains.map(d => DOMAIN_LABELS[d] || d).join(' · ') + (hasPlanet ? ' · Planet Sprint' : '')
+                      if (hasPlanet) return 'Planet Sprint'
+                      return 'No active stretch — start one'
+                    })()}
                   </div>
                 </div>
                 <span style={{ ...sc, fontSize: '18px', color: tokens.gold, marginLeft: '16px' }}>→</span>
@@ -2772,6 +2786,7 @@ export function HorizonPracticePage() {
               icalUrl={icalUrl}
               onSaveIcalUrl={handleSaveIcalUrl}
               activeSprint={activeSprint}
+              civSprint={civSprint}
               onComplete={handleMorningComplete}
               onClose={() => setView('hub')}
             />

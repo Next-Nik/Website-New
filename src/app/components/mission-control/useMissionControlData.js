@@ -170,7 +170,9 @@ export default function useMissionControlData() {
           mapData:        pick(mapRes,        []),
           mapResults:     pick(mapResultsRes, null),
           purposeData:    pick(purposeRes,    null),
-          sprintData:     pick(sprintRes,     []),
+          // Civ-scale sibling rows (Planet Sprint, domains=[]) are not
+          // personal sprints — keep them out of the panel.
+          sprintData:     pick(sprintRes,     []).filter(r => Array.isArray(r.domains) && r.domains.length > 0),
           practiceData:   pick(practiceRes,   null),
           foundationData: pick(foundationRes, null),
           userRow:        pick(userRowRes,    null),
