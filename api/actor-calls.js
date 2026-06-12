@@ -260,5 +260,115 @@ module.exports = async (req, res) => {
     return res.json({ flagged: true })
   }
 
+  // ── fulfill ───────────────────────────────────────────────────────────────
+  // Someone expresses interest in fulfilling an ask. Records a participant
+  // row with status='active'. No civ session — an ask fulfillment is not a
+  // stretch. Idempotent.
+  if (action === 'fulfill') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id, note } = body
+    if (!call_id) return res.status(400).json({ error: 'call_id required' })
+
+    const { data: call } = await supabase
+      .from('actor_calls')
+      .select('id, type, ask_quantity, ask_fulfilled, visibility')
+      .eq('id', call_id)
+      .eq('type', 'ask')
+      .in('visibility', ['link_only', 'community'])
+      .maybeSingle()
+    if (!call) return res.status(404).json({ error: 'Ask not found' })
+
+    // Idempotent — return existing
+    const { data: existing } = await supabase
+      .from('actor_call_participants')
+      .select('*').eq('call_id', call_id).eq('user_id', userId).maybeSingle()
+    if (existing) return res.json({ participant: existing, already_offered: true })
+
+    // Capacity check — if ask_quantity set, check headroom
+    if (call.ask_quantity) {
+      const active = (await supabase
+        .from('actor_call_participants')
+        .select('id', { count: 'exact' })
+        .eq('call_id', call_id)
+        .eq('status', 'active')).count || 0
+      if (active >= call.ask_quantity) {
+        return res.status(409).json({ error: 'This ask has reached capacity. Check back if space opens.' })
+      }
+    }
+
+    const { data: participant, error } = await supabase
+      .from('actor_call_participants')
+      .insert({ call_id, user_id: userId, status: 'active', reflection: note || null })
+      .select('*').single()
+    if (error) return res.status(500).json({ error: error.message })
+
+    await refreshCounts(call_id)
+    // Update ask_fulfilled count
+    await supabase.from('actor_calls')
+      .update({ ask_fulfilled: (call.ask_fulfilled || 0) + 1, updated_at: new Date().toISOString() })
+      .eq('id', call_id)
+
+    return res.json({ participant })
+  }
+
+  // ── unfulfill ─────────────────────────────────────────────────────────────
+  if (action === 'unfulfill') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id } = body
+    if (!call_id) return res.status(400).json({ error: 'call_id required' })
+
+    const { data: existing } = await supabase
+      .from('actor_call_participants')
+      .select('id').eq('call_id', call_id).eq('user_id', userId).maybeSingle()
+    if (!existing) return res.json({ withdrawn: true, was_absent: true })
+
+    await supabase.from('actor_call_participants')
+      .update({ status: 'withdrawn', updated_at: new Date().toISOString() })
+      .eq('id', existing.id)
+    await refreshCounts(call_id)
+    return res.json({ withdrawn: true })
+  }
+
+  // ── browse_asks ───────────────────────────────────────────────────────────
+  // Community-visible asks, optionally filtered by domain or actor.
+  // Returns lightweight rows — the browse list, not full detail.
+  if (action === 'browse_asks') {
+    const { domain, actor_id: filterActor, limit = 24, offset = 0 } = body
+    let q = supabase
+      .from('actor_calls')
+      .select(`
+        id, title, tagline, slug, type, scale, domain,
+        the_move, cadence, duration_days, ask_quantity, ask_deadline, ask_fulfilled,
+        taken_on_count, active_count, completed_count,
+        visibility, created_at, actor_id, user_id,
+        nextus_actors ( id, name, slug, type, image_url )
+      `)
+      .eq('visibility', 'community')
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
+
+    if (domain)       q = q.eq('domain', domain)
+    if (filterActor)  q = q.eq('actor_id', filterActor)
+
+    const { data, error } = await q
+    if (error) return res.status(500).json({ error: error.message })
+    return res.json({ calls: data || [] })
+  }
+
+  // ── browse_by_actor ───────────────────────────────────────────────────────
+  // All published calls for a specific actor — shown on their Atlas profile.
+  if (action === 'browse_by_actor') {
+    const { actor_id: targetActor } = body
+    if (!targetActor) return res.status(400).json({ error: 'actor_id required' })
+    const { data, error } = await supabase
+      .from('actor_calls')
+      .select('id, title, tagline, slug, type, scale, domain, the_move, ask_quantity, ask_deadline, taken_on_count, active_count, visibility, created_at')
+      .eq('actor_id', targetActor)
+      .in('visibility', ['link_only', 'community'])
+      .order('created_at', { ascending: false })
+    if (error) return res.status(500).json({ error: error.message })
+    return res.json({ calls: data || [] })
+  }
+
   return res.status(400).json({ error: `Unknown action: ${action}` })
 }

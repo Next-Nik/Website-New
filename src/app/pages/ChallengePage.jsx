@@ -127,7 +127,7 @@ function FlagModal({ callId, userId, onClose }) {
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div style={{ background: tokens.bg, border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-          <Eyebrow style={{ marginBottom: 0 }}>Flag this challenge</Eyebrow>
+          <Eyebrow style={{ marginBottom: 0 }}>Flag this {/* type from parent */}</Eyebrow>
           <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.1rem', color: tokens.ghost }}>×</button>
         </div>
         {submitted ? (
@@ -232,6 +232,141 @@ function TakeItOnModal({ call, userId, onClose, onJoined }) {
   )
 }
 
+// ─── Fulfill modal (Ask type) ─────────────────────────────────────────────────
+// The ask fulfillment gesture: express interest, leave an optional note,
+// the actor sees who offered. No session created — fulfillment is not a stretch.
+
+function FulfillModal({ call, userId, onClose, onFulfilled }) {
+  const [note,    setNote]    = useState('')
+  const [loading, setLoading] = useState(false)
+  const [done,    setDone]    = useState(false)
+
+  const spotsLeft = call.ask_quantity
+    ? call.ask_quantity - (call.active_count || 0)
+    : null
+
+  async function fulfill() {
+    setLoading(true)
+    try {
+      const res  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'fulfill', userId, call_id: call.id, note: note.trim() || null }) })
+      const data = await res.json()
+      if (data.participant || data.already_offered) { setDone(true); onFulfilled && onFulfilled() }
+    } catch {}
+    setLoading(false)
+  }
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div style={{ background: tokens.bg, border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <Eyebrow style={{ marginBottom: 0 }}>Offer to help</Eyebrow>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.1rem', color: tokens.ghost }}>×</button>
+        </div>
+        {done ? (
+          <div>
+            <p style={{ ...body, fontSize: '1.125rem', ...muted, lineHeight: 1.7, marginBottom: '20px' }}>
+              Your offer has been received. The author will be in touch.
+            </p>
+            <Btn onClick={onClose}>Done</Btn>
+          </div>
+        ) : (
+          <div>
+            <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: hair, borderRadius: '10px', marginBottom: '16px' }}>
+              <div style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.65 }}>{call.the_move}</div>
+              {spotsLeft !== null && (
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.gold, marginTop: '6px' }}>
+                  {spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} remaining
+                </div>
+              )}
+              {call.ask_deadline && (
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.ghost, marginTop: '4px' }}>
+                  Needed by {new Date(call.ask_deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                </div>
+              )}
+            </div>
+            <textarea
+              value={note}
+              onChange={e => setNote(e.target.value)}
+              placeholder="Any context you'd like to share — optional"
+              rows={3}
+              style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(200,146,42,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', background: tokens.bg, boxSizing: 'border-box', marginBottom: '14px' }}
+            />
+            <Btn onClick={fulfill} disabled={loading}>{loading ? 'Sending…' : 'Offer to help →'}</Btn>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ─── Ask body ─────────────────────────────────────────────────────────────────
+// Renders the Ask-specific fields: what's needed, quantity, deadline, offers.
+
+function AskBody({ call }) {
+  const deadline = call.ask_deadline
+    ? new Date(call.ask_deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : null
+  const spotsTotal = call.ask_quantity || null
+  const spotsLeft  = spotsTotal ? Math.max(0, spotsTotal - (call.active_count || 0)) : null
+  const isFull     = spotsLeft !== null && spotsLeft === 0
+
+  return (
+    <div>
+      {/* What's needed */}
+      <div style={{ padding: '20px 22px', background: 'rgba(200,146,42,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
+        <Eyebrow>What's needed</Eyebrow>
+        <p style={{ ...body, fontSize: '1.125rem', color: tokens.dark, lineHeight: 1.7, margin: 0 }}>
+          {call.the_move}
+        </p>
+      </div>
+
+      {/* Quantity + deadline */}
+      {(spotsTotal || deadline) && (
+        <div style={{ display: 'grid', gridTemplateColumns: spotsTotal && deadline ? '1fr 1fr' : '1fr', gap: '12px', marginBottom: '20px' }}>
+          {spotsTotal && (
+            <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
+              <Eyebrow style={{ marginBottom: '4px' }}>Spots</Eyebrow>
+              <div style={{ ...body, fontSize: '1.0625rem', color: isFull ? '#D63838' : tokens.dark }}>
+                {isFull ? 'Full' : `${spotsLeft} of ${spotsTotal} remaining`}
+              </div>
+            </div>
+          )}
+          {deadline && (
+            <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
+              <Eyebrow style={{ marginBottom: '4px' }}>Needed by</Eyebrow>
+              <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark }}>{deadline}</div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Horizon goal + mechanism */}
+      {(call.horizon_goal_text || call.mechanism) && (
+        <div style={{ marginBottom: '20px' }}>
+          {call.horizon_goal_text && (
+            <div style={{ marginBottom: '14px' }}>
+              <Eyebrow>Why this matters</Eyebrow>
+              <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: 0 }}>
+                {call.horizon_goal_text}
+              </p>
+            </div>
+          )}
+          {call.mechanism && (
+            <div>
+              <Eyebrow>What this enables</Eyebrow>
+              <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: 0 }}>
+                {call.mechanism}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Auth prompt ──────────────────────────────────────────────────────────────
 
 function AuthPrompt({ callSlug }) {
@@ -257,9 +392,12 @@ export function ChallengePage() {
   const [call,          setCall]    = useState(null)
   const [loading,       setLoading] = useState(true)
   const [notFound,      setNotFound] = useState(false)
-  const [showTakeItOn,  setShowTakeItOn] = useState(false)
-  const [showFlag,      setShowFlag]     = useState(false)
+  const [showTakeItOn,  setShowTakeItOn]  = useState(false)
+  const [showFulfill,   setShowFulfill]   = useState(false)
+  const [showFlag,      setShowFlag]      = useState(false)
   const [alreadyJoined, setAlreadyJoined] = useState(false)
+
+  const isAsk = call?.type === 'ask'
 
   useEffect(() => {
     if (!slug) return
@@ -304,6 +442,10 @@ export function ChallengePage() {
         <TakeItOnModal call={call} userId={user.id} onClose={() => setShowTakeItOn(false)}
           onJoined={() => { setAlreadyJoined(true); setShowTakeItOn(false); setCall(c => c ? { ...c, taken_on_count: (c.taken_on_count || 0) + 1 } : c) }} />
       )}
+      {showFulfill && user && (
+        <FulfillModal call={call} userId={user.id} onClose={() => setShowFulfill(false)}
+          onFulfilled={() => { setAlreadyJoined(true); setShowFulfill(false); setCall(c => c ? { ...c, active_count: (c.active_count || 0) + 1 } : c) }} />
+      )}
       {showFlag && (
         <FlagModal callId={call.id} userId={user?.id} onClose={() => setShowFlag(false)} />
       )}
@@ -333,29 +475,41 @@ export function ChallengePage() {
         </div>
 
         {/* Participation count */}
-        {call.taken_on_count > 0 && (
+        {(call.taken_on_count > 0 || call.active_count > 0) && (
           <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: tokens.gold, marginBottom: '20px' }}>
-            {call.taken_on_count.toLocaleString()} {call.taken_on_count === 1 ? 'person has' : 'people have'} taken this on
-            {call.active_count > 0 ? ` — ${call.active_count} active` : ''}
+            {isAsk
+              ? `${call.active_count || 0} ${(call.active_count || 0) === 1 ? 'person has' : 'people have'} offered to help`
+              : `${call.taken_on_count.toLocaleString()} ${call.taken_on_count === 1 ? 'person has' : 'people have'} taken this on${call.active_count > 0 ? ` — ${call.active_count} active` : ''}`
+            }
           </div>
         )}
 
         {/* CTA */}
         {!alreadyJoined && (
           user ? (
-            <Btn onClick={() => setShowTakeItOn(true)} style={{ marginBottom: '8px' }}>
-              Take it on →
-            </Btn>
+            isAsk ? (
+              <Btn onClick={() => setShowFulfill(true)} style={{ marginBottom: '8px' }}>
+                Offer to help →
+              </Btn>
+            ) : (
+              <Btn onClick={() => setShowTakeItOn(true)} style={{ marginBottom: '8px' }}>
+                Take it on →
+              </Btn>
+            )
           ) : (
             <AuthPrompt callSlug={slug} />
           )
         )}
         {alreadyJoined && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap', marginBottom: '8px' }}>
-            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#2A8C4F' }}>✓ You're in</span>
-            <a href="/tools/target-sprint" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
-              Open my stretch →
-            </a>
+            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#2A8C4F' }}>
+              {isAsk ? '✓ Offer sent' : '✓ You\'re in'}
+            </span>
+            {!isAsk && (
+              <a href="/tools/target-sprint" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
+                Open my stretch →
+              </a>
+            )}
           </div>
         )}
 
@@ -363,66 +517,46 @@ export function ChallengePage() {
 
         <Rule style={{ margin: '24px 0' }} />
 
-        {/* The move */}
-        <div style={{ padding: '20px 22px', background: 'rgba(200,146,42,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
-          <Eyebrow>The move</Eyebrow>
-          <p style={{ ...body, fontSize: '1.125rem', color: tokens.dark, lineHeight: 1.7, margin: 0 }}>
-            {call.the_move}
-          </p>
-        </div>
-
-        {/* Cadence + duration */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-          <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
-            <Eyebrow style={{ marginBottom: '4px' }}>Cadence</Eyebrow>
-            <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.55 }}>
-              {cadenceLabel}
-              {call.cadence === 'daily-absolute' && (
-                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#D63838', marginTop: '4px' }}>No missed days — this is the commitment.</div>
-              )}
-              {call.cadence_note && <div style={{ ...body, fontSize: '14px', color: tokens.ghost, marginTop: '4px' }}>{call.cadence_note}</div>}
+        {/* Body — branches on type */}
+        {isAsk ? (
+          <AskBody call={call} />
+        ) : (
+          <div>
+            {/* The move */}
+            <div style={{ padding: '20px 22px', background: 'rgba(200,146,42,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
+              <Eyebrow>The move</Eyebrow>
+              <p style={{ ...body, fontSize: '1.125rem', color: tokens.dark, lineHeight: 1.7, margin: 0 }}>
+                {call.the_move}
+              </p>
             </div>
-          </div>
-          <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
-            <Eyebrow style={{ marginBottom: '4px' }}>Duration</Eyebrow>
-            <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.55 }}>
-              {call.duration_days} days
+            {/* Cadence + duration */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+              <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
+                <Eyebrow style={{ marginBottom: '4px' }}>Cadence</Eyebrow>
+                <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.55 }}>
+                  {cadenceLabel}
+                  {call.cadence === 'daily-absolute' && (
+                    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#D63838', marginTop: '4px' }}>No missed days — this is the commitment.</div>
+                  )}
+                  {call.cadence_note && <div style={{ ...body, fontSize: '14px', color: tokens.ghost, marginTop: '4px' }}>{call.cadence_note}</div>}
+                </div>
+              </div>
+              <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
+                <Eyebrow style={{ marginBottom: '4px' }}>Duration</Eyebrow>
+                <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.55 }}>{call.duration_days} days</div>
+              </div>
             </div>
-          </div>
-        </div>
-
-        {/* Why this moves the domain */}
-        {(call.horizon_goal_text || call.mechanism) && (
-          <div style={{ marginBottom: '20px' }}>
-            {call.horizon_goal_text && (
-              <div style={{ marginBottom: '14px' }}>
-                <Eyebrow>Horizon goal</Eyebrow>
-                <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: 0 }}>
-                  {call.horizon_goal_text}
-                </p>
-              </div>
-            )}
-            {call.mechanism && (
-              <div style={{ marginBottom: '14px' }}>
-                <Eyebrow>Why this works</Eyebrow>
-                <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: 0 }}>
-                  {call.mechanism}
-                </p>
-              </div>
-            )}
-            {call.measure && (
-              <div>
-                <Eyebrow>How you'll know</Eyebrow>
-                <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: 0 }}>
-                  {call.measure}
-                </p>
+            {(call.horizon_goal_text || call.mechanism || call.measure) && (
+              <div style={{ marginBottom: '20px' }}>
+                {call.horizon_goal_text && <div style={{ marginBottom: '14px' }}><Eyebrow>Horizon goal</Eyebrow><p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: 0 }}>{call.horizon_goal_text}</p></div>}
+                {call.mechanism && <div style={{ marginBottom: '14px' }}><Eyebrow>Why this works</Eyebrow><p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: 0 }}>{call.mechanism}</p></div>}
+                {call.measure && <div><Eyebrow>How you'll know</Eyebrow><p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: 0 }}>{call.measure}</p></div>}
               </div>
             )}
           </div>
         )}
 
-        {/* Author */}
-        {(authorName || call.user_id) && (
+        {/* Author — shown for both types */}
           <div style={{ padding: '16px 20px', background: tokens.bgCard, border: hair, borderRadius: '10px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
             {call.nextus_actors?.image_url && (
               <img src={call.nextus_actors.image_url} alt={authorName} style={{ width: '44px', height: '44px', borderRadius: call.nextus_actors.type === 'practitioner' ? '50%' : '6px', objectFit: 'cover', flexShrink: 0 }} />
@@ -447,7 +581,7 @@ export function ChallengePage() {
         <div style={{ marginTop: '32px', textAlign: 'center' }}>
           <button type="button" onClick={() => setShowFlag(true)}
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.35)', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.15)', textUnderlineOffset: '3px' }}>
-            Flag this challenge
+            {isAsk ? 'Flag this ask' : 'Flag this challenge'}
           </button>
         </div>
 

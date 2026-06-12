@@ -60,6 +60,7 @@ import ProfileEdit            from './app/pages/ProfileEdit'
 import { PublicProfile }      from './app/pages/PublicProfile'
 import { FeedPage }           from './app/pages/Feed'
 import Contribution           from './app/pages/Contribution'
+import ContributionPage      from './app/pages/ContributionPage'
 import { OrgPublicPage }      from './app/pages/OrgPublic'
 import { OrgManagePage }      from './app/pages/OrgManage'
 import { MapPage as PlanetMapPage } from './app/pages/Map'
@@ -207,7 +208,7 @@ function AppInner() {
         <Route path="/nextus/actors"                 element={<Navigate to="/feed" replace />} />
         <Route path="/nextus/actors/:id"             element={<LegacyOrgRedirect />} />
         <Route path="/nextus/actors/:id/manage"      element={<LegacyOrgManageRedirect />} />
-        <Route path="/nextus/actors/:id/needs/new"   element={<Navigate to="/contribution" replace />} />
+        <Route path="/nextus/actors/:id/needs/new"   element={<Navigate to="/tools/target-sprint" replace />} />
         <Route path="/nextus/map"                    element={<Navigate to="/map" replace />} />
         <Route path="/nextus/nominate"               element={<Navigate to="/nominate" replace />} />
         <Route path="/nextus/place"                  element={<Navigate to="/welcome/org" replace />} />
@@ -261,7 +262,8 @@ function AppInner() {
         <Route path="/profile/edit"                 element={<ProfileEdit />} />
         <Route path="/profile/:id"                  element={<PublicProfile />} />
         <Route path="/feed"                         element={<FeedPage />} />
-        <Route path="/contribution"                 element={<Contribution />} />
+        <Route path="/contribution"                 element={<ContributionPage />} />
+        <Route path="/contribution/legacy"          element={<Contribution />} />
         <Route path="/org/:slug"                    element={<OrgPublicPage />} />
         <Route path="/org/:id/claim"                element={<ClaimPage />} />
         <Route path="/search"                       element={<SearchPage />} />

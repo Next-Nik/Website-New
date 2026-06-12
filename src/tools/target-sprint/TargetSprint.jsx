@@ -1559,7 +1559,134 @@ function PublishPanel({ domainData, domainId, userId, actorId }) {
   )
 }
 
-// ─── Setup phase: domain select ───────────────────────────────────────────────
+// ─── Create Ask panel ─────────────────────────────────────────────────────────
+// Actors and individuals can post asks directly — specific things they need,
+// not 90-day commitments. Lives on the stretch view for actors who've claimed
+// a profile, and can be accessed from the actor manage page (Phase C).
+
+function CreateAskPanel({ userId, actorId }) {
+  const [open,        setOpen]        = useState(false)
+  const [callId,      setCallId]      = useState(null)
+  const [publishedUrl, setPublishedUrl] = useState(null)
+  const [saving,      setSaving]      = useState(false)
+  const [errors,      setErrors]      = useState([])
+  const [form, setForm] = useState({
+    title: '', tagline: '', scale: 'civ', domain: '',
+    horizon_goal_text: '', the_move: '', mechanism: '',
+    ask_quantity: '', ask_deadline: '',
+  })
+
+  function set(k, v) { setForm(f => ({ ...f, [k]: v })) }
+
+  async function saveAndPublish(vis) {
+    setSaving(true); setErrors([])
+    try {
+      // Validate floor (reuse challenge floor — same required fields apply)
+      const vPayload = { ...form, cadence: 'custom', duration_days: 90, measure: form.mechanism }
+      const vRes  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'validate_floor', ...vPayload }) })
+      const vData = await vRes.json()
+      if (!vData.passes) { setErrors(vData.errors || ['Below floor']); setSaving(false); return }
+
+      // Create
+      const cRes  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create', userId, actor_id: actorId || null, type: 'ask', ...form, cadence: 'custom', duration_days: null }) })
+      const cData = await cRes.json()
+      if (!cData.call?.id) { setErrors(['Could not save.']); setSaving(false); return }
+      const id = cData.call.id
+      setCallId(id)
+
+      // Publish immediately if not draft
+      if (vis !== 'draft') {
+        const pRes  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'publish', userId, call_id: id, visibility: vis }) })
+        const pData = await pRes.json()
+        if (pData.url) setPublishedUrl(pData.url)
+      }
+    } catch { setErrors(['Something went wrong.']) }
+    setSaving(false)
+  }
+
+  if (!open) return (
+    <div style={{ marginTop: '12px' }}>
+      <button type="button" onClick={() => setOpen(true)}
+        style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: tokens.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0' }}>
+        POST AN ASK →
+      </button>
+    </div>
+  )
+
+  return (
+    <div style={{ marginTop: '20px', padding: '20px 22px', background: tokens.bgCard, border: `1.5px solid rgba(200,146,42,0.25)`, borderRadius: '14px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '14px' }}>
+        <Eyebrow style={{ marginBottom: 0 }}>Post an ask</Eyebrow>
+        <button type="button" onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1rem', color: tokens.ghost }}>×</button>
+      </div>
+      <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '14px' }}>
+        A specific need — a person, a skill, a resource, a window of time. Fulfilled when someone steps up, not completed over 90 days.
+      </p>
+
+      {publishedUrl ? (
+        <div>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#2A8C4F', marginBottom: '8px' }}>✓ Ask is live</div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <button type="button" onClick={() => navigator.clipboard.writeText(window.location.origin + publishedUrl)}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.gold, background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
+              Copy link
+            </button>
+            <a href={publishedUrl} target="_blank" rel="noopener noreferrer"
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', ...gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '20px', padding: '7px 16px' }}>
+              View ask →
+            </a>
+          </div>
+        </div>
+      ) : (
+        <div>
+          {[
+            { k: 'title',             l: 'Title',              ph: 'Name this ask',                              long: false },
+            { k: 'the_move',          l: "What's needed",      ph: 'Exactly what you need someone to do or provide', long: true },
+            { k: 'domain',            l: 'Domain',             ph: 'Which civilisational domain (e.g. Nature, Society)', long: false },
+            { k: 'horizon_goal_text', l: 'Why it matters',     ph: 'Which Horizon Goal does this support?',      long: true },
+            { k: 'mechanism',         l: 'What it enables',    ph: 'What becomes possible when this is filled?', long: true },
+          ].map(({ k, l, ph, long }) => (
+            <div key={k} style={{ marginBottom: '10px' }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginBottom: '3px', textTransform: 'uppercase' }}>{l}</div>
+              {long ? (
+                <textarea value={form[k]} onChange={e => set(k, e.target.value)} placeholder={ph} rows={2}
+                  style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(200,146,42,0.3)', borderRadius: '8px', padding: '9px 12px', resize: 'vertical', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
+              ) : (
+                <input type="text" value={form[k]} onChange={e => set(k, e.target.value)} placeholder={ph}
+                  style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(200,146,42,0.3)', borderRadius: '8px', padding: '9px 12px', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
+              )}
+            </div>
+          ))}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+            <div>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginBottom: '3px', textTransform: 'uppercase' }}>How many needed</div>
+              <input type="number" min="1" value={form.ask_quantity} onChange={e => set('ask_quantity', e.target.value)} placeholder="Leave blank for open"
+                style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(200,146,42,0.3)', borderRadius: '8px', padding: '9px 12px', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
+            </div>
+            <div>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginBottom: '3px', textTransform: 'uppercase' }}>Needed by</div>
+              <input type="date" value={form.ask_deadline} onChange={e => set('ask_deadline', e.target.value)}
+                style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(200,146,42,0.3)', borderRadius: '8px', padding: '9px 12px', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
+            </div>
+          </div>
+          {errors.length > 0 && (
+            <div style={{ ...body, fontSize: '1.0625rem', color: '#D63838', marginBottom: '10px', padding: '8px 12px', background: 'rgba(214,56,56,0.05)', border: '1px solid rgba(214,56,56,0.2)', borderRadius: '8px' }}>
+              {errors.join(' · ')}
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '4px' }}>
+            <Btn onClick={() => saveAndPublish('link_only')} disabled={saving} style={{ fontSize: '13px', padding: '8px 20px' }}>
+              {saving ? 'Saving…' : 'Shareable link →'}
+            </Btn>
+            <Btn onClick={() => saveAndPublish('community')} disabled={saving} style={{ fontSize: '13px', padding: '8px 20px' }}>
+              Post to community →
+            </Btn>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 function PhaseSelect({ hasMapData, scores, horizonScores, iaStatements = {}, selectedDomain, setSelectedDomain, recommendation, onContinue }) {
   const scoreFallbackRec = hasMapData && !recommendation?.recommended && Object.keys(scores).length > 0
@@ -2243,6 +2370,9 @@ export function TargetSprintPage() {
                     userId={user.id}
                     actorId={null}
                   />
+                )}
+                {user && (
+                  <CreateAskPanel userId={user.id} actorId={null} />
                 )}
 
                 {!hasMapData && (
