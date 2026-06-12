@@ -1953,11 +1953,138 @@ function CallFlagsSection({ toast }) {
   )
 }
 
+// ── Claim requests sub-tab ────────────────────────────────────
+// Admin-fallback claims: claimants who couldn't verify via org email.
+// Actions: Approve (sets profile_owner) | Reject (closes the request).
+
+function ClaimRequestsSection({ toast }) {
+  const [requests, setRequests] = useState([])
+  const [loading,  setLoading]  = useState(true)
+  const [filter,   setFilter]   = useState('pending')
+
+  async function load() {
+    setLoading(true)
+    const { data } = await supabase
+      .from('claim_requests')
+      .select(`
+        id, note, evidence_url, user_email, status, created_at, admin_note,
+        actor:actor_id ( id, name, slug, type, website, image_url, profile_owner )
+      `)
+      .eq('status', filter)
+      .order('created_at', { ascending: true })
+      .limit(50)
+    setRequests(data || [])
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [filter])
+
+  async function approve(req) {
+    const now = new Date().toISOString()
+    // Guard: check actor is still unclaimed
+    const { data: actor } = await supabase.from('nextus_actors').select('profile_owner').eq('id', req.actor.id).maybeSingle()
+    if (actor?.profile_owner) {
+      toast('Actor was already claimed — rejecting this request.')
+      await supabase.from('claim_requests').update({ status: 'rejected', reviewed_at: now, admin_note: 'Actor already claimed by the time this was reviewed.' }).eq('id', req.id)
+      load(); return
+    }
+    // Get user_id from the request row
+    const { data: fullReq } = await supabase.from('claim_requests').select('user_id').eq('id', req.id).maybeSingle()
+    if (!fullReq?.user_id) { toast('Could not find user — approve manually.'); return }
+
+    await supabase.from('nextus_actors').update({ profile_owner: fullReq.user_id, owner_id: fullReq.user_id, updated_at: now }).eq('id', req.actor.id)
+    await supabase.from('claim_requests').update({ status: 'approved', reviewed_at: now }).eq('id', req.id)
+    toast(`${req.actor.name} approved — profile_owner set.`)
+    load()
+  }
+
+  async function reject(req) {
+    await supabase.from('claim_requests').update({ status: 'rejected', reviewed_at: new Date().toISOString() }).eq('id', req.id)
+    toast(`Request rejected.`)
+    load()
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+        {[['pending','Pending'], ['approved','Approved'], ['rejected','Rejected']].map(([val, label]) => (
+          <Btn key={val} small variant={filter === val ? 'primary' : 'ghost'} onClick={() => setFilter(val)}>{label}</Btn>
+        ))}
+        <Btn small variant="ghost" onClick={load}>Refresh</Btn>
+      </div>
+      {filter === 'pending' && (
+        <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '18px', lineHeight: 1.6, maxWidth: '560px' }}>
+          Admin-fallback claims from people who could not verify via org-domain email.
+          Check their evidence, then approve or reject.
+        </div>
+      )}
+      {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading…</p>}
+      {!loading && requests.length === 0 && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No {filter} requests.</p>}
+      {requests.map(req => {
+        const a = req.actor
+        return (
+          <Card key={req.id} style={{ borderLeft: '3px solid rgba(200,146,42,0.30)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                  {a?.type && <Badge label={a.type} />}
+                  {a && <span style={{ ...body, fontSize: '17px', color: '#0F1523' }}>{a.name}</span>}
+                  {a?.website && (
+                    <a href={a.website} target="_blank" rel="noopener noreferrer"
+                      style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}>
+                      {a.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                    </a>
+                  )}
+                </div>
+                {req.user_email && (
+                  <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>
+                    Claimed by: <strong>{req.user_email}</strong>
+                  </div>
+                )}
+                {req.note && (
+                  <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px', padding: '10px 12px', marginBottom: '8px' }}>
+                    <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Their connection</p>
+                    <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>{req.note}</p>
+                  </div>
+                )}
+                {req.evidence_url && (
+                  <div style={{ marginBottom: '8px' }}>
+                    <a href={req.evidence_url} target="_blank" rel="noopener noreferrer"
+                      style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold }}>
+                      Evidence: {req.evidence_url.slice(0, 80)}
+                    </a>
+                  </div>
+                )}
+                <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.50)', margin: 0 }}>
+                  Submitted {new Date(req.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                </p>
+              </div>
+              {filter === 'pending' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
+                  <Btn small onClick={() => approve(req)}>Approve</Btn>
+                  <Btn small variant="ghost" onClick={() => reject(req)}>Reject</Btn>
+                  {a?.slug && (
+                    <a href={`/org/${a.slug}`} target="_blank" rel="noopener noreferrer"
+                      style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold, textAlign: 'center', textDecoration: 'none', marginTop: '2px' }}>
+                      View profile
+                    </a>
+                  )}
+                </div>
+              )}
+              {filter !== 'pending' && <Badge label={filter} color={filter === 'approved' ? '#2A6A3A' : 'rgba(15,21,35,0.45)'} />}
+            </div>
+          </Card>
+        )
+      })}
+    </div>
+  )
+}
+
 function FlagsTab({ toast }) {
   const [flags,    setFlags]    = useState([])
   const [loading,  setLoading]  = useState(true)
   const [filter,   setFilter]   = useState('open')
-  const [subTab,   setSubTab]   = useState('actors')  // actors | calls
+  const [subTab,   setSubTab]   = useState('actors')  // actors | calls | claims
 
   async function load() {
     setLoading(true)
@@ -2006,10 +2133,10 @@ function FlagsTab({ toast }) {
 
   return (
     <div>
-      {/* Sub-tab switcher: Actors | Calls */}
+      {/* Sub-tab switcher: Actors | Calls | Claims */}
       <div style={{ display: 'flex', gap: '0', marginBottom: '22px',
         borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
-        {[['actors', 'Actor Flags'], ['calls', 'Call Flags']].map(([val, label]) => (
+        {[['actors', 'Actor Flags'], ['calls', 'Call Flags'], ['claims', 'Claim Requests']].map(([val, label]) => (
           <button key={val} type="button" onClick={() => setSubTab(val)}
             style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em',
               padding: '8px 18px', background: 'none', border: 'none', cursor: 'pointer',
@@ -2021,7 +2148,8 @@ function FlagsTab({ toast }) {
         ))}
       </div>
 
-      {subTab === 'calls' && <CallFlagsSection toast={toast} />}
+      {subTab === 'calls'   && <CallFlagsSection toast={toast} />}
+      {subTab === 'claims'  && <ClaimRequestsSection toast={toast} />}
 
       {subTab === 'actors' && (
       <div>
