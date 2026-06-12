@@ -30,7 +30,7 @@ const parch = '#FAFAF7'
 const hair  = '1px solid rgba(200,146,42,0.22)'
 
 function Eyebrow({ children, style = {} }) {
-  return <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: gold, textTransform: 'uppercase', marginBottom: '10px', ...style }}>{children}</div>
+  return <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold, textTransform: 'uppercase', marginBottom: '10px', ...style }}>{children}</div>
 }
 
 function Err({ msg }) {
@@ -145,7 +145,7 @@ function HorizonAlignStep({ actor, userId, onDone }) {
   return (
     <div>
       <div style={{ background: 'rgba(200,146,42,0.04)', border: '1.5px solid rgba(200,146,42,0.22)', borderRadius: '12px', padding: '22px 24px', marginBottom: '28px' }}>
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: gold, marginBottom: '10px' }}>ONE QUESTION BEFORE YOU BEGIN</div>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold, marginBottom: '10px' }}>ONE QUESTION BEFORE YOU BEGIN</div>
         <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>
           Which world is <strong>{actor.name}</strong> building toward?
         </p>
@@ -158,7 +158,7 @@ function HorizonAlignStep({ actor, userId, onDone }) {
 
       {/* Domain picker */}
       <div style={{ marginBottom: '18px' }}>
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>WHICH DOMAIN DOES YOUR WORK MOVE?</div>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>WHICH DOMAIN DOES YOUR WORK MOVE?</div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           {DOMAIN_OPTIONS.map(d => (
             <button key={d.slug} type="button" onClick={() => { setSelectedDomain(d.slug); setTowardStatement(''); setReasoning('') }}
@@ -171,7 +171,7 @@ function HorizonAlignStep({ actor, userId, onDone }) {
           ))}
         </div>
         {selectedDomain && horizonGoal && (
-          <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.50)', fontStyle: 'italic', marginTop: '10px', lineHeight: 1.6 }}>
+          <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '10px', lineHeight: 1.6 }}>
             Horizon: {horizonGoal}
           </div>
         )}
@@ -180,8 +180,8 @@ function HorizonAlignStep({ actor, userId, onDone }) {
       {/* Optional context */}
       {selectedDomain && (
         <div style={{ marginBottom: '18px' }}>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
-            ANYTHING TO ADD ABOUT YOUR WORK? <span style={{ color: 'rgba(15,21,35,0.35)', textTransform: 'none', letterSpacing: 0 }}>(helps the AI)</span>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
+            ANYTHING TO ADD ABOUT YOUR WORK? <span style={{ color: 'rgba(15,21,35,0.55)', textTransform: 'none', letterSpacing: 0 }}>(helps the AI)</span>
           </div>
           <textarea value={userNote} onChange={e => setUserNote(e.target.value)} rows={2}
             placeholder="What specifically does this work do? What does success look like?"
@@ -201,12 +201,12 @@ function HorizonAlignStep({ actor, userId, onDone }) {
       {/* The reframe */}
       {towardStatement && !editing && (
         <div style={{ background: 'rgba(200,146,42,0.04)', border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '12px', padding: '20px 22px', marginBottom: '18px' }}>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '10px' }}>THE TOWARD VERSION</div>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '10px' }}>THE TOWARD VERSION</div>
           <p style={{ ...body, fontSize: '16px', color: dark, lineHeight: 1.65, margin: '0 0 10px' }}>
             {towardStatement}
           </p>
           {reasoning && (
-            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.50)', lineHeight: 1.6, fontStyle: 'italic', margin: 0 }}>
+            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, margin: 0 }}>
               {reasoning}
             </p>
           )}
@@ -215,7 +215,7 @@ function HorizonAlignStep({ actor, userId, onDone }) {
 
       {editing && (
         <div style={{ marginBottom: '18px' }}>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>YOUR VERSION</div>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>YOUR VERSION</div>
           <textarea value={editText} onChange={e => setEditText(e.target.value)} rows={3}
             placeholder="Write your own toward-statement — one sentence pointing to the destination your work navigates toward."
             style={{ width: '100%', ...body, fontSize: '15px', color: dark, border: hair, borderRadius: '8px', padding: '10px 14px', resize: 'vertical', outline: 'none', background: parch, boxSizing: 'border-box' }} />
@@ -264,7 +264,7 @@ function ActorCard({ actor }) {
         {actor.tagline && <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.60)', fontStyle: 'italic', marginBottom: '6px' }}>{actor.tagline}</div>}
         {actor.website && (
           <a href={actor.website} target="_blank" rel="noopener noreferrer"
-            style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, textDecoration: 'none' }}>
             {actor.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
           </a>
         )}
@@ -319,7 +319,7 @@ function CodePath({ actor, userId, actorDomain, onApproved }) {
       {!codeSent ? (
         <div>
           <div style={{ marginBottom: '14px' }}>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>ORG EMAIL ADDRESS</div>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>ORG EMAIL ADDRESS</div>
             <input type="email" value={orgEmail} onChange={e => setOrgEmail(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && sendCode()}
               placeholder={`you@${actorDomain}`}
@@ -336,7 +336,7 @@ function CodePath({ actor, userId, actorDomain, onApproved }) {
             Code sent to <strong>{orgEmail}</strong>. Check your inbox — it expires in 30 minutes.
           </p>
           <div style={{ marginBottom: '14px' }}>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>VERIFICATION CODE</div>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>VERIFICATION CODE</div>
             <input type="text" inputMode="numeric" maxLength={6} value={codeInput} onChange={e => setCodeInput(e.target.value.replace(/\D/g, ''))}
               onKeyDown={e => e.key === 'Enter' && verifyCode()}
               placeholder="6-digit code"
@@ -348,14 +348,14 @@ function CodePath({ actor, userId, actorDomain, onApproved }) {
               {loading ? 'Verifying…' : 'Verify →'}
             </PrimaryBtn>
             <button type="button" onClick={() => { setCodeSent(false); setCodeInput(''); setErr(null) }}
-              style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', background: 'none', border: 'none', cursor: 'pointer' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer' }}>
               Use a different address
             </button>
             {resendCd > 0 ? (
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.38)' }}>Resend in {resendCd}s</span>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>Resend in {resendCd}s</span>
             ) : (
               <button type="button" onClick={sendCode}
-                style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold, background: 'none', border: 'none', cursor: 'pointer' }}>
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: gold, background: 'none', border: 'none', cursor: 'pointer' }}>
                 Resend code
               </button>
             )}
@@ -390,7 +390,7 @@ function RequestPath({ actor, userId, userEmail, onSubmitted }) {
         Can't access an org-domain email? Tell us how you're connected to {actor.name}. The NextUs team reviews these manually — usually within a few days.
       </p>
       <div style={{ marginBottom: '14px' }}>
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
           HOW ARE YOU CONNECTED?
         </div>
         <textarea value={note} onChange={e => setNote(e.target.value)} rows={4}
@@ -398,8 +398,8 @@ function RequestPath({ actor, userId, userEmail, onSubmitted }) {
           style={{ width: '100%', ...body, fontSize: '15px', color: dark, border: hair, borderRadius: '8px', padding: '11px 14px', resize: 'vertical', outline: 'none', background: parch, boxSizing: 'border-box' }} />
       </div>
       <div style={{ marginBottom: '20px' }}>
-        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
-          EVIDENCE URL <span style={{ color: 'rgba(15,21,35,0.35)', textTransform: 'none', letterSpacing: 0 }}>(optional)</span>
+        <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
+          EVIDENCE URL <span style={{ color: 'rgba(15,21,35,0.55)', textTransform: 'none', letterSpacing: 0 }}>(optional)</span>
         </div>
         <input type="url" value={evidenceUrl} onChange={e => setEvidenceUrl(e.target.value)}
           placeholder="LinkedIn, personal site, staff directory — anything that helps"
@@ -527,7 +527,7 @@ export function ClaimPage() {
             <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, marginBottom: '12px' }}>
               Your claim request has been submitted. The NextUs team will review it and reach out to <strong>{user?.email}</strong> when a decision is made.
             </p>
-            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.50)', lineHeight: 1.65, marginBottom: '24px' }}>
+            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '24px' }}>
               Most requests are reviewed within a few days.
             </p>
             <GhostBtn onClick={() => navigate(`/org/${actor.slug || actor.id}`)}>Back to profile</GhostBtn>

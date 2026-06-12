@@ -2283,7 +2283,7 @@ function FloorTab({ toast }) {
     setLoading(true)
     const q = supabase
       .from('nextus_actors')
-      .select('id, name, slug, type, domain_id, domains, image_url, description, tagline, website, story, status, seeded_by, created_at')
+      .select('id, name, slug, type, domain_id, domains, image_url, image_provenance, description, tagline, website, story, status, seeded_by, created_at')
       .order('created_at', { ascending: false })
       .limit(200)
 

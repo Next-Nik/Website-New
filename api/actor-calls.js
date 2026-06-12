@@ -53,6 +53,16 @@ async function uniqueSlug(base) {
   }
 }
 
+
+// Ownership: profile_owner is the canonical auth column (per OrgManage);
+// owner_id is the legacy/Add.jsx column. Either grants ownership.
+async function ownsActor(actorId, userId) {
+  if (!actorId || !userId) return false
+  const { data } = await supabase.from('nextus_actors')
+    .select('profile_owner, owner_id').eq('id', actorId).maybeSingle()
+  return data?.profile_owner === userId || data?.owner_id === userId
+}
+
 // ─── Participation count helpers ──────────────────────────────────────────────
 
 async function refreshCounts(callId) {
@@ -97,13 +107,22 @@ module.exports = async (req, res) => {
       .in('visibility', ['link_only', 'community'])
       .maybeSingle()
     if (error || !data) return res.status(404).json({ error: 'Not found' })
-    return res.json({ call: data })
+    // Cosigner count (Phase E) — table may not exist pre-migration-115; fail soft
+    let cosignerCount = 0
+    try {
+      const { count } = await supabase
+        .from('actor_call_cosigners')
+        .select('id', { count: 'exact', head: true })
+        .eq('call_id', data.id)
+      cosignerCount = count || 0
+    } catch {}
+    return res.json({ call: { ...data, cosigner_count: cosignerCount } })
   }
 
   // ── get_my_calls ───────────────────────────────────────────────────────────
   if (action === 'get_my_calls') {
     if (!userId) return res.status(401).json({ error: 'Auth required' })
-    const { data: actorRows } = await supabase.from('nextus_actors').select('id').eq('owner_id', userId)
+    const { data: actorRows } = await supabase.from('nextus_actors').select('id').or(`profile_owner.eq.${userId},owner_id.eq.${userId}`)
     const actorIds = (actorRows || []).map(r => r.id)
     const { data, error } = await supabase.from('actor_calls').select('*')
       .or([
@@ -148,10 +167,7 @@ module.exports = async (req, res) => {
     const { data: existing } = await supabase.from('actor_calls').select('user_id, actor_id, visibility').eq('id', call_id).maybeSingle()
     if (!existing) return res.status(404).json({ error: 'Not found' })
     let owned = existing.user_id === userId
-    if (!owned && existing.actor_id) {
-      const { data: actor } = await supabase.from('nextus_actors').select('owner_id').eq('id', existing.actor_id).maybeSingle()
-      owned = actor?.owner_id === userId
-    }
+    if (!owned && existing.actor_id) owned = await ownsActor(existing.actor_id, userId)
     if (!owned) return res.status(403).json({ error: 'Not your call' })
     if (existing.visibility !== 'draft') return res.status(409).json({ error: 'Published calls cannot be edited (withdraw first).' })
     const safe = {}
@@ -174,10 +190,7 @@ module.exports = async (req, res) => {
     const { data: existing } = await supabase.from('actor_calls').select('*').eq('id', call_id).maybeSingle()
     if (!existing) return res.status(404).json({ error: 'Not found' })
     let owned = existing.user_id === userId
-    if (!owned && existing.actor_id) {
-      const { data: actor } = await supabase.from('nextus_actors').select('owner_id').eq('id', existing.actor_id).maybeSingle()
-      owned = actor?.owner_id === userId
-    }
+    if (!owned && existing.actor_id) owned = await ownsActor(existing.actor_id, userId)
     if (!owned) return res.status(403).json({ error: 'Not your call' })
 
     // Floor check before any publish
@@ -447,11 +460,7 @@ module.exports = async (req, res) => {
     if (!call) return res.status(404).json({ error: 'Not found' })
 
     let owned = call.user_id === userId
-    if (!owned && call.actor_id) {
-      const { data: actor } = await supabase
-        .from('nextus_actors').select('profile_owner').eq('id', call.actor_id).maybeSingle()
-      owned = actor?.profile_owner === userId
-    }
+    if (!owned && call.actor_id) owned = await ownsActor(call.actor_id, userId)
     if (!owned) return res.status(403).json({ error: 'Not your call' })
 
     // Fetch consented public reflections — attributed ones join profiles

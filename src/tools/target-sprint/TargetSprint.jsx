@@ -525,7 +525,7 @@ export function AccomplishmentTally({ domains, domainData, onCheck }) {
                         <input type="checkbox" checked={tDone}
                           onChange={e => handleCheck(d.id, 'task', mi, globalIdx, e.target.checked)}
                           style={{ marginTop: '3px', accentColor: colour, flexShrink: 0, width: '14px', height: '14px' }} />
-                        <span style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55, textDecoration: tDone ? 'line-through' : 'none', opacity: tDone ? 0.38 : 1, transition: 'all 0.3s' }}>
+                        <span style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55, textDecoration: tDone ? 'line-through' : 'none', opacity: tDone ? 0.55 : 1, transition: 'all 0.3s' }}>
                           {t.text}
                         </span>
                       </label>
@@ -1686,6 +1686,16 @@ function PublishPanel({ domainData, domainId, userId, actorId }) {
 // not 90-day commitments. Lives on the stretch view for actors who've claimed
 // a profile, and can be accessed from the actor manage page (Phase C).
 
+const CIV_DOMAIN_OPTIONS = [
+  { slug: 'human-being',     label: 'Human Being'      },
+  { slug: 'society',         label: 'Society'           },
+  { slug: 'nature',          label: 'Nature'            },
+  { slug: 'technology',      label: 'Technology'        },
+  { slug: 'finance-economy', label: 'Finance & Economy' },
+  { slug: 'legacy',          label: 'Legacy'            },
+  { slug: 'vision',          label: 'Vision'            },
+]
+
 function CreateAskPanel({ userId, actorId }) {
   const [open,        setOpen]        = useState(false)
   const [callId,      setCallId]      = useState(null)
@@ -1761,10 +1771,24 @@ function CreateAskPanel({ userId, actorId }) {
         </div>
       ) : (
         <div>
+          {/* Domain — slug chips, same vocabulary as the Atlas */}
+          <div style={{ marginBottom: '12px' }}>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginBottom: '6px', textTransform: 'uppercase' }}>Domain</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {CIV_DOMAIN_OPTIONS.map(d => (
+                <button key={d.slug} type="button" onClick={() => set('domain', d.slug)}
+                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '5px 14px', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.15s',
+                    border: `1px solid ${form.domain === d.slug ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.3)'}`,
+                    background: form.domain === d.slug ? 'rgba(200,146,42,0.08)' : 'transparent',
+                    color: form.domain === d.slug ? tokens.gold : tokens.ghost }}>
+                  {d.label}
+                </button>
+              ))}
+            </div>
+          </div>
           {[
             { k: 'title',             l: 'Title',              ph: 'Name this ask',                              long: false },
             { k: 'the_move',          l: "What's needed",      ph: 'Exactly what you need someone to do or provide', long: true },
-            { k: 'domain',            l: 'Domain',             ph: 'Which civilisational domain (e.g. Nature, Society)', long: false },
             { k: 'horizon_goal_text', l: 'Why it matters',     ph: 'Which Horizon Goal does this support?',      long: true },
             { k: 'mechanism',         l: 'What it enables',    ph: 'What becomes possible when this is filled?', long: true },
           ].map(({ k, l, ph, long }) => (
@@ -2049,6 +2073,18 @@ export function TargetSprintPage() {
     loadPracticeStreak()
   }, [user])
 
+  // Restore an unanswered feedback prompt from a previous session (Fix 12)
+  useEffect(() => {
+    if (!user?.id) return
+    try {
+      const raw = localStorage.getItem('tg_pending_feedback')
+      if (!raw) return
+      const saved = JSON.parse(raw)
+      if (saved?.callId && saved.userId === user.id) setPendingFeedback({ callId: saved.callId })
+      else localStorage.removeItem('tg_pending_feedback')
+    } catch {}
+  }, [user?.id])
+
   function rowToCiv(row) {
     return {
       id:           row.id,
@@ -2179,9 +2215,11 @@ export function TargetSprintPage() {
           .eq('id', current.id)
       } catch {}
     }
-    // If this civ session came from a designed challenge, invite feedback
+    // If this civ session came from a designed challenge, invite feedback.
+    // Persisted to localStorage so the prompt survives navigating away.
     if (current?.challengeId && user?.id) {
       setPendingFeedback({ callId: current.challengeId })
+      try { localStorage.setItem('tg_pending_feedback', JSON.stringify({ callId: current.challengeId, userId: user.id })) } catch {}
     }
     setCiv(null)
   }
@@ -2491,7 +2529,7 @@ export function TargetSprintPage() {
                   <FeedbackPrompt
                     callId={pendingFeedback.callId}
                     userId={user.id}
-                    onDone={() => setPendingFeedback(null)}
+                    onDone={() => { setPendingFeedback(null); try { localStorage.removeItem('tg_pending_feedback') } catch {} }}
                   />
                 )}
 

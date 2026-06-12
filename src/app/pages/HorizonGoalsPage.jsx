@@ -21,7 +21,7 @@ const hair  = '1px solid rgba(200,146,42,0.18)'
 const muted = 'rgba(15,21,35,0.72)'
 
 function Eyebrow({ children, style = {} }) {
-  return <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: gold, textTransform: 'uppercase', marginBottom: '8px', ...style }}>{children}</div>
+  return <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold, textTransform: 'uppercase', marginBottom: '8px', ...style }}>{children}</div>
 }
 
 // ─── Goal card ────────────────────────────────────────────────────────────────
@@ -35,22 +35,22 @@ function GoalCard({ goal }) {
       <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: goal.colour || gold, marginBottom: '6px', textTransform: 'uppercase' }}>
         {goal.label}
       </div>
-      <p style={{ ...body, fontStyle: 'italic', fontSize: '1.0625rem', color: dark, lineHeight: 1.65, margin: '0 0 12px' }}>
+      <p style={{ ...body, fontSize: '1.0625rem', color: dark, lineHeight: 1.65, margin: '0 0 12px' }}>
         {goal.goal_text}
       </p>
       <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
         {goal.actor_count > 0 && (
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.50)' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>
             {goal.actor_count} actor{goal.actor_count === 1 ? '' : 's'}
           </span>
         )}
         {goal.constellation_count > 0 && (
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.50)' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>
             {goal.constellation_count} constellation{goal.constellation_count === 1 ? '' : 's'}
           </span>
         )}
         {goal.challenge_count > 0 && (
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.50)' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>
             {goal.challenge_count} challenge{goal.challenge_count === 1 ? '' : 's'}
           </span>
         )}
@@ -73,8 +73,8 @@ function GoalDetail({ domain }) {
       .finally(() => setLoading(false))
   }, [domain])
 
-  if (loading) return <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.45)', padding: '80px 0', textAlign: 'center' }}>Loading…</div>
-  if (!data) return <div style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.45)', padding: '80px 0', textAlign: 'center' }}>Goal not found.</div>
+  if (loading) return <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', padding: '80px 0', textAlign: 'center' }}>Loading…</div>
+  if (!data) return <div style={{ ...sc, fontSize: '15px', color: 'rgba(15,21,35,0.55)', padding: '80px 0', textAlign: 'center' }}>Goal not found.</div>
 
   const { goal, actors, calls } = data
   const colour = goal.colour || GOLD_C
@@ -82,11 +82,11 @@ function GoalDetail({ domain }) {
   return (
     <div>
       <div style={{ marginBottom: '12px' }}>
-        <Link to="/atlas/goals" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.45)', textDecoration: 'none' }}>← All Horizon Goals</Link>
+        <Link to="/atlas/goals" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>← All Horizon Goals</Link>
       </div>
       <div style={{ borderLeft: `4px solid ${colour}`, paddingLeft: '20px', marginBottom: '32px' }}>
         <Eyebrow style={{ color: colour }}>{goal.label}</Eyebrow>
-        <p style={{ ...body, fontStyle: 'italic', fontSize: 'clamp(1.125rem,2.5vw,1.375rem)', color: dark, lineHeight: 1.65, margin: 0, maxWidth: '680px' }}>
+        <p style={{ ...body, fontSize: 'clamp(1.125rem,2.5vw,1.375rem)', color: dark, lineHeight: 1.65, margin: 0, maxWidth: '680px' }}>
           {goal.goal_text}
         </p>
       </div>
@@ -99,7 +99,7 @@ function GoalDetail({ domain }) {
         ].map(c => (
           <div key={c.l} style={{ padding: '16px 18px', background: '#FFF', border: hair, borderRadius: '10px', textAlign: 'center' }}>
             <div style={{ ...serif, fontSize: '2rem', fontWeight: 300, color: dark }}>{c.v || 0}</div>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.50)', textTransform: 'uppercase', marginTop: '2px' }}>{c.l}</div>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginTop: '2px' }}>{c.l}</div>
           </div>
         ))}
       </div>
@@ -133,14 +133,14 @@ function GoalDetail({ domain }) {
                 style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', padding: '14px 16px', background: '#FFF', border: hair, borderRadius: '8px', textDecoration: 'none', transition: 'all 0.15s' }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(200,146,42,0.5)'}
                 onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(200,146,42,0.18)'}>
-                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: c.type === 'ask' ? '#5F8DAA' : gold, background: c.type === 'ask' ? 'rgba(95,141,170,0.08)' : 'rgba(200,146,42,0.08)', borderRadius: '12px', padding: '3px 10px', flexShrink: 0, marginTop: '2px' }}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: c.type === 'ask' ? '#5F8DAA' : gold, background: c.type === 'ask' ? 'rgba(95,141,170,0.08)' : 'rgba(200,146,42,0.08)', borderRadius: '12px', padding: '3px 10px', flexShrink: 0, marginTop: '2px' }}>
                   {c.type === 'ask' ? 'Ask' : 'Challenge'}
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ ...body, fontSize: '15px', color: dark, marginBottom: '3px' }}>{c.title}</div>
                   {c.the_move && <div style={{ ...body, fontSize: '13px', color: muted }}>{c.the_move.slice(0, 100)}</div>}
                   {(c.taken_on_count > 0 || c.active_count > 0) && (
-                    <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.45)', marginTop: '4px' }}>
+                    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
                       {c.type === 'ask' ? `${c.active_count || 0} offered` : `${c.taken_on_count || 0} taken on`}
                     </div>
                   )}
@@ -189,7 +189,7 @@ function GoalsIndex() {
         Seven civilisational destinations. Every actor, challenge, and constellation on NextUs aligns to one. This is what gives the Atlas direction.
       </p>
       {loading
-        ? <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.45)', padding: '60px 0', textAlign: 'center' }}>Loading…</div>
+        ? <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', padding: '60px 0', textAlign: 'center' }}>Loading…</div>
         : <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(320px,1fr))', gap: '14px' }}>
             {goals.map(g => <GoalCard key={g.id} goal={g} />)}
           </div>

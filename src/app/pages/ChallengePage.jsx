@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { tokens, serif, body, sc } from '../../lib/designTokens'
@@ -107,7 +107,7 @@ function ShareRail({ url, title, tagline }) {
 
 // ─── Flag modal ───────────────────────────────────────────────────────────────
 
-function FlagModal({ callId, userId, onClose }) {
+function FlagModal({ callId, userId, isAsk, onClose }) {
   const [reason,    setReason]    = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [loading,   setLoading]   = useState(false)
@@ -127,7 +127,7 @@ function FlagModal({ callId, userId, onClose }) {
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div style={{ background: tokens.bg, border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-          <Eyebrow style={{ marginBottom: 0 }}>Flag this {/* type from parent */}</Eyebrow>
+          <Eyebrow style={{ marginBottom: 0 }}>{isAsk ? 'Flag this ask' : 'Flag this challenge'}</Eyebrow>
           <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.1rem', color: tokens.ghost }}>×</button>
         </div>
         {submitted ? (
@@ -460,16 +460,15 @@ function AuthorFeedbackSection({ callId, userId }) {
 // ─── Auth prompt ──────────────────────────────────────────────────────────────
 
 function AuthPrompt({ callSlug }) {
-  const redirect = encodeURIComponent(`/stretch/c/${callSlug}`)
   return (
     <div style={{ padding: '24px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '12px', textAlign: 'center', marginTop: '20px' }}>
       <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '14px' }}>
         Sign in to take on this challenge. Your progress stays with you.
       </p>
-      <a href={`/login?redirect=${redirect}`}
+      <Link to="/login" state={{ from: `/stretch/c/${callSlug}` }}
         style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: tokens.gold, background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '12px 28px', textDecoration: 'none', display: 'inline-block' }}>
         Sign in →
-      </a>
+      </Link>
     </div>
   )
 }
@@ -486,23 +485,21 @@ export function ChallengePage() {
   const [showFulfill,   setShowFulfill]   = useState(false)
   const [showFlag,      setShowFlag]      = useState(false)
   const [alreadyJoined, setAlreadyJoined] = useState(false)
+  // Co-sign display (Phase E) — count loaded with the call
+  const [cosignerCount, setCosignerCount] = useState(0)
 
   const isAsk    = call?.type === 'ask'
   const isAuthor = user && call && (
     call.user_id === user.id ||
-    (call.nextus_actors && call.nextus_actors.profile_owner === user.id)
+    (call.nextus_actors && (call.nextus_actors.profile_owner === user.id || call.nextus_actors.owner_id === user.id))
   )
-
-  // Co-sign state — constellation members can co-sign a call
-  const [cosignerCount, setCosignerCount] = useState(call?.cosigner_count || 0)
-  const [hasCosigned,   setHasCosigned]   = useState(false)
 
   useEffect(() => {
     if (!slug) return
     fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'get_by_slug', slug }) })
       .then(r => r.json())
       .then(data => {
-        if (data.call) setCall(data.call)
+        if (data.call) { setCall(data.call); setCosignerCount(data.call.cosigner_count || 0) }
         else setNotFound(true)
       })
       .catch(() => setNotFound(true))
@@ -545,7 +542,7 @@ export function ChallengePage() {
           onFulfilled={() => { setAlreadyJoined(true); setShowFulfill(false); setCall(c => c ? { ...c, active_count: (c.active_count || 0) + 1 } : c) }} />
       )}
       {showFlag && (
-        <FlagModal callId={call.id} userId={user?.id} onClose={() => setShowFlag(false)} />
+        <FlagModal callId={call.id} userId={user?.id} isAsk={isAsk} onClose={() => setShowFlag(false)} />
       )}
 
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: 'clamp(64px,8vw,96px) clamp(20px,5vw,40px) 100px' }}>
@@ -701,7 +698,7 @@ export function ChallengePage() {
         {/* Flag */}
         <div style={{ marginTop: '32px', textAlign: 'center' }}>
           <button type="button" onClick={() => setShowFlag(true)}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.35)', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.15)', textUnderlineOffset: '3px' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.15)', textUnderlineOffset: '3px' }}>
             {isAsk ? 'Flag this ask' : 'Flag this challenge'}
           </button>
         </div>

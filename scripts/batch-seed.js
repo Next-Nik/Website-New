@@ -213,14 +213,29 @@ async function main() {
 
       // 4. Stage (unless dry-run)
       if (!DRY_RUN) {
+        // Column whitelist — only fields that exist on nextus_actors.
+        // The extractor returns analysis fields (hal_signals, sfp_patterns,
+        // proposed_chains, etc.) that are NOT columns; spreading raw output
+        // breaks the insert. Add columns here as the schema grows.
+        const COLUMNS = [
+          'name', 'type', 'slug', 'description', 'story', 'tagline',
+          'website', 'image_url', 'location_name', 'scale', 'scale_notes',
+          'domains', 'domain_id', 'subdomains', 'fields', 'lenses',
+          'problem_chains', 'platform_principles', 'alignment_score',
+          'resolution', 'media', 'nominator_name', 'nominator_email',
+        ]
+        const row = {}
+        COLUMNS.forEach(c => { if (extracted[c] !== undefined) row[c] = extracted[c] })
+
         const { data, error } = await supabase
           .from('nextus_actors')
           .insert({
-            ...extracted,
-            status:        'staged',
-            seeded_by:     'nextus',
-            profile_owner: null,
-            owner_id:      null,
+            ...row,
+            status:           'staged',
+            seeded_by:        'nextus',
+            image_provenance: extracted.image_url ? 'hotlink' : null,
+            profile_owner:    null,
+            owner_id:         null,
           })
           .select('id, name')
           .single()

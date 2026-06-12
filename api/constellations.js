@@ -71,15 +71,20 @@ async function findSiblingAsk(callId) {
 
 async function refreshGoalCounts(goalId) {
   if (!goalId) return
+  const { data: goal } = await supabase
+    .from('horizon_goal_objects').select('domain').eq('id', goalId).maybeSingle()
   const [actorRes, callRes, conRes] = await Promise.all([
-    supabase.from('nextus_actors').select('id', { count: 'exact' }).eq('primary_horizon_goal_id', goalId).eq('status', 'live'),
-    supabase.from('actor_calls').select('id', { count: 'exact' }).eq('visibility', 'community'),
-    supabase.from('nextus_relationships').select('id', { count: 'exact' }).eq('horizon_goal_id', goalId).eq('relationship_type', 'constellation').eq('status', 'confirmed'),
+    supabase.from('nextus_actors').select('id', { count: 'exact', head: true }).eq('primary_horizon_goal_id', goalId).eq('status', 'live'),
+    goal?.domain
+      ? supabase.from('actor_calls').select('id', { count: 'exact', head: true }).eq('visibility', 'community').eq('domain', goal.domain)
+      : Promise.resolve({ count: 0 }),
+    supabase.from('nextus_relationships').select('id', { count: 'exact', head: true }).eq('horizon_goal_id', goalId).eq('relationship_type', 'constellation').eq('status', 'confirmed'),
   ])
   await supabase.from('horizon_goal_objects').update({
-    actor_count:        actorRes.count || 0,
-    constellation_count: Math.floor((conRes.count || 0) / 2), // pairs → constellations
-    updated_at:         new Date().toISOString(),
+    actor_count:         actorRes.count || 0,
+    challenge_count:     callRes.count  || 0,
+    constellation_count: Math.floor((conRes.count || 0) / 2), // reciprocal pairs → constellations
+    updated_at:          new Date().toISOString(),
   }).eq('id', goalId)
 }
 
@@ -125,7 +130,7 @@ module.exports = async (req, res) => {
       .from('actor_calls')
       .select('id, title, slug, type, scale, the_move, taken_on_count, active_count')
       .eq('visibility', 'community')
-      .ilike('horizon_goal_text', `%${goal.domain}%`)
+      .eq('domain', goal.domain)
       .limit(12)
 
     return res.json({ goal, actors: actors || [], calls: calls || [] })

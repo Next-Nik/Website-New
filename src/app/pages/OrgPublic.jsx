@@ -376,7 +376,7 @@ function DisputeModal({ actor, user, onClose }) {
         body: JSON.stringify({
           action:     'submit_request',
           actorId:    actor.id,
-          userId:     user?.id || 'anonymous',
+          userId:     user.id,
           note:       `DISPUTE (not a claim): ${reason.trim()}`,
           evidenceUrl: '',
           userEmail:   contactEmail.trim(),
@@ -400,7 +400,17 @@ function DisputeModal({ actor, user, onClose }) {
           <div style={{ ...sc_style, fontSize: '11px', letterSpacing: '0.22em', color: gold, textTransform: 'uppercase' }}>Dispute this entry</div>
           <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc_style, fontSize: '1.1rem', color: 'rgba(15,21,35,0.45)' }}>×</button>
         </div>
-        {submitted ? (
+        {!user ? (
+          <div>
+            <p style={{ ...body_style, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, marginBottom: '18px' }}>
+              Sign in to dispute this entry — it takes a moment and lets the team follow up with you directly.
+            </p>
+            <Link to="/login" state={{ from: `/org/${actor.slug || actor.id}` }}
+              style={{ ...sc_style, fontSize: '13px', letterSpacing: '0.14em', display: 'inline-block', padding: '11px 28px', borderRadius: '40px', background: '#C8922A', color: '#FFFFFF', textDecoration: 'none' }}>
+              Sign in →
+            </Link>
+          </div>
+        ) : submitted ? (
           <div>
             <p style={{ ...body_style, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, marginBottom: '20px' }}>
               Received. The NextUs team will review this entry and be in touch.
@@ -492,7 +502,7 @@ function ClaimBanner({ actor, user }) {
             )}
             <button type="button" onClick={() => setShowDispute(true)}
               style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-                color: 'rgba(15,21,35,0.40)', background: 'none', border: 'none',
+                color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none',
                 cursor: 'pointer', padding: '2px 0', textDecoration: 'underline',
                 textDecorationColor: 'rgba(15,21,35,0.18)', textUnderlineOffset: '2px' }}>
               Something is wrong — dispute this entry
