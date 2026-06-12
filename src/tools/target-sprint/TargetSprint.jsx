@@ -1363,6 +1363,202 @@ function PlanetSprintPanel({ civ, onCreate, onUpdateData, onComplete, onSaveAway
   )
 }
 
+
+// ─── Publish panel ────────────────────────────────────────────────────────────
+// Appears in the sprint view once the stretch is fully set up.
+// Lets the person publish this challenge for others to take on — same data,
+// new visibility. Three steps: draft → link_only → community.
+// The form fills from the existing stretch data and can be overridden.
+
+function PublishPanel({ domainData, domainId, userId, actorId }) {
+  const dd = domainData[domainId] || {}
+  const ps = domainData.__planet_sprint__ || {}
+  const [open,        setOpen]        = useState(false)
+  const [callId,      setCallId]      = useState(null)
+  const [visibility,  setVisibility]  = useState('draft')
+  const [publishedUrl, setPublishedUrl] = useState(null)
+  const [saving,      setSaving]      = useState(false)
+  const [errors,      setErrors]      = useState([])
+
+  // Form pre-filled from the stretch
+  const [form, setForm] = useState({
+    title:             dd.targetGoal || '',
+    tagline:           '',
+    scale:             'self',
+    domain:            domainId || '',
+    horizon_goal_text: dd.horizonText || '',
+    the_move:          dd.targetGoal || '',
+    cadence:           '5-of-7',
+    cadence_note:      '',
+    duration_days:     90,
+    measure:           '',
+    mechanism:         '',
+  })
+
+  useEffect(() => {
+    setForm(f => ({
+      ...f,
+      title:             dd.targetGoal || f.title,
+      horizon_goal_text: dd.horizonText || f.horizon_goal_text,
+      the_move:          dd.targetGoal  || f.the_move,
+      domain:            domainId || f.domain,
+    }))
+  }, [domainId, dd.targetGoal, dd.horizonText])
+
+  function set(k, v) { setForm(f => ({ ...f, [k]: v })) }
+
+  async function validateAndCreate() {
+    setSaving(true); setErrors([])
+    try {
+      // Floor check
+      const vRes  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'validate_floor', ...form }) })
+      const vData = await vRes.json()
+      if (!vData.passes) { setErrors(vData.errors || ['Below Challenge Floor']); setSaving(false); return }
+
+      // Create
+      const cRes  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create', userId, actor_id: actorId || null, ...form }) })
+      const cData = await cRes.json()
+      if (cData.call?.id) { setCallId(cData.call.id); setVisibility('draft') }
+    } catch { setErrors(['Something went wrong. Try again.']) }
+    setSaving(false)
+  }
+
+  async function publish(vis) {
+    if (!callId) return
+    setSaving(true); setErrors([])
+    try {
+      const pRes  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'publish', userId, call_id: callId, visibility: vis }) })
+      const pData = await pRes.json()
+      if (pData.error) { setErrors([pData.error]); setSaving(false); return }
+      setVisibility(vis)
+      if (pData.url) setPublishedUrl(pData.url)
+    } catch { setErrors(['Something went wrong.']) }
+    setSaving(false)
+  }
+
+  if (!open) {
+    return (
+      <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: hair }}>
+        <button type="button" onClick={() => setOpen(true)}
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: tokens.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0' }}>
+          OFFER THIS AS A CHALLENGE →
+        </button>
+      </div>
+    )
+  }
+
+  const CADENCE_OPTS = [
+    { v: '5-of-7',         l: '5 of 7 days' },
+    { v: 'daily-absolute', l: 'Every day (absolute)' },
+    { v: 'weekly',         l: 'Once per week' },
+    { v: 'custom',         l: 'Custom' },
+  ]
+  const SCALE_OPTS = [
+    { v: 'self', l: 'Personal (supports individual growth)' },
+    { v: 'civ',  l: 'Planetary (points beyond yourself)' },
+  ]
+
+  return (
+    <div style={{ marginTop: '24px', padding: '20px 22px', background: tokens.bgCard, border: `1.5px solid rgba(200,146,42,0.35)`, borderRadius: '14px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <Eyebrow style={{ marginBottom: 0 }}>Offer as a challenge</Eyebrow>
+        <button type="button" onClick={() => setOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1rem', color: tokens.ghost }}>×</button>
+      </div>
+      <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '16px' }}>
+        If this worked for you, publish it so others can take it on. The Challenge Floor requires a concrete move, cadence, mechanism, and a Horizon Goal this moves.
+      </p>
+
+      {publishedUrl ? (
+        <div>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#2A8C4F', marginBottom: '8px' }}>
+            {visibility === 'community' ? '✓ Community — listed and browsable' : '✓ Published — anyone with the link'}
+          </div>
+          <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, padding: '10px 14px', background: 'rgba(200,146,42,0.05)', border: hair, borderRadius: '8px', marginBottom: '12px', wordBreak: 'break-all' }}>
+            {window.location.origin}{publishedUrl}
+          </div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button type="button" onClick={() => { navigator.clipboard.writeText(window.location.origin + publishedUrl) }}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.gold, background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
+              Copy link
+            </button>
+            {visibility === 'link_only' && (
+              <Btn onClick={() => publish('community')} disabled={saving} style={{ fontSize: '13px', padding: '7px 18px' }}>
+                List in community →
+              </Btn>
+            )}
+          </div>
+        </div>
+      ) : callId ? (
+        <div>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginBottom: '12px' }}>Saved as draft. Choose visibility:</div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <Btn onClick={() => publish('link_only')} disabled={saving} style={{ fontSize: '13px', padding: '8px 20px' }}>
+              Shareable link only →
+            </Btn>
+            <Btn onClick={() => publish('community')} disabled={saving} style={{ fontSize: '13px', padding: '8px 20px' }}>
+              List in community →
+            </Btn>
+          </div>
+        </div>
+      ) : (
+        <div>
+          {/* Floor fields */}
+          {[
+            { k: 'title',             l: 'Challenge title',      ph: 'Name this challenge',                      long: false },
+            { k: 'tagline',           l: 'One-line description', ph: 'What is this, concisely',                  long: false },
+            { k: 'horizon_goal_text', l: 'Horizon Goal moved',   ph: 'Which civilisational Horizon Goal does this move toward?', long: true },
+            { k: 'the_move',          l: 'The move',             ph: 'The concrete daily/weekly action',         long: true },
+            { k: 'measure',           l: "How you'll know",     ph: "The concrete signal that it's working",   long: false },
+            { k: 'mechanism',         l: 'Why this works',       ph: 'The mechanism — why this moves the domain',long: true },
+          ].map(({ k, l, ph, long }) => (
+            <div key={k} style={{ marginBottom: '12px' }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginBottom: '4px', textTransform: 'uppercase' }}>{l}</div>
+              {long ? (
+                <textarea value={form[k]} onChange={e => set(k, e.target.value)} placeholder={ph} rows={2}
+                  style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(200,146,42,0.3)', borderRadius: '8px', padding: '10px 12px', resize: 'vertical', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
+              ) : (
+                <input type="text" value={form[k]} onChange={e => set(k, e.target.value)} placeholder={ph}
+                  style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(200,146,42,0.3)', borderRadius: '8px', padding: '10px 12px', outline: 'none', background: tokens.bg, boxSizing: 'border-box' }} />
+              )}
+            </div>
+          ))}
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+            <div>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginBottom: '4px', textTransform: 'uppercase' }}>Cadence</div>
+              <select value={form.cadence} onChange={e => set('cadence', e.target.value)}
+                style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(200,146,42,0.3)', borderRadius: '8px', padding: '10px 12px', outline: 'none', background: tokens.bg }}>
+                {CADENCE_OPTS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+              </select>
+            </div>
+            <div>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, marginBottom: '4px', textTransform: 'uppercase' }}>Scale</div>
+              <select value={form.scale} onChange={e => set('scale', e.target.value)}
+                style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(200,146,42,0.3)', borderRadius: '8px', padding: '10px 12px', outline: 'none', background: tokens.bg }}>
+                {SCALE_OPTS.map(o => <option key={o.v} value={o.v}>{o.l}</option>)}
+              </select>
+            </div>
+          </div>
+          {form.cadence === 'daily-absolute' && (
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#D63838', marginBottom: '12px', padding: '8px 12px', background: 'rgba(214,56,56,0.05)', border: '1px solid rgba(214,56,56,0.2)', borderRadius: '6px' }}>
+              Absolute cadence: no missed days. This will be labeled clearly so participants know what they're committing to.
+            </div>
+          )}
+
+          {errors.length > 0 && (
+            <div style={{ ...body, fontSize: '1.0625rem', color: '#D63838', marginBottom: '12px', padding: '10px 14px', background: 'rgba(214,56,56,0.05)', border: '1px solid rgba(214,56,56,0.2)', borderRadius: '8px' }}>
+              {errors.join(' · ')}
+            </div>
+          )}
+          <Btn onClick={validateAndCreate} disabled={saving} style={{ marginTop: '4px' }}>
+            {saving ? 'Checking floor…' : 'Save draft →'}
+          </Btn>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Setup phase: domain select ───────────────────────────────────────────────
 
 function PhaseSelect({ hasMapData, scores, horizonScores, iaStatements = {}, selectedDomain, setSelectedDomain, recommendation, onContinue }) {
@@ -2038,6 +2234,15 @@ export function TargetSprintPage() {
 
                 {setupComplete && (
                   <AccomplishmentTally domains={[d]} domainData={viewData} onCheck={handleCheck} />
+                )}
+
+                {setupComplete && user && (
+                  <PublishPanel
+                    domainData={domainData}
+                    domainId={selectedDomain}
+                    userId={user.id}
+                    actorId={null}
+                  />
                 )}
 
                 {!hasMapData && (

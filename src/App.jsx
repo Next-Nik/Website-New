@@ -95,6 +95,7 @@ import { MapPage }                                 from './tools/map/Map'
 import { HorizonStatePage }                        from './tools/horizon-state/HorizonState'
 import { PurposePiecePage, PurposePieceDeepPage }  from './tools/purpose-piece/PurposePiece'
 import { TargetSprintPage }                        from './tools/target-sprint/TargetSprint'
+import { ChallengePage }                           from './app/pages/ChallengePage'
 import { HorizonPracticePage }                     from './tools/horizon-practice/HorizonPractice'
 import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import JournalPage                                 from './app/pages/Journal'
@@ -244,6 +245,7 @@ function AppInner() {
         <Route path="/tools/purpose-piece"       element={<PurposePiecePage />} />
         <Route path="/tools/purpose-piece/deep"  element={<PurposePieceDeepPage />} />
         <Route path="/tools/target-sprint"       element={<TargetSprintPage />} />
+        <Route path="/stretch/c/:slug"           element={<ChallengePage />} />
         <Route path="/tools/horizon-practice"    element={<HorizonPracticePage />} />
         <Route path="/journal"                   element={<JournalPage />} />
         <Route path="/tools/planet"              element={<PlanetMap />} />  {/* founder-only beta — gate inside PlanetMap */}
