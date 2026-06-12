@@ -59,7 +59,7 @@ import IntroGate              from './app/components/IntroGate'
 import ProfileEdit            from './app/pages/ProfileEdit'
 import { PublicProfile }      from './app/pages/PublicProfile'
 import { FeedPage }           from './app/pages/Feed'
-import Contribution           from './app/pages/Contribution'
+import { HorizonGoalsPage }          from './app/pages/HorizonGoalsPage'
 import ContributionPage      from './app/pages/ContributionPage'
 import { OrgPublicPage }      from './app/pages/OrgPublic'
 import { OrgManagePage }      from './app/pages/OrgManage'
@@ -246,7 +246,8 @@ function AppInner() {
         <Route path="/tools/purpose-piece"       element={<PurposePiecePage />} />
         <Route path="/tools/purpose-piece/deep"  element={<PurposePieceDeepPage />} />
         <Route path="/tools/target-sprint"       element={<TargetSprintPage />} />
-        <Route path="/stretch/c/:slug"           element={<ChallengePage />} />
+        <Route path="/atlas/goals"              element={<HorizonGoalsPage />} />
+        <Route path="/atlas/goals/:domain"      element={<HorizonGoalsPage />} />
         <Route path="/tools/horizon-practice"    element={<HorizonPracticePage />} />
         <Route path="/journal"                   element={<JournalPage />} />
         <Route path="/tools/planet"              element={<PlanetMap />} />  {/* founder-only beta — gate inside PlanetMap */}

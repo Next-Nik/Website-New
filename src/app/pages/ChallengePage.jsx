@@ -493,6 +493,10 @@ export function ChallengePage() {
     (call.nextus_actors && call.nextus_actors.profile_owner === user.id)
   )
 
+  // Co-sign state — constellation members can co-sign a call
+  const [cosignerCount, setCosignerCount] = useState(call?.cosigner_count || 0)
+  const [hasCosigned,   setHasCosigned]   = useState(false)
+
   useEffect(() => {
     if (!slug) return
     fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'get_by_slug', slug }) })
@@ -570,12 +574,22 @@ export function ChallengePage() {
 
         {/* Participation count */}
         {(call.taken_on_count > 0 || call.active_count > 0) && (
-          <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: tokens.gold, marginBottom: '20px' }}>
+          <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: tokens.gold, marginBottom: '8px' }}>
             {isAsk
               ? `${call.active_count || 0} ${(call.active_count || 0) === 1 ? 'person has' : 'people have'} offered to help`
               : `${call.taken_on_count.toLocaleString()} ${call.taken_on_count === 1 ? 'person has' : 'people have'} taken this on${call.active_count > 0 ? ` — ${call.active_count} active` : ''}`
             }
           </div>
+        )}
+
+        {/* Cosigner count */}
+        {cosignerCount > 0 && (
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.ghost, marginBottom: '20px' }}>
+            Co-signed by {cosignerCount} constellation {cosignerCount === 1 ? 'member' : 'members'}
+          </div>
+        )}
+        {cosignerCount === 0 && (call.taken_on_count > 0 || call.active_count > 0) && (
+          <div style={{ marginBottom: '20px' }} />
         )}
 
         {/* CTA */}
@@ -675,6 +689,14 @@ export function ChallengePage() {
         {isAuthor && (
           <AuthorFeedbackSection callId={call.id} userId={user.id} />
         )}
+
+        {/* Horizon Goals link */}
+        <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: hair }}>
+          <a href={`/atlas/goals${call.domain ? '/' + call.domain : ''}`}
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, textDecoration: 'none' }}>
+            See all challenges building toward {call.domain ? call.domain.replace('-', ' ') : 'this goal'} →
+          </a>
+        </div>
 
         {/* Flag */}
         <div style={{ marginTop: '32px', textAlign: 'center' }}>

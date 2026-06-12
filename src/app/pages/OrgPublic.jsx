@@ -1145,14 +1145,14 @@ function OfferNeedCompose({ item, kind, actor, currentUser, onClose }) {
 
 // ── Relationships section ────────────────────────────────────
 
-function RelationshipsSection({ parent, children, partners }) {
-  if (!parent && !children?.length && !partners?.length) return null
+function RelationshipsSection({ parent, children, partners, constellation }) {
+  if (!parent && !children?.length && !partners?.length && !constellation?.length) return null
   return (
     <div>
       <Eyebrow>Relationships</Eyebrow>
 
       {parent && (
-        <div style={{ marginBottom: children?.length || partners?.length ? '18px' : 0 }}>
+        <div style={{ marginBottom: children?.length || partners?.length || constellation?.length ? '18px' : 0 }}>
           <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
             color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>
             PART OF
@@ -1166,7 +1166,7 @@ function RelationshipsSection({ parent, children, partners }) {
       )}
 
       {children?.length > 0 && (
-        <div style={{ marginBottom: partners?.length ? '18px' : 0 }}>
+        <div style={{ marginBottom: partners?.length || constellation?.length ? '18px' : 0 }}>
           <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
             color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
             INCLUDES
@@ -1187,7 +1187,7 @@ function RelationshipsSection({ parent, children, partners }) {
       )}
 
       {partners?.length > 0 && (
-        <div>
+        <div style={{ marginBottom: constellation?.length ? '18px' : 0 }}>
           <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
             color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
             PARTNERS WITH
@@ -1201,6 +1201,31 @@ function RelationshipsSection({ parent, children, partners }) {
                   border: '1px solid rgba(200,146,42,0.25)',
                   background: '#FFFFFF' }}>
                 {p.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {constellation?.length > 0 && (
+        <div>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+            color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
+            CONSTELLATION
+          </div>
+          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, margin: '0 0 10px' }}>
+            Aligned to the same Horizon Goal — same destination, retained identity.
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            {constellation.map(m => (
+              <Link key={m.id} to={`/org/${m.slug || m.id}`}
+                style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '7px 12px',
+                  background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.30)',
+                  borderRadius: '40px', textDecoration: 'none', transition: 'all 0.15s' }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(200,146,42,0.65)'}
+                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(200,146,42,0.30)'}>
+                {m.image_url && <img src={m.image_url} alt={m.name} style={{ width: '20px', height: '20px', borderRadius: '3px', objectFit: 'cover' }} />}
+                <span style={{ ...body, fontSize: '14px', color: dark }}>{m.name}</span>
               </Link>
             ))}
           </div>
@@ -1422,7 +1447,8 @@ export function OrgPublicPage() {
   const [needs, setNeeds]         = useState([])
   const [parent, setParent]       = useState(null)
   const [children, setChildren]   = useState([])
-  const [partners, setPartners]   = useState([])
+  const [partners,      setPartners]      = useState([])
+  const [constellation, setConstellation] = useState([])
   const [credentials, setCredentials]   = useState([])
   const [testimonials, setTestimonials] = useState([])
   const [loading, setLoading]     = useState(true)
@@ -1479,6 +1505,16 @@ export function OrgPublicPage() {
       setParent(parentRes.data || null)
       setChildren(childrenRes.data || [])
       setPartners((partnersRes.data || []).map(r => r.related).filter(Boolean))
+
+      // Constellation members (Phase E)
+      try {
+        const cRes = await fetch('/api/constellations', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'get_constellation', actorId: data.id }),
+        })
+        const cData = await cRes.json()
+        setConstellation(cData.members || [])
+      } catch {}
       setCredentials(credentialsRes.data || [])
       setTestimonials(testimonialsRes.data || [])
 
@@ -1594,7 +1630,7 @@ export function OrgPublicPage() {
     ),
     relationships: () => (
       (parent || children.length > 0 || partners.length > 0)
-        ? <RelationshipsSection parent={parent} children={children} partners={partners} />
+        ? <RelationshipsSection parent={parent} children={children} partners={partners} constellation={constellation} />
         : null
     ),
     provenance: () => (
