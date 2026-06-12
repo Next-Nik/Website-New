@@ -86,6 +86,14 @@ const EMPTY_FORM = {
   relationships: [],
 }
 
+// Accepts bare domains like "nasa.gov" and prepends https:// if no protocol present
+function normaliseUrl(raw) {
+  if (!raw || !raw.trim()) return raw
+  const s = raw.trim()
+  if (/^https?:\/\//i.test(s)) return s
+  return 'https://' + s
+}
+
 // ── Primitives ─────────────────────────────────────────────────
 
 function FieldLabel({ children, required }) {
@@ -102,9 +110,10 @@ function Hint({ children }) {
     marginTop: '5px', marginBottom: 0, lineHeight: 1.5 }}>{children}</p>
 }
 
-function TextInput({ value, onChange, placeholder, type = 'text' }) {
+function TextInput({ value, onChange, onBlur, placeholder, type = 'text' }) {
   return (
     <input type={type} value={value ?? ''} onChange={e => onChange(e.target.value)}
+      onBlur={onBlur}
       placeholder={placeholder}
       style={{ ...body, fontSize: '15px', color: dark, padding: '10px 14px',
         borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)',
@@ -432,7 +441,7 @@ export function AddPage() {
       platform_principles: isExtra ? (data.platform_principles || []) : form.platform_principles,
       scale:               data.scale           || null,
       location_name:       (data.location_name || '').trim() || null,
-      website:             (data.website || '').trim() || null,
+      website:             normaliseUrl((data.website || '').trim()) || null,
       impact_summary:      (data.impact_summary || '').trim() || null,
       alignment_score:     data.alignment_score != null ? parseFloat(data.alignment_score) : null,
       alignment_score_computed:   true,
@@ -844,7 +853,7 @@ export function AddPage() {
           {/* Website */}
           <Field>
             <FieldLabel>Website</FieldLabel>
-            <TextInput value={form.website} onChange={v => set('website', v)} placeholder="https://..." type="url" />
+            <TextInput value={form.website} onChange={v => set('website', v)} onBlur={() => set('website', normaliseUrl(form.website))} placeholder="nasa.gov or https://nasa.gov" />
           </Field>
 
           {/* Primary domain */}
