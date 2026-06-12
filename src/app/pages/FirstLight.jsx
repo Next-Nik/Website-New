@@ -7,7 +7,7 @@
 // Redirects to Mission Control on completion.
 // ─────────────────────────────────────────────────────────────
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
@@ -61,6 +61,23 @@ const SCALE_OPTIONS = [
   { key: 'country', label: 'My country' },
   { key: 'planet',  label: 'My planet'  },
 ]
+
+// ── Desktop breakpoint ─────────────────────────────────────────
+// First Light was designed mobile-first. On desktop we widen the
+// column and scale the wheels up so the ritual doesn't feel like
+// a phone strip floating in a void.
+function useDesktop() {
+  const [desktop, setDesktop] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
+  )
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)')
+    const fn = e => setDesktop(e.matches)
+    mq.addEventListener('change', fn)
+    return () => mq.removeEventListener('change', fn)
+  }, [])
+  return desktop
+}
 
 // ── WheelSVG — now imported from ../components/WheelSVG ────────
 
@@ -174,7 +191,10 @@ function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) 
 // ── Screen 2: The Zoom ─────────────────────────────────────────
 // No progress bar. No overflow. Vertically centred.
 // Planet wheel shows live civ domain scores from useCivDomainScores.
-function ZoomScreen({ scores, onNext }) {
+// Background colour is owned by the outer wrapper (via onPhase) so
+// the light→dark shift covers the full viewport on desktop, not
+// just the inner column.
+function ZoomScreen({ scores, onNext, onPhase, isDesktop }) {
   const [phase, setPhase]           = useState('personal')
   const [planetVisible, setPlanetVisible] = useState(false)
   const { scores: civScores }       = useCivDomainScores()
@@ -187,14 +207,17 @@ function ZoomScreen({ scores, onNext }) {
 
   function handleZoom() {
     setPhase('zooming')
-    setTimeout(() => { setPhase('planet'); setPlanetVisible(true) }, 1600)
+    onPhase?.('zooming')
+    setTimeout(() => { setPhase('planet'); setPlanetVisible(true); onPhase?.('planet') }, 1600)
   }
 
   const personalScale   = phase === 'zooming' ? 0.32 : 1
   const personalOpacity = phase === 'planet'  ? 0    : 1
   const planetOpacity   = phase === 'planet'  ? 1    : 0
-  const bgColor         = phase === 'personal' ? BG   : DARK
-  const isLight         = phase === 'personal'
+
+  const stackHeight  = isDesktop ? 470 : 340
+  const personalSize = isDesktop ? 250 : 180
+  const planetSize   = isDesktop ? 290 : 210
 
   return (
     <div style={{
@@ -204,13 +227,12 @@ function ZoomScreen({ scores, onNext }) {
       alignItems: 'center',
       justifyContent: 'center',
       textAlign: 'center',
-      background: bgColor,
-      transition: 'background 0.9s 0.5s',
+      background: 'transparent',
       padding: '24px 0 calc(40px + env(safe-area-inset-bottom))',
     }}>
 
       {/* Wheel stack — uses a fixed height to avoid layout shift */}
-      <div style={{ position: 'relative', width: '100%', height: 340, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ position: 'relative', width: '100%', height: stackHeight, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
 
         {/* Planet wheel — fades in */}
         <div style={{
@@ -222,7 +244,7 @@ function ZoomScreen({ scores, onNext }) {
           <WorldWheel
             dimensions={CIV_DIMS}
             current={civCurrent}
-            size={210}
+            size={planetSize}
             dark
           />
         </div>
@@ -236,7 +258,7 @@ function ZoomScreen({ scores, onNext }) {
           opacity: personalOpacity,
           overflow: 'visible',
         }}>
-          <WheelSVG scores={scores} size={180} />
+          <WheelSVG scores={scores} size={personalSize} />
         </div>
       </div>
 
@@ -423,8 +445,10 @@ function PlacementScreen({ vision, setVision, concerns, setConcerns, location, s
 export default function FirstLight() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const isDesktop = useDesktop()
 
-  const [step, setStep]         = useState(0)
+  const [step, setStep]           = useState(0)
+  const [zoomPhase, setZoomPhase] = useState('personal')
   const [scores, setScores]     = useState({ path: 5, spark: 5, body: 5, finances: 5, connection: 5, inner_game: 5, signal: 5 })
   const [cards, setCards]       = useState({})
   const [vision, setVision]     = useState('')
@@ -477,13 +501,19 @@ export default function FirstLight() {
   // Cover and Zoom are full-bleed — no progress bar.
   const showProgress = step === 1 || step === 3
 
+  // The viewport goes dark only once the zoom actually fires —
+  // never while the personal map is still on screen. This keeps
+  // desktop (where the column doesn't fill the viewport) from
+  // showing a light strip on a dark page.
+  const dark = step === 2 && zoomPhase !== 'personal'
+
   return (
-    <div style={{ height: '100dvh', background: step === 2 ? DARK : BG, overscrollBehavior: 'none', transition: 'background 0.9s 0.5s' }}>
-      <div style={s.app}>
+    <div style={{ height: '100dvh', background: dark ? DARK : BG, overscrollBehavior: 'none', transition: 'background 0.9s 0.5s' }}>
+      <div style={{ ...s.app, maxWidth: isDesktop ? 560 : 430 }}>
         {showProgress && <Progress step={step === 1 ? 0 : 1} total={2} />}
         {step === 0 && <CoverScreen onBegin={next} />}
         {step === 1 && <PersonalScreen scores={scores} setScores={setScores} cards={cards} setCards={setCards} onNext={next} onBack={back} />}
-        {step === 2 && <ZoomScreen scores={scores} onNext={next} />}
+        {step === 2 && <ZoomScreen scores={scores} onNext={next} onPhase={setZoomPhase} isDesktop={isDesktop} />}
         {step === 3 && (
           <PlacementScreen
             vision={vision}       setVision={setVision}
