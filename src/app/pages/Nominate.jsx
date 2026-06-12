@@ -21,6 +21,7 @@ import PrincipleStrip from '../components/PrincipleStrip'
 import { PRINCIPLES_ORDERED } from '../constants/principles'
 import { CIV_DOMAINS } from '../components/NextUsWheel'
 import { serif, body, sc } from '../../lib/designTokens'
+import { SCALES as CANONICAL_SCALES } from '../constants/scales'
 
 const gold  = '#A8721A'
 const dark  = '#0F1523'
@@ -37,14 +38,10 @@ const DOMAIN_HORIZON_GOALS = {
   'vision':         'Creating forward, as far as we can see, in service of the brightest future for all.',
 }
 
+// Canonical eight-level taxonomy — single source of truth.
 const SCALES = [
-  { value: '',              label: '-- Select scale --' },
-  { value: 'local',         label: 'Local' },
-  { value: 'municipal',     label: 'Municipal' },
-  { value: 'regional',      label: 'Regional' },
-  { value: 'national',      label: 'National' },
-  { value: 'international', label: 'International' },
-  { value: 'global',        label: 'Global' },
+  { value: '', label: '-- Select scale --' },
+  ...CANONICAL_SCALES.map(s => ({ value: s.slug, label: s.label })),
 ]
 
 const TYPES = [

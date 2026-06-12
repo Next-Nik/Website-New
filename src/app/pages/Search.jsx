@@ -20,6 +20,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { CIV_DOMAINS } from '../components/NextUsWheel'
 import { ShareButton } from '../components/ShareButton'
 import { serif, body, sc } from '../../lib/designTokens'
+import { SCALES as CANONICAL_SCALES } from '../constants/scales'
 
 const gold  = '#A8721A'
 const dark  = '#0F1523'
@@ -42,14 +43,10 @@ const ACTOR_TYPES = [
   { value: 'resource',     label: 'Resource' },
 ]
 
+// Canonical eight-level taxonomy — single source of truth.
 const SCALES = [
-  { value: '',              label: 'Any scale' },
-  { value: 'local',         label: 'Local' },
-  { value: 'municipal',     label: 'Municipal' },
-  { value: 'regional',      label: 'Regional' },
-  { value: 'national',      label: 'National' },
-  { value: 'international', label: 'International' },
-  { value: 'global',        label: 'Global' },
+  { value: '', label: 'Any scale' },
+  ...CANONICAL_SCALES.map(s => ({ value: s.slug, label: s.label })),
 ]
 
 // ── Result card components ───────────────────────────────────

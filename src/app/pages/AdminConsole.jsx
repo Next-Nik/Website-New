@@ -50,6 +50,7 @@ import {
 } from '../constants/domains'
 import { PRINCIPLES_ORDERED } from '../constants/principles'
 import { body, sc } from '../../lib/designTokens'
+import { SCALES as CANONICAL_SCALES } from '../constants/scales'
 
 // ── Founder check ─────────────────────────────────────────────
 // Identical to original: uses user_metadata.role set in Supabase.
@@ -64,7 +65,8 @@ const bg    = '#FAFAF7'
 const DOMAIN_LIST = CIV_DOMAINS.map(d => ({ value: d.slug, label: d.label }))
 const DOMAINS_WITH_EMPTY = [{ value: '', label: 'All domains' }, ...DOMAIN_LIST]
 const ACTOR_TYPES   = ['organisation', 'project']
-const SCALE_OPTIONS = ['local', 'municipal', 'regional', 'national', 'international', 'global']
+// Canonical eight-level taxonomy — kept in sync with src/app/constants/scales.js
+const SCALE_OPTIONS = CANONICAL_SCALES.map(s => s.slug)
 
 // Subdomain map. Beta version extends the original with v3.8 Nature subdomains.
 // Falls back to original SUBDOMAIN_MAP shape when domain not yet in SUBDOMAIN_MAP_BETA.
@@ -89,7 +91,7 @@ const SELF_DOMAINS_EX = [
   { value: 'inner-game', label: 'Inner Game' },
   { value: 'signal',     label: 'Signal' },
 ]
-const SCALES_EX = ['local','municipal','regional','national','international','global']
+const SCALES_EX = CANONICAL_SCALES.map(s => s.slug)
 const TYPES_EX  = ['organisation','project','practitioner','programme','resource']
 
 // ── Placement tier from score (preserved from original) ───────
