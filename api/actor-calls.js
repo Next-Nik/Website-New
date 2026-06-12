@@ -91,7 +91,7 @@ module.exports = async (req, res) => {
         taken_on_count, active_count, completed_count,
         visibility, source, created_at, updated_at,
         actor_id, user_id,
-        nextus_actors ( id, name, slug, type, description, image_url )
+        nextus_actors ( id, name, slug, type, description, image_url, profile_owner )
       `)
       .eq('slug', slug)
       .in('visibility', ['link_only', 'community'])
@@ -368,6 +368,132 @@ module.exports = async (req, res) => {
       .order('created_at', { ascending: false })
     if (error) return res.status(500).json({ error: error.message })
     return res.json({ calls: data || [] })
+  }
+
+  // ── submit_feedback ───────────────────────────────────────────────────────
+  // Records consent decision + optional reflection after a challenge completes.
+  // Idempotent — a second call updates rather than inserts.
+  if (action === 'submit_feedback') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id, consent, reflection, reflection_public, reflection_attributed } = body
+    if (!call_id) return res.status(400).json({ error: 'call_id required' })
+
+    // Participant row must exist (they took it on earlier)
+    const { data: existing } = await supabase
+      .from('actor_call_participants')
+      .select('id, status')
+      .eq('call_id', call_id)
+      .eq('user_id', userId)
+      .maybeSingle()
+    if (!existing) return res.status(404).json({ error: 'Participation record not found' })
+
+    const patch = {
+      feedback_consent:       !!consent,
+      reflection:             consent && reflection ? reflection : null,
+      reflection_public:      !!(consent && reflection_public),
+      reflection_attributed:  !!(consent && reflection_attributed),
+      updated_at:             new Date().toISOString(),
+    }
+    // Mark complete if not already
+    if (existing.status === 'active') {
+      patch.status       = 'complete'
+      patch.completed_at = new Date().toISOString()
+    }
+
+    const { error } = await supabase
+      .from('actor_call_participants')
+      .update(patch)
+      .eq('id', existing.id)
+    if (error) return res.status(500).json({ error: error.message })
+
+    await refreshCounts(call_id)
+    return res.json({ saved: true })
+  }
+
+  // ── mark_complete ─────────────────────────────────────────────────────────
+  // Marks a participation row complete without feedback — for asks fulfilled
+  // or manual completion outside the stretch tool.
+  if (action === 'mark_complete') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id } = body
+    if (!call_id) return res.status(400).json({ error: 'call_id required' })
+
+    const { data: existing } = await supabase
+      .from('actor_call_participants')
+      .select('id').eq('call_id', call_id).eq('user_id', userId).maybeSingle()
+    if (!existing) return res.status(404).json({ error: 'Not found' })
+
+    await supabase.from('actor_call_participants')
+      .update({ status: 'complete', completed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+      .eq('id', existing.id)
+    await refreshCounts(call_id)
+    return res.json({ completed: true })
+  }
+
+  // ── get_feedback ──────────────────────────────────────────────────────────
+  // Author-only view: aggregate counts + consented, public reflections.
+  // Identity of participants is NEVER returned — not even to the author.
+  // Attributed reflections carry a display_name; anonymous ones do not.
+  if (action === 'get_feedback') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id } = body
+    if (!call_id) return res.status(400).json({ error: 'call_id required' })
+
+    // Ownership check
+    const { data: call } = await supabase
+      .from('actor_calls')
+      .select('id, user_id, actor_id, taken_on_count, active_count, completed_count')
+      .eq('id', call_id).maybeSingle()
+    if (!call) return res.status(404).json({ error: 'Not found' })
+
+    let owned = call.user_id === userId
+    if (!owned && call.actor_id) {
+      const { data: actor } = await supabase
+        .from('nextus_actors').select('profile_owner').eq('id', call.actor_id).maybeSingle()
+      owned = actor?.profile_owner === userId
+    }
+    if (!owned) return res.status(403).json({ error: 'Not your call' })
+
+    // Fetch consented public reflections — attributed ones join profiles
+    const { data: participants } = await supabase
+      .from('actor_call_participants')
+      .select('reflection, reflection_attributed, reflection_public, status, completed_at, user_id')
+      .eq('call_id', call_id)
+      .eq('reflection_public', true)
+      .eq('feedback_consent', true)
+      .not('reflection', 'is', null)
+      .order('completed_at', { ascending: false })
+      .limit(50)
+
+    const rows  = participants || []
+    const named = rows.filter(r => r.reflection_attributed)
+
+    // Fetch display names for attributed reflections only
+    let nameMap = {}
+    if (named.length) {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, display_name, avatar_url')
+        .in('id', named.map(r => r.user_id))
+      if (profiles) profiles.forEach(p => { nameMap[p.id] = p })
+    }
+
+    const reflections = rows.map(r => ({
+      reflection:     r.reflection,
+      completed_at:   r.completed_at,
+      anonymous:      !r.reflection_attributed,
+      display_name:   r.reflection_attributed ? (nameMap[r.user_id]?.display_name || 'Community member') : null,
+      avatar_url:     r.reflection_attributed ? (nameMap[r.user_id]?.avatar_url   || null) : null,
+    }))
+
+    return res.json({
+      counts: {
+        taken_on:  call.taken_on_count,
+        active:    call.active_count,
+        completed: call.completed_count,
+      },
+      reflections,
+    })
   }
 
   return res.status(400).json({ error: `Unknown action: ${action}` })

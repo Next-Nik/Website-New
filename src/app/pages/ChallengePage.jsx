@@ -367,6 +367,96 @@ function AskBody({ call }) {
   )
 }
 
+// ─── Author feedback section ──────────────────────────────────────────────────
+// Visible only to the call's author. Shows aggregate counts and a wall of
+// consented, public reflections. Individual identity never exposed.
+
+function AuthorFeedbackSection({ callId, userId }) {
+  const [data,    setData]    = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [open,    setOpen]    = useState(false)
+
+  useEffect(() => {
+    if (!open || data) return
+    fetch('/api/actor-calls', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'get_feedback', userId, call_id: callId }),
+    })
+      .then(r => r.json())
+      .then(d => { if (d.counts) setData(d) })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [open])
+
+  return (
+    <div style={{ marginTop: '32px', paddingTop: '28px', borderTop: hair }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+        <Eyebrow style={{ marginBottom: 0 }}>Author view</Eyebrow>
+        <button type="button" onClick={() => setOpen(o => !o)}
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+          {open ? 'Close' : 'View feedback →'}
+        </button>
+      </div>
+
+      {open && (
+        <div>
+          {loading ? (
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: tokens.ghost }}>Loading…</div>
+          ) : data ? (
+            <div>
+              {/* Aggregate counts */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '20px' }}>
+                {[
+                  { l: 'Taken on',  v: data.counts.taken_on  },
+                  { l: 'Active',    v: data.counts.active    },
+                  { l: 'Completed', v: data.counts.completed },
+                ].map(c => (
+                  <div key={c.l} style={{ padding: '14px 16px', background: tokens.bgCard, border: hair, borderRadius: '8px', textAlign: 'center' }}>
+                    <div style={{ ...serif, fontSize: '1.75rem', fontWeight: 300, color: tokens.dark, marginBottom: '2px' }}>{c.v || 0}</div>
+                    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost }}>{c.l.toUpperCase()}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Reflections */}
+              {data.reflections.length > 0 ? (
+                <div>
+                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: tokens.ghost, marginBottom: '12px' }}>
+                    {data.reflections.length} REFLECTION{data.reflections.length === 1 ? '' : 'S'} SHARED
+                  </div>
+                  {data.reflections.map((r, i) => (
+                    <div key={i} style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px', marginBottom: '10px' }}>
+                      <p style={{ ...body, fontStyle: 'italic', fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.7, margin: '0 0 8px' }}>
+                        {r.reflection}
+                      </p>
+                      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.ghost, display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        {r.anonymous ? (
+                          <span>Anonymous</span>
+                        ) : (
+                          <span>{r.display_name}</span>
+                        )}
+                        {r.completed_at && (
+                          <span>{new Date(r.completed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ ...body, fontSize: '1.0625rem', color: tokens.ghost, lineHeight: 1.7 }}>
+                  No reflections shared yet. They appear here as participants complete and consent to share.
+                </p>
+              )}
+            </div>
+          ) : (
+            <p style={{ ...body, fontSize: '1.0625rem', color: tokens.ghost }}>Could not load feedback.</p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Auth prompt ──────────────────────────────────────────────────────────────
 
 function AuthPrompt({ callSlug }) {
@@ -397,7 +487,11 @@ export function ChallengePage() {
   const [showFlag,      setShowFlag]      = useState(false)
   const [alreadyJoined, setAlreadyJoined] = useState(false)
 
-  const isAsk = call?.type === 'ask'
+  const isAsk    = call?.type === 'ask'
+  const isAuthor = user && call && (
+    call.user_id === user.id ||
+    (call.nextus_actors && call.nextus_actors.profile_owner === user.id)
+  )
 
   useEffect(() => {
     if (!slug) return
@@ -575,6 +669,11 @@ export function ChallengePage() {
               )}
             </div>
           </div>
+        )}
+
+        {/* Author feedback — only the author sees this */}
+        {isAuthor && (
+          <AuthorFeedbackSection callId={call.id} userId={user.id} />
         )}
 
         {/* Flag */}

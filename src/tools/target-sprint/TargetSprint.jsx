@@ -1186,6 +1186,128 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
 // Optional. For those with capacity. Schema carries source/designedBy so
 // org- and group-designed sprints can plug in later.
 
+// ─── Feedback prompt ──────────────────────────────────────────────────────────
+// Shown after a designed Planet Sprint (challenge_id set) completes.
+// Three steps: consent gate → optional reflection → attribution choice.
+// Never shown for self-authored stretches — only designed challenges.
+// Consent is true opt-in: default is NO, must be actively switched.
+
+function FeedbackPrompt({ callId, userId, onDone }) {
+  const [step,       setStep]       = useState('consent')
+  const [consent,    setConsent]    = useState(false)
+  const [reflection, setReflection] = useState('')
+  const [attributed, setAttributed] = useState(false)
+  const [saving,     setSaving]     = useState(false)
+
+  async function submit() {
+    setSaving(true)
+    try {
+      await fetch('/api/actor-calls', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'submit_feedback', userId, call_id: callId,
+          consent,
+          reflection:            consent && reflection.trim() ? reflection.trim() : null,
+          reflection_public:     consent && !!reflection.trim(),
+          reflection_attributed: consent && attributed,
+        }),
+      })
+    } catch {}
+    setSaving(false)
+    setStep('thanks')
+  }
+
+  return (
+    <div style={{ marginTop: '24px', padding: '22px 24px', background: tokens.dark, borderRadius: '14px', borderTop: `3px solid ${GOLD_C}` }}>
+      {step === 'consent' && (
+        <div>
+          <Eyebrow style={{ color: '#D9A94A', marginBottom: '8px' }}>You completed a challenge.</Eyebrow>
+          <p style={{ ...body, fontSize: '1.0625rem', color: 'rgba(250,250,247,0.85)', lineHeight: 1.7, marginBottom: '12px' }}>
+            The author — and the people who'll take this on after you — benefit from knowing what happened. Want to share how it went?
+          </p>
+          <p style={{ ...body, fontSize: '14px', color: 'rgba(250,250,247,0.55)', lineHeight: 1.65, marginBottom: '20px' }}>
+            Completely optional. Your participation is always private. Sharing is an active choice you make right now.
+          </p>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <Btn onClick={() => { setConsent(true); setStep('reflect') }}
+              style={{ background: 'rgba(200,146,42,0.15)', borderColor: 'rgba(200,146,42,0.6)', color: '#D9A94A', fontSize: '13px', padding: '8px 20px' }}>
+              Yes, I'll share →
+            </Btn>
+            <button type="button" onClick={() => { setConsent(false); submit() }}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(250,250,247,0.45)', background: 'none', border: 'none', cursor: 'pointer', padding: '8px 0' }}>
+              No thanks
+            </button>
+          </div>
+        </div>
+      )}
+      {step === 'reflect' && (
+        <div>
+          <Eyebrow style={{ color: '#D9A94A', marginBottom: '8px' }}>What happened?</Eyebrow>
+          <p style={{ ...body, fontSize: '1.0625rem', color: 'rgba(250,250,247,0.85)', lineHeight: 1.7, marginBottom: '14px' }}>
+            What shifted? What surprised you? What would you tell someone starting this?
+          </p>
+          <textarea
+            value={reflection} onChange={e => setReflection(e.target.value)}
+            placeholder="Optional — share as much or as little as feels right."
+            rows={4}
+            style={{ width: '100%', ...body, fontSize: '1.0625rem', color: '#FAFAF7', background: 'rgba(250,250,247,0.07)', border: '1px solid rgba(200,146,42,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', boxSizing: 'border-box', marginBottom: '14px' }}
+          />
+          <Btn onClick={() => setStep('attribution')}
+            style={{ background: 'rgba(200,146,42,0.15)', borderColor: 'rgba(200,146,42,0.6)', color: '#D9A94A', fontSize: '13px', padding: '8px 20px' }}>
+            {reflection.trim() ? 'Continue →' : 'Skip →'}
+          </Btn>
+        </div>
+      )}
+      {step === 'attribution' && (
+        <div>
+          <Eyebrow style={{ color: '#D9A94A', marginBottom: '8px' }}>How do you want this shared?</Eyebrow>
+          <p style={{ ...body, fontSize: '1.0625rem', color: 'rgba(250,250,247,0.85)', lineHeight: 1.7, marginBottom: '18px' }}>
+            {reflection.trim()
+              ? 'Your reflection can appear on the challenge page alongside others. Choose how it shows.'
+              : 'Your completion will be counted — no reflection shared.'}
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '18px' }}>
+            {[
+              { v: false, l: 'Anonymous',     d: 'No name — just the reflection.' },
+              { v: true,  l: 'With my name',  d: 'Your display name appears alongside it.' },
+            ].map(o => (
+              <button key={String(o.v)} type="button" onClick={() => setAttributed(o.v)}
+                style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', padding: '12px 14px', borderRadius: '8px', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s',
+                  border: `1px solid ${attributed === o.v ? 'rgba(200,146,42,0.6)' : 'rgba(250,250,247,0.15)'}`,
+                  background: attributed === o.v ? 'rgba(200,146,42,0.12)' : 'transparent' }}>
+                <div style={{ width: '16px', height: '16px', borderRadius: '50%', flexShrink: 0, marginTop: '2px', transition: 'all 0.2s',
+                  border: `2px solid ${attributed === o.v ? '#D9A94A' : 'rgba(250,250,247,0.35)'}`,
+                  background: attributed === o.v ? '#D9A94A' : 'transparent' }} />
+                <div>
+                  <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.1em', color: '#FAFAF7', marginBottom: '2px' }}>{o.l}</div>
+                  <div style={{ ...body, fontSize: '13px', color: 'rgba(250,250,247,0.55)' }}>{o.d}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+          <Btn onClick={submit} disabled={saving}
+            style={{ background: 'rgba(200,146,42,0.15)', borderColor: 'rgba(200,146,42,0.6)', color: '#D9A94A', fontSize: '13px', padding: '8px 20px' }}>
+            {saving ? 'Saving…' : 'Submit →'}
+          </Btn>
+        </div>
+      )}
+      {step === 'thanks' && (
+        <div>
+          <Eyebrow style={{ color: '#D9A94A', marginBottom: '8px' }}>Thank you.</Eyebrow>
+          <p style={{ ...body, fontSize: '1.0625rem', color: 'rgba(250,250,247,0.85)', lineHeight: 1.7, marginBottom: '16px' }}>
+            {consent && reflection.trim()
+              ? 'Your reflection helps the people who come after you.'
+              : 'Your completion has been recorded.'}
+          </p>
+          <Btn onClick={onDone} style={{ background: 'rgba(200,146,42,0.15)', borderColor: 'rgba(200,146,42,0.6)', color: '#D9A94A', fontSize: '13px', padding: '8px 20px' }}>
+            Done
+          </Btn>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Clock helpers (shared by Planet Sprint creation surfaces) ────────────────
 
 export function computeClock(type) {
@@ -1897,6 +2019,7 @@ export function TargetSprintPage() {
   // Sibling civ session — the Planet Sprint row. { id, status, quarterType,
   // targetDate, endDateLabel, data } where data = domain_data.__planet_sprint__
   const [civ,             setCiv]              = useState(null)
+  const [pendingFeedback, setPendingFeedback]  = useState(null)  // { callId } | null
   const civRef = useRef(null)
   useEffect(() => { civRef.current = civ }, [civ])
   const loadedRef = useRef(false)
@@ -1928,12 +2051,13 @@ export function TargetSprintPage() {
 
   function rowToCiv(row) {
     return {
-      id: row.id,
-      status: row.status,
-      quarterType: row.quarter_type || null,
-      targetDate: row.target_date || null,
+      id:           row.id,
+      status:       row.status,
+      quarterType:  row.quarter_type   || null,
+      targetDate:   row.target_date    || null,
       endDateLabel: row.end_date_label || null,
-      data: row.domain_data?.__planet_sprint__ || {},
+      challengeId:  row.challenge_id   || null,  // B5: feedback links back to the call
+      data:         row.domain_data?.__planet_sprint__ || {},
     }
   }
 
@@ -2054,6 +2178,10 @@ export function TargetSprintPage() {
           .update({ status: 'complete', updated_at: new Date().toISOString() })
           .eq('id', current.id)
       } catch {}
+    }
+    // If this civ session came from a designed challenge, invite feedback
+    if (current?.challengeId && user?.id) {
+      setPendingFeedback({ callId: current.challengeId })
     }
     setCiv(null)
   }
@@ -2358,6 +2486,14 @@ export function TargetSprintPage() {
                 </div>
 
                 <PlanetSprintPanel civ={civ} onCreate={createCivSession} onUpdateData={updateCivData} onComplete={completeCivSession} onSaveAway={() => queueSave({})} />
+
+                {pendingFeedback && user && (
+                  <FeedbackPrompt
+                    callId={pendingFeedback.callId}
+                    userId={user.id}
+                    onDone={() => setPendingFeedback(null)}
+                  />
+                )}
 
                 {setupComplete && (
                   <AccomplishmentTally domains={[d]} domainData={viewData} onCheck={handleCheck} />
