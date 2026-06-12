@@ -290,6 +290,9 @@ export function AddPage() {
   const [saved, setSaved]           = useState([])
   const [error, setError]           = useState(null)
 
+  // ── Staged flow: 'source' (paste URL / choose manual) → 'form' (review & edit)
+  const [stage, setStage]           = useState('source')
+
   // ── URL autofill state ───────────────────────────────────────
   const [aiUrl, setAiUrl]           = useState('')
   const [reading, setReading]       = useState(false)
@@ -325,7 +328,10 @@ export function AddPage() {
   useEffect(() => {
     clearTimeout(dupTimer)
     setDuplicates([]); setDupDismissed(false)
-    const name = form.name.trim(); const website = form.website.trim()
+    // Short names (e.g. "Nik") over-match — require 4+ chars before checking.
+    const name    = form.name.trim().length >= 4 ? form.name.trim() : ''
+    // Compare on the normalised URL so "nasa.gov" and "https://nasa.gov" hit the same row.
+    const website = normaliseUrl(form.website.trim()) || ''
     if (!name && !website) return
     const t = setTimeout(async () => {
       const queries = []
@@ -391,11 +397,24 @@ export function AddPage() {
         setExtras(results.slice(1))
         setExtraChecked(results.slice(1).map(() => true))
       }
+
+      // Source read — move to the review stage
+      setStage('form')
     } catch {
-      setReadErr('Something went wrong. Fill the form manually below.')
+      setReadErr('Something went wrong reading that source. You can try again or fill in manually.')
     } finally {
       setReading(false)
     }
+  }
+
+  // Reset everything and return to the source stage
+  function startOver() {
+    setForm(EMPTY_FORM)
+    setExtras([]); setExtraChecked([])
+    setAiUrl(''); setAiUsed(false); setReadErr(null)
+    setDuplicates([]); setDupDismissed(false)
+    setError(null)
+    setStage('source')
   }
 
   function updateExtra(i, key, value) {
@@ -691,64 +710,12 @@ export function AddPage() {
           Add them. They go live immediately.
         </p>
 
-        {/* ── Optional URL autofill ─────────────────────────── */}
-        <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.22)',
-          borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.20em',
-            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '8px' }}>
-            Autofill from any source — optional
-          </div>
-          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
-            lineHeight: 1.55, marginBottom: '12px' }}>
-            Paste any public URL — their website, podcast, YouTube channel, Substack, LinkedIn,
-            or another platform where they show up. Or paste a description if there's no URL.
-            You review and edit before anything goes live.
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <textarea value={aiUrl}
-              onChange={e => setAiUrl(e.target.value)}
-              rows={3}
-              placeholder={'Paste any URL — https://example.com, a YouTube channel, a Substack, etc.\nOr paste raw page source — <!DOCTYPE html>...\nOr describe them in plain text'}
-              style={{ ...body, fontSize: '14px', color: dark, padding: '10px 14px',
-                borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.28)',
-                background: parch, outline: 'none', width: '100%',
-                resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box' }}
-            />
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button onClick={readSite} disabled={reading || !aiUrl.trim()}
-                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
-                  padding: '10px 22px', borderRadius: '40px', border: 'none',
-                  background: reading || !aiUrl.trim() ? 'rgba(200,146,42,0.25)' : '#C8922A',
-                  color: '#FFFFFF', whiteSpace: 'nowrap',
-                  cursor: reading || !aiUrl.trim() ? 'not-allowed' : 'pointer' }}>
-                {reading ? (
-                  <>
-                    <span style={{
-                      display: 'inline-block', width: '12px', height: '12px',
-                      border: '2px solid rgba(255,255,255,0.4)',
-                      borderTopColor: '#FFFFFF',
-                      borderRadius: '50%',
-                      animation: 'add-spin 0.7s linear infinite',
-                      marginRight: '6px', verticalAlign: 'middle',
-                    }} />
-                    Reading...
-                  </>
-                ) : 'Read site'}
-              </button>
-            </div>
-          </div>
-          {readErr && (
-            <p style={{ ...body, fontSize: '13px', color: '#8A3030', marginTop: '8px', marginBottom: 0 }}>
-              {readErr}
-            </p>
-          )}
-          {aiUsed && !readErr && (
-            <p style={{ ...body, fontSize: '13px', color: gold, marginTop: '8px', marginBottom: 0 }}>
-              Form filled from site — review everything before submitting.
-            </p>
-          )}
-        </div>
-
+        {/* ── STAGE 1 — SOURCE ────────────────────────────────
+            Relationship first, then the source box (primary path),
+            then a quiet manual-entry link. The form only appears
+            after a source is read or manual entry is chosen. */}
+        {stage === 'source' && (
+          <>
         {/* ── Representation toggle ─────────────────────────── */}
         <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.22)',
           borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
@@ -810,6 +777,95 @@ export function AddPage() {
             ))}
           </div>
         </div>
+
+        {/* ── Optional URL autofill ─────────────────────────── */}
+        <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.22)',
+          borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
+          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.20em',
+            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '8px' }}>
+            Start from any source
+          </div>
+          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
+            lineHeight: 1.55, marginBottom: '12px' }}>
+            Paste any public URL — their website, podcast, YouTube channel, Substack, LinkedIn,
+            or another platform where they show up. Or paste a description if there's no URL.
+            You review and edit before anything goes live.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <textarea value={aiUrl}
+              onChange={e => setAiUrl(e.target.value)}
+              rows={3}
+              placeholder={'Paste any URL — https://example.com, a YouTube channel, a Substack, etc.\nOr paste raw page source — <!DOCTYPE html>...\nOr describe them in plain text'}
+              style={{ ...body, fontSize: '14px', color: dark, padding: '10px 14px',
+                borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.28)',
+                background: parch, outline: 'none', width: '100%',
+                resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box' }}
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button onClick={readSite} disabled={reading || !aiUrl.trim()}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
+                  padding: '10px 22px', borderRadius: '40px', border: 'none',
+                  background: reading || !aiUrl.trim() ? 'rgba(200,146,42,0.25)' : '#C8922A',
+                  color: '#FFFFFF', whiteSpace: 'nowrap',
+                  cursor: reading || !aiUrl.trim() ? 'not-allowed' : 'pointer' }}>
+                {reading ? (
+                  <>
+                    <span style={{
+                      display: 'inline-block', width: '12px', height: '12px',
+                      border: '2px solid rgba(255,255,255,0.4)',
+                      borderTopColor: '#FFFFFF',
+                      borderRadius: '50%',
+                      animation: 'add-spin 0.7s linear infinite',
+                      marginRight: '6px', verticalAlign: 'middle',
+                    }} />
+                    Reading...
+                  </>
+                ) : 'Read site'}
+              </button>
+            </div>
+          </div>
+          {readErr && (
+            <p style={{ ...body, fontSize: '13px', color: '#8A3030', marginTop: '8px', marginBottom: 0 }}>
+              {readErr}
+            </p>
+          )}
+          {aiUsed && !readErr && (
+            <p style={{ ...body, fontSize: '13px', color: gold, marginTop: '8px', marginBottom: 0 }}>
+              Form filled from site — review everything before submitting.
+            </p>
+          )}
+        </div>
+
+            {/* Quiet manual path — always visible */}
+            <div style={{ textAlign: 'center', marginTop: '-12px', marginBottom: '32px' }}>
+              <button type="button" onClick={() => setStage('form')}
+                style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)',
+                  background: 'none', border: 'none', cursor: 'pointer',
+                  textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+                No URL? Fill in manually
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* ── STAGE 2 — REVIEW & EDIT ─────────────────────────── */}
+        {stage === 'form' && (
+          <>
+            {/* Collapsed source summary */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.22)',
+              borderRadius: '10px', padding: '12px 18px', marginBottom: '28px' }}>
+              <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)' }}>
+                {aiUsed
+                  ? `Read from ${(() => { try { return new URL(normaliseUrl(aiUrl.trim())).hostname.replace(/^www\./, '') } catch { return 'source' } })()} — review and edit below.`
+                  : 'Filling in manually.'}
+              </span>
+              <button type="button" onClick={startOver}
+                style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold,
+                  background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                Start over
+              </button>
+            </div>
 
         {/* ── Duplicate warning ─────────────────────────────── */}
         {duplicates.length > 0 && !dupDismissed && (
@@ -1001,6 +1057,8 @@ export function AddPage() {
             }
           </p>
         </form>
+          </>
+        )}
       </div>
       <style>{`@keyframes add-spin { to { transform: rotate(360deg); } }`}</style>
       <SiteFooter />
