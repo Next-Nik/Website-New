@@ -360,7 +360,85 @@ function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
 
 // ── Claim banner — prominent on wards ────────────────────────
 
+function DisputeModal({ actor, user, onClose }) {
+  const [reason,    setReason]    = useState('')
+  const [contactEmail, setContactEmail] = useState(user?.email || '')
+  const [loading,   setLoading]   = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+
+  async function submit() {
+    if (!reason.trim()) return
+    setLoading(true)
+    try {
+      // Files a claim_request with a 'dispute' note so admin can review
+      await fetch('/api/claim-verify', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action:     'submit_request',
+          actorId:    actor.id,
+          userId:     user?.id || 'anonymous',
+          note:       `DISPUTE (not a claim): ${reason.trim()}`,
+          evidenceUrl: '',
+          userEmail:   contactEmail.trim(),
+        }),
+      })
+      setSubmitted(true)
+    } catch {}
+    setLoading(false)
+  }
+
+  const gold = '#A8721A', dark = '#0F1523', parch = '#FAFAF7'
+  const hair = '1px solid rgba(200,146,42,0.22)'
+  const sc_style = { fontFamily: "'Cormorant SC', Georgia, serif" }
+  const body_style = { fontFamily: "'Lora', Georgia, serif" }
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div style={{ background: parch, border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <div style={{ ...sc_style, fontSize: '11px', letterSpacing: '0.22em', color: gold, textTransform: 'uppercase' }}>Dispute this entry</div>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc_style, fontSize: '1.1rem', color: 'rgba(15,21,35,0.45)' }}>×</button>
+        </div>
+        {submitted ? (
+          <div>
+            <p style={{ ...body_style, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, marginBottom: '20px' }}>
+              Received. The NextUs team will review this entry and be in touch.
+            </p>
+            <button type="button" onClick={onClose}
+              style={{ ...sc_style, fontSize: '13px', letterSpacing: '0.14em', color: gold, background: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 20px', cursor: 'pointer' }}>
+              Close
+            </button>
+          </div>
+        ) : (
+          <div>
+            <p style={{ ...body_style, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, marginBottom: '18px' }}>
+              If this entry contains wrong, outdated, or harmful information about you or your organisation, tell us what's incorrect. The NextUs team will review and act.
+            </p>
+            <div style={{ marginBottom: '12px' }}>
+              <div style={{ ...sc_style, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '6px', textTransform: 'uppercase' }}>What's incorrect?</div>
+              <textarea value={reason} onChange={e => setReason(e.target.value)} rows={4}
+                placeholder="Describe the problem — what's wrong, outdated, or should be removed."
+                style={{ width: '100%', ...body_style, fontSize: '15px', color: dark, border: hair, borderRadius: '8px', padding: '10px 14px', resize: 'vertical', outline: 'none', background: '#FFFFFF', boxSizing: 'border-box' }} />
+            </div>
+            <div style={{ marginBottom: '18px' }}>
+              <div style={{ ...sc_style, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '6px', textTransform: 'uppercase' }}>Contact email</div>
+              <input type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} placeholder="Where can we reach you?"
+                style={{ width: '100%', ...body_style, fontSize: '15px', color: dark, border: hair, borderRadius: '8px', padding: '10px 14px', outline: 'none', background: '#FFFFFF', boxSizing: 'border-box' }} />
+            </div>
+            <button type="button" onClick={submit} disabled={!reason.trim() || loading}
+              style={{ ...sc_style, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 28px', borderRadius: '40px', border: 'none', background: !reason.trim() || loading ? 'rgba(200,146,42,0.30)' : '#C8922A', color: '#FFFFFF', cursor: !reason.trim() || loading ? 'not-allowed' : 'pointer' }}>
+              {loading ? 'Sending…' : 'Submit dispute →'}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function ClaimBanner({ actor, user }) {
+  const [showDispute, setShowDispute] = useState(false)
   if (actor.profile_owner) return null  // already claimed
 
   // Provenance — two honest states for an unclaimed live entry:
@@ -372,45 +450,57 @@ function ClaimBanner({ actor, user }) {
     : 'Seeded by NextUs'
 
   return (
-    <div style={{ background: 'rgba(200,146,42,0.06)',
-      border: '1.5px solid rgba(200,146,42,0.35)',
-      borderRadius: '12px', padding: '20px 24px', marginBottom: '40px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px',
-        flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: '240px' }}>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em',
-            color: gold, marginBottom: '6px' }}>
-            HELD IN TRUST
+    <>
+      {showDispute && <DisputeModal actor={actor} user={user} onClose={() => setShowDispute(false)} />}
+      <div style={{ background: 'rgba(200,146,42,0.06)',
+        border: '1.5px solid rgba(200,146,42,0.35)',
+        borderRadius: '12px', padding: '20px 24px', marginBottom: '40px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px',
+          flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: '240px' }}>
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em',
+              color: gold, marginBottom: '6px' }}>
+              HELD IN TRUST
+            </div>
+            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)',
+              lineHeight: 1.6, margin: '0 0 8px' }}>
+              NextUs holds this profile in trust until claimed.
+              {actor.name === 'NextUs' ? '' : ` Is this you? Claim ${actor.name} to add your voice.`}
+            </p>
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
+              color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
+              {provenance}
+            </div>
           </div>
-          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)',
-            lineHeight: 1.6, margin: '0 0 8px' }}>
-            NextUs holds this profile in trust until claimed.
-            {actor.name === 'NextUs' ? '' : ` Is this you? Claim ${actor.name} to add your voice.`}
-          </p>
-          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
-            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
-            {provenance}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+            {user ? (
+              <Link to={`/org/${actor.slug || actor.id}/claim`}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
+                  color: '#FFFFFF', background: '#C8922A',
+                  padding: '10px 22px', borderRadius: '40px',
+                  textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                Claim this profile
+              </Link>
+            ) : (
+              <Link to="/login"
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
+                  color: '#FFFFFF', background: '#C8922A',
+                  padding: '10px 22px', borderRadius: '40px',
+                  textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                Sign in to claim
+              </Link>
+            )}
+            <button type="button" onClick={() => setShowDispute(true)}
+              style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                color: 'rgba(15,21,35,0.40)', background: 'none', border: 'none',
+                cursor: 'pointer', padding: '2px 0', textDecoration: 'underline',
+                textDecorationColor: 'rgba(15,21,35,0.18)', textUnderlineOffset: '2px' }}>
+              Something is wrong — dispute this entry
+            </button>
           </div>
         </div>
-        {user ? (
-          <Link to={`/org/${actor.slug || actor.id}/claim`}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
-              color: '#FFFFFF', background: '#C8922A',
-              padding: '10px 22px', borderRadius: '40px',
-              textDecoration: 'none', whiteSpace: 'nowrap' }}>
-            Claim this profile
-          </Link>
-        ) : (
-          <Link to="/login"
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
-              color: '#FFFFFF', background: '#C8922A',
-              padding: '10px 22px', borderRadius: '40px',
-              textDecoration: 'none', whiteSpace: 'nowrap' }}>
-            Sign in to claim
-          </Link>
-        )}
       </div>
-    </div>
+    </>
   )
 }
 

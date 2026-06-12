@@ -70,3 +70,18 @@ CREATE POLICY "Users manage own requests"
   ON claim_requests FOR ALL
   USING  (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
+
+-- ─── C6: Outreach tracking ────────────────────────────────────────────────────
+ALTER TABLE nextus_actors
+  ADD COLUMN IF NOT EXISTS outreach_sent_at timestamptz NULL;
+
+COMMENT ON COLUMN nextus_actors.outreach_sent_at IS
+  'Last outreach email sent. Rate-limited to once per 7 days per actor.';
+
+CREATE TABLE IF NOT EXISTS actor_outreach_log (
+  id        uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  actor_id  uuid REFERENCES nextus_actors(id) ON DELETE CASCADE,
+  to_email  text NOT NULL,
+  sent_by   uuid REFERENCES auth.users(id) ON DELETE SET NULL,
+  sent_at   timestamptz NOT NULL DEFAULT now()
+);

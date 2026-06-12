@@ -62,6 +62,194 @@ function GhostBtn({ onClick, children }) {
   )
 }
 
+// ─── Horizon alignment step ───────────────────────────────────────────────────
+// The paradigm-shift mechanic. After a claim is verified, the new owner
+// names which Horizon Goal their work moves toward. AI offers a toward-framed
+// rewrite; owner consents to it or writes their own. Skippable — they can
+// add this later from their manage page. Never mandatory.
+
+const DOMAIN_OPTIONS = [
+  { slug: 'human-being',    label: 'Human Being'     },
+  { slug: 'society',        label: 'Society'          },
+  { slug: 'nature',         label: 'Nature'           },
+  { slug: 'technology',     label: 'Technology'       },
+  { slug: 'finance-economy',label: 'Finance & Economy'},
+  { slug: 'legacy',         label: 'Legacy'           },
+  { slug: 'vision',         label: 'Vision'           },
+]
+
+const HORIZON_GOALS_CLIENT = {
+  'human-being':     'Every human held in dignity, met with care, supported in becoming most fully themselves.',
+  'society':         'A structure that gives everyone space to function and the possibility to thrive.',
+  'nature':          'The living planet is thriving, and humanity lives as a regenerative participant in it.',
+  'technology':      'Technology in service of life — designed to restore as it operates, accessible and honest.',
+  'finance-economy': 'An economy in which everyone has enough to act on what matters.',
+  'legacy':          'A civilisation that knows what it carries, tends what it transmits, and plants with love.',
+  'vision':          'Creating forward — as far as we can see — in service of the brightest future for all.',
+}
+
+function HorizonAlignStep({ actor, userId, onDone }) {
+  const [selectedDomain, setSelectedDomain] = useState(
+    DOMAIN_OPTIONS.find(d => actor.domains?.includes(d.slug))?.slug || ''
+  )
+  const [userNote,          setUserNote]          = useState('')
+  const [generating,        setGenerating]        = useState(false)
+  const [towardStatement,   setTowardStatement]   = useState('')
+  const [reasoning,         setReasoning]         = useState('')
+  const [editing,           setEditing]           = useState(false)
+  const [editText,          setEditText]           = useState('')
+  const [saving,            setSaving]            = useState(false)
+  const [genErr,            setGenErr]            = useState(null)
+
+  const horizonGoal = selectedDomain ? HORIZON_GOALS_CLIENT[selectedDomain] : null
+
+  async function generate() {
+    if (!selectedDomain) return
+    setGenerating(true); setGenErr(null); setTowardStatement(''); setReasoning('')
+    try {
+      const res  = await fetch('/api/horizon-align', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          actorName:        actor.name,
+          actorDescription: actor.description,
+          actorMission:     actor.mission_statement,
+          domain:           selectedDomain,
+          userNote:         userNote.trim() || undefined,
+        }),
+      })
+      const data = await res.json()
+      if (data.error) { setGenErr(data.error); setGenerating(false); return }
+      setTowardStatement(data.toward_statement || '')
+      setReasoning(data.reasoning || '')
+    } catch { setGenErr('Something went wrong. Write your own below.') }
+    setGenerating(false)
+  }
+
+  async function save(statement) {
+    if (!statement?.trim() || !selectedDomain) return
+    setSaving(true)
+    const patch = { domain_alignment_notes: { [selectedDomain]: statement.trim() } }
+    // Merge with any existing alignment notes
+    const { data: current } = await supabase.from('nextus_actors')
+      .select('domain_alignment_notes').eq('id', actor.id).maybeSingle()
+    const existing = current?.domain_alignment_notes || {}
+    await supabase.from('nextus_actors')
+      .update({ domain_alignment_notes: { ...existing, [selectedDomain]: statement.trim() } })
+      .eq('id', actor.id)
+    setSaving(false)
+    onDone()
+  }
+
+  const displayStatement = editing ? editText : towardStatement
+
+  return (
+    <div>
+      <div style={{ background: 'rgba(200,146,42,0.04)', border: '1.5px solid rgba(200,146,42,0.22)', borderRadius: '12px', padding: '22px 24px', marginBottom: '28px' }}>
+        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: gold, marginBottom: '10px' }}>ONE QUESTION BEFORE YOU BEGIN</div>
+        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>
+          Which world is <strong>{actor.name}</strong> building toward?
+        </p>
+        <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginTop: '8px', marginBottom: 0 }}>
+          Every actor on NextUs is placed in the context of a civilisational Horizon Goal —
+          the destination their work navigates toward. This is what gives the Atlas direction.
+          Takes one minute. Skippable — you can add it from your profile later.
+        </p>
+      </div>
+
+      {/* Domain picker */}
+      <div style={{ marginBottom: '18px' }}>
+        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>WHICH DOMAIN DOES YOUR WORK MOVE?</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          {DOMAIN_OPTIONS.map(d => (
+            <button key={d.slug} type="button" onClick={() => { setSelectedDomain(d.slug); setTowardStatement(''); setReasoning('') }}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '7px 16px', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.15s',
+                border: `1px solid ${selectedDomain === d.slug ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.25)'}`,
+                background: selectedDomain === d.slug ? 'rgba(200,146,42,0.08)' : 'transparent',
+                color: selectedDomain === d.slug ? gold : 'rgba(15,21,35,0.55)' }}>
+              {d.label}
+            </button>
+          ))}
+        </div>
+        {selectedDomain && horizonGoal && (
+          <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.50)', fontStyle: 'italic', marginTop: '10px', lineHeight: 1.6 }}>
+            Horizon: {horizonGoal}
+          </div>
+        )}
+      </div>
+
+      {/* Optional context */}
+      {selectedDomain && (
+        <div style={{ marginBottom: '18px' }}>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>
+            ANYTHING TO ADD ABOUT YOUR WORK? <span style={{ color: 'rgba(15,21,35,0.35)', textTransform: 'none', letterSpacing: 0 }}>(helps the AI)</span>
+          </div>
+          <textarea value={userNote} onChange={e => setUserNote(e.target.value)} rows={2}
+            placeholder="What specifically does this work do? What does success look like?"
+            style={{ width: '100%', ...body, fontSize: '15px', color: dark, border: hair, borderRadius: '8px', padding: '10px 14px', resize: 'vertical', outline: 'none', background: parch, boxSizing: 'border-box' }} />
+        </div>
+      )}
+
+      {selectedDomain && !towardStatement && (
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '18px' }}>
+          <PrimaryBtn onClick={generate} disabled={generating}>
+            {generating ? 'Thinking…' : 'Offer a toward-statement →'}
+          </PrimaryBtn>
+          {genErr && <span style={{ ...body, fontSize: '13px', color: '#8A3030' }}>{genErr}</span>}
+        </div>
+      )}
+
+      {/* The reframe */}
+      {towardStatement && !editing && (
+        <div style={{ background: 'rgba(200,146,42,0.04)', border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '12px', padding: '20px 22px', marginBottom: '18px' }}>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '10px' }}>THE TOWARD VERSION</div>
+          <p style={{ ...body, fontSize: '16px', color: dark, lineHeight: 1.65, margin: '0 0 10px' }}>
+            {towardStatement}
+          </p>
+          {reasoning && (
+            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.50)', lineHeight: 1.6, fontStyle: 'italic', margin: 0 }}>
+              {reasoning}
+            </p>
+          )}
+        </div>
+      )}
+
+      {editing && (
+        <div style={{ marginBottom: '18px' }}>
+          <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '6px' }}>YOUR VERSION</div>
+          <textarea value={editText} onChange={e => setEditText(e.target.value)} rows={3}
+            placeholder="Write your own toward-statement — one sentence pointing to the destination your work navigates toward."
+            style={{ width: '100%', ...body, fontSize: '15px', color: dark, border: hair, borderRadius: '8px', padding: '10px 14px', resize: 'vertical', outline: 'none', background: parch, boxSizing: 'border-box' }} />
+        </div>
+      )}
+
+      {(towardStatement || editing) && (
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <PrimaryBtn onClick={() => save(editing ? editText : towardStatement)} disabled={saving || !(editing ? editText.trim() : towardStatement)}>
+            {saving ? 'Saving…' : 'Yes — this is where we\'re heading →'}
+          </PrimaryBtn>
+          {!editing && (
+            <GhostBtn onClick={() => { setEditing(true); setEditText(towardStatement) }}>Write my own</GhostBtn>
+          )}
+          {!editing && (
+            <GhostBtn onClick={generate}>Try again</GhostBtn>
+          )}
+        </div>
+      )}
+
+      {selectedDomain && (
+        <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
+          <GhostBtn onClick={onDone}>Skip for now — I'll add this from my profile</GhostBtn>
+        </div>
+      )}
+      {!selectedDomain && (
+        <div style={{ marginTop: '8px' }}>
+          <GhostBtn onClick={onDone}>Skip for now</GhostBtn>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Profile summary card ─────────────────────────────────────────────────────
 
 function ActorCard({ actor }) {
@@ -270,7 +458,7 @@ export function ClaimPage() {
     const data = await res.json()
     setChecking(false)
     if (data.alreadyClaimed) { setPageErr('This profile was just claimed.'); return }
-    if (data.approved) { setStage('done'); return }
+    if (data.approved) { setStage('align'); return }
     setActorDomain(data.actorDomain)
     setStage(data.path === 'auto' ? 'done' : data.path)  // 'code' | 'request'
   }
@@ -300,9 +488,11 @@ export function ClaimPage() {
 
         <Eyebrow>Claim profile</Eyebrow>
         <h1 style={{ ...serif, fontSize: 'clamp(30px,5vw,46px)', fontWeight: 400, color: dark, lineHeight: 1.08, marginBottom: '12px' }}>
-          {stage === 'done' ? `${actor.name} is yours.` : `Claim ${actor.name}`}
+          {stage === 'done' ? `${actor.name} is yours.`
+            : stage === 'align' ? 'One question before you begin.'
+            : `Claim ${actor.name}`}
         </h1>
-        {stage !== 'done' && stage !== 'submitted' && (
+        {stage !== 'done' && stage !== 'submitted' && stage !== 'align' && (
           <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, marginBottom: '32px' }}>
             This profile was added by the community and is held in trust by NextUs.
             Claiming it makes you the owner — you can edit the voice layer and manage how this profile represents you or your organisation.
@@ -310,6 +500,14 @@ export function ClaimPage() {
         )}
 
         <ActorCard actor={actor} />
+
+        {/* ── Align ────────────────────────────────────────────── */}
+        {stage === 'align' && (
+          <div>
+            <HorizonAlignStep actor={actor} userId={user?.id}
+              onDone={() => setStage('done')} />
+          </div>
+        )}
 
         {/* ── Done ─────────────────────────────────────────────── */}
         {stage === 'done' && (
@@ -364,7 +562,7 @@ export function ClaimPage() {
         {stage === 'code' && (
           <div>
             <CodePath actor={actor} userId={user.id} actorDomain={actorDomain}
-              onApproved={() => setStage('done')} />
+              onApproved={() => setStage('align')} />
             <div style={{ marginTop: '20px', paddingTop: '18px', borderTop: '1px solid rgba(200,146,42,0.15)' }}>
               <GhostBtn onClick={() => setStage('request')}>
                 Can't access an org email? Request admin review →

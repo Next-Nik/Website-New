@@ -247,7 +247,7 @@ function HorizonFloorModal({ domainSlug, contextLabel, onResolve, onCancel }) {
 
 // ── Tab navigation ────────────────────────────────────────────
 
-const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Place', 'Flags', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
+const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Place', 'Flags', 'Floor', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
 
 function TabBar({ active, setActive }) {
   return (
@@ -2256,6 +2256,179 @@ function FlagsTab({ toast }) {
   )
 }
 
+// ── FLOOR TAB ─────────────────────────────────────────────────
+// Shows seeded actors below the Actor Profile Floor — missing
+// image, thin description, no contact path, no domain placement.
+// The pre-seeding quality queue.
+
+const FLOOR_CHECKS = [
+  { key: 'no_image',       label: 'No image',        query: { column: 'image_url',    op: 'is',     val: null } },
+  { key: 'thin_desc',      label: 'Thin description', desc: 'description shorter than 50 chars' },
+  { key: 'no_website',     label: 'No website',       query: { column: 'website',      op: 'is',     val: null } },
+  { key: 'no_domain',      label: 'No domain',        desc: 'empty domains array and no domain_id' },
+  { key: 'no_tagline',     label: 'No tagline',       query: { column: 'tagline',      op: 'is',     val: null } },
+]
+
+function FloorTab({ toast }) {
+  const [actors,       setActors]       = useState([])
+  const [loading,      setLoading]      = useState(true)
+  const [filter,       setFilter]       = useState('all')
+  const [sort,         setSort]         = useState('gaps')
+  const [outreachModal, setOutreachModal] = useState(null)  // actor | null
+  const [outreachEmail, setOutreachEmail] = useState('')
+  const [outreachName,  setOutreachName]  = useState('')
+  const [outreachSending, setOutreachSending] = useState(false)
+
+  async function load() {
+    setLoading(true)
+    const q = supabase
+      .from('nextus_actors')
+      .select('id, name, slug, type, domain_id, domains, image_url, description, tagline, website, story, status, seeded_by, created_at')
+      .order('created_at', { ascending: false })
+      .limit(200)
+
+    const statusFilter = filter === 'staged' ? 'staged' : filter === 'live' ? 'live' : null
+    const { data } = statusFilter ? await q.eq('status', statusFilter) : await q.in('status', ['staged', 'live'])
+
+    const rows = (data || []).map(a => {
+      const gaps = []
+      if (!a.image_url)                                   gaps.push('image')
+      if (!a.description || a.description.length < 50)   gaps.push('description')
+      if (!a.website)                                     gaps.push('website')
+      if (!a.tagline)                                     gaps.push('tagline')
+      if (!a.story)                                       gaps.push('story')
+      const hasDomain = (a.domains || []).length > 0 || a.domain_id
+      if (!hasDomain)                                     gaps.push('domain')
+      return { ...a, gaps, gapCount: gaps.length }
+    }).filter(a => a.gapCount > 0)
+
+    const sorted = [...rows]
+    if (sort === 'gaps')    sorted.sort((a, b) => b.gapCount - a.gapCount)
+    if (sort === 'name')    sorted.sort((a, b) => a.name.localeCompare(b.name))
+    if (sort === 'created') sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+
+    setActors(sorted)
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [filter, sort])
+
+  const floorCount = actors.length
+  const criticalCount = actors.filter(a => a.gaps.includes('image') || a.gaps.includes('description') || a.gaps.includes('domain')).length
+
+  return (
+    <div>
+      {outreachModal && (
+        <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}
+          onClick={e => { if (e.target === e.currentTarget) setOutreachModal(null) }}>
+          <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '12px', padding: '28px 24px', maxWidth: '440px', width: '100%' }}>
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.2em', color: gold, marginBottom: '10px' }}>SEND OUTREACH — {outreachModal.name}</div>
+            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.65, marginBottom: '16px' }}>
+              Rate-limited to once per 7 days per actor.
+            </p>
+            <div style={{ marginBottom: '10px' }}><Label>To email</Label><Input type="email" value={outreachEmail} onChange={v => setOutreachEmail(v)} placeholder="contact@example.org" /></div>
+            <div style={{ marginBottom: '16px' }}><Label>Recipient name (optional)</Label><Input value={outreachName} onChange={v => setOutreachName(v)} placeholder="Defaults to actor name" /></div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <Btn small onClick={sendOutreach} disabled={!outreachEmail.trim() || outreachSending}>{outreachSending ? 'Sending…' : 'Send'}</Btn>
+              <Btn small variant="ghost" onClick={() => setOutreachModal(null)}>Cancel</Btn>
+            </div>
+          </div>
+        </div>
+      )}
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+        {[['all','All seeded'], ['staged','Staged only'], ['live','Live only']].map(([v, l]) => (
+          <Btn key={v} small variant={filter === v ? 'primary' : 'ghost'} onClick={() => setFilter(v)}>{l}</Btn>
+        ))}
+        <span style={{ flex: 1 }} />
+        <select value={sort} onChange={e => setSort(e.target.value)}
+          style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', border: '1px solid rgba(200,146,42,0.3)', borderRadius: '4px', padding: '4px 8px', background: 'transparent', color: gold, cursor: 'pointer' }}>
+          <option value="gaps">Sort by gap count</option>
+          <option value="name">Sort by name</option>
+          <option value="created">Sort by date</option>
+        </select>
+        <Btn small variant="ghost" onClick={load}>Refresh</Btn>
+      </div>
+
+      {!loading && (
+        <div style={{ display: 'flex', gap: '16px', marginBottom: '18px', flexWrap: 'wrap' }}>
+          <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
+            <strong style={{ color: dark }}>{floorCount}</strong> entries below floor
+          </div>
+          {criticalCount > 0 && (
+            <div style={{ ...body, fontSize: '13px', color: '#8A3030' }}>
+              <strong>{criticalCount}</strong> missing image, description, or domain (blocks publishing)
+            </div>
+          )}
+        </div>
+      )}
+
+      {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading…</p>}
+      {!loading && actors.length === 0 && (
+        <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>All seeded actors are above the floor. Good work.</p>
+      )}
+
+      {actors.map(a => (
+        <Card key={a.id} style={{ borderLeft: (a.gaps.includes('image') || a.gaps.includes('domain')) ? '3px solid rgba(138,48,48,0.50)' : '3px solid rgba(200,146,42,0.30)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                {a.type && <Badge label={a.type} />}
+                <span style={{ ...body, fontSize: '16px', color: dark }}>{a.name}</span>
+                <Badge label={a.status} color={a.status === 'live' ? '#2A6A3A' : 'rgba(15,21,35,0.45)'} />
+              </div>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '6px' }}>
+                {a.gaps.map(g => (
+                  <span key={g} style={{ ...sc, fontSize: '11px', letterSpacing: '0.1em', padding: '2px 8px', borderRadius: '20px',
+                    background: ['image','domain','description'].includes(g) ? 'rgba(138,48,48,0.08)' : 'rgba(200,146,42,0.08)',
+                    border: ['image','domain','description'].includes(g) ? '1px solid rgba(138,48,48,0.25)' : '1px solid rgba(200,146,42,0.25)',
+                    color: ['image','domain','description'].includes(g) ? '#8A3030' : '#8A6020' }}>
+                    missing {g}
+                  </span>
+                ))}
+              </div>
+              {a.website && (
+                <a href={a.website} target="_blank" rel="noopener noreferrer"
+                  style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold }}>
+                  {a.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                </a>
+              )}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
+              {a.slug && (
+                <a href={`/org/${a.slug}/manage`} target="_blank" rel="noopener noreferrer"
+                  style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold, textDecoration: 'none', textAlign: 'center' }}>
+                  Edit
+                </a>
+              )}
+              {a.slug && (
+                <a href={`/org/${a.slug}`} target="_blank" rel="noopener noreferrer"
+                  style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', textDecoration: 'none', textAlign: 'center' }}>
+                  View
+                </a>
+              )}
+              <button type="button" onClick={() => { setOutreachModal(a); setOutreachEmail(''); setOutreachName('') }}
+                style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: '#2A6A3A', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', padding: '2px 0' }}>
+                Outreach
+              </button>
+              {a.image_provenance === 'hotlink' && (
+                <button type="button" onClick={async () => {
+                  const r = await fetch('/api/actor-image-upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ actorId: a.id }) })
+                  const d = await r.json()
+                  d.uploaded ? toast('Image uploaded to storage') : toast('Upload failed: ' + d.error)
+                  load()
+                }}
+                  style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: '#5F8DAA', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'center', padding: '2px 0' }}>
+                  Upload img
+                </button>
+              )}
+            </div>
+          </div>
+        </Card>
+      ))}
+    </div>
+  )
+}
+
 // ── DOMAIN DATA TAB ───────────────────────────────────────────
 // Preserved from original
 
@@ -3521,6 +3694,7 @@ export function AdminConsolePage() {
         {tab === 'Add'           && <AddTab          toast={showToast} />}
         {tab === 'Place'         && <PlaceTab        toast={showToast} />}
         {tab === 'Flags'         && <FlagsTab        toast={showToast} />}
+        {tab === 'Floor'         && <FloorTab         toast={showToast} />}
         {tab === 'Domain Data'   && <DomainDataTab   toast={showToast} />}
         {tab === 'Indicators'    && <IndicatorsTab   toast={showToast} />}
         {tab === 'Subdomains'    && <SubdomainsTab   toast={showToast} />}
