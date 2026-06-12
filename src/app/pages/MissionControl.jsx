@@ -1139,7 +1139,7 @@ export default function MissionControl() {
             />
             <Tile
               glyph="＋"
-              label="ADD"
+              label="ADD ORG"
               state={null}
               onClick={() => navigate('/add')}
               title="Add to the ecosystem"

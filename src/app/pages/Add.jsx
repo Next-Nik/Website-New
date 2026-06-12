@@ -292,6 +292,7 @@ export function AddPage() {
 
   // ── Staged flow: 'source' (paste URL / choose manual) → 'form' (review & edit)
   const [stage, setStage]           = useState('source')
+  const [imgBroken, setImgBroken]   = useState(false)
 
   // ── URL autofill state ───────────────────────────────────────
   const [aiUrl, setAiUrl]           = useState('')
@@ -391,6 +392,7 @@ export function AddPage() {
         relationships:  primary.relationships  || [],
       }))
       setAiUsed(true)
+      setImgBroken(false)
 
       // Remaining results become extra proposal cards (carrying their own links/press/relationships)
       if (results.length > 1) {
@@ -412,6 +414,7 @@ export function AddPage() {
     setForm(EMPTY_FORM)
     setExtras([]); setExtraChecked([])
     setAiUrl(''); setAiUsed(false); setReadErr(null)
+    setImgBroken(false)
     setDuplicates([]); setDupDismissed(false)
     setError(null)
     setStage('source')
@@ -449,6 +452,9 @@ export function AddPage() {
       track:               data.track || null,
       tagline:             (data.tagline || '').trim() || null,
       image_url:           (data.image_url || '').trim() || null,
+      // Hotlinked at save; the post-save upload pass re-hosts to storage.
+      // 'self_uploaded' is reserved for an actual file upload by the owner.
+      image_provenance:    (data.image_url || '').trim() ? 'hotlink' : null,
       description:         (data.description || '').trim() || null,
       story:               (data.story || '').trim() || null,
       domain_id:           domains[0] || null,
@@ -629,6 +635,17 @@ export function AddPage() {
       console.warn('Problem-chain proposal save skipped:', propErr?.message)
     }
 
+    // Re-host hotlinked images into Supabase Storage. Fire-and-forget —
+    // a failure leaves the hotlink in place and the Floor tab can retry.
+    for (const actor of allActors) {
+      const img = (actor.data.image_url || '').trim()
+      if (!img) continue
+      fetch('/api/actor-image-upload', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ actorId: actor.id, imageUrl: img }),
+      }).catch(() => {})
+    }
+
     setSaving(false)
     setSaved(results)
   }
@@ -636,6 +653,7 @@ export function AddPage() {
   function reset() {
     setForm(EMPTY_FORM); setRepresents(false); setSaved([]); setError(null)
     setAiUrl(''); setAiUsed(false); setReadErr(null)
+    setImgBroken(false); setStage('source')
     setExtras([]); setExtraChecked([]); setDuplicates([]); setDupDismissed(false)
   }
 
@@ -910,6 +928,33 @@ export function AddPage() {
           <Field>
             <FieldLabel>Website</FieldLabel>
             <TextInput value={form.website} onChange={v => set('website', v)} onBlur={() => set('website', normaliseUrl(form.website))} placeholder="nasa.gov or https://nasa.gov" />
+          </Field>
+
+          {/* Image */}
+          <Field>
+            <FieldLabel>Image</FieldLabel>
+            <Hint>Logo for organisations, portrait for practitioners. Found automatically when reading a source — paste a different image URL to replace it.</Hint>
+            <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginTop: '8px' }}>
+              <div style={{ width: '72px', height: '72px', borderRadius: '10px', flexShrink: 0,
+                border: '1.5px solid rgba(200,146,42,0.28)', background: '#FFFFFF',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                {form.image_url && !imgBroken ? (
+                  <img key={form.image_url} src={form.image_url} alt=""
+                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    onError={() => setImgBroken(true)} />
+                ) : (
+                  <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
+                    textAlign: 'center', padding: '4px' }}>
+                    {form.image_url ? 'Broken link' : 'No image'}
+                  </span>
+                )}
+              </div>
+              <div style={{ flex: 1 }}>
+                <TextInput value={form.image_url} onChange={v => { set('image_url', v); setImgBroken(false) }}
+                  onBlur={() => set('image_url', normaliseUrl(form.image_url))}
+                  placeholder="https://example.org/logo.png" />
+              </div>
+            </div>
           </Field>
 
           {/* Primary domain */}
