@@ -32,10 +32,11 @@ export const LIFES_MISSION_QUESTIONS = {
 
 // Journey chapter registry — the thread's stations.
 export const CHAPTERS = [
-  { n: 1, key: 'map',        title: 'The Map',               route: '/nextu/map' },
-  { n: 2, key: 'iam',        title: 'I Am Statements',       route: '/nextu/i-am' },
-  { n: 3, key: 'horizon',    title: 'Horizon Self',          route: '/nextu/horizon-self' },
-  { n: 4, key: 'biography',  title: 'The Horizon Biography', route: '/nextu/biography' },
+  { n: 1, key: 'map',       title: 'The Map',               route: '/nextu/map' },
+  { n: 2, key: 'iam',       title: 'I Am Statements',       route: '/nextu/i-am' },
+  { n: 3, key: 'horizon',   title: 'Horizon Self',          route: '/nextu/horizon-self' },
+  { n: 4, key: 'biography', title: 'The Horizon Biography', route: '/nextu/biography' },
+  { n: 5, key: 'stretch',   title: 'Target Stretch',        route: '/tools/target-sprint' },
 ]
 
 // ─── Auto-save: debounce + visible whisper ───────────────────

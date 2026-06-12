@@ -113,6 +113,7 @@ function Eyebrow({ children, ink = false }) {
 // ─── the invitation — dim-not-locked, forward language ────────
 function Invitation({ chapter, gateLine, onClose }) {
   const isHorizonSelf = chapter === 3
+  const isStretch     = chapter === 5
   return (
     <div
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
@@ -132,12 +133,55 @@ function Invitation({ chapter, gateLine, onClose }) {
           borderRadius: '10px', padding: '36px 30px 42px',
         }}
       >
-        <Eyebrow>CHAPTER {chapter === 3 ? 'THREE' : 'FOUR'} · {gateLine.toUpperCase()}</Eyebrow>
+        <Eyebrow>
+          CHAPTER {chapter === 3 ? 'THREE' : chapter === 4 ? 'FOUR' : 'FIVE'} · {gateLine.toUpperCase()}
+        </Eyebrow>
         <h2 style={{ ...serif, fontSize: '32px', fontWeight: 300, margin: '8px 0 0', color: tokens.dark }}>
-          {isHorizonSelf ? 'Horizon Self' : 'The Horizon Biography'}
+          {isStretch ? 'Target Stretch' : isHorizonSelf ? 'Horizon Self' : 'The Horizon Biography'}
         </h2>
 
-        {isHorizonSelf ? (
+        {isStretch ? (
+          <>
+            <p style={{ ...body, fontSize: '16px', lineHeight: 1.65, marginTop: '14px', color: tokens.dark }}>
+              The journey built you. This chapter is where you act. Ninety days as your
+              Horizon Self — in one chosen arena, taking clear action from that identity.
+              The question: if you were already him, what could one quarter accomplish?
+            </p>
+            <div style={{ marginTop: '18px' }}>
+              <Eyebrow>WHAT THIS CHAPTER IS</Eyebrow>
+              <ul style={{ listStyle: 'none', margin: '10px 0 0', padding: 0 }}>
+                {[
+                  'One arena — the domain where 90 days of embodied action matters most',
+                  'A 90-day goal on the way to your Horizon, not the Horizon itself',
+                  'Three monthly milestones, weekly tasks, a coach who holds the whole plan',
+                  'An optional outer arc — the same Horizon Self, pointed outward',
+                  'Not a chapter that ends — the standing loop the journey empties into',
+                ].map(t => (
+                  <li key={t} style={{
+                    ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
+                    padding: '5px 0 5px 18px', position: 'relative', lineHeight: 1.5,
+                  }}>
+                    <span style={{
+                      position: 'absolute', left: 0, top: '13px',
+                      width: '7px', height: '1.5px', background: tokens.goldChrome,
+                      display: 'inline-block',
+                    }} />
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <p style={{
+              ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)',
+              marginTop: '18px', paddingTop: '18px',
+              borderTop: `1px solid ${tokens.goldFaint}`, lineHeight: 1.65,
+            }}>
+              Inner Game is baked in — the whole stretch is identity work. Choose it as
+              your arena only when you want that front and centre. The practice continues
+              every morning. The stretch adds the 90-day proof arc.
+            </p>
+          </>
+        ) : isHorizonSelf ? (
           <>
             <p style={{ ...body, fontSize: '16px', lineHeight: 1.65, marginTop: '14px', color: tokens.dark }}>
               Your Horizon Self is the version of you that exists when you're standing in a
@@ -285,8 +329,9 @@ export function NextUJourneyPage() {
   const [mapResult, setMapResult]   = useState(null)
   const [onboarding, setOnboarding] = useState(null)
   const [streak, setStreak]         = useState(null)
+  const [sprintRows, setSprintRows] = useState(null)  // self-scale sessions for ch5
   const [loading, setLoading]       = useState(true)
-  const [vaultOpen, setVaultOpen]   = useState({})   // { map: bool, iam: bool, horizon: bool }
+  const [vaultOpen, setVaultOpen]   = useState({})   // { map: bool, iam: bool, horizon: bool, stretch: bool }
   const [invite, setInvite]         = useState(null) // chapter number or null
 
   useEffect(() => {
@@ -295,7 +340,7 @@ export function NextUJourneyPage() {
     let cancelled = false
     async function load() {
       try {
-        const [mapRes, resultRes, obRes, hsRes] = await Promise.all([
+        const [mapRes, resultRes, obRes, hsRes, sprintRes] = await Promise.all([
           supabase.from('horizon_profile')
             .select('domain, current_score, horizon_score, horizon_goal, ia_statement')
             .eq('user_id', user.id),
@@ -313,12 +358,21 @@ export function NextUJourneyPage() {
             .select('streak_days')
             .eq('user_id', user.id)
             .maybeSingle(),
+          // Chapter 5 — self-scale stretch sessions only
+          supabase.from('target_sprint_sessions')
+            .select('id, domains, status, domain_data, target_date, end_date_label, updated_at')
+            .eq('user_id', user.id)
+            .or('scale.eq.self,scale.is.null')  // handles pre-B1 rows gracefully
+            .neq('domains', '{}')
+            .order('updated_at', { ascending: false })
+            .limit(10),
         ])
         if (cancelled) return
         setMapRows(mapRes.data || [])
         setMapResult(resultRes.data || null)
         setOnboarding(obRes.error ? null : (obRes.data || null))
         setStreak(hsRes.data?.streak_days ?? null)
+        setSprintRows(sprintRes.data || [])
       } catch { /* journey renders from whatever loaded */ }
       if (!cancelled) setLoading(false)
     }
@@ -349,13 +403,32 @@ export function NextUJourneyPage() {
     const constructionDone = ob && (ob.status === 'construction_complete' || ob.status === 'complete')
     const biographyDone = ob?.status === 'complete'
 
+    // Chapter 5 — Target Stretch (recurring; uses extended states: running | between)
+    // 'running'  — has an active/draft stretch right now
+    // 'between'  — completed at least one, none running (invite the next)
+    // 'current'  — ch4 done, never started → first invitation
+    // 'ahead'    — ch4 not done
+    const allSprints   = sprintRows || []
+    const activeSprint = allSprints.find(s => s.status === 'active' || s.status === 'draft') || null
+    const doneCount    = allSprints.filter(s => s.status === 'complete').length
+    let ch5
+    if (!biographyDone) {
+      ch5 = 'ahead'
+    } else if (activeSprint) {
+      ch5 = 'running'
+    } else if (doneCount > 0) {
+      ch5 = 'between'
+    } else {
+      ch5 = 'current'
+    }
+
     // Chapter states
     const ch1 = scoredCount >= 7 ? 'done' : 'current'
     const ch2 = ch1 !== 'done' ? 'ahead' : iaCount >= 7 ? 'done' : 'current'
     const ch3 = ch2 !== 'done' ? 'ahead' : constructionDone ? 'done' : 'current'
     const ch4 = ch3 !== 'done' ? 'ahead' : biographyDone ? 'done' : 'current'
 
-    // Position line + resume
+    // Position line + resume — ch5 states added
     let position, resumeLabel, resumeLine, resumeRoute
     if (ch1 === 'current') {
       position = scoredCount === 0
@@ -383,21 +456,43 @@ export function NextUJourneyPage() {
       resumeLabel = ob?.biography ? 'CONTINUE WHERE YOU LEFT OFF' : 'BEGIN CHAPTER FOUR'
       resumeLine = 'The Horizon Biography'
       resumeRoute = '/nextu/biography'
+    } else if (ch5 === 'running') {
+      const domainId  = activeSprint?.domains?.[0]
+      const domLabel  = domainId ? (DOMAIN_LABELS[domainId] || domainId) : 'your arena'
+      const daysLeft  = activeSprint?.target_date
+        ? Math.max(0, Math.ceil((new Date(activeSprint.target_date + 'T23:59:59') - new Date()) / 86400000))
+        : null
+      position = `Chapter Five — ${domLabel}. ${daysLeft !== null ? `${daysLeft} days left.` : ''}`
+      resumeLabel = 'OPEN YOUR STRETCH'
+      resumeLine  = `${domLabel} — ${activeSprint?.domain_data?.[domainId]?.targetGoal?.slice(0, 80) || 'your Horizon Self in action'}`
+      resumeRoute = '/tools/target-sprint'
+    } else if (ch5 === 'between') {
+      position = `Chapter Five — ${doneCount} stretch${doneCount === 1 ? '' : 'es'} complete. Ready for the next.`
+      resumeLabel = 'BEGIN YOUR NEXT STRETCH'
+      resumeLine  = 'Choose your next arena'
+      resumeRoute = '/tools/target-sprint'
+    } else if (ch5 === 'current') {
+      position = 'Chapter Five — your first stretch is waiting.'
+      resumeLabel = 'BEGIN CHAPTER FIVE'
+      resumeLine  = 'Target Stretch — 90 days as your Horizon Self'
+      resumeRoute = '/tools/target-sprint'
     } else {
-      position = 'The journey is built. The daily runs from here.'
-      resumeLabel = 'RE-READ WHO YOU ARE'
-      resumeLine = 'Your statements, your Code, your Biography'
-      resumeRoute = null // resume opens the vaults
+      // ch5 === 'ahead' — biography not done
+      position = 'Chapter Four — your story, told through his eyes.'
+      resumeLabel = ob?.biography ? 'CONTINUE WHERE YOU LEFT OFF' : 'BEGIN CHAPTER FOUR'
+      resumeLine  = 'The Horizon Biography'
+      resumeRoute = '/nextu/biography'
     }
 
     return {
       scores, scoredCount, iaList, iaCount, nextIaDomain,
       ob, obStep, constructionDone, biographyDone,
-      states: { 1: ch1, 2: ch2, 3: ch3, 4: ch4 },
+      allSprints, activeSprint, doneCount,
+      states: { 1: ch1, 2: ch2, 3: ch3, 4: ch4, 5: ch5 },
       position, resumeLabel, resumeLine, resumeRoute,
       lifeStatement: mapResult?.life_ia_statement || null,
     }
-  }, [mapRows, mapResult, onboarding])
+  }, [mapRows, mapResult, onboarding, sprintRows])
 
   // ─── signed out / loading ───────────────────────────────────
   if (authLoading || loading) {
@@ -449,6 +544,19 @@ export function NextUJourneyPage() {
     4: d.states[4] === 'ahead'
       ? (d.states[3] === 'done' ? 'Ready to write' : 'Your story, told through his eyes')
       : d.states[4] === 'done' ? 'Written · From Here Forward' : 'In the writing room',
+    5: d.states[5] === 'ahead'
+      ? 'Begins after Chapter Four'
+      : d.states[5] === 'running'
+        ? (() => {
+            const domId  = d.activeSprint?.domains?.[0]
+            const days   = d.activeSprint?.target_date
+              ? Math.max(0, Math.ceil((new Date(d.activeSprint.target_date + 'T23:59:59') - new Date()) / 86400000))
+              : null
+            return `${DOMAIN_LABELS[domId] || 'In progress'}${days !== null ? ` · ${days} days left` : ''}`
+          })()
+        : d.states[5] === 'between'
+          ? `${d.doneCount} stretch${d.doneCount === 1 ? '' : 'es'} complete · choose the next arena`
+          : '90 days as your Horizon Self',
   }
 
   return (
@@ -685,13 +793,127 @@ export function NextUJourneyPage() {
             eyebrow="CHAPTER FOUR"
             title="The Horizon Biography"
             stateLine={stateLine[4]}
-            isLast
             onClick={
               d.states[4] === 'ahead'
                 ? () => setInvite(4)
                 : () => navigate('/nextu/biography')
             }
           />
+
+          {/* Chapter Five — Target Stretch */}
+          <Station
+            state={
+              d.states[5] === 'running' || d.states[5] === 'between'
+                ? 'done'    // Station renders the vault pattern for both live states
+                : d.states[5]
+            }
+            eyebrow="CHAPTER FIVE"
+            title="Target Stretch"
+            stateLine={stateLine[5]}
+            isLast
+            onClick={
+              d.states[5] === 'ahead'
+                ? () => setInvite(5)
+                : d.states[5] === 'current'
+                  ? () => navigate('/tools/target-sprint')
+                  : undefined
+            }
+          >
+            {/* Running — vault shows the active stretch */}
+            {d.states[5] === 'running' && d.activeSprint && (() => {
+              const domId    = d.activeSprint.domains[0]
+              const dd       = d.activeSprint.domain_data?.[domId] || {}
+              const daysLeft = d.activeSprint.target_date
+                ? Math.max(0, Math.ceil((new Date(d.activeSprint.target_date + 'T23:59:59') - new Date()) / 86400000))
+                : null
+              return (
+                <>
+                  <div style={{ marginTop: '12px' }}>
+                    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '4px' }}>
+                      {DOMAIN_LABELS[domId] || domId}
+                      {daysLeft !== null && <span style={{ color: tokens.ghost, marginLeft: '8px' }}>{daysLeft} days left</span>}
+                    </div>
+                    {dd.targetGoal && (
+                      <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+                        {dd.targetGoal.slice(0, 120)}
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => toggleVault('stretch')}
+                    style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: tokens.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: '12px' }}
+                  >
+                    {vaultOpen.stretch ? 'CLOSE' : 'OPEN YOUR STRETCH'}
+                  </button>
+                  {vaultOpen.stretch && (
+                    <div style={{ marginTop: '12px', borderTop: `1px solid ${tokens.goldFaint}`, paddingTop: '14px' }}>
+                      {['milestones'].map(() => {
+                        const ms = dd.milestones || []
+                        return (
+                          <div key="ms" style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.8 }}>
+                            {ms.map((m, i) => (
+                              <div key={i}>
+                                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: dd.milestoneChecked?.[i] ? '#2A8C4F' : tokens.gold }}>
+                                  {dd.milestoneChecked?.[i] ? '✓ ' : ''}Month {i + 1}
+                                </span>
+                                {' '}{m.text}
+                              </div>
+                            ))}
+                          </div>
+                        )
+                      })}
+                      <button
+                        onClick={() => navigate('/tools/target-sprint')}
+                        style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', color: tokens.gold, background: 'none', border: 'none', cursor: 'pointer', padding: 0, marginTop: '14px' }}
+                      >
+                        OPEN MY STRETCH →
+                      </button>
+                    </div>
+                  )}
+                </>
+              )
+            })()}
+
+            {/* Between stretches — completed at least one */}
+            {d.states[5] === 'between' && (
+              <div style={{ marginTop: '12px' }}>
+                <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, marginBottom: '14px' }}>
+                  {d.doneCount} stretch{d.doneCount === 1 ? '' : 'es'} complete. The Horizon Self keeps acting.
+                </div>
+                <button
+                  onClick={() => navigate('/tools/target-sprint')}
+                  style={{
+                    ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.14em',
+                    color: '#FFFFFF', background: tokens.goldChrome, border: 'none',
+                    borderRadius: '4px', padding: '11px 22px', cursor: 'pointer',
+                    display: 'inline-block',
+                  }}
+                >
+                  BEGIN THE NEXT →
+                </button>
+              </div>
+            )}
+
+            {/* First invitation — never stretched */}
+            {d.states[5] === 'current' && (
+              <div>
+                <button
+                  onClick={() => navigate('/tools/target-sprint')}
+                  style={{
+                    ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.14em',
+                    color: '#FFFFFF', background: tokens.goldChrome, border: 'none',
+                    borderRadius: '4px', padding: '11px 22px', cursor: 'pointer',
+                    marginTop: '14px', display: 'inline-block',
+                  }}
+                >
+                  BEGIN CHAPTER FIVE
+                </button>
+                <div style={{ ...body, fontSize: '14px', color: tokens.ghost, marginTop: '8px' }}>
+                  Choose your arena. 90 days as the person you built.
+                </div>
+              </div>
+            )}
+          </Station>
 
           {/* the horizon */}
           <div style={{ position: 'relative', paddingLeft: '46px', marginTop: '6px' }}>
@@ -700,7 +922,7 @@ export function NextUJourneyPage() {
               From Here Forward
             </div>
             <div style={{ ...body, fontSize: '14px', color: tokens.ghost, marginTop: '4px' }}>
-              The journey opens into the daily.
+              The thread doesn't end — it becomes the loop. A new stretch every quarter.
             </div>
           </div>
         </div>
@@ -735,7 +957,9 @@ export function NextUJourneyPage() {
           chapter={invite}
           gateLine={invite === 3
             ? (d.iaCount >= 7 ? 'Ready to begin' : `${7 - d.iaCount} statement${7 - d.iaCount === 1 ? '' : 's'} to go`)
-            : (d.constructionDone ? 'Ready to write' : 'Begins after Chapter Three')}
+            : invite === 4
+              ? (d.constructionDone ? 'Ready to write' : 'Begins after Chapter Three')
+              : (d.biographyDone ? 'Ready to begin' : 'Begins after Chapter Four')}
           onClose={() => setInvite(null)}
         />
       )}
