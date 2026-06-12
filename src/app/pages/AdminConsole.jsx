@@ -1785,11 +1785,14 @@ function PlaceTab({ toast }) {
 // Replaces Nominations tab. Trust is the default — entries go live
 // immediately on /add. This queue shows community flags, not submissions.
 //
-// Flag levels:
+// Flag levels (actor flags):
 //   1 Spam        — stays live, queue only
 //   2 Misplaced   — stays live, queue only
 //   3 Misleading  — stays live, queue only
 //   4 Harmful     — auto-hidden by DB trigger, restore/keep here
+//
+// Call flags (actor_call_flags):
+//   Free-text reason. Resolve = call stays live. Suspend = withdraw call.
 
 const FLAG_CFG = {
   1: { label: 'Spam',       color: '#8A3030', bg: 'rgba(138,48,48,0.06)',  border: 'rgba(138,48,48,0.20)',  urgent: false },
@@ -1811,10 +1814,150 @@ function FlagBadge({ level }) {
   )
 }
 
-function FlagsTab({ toast }) {
+// ── Call flags sub-tab ────────────────────────────────────────
+
+function CallFlagsSection({ toast }) {
   const [flags,   setFlags]   = useState([])
   const [loading, setLoading] = useState(true)
   const [filter,  setFilter]  = useState('open')
+
+  async function load() {
+    setLoading(true)
+    const { data } = await supabase
+      .from('actor_call_flags')
+      .select(`
+        id, reason, created_at, resolved, resolved_at, admin_note,
+        call:actor_calls (
+          id, title, slug, type, scale, domain, visibility,
+          taken_on_count, flag_count
+        ),
+        user:user_id (id)
+      `)
+      .eq('resolved', filter !== 'open')
+      .order('created_at', { ascending: false })
+      .limit(100)
+    setFlags(data || [])
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [filter])
+
+  async function resolve(flag, suspend = false) {
+    const now = new Date().toISOString()
+    await supabase.from('actor_call_flags')
+      .update({ resolved: true, resolved_at: now })
+      .eq('id', flag.id)
+    if (suspend && flag.call?.id) {
+      // Withdraw: set visibility to 'draft' — effectively unlists the call
+      await supabase.from('actor_calls')
+        .update({ visibility: 'draft', admin_reviewed: true,
+          admin_note: `Withdrawn by admin after flag: ${flag.reason?.slice(0, 120) || 'see flag record'}` })
+        .eq('id', flag.call.id)
+      toast(`Call withdrawn from community: "${flag.call.title || flag.call.id}"`)
+    } else {
+      toast('Flag dismissed — call stays live')
+    }
+    load()
+  }
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
+        {[['open','Open'], ['resolved','Resolved']].map(([val, label]) => (
+          <Btn key={val} small variant={filter === val ? 'primary' : 'ghost'}
+            onClick={() => setFilter(val)}>{label}</Btn>
+        ))}
+        <Btn small variant="ghost" onClick={load}>Refresh</Btn>
+      </div>
+
+      {filter === 'open' && (
+        <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)',
+          marginBottom: '18px', lineHeight: 1.6, maxWidth: '560px' }}>
+          Community flags on Challenges and Asks. Dismiss if not valid.
+          Withdraw (set draft) if the call violates community standards.
+        </div>
+      )}
+
+      {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading…</p>}
+      {!loading && flags.length === 0 && (
+        <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No {filter} call flags.</p>
+      )}
+
+      {flags.map(flag => {
+        const call   = flag.call
+        const typeLabel = call?.type === 'ask' ? 'Ask' : 'Challenge'
+        const isLive = call?.visibility === 'community' || call?.visibility === 'link_only'
+
+        return (
+          <Card key={flag.id} style={{ borderLeft: '3px solid rgba(200,146,42,0.30)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between',
+              alignItems: 'flex-start', gap: '16px' }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px',
+                  marginBottom: '8px', flexWrap: 'wrap' }}>
+                  <Badge label={typeLabel} />
+                  {call?.domain && <Badge label={call.domain} color="#2A4A8A" />}
+                  {call?.visibility && <Badge label={call.visibility} color={isLive ? '#2A6A3A' : 'rgba(15,21,35,0.4)'} />}
+                  {call?.flag_count > 1 && (
+                    <Badge label={`${call.flag_count} flags total`} color="#8A3030" />
+                  )}
+                </div>
+                {call?.title && (
+                  <div style={{ ...body, fontSize: '17px', color: '#0F1523', marginBottom: '4px' }}>
+                    {call.title}
+                  </div>
+                )}
+                {call?.slug && (
+                  <div style={{ marginBottom: '8px' }}>
+                    <a href={`/stretch/c/${call.slug}`} target="_blank" rel="noopener noreferrer"
+                      style={{ ...sc, fontSize: '12px', letterSpacing: '0.12em', color: gold }}>
+                      /stretch/c/{call.slug}
+                    </a>
+                  </div>
+                )}
+                {flag.reason && (
+                  <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)',
+                    borderRadius: '8px', padding: '10px 12px', marginBottom: '8px' }}>
+                    <p style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', color: gold, marginBottom: '4px' }}>Reason</p>
+                    <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
+                      {flag.reason}
+                    </p>
+                  </div>
+                )}
+                <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', margin: 0 }}>
+                  Flagged {new Date(flag.created_at).toLocaleDateString('en-GB',
+                    { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {call?.taken_on_count > 0 && ` · ${call.taken_on_count} participant${call.taken_on_count === 1 ? '' : 's'}`}
+                </p>
+              </div>
+
+              {filter === 'open' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
+                  <Btn small onClick={() => resolve(flag, false)}>Dismiss</Btn>
+                  <Btn small variant="danger" onClick={() => resolve(flag, true)}>Withdraw call</Btn>
+                  {call?.slug && (
+                    <a href={`/stretch/c/${call.slug}`} target="_blank" rel="noopener noreferrer"
+                      style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold,
+                        textAlign: 'center', textDecoration: 'none', marginTop: '2px' }}>
+                      View call
+                    </a>
+                  )}
+                </div>
+              )}
+              {filter !== 'open' && <Badge label="resolved" color="rgba(15,21,35,0.45)" />}
+            </div>
+          </Card>
+        )
+      })}
+    </div>
+  )
+}
+
+function FlagsTab({ toast }) {
+  const [flags,    setFlags]    = useState([])
+  const [loading,  setLoading]  = useState(true)
+  const [filter,   setFilter]   = useState('open')
+  const [subTab,   setSubTab]   = useState('actors')  // actors | calls
 
   async function load() {
     setLoading(true)
@@ -1863,6 +2006,25 @@ function FlagsTab({ toast }) {
 
   return (
     <div>
+      {/* Sub-tab switcher: Actors | Calls */}
+      <div style={{ display: 'flex', gap: '0', marginBottom: '22px',
+        borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
+        {[['actors', 'Actor Flags'], ['calls', 'Call Flags']].map(([val, label]) => (
+          <button key={val} type="button" onClick={() => setSubTab(val)}
+            style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em',
+              padding: '8px 18px', background: 'none', border: 'none', cursor: 'pointer',
+              color: subTab === val ? gold : 'rgba(15,21,35,0.45)',
+              borderBottom: subTab === val ? `2px solid ${gold}` : '2px solid transparent',
+              marginBottom: '-1px', transition: 'all 0.15s' }}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {subTab === 'calls' && <CallFlagsSection toast={toast} />}
+
+      {subTab === 'actors' && (
+      <div>
       <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
         {[['open','Open'], ['resolved','Resolved'], ['dismissed','Dismissed']].map(([val, label]) => (
           <Btn key={val} small variant={filter === val ? 'primary' : 'ghost'}
@@ -1960,6 +2122,8 @@ function FlagsTab({ toast }) {
           </Card>
         )
       })}
+    </div>
+      )}  {/* end subTab === 'actors' */}
     </div>
   )
 }
