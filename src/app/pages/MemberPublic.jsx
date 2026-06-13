@@ -58,7 +58,10 @@ function DomainChip({ slug }) {
 }
 
 export function MemberPublicPage() {
-  const { slug } = useParams()
+  // Route param is :id on /profile/:id and /member/:id — may be a user UUID
+  // (from feed/bilateral links) or a member_slug (pretty URL). We resolve both.
+  const params = useParams()
+  const idOrSlug = params.id || params.slug
   const navigate = useNavigate()
   const { user } = useAuth()
 
@@ -67,35 +70,70 @@ export function MemberPublicPage() {
   const [actors,  setActors]  = useState([])
   const [sprints, setSprints] = useState([])
   const [spaces,  setSpaces]  = useState([])
+  const [isOwner, setIsOwner] = useState(false)
   const [notFound,setNotFound]= useState(false)
 
   useEffect(() => {
     let cancelled = false
     async function load() {
-      setLoading(true); setNotFound(false)
+      setLoading(true); setNotFound(false); setIsOwner(false)
 
-      // 1. The card itself (public view — only published members are visible)
-      const { data: card } = await supabase
-        .from('member_cards')
-        .select('*')
-        .eq('member_slug', slug)
-        .maybeSingle()
+      const looksLikeUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug)
+      const viewerId = user?.id || null
+      const viewingSelf = looksLikeUuid && viewerId && idOrSlug === viewerId
+
+      let card = null
+      let userId = null
+
+      if (viewingSelf) {
+        // Owner previewing their own card — read straight from their row,
+        // published or not. Contribution-rail columns only.
+        const { data } = await supabase
+          .from('users')
+          .select('id, member_slug, member_card_public, first_name, last_name, public_bio, domains_of_interest, location, region')
+          .eq('id', viewerId)
+          .maybeSingle()
+        if (data) { card = data; userId = data.id; if (!cancelled) setIsOwner(true) }
+      } else {
+        // Public view — only published members are visible, via the
+        // column-safe member_cards view. Resolve id OR slug.
+        const col = looksLikeUuid ? 'id' : 'member_slug'
+        // member_cards has no id column; for UUID lookups resolve through users
+        // (published only), then read the safe view by slug.
+        if (looksLikeUuid) {
+          const { data: idRow } = await supabase
+            .from('users')
+            .select('member_slug')
+            .eq('id', idOrSlug)
+            .eq('member_card_public', true)
+            .maybeSingle()
+          if (idRow?.member_slug) {
+            const { data } = await supabase
+              .from('member_cards').select('*')
+              .eq('member_slug', idRow.member_slug).maybeSingle()
+            card = data
+          }
+        } else {
+          const { data } = await supabase
+            .from('member_cards').select('*')
+            .eq('member_slug', idOrSlug).maybeSingle()
+          card = data
+        }
+      }
 
       if (cancelled) return
       if (!card) { setNotFound(true); setLoading(false); return }
       setMember(card)
 
-      // We need the user_id to fetch owned actors / sprints / affiliations.
-      // member_cards intentionally omits it; resolve via a second narrow query
-      // that returns id only for the published member.
-      const { data: idRow } = await supabase
-        .from('users')
-        .select('id')
-        .eq('member_slug', slug)
-        .eq('member_card_public', true)
-        .maybeSingle()
-
-      const userId = idRow?.id
+      // Resolve userId for related lookups (already have it for self-view).
+      if (!userId) {
+        const { data: idRow } = await supabase
+          .from('users').select('id')
+          .eq('member_slug', card.member_slug)
+          .eq('member_card_public', true)
+          .maybeSingle()
+        userId = idRow?.id
+      }
       if (!userId) { setLoading(false); return }
 
       // 2. Claimed actor profiles — live only
@@ -140,7 +178,7 @@ export function MemberPublicPage() {
     }
     load()
     return () => { cancelled = true }
-  }, [slug])
+  }, [idOrSlug, user])
 
   if (loading) {
     return (
@@ -179,13 +217,27 @@ export function MemberPublicPage() {
   const initial  = (fullName.trim().charAt(0) || 'M').toUpperCase()
   const place    = member.location || null
   const domains  = member.domains_of_interest || []
-  const isSelf   = user && member && user.id && false // self-preview handled server-side; placeholder
+  const unpublished = isOwner && !member.member_card_public
 
   return (
     <div style={{ background: BG, minHeight: '100vh' }}>
       <Nav activePath="" />
 
       <div style={{ maxWidth: '760px', margin: '0 auto', padding: '72px 32px 120px' }}>
+
+        {/* Owner preview banner — only the owner sees this, and only while unpublished */}
+        {isOwner && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            gap: '14px', background: unpublished ? 'rgba(200,146,42,0.06)' : 'rgba(42,140,79,0.06)',
+            border: `1px solid ${unpublished ? RULE : 'rgba(42,140,79,0.30)'}`,
+            borderRadius: '12px', padding: '12px 18px', marginBottom: '28px' }}>
+            <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.70)' }}>
+              {unpublished
+                ? 'This is your preview. It isn\u2019t public yet \u2014 only you can see it.'
+                : 'This card is live. Anyone with the link can see it.'}
+            </span>
+          </div>
+        )}
 
         {/* Eyebrow */}
         <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em',

@@ -681,7 +681,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
             fontWeight: 500,
             textTransform: 'uppercase',
           }}>
-            Contributor Profile
+            Member Card
           </div>
           <div style={{
             fontFamily: FONT_BODY,
@@ -689,7 +689,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
             color: TEXT_META,
             marginTop: 2,
           }}>
-            Visible on NextUs Planet — opens in new tab
+            Your placement in the ecosystem — opens in new tab
           </div>
         </div>
         <span style={{

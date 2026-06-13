@@ -57,7 +57,9 @@ import WelcomePractitioner    from './app/pages/WelcomePractitioner'
 import WelcomeNext            from './app/pages/WelcomeNext'
 import IntroGate              from './app/components/IntroGate'
 import ProfileEdit            from './app/pages/ProfileEdit'
-import { PublicProfile }      from './app/pages/PublicProfile'
+// PublicProfile retired (migration to sealed member card). /profile/:id now
+// renders MemberPublicPage. The old component leaked developmental-rail data
+// (Map scores, I Am Statements) and must not be routed.
 import { FeedPage }           from './app/pages/Feed'
 import { HorizonGoalsPage }          from './app/pages/HorizonGoalsPage'
 import ContributionPage      from './app/pages/ContributionPage'
@@ -263,7 +265,7 @@ function AppInner() {
         <Route path="/welcome/org-next"             element={<WelcomeNext />} />
         <Route path="/welcome/practitioner-next"    element={<WelcomeNext />} />
         <Route path="/profile/edit"                 element={<ProfileEdit />} />
-        <Route path="/profile/:id"                  element={<PublicProfile />} />
+        <Route path="/profile/:id"                  element={<MemberPublicPage />} />
         <Route path="/feed"                         element={<FeedPage />} />
         <Route path="/contribution"                 element={<ContributionPage />} />
         <Route path="/contribution/legacy"          element={<Contribution />} />
