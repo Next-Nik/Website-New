@@ -157,6 +157,10 @@
       "destination": "/api/practice-confirm"
     },
     {
+      "source": "/api/practice-reconsider",
+      "destination": "/api/practice-reconsider"
+    },
+    {
       "source": "/api/podcast-feed",
       "destination": "/api/podcast-feed"
     },
