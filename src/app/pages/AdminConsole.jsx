@@ -249,7 +249,7 @@ function HorizonFloorModal({ domainSlug, contextLabel, onResolve, onCancel }) {
 
 // ── Tab navigation ────────────────────────────────────────────
 
-const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Place', 'Flags', 'Chains', 'Floor', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
+const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Place', 'Flags', 'Chains', 'Practices', 'Floor', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
 
 function TabBar({ active, setActive }) {
   return (
@@ -2349,6 +2349,181 @@ function SupplyDemandSection({ toast }) {
   )
 }
 
+// ── Practices tab ─────────────────────────────────────────────
+// The judgment surface. Sets standing on practices (best | alternative |
+// ruled_out | unjudged), backed up with a rationale and sources, and toggles
+// whether a ruled-out practice stays open to reconsideration. Reads through the
+// founder-authed service endpoint because unjudged candidates aren't publicly
+// readable. Shows each practice's redemption door — the better practice for the
+// same issue — which is the invitation an actor on a ruled-out practice is
+// offered, never a shaming.
+const STANDING_LABELS = {
+  best:        ['Best',        '#2A6A3A'],
+  alternative: ['Alternative', '#2A4A8A'],
+  ruled_out:   ['Ruled out',   '#8A3030'],
+  unjudged:    ['Unjudged',    'rgba(15,21,35,0.45)'],
+}
+
+function PracticesTab({ toast }) {
+  const [practices, setPractices] = useState([])
+  const [loading,   setLoading]   = useState(true)
+  const [filter,    setFilter]    = useState('all')
+  const [busyId,    setBusyId]    = useState(null)
+  const [draft,     setDraft]     = useState({})   // practiceId -> { rationale, sources }
+
+  async function authedFetch(opts) {
+    const { data: { session } } = await supabase.auth.getSession()
+    const token = session?.access_token
+    if (!token) { toast('Sign-in expired — reload and retry.'); return null }
+    return fetch('/api/practice-admin', {
+      ...opts,
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}`, ...(opts.headers || {}) },
+    })
+  }
+
+  async function load() {
+    setLoading(true)
+    const res = await authedFetch({ method: 'GET' })
+    if (!res) { setLoading(false); return }
+    const body = await res.json().catch(() => ({}))
+    setPractices(body.practices || [])
+    setLoading(false)
+  }
+  useEffect(() => { load() }, [])
+
+  async function judge(p, standing) {
+    setBusyId(p.id)
+    try {
+      const d = draft[p.id] || {}
+      const sources = (d.sources ?? (p.standing_sources || []).join(', '))
+        .split(',').map(s => s.trim()).filter(Boolean)
+      const res = await authedFetch({
+        method: 'POST',
+        body: JSON.stringify({
+          practiceId: p.id,
+          standing,
+          standing_rationale: d.rationale ?? p.standing_rationale ?? '',
+          standing_sources: sources,
+          reconsideration_open: typeof d.reconsider === 'boolean' ? d.reconsider : p.reconsideration_open,
+        }),
+      })
+      if (!res) return
+      const body = await res.json().catch(() => ({}))
+      if (!body.ok) { toast(body.error || 'Could not save.'); return }
+      toast(`"${p.name}" set to ${STANDING_LABELS[standing]?.[0] || standing}`)
+      load()
+    } finally {
+      setBusyId(null)
+    }
+  }
+
+  const domainLabel = id => DOMAIN_LIST.find(d => d.value === id)?.label || id
+  const shown = filter === 'all' ? practices : practices.filter(p => p.standing === filter)
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+        {[['all','All'], ['unjudged','Unjudged'], ['best','Best'], ['alternative','Alternatives'], ['ruled_out','Ruled out']].map(([val, label]) => (
+          <Btn key={val} small variant={filter === val ? 'primary' : 'ghost'} onClick={() => setFilter(val)}>{label}</Btn>
+        ))}
+        <Btn small variant="ghost" onClick={load}>Refresh</Btn>
+      </div>
+
+      <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)',
+        marginBottom: '20px', lineHeight: 1.6, maxWidth: '640px' }}>
+        Set where each practice stands. The viable/not-viable line is the grace gate:
+        an alternative works but ranks lower; ruled-out failed a gate. Back every judgment
+        up with a rationale and sources. Ruled-out shows the practice and the why, never
+        the actors doing it, and always shows the door forward.
+      </div>
+
+      {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {!loading && shown.length === 0 && (
+        <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No {filter === 'all' ? '' : filter + ' '}practices.</p>
+      )}
+
+      {shown.map(p => {
+        const [slabel, scolor] = STANDING_LABELS[p.standing] || STANDING_LABELS.unjudged
+        const d = draft[p.id] || {}
+        const reconsider = typeof d.reconsider === 'boolean' ? d.reconsider : p.reconsideration_open
+        return (
+          <Card key={p.id} style={{ borderLeft: `3px solid ${scolor}` }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
+              <Badge label={slabel} color={scolor} />
+              <span style={{ ...body, fontSize: '18px', color: '#0F1523' }}>{p.name}</span>
+              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.45)' }}>{p.slug}</span>
+              {(p.domains || []).map(dm => <Badge key={dm} label={domainLabel(dm)} color="#2A4A8A" />)}
+              <span style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.45)' }}>{p.embodiment_count} embodying</span>
+            </div>
+
+            {p.statement && (
+              <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, marginBottom: '8px' }}>{p.statement}</div>
+            )}
+
+            {(p.problem_chains || []).length > 0 && (
+              <div style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
+                Answers: {p.problem_chains.join(', ')}
+              </div>
+            )}
+
+            {(p.tiers || []).length > 0 && (
+              <div style={{ marginBottom: '10px' }}>
+                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold, textTransform: 'uppercase', marginBottom: '4px' }}>Tier ladder</div>
+                {p.tiers.map(t => (
+                  <div key={t.id} style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+                    {t.position}. {t.label}{t.resource_level ? ` · ${t.resource_level}` : ''}{t.scale ? ` · ${t.scale}` : ''}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Redemption door — the way forward for an actor on this practice */}
+            {(p.redemption_door || []).length > 0 && (
+              <div style={{ marginBottom: '10px', padding: '8px 12px', background: 'rgba(42,106,58,0.06)', borderRadius: '8px' }}>
+                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: '#2A6A3A', textTransform: 'uppercase', marginBottom: '4px' }}>Door forward (same issue)</div>
+                <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
+                  {p.redemption_door.map(b => b.name).join(' · ')}
+                </div>
+              </div>
+            )}
+
+            {/* Backing */}
+            <textarea
+              defaultValue={p.standing_rationale || ''}
+              placeholder="Rationale — why this standing. Back it up."
+              onChange={e => setDraft(s => ({ ...s, [p.id]: { ...s[p.id], rationale: e.target.value } }))}
+              style={{ ...body, width: '100%', minHeight: '54px', fontSize: '13px', padding: '8px 10px',
+                border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', marginBottom: '8px', resize: 'vertical' }}
+            />
+            <input
+              defaultValue={(p.standing_sources || []).join(', ')}
+              placeholder="Sources (comma-separated URLs or citations)"
+              onChange={e => setDraft(s => ({ ...s, [p.id]: { ...s[p.id], sources: e.target.value } }))}
+              style={{ ...body, width: '100%', fontSize: '13px', padding: '8px 10px',
+                border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', marginBottom: '10px' }}
+            />
+
+            <label style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+              <input type="checkbox" checked={reconsider}
+                onChange={e => setDraft(s => ({ ...s, [p.id]: { ...s[p.id], reconsider: e.target.checked } }))} />
+              Open to reconsideration (uncheck only for the settled — we don't relitigate flat earth)
+            </label>
+
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+              {['best','alternative','ruled_out','unjudged'].map(st => (
+                <Btn key={st} small disabled={busyId === p.id} variant={p.standing === st ? 'primary' : 'ghost'}
+                  onClick={() => judge(p, st)}>
+                  {busyId === p.id ? '…' : STANDING_LABELS[st][0]}
+                </Btn>
+              ))}
+            </div>
+          </Card>
+        )
+      })}
+    </div>
+  )
+}
+
 function FlagsTab({ toast }) {
   const [flags,    setFlags]    = useState([])
   const [loading,  setLoading]  = useState(true)
@@ -3964,6 +4139,7 @@ export function AdminConsolePage() {
         {tab === 'Place'         && <PlaceTab        toast={showToast} />}
         {tab === 'Flags'         && <FlagsTab        toast={showToast} />}
         {tab === 'Chains'        && <ChainsTab       toast={showToast} />}
+        {tab === 'Practices'     && <PracticesTab    toast={showToast} />}
         {tab === 'Floor'         && <FloorTab         toast={showToast} />}
         {tab === 'Domain Data'   && <DomainDataTab   toast={showToast} />}
         {tab === 'Indicators'    && <IndicatorsTab   toast={showToast} />}

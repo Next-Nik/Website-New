@@ -149,6 +149,10 @@
       "destination": "/api/practice-persist"
     },
     {
+      "source": "/api/practice-admin",
+      "destination": "/api/practice-admin"
+    },
+    {
       "source": "/api/podcast-feed",
       "destination": "/api/podcast-feed"
     },
