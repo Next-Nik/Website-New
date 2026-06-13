@@ -534,8 +534,9 @@ function FilterRow({ value, onChange }) {
 
 function WatchedSection() {
   const navigate = useNavigate()
-  const viewerCtx = useViewerContext()
-  const { items, loading } = useFocusFeed('watched', viewerCtx)
+  const { data: viewerCtx, loading: ctxLoading } = useViewerContext()
+  const { items, loading: feedLoading } = useFocusFeed('watched', viewerCtx)
+  const loading = ctxLoading || feedLoading
 
   return (
     <SectionFrame
@@ -566,8 +567,9 @@ function WatchedSection() {
 
 function CuratedSection() {
   const navigate = useNavigate()
-  const viewerCtx = useViewerContext()
-  const { items, loading } = useFocusFeed('curated', viewerCtx)
+  const { data: viewerCtx, loading: ctxLoading } = useViewerContext()
+  const { items, loading: feedLoading } = useFocusFeed('curated', viewerCtx)
+  const loading = ctxLoading || feedLoading
 
   return (
     <SectionFrame

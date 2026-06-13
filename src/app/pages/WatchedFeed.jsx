@@ -28,19 +28,20 @@ import { InfoButton } from '../components/InfoButton'
 const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 export default function WatchedFeed() {
-  const viewerCtx = useViewerContext()
+  const { data: viewerCtx, loading: ctxLoading } = useViewerContext()
   const { count: watchCount } = useWatch()
   const { hasFocus } = useActiveFocus()
   const {
     items,
-    loading,
+    loading: feedLoading,
     hasMore,
     reachedEnd,
     page,
     loadMore,
   } = useFocusFeed('watched', viewerCtx)
+  const loading = ctxLoading || feedLoading
 
-  if (!viewerCtx) {
+  if (!ctxLoading && !viewerCtx) {
     return <NotSignedIn />
   }
 

@@ -24,19 +24,20 @@ import { InfoButton } from '../components/InfoButton'
 const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
 
 export default function CuratedFeed() {
-  const viewerCtx = useViewerContext()
+  const { data: viewerCtx, loading: ctxLoading } = useViewerContext()
   const { slots, spent, cap } = useRoster()
   const { hasFocus } = useActiveFocus()
   const {
     items,
-    loading,
+    loading: feedLoading,
     hasMore,
     reachedEnd,
     page,
     loadMore,
   } = useFocusFeed('curated', viewerCtx)
+  const loading = ctxLoading || feedLoading
 
-  if (!viewerCtx) return <NotSignedIn />
+  if (!ctxLoading && !viewerCtx) return <NotSignedIn />
 
   return (
     <div style={{ background: parch, minHeight: '100dvh' }}>
