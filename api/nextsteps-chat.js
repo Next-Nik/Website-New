@@ -180,6 +180,8 @@ For THE REFLECTION LANDING (the final turn of Phase 2 — the moment the reframe
   "domains": ["domain-key", ...],
   "scale": "civ" | "self",
   "problem_chains": ["chain-slug", ...],
+  "chain_gap": false,
+  "concern_shape": null,
   "closing": "One line — what gets said as the person enters the Domain Landing. Should land, not summarise."
 }
 
@@ -203,6 +205,10 @@ CONTROLLED PROBLEM-CHAIN VOCABULARY (use slugs exactly; do not invent):
   energy-injustice
 
 If a person's concern doesn't fit any chain, return an empty array — never invent a slug. Better to match on domain alone than tag wrongly.
+
+CHAIN GAP CAPTURE. When this is a 'reframe' branch (a real away-from concern was present and you completed it) AND problem_chains came back empty because nothing in the controlled vocabulary honestly held the concern, set "chain_gap": true. This is not a failure. It is the most valuable signal the system collects: a concern the world has no shared language for yet, spoken by the person living inside it.
+
+When chain_gap is true, also produce "concern_shape": one de-identified line stating the away-from concern in plain grammar (how a person speaks the problem). STRIP everything personal: names, specific places, employers, named people, health specifics, anything that could identify the individual. Keep only the shape of the concern. For example, "I moved to Lisbon for my husband's job and there's no one here for a new mum like me" becomes "a new mother who has relocated has no community to land into". If the concern DID match a chain, or this is the 'mirror' branch, set "chain_gap": false and "concern_shape": null. Never invent a chain slug to dodge a gap. An honest gap is the point.
 
 For 'mirror' branch (diffuse): problem_chains MAY be empty, since there is no specific away-from to extract. If the orienting question surfaced something, tag it; otherwise leave empty.
 
@@ -311,6 +317,18 @@ function tryParseReflection(text) {
       // problem_chains is optional in v1 of the contract but always
       // emitted by the v1.1 prompt — default to empty if missing.
       if (!Array.isArray(obj.problem_chains)) obj.problem_chains = [];
+      // Demand-side learning: a concern the vocabulary could not hold.
+      // Enforce the invariant regardless of model drift — chain_gap is only
+      // honest on the 'reframe' branch with no matched chain, and
+      // concern_shape only survives when chain_gap holds.
+      obj.chain_gap = obj.branch === "reframe"
+        && obj.problem_chains.length === 0
+        && obj.chain_gap === true;
+      obj.concern_shape = (obj.chain_gap
+        && typeof obj.concern_shape === "string"
+        && obj.concern_shape.trim())
+        ? obj.concern_shape.trim()
+        : null;
       return obj;
     }
   } catch (_) {

@@ -102,6 +102,8 @@ export function NextStepsPage() {
           domains: reflection.domains,
           scale: reflection.scale,
           problem_chains: reflection.problem_chains || [],
+          chain_gap: reflection.chain_gap === true,
+          concern_shape: reflection.concern_shape || null,
         }),
       })
       if (!res.ok) throw new Error(`create track ${res.status}`)

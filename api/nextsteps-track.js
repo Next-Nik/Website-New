@@ -71,6 +71,8 @@ module.exports = async (req, res) => {
       domains,
       scale,
       problem_chains,
+      chain_gap,
+      concern_shape,
       // branch is informational — 'reframe' or 'mirror'
       // mirror branch tracks may have toward_sentence === null
     } = req.body || {};
@@ -101,6 +103,30 @@ module.exports = async (req, res) => {
       console.error('NextSteps track create error:', error);
       return res.status(500).json({ error: 'Could not create track.' });
     }
+
+    // Demand-side vocabulary learning (Slice 1 — capture).
+    // A clear away-from concern that no live chain held. Write the scrubbed
+    // shape to the learning corpus. The verbatim original_concern stays on the
+    // track, untouched — this is a separate, de-identified record. The scrub
+    // happens upstream in the reflection; we persist only the shape here.
+    // Best-effort: a capture failure must never break track creation.
+    if (chain_gap === true && typeof concern_shape === 'string' && concern_shape.trim()) {
+      try {
+        const { error: gapErr } = await supabase
+          .from('nextsteps_chain_gaps')
+          .insert({
+            concern_shape: concern_shape.trim(),
+            domains: Array.isArray(domains) ? domains : [],
+            scale: scale === 'self' ? 'self' : 'civ',
+            track_id: data.id,
+            user_id: userId,
+          });
+        if (gapErr) console.error('NextSteps chain-gap capture (non-fatal):', gapErr);
+      } catch (gapEx) {
+        console.error('NextSteps chain-gap capture threw (non-fatal):', gapEx);
+      }
+    }
+
     return res.json({ track: data });
   }
 
