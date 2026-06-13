@@ -2094,6 +2094,7 @@ function ChainsTab({ toast }) {
   const [loading,   setLoading]   = useState(true)
   const [filter,    setFilter]    = useState('pending')
   const [busyId,    setBusyId]    = useState(null)
+  const [subTab,    setSubTab]    = useState('proposals')
 
   async function load() {
     setLoading(true)
@@ -2167,6 +2168,24 @@ function ChainsTab({ toast }) {
 
   return (
     <div>
+      <div style={{ display: 'flex', gap: '0', marginBottom: '22px',
+        borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
+        {[['proposals','Proposals'], ['supply','Supply & Demand']].map(([val, label]) => (
+          <button key={val} type="button" onClick={() => setSubTab(val)}
+            style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em',
+              padding: '8px 18px', background: 'none', border: 'none', cursor: 'pointer',
+              color: subTab === val ? gold : 'rgba(15,21,35,0.45)',
+              borderBottom: subTab === val ? `2px solid ${gold}` : '2px solid transparent',
+              marginBottom: '-1px', transition: 'all 0.15s' }}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {subTab === 'supply' && <SupplyDemandSection toast={toast} />}
+
+      {subTab === 'proposals' && (
+      <div>
       <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
         {[['pending','Pending'], ['approved','Approved'], ['rejected','Rejected']].map(([val, label]) => (
           <Btn key={val} small variant={filter === val ? 'primary' : 'ghost'}
@@ -2250,6 +2269,79 @@ function ChainsTab({ toast }) {
                 </Btn>
               </div>
             )}
+          </Card>
+        )
+      })}
+      </div>
+      )}
+    </div>
+  )
+}
+
+// The unmet-need readout: per active chain, who answers it (actor supply) vs
+// who arrives matching it (people demand). Chains with demand and no supply are
+// the seeding queue writing itself.
+function SupplyDemandSection({ toast }) {
+  const [rows,     setRows]     = useState([])
+  const [loading,  setLoading]  = useState(true)
+  const [onlyGaps, setOnlyGaps] = useState(true)
+
+  async function load() {
+    setLoading(true)
+    const { data, error } = await supabase.rpc('nextus_chain_supply_demand')
+    if (error) { toast('Could not load supply / demand.'); setRows([]); setLoading(false); return }
+    setRows(data || [])
+    setLoading(false)
+  }
+  useEffect(() => { load() }, [])
+
+  const domainLabel = id => DOMAIN_LIST.find(d => d.value === id)?.label || id
+  const shown = onlyGaps ? rows.filter(r => Number(r.actor_count) === 0) : rows
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', alignItems: 'center' }}>
+        <Btn small variant={onlyGaps ? 'primary' : 'ghost'} onClick={() => setOnlyGaps(true)}>Unmet (no actors)</Btn>
+        <Btn small variant={!onlyGaps ? 'primary' : 'ghost'} onClick={() => setOnlyGaps(false)}>All active chains</Btn>
+        <Btn small variant="ghost" onClick={load}>Refresh</Btn>
+      </div>
+
+      <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)',
+        marginBottom: '20px', lineHeight: 1.6, maxWidth: '620px' }}>
+        Chains people arrive matching but no live actor answers yet. Where demand has
+        outrun supply, this is the seeding queue writing itself — go find who is building toward it.
+      </div>
+
+      {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {!loading && shown.length === 0 && (
+        <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>
+          {onlyGaps ? 'No unmet chains — every active chain has at least one actor.' : 'No active chains.'}
+        </p>
+      )}
+
+      {shown.map(r => {
+        const noSupply = Number(r.actor_count) === 0
+        return (
+          <Card key={r.slug} style={{
+            borderLeft: noSupply ? '3px solid rgba(138,48,48,0.50)' : '3px solid rgba(200,146,42,0.30)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ ...body, fontSize: '17px', color: '#0F1523' }}>{r.label}</span>
+              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.45)' }}>{r.slug}</span>
+              {r.is_demand_origin && <Badge label="demand-born" color="#2A6A3A" />}
+              {(r.domains || []).map(d => <Badge key={d} label={domainLabel(d)} color="#2A4A8A" />)}
+            </div>
+            <div style={{ display: 'flex', gap: '24px', marginTop: '10px' }}>
+              <div>
+                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase',
+                  color: noSupply ? '#8A3030' : gold }}>Actors</div>
+                <div style={{ ...body, fontSize: '18px', color: noSupply ? '#8A3030' : '#0F1523' }}>{r.actor_count}</div>
+              </div>
+              <div>
+                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em', textTransform: 'uppercase', color: gold }}>People arriving</div>
+                <div style={{ ...body, fontSize: '18px', color: '#0F1523' }}>{r.track_count}</div>
+              </div>
+            </div>
           </Card>
         )
       })}
