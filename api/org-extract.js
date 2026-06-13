@@ -504,6 +504,57 @@ The relationship is recorded on the FROM actor's record. Example:
   The Bridge Experience (programme, child) has relationship → { to_name: "Preston Smiles", relationship_type: "parent_child" }
 
 ──────────────────────────────────────────────────────────────────────────────
+PRACTICES — WHAT THIS ACTOR DOES THAT WORKS
+──────────────────────────────────────────────────────────────────────────────
+
+A problem-chain is an away-from concern people walk in with. A PRACTICE is the
+toward-answer: a repeatable approach that moves a domain toward its Horizon Goal.
+Where the source shows this actor visibly doing something that works (a method,
+model, programme shape, or repeatable approach), propose it as a practice the
+actor embodies.
+
+A practice is DISTINCT from the actor. The actor embodies the practice; the actor
+is never itself the practice. Name the approach, not the organisation.
+"Participatory budgeting" is a practice; "the city council" is not.
+
+TIERS. The same practice can be done at right-sized levels, like a tier of gear
+that is genuinely good for the level it is built for. A tier is FIT, not rank:
+more resource and commitment, not "better." Identify the ONE tier THIS actor
+operates at. Describe it with dignity. The entry level is "the right place to
+start," never "the basic one." A grassroots actor and a global institution may
+embody the same practice at different tiers, and neither is lesser.
+
+WHAT YOU PROPOSE, AND WHAT YOU DO NOT. You propose a CANDIDATE practice: its
+identity, placement, the chains it answers, and the tier this actor visibly
+operates at, grounded in what the source shows. You do NOT score it, you do NOT
+judge it, and you do NOT assert it is established or best. Whether a practice
+truly works, and whether it does so with grace, is decided later by evidence and
+by the domain community, never by extraction. The embodiment is a proposal the
+owner confirms.
+
+For each practice, return:
+  {
+    "name": "short name of the approach",
+    "slug": "lowercase-hyphenated-stable",
+    "statement": "one TED-tight line, third person, the practice not the practitioner, or null",
+    "domains": ["domain-slug", ...],
+    "subdomains": ["subdomain-slug", ...],
+    "fields": ["field-slug", ...],
+    "problem_chains": ["chain-slug", ...],
+    "tier": {
+      "label": "dignified tier name (never 'basic')",
+      "looks_like": "what doing it at this level looks like, from the source",
+      "resource_level": "low | moderate | high",
+      "scale": "local | municipal | regional | national | international | global"
+    },
+    "evidence_note": "what the source shows about this actor doing it"
+  }
+
+Most actors embody zero to three practices. If the source shows no repeatable
+approach clearly enough to name, return an empty array. Do not invent a practice
+to fill the field. An honest empty is correct.
+
+──────────────────────────────────────────────────────────────────────────────
 IMAGE
 ──────────────────────────────────────────────────────────────────────────────
 
@@ -602,6 +653,15 @@ Return an array of 1-6 actor objects. Use this exact shape:
     ],
     "relationships": [
       { "to_name": "Other Actor Name", "relationship_type": "parent_child" }
+    ],
+    "practices": [
+      {
+        "name": "...", "slug": "...", "statement": "... or null",
+        "domains": ["..."], "subdomains": ["..."], "fields": ["..."],
+        "problem_chains": ["..."],
+        "tier": { "label": "...", "looks_like": "...", "resource_level": "low|moderate|high", "scale": "..." },
+        "evidence_note": "..."
+      }
     ]
   }
 ]
@@ -714,6 +774,35 @@ function enforceShape(record, vocab = null) {
     r && r.to_name && ALLOWED_REL_TYPES.includes(r.relationship_type)
   ) : []
 
+  // Practices — candidate toward-answers this actor embodies. Identity, chain
+  // links, and the observed tier only. Never scored, judged, or asserted as
+  // established — that is the scoring layer's and the community's job. Reuses
+  // the cleanSlugs validator above so placement slugs stay real.
+  const RESOURCE_LEVELS = new Set(['low', 'moderate', 'high'])
+  record.practices = Array.isArray(record.practices) ? record.practices
+    .filter(p => p && typeof p.name === 'string' && p.name.trim())
+    .map(p => {
+      const slug = (typeof p.slug === 'string' && p.slug.trim() ? p.slug : p.name)
+        .trim().toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '')
+      const tIn = (p.tier && typeof p.tier === 'object') ? p.tier : {}
+      return {
+        name:           p.name.trim(),
+        slug,
+        statement:      (typeof p.statement === 'string' && p.statement.trim()) ? p.statement.trim() : null,
+        domains:        Array.isArray(p.domains) ? p.domains.filter(s => typeof s === 'string' && s.trim()).map(s => s.trim()) : [],
+        subdomains:     cleanSlugs(p.subdomains,     vocab?.validSubdomains),
+        fields:         cleanSlugs(p.fields,         vocab?.validFields),
+        problem_chains: cleanSlugs(p.problem_chains, vocab?.validChains),
+        tier: {
+          label:          (typeof tIn.label === 'string' && tIn.label.trim()) ? tIn.label.trim() : null,
+          looks_like:     (typeof tIn.looks_like === 'string' && tIn.looks_like.trim()) ? tIn.looks_like.trim() : null,
+          resource_level: RESOURCE_LEVELS.has(tIn.resource_level) ? tIn.resource_level : null,
+          scale:          (typeof tIn.scale === 'string' && tIn.scale.trim()) ? tIn.scale.trim() : null,
+        },
+        evidence_note:  (typeof p.evidence_note === 'string' && p.evidence_note.trim()) ? p.evidence_note.trim() : null,
+      }
+    }) : []
+
   // Tier from score
   const s = record.alignment_score ?? 0
   if      (s <= 4) record.placement_tier = 'pattern_instance'
@@ -760,7 +849,7 @@ module.exports = async function handler(req, res) {
   if (mode === 'html') {
     content = `[HTML source provided]\n\n${stripHtml(input)}\n\n${knownContext}`
   } else if (mode === 'url') {
-    content = `[URL provided: ${input.trim()}]\n\nRead this URL. Identify ALL distinct actors — look for: the main organisation/practitioner, any retreat or physical places, any programmes with their own identity, any partner-run practices. Generate a separate record for each. Podcasts, Substacks, YouTube channels, and newsletters are never separate records — capture them as links on the parent actor.\n\nFor every record, meet the Floor: accurate image, description, story (2-4 paragraphs from explicit source claims), tagline, ALL media links discoverable on the source, and at least one business contact path (email, contact form, booking link, or phone). Be exhaustive on the links — catch every channel.\n\n${knownContext}`
+    content = `[URL provided: ${input.trim()}]\n\nRead this URL. Identify ALL distinct actors — look for: the main organisation/practitioner, any retreat or physical places, any programmes with their own identity, any partner-run practices. Generate a separate record for each. Podcasts, Substacks, YouTube channels, and newsletters are never separate records — capture them as links on the parent actor.\n\nFor every record, meet the Floor: accurate image, description, story (2-4 paragraphs from explicit source claims), tagline, ALL media links discoverable on the source, and at least one business contact path (email, contact form, booking link, or phone). Be exhaustive on the links — catch every channel. Also propose any PRACTICES each actor visibly embodies, the repeatable approaches that work, with the tier the actor operates at. Identity and observed tier only, never scored.\n\n${knownContext}`
   } else {
     content = `[Description provided]\n\n${input.trim()}\n\nIdentify ALL distinct actors and their relationships. Meet the Floor for each.\n\n${knownContext}`
   }
