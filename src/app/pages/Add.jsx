@@ -385,6 +385,8 @@ export function AddPage() {
         _aiPress:       primary.press          || [],
         // Stash proposed new chains for save phase — saved to proposals table
         _proposedChains: primary.proposed_chains || [],
+        // Stash proposed practices for save phase — persisted via /api/practice-persist
+        practices:      primary.practices       || [],
         // Stash relationships so primary can have parent/child resolved
         relationships:  primary.relationships  || [],
       }))
@@ -630,6 +632,27 @@ export function AddPage() {
       }
     } catch (propErr) {
       console.warn('Problem-chain proposal save skipped:', propErr?.message)
+    }
+
+    // Persist proposed practices for each actor (candidate practices + tier
+    // ladder + unconfirmed embodiments). Service-role write via founder token.
+    // Best-effort — a failure never blocks the save.
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token
+      if (token) {
+        for (const actor of allActors) {
+          const practices = actor.data.practices || []
+          if (!practices.length) continue
+          await fetch('/api/practice-persist', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ actorId: actor.id, practices }),
+          }).catch(() => {})
+        }
+      }
+    } catch (pracErr) {
+      console.warn('Practice persistence skipped:', pracErr?.message)
     }
 
     // Re-host hotlinked images into Supabase Storage. Fire-and-forget —

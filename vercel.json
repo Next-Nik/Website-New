@@ -145,6 +145,10 @@
       "destination": "/api/chain-promote"
     },
     {
+      "source": "/api/practice-persist",
+      "destination": "/api/practice-persist"
+    },
+    {
       "source": "/api/podcast-feed",
       "destination": "/api/podcast-feed"
     },
