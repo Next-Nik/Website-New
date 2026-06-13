@@ -216,7 +216,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
           letterSpacing: '0.18em',
           color: GOLD_DK,
         }}>
-          {userRow?.beta_group ? userRow.beta_group.toUpperCase().replace(/_/g, ' ') : 'BETA'}
+          {isFounder ? 'FOUNDER' : ''}
         </div>
         <div style={{
           fontFamily: FONT_SC,
@@ -666,7 +666,6 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
         }}>
           {[
             ['Email',        email],
-            ['Beta group',   userRow?.beta_group ? userRow.beta_group.replace(/_/g, ' ') : (loaded ? '—' : '…')],
             ['Member since', formatDate(userRow?.created_at) || (loaded ? '—' : '…')],
           ].map(([label, val], i, arr) => (
             <div key={label} style={{

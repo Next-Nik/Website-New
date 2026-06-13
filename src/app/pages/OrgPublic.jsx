@@ -1250,12 +1250,13 @@ function RelationshipsSection({ parent, children, partners, constellation }) {
 function ProvenanceBadge({ actor }) {
   let label, hint
   if (actor.seeded_by === 'self') {
-    label = 'Self-declared'
-    hint = 'Added and managed by the actor.'
+    // Owner-built and owner-managed — the profile itself is the provenance.
+    // No badge.
+    return null
   } else if (actor.seeded_by === 'community') {
-    label = 'Community-added'
+    label = 'Placed by the community'
     hint = actor.profile_owner
-      ? 'Added by the community. Claimed and managed by the actor.'
+      ? 'Claimed and managed by the actor.'
       : 'Held in trust by NextUs until the owner claims and adds depth.'
   } else if (actor.seeded_by === 'nextus') {
     label = 'Seeded by NextUs'

@@ -802,18 +802,18 @@ export function AddPage() {
           </div>
           <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
             lineHeight: 1.55, marginBottom: '12px' }}>
-            Paste any public URL — their website, podcast, YouTube channel, Substack, LinkedIn,
-            or another platform where they show up. Or paste a description if there's no URL.
-            You review and edit before anything goes live.
+            Their website, or any page where their work shows up — or a few words if there's no URL.
+            Podcasts, newsletters, and channels become links on their profile.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <textarea value={aiUrl}
               onChange={e => setAiUrl(e.target.value)}
-              rows={3}
-              placeholder={'Paste any URL — https://example.com, a YouTube channel, a Substack, etc.\nOr paste raw page source — <!DOCTYPE html>...\nOr describe them in plain text'}
-              style={{ ...body, fontSize: '14px', color: dark, padding: '10px 14px',
-                borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.28)',
-                background: parch, outline: 'none', width: '100%',
+              rows={2}
+              placeholder={'Paste a URL or describe them...'}
+              style={{ ...body, fontSize: '16px', color: dark, padding: '12px 16px',
+                borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.55)',
+                background: '#FFFFFF', outline: 'none', width: '100%',
+                boxShadow: 'inset 0 1px 3px rgba(15,21,35,0.06)',
                 resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box' }}
             />
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>

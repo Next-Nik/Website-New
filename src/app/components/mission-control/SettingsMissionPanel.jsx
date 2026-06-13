@@ -274,35 +274,6 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
             </span>
           </div>
 
-          {/* Beta group row */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '10px 16px',
-            borderBottom: `1px solid ${GOLD_RULE}`,
-            gap: 10,
-          }}>
-            <span style={{
-              fontFamily: FONT_SC,
-              fontSize: 10,
-              letterSpacing: '0.16em',
-              color: TEXT_FAINT,
-              textTransform: 'uppercase',
-              flexShrink: 0,
-            }}>
-              Beta group
-            </span>
-            <span style={{
-              fontFamily: FONT_BODY,
-              fontSize: 13,
-              color: TEXT_META,
-              textTransform: 'capitalize',
-            }}>
-              {userRow?.beta_group ? userRow.beta_group.replace(/_/g, ' ') : (loaded ? '—' : '…')}
-            </span>
-          </div>
-
           {/* Member since */}
           <div style={{
             display: 'flex',

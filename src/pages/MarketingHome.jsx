@@ -77,8 +77,8 @@ function FractalWheels() {
 // error — never zeros, never placeholders. Public data only; this
 // page is signed-out.
 const PROVENANCE_LABELS = {
-  self:      'Self-declared',
-  community: 'Community-added',
+  // 'self' shows no badge — owner-managed is its own provenance.
+  community: 'Placed by the community',
   nextus:    'Seeded by NextUs',
 }
 
@@ -89,7 +89,7 @@ function provenanceFor(actor) {
     return 'Seeded by NextUs · Claimed and managed by the actor'
   }
   if (actor.seeded_by === 'community' && actor.profile_owner) {
-    return 'Community-added · Claimed and managed by the actor'
+    return 'Placed by the community · Claimed and managed by the actor'
   }
   return base
 }

@@ -164,9 +164,8 @@ This site holds three distinct actor records that must all be returned:
    - Type: practitioner. Domain: human-being. Scale: international.
    - Location: Mexico City.
 
-3. NextUs Podcast (programme)
-   - The platform's podcast.
-   - Type: programme. Parent: NextUs.
+The NextUs podcast, Substack, and social channels are links on the
+NextUs record — not separate records.
 `,
 }
 
@@ -334,7 +333,6 @@ carefully for ALL of these patterns in the source:
 
 - A named individual whose personal practice, coaching, or work is distinct
 - An organisation, company, non-profit, or collective
-- A podcast that has its own brand and audience (separate from its host)
 - A programme, course, methodology, or tool suite with its own identity
 - A physical place (retreat centre, coworking space, land project)
 - A project, initiative, or campaign with its own scope
@@ -350,12 +348,17 @@ identifies the practitioner; the content describes the practice.
 
 One source can yield MULTIPLE distinct actors. A coach's website may surface:
 - The coach (practitioner)
-- Their podcast (programme)
 - Their retreat venue (place)
 - A coaching practice they run with a partner (programme)
 
 Generate a separate record for each. Do not collapse multiple entities into one.
 Do not assume only one actor per source.
+
+MEDIA CHANNELS ARE NEVER STANDALONE RECORDS. A podcast, Substack, YouTube
+channel, newsletter, or social account — however strong its own brand — is a
+feature of its actor's profile, not an actor. Capture every channel in the
+parent record's links array (podcast_rss, substack, youtube_channel, etc.)
+and move on. Never generate a separate record for one.
 
 ──────────────────────────────────────────────────────────────────────────────
 ACTOR TYPES (use the exact string)
@@ -379,15 +382,16 @@ practitioner   — the public-facing professional work of a named individual.
                  Examples: Preston Smiles (his coaching/teaching practice),
                  a therapist's practice, an independent consultant.
 
-programme      — a methodology, course, retreat experience, podcast, tool suite,
+programme      — a methodology, course, retreat experience, tool suite,
                  book series, or repeatable offering with its own identity
                  and audience. Often nested under a practitioner or org.
                  Examples: The Bridge Experience (Preston's workshop),
                  Spiritual Millionaire Academy (Preston's training),
-                 The Horizon Suite (NextUs's tool suite),
-                 a podcast like Brothers In Depth or The Preston Smiles Show.
-                 Critical: podcasts are programmes, NOT organisations.
+                 The Horizon Suite (NextUs's tool suite).
                  Courses are programmes. Workshops are programmes.
+                 Critical: podcasts, Substacks, YouTube channels, and
+                 newsletters are NOT programmes and NOT records of any
+                 type — they belong in the parent actor's links.
 
 place          — a physical location whose IDENTITY is primarily about the
                  place itself, not an organisation that runs it.
@@ -489,7 +493,7 @@ When you propose multiple actors from one source, identify their relationships.
 
 relationship_type values:
   parent_child       — one actor is structurally contained in another
-                       (UNEP inside UN; a podcast inside its host's umbrella)
+                       (UNEP inside UN; a programme inside the org that runs it)
   member_of          — one actor is a member or participant in another
   partner            — peer relationship, neither contains the other
                        (a coaching practice run by spouses)
@@ -497,7 +501,7 @@ relationship_type values:
 Each relationship: { "to_name": "name of related actor", "relationship_type": "..." }
 
 The relationship is recorded on the FROM actor's record. Example:
-  Brothers In Depth (podcast, child) has relationship → { to_name: "James Mattingley", relationship_type: "parent_child" }
+  The Bridge Experience (programme, child) has relationship → { to_name: "Preston Smiles", relationship_type: "parent_child" }
 
 ──────────────────────────────────────────────────────────────────────────────
 IMAGE
@@ -756,7 +760,7 @@ module.exports = async function handler(req, res) {
   if (mode === 'html') {
     content = `[HTML source provided]\n\n${stripHtml(input)}\n\n${knownContext}`
   } else if (mode === 'url') {
-    content = `[URL provided: ${input.trim()}]\n\nRead this URL. Identify ALL distinct actors — look for: the main organisation/practitioner, any podcasts with their own brand, any retreat or physical places, any programmes with their own identity, any partner-run practices. Generate a separate record for each.\n\nFor every record, meet the Floor: accurate image, description, story (2-4 paragraphs from explicit source claims), tagline, ALL media links discoverable on the source, and at least one business contact path (email, contact form, booking link, or phone). Be exhaustive on the links — catch every channel.\n\n${knownContext}`
+    content = `[URL provided: ${input.trim()}]\n\nRead this URL. Identify ALL distinct actors — look for: the main organisation/practitioner, any retreat or physical places, any programmes with their own identity, any partner-run practices. Generate a separate record for each. Podcasts, Substacks, YouTube channels, and newsletters are never separate records — capture them as links on the parent actor.\n\nFor every record, meet the Floor: accurate image, description, story (2-4 paragraphs from explicit source claims), tagline, ALL media links discoverable on the source, and at least one business contact path (email, contact form, booking link, or phone). Be exhaustive on the links — catch every channel.\n\n${knownContext}`
   } else {
     content = `[Description provided]\n\n${input.trim()}\n\nIdentify ALL distinct actors and their relationships. Meet the Floor for each.\n\n${knownContext}`
   }
