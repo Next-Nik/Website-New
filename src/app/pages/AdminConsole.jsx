@@ -249,7 +249,7 @@ function HorizonFloorModal({ domainSlug, contextLabel, onResolve, onCancel }) {
 
 // ── Tab navigation ────────────────────────────────────────────
 
-const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Place', 'Flags', 'Floor', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
+const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Place', 'Flags', 'Chains', 'Floor', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
 
 function TabBar({ active, setActive }) {
   return (
@@ -2082,6 +2082,181 @@ function ClaimRequestsSection({ toast }) {
   )
 }
 
+// ── Chains tab ────────────────────────────────────────────────
+// Reviews problem-chain proposals — supply-side (extractor, surfaced from a
+// seeded actor) and demand-side (clustering cron, surfaced from N people who
+// arrived with a concern no live chain held). Approving promotes the chain
+// into the live vocabulary and closes the loop: aliases seed from the cluster,
+// the people who brought it are retro-tagged, and overlapping actors are
+// re-tagged via the existing auto-tagger.
+function ChainsTab({ toast }) {
+  const [proposals, setProposals] = useState([])
+  const [loading,   setLoading]   = useState(true)
+  const [filter,    setFilter]    = useState('pending')
+  const [busyId,    setBusyId]    = useState(null)
+
+  async function load() {
+    setLoading(true)
+    const { data } = await supabase
+      .from('nextus_problem_chain_proposals')
+      .select('*')
+      .eq('status', filter)
+      .order('people_count', { ascending: false, nullsFirst: false })
+      .order('created_at', { ascending: false })
+      .limit(100)
+    setProposals(data || [])
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [filter])
+
+  async function callPromote(proposalId, action) {
+    const { data: { session } } = await supabase.auth.getSession()
+    const token = session?.access_token
+    if (!token) { toast('Sign-in expired — reload and retry.'); return null }
+    const res = await fetch('/api/chain-promote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ proposalId, action }),
+    })
+    return { status: res.status, body: await res.json().catch(() => ({})) }
+  }
+
+  async function approve(p) {
+    setBusyId(p.id)
+    try {
+      const r = await callPromote(p.id, 'approve')
+      if (!r) return
+      if (r.status === 409) { toast(r.body?.message || 'Slug already exists.'); return }
+      if (r.status !== 200 || !r.body?.ok) { toast(r.body?.message || r.body?.error || 'Promotion failed.'); return }
+
+      // Fire the existing actor auto-tagger against overlapping actors so the
+      // supply side picks the new chain up. Fire-and-forget — promotion already
+      // succeeded; tagging is best-effort and runs long.
+      const actorIds = r.body.actor_ids || []
+      if (actorIds.length) {
+        fetch('/api/nextsteps-tag-actor', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ actor_ids: actorIds }),
+        }).catch(() => {})
+      }
+      const bits = [`"${r.body.chain?.label || p.label}" is live`]
+      if (r.body.retagged_tracks) bits.push(`${r.body.retagged_tracks} people re-tagged`)
+      if (actorIds.length)        bits.push(`re-tagging ${actorIds.length} actors`)
+      toast(bits.join(' · '))
+      load()
+    } finally {
+      setBusyId(null)
+    }
+  }
+
+  async function reject(p) {
+    setBusyId(p.id)
+    try {
+      const r = await callPromote(p.id, 'reject')
+      if (!r) return
+      if (r.status !== 200) { toast(r.body?.error || 'Could not reject.'); return }
+      toast('Proposal rejected')
+      load()
+    } finally {
+      setBusyId(null)
+    }
+  }
+
+  const domainLabel = id => DOMAIN_LIST.find(d => d.value === id)?.label || id
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+        {[['pending','Pending'], ['approved','Approved'], ['rejected','Rejected']].map(([val, label]) => (
+          <Btn key={val} small variant={filter === val ? 'primary' : 'ghost'}
+            onClick={() => setFilter(val)}>{label}</Btn>
+        ))}
+        <Btn small variant="ghost" onClick={load}>Refresh</Btn>
+      </div>
+
+      {filter === 'pending' && (
+        <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)',
+          marginBottom: '20px', lineHeight: 1.6, maxWidth: '620px' }}>
+          New problem-chains awaiting review. Demand-side proposals carry the number
+          of distinct people who arrived with a concern no live chain held, and a
+          sample of how they said it. Approving promotes the chain, seeds its aliases,
+          re-tags the people who brought it, and re-tags overlapping actors.
+        </div>
+      )}
+
+      {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {!loading && proposals.length === 0 && (
+        <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No {filter} proposals.</p>
+      )}
+
+      {proposals.map(p => {
+        const isDemand = p.source === 'demand'
+        const samples  = Array.isArray(p.sample_shapes) ? p.sample_shapes : []
+        const aliases  = Array.isArray(p.aliases) ? p.aliases : []
+        return (
+          <Card key={p.id} style={{
+            borderLeft: isDemand
+              ? '3px solid rgba(42,106,58,0.45)'
+              : '3px solid rgba(200,146,42,0.30)',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px',
+              marginBottom: '10px', flexWrap: 'wrap' }}>
+              <Badge label={isDemand ? 'demand' : 'supply'} color={isDemand ? '#2A6A3A' : gold} />
+              <span style={{ ...body, fontSize: '18px', color: '#0F1523' }}>{p.label}</span>
+              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em',
+                color: 'rgba(15,21,35,0.45)' }}>{p.proposed_slug}</span>
+              {isDemand && typeof p.people_count === 'number' && (
+                <Badge label={`${p.people_count} people`} color="#2A4A8A" />
+              )}
+              {(p.domains || []).map(d => <Badge key={d} label={domainLabel(d)} color="#2A4A8A" />)}
+            </div>
+
+            {p.description && (
+              <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)',
+                lineHeight: 1.6, marginBottom: '10px' }}>{p.description}</div>
+            )}
+
+            {p.rationale && (
+              <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
+                lineHeight: 1.6, marginBottom: '10px', fontStyle: 'normal' }}>{p.rationale}</div>
+            )}
+
+            {isDemand && samples.length > 0 && (
+              <div style={{ marginBottom: '10px' }}>
+                <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em', color: gold,
+                  textTransform: 'uppercase', marginBottom: '6px' }}>How people said it</div>
+                {samples.map((s, i) => (
+                  <div key={i} style={{ ...body, fontSize: '13px', fontStyle: 'italic',
+                    color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>“{s}”</div>
+                ))}
+              </div>
+            )}
+
+            {aliases.length > 0 && (
+              <div style={{ ...body, fontSize: '12px', color: 'rgba(15,21,35,0.55)',
+                lineHeight: 1.6, marginBottom: '12px' }}>
+                Aliases on promotion: {aliases.join(', ')}
+              </div>
+            )}
+
+            {filter === 'pending' && (
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <Btn small disabled={busyId === p.id} onClick={() => approve(p)}>
+                  {busyId === p.id ? 'Working…' : 'Approve + promote'}
+                </Btn>
+                <Btn small variant="ghost" disabled={busyId === p.id} onClick={() => reject(p)}>
+                  Reject
+                </Btn>
+              </div>
+            )}
+          </Card>
+        )
+      })}
+    </div>
+  )
+}
+
 function FlagsTab({ toast }) {
   const [flags,    setFlags]    = useState([])
   const [loading,  setLoading]  = useState(true)
@@ -3696,6 +3871,7 @@ export function AdminConsolePage() {
         {tab === 'Add'           && <AddTab          toast={showToast} />}
         {tab === 'Place'         && <PlaceTab        toast={showToast} />}
         {tab === 'Flags'         && <FlagsTab        toast={showToast} />}
+        {tab === 'Chains'        && <ChainsTab       toast={showToast} />}
         {tab === 'Floor'         && <FloorTab         toast={showToast} />}
         {tab === 'Domain Data'   && <DomainDataTab   toast={showToast} />}
         {tab === 'Indicators'    && <IndicatorsTab   toast={showToast} />}

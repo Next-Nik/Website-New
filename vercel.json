@@ -141,6 +141,10 @@
       "destination": "/api/chain-cluster-cron"
     },
     {
+      "source": "/api/chain-promote",
+      "destination": "/api/chain-promote"
+    },
+    {
       "source": "/api/podcast-feed",
       "destination": "/api/podcast-feed"
     },
