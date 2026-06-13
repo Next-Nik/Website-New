@@ -40,6 +40,21 @@ export const SELF_DOMAINS = [
   { slug: 'signal',     label: 'Signal'     },
 ]
 
+// Locked seven-domain palette (design system v3).
+export const SELF_DOMAIN_COLORS = {
+  'path':       '#6B1F2E',  // Maroon
+  'spark':      '#E8722E',  // Orange
+  'body':       '#2A8C4F',  // Green
+  'finances':   '#E8B92E',  // Yellow
+  'connection': '#D63838',  // Red
+  'inner-game': '#2767B8',  // Blue
+  'signal':     '#6B3FA8',  // Purple
+}
+
+export const SELF_DOMAIN_LABELS = Object.fromEntries(
+  SELF_DOMAINS.map(d => [d.slug, d.label])
+)
+
 // Fractal Self <-> Atlas mapping
 export const SELF_TO_ATLAS_MAP = {
   'path':       'vision',

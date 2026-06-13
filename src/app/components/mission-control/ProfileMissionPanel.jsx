@@ -278,6 +278,21 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
         </div>
       </div>
 
+      {/* ── PRIVATE ZONE ─────────────────────────────────────────
+          Everything below the identity card down to the account rows
+          is private to the member. The developmental rail is never
+          published and has no opt-in. */}
+      <div style={{
+        fontFamily: FONT_SC,
+        fontSize: 10,
+        letterSpacing: '0.18em',
+        textTransform: 'uppercase',
+        color: TEXT_FAINT,
+        margin: '4px 2px 12px',
+      }}>
+        Private to you
+      </div>
+
       {/* Horizon Self */}
       <div style={{
         background: 'rgba(200, 146, 42, 0.04)',
@@ -287,13 +302,29 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
         marginBottom: 14,
       }}>
         <div style={{
-          fontFamily: FONT_SC,
-          fontSize: 9.5,
-          letterSpacing: '0.18em',
-          color: TEXT_FAINT,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 8,
           marginBottom: 8,
         }}>
-          HORIZON SELF
+          <span style={{
+            fontFamily: FONT_SC,
+            fontSize: 9.5,
+            letterSpacing: '0.18em',
+            color: TEXT_FAINT,
+          }}>
+            HORIZON SELF
+          </span>
+          <span style={{
+            fontFamily: FONT_SC,
+            fontSize: 9,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            color: TEXT_FAINT,
+          }}>
+            Only you see this
+          </span>
         </div>
         {editing ? (
           <>
@@ -599,6 +630,28 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
             </button>
           </>
         )}
+      </div>
+
+      {/* ── PUBLIC ZONE ──────────────────────────────────────────
+          The contribution-rail surface others can see. */}
+      <div style={{
+        fontFamily: FONT_SC,
+        fontSize: 10,
+        letterSpacing: '0.18em',
+        textTransform: 'uppercase',
+        color: TEXT_FAINT,
+        margin: '8px 2px 4px',
+      }}>
+        Public
+      </div>
+      <div style={{
+        fontFamily: FONT_BODY,
+        fontSize: 12.5,
+        color: TEXT_META,
+        lineHeight: 1.6,
+        margin: '0 2px 12px',
+      }}>
+        What others see — where you stand and what you contribute. Your inner work stays private.
       </div>
 
       {/* Public profile link */}

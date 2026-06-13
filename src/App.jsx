@@ -61,7 +61,6 @@ import { PublicProfile }      from './app/pages/PublicProfile'
 import { FeedPage }           from './app/pages/Feed'
 import { HorizonGoalsPage }          from './app/pages/HorizonGoalsPage'
 import ContributionPage      from './app/pages/ContributionPage'
-import Contribution           from './app/pages/Contribution'
 import { OrgPublicPage }      from './app/pages/OrgPublic'
 import { OrgManagePage }      from './app/pages/OrgManage'
 import { MapPage as PlanetMapPage } from './app/pages/Map'
@@ -72,6 +71,7 @@ import { AddPage }            from './app/pages/Add'
 import { EventManagePage }    from './app/pages/EventManage'
 import { EventPublicPage }    from './app/pages/EventPublic'
 import { DomainPage } from './app/pages/Domain'
+import { MemberPublicPage } from './app/pages/MemberPublic'
 import { FocusProfile } from './app/pages/FocusProfile'
 import { FocusIndex } from './app/pages/FocusIndex'
 import { Explore } from './app/pages/Explore'
@@ -279,6 +279,7 @@ function AppInner() {
         <Route path="/alternatives"                 element={<Navigate to="/nextmarket" replace />} />
         <Route path="/nominate"                     element={<Navigate to="/add" replace />} />
         <Route path="/add"                          element={<AddPage />} />
+        <Route path="/member/:slug"                 element={<MemberPublicPage />} />
         <Route path="/domain/:slug"                 element={<DomainPage />} />
         <Route path="/focus"                        element={<FocusIndex />} />
         <Route path="/focus/:slug"                  element={<FocusProfile />} />

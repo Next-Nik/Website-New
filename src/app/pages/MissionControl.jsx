@@ -1342,7 +1342,7 @@ export default function MissionControl() {
         open={activePanel === 'profile'}
         onClose={closePanel}
         eyebrow={data.user ? 'YOU · PROFILE' : 'YOU · SIGN IN'}
-        title={data.user ? 'What others see of you on NextUs' : 'Sign in to NextUs'}
+        title={data.user ? 'You on NextUs' : 'Sign in to NextUs'}
         actions={data.user ? [
           { label: 'EDIT FULL PROFILE →', primary: true,
             onClick: () => navigate('/profile/edit') },
