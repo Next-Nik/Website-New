@@ -17,6 +17,10 @@
     {
       "path": "/api/compute-effort-signal",
       "schedule": "45 3 * * *"
+    },
+    {
+      "path": "/api/chain-cluster-cron",
+      "schedule": "0 4 * * *"
     }
   ],
   "rewrites": [
@@ -131,6 +135,10 @@
     {
       "source": "/api/compute-effort-signal",
       "destination": "/api/compute-effort-signal"
+    },
+    {
+      "source": "/api/chain-cluster-cron",
+      "destination": "/api/chain-cluster-cron"
     },
     {
       "source": "/api/podcast-feed",
