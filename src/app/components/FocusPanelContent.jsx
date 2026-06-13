@@ -128,6 +128,14 @@ export default function FocusPanelContent() {
         onGoToPurposePiece={() => navigate('/tools/purpose-piece')}
       />
 
+      {/* ── BRING SOMETHING (NextSteps intake) ──────────────── */}
+      {!editingFocus && (
+        <>
+          <SectionDivider />
+          <NextStepsIntake />
+        </>
+      )}
+
       {/* ── STREAMS ZONE ────────────────────────────────────── */}
       {hasFocus && !editingFocus && (
         <StreamsZone
@@ -135,6 +143,66 @@ export default function FocusPanelContent() {
           setStreamTab={setStreamTab}
         />
       )}
+    </div>
+  )
+}
+
+// ── Bring something: the complaint-or-vision intake (NextSteps) ──────────
+// The front door for everything downstream. A person arrives with a grievance
+// or a hope; this hands it to NextSteps, which holds it without making them
+// wrong for arriving frustrated and turns it toward a next step. Names both
+// moods plainly so the door is unmistakable.
+function NextStepsIntake() {
+  const navigate = useNavigate()
+  const [val, setVal] = useState('')
+
+  function go() {
+    const q = val.trim()
+    if (!q) return
+    navigate(`/tools/nextsteps?q=${encodeURIComponent(q)}`)
+  }
+  function onKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); go() }
+  }
+
+  return (
+    <div style={{ margin: '4px 0 8px' }}>
+      <div style={{ ...sc, fontSize: '10.5px', letterSpacing: '0.20em', color: GOLD, textTransform: 'uppercase', marginBottom: '8px' }}>
+        Start here
+      </div>
+      <div style={{ ...display, fontSize: '20px', color: INK, lineHeight: 1.25, marginBottom: '6px' }}>
+        Something wrong, or something you want to see?
+      </div>
+      <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.6)', lineHeight: 1.55, marginBottom: '12px' }}>
+        Bring it in your own words. We&rsquo;ll help turn it toward a next step.
+      </div>
+      <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+        <textarea
+          value={val}
+          onChange={e => setVal(e.target.value)}
+          onKeyDown={onKey}
+          rows={2}
+          placeholder="What's bothering you, or what you'd build…"
+          style={{
+            flex: 1, resize: 'none', border: '1px solid rgba(168,114,26,0.28)', borderRadius: '3px',
+            padding: '10px 12px', ...body, fontSize: '14px', lineHeight: 1.55, color: INK,
+            background: '#FAFAF7', outline: 'none',
+          }}
+        />
+        <button
+          type="button"
+          onClick={go}
+          disabled={!val.trim()}
+          aria-label="Bring this to Next Steps"
+          style={{
+            background: val.trim() ? GOLD_LIGHT : 'rgba(15,21,35,0.25)',
+            color: '#FFFFFF', border: 'none', borderRadius: '3px', padding: '10px 16px',
+            cursor: val.trim() ? 'pointer' : 'not-allowed',
+            ...sc, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase',
+            flexShrink: 0, transition: 'background 0.15s',
+          }}
+        >&rarr;</button>
+      </div>
     </div>
   )
 }
