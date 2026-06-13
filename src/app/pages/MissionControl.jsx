@@ -301,8 +301,8 @@ function civPlacementKey(purposeData) {
 function ScopePlaceholder({ scope }) {
   const label = scope === 'practice' ? 'My Practice' : 'My Org'
   const body = scope === 'practice'
-    ? 'Your practitioner working room is being built. The brief specifies the placement fields, the offering shape, and the inbound contribution interest the room will surface. Setup, including a URL-paste shortcut that pre-fills your placement from a page you already have on the web, lands in the next drop.'
-    : 'Your organisation working room is being built. The brief specifies the six tabs from Module 6 wrapped into the Mission Control surface, plus setup with the same URL-paste shortcut. It lands in the next drop.'
+    ? 'Your practitioner working room is being built. It will hold your placement, your offerings, and the contribution interest coming your way — with a URL-paste setup that pre-fills your placement from a page you already have on the web.'
+    : 'Your organisation working room is being built. It will bring your organisation\'s profile, offers, and asks into Mission Control, with the same URL-paste setup shortcut.'
 
   return (
     <div className="mc-scope-placeholder">

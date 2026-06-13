@@ -694,7 +694,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
-                textTransform: label === 'Beta group' ? 'capitalize' : 'none',
+                textTransform: 'none',
               }}>
                 {val}
               </span>

@@ -194,7 +194,7 @@ function NotSignedIn() {
       <Nav activePath="" />
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '160px 24px', textAlign: 'center' }}>
         <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.75, marginBottom: '20px' }}>
-          The feed is for signed-in beta members.
+          The feed is for signed-in members.
         </p>
         <button onClick={() => navigate('/login?redirect=/beta/feed')} style={{
           ...sc, fontSize: '13px', letterSpacing: '0.16em',

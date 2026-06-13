@@ -60,7 +60,7 @@ export function DomainPage() {
       <Layout>
         <div style={{ minHeight: 'calc(100dvh - 80px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '40px' }}>
           <div style={{ textAlign: 'center', maxWidth: '480px' }}>
-            <span style={{ ...sc, fontSize: '14px', letterSpacing: '0.2em', color: goldDark, display: 'block', marginBottom: '16px' }}>Module 11</span>
+            <span style={{ ...sc, fontSize: '14px', letterSpacing: '0.2em', color: goldDark, display: 'block', marginBottom: '16px' }}>The Atlas</span>
             <h1 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: dark, marginBottom: '12px' }}>Unknown domain</h1>
             <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
               No domain matches "{slug}". Try one of the seven canonical slugs.
@@ -87,7 +87,7 @@ export function DomainPage() {
 
         {/* Header */}
         <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: goldDark, display: 'block', marginBottom: '10px' }}>
-          NextUs Beta · Module 11 (placeholder)
+          The Atlas
         </span>
         <h1 style={{ ...serif, fontSize: 'clamp(28px,4vw,44px)', fontWeight: 300, color: dark, marginBottom: '14px', lineHeight: 1.1 }}>
           {domain.label}
@@ -105,7 +105,7 @@ export function DomainPage() {
           marginBottom: '24px',
         }}>
           <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
-            Module 14 demonstration · pick a Focus
+            Pick a Focus
           </div>
           <select
             value={selectedFocusId}
@@ -137,7 +137,7 @@ export function DomainPage() {
           marginBottom: '14px',
         }}>
           <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', margin: 0 }}>
-            Actor grid · Module 11 ships this
+            The actor grid for this domain is on its way.
           </p>
         </div>
 

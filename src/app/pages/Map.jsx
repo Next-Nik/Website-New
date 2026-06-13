@@ -727,7 +727,7 @@ export function MapPage() {
         {/* Header */}
         <div className="beta-map-header" style={{ maxWidth: '1100px', margin: '0 auto', padding: '72px 32px 0', width: '100%' }}>
           <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.20em', color: goldDark, display: 'block', marginBottom: '10px' }}>
-            NextUs Beta · The Map
+            The Atlas
           </span>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '20px', flexWrap: 'wrap', gap: '16px' }}>
             <div>
