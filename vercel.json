@@ -153,6 +153,10 @@
       "destination": "/api/practice-admin"
     },
     {
+      "source": "/api/practice-confirm",
+      "destination": "/api/practice-confirm"
+    },
+    {
       "source": "/api/podcast-feed",
       "destination": "/api/podcast-feed"
     },

@@ -29,6 +29,7 @@ import { LinksTab } from '../components/manage/LinksTab'
 import { CredentialsTab } from '../components/manage/CredentialsTab'
 import { TestimonialsTab } from '../components/manage/TestimonialsTab'
 import { EventsTab } from '../components/EventsTab'
+import { PracticesTab } from '../components/manage/PracticesTab'
 import { useEffortSignal } from '../hooks/useEffortSignal'
 
 // ── Chip multi-select ────────────────────────────────────────
@@ -819,6 +820,7 @@ const TABS = [
   { key: 'links',         label: 'Links & Press' },
   { key: 'domains',       label: 'Domains' },
   { key: 'offerings',     label: 'Offerings' },
+  { key: 'practices',     label: 'Practices' },
   { key: 'events',        label: 'Events' },
   { key: 'matches',       label: 'Matches' },
   { key: 'contributions', label: 'Contributions' },
@@ -968,6 +970,7 @@ export function OrgManagePage() {
         {activeTab === 'coordination'  && <CoordinationTab  actorId={actor.id} toast={showToast} />}
         {activeTab === 'links'         && <LinksTab         actorId={actor.id} toast={showToast} />}
         {activeTab === 'offerings'     && <OfferingsTab     actorId={actor.id} toast={showToast} />}
+        {activeTab === 'practices'     && <PracticesTab     actorId={actor.id} toast={showToast} />}
         {activeTab === 'domains'       && <OrgDomainsTab    actorId={actor.id} toast={showToast} />}
         {activeTab === 'matches'       && <MatchesTab       actorId={actor.id} toast={showToast} />}
         {activeTab === 'events'        && <EventsTab        actorId={actor.id} actorName={actor.name} toast={showToast} />}
