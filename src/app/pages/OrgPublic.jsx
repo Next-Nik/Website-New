@@ -38,6 +38,7 @@ import { ShareButton } from '../components/ShareButton'
 import { WatchButton } from '../components/WatchButton'
 import { MessageButton } from '../components/MessageButton'
 import { EventsSection } from '../components/EventsSection'
+import { PodcastPlayer } from '../components/PodcastPlayer'
 
 // ── Design utilities ─────────────────────────────────────────
 
@@ -135,13 +136,13 @@ const MEMBERSHIP_STATUS_LABEL = {
 // or when the mode doesn't change order materially. 'practice' foregrounds
 // offerings (programmes / retreats) earlier in the page.
 const MODE_PROFILE_ORDER = {
-  practice:   ['identity', 'mission', 'story', 'description', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'contact', 'links', 'press', 'relationships', 'provenance'],
-  enterprise: ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'needs', 'credentials', 'testimonials', 'events', 'contact', 'links', 'press', 'relationships', 'provenance'],
-  platform:   ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'credentials', 'testimonials', 'needs', 'events', 'contact', 'links', 'press', 'relationships', 'provenance'],
-  collective: ['identity', 'mission', 'description', 'story', 'placement', 'working_on', 'needs', 'offers', 'testimonials', 'credentials', 'events', 'contact', 'links', 'press', 'relationships', 'provenance'],
-  mixed:      ['identity', 'mission', 'description', 'story', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'contact', 'links', 'press', 'relationships', 'provenance'],
+  practice:   ['identity', 'mission', 'story', 'description', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'relationships', 'provenance'],
+  enterprise: ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'needs', 'credentials', 'testimonials', 'events', 'listen', 'contact', 'links', 'press', 'relationships', 'provenance'],
+  platform:   ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'credentials', 'testimonials', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'relationships', 'provenance'],
+  collective: ['identity', 'mission', 'description', 'story', 'placement', 'working_on', 'needs', 'offers', 'testimonials', 'credentials', 'events', 'listen', 'contact', 'links', 'press', 'relationships', 'provenance'],
+  mixed:      ['identity', 'mission', 'description', 'story', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'relationships', 'provenance'],
   // default (NULL mode) — close to the original OrgPublic order
-  default:    ['identity', 'mission', 'description', 'working_on', 'placement', 'offers', 'needs', 'story', 'testimonials', 'credentials', 'events', 'contact', 'links', 'press', 'relationships', 'provenance'],
+  default:    ['identity', 'mission', 'description', 'working_on', 'placement', 'offers', 'needs', 'story', 'testimonials', 'credentials', 'events', 'listen', 'contact', 'links', 'press', 'relationships', 'provenance'],
 }
 
 function getSectionOrder(actorMode) {
@@ -1619,6 +1620,27 @@ export function OrgPublicPage() {
     events: () => (
       <EventsSection actor={actor} isOwner={isOwner} />
     ),
+    listen: () => {
+      const rss = links.find(l => l.link_type === 'podcast_rss')
+      if (!rss) return null
+      const subOrder = ['podcast_spotify', 'podcast_apple', 'podcast_rss']
+      const subscribeLinks = links
+        .filter(l => subOrder.includes(l.link_type))
+        .sort((a, b) => subOrder.indexOf(a.link_type) - subOrder.indexOf(b.link_type))
+        .map(l => ({
+          label: l.link_type === 'podcast_spotify' ? 'Spotify'
+            : l.link_type === 'podcast_apple' ? 'Apple'
+            : 'RSS',
+          url: l.url,
+        }))
+      return (
+        <PodcastPlayer
+          feedUrl={rss.url}
+          host={actor.type === 'practitioner' ? `Hosted by ${actor.name}` : null}
+          subscribeLinks={subscribeLinks}
+        />
+      )
+    },
     contact: () => (
       links.some(l => CONTACT_LINK_TYPES.has(l.link_type))
         ? <ContactSection links={links} actorName={actor.name} />

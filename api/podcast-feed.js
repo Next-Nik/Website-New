@@ -7,7 +7,21 @@
 
 export const config = { maxDuration: 15 }
 
-const FEED_URL = 'http://feeds.libsyn.com/66392/rss';
+const DEFAULT_FEED_URL = 'http://feeds.libsyn.com/66392/rss';
+
+// Resolve the feed to fetch. Accepts an optional ?feed= override so the same
+// endpoint can serve any actor's show, falling back to the NextUs feed.
+// Only well-formed http(s) URLs are honoured; anything else uses the default.
+function resolveFeedUrl(raw) {
+  if (!raw || typeof raw !== 'string') return DEFAULT_FEED_URL;
+  try {
+    const u = new URL(raw);
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return DEFAULT_FEED_URL;
+    return u.toString();
+  } catch {
+    return DEFAULT_FEED_URL;
+  }
+}
 
 // Simple XML text extractor — no external dependencies
 function extractText(xml, tag) {
@@ -80,7 +94,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    const response = await fetch(FEED_URL, {
+    const feedUrl = resolveFeedUrl(req.query && req.query.feed);
+    const response = await fetch(feedUrl, {
       headers: { 'User-Agent': 'NextUs/1.0 (podcast page fetcher)' },
     });
 
