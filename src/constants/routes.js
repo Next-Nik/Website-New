@@ -59,6 +59,8 @@ export const ROUTES = {
   targetSprint:     '/tools/target-sprint',
   horizonPractice:  '/tools/horizon-practice',
   sentenceCompletion: '/tools/sentence-completion',
+  iAmPractice:        '/tools/i-am',
+  morningPages:       '/tools/morning-pages',
 
   // ── Tool API fetch paths ────────────────────────────────────
   api: {

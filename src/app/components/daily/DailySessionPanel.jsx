@@ -610,6 +610,16 @@ export default function DailySessionPanel({ user, sprintData, practiceData, mapC
         onClick={() => onNavigate('/tools/sentence-completion')}
       />
       <ToolCard
+        name="I AM"
+        sub="Write a statement three to ten times. Feel it as you go."
+        onClick={() => onNavigate('/tools/i-am')}
+      />
+      <ToolCard
+        name="MORNING PAGES"
+        sub="Empty the channel. Whatever's on top, written fast."
+        onClick={() => onNavigate('/tools/morning-pages')}
+      />
+      <ToolCard
         name="HORIZON PRACTICE"
         sub={mapComplete
           ? 'The morning sequence. Six beats, voiced from your Horizon Self.'

@@ -107,6 +107,8 @@ import { HorizonPracticePage }                     from './tools/horizon-practic
 import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import JournalPage                                 from './app/pages/Journal'
 import SentenceCompletion                          from './app/pages/SentenceCompletion'
+import IAmPractice                                 from './app/pages/IAmPractice'
+import MorningPages                                 from './app/pages/MorningPages'
 import PlanetMap                                    from './tools/planet/PlanetMap'
 import { NextUJourneyPage }                        from './tools/nextu/NextUJourney'
 import { IAmChapterPage }                          from './tools/nextu/IAmChapter'
@@ -276,6 +278,8 @@ function AppInner() {
         <Route path="/tools/horizon-practice"    element={<HorizonPracticePage />} />
         <Route path="/journal"                   element={<JournalPage />} />
         <Route path="/tools/sentence-completion" element={<SentenceCompletion />} />
+        <Route path="/tools/i-am"                element={<IAmPractice />} />
+        <Route path="/tools/morning-pages"       element={<MorningPages />} />
         <Route path="/tools/planet"              element={<PlanetMap />} />  {/* founder-only beta — gate inside PlanetMap */}
 
         {/* ── Platform routes (beta prefix retired) ── */}

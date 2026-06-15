@@ -113,6 +113,7 @@ export default function Journal() {
   const [hsRows, setHsRows]              = useState([])
   const [hpRows, setHpRows]              = useState([])
   const [scRows, setScRows]              = useState([])
+  const [pwRows, setPwRows]              = useState([])
 
   // Write tab state
   const [draft, setDraft]         = useState('')
@@ -133,7 +134,7 @@ export default function Journal() {
     async function load() {
       setLoading(true)
       // Promise.allSettled — one failure shouldn't nuke the others
-      const [jRes, hsRes, hpRes, scRes] = await Promise.allSettled([
+      const [jRes, hsRes, hpRes, scRes, pwRes] = await Promise.allSettled([
         supabase
           .from('journal_entries')
           .select('*')
@@ -158,12 +159,19 @@ export default function Journal() {
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(400),
+        supabase
+          .from('practice_writing_entries')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(400),
       ])
       if (cancelled) return
       if (jRes.status  === 'fulfilled' && !jRes.value.error)  setJournalRows(jRes.value.data || [])
       if (hsRes.status === 'fulfilled' && !hsRes.value.error) setHsRows(hsRes.value.data || [])
       if (hpRes.status === 'fulfilled' && !hpRes.value.error) setHpRows(hpRes.value.data || [])
       if (scRes.status === 'fulfilled' && !scRes.value.error) setScRows(scRes.value.data || [])
+      if (pwRes.status === 'fulfilled' && !pwRes.value.error) setPwRows(pwRes.value.data || [])
       setLoading(false)
     }
     load()
@@ -238,9 +246,27 @@ export default function Journal() {
         reflection: g.reflection,
       })
     }
+    // I Am practice + Morning Pages — group a session into one card.
+    const pwBySession = {}
+    for (const r of pwRows) {
+      const g = pwBySession[r.session_id] || { rows: [], when: r.created_at, practice: r.practice, domain: r.domain }
+      g.rows.push(r)
+      if (new Date(r.created_at) > new Date(g.when)) g.when = r.created_at
+      pwBySession[r.session_id] = g
+    }
+    for (const [sid, g] of Object.entries(pwBySession)) {
+      const composed = g.rows.map(r => r.body).join('\n\n')
+      items.push({
+        id:       `pw-${sid}`,
+        kind:     g.practice === 'i_am' ? 'i_am' : 'morning_pages',
+        when:     g.when,
+        body:     composed,
+        domain:   g.domain,
+      })
+    }
     items.sort((a, b) => new Date(b.when) - new Date(a.when))
     return items
-  }, [journalRows, hsRows, hpRows, scRows])
+  }, [journalRows, hsRows, hpRows, scRows, pwRows])
 
   // ── Cadence — "what's due this period?" ──────────────────────
   // For weekly/quarterly/annual, the period is "complete" if there's
@@ -510,6 +536,28 @@ export default function Journal() {
               >
                 Sentence Completion — a stem, finished fast, across the seven domains →
               </button>
+              <button
+                type="button"
+                onClick={() => navigate('/tools/i-am')}
+                style={{
+                  ...body, fontSize: 14.5, lineHeight: 1.5, textAlign: 'left',
+                  background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+                  color: tokens.goldDk, display: 'block', marginTop: 10,
+                }}
+              >
+                I Am — write a statement three to ten times, feeling it as you go →
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate('/tools/morning-pages')}
+                style={{
+                  ...body, fontSize: 14.5, lineHeight: 1.5, textAlign: 'left',
+                  background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+                  color: tokens.goldDk, display: 'block', marginTop: 10,
+                }}
+              >
+                Morning Pages — empty the channel, written fast and unedited →
+              </button>
             </div>
           </section>
         )}
@@ -619,6 +667,14 @@ function StreamItem({ item }) {
     if (item.domain) {
       extra = <DomainPill label={DOMAIN_LABEL_BY_KEY[item.domain] || item.domain} />
     }
+  } else if (item.kind === 'i_am') {
+    label = item.domain
+      ? `I Am · ${DOMAIN_LABEL_BY_KEY[item.domain] || item.domain}`
+      : 'I Am'
+    body  = item.body
+  } else if (item.kind === 'morning_pages') {
+    label = 'Morning Pages'
+    body  = item.body
   }
 
   return (

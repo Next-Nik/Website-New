@@ -16,7 +16,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 import { tokens, serif, body, sc } from '../../lib/designTokens'
@@ -32,6 +32,9 @@ const ORDINAL_WORDS = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', '
 export function IAmChapterPage() {
   const navigate = useNavigate()
   const { user, loading: authLoading } = useAuth()
+  const [params] = useSearchParams()
+  const returnTo = params.get('return')        // e.g. /tools/i-am?domain=path
+  const wantDomain = params.get('domain')      // land on this statement
 
   const [rows, setRows]           = useState(null)   // horizon_profile rows
   const [loading, setLoading]     = useState(true)
@@ -67,6 +70,11 @@ export function IAmChapterPage() {
 
   // active domain defaults to the next missing one
   const current = active || nextMissing || DOMAIN_ORDER[0]
+
+  // Arriving from a practice with ?domain= → land on that statement.
+  useEffect(() => {
+    if (wantDomain && DOMAIN_ORDER.includes(wantDomain)) setActive(wantDomain)
+  }, [wantDomain])
 
   // keep the draft in sync when the active domain changes
   useEffect(() => {
@@ -128,6 +136,19 @@ export function IAmChapterPage() {
   return (
     <NextUShell chapter={2}>
       <div style={{ maxWidth: '600px', margin: '0 auto', padding: '48px 22px 80px' }}>
+
+        {returnTo && (
+          <button
+            onClick={() => navigate(returnTo)}
+            style={{
+              ...sc, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase',
+              color: tokens.gold, background: 'none', border: 'none', padding: 0,
+              cursor: 'pointer', marginBottom: '24px',
+            }}
+          >
+            ← Back to your practice
+          </button>
+        )}
 
         {/* The Map isn't done yet — forward language, never a lock */}
         {!mapReady && !allDone && (
