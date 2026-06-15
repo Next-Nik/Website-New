@@ -28,6 +28,7 @@ import { SiteFooter } from '../../components/SiteFooter'
 import { supabase } from '../../hooks/useSupabase'
 import { useAuth } from '../../hooks/useAuth'
 import { serif, body, sc } from '../../lib/designTokens'
+import { ShareButton } from '../components/ShareButton'
 import { SELF_DOMAIN_COLORS, SELF_DOMAIN_LABELS } from '../constants/domains'
 
 const BG     = '#FAFAF7'
@@ -264,6 +265,15 @@ export function MemberPublicPage() {
               </div>
             )}
           </div>
+          {!unpublished && (
+            <div style={{ marginLeft: 'auto', alignSelf: 'flex-start' }}>
+              <ShareButton
+                url={typeof window !== 'undefined' ? window.location.href : null}
+                title={fullName}
+                text={member.public_bio || `${fullName} on NextUs`}
+              />
+            </div>
+          )}
         </div>
 
         {/* Bio */}
