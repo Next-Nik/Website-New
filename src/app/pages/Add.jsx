@@ -16,6 +16,7 @@
 //   "I represent this org"        → seeded_by: 'self',      profile_owner: user.id
 
 import { logActivity } from '../components/pulse/logActivity'
+import { SHOW_ALIGNMENT_PUBLIC } from '../components/OrgShared'
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../hooks/useSupabase'
@@ -197,7 +198,7 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
           {proposal.type || 'organisation'}
         </span>
         <span style={{ ...body, fontSize: '15px', color: dark }}>{proposal.name}</span>
-        {proposal.alignment_score != null && (
+        {SHOW_ALIGNMENT_PUBLIC && proposal.alignment_score != null && (
           <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)', marginLeft: 'auto' }}>
             Score {proposal.alignment_score}
           </span>

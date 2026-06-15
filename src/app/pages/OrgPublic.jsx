@@ -32,6 +32,7 @@ import {
   body, serif, sc, gold, dark, parch,
   DOMAIN_LABEL, SCALE_LABEL,
   PLACEMENT_TIER,
+  SHOW_ALIGNMENT_PUBLIC,
 } from '../components/OrgShared'
 import { DOMAIN_COLORS } from '../constants/domains'
 import { ShareButton } from '../components/ShareButton'
@@ -313,8 +314,8 @@ function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
             </div>
           )}
 
-          {/* Placement tier badge */}
-          {tierConfig && (
+          {/* Placement tier badge — hidden from public while scoring is calibrated */}
+          {SHOW_ALIGNMENT_PUBLIC && tierConfig && (
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px',
               padding: '5px 12px', background: tierConfig.bg,
               border: `1px solid ${tierConfig.color}30`, borderRadius: '4px',

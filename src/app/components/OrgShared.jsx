@@ -88,6 +88,14 @@ export const PLATFORM_PRINCIPLE_LIST = [
   { value: 'legacy-temporal-dimension',label: 'Legacy as Temporal Dimension' },
 ]
 
+// Public visibility of alignment scores and placement tiers.
+// Held false while the scoring is still being calibrated. The score is still
+// computed on extraction and stored on the actor; this only governs whether
+// it is shown on public-facing surfaces (the OrgPublic tier badge and the
+// /add review score). Flip to true to surface them again. Admin Console always
+// shows them regardless of this flag.
+export const SHOW_ALIGNMENT_PUBLIC = false
+
 // Placement tier display
 export const PLACEMENT_TIER = {
   exemplar:         { label: 'Exemplar',         color: '#3B6B9E', bg: 'rgba(59,107,158,0.08)'  },
