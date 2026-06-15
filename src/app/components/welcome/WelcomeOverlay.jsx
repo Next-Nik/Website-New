@@ -287,23 +287,25 @@ export default function WelcomeOverlay({
             ← Back
           </button>
 
-          {headerNode}
+          <div className="card-scroll">
+            {headerNode}
 
-          {beat.wheel && (
-            <div className="wheel-area">
-              {/* key forces remount when mode changes — clean teardown of imperative SVG */}
-              <WelcomeWheel
-                key={`${beat.id}-${wheelMode}`}
-                kind={beat.wheel}
-                mode={wheelMode}
-                selfData={selfData}
-                civData={civData}
-              />
+            {beat.wheel && (
+              <div className="wheel-area">
+                {/* key forces remount when mode changes — clean teardown of imperative SVG */}
+                <WelcomeWheel
+                  key={`${beat.id}-${wheelMode}`}
+                  kind={beat.wheel}
+                  mode={wheelMode}
+                  selfData={selfData}
+                  civData={civData}
+                />
+              </div>
+            )}
+
+            <div className={`beat-content beat-stage${fading ? ' fading' : ''}`}>
+              <BeatContent content={beat.content} />
             </div>
-          )}
-
-          <div className={`beat-content beat-stage${fading ? ' fading' : ''}`}>
-            <BeatContent content={beat.content} />
           </div>
 
           <div className="controls">
@@ -552,11 +554,20 @@ const WELCOME_CSS = `
   margin-bottom: 14px;
 }
 
+.card-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.card-scroll::-webkit-scrollbar { width: 6px; }
+.card-scroll::-webkit-scrollbar-thumb { background: var(--gold-rule); border-radius: 3px; }
+
 .beat-content {
   flex: 1 1 auto;
-  overflow-y: auto;
+  min-height: 0;
   padding: 0 4px;
-  min-height: 100px;
 }
 .beat-content::-webkit-scrollbar { width: 6px; }
 .beat-content::-webkit-scrollbar-thumb { background: var(--gold-rule); border-radius: 3px; }

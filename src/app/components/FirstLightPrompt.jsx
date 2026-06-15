@@ -14,6 +14,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
+import { hasMapEngagement } from '../util/onboarding'
 
 const BG   = '#FAFAF7'
 const INK  = '#0F1523'
@@ -39,16 +40,25 @@ export default function FirstLightPrompt({ style }) {
     try { dismissed = sessionStorage.getItem(DISMISS_KEY) === '1' } catch {}
     if (dismissed) { setShow(false); return }
 
-    supabase
-      .from('users')
-      .select('first_light_completed_at')
-      .eq('id', user.id)
-      .maybeSingle()
-      .then(({ data }) => {
+    ;(async () => {
+      try {
+        const [userRes, mapEngaged] = await Promise.all([
+          supabase
+            .from('users')
+            .select('first_light_completed_at')
+            .eq('id', user.id)
+            .maybeSingle(),
+          hasMapEngagement(user.id),
+        ])
         if (cancelled) return
-        setShow(!data?.first_light_completed_at)
-      })
-      .catch(() => { if (!cancelled) setShow(false) })
+        // Hide once First Light is done, or once the Map — its deeper
+        // sibling — has been engaged. No nagging someone who's already
+        // placed themselves more thoroughly.
+        setShow(!userRes?.data?.first_light_completed_at && !mapEngaged)
+      } catch {
+        if (!cancelled) setShow(false)
+      }
+    })()
 
     return () => { cancelled = true }
   }, [user])

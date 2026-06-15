@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 import { supabase } from './hooks/useSupabase'
+import { hasMapEngagement } from './app/util/onboarding'
 import { useEffect, useState, Component } from 'react'
 import { BottomTabs } from './components/BottomTabs'
 
@@ -150,19 +151,33 @@ function RootRoute() {
 
   useEffect(() => {
     if (!user) { setChecking(false); return }
-    supabase
-      .from('users')
-      .select('first_light_completed_at, first_light_skipped_at')
-      .eq('id', user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        // Wall only the brand-new user — never completed, never skipped.
-        // Once they skip, '/' resolves to Mission Control and the
-        // re-prompt invites them back when the moment is right.
-        setNeedsFirstLight(!data?.first_light_completed_at && !data?.first_light_skipped_at)
-        setChecking(false)
-      })
-      .catch(() => setChecking(false))
+    let cancelled = false
+    ;(async () => {
+      try {
+        const [userRes, mapEngaged] = await Promise.all([
+          supabase
+            .from('users')
+            .select('first_light_completed_at, first_light_skipped_at')
+            .eq('id', user.id)
+            .maybeSingle(),
+          hasMapEngagement(user.id),
+        ])
+        if (cancelled) return
+        // Wall only the brand-new user — never completed, never skipped,
+        // and no Map engagement. Anyone who has scored the Map has done
+        // the deeper version of First Light, so they go straight in.
+        const seen = !!userRes?.data?.first_light_completed_at
+          || !!userRes?.data?.first_light_skipped_at
+          || mapEngaged
+        setNeedsFirstLight(!seen)
+      } catch {
+        // Fail open — an error must never trap someone behind First Light.
+        if (!cancelled) setNeedsFirstLight(false)
+      } finally {
+        if (!cancelled) setChecking(false)
+      }
+    })()
+    return () => { cancelled = true }
   }, [user])
 
   if (loading || checking) return null
