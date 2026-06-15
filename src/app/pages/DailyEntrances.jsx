@@ -19,15 +19,16 @@ import PracticeComposer from '../components/daily/PracticeComposer'
 
 const ENTRANCES = [
   { key: 'morning', label: 'Morning', sub: 'Land, become, aim, breathe out.' },
-  { key: 'midday',  label: 'Midday',  sub: 'Regulate, remember, recommit, release.' },
-  { key: 'evening', label: 'Evening', sub: 'How was your day.' },
+  { key: 'midday',  label: 'Midday',  sub: 'Breathe, remember who you are, and go back in.' },
+  { key: 'evening', label: 'Evening', sub: 'Note the day.' },
 ]
 
 const MODULES = [
   { label: 'Horizon State',      sub: 'The full protocol — arrive, listen, embark.', route: '/tools/horizon-state' },
   { label: 'Horizon Practice',   sub: 'The morning sequence.',                        route: '/tools/horizon-practice' },
+  { label: 'Consistency challenge', sub: 'Your cadence, streak, and showing up.',      route: '/tools/horizon-practice' },
   { label: 'I Am',               sub: 'Speak your statements.',                       route: '/tools/i-am' },
-  { label: 'Sentence Completion',sub: 'Branden’s stems, week by week.',               route: '/tools/sentence-completion' },
+  { label: 'Sentence string',    sub: 'Finish the sentence, fast.',               route: '/tools/sentence-completion' },
   { label: 'Morning Pages',      sub: 'Clear the channel.',                           route: '/tools/morning-pages' },
   { label: 'Anchor breath',      sub: 'Chest, belly, sacrum.',                        route: '/tools/anchor-breath' },
   { label: 'Charge breath',      sub: 'Wake the system.',                             route: '/tools/charge-breath' },
@@ -74,7 +75,7 @@ function EntranceRow({ label, sub, onEnter, onShape }) {
           position: 'absolute', top: '16px', right: '18px',
           ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
           background: 'transparent', border: 'none', color: tokens.gold, cursor: 'pointer',
-        }}>Shape ▸</button>
+        }}>Edit ▸</button>
       )}
     </div>
   )

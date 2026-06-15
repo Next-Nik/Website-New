@@ -24,26 +24,27 @@
 
 export const REGIONS = {
   intro: 'Intro',   // the way in — land and regulate
-  meat:  'Meat',    // the work
+  meat:  'The Work', // the fillings — become, write, aim
   outro: 'Outro',   // the way out — release and launch
 }
 
 // The master line. One object per block.
 export const BLOCKS = {
-  flame_arrive: { id: 'flame_arrive', label: 'Flame check · arrive', region: 'intro', order: 10,  status: 'ready', component: 'FlameCheck' },
-  readiness:    { id: 'readiness',    label: 'Readiness',            region: 'intro', order: 20,  status: 'ready', component: 'Readiness' },
-  breath_in:    { id: 'breath_in',    label: 'Lead-in breath',       region: 'intro', order: 30,  status: 'ready', component: 'BreathPacer' },
-  audio_baseline:    { id: 'audio_baseline',    label: 'Foundation · Baseline',    region: 'meat', order: 40, status: 'ready', component: 'FoundationAudio', phase: 'baseline' },
-  audio_calibration: { id: 'audio_calibration', label: 'Foundation · Calibration', region: 'meat', order: 42, status: 'ready', component: 'FoundationAudio', phase: 'calibration' },
-  audio_embodiment:  { id: 'audio_embodiment',  label: 'Foundation · Embodiment',  region: 'meat', order: 44, status: 'ready', component: 'FoundationAudio', phase: 'embodiment' },
-  i_am:         { id: 'i_am',         label: 'Become · I Am',        region: 'meat',  order: 50,  status: 'link', route: '/tools/i-am' },
-  sentence:     { id: 'sentence',     label: 'Sentence Completion',  region: 'meat',  order: 60,  status: 'link', route: '/tools/sentence-completion' },
+  flame_arrive: { id: 'flame_arrive', label: 'Check in', region: 'intro', order: 10,  status: 'ready', component: 'FlameCheck' },
+  readiness:    { id: 'readiness',    label: 'Choose',            region: 'intro', order: 20,  status: 'ready', component: 'Readiness' },
+  breath_in:    { id: 'breath_in',    label: 'Energy breath',       region: 'intro', order: 30,  status: 'ready', component: 'BreathPacer' },
+  audio_baseline:    { id: 'audio_baseline',    label: 'Audio · Baseline',    region: 'meat', order: 40, status: 'ready', component: 'FoundationAudio', phase: 'baseline' },
+  audio_calibration: { id: 'audio_calibration', label: 'Audio · Calibration', region: 'meat', order: 42, status: 'ready', component: 'FoundationAudio', phase: 'calibration' },
+  audio_embodiment:  { id: 'audio_embodiment',  label: 'Audio · Embodiment',  region: 'meat', order: 44, status: 'ready', component: 'FoundationAudio', phase: 'embodiment' },
+  i_am:         { id: 'i_am',         label: 'I Am written',        region: 'meat',  order: 50,  status: 'link', route: '/tools/i-am' },
+  i_am_spoken:  { id: 'i_am_spoken',  label: 'I Am spoken',          region: 'meat',  order: 51,  status: 'weld' },
+  sentence:     { id: 'sentence',     label: 'Sentence string',  region: 'meat',  order: 60,  status: 'link', route: '/tools/sentence-completion' },
   morning_pages:{ id: 'morning_pages',label: 'Morning Pages',        region: 'meat',  order: 70,  status: 'link', route: '/tools/morning-pages' },
   journal:      { id: 'journal',      label: 'Journal · free write', region: 'meat',  order: 75,  status: 'link', route: '/journal' },
   win_the_day:  { id: 'win_the_day',  label: 'Win the Day',          region: 'meat',  order: 80,  status: 'ready', component: 'WinTheDay' },
-  thresholds:   { id: 'thresholds',   label: 'Thresholds + calendar',region: 'meat',  order: 85,  status: 'ready', component: 'Thresholds' },
-  breath_out:   { id: 'breath_out',   label: 'Lead-out breath · Anchor', region: 'outro', order: 90, status: 'ready', component: 'OpenBreath' },
-  embark:       { id: 'embark',       label: 'Embark · flame check', region: 'outro', order: 95,  status: 'ready', component: 'FlameCheck' },
+  thresholds:   { id: 'thresholds',   label: 'Calendar intention',region: 'meat',  order: 85,  status: 'ready', component: 'Thresholds' },
+  breath_out:   { id: 'breath_out',   label: 'Breath — regulate and anchor', region: 'outro', order: 90, status: 'ready', component: 'OpenBreath' },
+  embark:       { id: 'embark',       label: 'Check out', region: 'outro', order: 95,  status: 'ready', component: 'FlameCheck' },
   act:          { id: 'act',          label: 'Act · you are live',   region: 'outro', order: 100, status: 'ready', component: 'Act' },
 
   // Midday-only pieces — designed, not yet built.

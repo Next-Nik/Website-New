@@ -17,8 +17,8 @@ import { tokens, serif, body, sc } from '../../../../lib/designTokens'
 import { FlameSlider } from '../../../../components/FlameCheckIn'
 
 const COPY = {
-  arrive: { region: 'Arrive', heading: 'Where are you, right now?', hint: 'No right answer. Just read the flame.' },
-  embark: { region: 'Embark', heading: 'And now?',                  hint: 'Where you are, against where you started.' },
+  arrive: { region: 'Check in', heading: 'Where are you, right now?', hint: 'No right answer. Just read the flame.' },
+  embark: { region: 'Check out', heading: 'And now?',                  hint: 'Where you are, against where you started.' },
 }
 
 export default function FlameCheck({ stage = 'arrive', ghostValue = null, onComplete = () => {}, onSkip = () => {} }) {

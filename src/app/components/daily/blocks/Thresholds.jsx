@@ -50,7 +50,7 @@ export default function Thresholds({ userId = null, onComplete = () => {}, onSki
         <p style={{
           ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.22em',
           textTransform: 'uppercase', color: tokens.gold, margin: '0 0 8px',
-        }}>Plan</p>
+        }}>Calendar intention</p>
         <h2 style={{
           ...serif, fontWeight: 300, fontSize: 'clamp(26px,4vw,34px)',
           color: tokens.dark, lineHeight: 1.25, margin: '0 0 10px',

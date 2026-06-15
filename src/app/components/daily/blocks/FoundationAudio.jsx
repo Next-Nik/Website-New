@@ -21,9 +21,9 @@ const PHASE_AUDIO = {
   embodiment:  'foundation-embodiment.mp3',
 }
 const COPY = {
-  baseline:    { heading: 'Baseline',    hint: 'The regulated floor. Around twenty minutes.' },
-  calibration: { heading: 'Calibration', hint: 'Opens with your I Am statements.' },
-  embodiment:  { heading: 'Embodiment',  hint: 'Settle it into the body.' },
+  baseline:    { heading: 'Audio · Baseline',    hint: 'The regulated floor. Around twenty minutes.' },
+  calibration: { heading: 'Audio · Calibration', hint: 'Opens with your I Am statements.' },
+  embodiment:  { heading: 'Audio · Embodiment',  hint: 'Settle it into the body.' },
 }
 
 export default function FoundationAudio({ phase = 'baseline', title = null, onComplete = () => {}, onSkip = () => {} }) {

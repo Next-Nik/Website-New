@@ -64,7 +64,7 @@ export default function Readiness({
         <p style={{
           ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.22em',
           textTransform: 'uppercase', color: tokens.gold, margin: '0 0 20px',
-        }}>Commit</p>
+        }}>Choose</p>
 
         {/* three thresholds, one at a time */}
         <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '30px' }}>
