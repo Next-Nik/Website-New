@@ -922,9 +922,8 @@ export default function MissionControl() {
     setActivePanel(key)
   }
 
-  // Open the Daily panel. The session inside resumes wherever the
-  // user's day actually is (arrive → deck → embark → seal).
-  const openDaily = () => openPersonalPanel('daily')
+  // Open the Daily front door — three entrances, every tool as a module.
+  const openDaily = () => navigate('/daily')
 
   // ─── Rail states ─────────────────────────────────────────────
   const hsState = data.foundationData?.streak_days
