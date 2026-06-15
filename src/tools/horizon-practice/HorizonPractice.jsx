@@ -875,6 +875,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
 
   // Commit
   const [answers, setAnswers] = useState({ ready: null, allowed: null, choosing: null })
+  const [commitStep, setCommitStep] = useState(0)
   const [showCovenant, setShowCovenant] = useState(false)
 
   // Plan — thresholds the user adds
@@ -1056,47 +1057,87 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
       {/* ━━━ COMMIT ━━━ */}
       {beat === 1 && (
         <div className="hp-fade-in">
-          <Eyebrow style={{ marginBottom: '12px' }}>Commit</Eyebrow>
-          <Heading size="lg" style={{ marginBottom: '16px' }}>
-            Ready to step into your{' '}
-            <em style={{ color: tokens.gold }}>Horizon</em>?
-          </Heading>
+          <Eyebrow style={{ marginBottom: '20px' }}>Commit</Eyebrow>
 
-          <div style={{ marginTop: '28px' }}>
-            {[
-              { key: 'ready',    label: 'Are you ready to step into your Horizon Self?' },
-              { key: 'allowed',  label: 'Are you allowed to live as your Horizon Self?' },
-              { key: 'choosing', label: 'Are you choosing to step into your Horizon Self?' },
-            ].map((q) => (
-              <Card key={q.key} style={{ marginBottom: '12px', padding: '18px 22px' }}>
-                <p style={{
-                  ...serif, fontSize: '18px',
-                  color: tokens.dark, margin: '0 0 14px', lineHeight: 1.4, fontWeight: 300,
-                }}>{q.label}</p>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  {['yes', 'no'].map(ans => (
-                    <button key={ans}
-                      onClick={() => setAnswers(a => ({ ...a, [q.key]: ans }))}
-                      style={{
-                        flex: 1,
-                        background: answers[q.key] === ans
-                          ? (ans === 'yes' ? tokens.goldChrome : tokens.ghost) : 'transparent',
-                        color: answers[q.key] === ans ? '#FFFFFF'
-                          : (ans === 'yes' ? tokens.gold : tokens.ghost),
-                        border: `1px solid ${answers[q.key] === ans
-                          ? (ans === 'yes' ? tokens.goldChrome : tokens.ghost) : tokens.goldFaint}`,
-                        borderRadius: '40px', padding: '10px 18px',
-                        ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.18em',
-                        textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s',
-                      }}>{ans}</button>
-                  ))}
-                </div>
-              </Card>
+          {/* three thresholds, one at a time */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '30px' }}>
+            {[0, 1, 2].map(i => (
+              <div key={i} style={{
+                width: i === commitStep ? '22px' : '7px', height: '7px', borderRadius: '4px',
+                background: i < commitStep ? tokens.goldChrome : i === commitStep ? tokens.gold : tokens.goldFaint,
+                transition: 'all 0.4s ease',
+              }} />
             ))}
           </div>
 
+          <Heading size="lg" style={{ textAlign: 'center', marginBottom: '30px' }}>
+            {[
+              'Are you ready to step into your Horizon Self?',
+              'Are you allowed to live as your Horizon Self?',
+              'Are you choosing to step into your Horizon Self?',
+            ][commitStep]}
+          </Heading>
+
+          {/* the Horizon Self statement — held in the middle, the thing you say yes to */}
+          {horizonSelfStatement ? (
+            <div style={{
+              margin: '0 auto 36px', maxWidth: '460px', padding: '28px 30px', textAlign: 'center',
+              background: tokens.goldTint, border: `1px solid ${tokens.goldFaint}`, borderRadius: '14px',
+            }}>
+              <p style={{
+                ...serif, fontStyle: 'italic', fontSize: 'clamp(20px,3vw,26px)', fontWeight: 300,
+                color: tokens.gold, lineHeight: 1.45, margin: 0,
+              }}>{horizonSelfStatement}</p>
+            </div>
+          ) : (
+            <p style={{
+              ...body, textAlign: 'center', color: tokens.ghost, fontSize: '15px',
+              margin: '0 auto 36px', maxWidth: '420px', lineHeight: 1.6,
+            }}>
+              Your integrated Horizon Self statement lands here once your Map’s synthesis runs.
+            </p>
+          )}
+
+          {/* the slowly pulsing yes */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '22px' }}>
+            <button
+              className="hp-pulse-yes"
+              onClick={() => {
+                const key = ['ready', 'allowed', 'choosing'][commitStep]
+                setAnswers(a => ({ ...a, [key]: 'yes' }))
+                if (commitStep < 2) setCommitStep(s => s + 1)
+                else moveToGround()
+              }}
+              style={{
+                ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase',
+                color: '#FFFFFF', background: tokens.goldChrome, border: 'none', borderRadius: '50%',
+                width: '124px', height: '124px', cursor: 'pointer',
+              }}
+            >
+              Yes
+            </button>
+          </div>
+
+          {/* quiet escape — a no is data, never a wall */}
+          <div style={{ textAlign: 'center' }}>
+            <button
+              onClick={() => {
+                const key = ['ready', 'allowed', 'choosing'][commitStep]
+                setAnswers(a => ({ ...a, [key]: 'no' }))
+                moveToGround()
+              }}
+              style={{
+                background: 'transparent', border: 'none', cursor: 'pointer',
+                ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em',
+                color: tokens.ghost, textTransform: 'uppercase',
+              }}
+            >
+              Not today — run lighter →
+            </button>
+          </div>
+
           {protectorCovenant && (
-            <div style={{ marginTop: '8px', marginBottom: '24px' }}>
+            <div style={{ marginTop: '22px', textAlign: 'center' }}>
               <button onClick={() => setShowCovenant(s => !s)} style={{
                 background: 'transparent', border: 'none', padding: '8px 0',
                 cursor: 'pointer', ...sc, fontSize: '13px', fontWeight: 600,
@@ -1105,7 +1146,7 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
               }}>{showCovenant ? '— Hide covenant' : '+ Covenant'}</button>
               {showCovenant && (
                 <div style={{
-                  marginTop: '14px', padding: '20px 22px',
+                  marginTop: '14px', padding: '20px 22px', textAlign: 'left',
                   background: tokens.goldTint,
                   borderLeft: `2px solid ${tokens.goldChrome}`, borderRadius: '4px',
                 }}>
@@ -1117,21 +1158,6 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
               )}
             </div>
           )}
-
-          {anyNo && (
-            <Card style={{ background: tokens.goldTint, marginBottom: '24px' }}>
-              <Eyebrow color="ghost" style={{ marginBottom: '8px', fontSize: '13px' }}>A no is data</Eyebrow>
-              <Body dim style={{ margin: 0, fontSize: '14px' }}>
-                Run lighter today. Or close and return.
-              </Body>
-            </Card>
-          )}
-
-          <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-            {anyNo && <GhostButton onClick={moveToGround}>Light run →</GhostButton>}
-            <SolidButton onClick={moveToGround} disabled={!allYes && !anyNo}
-              style={{ display: anyNo ? 'none' : 'inline-block' }}>Ground →</SolidButton>
-          </div>
         </div>
       )}
 
@@ -2472,6 +2498,12 @@ export function HorizonPracticePage() {
           }
           .hp-card-pulse { animation: hp-pulse-card 0.9s ease-out; }
           .hp-fade-in    { animation: hp-fade-in 0.5s ease-out; }
+          @keyframes hp-pulse-yes {
+            0%, 100% { transform: scale(1);    box-shadow: 0 0 0 0 ${tokens.goldStrong}; }
+            50%      { transform: scale(1.06); box-shadow: 0 0 0 20px transparent; }
+          }
+          .hp-pulse-yes { animation: hp-pulse-yes 2.8s ease-in-out infinite; transition: transform 0.2s ease; }
+          .hp-pulse-yes:hover { transform: scale(1.06); }
           .hp-ground-step {
             opacity: 0;
             animation: hp-fade-in 0.6s ease-out forwards;

@@ -235,18 +235,24 @@ export function IAmChapterPage() {
                 and keep refining until you feel a spark when you read it back.
               </p>
 
+              <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', marginTop: '12px', lineHeight: 1.6 }}>
+                Present tense. One line. Not a goal — a declaration. Write it as if it's already
+                true, and keep refining until you feel a spark when you read it back.
+              </p>
+
               <textarea
                 value={draft}
-                onChange={e => onDraftChange(e.target.value)}
+                onChange={e => onDraftChange(e.target.value.replace(/[\r\n]+/g, ' '))}
+                onKeyDown={e => { if (e.key === 'Enter') e.preventDefault() }}
                 placeholder="I am…"
-                rows={3}
+                rows={2}
                 aria-label={`Your ${DOMAIN_LABELS[current]} I Am statement`}
                 style={{
                   width: '100%', boxSizing: 'border-box', marginTop: '22px',
                   padding: '16px', border: `1px solid ${tokens.goldFaint}`,
                   borderRadius: '6px', background: '#FFFFFF',
                   ...body, fontStyle: 'italic', fontSize: '16px', lineHeight: 1.6,
-                  color: tokens.dark, resize: 'vertical', outline: 'none',
+                  color: tokens.dark, resize: 'none', outline: 'none',
                 }}
                 onFocus={e => { e.target.style.borderColor = tokens.goldChrome }}
                 onBlur={e => { e.target.style.borderColor = tokens.goldFaint }}
