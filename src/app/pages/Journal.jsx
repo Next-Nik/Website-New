@@ -112,6 +112,7 @@ export default function Journal() {
   const [journalRows, setJournalRows]   = useState([])
   const [hsRows, setHsRows]              = useState([])
   const [hpRows, setHpRows]              = useState([])
+  const [scRows, setScRows]              = useState([])
 
   // Write tab state
   const [draft, setDraft]         = useState('')
@@ -132,7 +133,7 @@ export default function Journal() {
     async function load() {
       setLoading(true)
       // Promise.allSettled — one failure shouldn't nuke the others
-      const [jRes, hsRes, hpRes] = await Promise.allSettled([
+      const [jRes, hsRes, hpRes, scRes] = await Promise.allSettled([
         supabase
           .from('journal_entries')
           .select('*')
@@ -151,11 +152,18 @@ export default function Journal() {
           .eq('user_id', user.id)
           .order('occurred_at', { ascending: false })
           .limit(200),
+        supabase
+          .from('sentence_completion_entries')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(400),
       ])
       if (cancelled) return
       if (jRes.status  === 'fulfilled' && !jRes.value.error)  setJournalRows(jRes.value.data || [])
       if (hsRes.status === 'fulfilled' && !hsRes.value.error) setHsRows(hsRes.value.data || [])
       if (hpRes.status === 'fulfilled' && !hpRes.value.error) setHpRows(hpRes.value.data || [])
+      if (scRes.status === 'fulfilled' && !scRes.value.error) setScRows(scRes.value.data || [])
       setLoading(false)
     }
     load()
@@ -208,9 +216,31 @@ export default function Journal() {
         fromWho:   r.from_who,
       })
     }
+    // Sentence Completion — group a session's stems into one card.
+    const scBySession = {}
+    for (const r of scRows) {
+      const g = scBySession[r.session_id] || { rows: [], when: r.created_at, domain: r.domain, week: r.week, reflection: r.is_reflection }
+      g.rows.push(r)
+      if (new Date(r.created_at) > new Date(g.when)) g.when = r.created_at
+      g.reflection = g.reflection || r.is_reflection
+      scBySession[r.session_id] = g
+    }
+    for (const [sid, g] of Object.entries(scBySession)) {
+      const composed = g.rows
+        .map(r => `${r.stem}\n${r.endings}`)
+        .join('\n\n')
+      items.push({
+        id:         `sc-${sid}`,
+        kind:       'sentence_completion',
+        when:       g.when,
+        body:       composed,
+        domain:     g.domain,
+        reflection: g.reflection,
+      })
+    }
     items.sort((a, b) => new Date(b.when) - new Date(a.when))
     return items
-  }, [journalRows, hsRows, hpRows])
+  }, [journalRows, hsRows, hpRows, scRows])
 
   // ── Cadence — "what's due this period?" ──────────────────────
   // For weekly/quarterly/annual, the period is "complete" if there's
@@ -461,6 +491,26 @@ export default function Journal() {
                 <span style={{ ...body, fontSize: 13, color: '#A8423A' }}>{saveError}</span>
               )}
             </div>
+
+            <div style={{ marginTop: 30, paddingTop: 18, borderTop: `1px solid ${tokens.goldRule}` }}>
+              <div style={{
+                ...sc, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase',
+                color: tokens.inkFaint, marginBottom: 8,
+              }}>
+                Guided practice
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/tools/sentence-completion')}
+                style={{
+                  ...body, fontSize: 14.5, lineHeight: 1.5, textAlign: 'left',
+                  background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+                  color: tokens.goldDk,
+                }}
+              >
+                Sentence Completion — a stem, finished fast, across the seven domains →
+              </button>
+            </div>
           </section>
         )}
 
@@ -563,6 +613,12 @@ function StreamItem({ item }) {
     const kindLabel = PRACTICE_KIND_LABEL[item.practice] || item.practice
     label = `Practice · ${kindLabel}`
     if (item.fromWho) label += ` · ${item.fromWho}`
+  } else if (item.kind === 'sentence_completion') {
+    label = item.reflection ? 'Sentence Completion · reflection' : 'Sentence Completion'
+    body  = item.body
+    if (item.domain) {
+      extra = <DomainPill label={DOMAIN_LABEL_BY_KEY[item.domain] || item.domain} />
+    }
   }
 
   return (

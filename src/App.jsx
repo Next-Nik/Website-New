@@ -106,6 +106,7 @@ import { ChallengePage }                           from './app/pages/ChallengePa
 import { HorizonPracticePage }                     from './tools/horizon-practice/HorizonPractice'
 import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import JournalPage                                 from './app/pages/Journal'
+import SentenceCompletion                          from './app/pages/SentenceCompletion'
 import PlanetMap                                    from './tools/planet/PlanetMap'
 import { NextUJourneyPage }                        from './tools/nextu/NextUJourney'
 import { IAmChapterPage }                          from './tools/nextu/IAmChapter'
@@ -274,6 +275,7 @@ function AppInner() {
         <Route path="/atlas/goals/:domain"      element={<HorizonGoalsPage />} />
         <Route path="/tools/horizon-practice"    element={<HorizonPracticePage />} />
         <Route path="/journal"                   element={<JournalPage />} />
+        <Route path="/tools/sentence-completion" element={<SentenceCompletion />} />
         <Route path="/tools/planet"              element={<PlanetMap />} />  {/* founder-only beta — gate inside PlanetMap */}
 
         {/* ── Platform routes (beta prefix retired) ── */}

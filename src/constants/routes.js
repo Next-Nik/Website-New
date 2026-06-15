@@ -58,6 +58,7 @@ export const ROUTES = {
   purposePieceDeep: '/tools/purpose-piece/deep',
   targetSprint:     '/tools/target-sprint',
   horizonPractice:  '/tools/horizon-practice',
+  sentenceCompletion: '/tools/sentence-completion',
 
   // ── Tool API fetch paths ────────────────────────────────────
   api: {
