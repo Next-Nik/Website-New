@@ -39,6 +39,13 @@ export default function Thresholds({ userId = null, onComplete = () => {}, onSki
 
   return (
     <div style={{ maxWidth: '560px', margin: '0 auto' }}>
+      <div style={{ textAlign: 'right', marginBottom: '8px' }}>
+        <button onClick={onSkip} style={{
+          background: 'transparent', border: 'none', cursor: 'pointer',
+          fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', fontWeight: 600,
+          letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(15,21,35,0.55)', opacity: 0.6,
+        }}>Skip</button>
+      </div>
       <div style={{ textAlign: 'center', marginBottom: '24px' }}>
         <p style={{
           ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.22em',
@@ -67,11 +74,7 @@ export default function Thresholds({ userId = null, onComplete = () => {}, onSki
           color: '#FFFFFF', background: tokens.goldChrome, border: 'none',
           borderRadius: '40px', padding: '12px 28px', cursor: 'pointer', margin: '0 6px',
         }}>Done →</button>
-        <button onClick={onSkip} style={{
-          ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
-          background: 'transparent', border: `1px solid ${tokens.goldFaint}`, color: tokens.gold,
-          borderRadius: '40px', padding: '12px 24px', cursor: 'pointer', margin: '0 6px',
-        }}>Skip →</button>
+
       </div>
     </div>
   )

@@ -40,6 +40,13 @@ export default function FoundationAudio({ phase = 'baseline', title = null, onCo
 
   return (
     <div style={{ maxWidth: '520px', margin: '0 auto', textAlign: 'center' }}>
+      <div style={{ textAlign: 'right', marginBottom: '16px' }}>
+        <button onClick={onSkip} style={{
+          background: 'transparent', border: 'none', cursor: 'pointer',
+          fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', fontWeight: 600,
+          letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(15,21,35,0.55)', opacity: 0.6,
+        }}>Skip</button>
+      </div>
       <p style={{
         ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.22em',
         textTransform: 'uppercase', color: tokens.gold, margin: '0 0 8px',
@@ -69,11 +76,7 @@ export default function FoundationAudio({ phase = 'baseline', title = null, onCo
           color: '#FFFFFF', background: tokens.goldChrome, border: 'none',
           borderRadius: '40px', padding: '12px 28px', cursor: 'pointer', margin: '0 6px',
         }}>{ended ? 'Continue →' : 'Done →'}</button>
-        <button onClick={onSkip} style={{
-          ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
-          background: 'transparent', border: `1px solid ${tokens.goldFaint}`, color: tokens.gold,
-          borderRadius: '40px', padding: '12px 24px', cursor: 'pointer', margin: '0 6px',
-        }}>Skip →</button>
+
       </div>
     </div>
   )

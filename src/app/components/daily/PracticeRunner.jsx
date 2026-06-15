@@ -65,6 +65,16 @@ function StepButton({ children, onClick, solid = false }) {
   )
 }
 
+function QuietSkip({ onClick, isLast = false }) {
+  return (
+    <button onClick={onClick} style={{
+      background: 'transparent', border: 'none', cursor: 'pointer',
+      ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em',
+      textTransform: 'uppercase', color: 'rgba(15,21,35,0.55)', opacity: 0.6,
+    }}>{isLast ? 'Done' : 'Skip'}</button>
+  )
+}
+
 export default function PracticeRunner({ blocks = [], title = 'Practice', data = {}, onExit = () => {}, onNavigate = () => {} }) {
   const [i, setI] = useState(0)
   const [showCovenant, setShowCovenant] = useState(false)
@@ -143,12 +153,14 @@ export default function PracticeRunner({ blocks = [], title = 'Practice', data =
     if (block.status === 'link') {
       return (
         <StepShell region={block.region} label={block.label}>
+          <div style={{ textAlign: 'right', marginBottom: '12px' }}>
+            <QuietSkip onClick={next} isLast={isLast} />
+          </div>
           <p style={{ ...body, color: tokens.ghost, fontSize: '15px', lineHeight: 1.6, margin: '0 0 26px' }}>
             Opens as its own room. Come back here when you’re done, or carry straight on.
           </p>
           <div>
             <StepButton solid onClick={() => onNavigate(block.route)}>Open →</StepButton>
-            <StepButton onClick={next}>{isLast ? 'Done' : 'Skip →'}</StepButton>
           </div>
         </StepShell>
       )
@@ -158,14 +170,16 @@ export default function PracticeRunner({ blocks = [], title = 'Practice', data =
     const home = WELD_HOME[block.id]
     return (
       <StepShell region={block.region} label={block.label}>
+        <div style={{ textAlign: 'right', marginBottom: '12px' }}>
+          <QuietSkip onClick={next} isLast={isLast} />
+        </div>
         <p style={{ ...body, color: tokens.ghost, fontSize: '15px', lineHeight: 1.6, margin: '0 0 26px' }}>
           {block.status === 'new'
-            ? 'A new piece, on the way soon.'
-            : home ? `Runs inside ${home.label} for now.` : 'Not a standalone module yet.'}
+            ? 'Opening soon.'
+            : home ? `Available inside ${home.label}.` : 'Opening soon.'}
         </p>
         <div>
           {home && <StepButton solid onClick={() => onNavigate(home.route)}>Open {home.label} →</StepButton>}
-          <StepButton onClick={next}>{isLast ? 'Done' : 'Skip →'}</StepButton>
         </div>
       </StepShell>
     )
