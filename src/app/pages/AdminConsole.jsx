@@ -95,7 +95,7 @@ const SCALES_EX = CANONICAL_SCALES.map(s => s.slug)
 const TYPES_EX  = ['organisation','project','practitioner','programme','resource']
 
 // ── Placement tier from score (preserved from original) ───────
-const TIER_FROM_SCORE = s => s <= 4 ? 'pattern_instance' : s <= 6 ? 'contested' : s <= 8 ? 'qualified' : 'exemplar'
+const TIER_FROM_SCORE = s => s <= 4.5 ? 'pattern_instance' : s <= 6.5 ? 'contested' : s <= 8.5 ? 'qualified' : 'exemplar'
 
 const TIER_CFG = {
   pattern_instance: { label: 'Pattern instance', color: '#8A3030', bg: 'rgba(138,48,48,0.08)', border: 'rgba(138,48,48,0.25)' },
@@ -139,9 +139,9 @@ function Btn({ onClick, children, variant = 'primary', small, disabled }) {
   )
 }
 
-function Input({ value, onChange, placeholder, type = 'text', style, onKeyDown }) {
+function Input({ value, onChange, placeholder, type = 'text', style, onKeyDown, step }) {
   return (
-    <input type={type} value={value} onChange={e => onChange(e.target.value)}
+    <input type={type} step={step} value={value} onChange={e => onChange(e.target.value)}
       onKeyDown={onKeyDown}
       placeholder={placeholder}
       style={{
@@ -171,11 +171,12 @@ function Select({ value, onChange, options, style }) {
   )
 }
 
-function Card({ children, style }) {
+function Card({ children, style, onClick }) {
   return (
-    <div style={{
+    <div onClick={onClick} style={{
       background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.20)',
       borderRadius: '14px', padding: '20px 22px', marginBottom: '10px',
+      ...(onClick ? { cursor: 'pointer' } : null),
       ...style,
     }}>
       {children}
@@ -350,7 +351,7 @@ function NowTab() {
 // ── PLATFORM TAB ─────────────────────────────────────────────
 // Preserved from original
 
-function PlatformTab() {
+function PlatformTab({ onNavigate }) {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -379,19 +380,20 @@ function PlatformTab() {
   if (loading) return <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>
 
   const statCards = [
-    { label: 'Total Actors', value: stats.totalActors },
-    { label: 'Claimed', value: stats.claimedActors },
-    { label: 'Open Needs', value: stats.openNeeds },
-    { label: 'Pending Claims', value: stats.pendingClaims },
-    { label: 'Contributions', value: stats.totalContribs },
-    { label: 'Waitlist', value: stats.waitlistCount },
+    { label: 'Total Actors',  value: stats.totalActors,   tab: 'Actors' },
+    { label: 'Claimed',       value: stats.claimedActors, tab: 'Actors' },
+    { label: 'Open Needs',    value: stats.openNeeds,     tab: 'Needs' },
+    { label: 'Pending Claims',value: stats.pendingClaims, tab: 'Actors' },
+    { label: 'Contributions', value: stats.totalContribs, tab: 'Contributions' },
+    { label: 'Waitlist',      value: stats.waitlistCount, tab: 'Waitlist' },
   ]
 
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px', marginBottom: '32px' }}>
         {statCards.map(s => (
-          <Card key={s.label} style={{ textAlign: 'center', padding: '20px 12px' }}>
+          <Card key={s.label} onClick={s.tab && onNavigate ? () => onNavigate(s.tab) : undefined}
+            style={{ textAlign: 'center', padding: '20px 12px' }}>
             <div style={{ ...body, fontSize: '32px', fontWeight: 400, color: '#0F1523', lineHeight: 1 }}>{s.value ?? 0}</div>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginTop: '6px' }}>{s.label}</div>
           </Card>
@@ -888,8 +890,8 @@ function ActorsTab({ toast }) {
             </div>
 
             <div>
-              <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Alignment score (0-9)</label>
-              <Input value={form.alignment_score} onChange={v => setFormField('alignment_score', v)} type="number" placeholder="0–9" />
+              <label style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', color: gold, display: 'block', marginBottom: '5px' }}>Alignment score (0–10)</label>
+              <Input value={form.alignment_score} onChange={v => setFormField('alignment_score', v)} type="number" step="0.5" placeholder="0–10" />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
@@ -1324,9 +1326,9 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           <div style={{ display:'grid', gridTemplateColumns:'120px 1fr', gap:'12px', alignItems:'end' }}>
             <div>
               <label style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px',
-                letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Score (0-9)</label>
+                letterSpacing:'0.16em', color:gold, display:'block', marginBottom:'5px' }}>Score (0–10)</label>
               <Input value={proposal.alignment_score ?? ''} onChange={handleScoreChange}
-                type="number" placeholder="0-9" />
+                type="number" step="0.5" placeholder="0–10" />
             </div>
             <div style={{ paddingBottom:'2px' }}>
               {!isNaN(score) && <ExTierBadge tier={TIER_FROM_SCORE(score)} />}
@@ -4133,7 +4135,7 @@ export function AdminConsolePage() {
         <TabBar active={tab} setActive={setTab} />
 
         {tab === 'Now'           && <NowTab />}
-        {tab === 'Platform'      && <PlatformTab />}
+        {tab === 'Platform'      && <PlatformTab onNavigate={setTab} />}
         {tab === 'Actors'        && <ActorsTab       toast={showToast} />}
         {tab === 'Add'           && <AddTab          toast={showToast} />}
         {tab === 'Place'         && <PlaceTab        toast={showToast} />}
