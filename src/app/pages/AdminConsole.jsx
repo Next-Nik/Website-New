@@ -613,7 +613,7 @@ function ActorLinker({ toast }) {
   const actorOpts = [{ value: '', label: '— Select actor —' },
     ...actors.map(a => ({ value: a.id, label: a.type ? `${a.name} · ${a.type}` : a.name }))]
   const relOpts = [
-    { value: 'parent_child', label: 'is a child of' },
+    { value: 'parent_child', label: 'is part of' },
     { value: 'member_of',    label: 'is a member of' },
     { value: 'partner',      label: 'is a partner of' },
   ]
@@ -654,7 +654,7 @@ function ActorLinker({ toast }) {
   )
 }
 
-const REL_PHRASE = { parent_child: 'is a child of', member_of: 'is a member of', partner: 'is a partner of' }
+const REL_PHRASE = { parent_child: 'is part of', member_of: 'is a member of', partner: 'is a partner of' }
 
 function ActorsTab({ toast }) {
   const [actors, setActors]     = useState([])
@@ -1322,7 +1322,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
                   <span key={i} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'13px',
                     color:'rgba(15,21,35,0.72)', background:'rgba(15,21,35,0.04)',
                     border:'1px solid rgba(15,21,35,0.10)', borderRadius:'40px', padding:'3px 10px' }}>
-                    {r.relationship_type === 'parent_child' ? 'child of ' : r.relationship_type.replace('_', ' ') + ' '}{r.to_name}
+                    {r.to_name}
                   </span>
                 ))}
               </div>

@@ -247,7 +247,7 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
                   color: 'rgba(15,21,35,0.55)', background: 'rgba(200,146,42,0.06)',
                   border: '1px solid rgba(200,146,42,0.20)',
                   borderRadius: '40px', padding: '2px 9px' }}>
-                  {r.relationship_type === 'parent_child' ? 'child of ' : r.relationship_type + ' '}{r.to_name}
+                  {r.to_name}
                 </span>
               ))}
               {proposal.links?.length > 0 && (
