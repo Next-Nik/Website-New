@@ -679,6 +679,109 @@ function stripHtml(html) {
     .slice(0, 12000)
 }
 
+// ── Server-side page read ─────────────────────────────────────────────────────
+// Fetch the page HTML ourselves so the extractor can run in html mode (a single
+// fast Claude call, no web_search round-trips that blow the function timeout on
+// content-heavy sites) AND see the actual DOM — which stripHtml otherwise throws
+// away. Image and link candidates are harvested from the raw HTML before the
+// strip and handed to the model, so logo/social/contact extraction improves
+// instead of regressing. Falls back to the web_search path when the fetch fails
+// or returns a thin JS shell (SPA with no server-rendered content).
+
+async function fetchPageHtml(url, timeoutMs = 12000) {
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs)
+  try {
+    const r = await fetch(url, {
+      signal: ctrl.signal,
+      redirect: 'follow',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; NextUsAtlasBot/1.0; +https://nextus.world)',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      },
+    })
+    if (!r.ok) return null
+    const ct = (r.headers.get('content-type') || '').toLowerCase()
+    if (!ct.includes('html') && !ct.includes('xml')) return null
+    const html = (await r.text()).slice(0, 600000)
+    return { html, finalUrl: r.url || url }
+  } catch {
+    return null
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+function absolutise(u, base) {
+  try { return new URL(u, base).href } catch { return null }
+}
+
+// Harvest candidate anchor images from raw HTML, in preference order:
+// og:image / twitter:image → apple-touch-icon / icon link → logo-ish <img>.
+function extractImageCandidates(html, baseUrl) {
+  const out = []
+  const push = (u) => { const a = absolutise(u, baseUrl); if (a && !out.includes(a)) out.push(a) }
+
+  let m
+  const metaRe = /<meta[^>]+(?:property|name)=["'](?:og:image(?::secure_url)?|twitter:image(?::src)?)["'][^>]*>/gi
+  while ((m = metaRe.exec(html))) {
+    const c = m[0].match(/content=["']([^"']+)["']/i)
+    if (c) push(c[1])
+  }
+  const linkRe = /<link[^>]+rel=["'][^"']*(?:apple-touch-icon|icon)[^"']*["'][^>]*>/gi
+  while ((m = linkRe.exec(html))) {
+    const h = m[0].match(/href=["']([^"']+)["']/i)
+    if (h) push(h[1])
+  }
+  const imgRe = /<img[^>]+>/gi
+  while ((m = imgRe.exec(html))) {
+    if (/logo/i.test(m[0])) {
+      const s = m[0].match(/src=["']([^"']+)["']/i)
+      if (s) push(s[1])
+    }
+  }
+  return out
+}
+
+const SOCIAL_HOST_RE = /(instagram\.com|twitter\.com|x\.com|youtube\.com|youtu\.be|linkedin\.com|facebook\.com|tiktok\.com|substack\.com|medium\.com|open\.spotify\.com|podcasts\.apple\.com|vimeo\.com|github\.com|calendly\.com|cal\.com|savvycal\.com|threads\.net|bsky\.app|t\.me)/i
+const CONTACT_PATH_RE = /(contact|get-in-touch|\bbook\b|booking|schedule|appointment|connect|subscribe|newsletter|\brss\b|feed)/i
+
+// Harvest noteworthy links so the model can classify them into link_type even
+// though stripHtml drops hrefs. Keeps mailto/tel, social/podcast/booking hosts,
+// contact-ish paths, and off-domain links; drops internal nav noise.
+function extractLinkCandidates(html, baseUrl) {
+  let baseHost = ''
+  try { baseHost = new URL(baseUrl).hostname.replace(/^www\./, '') } catch {}
+  const seen = []
+  const out = []
+  let m
+  const aRe = /<a[^>]+href=["']([^"']+)["'][^>]*>/gi
+  while ((m = aRe.exec(html))) {
+    let v = (m[1] || '').trim()
+    if (!v || /^(javascript:|#)/i.test(v)) continue
+    if (/^(mailto:|tel:)/i.test(v)) { if (!out.includes(v)) out.push(v); continue }
+    const abs = absolutise(v, baseUrl)
+    if (!abs || seen.includes(abs)) continue
+    seen.push(abs)
+    let host = ''
+    try { host = new URL(abs).hostname.replace(/^www\./, '') } catch { continue }
+    const offDomain = baseHost && host && !host.endsWith(baseHost)
+    if (SOCIAL_HOST_RE.test(abs) || CONTACT_PATH_RE.test(abs) || offDomain) {
+      if (!out.includes(abs)) out.push(abs)
+    }
+    if (out.length >= 60) break
+  }
+  return out
+}
+
+function faviconFallback(websiteOrUrl) {
+  try {
+    const host = new URL(websiteOrUrl).hostname.replace(/^www\./, '')
+    if (!host) return null
+    return `https://www.google.com/s2/favicons?domain=${host}&sz=256`
+  } catch { return null }
+}
+
 function safeJson(text) {
   const attempts = [
     () => JSON.parse(text),
@@ -846,15 +949,52 @@ module.exports = async function handler(req, res) {
   const knownContext = getKnownContext(input)
   let content        = input.trim()
 
+  // Image/link candidates harvested from a server-side page fetch (url mode).
+  // primaryImageFallback is the best anchor image found in the page source; it
+  // backstops the first actor when the model returns no image. readVia records
+  // which path actually ran, for log/debug visibility.
+  let primaryImageFallback = null
+  let readVia              = mode
+  let useWebSearch         = false
+
+  const FLOOR_TAIL = `Identify ALL distinct actors — look for: the main organisation/practitioner, any retreat or physical places, any programmes with their own identity, any partner-run practices. Generate a separate record for each. Podcasts, Substacks, YouTube channels, and newsletters are never separate records — capture them as links on the parent actor.\n\nFor every record, meet the Floor: accurate image, description, story (2-4 paragraphs from explicit source claims), tagline, ALL media links discoverable on the source, and at least one business contact path (email, contact form, booking link, or phone). Be exhaustive on the links — catch every channel. Also propose any PRACTICES each actor visibly embodies, the repeatable approaches that work, with the tier the actor operates at. Identity and observed tier only, never scored.`
+
   if (mode === 'html') {
     content = `[HTML source provided]\n\n${stripHtml(input)}\n\n${knownContext}`
   } else if (mode === 'url') {
-    content = `[URL provided: ${input.trim()}]\n\nRead this URL. Identify ALL distinct actors — look for: the main organisation/practitioner, any retreat or physical places, any programmes with their own identity, any partner-run practices. Generate a separate record for each. Podcasts, Substacks, YouTube channels, and newsletters are never separate records — capture them as links on the parent actor.\n\nFor every record, meet the Floor: accurate image, description, story (2-4 paragraphs from explicit source claims), tagline, ALL media links discoverable on the source, and at least one business contact path (email, contact form, booking link, or phone). Be exhaustive on the links — catch every channel. Also propose any PRACTICES each actor visibly embodies, the repeatable approaches that work, with the tier the actor operates at. Identity and observed tier only, never scored.\n\n${knownContext}`
+    // Try to read the page ourselves first. A single fast html-mode call avoids
+    // the web_search round-trips that time the function out on heavy sites, and
+    // lets us hand the model the actual logo/social/contact URLs from the DOM.
+    const page = await fetchPageHtml(input.trim())
+    const stripped = page ? stripHtml(page.html) : ''
+
+    if (page && stripped.length >= 400) {
+      const baseUrl   = page.finalUrl || input.trim()
+      const imageCands = extractImageCandidates(page.html, baseUrl)
+      const linkCands  = extractLinkCandidates(page.html, baseUrl)
+      primaryImageFallback = imageCands[0] || null
+      readVia = 'html_fetch'
+
+      const imageBlock = imageCands.length
+        ? `\n\nIMAGE CANDIDATES found in the page source (pick the single best anchor image for each actor — logo for orgs, portrait for practitioners — and return it as image_url; return null if none fit):\n${imageCands.slice(0, 8).map(u => `  - ${u}`).join('\n')}`
+        : ''
+      const linkBlock = linkCands.length
+        ? `\n\nLINK CANDIDATES found in the page source (classify the ones that belong to an actor into the link_type vocabulary — socials, podcast feeds, booking/contact pages, email, phone — and attach them to the right record; ignore the rest):\n${linkCands.slice(0, 60).map(u => `  - ${u}`).join('\n')}`
+        : ''
+
+      content = `[Page read from URL: ${input.trim()}]\n\n${stripped}${imageBlock}${linkBlock}\n\n${FLOOR_TAIL}\n\n${knownContext}`
+    } else {
+      // Fetch failed or returned a thin JS shell — fall back to web_search so
+      // SPA / bot-blocked sites still resolve.
+      useWebSearch = true
+      readVia = 'web_search'
+      content = `[URL provided: ${input.trim()}]\n\nRead this URL. ${FLOOR_TAIL}\n\n${knownContext}`
+    }
   } else {
     content = `[Description provided]\n\n${input.trim()}\n\nIdentify ALL distinct actors and their relationships. Meet the Floor for each.\n\n${knownContext}`
   }
 
-  const tools = mode === 'url' ? [{ type: 'web_search_20250305', name: 'web_search' }] : undefined
+  const tools = useWebSearch ? [{ type: 'web_search_20250305', name: 'web_search' }] : undefined
 
   // Load the live placement vocabulary and append it to the system prompt so
   // the extractor places at subdomain/field resolution and tags real chains.
@@ -890,7 +1030,34 @@ module.exports = async function handler(req, res) {
     if (!Array.isArray(parsed)) parsed = [parsed]
     const results = parsed.slice(0, 6).map(r => enforceShape(r, vocab))
 
-    return res.status(200).json({ results, mode })
+    // Image fallback. The model returns image_url only when it saw a real image
+    // in the source — so most reads come back imageless. Backstop it: the first
+    // (primary) actor inherits the page's anchor image (og:image / logo) when
+    // one was harvested, which counts as a real floor-meeting image. Anything
+    // else, and the case where no anchor image was found, falls back to a domain
+    // favicon — usable for display but NOT floor-meeting, so review still flags
+    // it for a proper logo.
+    results.forEach((r, i) => {
+      if (r.image_url) return
+      const sourceImg = (i === 0) ? primaryImageFallback : null
+      if (sourceImg) {
+        r.image_url = sourceImg
+        r.floor_check.has_image = true
+      } else {
+        const fav = faviconFallback(r.website || input)
+        if (fav) {
+          r.image_url = fav
+          r.floor_check.has_favicon_fallback = true
+        }
+      }
+      r.floor_check.meets_floor = r.floor_check.has_image
+        && r.floor_check.has_description
+        && r.floor_check.has_tagline
+        && r.floor_check.has_business_contact
+        && r.floor_check.media_link_count >= 1
+    })
+
+    return res.status(200).json({ results, mode, read_via: readVia })
 
   } catch (err) {
     console.error('org-extract error:', err)
