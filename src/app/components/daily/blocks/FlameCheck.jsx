@@ -27,6 +27,13 @@ export default function FlameCheck({ stage = 'arrive', ghostValue = null, onComp
 
   return (
     <div style={{ maxWidth: '460px', margin: '0 auto', textAlign: 'center' }}>
+      <div style={{ textAlign: 'right', marginBottom: '16px' }}>
+        <button onClick={onSkip} style={{
+          background: 'transparent', border: 'none', cursor: 'pointer',
+          ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em',
+          color: tokens.ghost, textTransform: 'uppercase', opacity: 0.6,
+        }}>Skip</button>
+      </div>
       <p style={{
         ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.22em',
         textTransform: 'uppercase', color: tokens.gold, margin: '0 0 8px',
@@ -47,13 +54,8 @@ export default function FlameCheck({ stage = 'arrive', ghostValue = null, onComp
         <button onClick={() => onComplete(value)} style={{
           ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
           color: '#FFFFFF', background: tokens.goldChrome, border: 'none',
-          borderRadius: '40px', padding: '12px 28px', cursor: 'pointer', margin: '0 6px',
+          borderRadius: '40px', padding: '12px 28px', cursor: 'pointer',
         }}>Set →</button>
-        <button onClick={onSkip} style={{
-          ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
-          background: 'transparent', border: `1px solid ${tokens.goldFaint}`, color: tokens.gold,
-          borderRadius: '40px', padding: '12px 24px', cursor: 'pointer', margin: '0 6px',
-        }}>Skip →</button>
       </div>
     </div>
   )
