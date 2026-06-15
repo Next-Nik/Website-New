@@ -48,9 +48,9 @@ export const BLOCKS = {
   act:          { id: 'act',          label: 'Act · you are live',   region: 'outro', order: 100, status: 'ready', component: 'Act' },
 
   // Midday-only pieces — designed, not yet built.
-  glimpse:      { id: 'glimpse',      label: 'Who you are',          region: 'meat',  order: 52,  status: 'new' },
-  recommit:     { id: 'recommit',     label: 'Recommit',             region: 'meat',  order: 54,  status: 'new' },
-  release:      { id: 'release',      label: 'Release · back to it', region: 'outro', order: 92,  status: 'new' },
+  glimpse:      { id: 'glimpse',      label: 'Who you are',          region: 'meat',  order: 52,  status: 'new',  entrance: 'midday' },
+  recommit:     { id: 'recommit',     label: 'Recommit',             region: 'meat',  order: 54,  status: 'new',  entrance: 'midday' },
+  release:      { id: 'release',      label: 'Back to it',           region: 'outro', order: 92,  status: 'new',  entrance: 'midday' },
 }
 
 // The house versions — what we offer to start. Each is a list of

@@ -21,7 +21,10 @@ const REGION_ORDER = ['intro', 'meat', 'outro']
 export default function PracticeComposer({ entrance = '', value = [], onSave = () => {}, onClose = () => {} }) {
   const [ids, setIds] = useState(() => new Set(value))
 
-  const all = allBlocksInOrder()
+  // Only show blocks that belong to this entrance — blocks tagged with a
+  // specific entrance are exclusive to that path (e.g. midday-only blocks
+  // never appear in the morning composer).
+  const all = allBlocksInOrder().filter(b => !b.entrance || b.entrance === entrance)
   const inCount = all.filter(b => ids.has(b.id)).length
 
   function toggle(block) {
@@ -50,7 +53,7 @@ export default function PracticeComposer({ entrance = '', value = [], onSave = (
     <div style={{ maxWidth: '640px', margin: '0 auto', padding: '40px 20px 80px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '8px' }}>
         <p style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase', color: tokens.gold, margin: 0 }}>
-          Shape · {title}
+          Edit · {title}
         </p>
         <button onClick={onClose} style={{
           ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
@@ -62,7 +65,7 @@ export default function PracticeComposer({ entrance = '', value = [], onSave = (
         Reshape your flow.
       </h1>
       <p style={{ ...body, fontSize: '15px', color: tokens.ghost, lineHeight: 1.6, margin: '0 0 28px', maxWidth: '480px' }}>
-        Add or drop blocks. They always run in the same order — you’re choosing what’s in, not where it sits. Saved as your standing {title.toLowerCase()}.
+        Add or drop blocks. They always run in the same order — you’re choosing what’s in, not where it sits. Saved as your {title.toLowerCase()} from here on.
       </p>
 
       {REGION_ORDER.map(region => {
@@ -121,7 +124,7 @@ export default function PracticeComposer({ entrance = '', value = [], onSave = (
           ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
           color: '#FFFFFF', background: tokens.goldChrome, border: 'none',
           borderRadius: '40px', padding: '12px 28px', cursor: 'pointer',
-        }}>Save shape</button>
+        }}>Save</button>
       </div>
     </div>
   )
