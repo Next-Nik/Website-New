@@ -40,6 +40,7 @@ import { supabase } from '../../hooks/useSupabase'
 
 import IdentityStrip      from '../components/mission-control/IdentityStrip'
 import PoleHeader         from '../components/mission-control/PoleHeader'
+import FirstLightPrompt   from '../components/FirstLightPrompt'
 import WorldMapSubstrate  from '../components/mission-control/WorldMapSubstrate'
 import WheelStage         from '../components/mission-control/WheelStage'
 import SideRail           from '../components/mission-control/SideRail'
@@ -994,6 +995,8 @@ export default function MissionControl() {
       />
 
       <main className="mc-body">
+
+        <FirstLightPrompt style={{ margin: '0 auto 18px', maxWidth: 720 }} />
 
         {(activeScope === 'self' || activeScope === 'planet') && (
         <>

@@ -456,6 +456,7 @@ export default function FirstLight() {
   const [location, setLocation] = useState(null)
   const [scale, setScale]       = useState(null)
   const [saving, setSaving]     = useState(false)
+  const [skipping, setSkipping] = useState(false)
 
   async function handleFinish() {
     if (!user) return
@@ -494,6 +495,24 @@ export default function FirstLight() {
     }
   }
 
+  // Skip for now — record the off-ramp and step into the platform.
+  // The user is NOT marked complete, so the re-prompt (FirstLightPrompt
+  // on Mission Control / NextU) will gently invite them back.
+  async function handleSkip() {
+    if (!user || skipping) return
+    setSkipping(true)
+    try {
+      await supabase.from('users').update({
+        first_light_skipped_at: new Date().toISOString(),
+      }).eq('id', user.id)
+    } catch (e) {
+      console.error('First Light skip error:', e)
+    } finally {
+      setSkipping(false)
+      navigate('/', { replace: true })
+    }
+  }
+
   const next = () => setStep(s => Math.min(s + 1, 3))
   const back = () => setStep(s => Math.max(s - 1, 0))
 
@@ -508,7 +527,26 @@ export default function FirstLight() {
   const dark = step === 2 && zoomPhase !== 'personal'
 
   return (
-    <div style={{ height: '100dvh', background: dark ? DARK : BG, overscrollBehavior: 'none', transition: 'background 0.9s 0.5s' }}>
+    <div style={{ position: 'relative', height: '100dvh', background: dark ? DARK : BG, overscrollBehavior: 'none', transition: 'background 0.9s 0.5s' }}>
+      {/* Off-ramp — always available. Skipping steps the user into the
+          platform without completing; the re-prompt invites them back. */}
+      <button
+        onClick={handleSkip}
+        disabled={skipping}
+        style={{
+          position: 'absolute',
+          top: 'calc(14px + env(safe-area-inset-top))', right: 16,
+          zIndex: 10,
+          fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase',
+          background: 'none', border: 'none', cursor: skipping ? 'default' : 'pointer',
+          padding: '6px 8px',
+          color: dark ? 'rgba(250,250,247,0.6)' : 'rgba(15,21,35,0.5)',
+          transition: 'color 0.9s',
+        }}
+      >
+        {skipping ? 'One sec…' : 'Skip for now'}
+      </button>
+
       <div style={{ ...s.app, maxWidth: isDesktop ? 560 : 430 }}>
         {showProgress && <Progress step={step === 1 ? 0 : 1} total={2} />}
         {step === 0 && <CoverScreen onBegin={next} />}

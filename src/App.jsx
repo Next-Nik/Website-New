@@ -152,11 +152,14 @@ function RootRoute() {
     if (!user) { setChecking(false); return }
     supabase
       .from('users')
-      .select('first_light_completed_at')
+      .select('first_light_completed_at, first_light_skipped_at')
       .eq('id', user.id)
       .maybeSingle()
       .then(({ data }) => {
-        setNeedsFirstLight(!data?.first_light_completed_at)
+        // Wall only the brand-new user — never completed, never skipped.
+        // Once they skip, '/' resolves to Mission Control and the
+        // re-prompt invites them back when the moment is right.
+        setNeedsFirstLight(!data?.first_light_completed_at && !data?.first_light_skipped_at)
         setChecking(false)
       })
       .catch(() => setChecking(false))
@@ -165,7 +168,8 @@ function RootRoute() {
   if (loading || checking) return null
   if (!user) return <MarketingHomePage />
 
-  // Gate: new or existing user who hasn't done First Light
+  // Gate: brand-new user who has neither completed nor skipped First
+  // Light. Skippers fall through to Mission Control below.
   if (needsFirstLight) return <Navigate to="/welcome/first-light" replace />
 
   // Legacy wrapper welcome flow

@@ -24,6 +24,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { tokens, serif, body, sc } from '../../lib/designTokens'
 import { DOMAIN_COLORS } from '../../constants/domainColors'
 import { DOMAIN_ORDER, DOMAIN_LABELS, CHAPTERS } from './shared'
+import FirstLightPrompt from '../../app/components/FirstLightPrompt'
 
 // ─── styles that need keyframes / pseudo-elements ─────────────
 const JOURNEY_CSS = `
@@ -584,6 +585,8 @@ export function NextUJourneyPage() {
         <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.72)', marginTop: '6px' }}>
           {d.position}
         </p>
+
+        <FirstLightPrompt style={{ marginTop: '24px' }} />
 
         {/* resume card — the one decision above the thread */}
         <button
