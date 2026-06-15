@@ -2,6 +2,11 @@
 // Canonical source of truth for all domain taxonomy.
 // All modules import from here. Inline duplication is forbidden.
 
+// Lenses are hidden from user-facing surfaces for now (the picker, the public
+// Practices filter, and the Map placement row). The data is still stored and
+// rendered admin-side; flip this to true to surface Lenses to users again.
+export const SHOW_LENSES_PUBLIC = false
+
 export const CIV_DOMAINS = [
   { slug: 'human-being',    label: 'Human Being',     color: '#5C7FA3', colorMuted: 'rgba(92,127,163,0.12)'  },
   { slug: 'society',        label: 'Society',          color: '#7A6B8A', colorMuted: 'rgba(122,107,138,0.12)' },

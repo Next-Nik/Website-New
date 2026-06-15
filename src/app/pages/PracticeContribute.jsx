@@ -33,7 +33,7 @@ import {
   PRACTICE_KIND_BY_SLUG,
   CONTRIBUTOR_ROLES,
 } from '../constants/practices'
-import { CIV_DOMAINS, SUBDOMAIN_MAP_BETA, LENSES_PER_DOMAIN } from '../constants/domains'
+import { CIV_DOMAINS, SUBDOMAIN_MAP_BETA, LENSES_PER_DOMAIN, SHOW_LENSES_PUBLIC } from '../constants/domains'
 import { PRINCIPLES_ORDERED } from '../constants/principles'
 import { body, sc } from '../../lib/designTokens'
 
@@ -200,7 +200,9 @@ export default function PracticeContribute() {
     const v = validate()
     if (v) { setError(v); window.scrollTo({ top: 0, behavior: 'smooth' }); return }
     setError(null)
-    setShowFloor(true)
+    // The Horizon Floor check is internal and runs admin-side, not in the
+    // public flow. Save directly, marked pending_review for an admin to clear.
+    handleFloorResolve({ status: 'pending_review' })
   }
 
   async function handleFloorResolve({ status, reason }) {
@@ -520,7 +522,7 @@ export default function PracticeContribute() {
           )}
 
           {/* Lenses */}
-          {lensOptions.length > 0 && (
+          {SHOW_LENSES_PUBLIC && lensOptions.length > 0 && (
             <FieldGroup>
               <Eyebrow>Lenses</Eyebrow>
               <Hint>Optional. What kind of relationship does this practice have with its substrate?</Hint>
@@ -661,17 +663,15 @@ export default function PracticeContribute() {
 
           {/* Submit */}
           <div style={{ paddingTop: '20px', borderTop: '1px solid rgba(200,146,42,0.18)', display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
-            <button type="submit"
+            <button type="submit" disabled={saving}
               style={{
                 ...sc, fontSize: '13px', letterSpacing: '0.16em',
                 padding: '13px 30px', borderRadius: '40px', border: 'none',
-                background: '#0F1523', color: '#FFFFFF', cursor: 'pointer', fontWeight: 600,
+                background: '#0F1523', color: '#FFFFFF', cursor: saving ? 'default' : 'pointer', fontWeight: 600,
+                opacity: saving ? 0.6 : 1,
               }}>
-              Continue to Horizon Floor
+              {saving ? 'Saving…' : 'Add this practice'}
             </button>
-            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', margin: 0 }}>
-              The Horizon Floor check is the last step before saving.
-            </p>
           </div>
         </form>
       </div>

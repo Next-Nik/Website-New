@@ -17,7 +17,7 @@ import {
   VETTING_STATUSES,
   PRACTICES_EMPTY_STATE_COPY,
 } from '../constants/practices'
-import { CIV_DOMAINS, LENSES_PER_DOMAIN } from '../constants/domains'
+import { CIV_DOMAINS, LENSES_PER_DOMAIN, SHOW_LENSES_PUBLIC } from '../constants/domains'
 import { PRINCIPLES_ORDERED } from '../constants/principles'
 
 import PracticeCard from '../components/practices/PracticeCard'
@@ -170,7 +170,7 @@ function FilterPanel({ filters, onChange, availableLenses }) {
           </div>
 
           {/* Lenses (only the ones available given selected domains) */}
-          {availableLenses.length > 0 && (
+          {SHOW_LENSES_PUBLIC && availableLenses.length > 0 && (
             <div>
               <SectionLabel>Lens</SectionLabel>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>

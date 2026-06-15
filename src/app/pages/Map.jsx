@@ -19,6 +19,7 @@ import {
   SUBDOMAINS,
   FIELDS,
   DOMAIN_COLORS,
+  SHOW_LENSES_PUBLIC,
 } from '../constants/domains'
 import { SCALES }           from '../constants/scales'
 import { LENSES_PER_DOMAIN } from '../constants/lenses'
@@ -348,7 +349,7 @@ function ActorPanel({ actor, onClose, navigate }) {
             )}
 
             {/* Lenses */}
-            {lenses.length > 0 && (
+            {SHOW_LENSES_PUBLIC && lenses.length > 0 && (
               <PlacementRow
                 label="Lens"
                 items={lenses.map((l, i) => ({ slug: l, label: LENS_LABEL[l] || l, primary: i === 0 }))}
