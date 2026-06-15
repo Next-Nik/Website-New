@@ -27,6 +27,7 @@ import { useAccess } from '../../hooks/useAccess'
 import { supabase } from '../../hooks/useSupabase'
 import { useStreak } from './useStreak'
 import { tokens, serif, body, sc } from '../../lib/designTokens'
+import Readiness from '../../app/components/daily/blocks/Readiness'
 
 // ─── Domain order (locked NextUs vocabulary) ────────────────────────────────
 const DOMAIN_ORDER = ['path', 'spark', 'body', 'finances', 'connection', 'inner_game', 'signal']
@@ -394,7 +395,7 @@ const ICAL_SETUP_GUIDES = [
   },
 ]
 
-function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId }) {
+export function CalendarPlanBeat({ thresholds, onChange, icalUrl, onSaveIcalUrl, userId }) {
   // ical loading states
   const [calEvents, setCalEvents] = useState([])
   const [calLoading, setCalLoading] = useState(false)
@@ -875,7 +876,6 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
 
   // Commit
   const [answers, setAnswers] = useState({ ready: null, allowed: null, choosing: null })
-  const [commitStep, setCommitStep] = useState(0)
   const [showCovenant, setShowCovenant] = useState(false)
 
   // Plan — thresholds the user adds
@@ -925,15 +925,15 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
     return null
   }
 
-  async function moveToGround() {
+  async function moveToGround(finalAnswers = answers) {
     const rid = await ensureRun()
     if (rid && userId) {
       await supabase.from('horizon_practice_morning_runs').update({
-        commit_ready: answers.ready,
-        commit_allowed: answers.allowed,
-        commit_choosing: answers.choosing,
+        commit_ready: finalAnswers.ready,
+        commit_allowed: finalAnswers.allowed,
+        commit_choosing: finalAnswers.choosing,
         commit_covenant_seen: showCovenant,
-        light_run: anyNo,
+        light_run: Object.values(finalAnswers).includes('no'),
       }).eq('id', rid)
     }
     setBeat(2)
@@ -1054,112 +1054,21 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
 
       <FiveBeatTracker currentBeat={beat} sweep={sweep} />
 
-      {/* ━━━ COMMIT ━━━ */}
+      {/* ━━━ COMMIT — readiness ritual (extracted block) ━━━ */}
       {beat === 1 && (
         <div className="hp-fade-in">
-          <Eyebrow style={{ marginBottom: '20px' }}>Commit</Eyebrow>
-
-          {/* three thresholds, one at a time */}
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginBottom: '30px' }}>
-            {[0, 1, 2].map(i => (
-              <div key={i} style={{
-                width: i === commitStep ? '22px' : '7px', height: '7px', borderRadius: '4px',
-                background: i < commitStep ? tokens.goldChrome : i === commitStep ? tokens.gold : tokens.goldFaint,
-                transition: 'all 0.4s ease',
-              }} />
-            ))}
-          </div>
-
-          <Heading size="lg" style={{ textAlign: 'center', marginBottom: '30px' }}>
-            {[
-              'Are you ready to step into your Horizon Self?',
-              'Are you allowed to live as your Horizon Self?',
-              'Are you choosing to step into your Horizon Self?',
-            ][commitStep]}
-          </Heading>
-
-          {/* the Horizon Self statement — held in the middle, the thing you say yes to */}
-          {horizonSelfStatement ? (
-            <div style={{
-              margin: '0 auto 36px', maxWidth: '460px', padding: '28px 30px', textAlign: 'center',
-              background: tokens.goldTint, border: `1px solid ${tokens.goldFaint}`, borderRadius: '14px',
-            }}>
-              <p style={{
-                ...serif, fontStyle: 'italic', fontSize: 'clamp(20px,3vw,26px)', fontWeight: 300,
-                color: tokens.gold, lineHeight: 1.45, margin: 0,
-              }}>{horizonSelfStatement}</p>
-            </div>
-          ) : (
-            <p style={{
-              ...body, textAlign: 'center', color: tokens.ghost, fontSize: '15px',
-              margin: '0 auto 36px', maxWidth: '420px', lineHeight: 1.6,
-            }}>
-              Your integrated Horizon Self statement lands here once your Map’s synthesis runs.
-            </p>
-          )}
-
-          {/* the slowly pulsing yes */}
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '22px' }}>
-            <button
-              className="hp-pulse-yes"
-              onClick={() => {
-                const key = ['ready', 'allowed', 'choosing'][commitStep]
-                setAnswers(a => ({ ...a, [key]: 'yes' }))
-                if (commitStep < 2) setCommitStep(s => s + 1)
-                else moveToGround()
-              }}
-              style={{
-                ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase',
-                color: '#FFFFFF', background: tokens.goldChrome, border: 'none', borderRadius: '50%',
-                width: '124px', height: '124px', cursor: 'pointer',
-              }}
-            >
-              Yes
-            </button>
-          </div>
-
-          {/* quiet escape — a no is data, never a wall */}
-          <div style={{ textAlign: 'center' }}>
-            <button
-              onClick={() => {
-                const key = ['ready', 'allowed', 'choosing'][commitStep]
-                setAnswers(a => ({ ...a, [key]: 'no' }))
-                moveToGround()
-              }}
-              style={{
-                background: 'transparent', border: 'none', cursor: 'pointer',
-                ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em',
-                color: tokens.ghost, textTransform: 'uppercase',
-              }}
-            >
-              Not today — run lighter →
-            </button>
-          </div>
-
-          {protectorCovenant && (
-            <div style={{ marginTop: '22px', textAlign: 'center' }}>
-              <button onClick={() => setShowCovenant(s => !s)} style={{
-                background: 'transparent', border: 'none', padding: '8px 0',
-                cursor: 'pointer', ...sc, fontSize: '13px', fontWeight: 600,
-                letterSpacing: '0.18em', color: tokens.gold,
-                borderBottom: `1px solid ${tokens.goldFaint}`,
-              }}>{showCovenant ? '— Hide covenant' : '+ Covenant'}</button>
-              {showCovenant && (
-                <div style={{
-                  marginTop: '14px', padding: '20px 22px', textAlign: 'left',
-                  background: tokens.goldTint,
-                  borderLeft: `2px solid ${tokens.goldChrome}`, borderRadius: '4px',
-                }}>
-                  <p style={{
-                    margin: 0, ...serif, fontSize: '18px', fontWeight: 300,
-                    color: tokens.meta, lineHeight: 1.6,
-                  }}>{protectorCovenant}</p>
-                </div>
-              )}
-            </div>
-          )}
+          <Readiness
+            horizonSelfStatement={horizonSelfStatement}
+            protectorCovenant={protectorCovenant}
+            showCovenant={showCovenant}
+            onToggleCovenant={() => setShowCovenant(s => !s)}
+            onComplete={(ans) => { setAnswers(ans); moveToGround(ans) }}
+            onSkip={(ans) => { setAnswers(ans); moveToGround(ans) }}
+          />
         </div>
       )}
+
+
 
       {/* ━━━ GROUND — three text steps ━━━ */}
       {beat === 2 && (

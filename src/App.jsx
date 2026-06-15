@@ -109,6 +109,7 @@ import JournalPage                                 from './app/pages/Journal'
 import SentenceCompletion                          from './app/pages/SentenceCompletion'
 import IAmPractice                                 from './app/pages/IAmPractice'
 import MorningPages                                 from './app/pages/MorningPages'
+import DailyEntrances                               from './app/pages/DailyEntrances'
 import AnchorBreathPage                             from './app/pages/AnchorBreathPage'
 import ChargeBreathPage                             from './app/pages/ChargeBreathPage'
 import PlanetMap                                    from './tools/planet/PlanetMap'
@@ -282,6 +283,7 @@ function AppInner() {
         <Route path="/tools/sentence-completion" element={<SentenceCompletion />} />
         <Route path="/tools/i-am"                element={<IAmPractice />} />
         <Route path="/tools/morning-pages"       element={<MorningPages />} />
+        <Route path="/daily"                     element={<DailyEntrances />} />
         <Route path="/tools/anchor-breath"       element={<AnchorBreathPage />} />
         <Route path="/tools/charge-breath"       element={<ChargeBreathPage />} />
         <Route path="/tools/planet"              element={<PlanetMap />} />  {/* founder-only beta — gate inside PlanetMap */}

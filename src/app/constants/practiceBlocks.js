@@ -1,0 +1,83 @@
+// ─────────────────────────────────────────────────────────────
+// practiceBlocks.js — the registry
+//
+// Every block the daily practice can hold, as data. This is the
+// single source of truth the composer (plus/minus) and the runner
+// (the walk) both read. Nothing renders a sequence except by asking
+// this file what's in it and in what order.
+//
+// The order numbers are the canonical line we locked. Gaps of ten so
+// new blocks slot in without renumbering. If every block were on,
+// they run smallest number to largest.
+//
+// `status` tells the runner how to handle a block today:
+//   'ready' — a standalone, embeddable component exists (renders inline)
+//   'link'  — a full page; the runner opens it, then continues
+//   'weld'  — still welded inside Horizon State / Practice; not yet
+//             extracted, so the runner shows a quiet "not wired yet"
+//   'new'   — designed but unbuilt (the midday pieces)
+//
+// As each welded beat is extracted into a block component, its entry
+// flips from 'weld'/'link' to 'ready' and gains a `component`. The
+// registry is the worklist for the extraction stage, made literal.
+// ─────────────────────────────────────────────────────────────
+
+export const REGIONS = {
+  intro: 'Intro',   // the way in — land and regulate
+  meat:  'Meat',    // the work
+  outro: 'Outro',   // the way out — release and launch
+}
+
+// The master line. One object per block.
+export const BLOCKS = {
+  flame_arrive: { id: 'flame_arrive', label: 'Flame check · arrive', region: 'intro', order: 10,  status: 'ready', component: 'FlameCheck' },
+  readiness:    { id: 'readiness',    label: 'Readiness',            region: 'intro', order: 20,  status: 'ready', component: 'Readiness' },
+  breath_in:    { id: 'breath_in',    label: 'Lead-in breath',       region: 'intro', order: 30,  status: 'ready', component: 'BreathPacer' },
+  audio_baseline:    { id: 'audio_baseline',    label: 'Foundation · Baseline',    region: 'meat', order: 40, status: 'ready', component: 'FoundationAudio', phase: 'baseline' },
+  audio_calibration: { id: 'audio_calibration', label: 'Foundation · Calibration', region: 'meat', order: 42, status: 'ready', component: 'FoundationAudio', phase: 'calibration' },
+  audio_embodiment:  { id: 'audio_embodiment',  label: 'Foundation · Embodiment',  region: 'meat', order: 44, status: 'ready', component: 'FoundationAudio', phase: 'embodiment' },
+  i_am:         { id: 'i_am',         label: 'Become · I Am',        region: 'meat',  order: 50,  status: 'link', route: '/tools/i-am' },
+  sentence:     { id: 'sentence',     label: 'Sentence Completion',  region: 'meat',  order: 60,  status: 'link', route: '/tools/sentence-completion' },
+  morning_pages:{ id: 'morning_pages',label: 'Morning Pages',        region: 'meat',  order: 70,  status: 'link', route: '/tools/morning-pages' },
+  journal:      { id: 'journal',      label: 'Journal · free write', region: 'meat',  order: 75,  status: 'link', route: '/journal' },
+  win_the_day:  { id: 'win_the_day',  label: 'Win the Day',          region: 'meat',  order: 80,  status: 'ready', component: 'WinTheDay' },
+  thresholds:   { id: 'thresholds',   label: 'Thresholds + calendar',region: 'meat',  order: 85,  status: 'ready', component: 'Thresholds' },
+  breath_out:   { id: 'breath_out',   label: 'Lead-out breath · Anchor', region: 'outro', order: 90, status: 'ready', component: 'OpenBreath' },
+  embark:       { id: 'embark',       label: 'Embark · flame check', region: 'outro', order: 95,  status: 'ready', component: 'FlameCheck' },
+  act:          { id: 'act',          label: 'Act · you are live',   region: 'outro', order: 100, status: 'ready', component: 'Act' },
+
+  // Midday-only pieces — designed, not yet built.
+  glimpse:      { id: 'glimpse',      label: 'Who you are',          region: 'meat',  order: 52,  status: 'new' },
+  recommit:     { id: 'recommit',     label: 'Recommit',             region: 'meat',  order: 54,  status: 'new' },
+  release:      { id: 'release',      label: 'Release · back to it', region: 'outro', order: 92,  status: 'new' },
+}
+
+// The house versions — what we offer to start. Each is a list of
+// block ids; the resolver sorts them into canonical order. Everything
+// is optional, so these are a starting suggestion, not a frame.
+export const HOUSE = {
+  morning: ['flame_arrive', 'breath_in', 'i_am', 'win_the_day', 'breath_out'],
+  midday:  ['breath_in', 'glimpse', 'recommit', 'release'],
+  evening: ['journal'],   // evening stays the existing how-was-your-day flow; breath is built into it
+}
+
+export const ENTRANCES = [
+  { key: 'morning', label: 'Morning', sub: 'Land, become, aim, breathe out.' },
+  { key: 'midday',  label: 'Midday',  sub: 'Regulate, remember, recommit, release.' },
+  { key: 'evening', label: 'Evening', sub: 'How was your day.' },
+]
+
+// Resolve a list of block ids into the blocks themselves, in
+// canonical order. Unknown ids are dropped, not thrown.
+export function resolve(ids) {
+  return (ids || [])
+    .map(id => BLOCKS[id])
+    .filter(Boolean)
+    .sort((a, b) => a.order - b.order)
+}
+
+// The full line, in order — used by the composer to show everything
+// available with its on/off state.
+export function allBlocksInOrder() {
+  return Object.values(BLOCKS).sort((a, b) => a.order - b.order)
+}
