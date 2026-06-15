@@ -3863,14 +3863,22 @@ function WaitlistTab({ toast }) {
   const [entries, setEntries]   = useState([])
   const [loading, setLoading]   = useState(true)
 
-  useEffect(() => {
-    async function load() {
-      const { data } = await supabase.from('nextus_waitlist').select('*').order('created_at', { ascending: false }).limit(200)
-      setEntries(data || [])
-      setLoading(false)
-    }
-    load()
-  }, [])
+  async function load() {
+    setLoading(true)
+    const { data } = await supabase.from('nextus_waitlist').select('*').order('created_at', { ascending: false }).limit(200)
+    setEntries(data || [])
+    setLoading(false)
+  }
+
+  useEffect(() => { load() }, [])
+
+  async function remove(entry) {
+    if (!window.confirm(`Remove ${entry.email} from the waitlist? This cannot be undone.`)) return
+    const { error } = await supabase.from('nextus_waitlist').delete().eq('id', entry.id)
+    if (error) { toast(`Could not remove: ${error.message}`); return }
+    toast(`${entry.email} removed`)
+    setEntries(es => es.filter(e => e.id !== entry.id))
+  }
 
   return (
     <div>
@@ -3885,6 +3893,7 @@ function WaitlistTab({ toast }) {
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               {e.source && <Badge label={e.source} color="rgba(15,21,35,0.55)" />}
               <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)' }}>{e.created_at?.slice(0, 10)}</span>
+              <Btn small variant="ghost" onClick={() => remove(e)}>Remove</Btn>
             </div>
           </div>
           {e.note && <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', margin: '4px 0 0', lineHeight: 1.5 }}>{e.note}</p>}
