@@ -1185,6 +1185,26 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
               <div>{proposal.sfp_patterns.map(s => <ExPill key={s} label={s} variant="amber" />)}</div>
             </div>
           )}
+
+          {/* Relationships the AI proposed — shown so the linking is visible
+             before placement. Written on save by linkRelationships(). */}
+          {proposal.relationships?.length > 0 && (
+            <div style={{ marginBottom:'8px' }}>
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'11px',
+                letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px' }}>
+                Linked to
+              </p>
+              <div style={{ display:'flex', flexWrap:'wrap', gap:'5px' }}>
+                {proposal.relationships.map((r, i) => (
+                  <span key={i} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'13px',
+                    color:'rgba(15,21,35,0.72)', background:'rgba(15,21,35,0.04)',
+                    border:'1px solid rgba(15,21,35,0.10)', borderRadius:'40px', padding:'3px 10px' }}>
+                    {r.relationship_type === 'parent_child' ? 'child of ' : r.relationship_type.replace('_', ' ') + ' '}{r.to_name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <button onClick={() => setExpanded(e => !e)}
@@ -1359,6 +1379,7 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
 }
 
 function AddTab({ toast }) {
+  const { user }                = useAuth()
   const [input,    setInput]    = useState('')
   const [adding,   setAdding]   = useState(false)
   const [addErr,   setAddErr]   = useState(null)
@@ -1487,7 +1508,41 @@ function AddTab({ toast }) {
         setFloorActive({ proposal: queue[nextIndex], queueIndex: nextIndex, queue })
       } else {
         setSaved(next)
+        await linkRelationships(queue, next)
         toast(`${next.length} record${next.length !== 1 ? 's' : ''} placed on the map`)
+      }
+    }
+  }
+
+  // Write the AI-proposed relationships once every selected record exists, so
+  // both ends can be resolved by name. parent_child sets the child's parent_id;
+  // member_of / partner write a confirmed row to nextus_relationships. Only
+  // links where both actors were placed in this batch are written.
+  async function linkRelationships(queue, saved) {
+    if (!saved?.length) return
+    const nameToId = {}
+    for (const s of saved) {
+      if (s?.name) nameToId[s.name.trim().toLowerCase()] = s.id
+    }
+    for (const proposal of queue) {
+      const fromId = nameToId[proposal.name?.trim().toLowerCase()]
+      if (!fromId) continue
+      for (const rel of (proposal.relationships || [])) {
+        const targetId = nameToId[rel.to_name?.trim().toLowerCase()]
+        if (!targetId || targetId === fromId) continue
+        if (rel.relationship_type === 'parent_child') {
+          await supabase.from('nextus_actors').update({ parent_id: targetId }).eq('id', fromId)
+        } else if (rel.relationship_type === 'member_of' || rel.relationship_type === 'partner') {
+          await supabase.from('nextus_relationships').insert({
+            actor_id:          fromId,
+            related_actor_id:  targetId,
+            relationship_type: rel.relationship_type,
+            status:            'confirmed',
+            initiated_by:      user?.id || null,
+            confirmed_by:      user?.id || null,
+            confirmed_at:      new Date().toISOString(),
+          }).then(({ error }) => { if (error) console.error('link relationship failed', error) })
+        }
       }
     }
   }
@@ -2010,7 +2065,7 @@ function ClaimRequestsSection({ toast }) {
     const { data: fullReq } = await supabase.from('claim_requests').select('user_id').eq('id', req.id).maybeSingle()
     if (!fullReq?.user_id) { toast('Could not find user — approve manually.'); return }
 
-    await supabase.from('nextus_actors').update({ profile_owner: fullReq.user_id, owner_id: fullReq.user_id, updated_at: now }).eq('id', req.actor.id)
+    await supabase.from('nextus_actors').update({ profile_owner: fullReq.user_id, updated_at: now }).eq('id', req.actor.id)
     await supabase.from('claim_requests').update({ status: 'approved', reviewed_at: now }).eq('id', req.id)
     toast(`${req.actor.name} approved — profile_owner set.`)
     load()
