@@ -61,6 +61,8 @@ export const ROUTES = {
   sentenceCompletion: '/tools/sentence-completion',
   iAmPractice:        '/tools/i-am',
   morningPages:       '/tools/morning-pages',
+  anchorBreath:       '/tools/anchor-breath',
+  chargeBreath:       '/tools/charge-breath',
 
   // ── Tool API fetch paths ────────────────────────────────────
   api: {

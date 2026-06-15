@@ -620,6 +620,16 @@ export default function DailySessionPanel({ user, sprintData, practiceData, mapC
         onClick={() => onNavigate('/tools/morning-pages')}
       />
       <ToolCard
+        name="ANCHOR"
+        sub="Three open breaths, down through the body, exhaling on an 'ah'."
+        onClick={() => onNavigate('/tools/anchor-breath')}
+      />
+      <ToolCard
+        name="CHARGE"
+        sub="Tabata breath. Three rounds, fast and deep, to wake the system."
+        onClick={() => onNavigate('/tools/charge-breath')}
+      />
+      <ToolCard
         name="HORIZON PRACTICE"
         sub={mapComplete
           ? 'The morning sequence. Six beats, voiced from your Horizon Self.'
