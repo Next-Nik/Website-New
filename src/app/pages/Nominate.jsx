@@ -386,38 +386,8 @@ export function NominatePage() {
             </Field>
           </div>
 
-          {/* Four-dim: Platform principles (optional) */}
-          <Field>
-            <Label>Platform principles engaged</Label>
-            <Hint>Which of the four cross-domain principles does this actor materially engage? Optional. Click a badge to see the definition.</Hint>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '10px' }}>
-              {PRINCIPLES_ORDERED.map(p => {
-                const isOn = form.platform_principles.includes(p.slug)
-                return (
-                  <button
-                    key={p.slug}
-                    type="button"
-                    onClick={() => togglePrinciple(p.slug)}
-                    style={{
-                      ...sc, fontSize: '12px', letterSpacing: '0.04em',
-                      padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
-                      color: isOn ? gold : 'rgba(15,21,35,0.72)',
-                      background: isOn ? 'rgba(200,146,42,0.08)' : '#FFFFFF',
-                      border: isOn ? '1px solid rgba(200,146,42,0.55)' : '1px solid rgba(200,146,42,0.25)',
-                      fontWeight: isOn ? 600 : 400,
-                    }}
-                  >
-                    {p.label}
-                  </button>
-                )
-              })}
-            </div>
-            {form.platform_principles.length > 0 && (
-              <div style={{ marginTop: '10px' }}>
-                <PrincipleStrip slugs={form.platform_principles} size="sm" />
-              </div>
-            )}
-          </Field>
+          {/* Platform principles: internal placement dimension, not surfaced to
+             the nominator where the named principles read as jargon. */}
 
           {/* Why */}
           <Field>

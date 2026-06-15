@@ -474,7 +474,6 @@ export function AddPage() {
       placement_tier:      data.placement_tier  || null,
       seeded_by:           represents ? 'self' : 'community',
       profile_owner:       represents ? user.id : null,
-      owner_id:            represents ? user.id : null,
       represented_by_adder: represents,
       vetting_status:      'approved',
       status:              'live',
@@ -532,7 +531,12 @@ export function AddPage() {
     // Save primary form record
     const { data: primary, error: pErr } = await supabase
       .from('nextus_actors').insert(buildPayload(form)).select('id, name, slug').single()
-    if (pErr) { setError('Error saving: ' + pErr.message); setSaving(false); return }
+    if (pErr) {
+      console.error('Add: actor save failed', pErr)
+      setError("Something went wrong saving this entry. Please try again, or email support@nextus.world if it keeps happening.")
+      setSaving(false)
+      return
+    }
     results.push({ id: primary.id, slug: primary.slug, name: form.name, label: 'Primary' })
     nameToId[form.name.trim().toLowerCase()] = primary.id
     // The pulse: a new actor is live on the Atlas (public entity).
@@ -1054,31 +1058,9 @@ export function AddPage() {
             </div>
           </Field>
 
-          {/* Platform principles */}
-          <Field>
-            <FieldLabel>Platform principles engaged</FieldLabel>
-            <Hint>Optional. Which cross-domain principles does this actor materially engage?</Hint>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '7px', marginTop: '10px' }}>
-              {PRINCIPLES_ORDERED.map(p => {
-                const isOn = form.platform_principles.includes(p.slug)
-                return (
-                  <button key={p.slug} type="button" onClick={() => togglePrinciple(p.slug)}
-                    style={{ ...sc, fontSize: '12px', letterSpacing: '0.04em',
-                      padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
-                      color: isOn ? gold : 'rgba(15,21,35,0.72)',
-                      background: isOn ? 'rgba(200,146,42,0.08)' : '#FFFFFF',
-                      border: isOn ? '1px solid rgba(200,146,42,0.55)' : '1px solid rgba(200,146,42,0.25)' }}>
-                    {p.label}
-                  </button>
-                )
-              })}
-            </div>
-            {form.platform_principles.length > 0 && (
-              <div style={{ marginTop: '10px' }}>
-                <PrincipleStrip slugs={form.platform_principles} size="sm" />
-              </div>
-            )}
-          </Field>
+          {/* Platform principles: internal placement dimension. The AI computes
+             these and admins curate them; they are not surfaced to the person
+             adding an entry, where the named principles read as jargon. */}
 
           {/* ── AI-detected extra records ─────────────────────── */}
           {extras.length > 0 && (
