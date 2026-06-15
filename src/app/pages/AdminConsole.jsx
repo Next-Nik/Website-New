@@ -279,10 +279,12 @@ function TabBar({ active, setActive }) {
 // ── NOW TAB ───────────────────────────────────────────────────
 // Preserved from original
 
-function NowTab() {
+function NowTab({ onNavigate }) {
+  const navigate              = useNavigate()
   const [stats, setStats]     = useState(null)
   const [recent, setRecent]   = useState([])
   const [loading, setLoading] = useState(true)
+  const [showAll, setShowAll] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -294,19 +296,16 @@ function NowTab() {
           { count: ppCount },
           { count: sprintCount },
           { data: recentUsers },
-          { data: recentGrants },
         ] = await Promise.all([
           supabase.from('users').select('*', { count: 'exact', head: true }),
           supabase.from('map_results').select('*', { count: 'exact', head: true }).eq('complete', true),
           supabase.from('purpose_piece_results').select('*', { count: 'exact', head: true }),
           supabase.from('target_sprint_sessions').select('*', { count: 'exact', head: true }).eq('status', 'active'),
           supabase.from('users').select('id, email, first_name, last_name, created_at, status')
-            .order('created_at', { ascending: false }).limit(8),
-          supabase.from('access').select('*, users(email)')
-            .order('granted_at', { ascending: false }).limit(5),
+            .order('created_at', { ascending: false }).limit(500),
         ])
         setStats({ totalUsers, mapCount, ppCount, sprintCount })
-        setRecent({ users: recentUsers ?? [], grants: recentGrants ?? [] })
+        setRecent(recentUsers ?? [])
       } catch {}
       setLoading(false)
     }
@@ -314,6 +313,8 @@ function NowTab() {
   }, [])
 
   if (loading) return <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)' }}>Loading...</p>
+
+  const visible = showAll ? recent : recent.slice(0, 8)
 
   return (
     <div>
@@ -323,23 +324,36 @@ function NowTab() {
       {stats && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px', marginBottom: '36px' }}>
           {[
-            { label: 'Users', value: stats.totalUsers },
+            { label: 'Users', value: stats.totalUsers, tab: 'Users' },
             { label: 'Map sessions', value: stats.mapCount },
             { label: 'Purpose Piece', value: stats.ppCount },
             { label: 'Active sprints', value: stats.sprintCount },
           ].map(s => (
-            <Card key={s.label} style={{ textAlign: 'center', padding: '18px 12px' }}>
+            <Card key={s.label} onClick={s.tab && onNavigate ? () => onNavigate(s.tab) : undefined}
+              style={{ textAlign: 'center', padding: '18px 12px' }}>
               <div style={{ ...body, fontSize: '32px', fontWeight: 400, color: '#0F1523', lineHeight: 1 }}>{s.value ?? 0}</div>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginTop: '6px' }}>{s.label}</div>
             </Card>
           ))}
         </div>
       )}
-      <Eyebrow>Recent signups</Eyebrow>
-      {(recent?.users || []).map(u => (
-        <Card key={u.id} style={{ padding: '12px 16px', marginBottom: '6px' }}>
+
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '4px' }}>
+        <Eyebrow>{showAll ? 'All signups' : 'Recent signups'}</Eyebrow>
+        {recent.length > 8 && (
+          <Btn small variant="ghost" onClick={() => setShowAll(v => !v)}>
+            {showAll ? 'Show recent only' : `See all (${recent.length})`}
+          </Btn>
+        )}
+      </div>
+
+      {visible.map(u => (
+        <Card key={u.id} onClick={() => navigate(`/profile/${u.id}`)} style={{ padding: '12px 16px', marginBottom: '6px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ ...body, fontSize: '14px', color: '#0F1523' }}>{u.email}</span>
+            <span style={{ ...body, fontSize: '14px', color: '#0F1523' }}>
+              {u.email}
+              {u.first_name && <span style={{ color: 'rgba(15,21,35,0.55)', marginLeft: '8px' }}>{u.first_name} {u.last_name}</span>}
+            </span>
             <span style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>{u.created_at?.slice(0, 10)}</span>
           </div>
         </Card>
@@ -4029,6 +4043,7 @@ function EntitlementsTab({ toast }) {
 }
 
 function UsersTab({ toast }) {
+  const navigate            = useNavigate()
   const [users, setUsers]   = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -4059,13 +4074,13 @@ function UsersTab({ toast }) {
       </div>
       {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
       {users.map(u => (
-        <Card key={u.id} style={{ padding: '10px 16px', marginBottom: '4px' }}>
+        <Card key={u.id} onClick={() => navigate(`/profile/${u.id}`)} style={{ padding: '10px 16px', marginBottom: '4px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <div>
               <span style={{ ...body, fontSize: '14px', color: '#0F1523' }}>{u.email}</span>
               {u.first_name && <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginLeft: '8px' }}>{u.first_name} {u.last_name}</span>}
             </div>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <div onClick={e => e.stopPropagation()} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               {u.beta_access && <Badge label="beta" color="#2A4A8A" />}
               <Btn small variant="ghost" onClick={() => toggleBetaAccess(u)}>
                 {u.beta_access ? 'Remove beta' : 'Grant beta'}
@@ -4143,7 +4158,7 @@ export function AdminConsolePage() {
 
         <TabBar active={tab} setActive={setTab} />
 
-        {tab === 'Now'           && <NowTab />}
+        {tab === 'Now'           && <NowTab onNavigate={setTab} />}
         {tab === 'Platform'      && <PlatformTab onNavigate={setTab} />}
         {tab === 'Actors'        && <ActorsTab       toast={showToast} />}
         {tab === 'Add'           && <AddTab          toast={showToast} />}
