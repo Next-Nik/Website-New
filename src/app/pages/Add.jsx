@@ -957,7 +957,11 @@ export function AddPage() {
             <Hint>Logo for organisations, portrait for practitioners. Found automatically when reading a source — paste a different image URL to replace it.</Hint>
             <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginTop: '8px' }}>
               <div style={{ width: '72px', height: '72px', borderRadius: '10px', flexShrink: 0,
-                border: '1.5px solid rgba(200,146,42,0.28)', background: '#FFFFFF',
+                border: '1.5px solid rgba(200,146,42,0.28)',
+                background: '#FFFFFF',
+                backgroundImage: 'linear-gradient(45deg, rgba(15,21,35,0.07) 25%, transparent 25%), linear-gradient(-45deg, rgba(15,21,35,0.07) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(15,21,35,0.07) 75%), linear-gradient(-45deg, transparent 75%, rgba(15,21,35,0.07) 75%)',
+                backgroundSize: '12px 12px',
+                backgroundPosition: '0 0, 0 6px, 6px -6px, -6px 0',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
                 {form.image_url && !imgBroken ? (
                   <img key={form.image_url} src={form.image_url} alt=""
