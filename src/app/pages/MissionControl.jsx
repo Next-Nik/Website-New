@@ -1270,6 +1270,7 @@ export default function MissionControl() {
             practiceData={data.practiceData}
             mapComplete={mapComplete}
             onNavigate={(path) => { closePanel(); navigate(path) }}
+            onOpenGetToDo={() => { closePanel(); openPersonalPanel('get-to-do') }}
           />
         )}
       </Panel>
