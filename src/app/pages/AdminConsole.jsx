@@ -538,6 +538,124 @@ function ResolverNote({ claimId, onResolve }) {
   )
 }
 
+// ── Manual actor linker ───────────────────────────────────────
+// Link any two existing actors by hand (e.g. NextUs and Nik Wood). Mirrors the
+// batch auto-link: parent_child sets the child's parent_id; member_of / partner
+// write a confirmed nextus_relationships row. Existing links are listed with an
+// unlink control.
+function ActorLinker({ toast }) {
+  const { user } = useAuth()
+  const [actors, setActors] = useState([])
+  const [links, setLinks]   = useState([])
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving]   = useState(false)
+  const [fromId, setFromId]   = useState('')
+  const [relType, setRelType] = useState('member_of')
+  const [toId, setToId]       = useState('')
+
+  async function load() {
+    setLoading(true)
+    const [{ data: acts }, { data: rels }] = await Promise.all([
+      supabase.from('nextus_actors').select('id, name, type, parent_id').order('name').limit(1000),
+      supabase.from('nextus_relationships').select('id, actor_id, related_actor_id, relationship_type, status').order('created_at', { ascending: false }).limit(500),
+    ])
+    const list = acts || []
+    const byId = Object.fromEntries(list.map(a => [a.id, a]))
+    const parentLinks = list.filter(a => a.parent_id).map(a => ({
+      kind: 'parent', key: `p-${a.id}`, fromId: a.id, toId: a.parent_id,
+      fromName: a.name, toName: byId[a.parent_id]?.name || '(missing)', type: 'parent_child',
+    }))
+    const relLinks = (rels || []).map(r => ({
+      kind: 'rel', key: r.id, id: r.id, fromId: r.actor_id, toId: r.related_actor_id,
+      fromName: byId[r.actor_id]?.name || '(missing)', toName: byId[r.related_actor_id]?.name || '(missing)',
+      type: r.relationship_type,
+    }))
+    setActors(list)
+    setLinks([...parentLinks, ...relLinks])
+    setLoading(false)
+  }
+  useEffect(() => { load() }, [])
+
+  async function createLink() {
+    if (!fromId || !toId) { toast('Pick both actors'); return }
+    if (fromId === toId)  { toast('Pick two different actors'); return }
+    setSaving(true)
+    let error
+    if (relType === 'parent_child') {
+      ({ error } = await supabase.from('nextus_actors').update({ parent_id: toId }).eq('id', fromId))
+    } else {
+      ({ error } = await supabase.from('nextus_relationships').insert({
+        actor_id: fromId, related_actor_id: toId, relationship_type: relType,
+        status: 'confirmed', initiated_by: user?.id || null, confirmed_by: user?.id || null,
+        confirmed_at: new Date().toISOString(),
+      }))
+    }
+    setSaving(false)
+    if (error) { console.error('link failed', error); toast(`Could not link: ${error.message}`); return }
+    toast('Linked')
+    setFromId(''); setToId('')
+    load()
+  }
+
+  async function unlink(link) {
+    if (!window.confirm(`Remove the link "${link.fromName} ${REL_PHRASE[link.type] || link.type} ${link.toName}"?`)) return
+    let error
+    if (link.kind === 'parent') {
+      ({ error } = await supabase.from('nextus_actors').update({ parent_id: null }).eq('id', link.fromId))
+    } else {
+      ({ error } = await supabase.from('nextus_relationships').delete().eq('id', link.id))
+    }
+    if (error) { toast(`Could not unlink: ${error.message}`); return }
+    toast('Unlinked')
+    load()
+  }
+
+  const actorOpts = [{ value: '', label: '— Select actor —' },
+    ...actors.map(a => ({ value: a.id, label: a.type ? `${a.name} · ${a.type}` : a.name }))]
+  const relOpts = [
+    { value: 'parent_child', label: 'is a child of' },
+    { value: 'member_of',    label: 'is a member of' },
+    { value: 'partner',      label: 'is a partner of' },
+  ]
+
+  return (
+    <div>
+      <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginBottom: '20px', lineHeight: 1.6, maxWidth: '560px' }}>
+        Link any two actors that already exist on the map. The first actor is the one the relationship belongs to (the child, the member, the partner).
+      </p>
+
+      <Card style={{ marginBottom: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '10px', maxWidth: '520px' }}>
+          <Select value={fromId}  onChange={setFromId}  options={actorOpts} />
+          <Select value={relType} onChange={setRelType} options={relOpts} />
+          <Select value={toId}    onChange={setToId}    options={actorOpts} />
+          <div>
+            <Btn small onClick={createLink} disabled={saving || !fromId || !toId}>
+              {saving ? 'Linking…' : 'Create link'}
+            </Btn>
+          </div>
+        </div>
+      </Card>
+
+      <Eyebrow>Existing links</Eyebrow>
+      {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading...</p>}
+      {!loading && links.length === 0 && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>No links yet.</p>}
+      {links.map(l => (
+        <Card key={l.key} style={{ padding: '10px 16px', marginBottom: '4px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <span style={{ ...body, fontSize: '14px', color: '#0F1523' }}>
+              {l.fromName} <span style={{ color: 'rgba(15,21,35,0.55)' }}>{REL_PHRASE[l.type] || l.type}</span> {l.toName}
+            </span>
+            <Btn small variant="ghost" onClick={() => unlink(l)}>Unlink</Btn>
+          </div>
+        </Card>
+      ))}
+    </div>
+  )
+}
+
+const REL_PHRASE = { parent_child: 'is a child of', member_of: 'is a member of', partner: 'is a partner of' }
+
 function ActorsTab({ toast }) {
   const [actors, setActors]     = useState([])
   const [loading, setLoading]   = useState(false)
@@ -742,10 +860,13 @@ function ActorsTab({ toast }) {
       )}
 
       <div style={{ display: 'flex', gap: '8px', marginBottom: '28px' }}>
-        {['browse', 'add', 'claims'].map(m => (
+        {['browse', 'add', 'links', 'claims'].map(m => (
           <Btn key={m} onClick={() => { setMode(m); if (m === 'add') setForm(EMPTY_ACTOR_FORM) }}
             variant={mode === m || (mode === 'edit' && m === 'add') ? 'primary' : 'ghost'} small>
-            {m === 'browse' ? `Browse (${total})` : m === 'add' ? '+ Add Actor' : `Claims (${claims.length})`}
+            {m === 'browse' ? `Browse (${total})`
+              : m === 'add' ? '+ Add Actor'
+              : m === 'links' ? 'Links'
+              : `Claims (${claims.length})`}
           </Btn>
         ))}
       </div>
@@ -808,6 +929,8 @@ function ActorsTab({ toast }) {
           ))}
         </div>
       )}
+
+      {mode === 'links' && <ActorLinker toast={toast} />}
 
       {(mode === 'add' || mode === 'edit') && (
         <div style={{ maxWidth: '640px' }}>
