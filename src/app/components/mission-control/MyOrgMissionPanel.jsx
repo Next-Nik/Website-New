@@ -907,28 +907,17 @@ function StatusChip({ actor, floor }) {
       <span className={`moc-status-dot${live ? ' is-live' : ''}`} />
       <span className="moc-status-text">
         {live ? 'Live' : 'Draft'} · {ownLabel}
-        {floor.met
-          ? ' · meets the floor'
-          : ` · ${floor.missing.length} from the floor`}
       </span>
     </div>
   )
 }
 
 function FloorReadiness({ floor, onFix, slugOrId }) {
-  if (floor.met) {
-    return (
-      <div className="moc-floor moc-floor-met">
-        <span className="moc-floor-tick" aria-hidden="true" />
-        <span>This entry meets the profile floor. It is the standard.</span>
-      </div>
-    )
-  }
+  // Nothing to show once the floor is met — the cockpit stays quiet.
+  if (floor.met) return null
   return (
     <div className="moc-floor">
-      <p className="moc-floor-head">
-        {floor.missing.length === 1 ? 'One thing' : `${floor.missing.length} things`} from the floor:
-      </p>
+      <p className="moc-floor-head">Complete your profile</p>
       <div className="moc-floor-items">
         {floor.missing.map(m => (
           m.card
@@ -1089,13 +1078,13 @@ function EditDomainSet({ label, primary, value, saving, onSave }) {
 function computeFloor(actor, channels, contacts, linksLoading) {
   const has = v => !!(v && String(v).trim())
   const items = [
-    { key: 'domain',  ok: has(actor.domains?.[0]),                 toward: 'a primary domain', card: 'placement' },
-    { key: 'image',   ok: has(actor.image_url),                    toward: 'a logo',           card: 'identity' },
-    { key: 'tagline', ok: has(actor.tagline),                      toward: 'a tagline',        card: 'identity' },
-    { key: 'desc',    ok: has(actor.description),                  toward: 'a description',    card: 'identity' },
-    { key: 'story',   ok: has(actor.story),                        toward: 'your story',       card: 'story' },
-    { key: 'channel', ok: linksLoading || channels.some(l => l.link_type !== 'website'), toward: 'a channel beyond the website', card: null },
-    { key: 'contact', ok: linksLoading || contacts.length > 0,     toward: 'a contact path',   card: null },
+    { key: 'domain',  ok: has(actor.domains?.[0]),                 toward: 'Set a primary domain', card: 'placement' },
+    { key: 'image',   ok: has(actor.image_url),                    toward: 'Add a logo',           card: 'identity' },
+    { key: 'tagline', ok: has(actor.tagline),                      toward: 'Add a tagline',        card: 'identity' },
+    { key: 'desc',    ok: has(actor.description),                  toward: 'Add a description',    card: 'identity' },
+    { key: 'story',   ok: has(actor.story),                        toward: 'Add your story',       card: 'story' },
+    { key: 'channel', ok: linksLoading || channels.some(l => l.link_type !== 'website'), toward: 'Add a channel', card: null },
+    { key: 'contact', ok: linksLoading || contacts.length > 0,     toward: 'Add contact info',     card: null },
   ]
   // While links load, don't flash channel/contact as missing.
   const missing = items.filter(i => !i.ok)
@@ -1495,19 +1484,6 @@ const PANEL_CSS = `
   margin: 0 0 22px; padding: 14px 18px;
   background: ${GOLD_FAINT}; border: 1px solid ${GOLD_RULE};
   border-radius: 14px;
-}
-.moc-floor-met {
-  display: flex; align-items: center; gap: 10px;
-  font-family: ${FONT_BODY}; font-size: 14.5px; color: ${GOLD_DK};
-}
-.moc-floor-tick {
-  width: 14px; height: 14px; border-radius: 50%;
-  border: 1.5px solid ${GOLD}; flex-shrink: 0; position: relative;
-}
-.moc-floor-tick::after {
-  content: ''; position: absolute; left: 4px; top: 1.5px;
-  width: 4px; height: 7px; border: solid ${GOLD};
-  border-width: 0 1.5px 1.5px 0; transform: rotate(45deg);
 }
 .moc-floor-head {
   font-family: ${FONT_SC}; font-size: 11px; letter-spacing: 0.18em;
