@@ -106,6 +106,7 @@ import { ChallengePage }                           from './app/pages/ChallengePa
 import MyChallenges                                 from './app/pages/MyChallenges'
 import ChallengeAuthor                              from './app/pages/ChallengeAuthor'
 import ChallengeBrowse                              from './app/pages/ChallengeBrowse'
+import PartnerInbox                                 from './app/pages/PartnerInbox'
 import { HorizonPracticePage }                     from './tools/horizon-practice/HorizonPractice'
 import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import JournalPage                                 from './app/pages/Journal'
@@ -308,6 +309,7 @@ function AppInner() {
         <Route path="/challenges"                   element={<MyChallenges />} />
         <Route path="/challenges/new"               element={<ChallengeAuthor />} />
         <Route path="/challenges/browse"            element={<ChallengeBrowse />} />
+        <Route path="/challenges/partners"          element={<PartnerInbox />} />
         <Route path="/org/:slug"                    element={<OrgPublicPage />} />
         <Route path="/org/:id/claim"                element={<ClaimPage />} />
         <Route path="/search"                       element={<SearchPage />} />

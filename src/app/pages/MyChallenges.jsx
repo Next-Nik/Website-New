@@ -66,11 +66,36 @@ function ChallengeCard({ p, userId }) {
   const [doneToday, setDoneToday] = useState(new Set(p.done_today || []))
   const [busy, setBusy]           = useState(null)
 
+  const [localComplete, setLocalComplete] = useState(false)
+  const [finishing,  setFinishing]  = useState(false)
+  const [consent,    setConsent]    = useState(false)
+  const [reflection, setReflection] = useState('')
+  const [attributed, setAttributed] = useState(false)
+  const [savingDone, setSavingDone] = useState(false)
+
   const window   = daysInclusive(p.started_on, p.ends_on)
   const dayNo    = dayNumber(p.started_on, window)
   const streak   = useMemo(() => currentStreak(p.done_dates), [p.done_dates])
   const strands  = p.strands || []
-  const complete = p.status === 'complete'
+  const complete = p.status === 'complete' || localComplete
+
+  async function finish() {
+    setSavingDone(true)
+    try {
+      await fetch('/api/actor-calls', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'submit_feedback', userId, call_id: p.call_id,
+          consent,
+          reflection:            consent && reflection.trim() ? reflection.trim() : null,
+          reflection_public:     consent && !!reflection.trim(),
+          reflection_attributed: consent && attributed,
+        }),
+      })
+      setLocalComplete(true); setFinishing(false)
+    } catch {}
+    setSavingDone(false)
+  }
 
   const dots = useMemo(() => {
     if (!p.started_on) return []
@@ -175,6 +200,46 @@ function ChallengeCard({ p, userId }) {
               </label>
             )
           })}
+
+          <div style={{ marginTop: '18px', paddingTop: '14px', borderTop: hair }}>
+            {!finishing ? (
+              <button type="button" onClick={() => setFinishing(true)}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, background: 'none', border: 'none', cursor: 'pointer', padding: 0, textTransform: 'uppercase' }}>
+                Mark complete
+              </button>
+            ) : (
+              <div>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: tokens.ghost, textTransform: 'uppercase', marginBottom: '10px' }}>How did it go?</div>
+                <label style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', cursor: 'pointer', marginBottom: '10px' }}>
+                  <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)}
+                    style={{ marginTop: '3px', accentColor: GOLD_C, width: '15px', height: '15px', flexShrink: 0 }} />
+                  <span style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.78)', lineHeight: 1.5 }}>
+                    Share how it went with {p.author?.name || 'the author'} (optional)
+                  </span>
+                </label>
+                {consent && (
+                  <div style={{ marginBottom: '10px' }}>
+                    <textarea value={reflection} onChange={e => setReflection(e.target.value)} rows={3}
+                      placeholder="What happened — in your words"
+                      style={{ ...body, fontSize: '15px', color: tokens.dark, width: '100%', boxSizing: 'border-box', background: tokens.bgCard, border: hair, borderRadius: '10px', padding: '10px 12px', resize: 'vertical', lineHeight: 1.5 }} />
+                    <label style={{ display: 'flex', gap: '10px', alignItems: 'center', cursor: 'pointer', marginTop: '8px' }}>
+                      <input type="checkbox" checked={attributed} onChange={e => setAttributed(e.target.checked)}
+                        style={{ accentColor: GOLD_C, width: '15px', height: '15px', flexShrink: 0 }} />
+                      <span style={{ ...body, fontSize: '14px', color: tokens.ghost }}>Show my name with it</span>
+                    </label>
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginTop: '4px' }}>
+                  <button type="button" onClick={finish} disabled={savingDone}
+                    style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: '#fff', background: tokens.gold, border: 'none', borderRadius: '30px', padding: '9px 22px', cursor: 'pointer', opacity: savingDone ? 0.5 : 1 }}>
+                    {savingDone ? 'Saving…' : 'Complete challenge'}
+                  </button>
+                  <button type="button" onClick={() => setFinishing(false)}
+                    style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.ghost, background: 'none', border: 'none', cursor: 'pointer' }}>Cancel</button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -220,6 +285,9 @@ export default function MyChallenges() {
             </Link>
             <Link to="/challenges/new" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, textTransform: 'uppercase', textDecoration: 'none' }}>
               + Author a challenge
+            </Link>
+            <Link to="/challenges/partners" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, textTransform: 'uppercase', textDecoration: 'none' }}>
+              Partner requests
             </Link>
           </div>
         )}

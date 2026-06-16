@@ -91,6 +91,12 @@ export default function ChallengeAuthor() {
   const [chatBusy,    setChatBusy]    = useState(false)
   const [pendingDraft, setPendingDraft] = useState(null)
 
+  // Partner invite (success screen)
+  const [inviteQ,       setInviteQ]       = useState('')
+  const [inviteResults, setInviteResults] = useState([])
+  const [invited,       setInvited]       = useState([])
+  const [inviteBusy,    setInviteBusy]    = useState(false)
+
   const scale = domain ? (SELF_SLUGS.has(domain) ? 'self' : 'civ') : 'civ'
   const isSelf = scale === 'self'
 
@@ -166,6 +172,33 @@ export default function ChallengeAuthor() {
     setPendingDraft(null)
   }
 
+  async function searchInvite(q) {
+    setInviteQ(q)
+    if (q.trim().length < 2) { setInviteResults([]); return }
+    try {
+      const r = await fetch('/api/actor-calls', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'search_actors', q }),
+      })
+      const d = await r.json()
+      setInviteResults(d.actors || [])
+    } catch { setInviteResults([]) }
+  }
+
+  async function invitePartner(actor) {
+    if (!published?.callId) return
+    setInviteBusy(true)
+    try {
+      await fetch('/api/actor-calls', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'request_partner', userId: user.id, call_id: published.callId, partner_actor_id: actor.id }),
+      })
+      setInvited(v => [...v, actor.name])
+      setInviteQ(''); setInviteResults([])
+    } catch {}
+    setInviteBusy(false)
+  }
+
   function buildPayload() {
     const cleanStrands = strands
       .filter(s => s.text.trim())
@@ -199,7 +232,7 @@ export default function ChallengeAuthor() {
       const pRes = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'publish', userId: user.id, call_id: cData.call.id, visibility }) })
       const pData = await pRes.json()
       if (pData.error) { setErrors([pData.error]); setSaving(false); return }
-      setPublished({ url: pData.url, visibility })
+      setPublished({ url: pData.url, visibility, callId: cData.call.id })
     } catch {
       setErrors(['Something went wrong. Try again.'])
     }
@@ -223,6 +256,30 @@ export default function ChallengeAuthor() {
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
             <Btn onClick={() => { if (navigator.clipboard) navigator.clipboard.writeText(full) }}>Copy link</Btn>
             <Btn variant="ghost" onClick={() => nav(published.url)}>Open it →</Btn>
+          </div>
+
+          <div style={{ marginTop: '36px', paddingTop: '24px', borderTop: hair }}>
+            <Eyebrow style={{ marginBottom: '6px' }}>In partnership with</Eyebrow>
+            <p style={{ ...body, fontSize: '15px', color: tokens.ghost, lineHeight: 1.6, margin: '0 0 12px' }}>
+              Credit a partner. They get a request — nothing shows publicly until they accept.
+            </p>
+            {invited.length > 0 && (
+              <div style={{ ...body, fontSize: '15px', color: tokens.dark, marginBottom: '12px' }}>
+                Requested: {invited.join(', ')}
+              </div>
+            )}
+            <input value={inviteQ} onChange={e => searchInvite(e.target.value)} placeholder="Search for an actor by name" style={inputStyle} />
+            {inviteResults.length > 0 && (
+              <div style={{ marginTop: '8px', border: hair, borderRadius: '10px', overflow: 'hidden' }}>
+                {inviteResults.map(a => (
+                  <button key={a.id} type="button" onClick={() => invitePartner(a)} disabled={inviteBusy}
+                    style={{ display: 'flex', alignItems: 'center', gap: '10px', width: '100%', textAlign: 'left', background: tokens.bgCard, border: 'none', borderBottom: hair, padding: '10px 14px', cursor: 'pointer' }}>
+                    {a.image_url && <img src={a.image_url} alt="" style={{ width: '28px', height: '28px', borderRadius: a.type === 'practitioner' ? '50%' : '5px', objectFit: 'cover' }} />}
+                    <span style={{ ...body, fontSize: '15px', color: tokens.dark }}>{a.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

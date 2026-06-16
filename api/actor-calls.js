@@ -63,6 +63,16 @@ async function ownsActor(actorId, userId) {
   return data?.profile_owner === userId
 }
 
+// Does this user author the call (directly, or via an actor they own)?
+async function ownsCall(callId, userId) {
+  if (!callId || !userId) return { exists: false, owned: false }
+  const { data } = await supabase.from('actor_calls').select('user_id, actor_id').eq('id', callId).maybeSingle()
+  if (!data) return { exists: false, owned: false }
+  let owned = data.user_id === userId
+  if (!owned && data.actor_id) owned = await ownsActor(data.actor_id, userId)
+  return { exists: true, owned, actor_id: data.actor_id, user_id: data.user_id }
+}
+
 // ─── Participation count helpers ──────────────────────────────────────────────
 
 async function refreshCounts(callId) {
@@ -227,8 +237,9 @@ module.exports = async (req, res) => {
   }
 
   // ── take_on ───────────────────────────────────────────────────────────────
-  // Participant joins a challenge. Creates a sibling civ session with its
-  // own clock derived from the challenge's duration_days, challenge_id set.
+  // Participant joins a challenge. Records a participation row (its own clock
+  // from the challenge's duration_days, the true scale, a frozen strand
+  // snapshot). No target_sprint_session is created — /challenges is the home.
   if (action === 'take_on') {
     if (!userId) return res.status(401).json({ error: 'Auth required' })
     const { call_id, clock_type = 'rolling' } = body
@@ -253,45 +264,21 @@ module.exports = async (req, res) => {
       ? call.protocol
       : (call.the_move ? [{ id: 's1', text: call.the_move, cadence: call.cadence || '5-of-7' }] : [])
 
-    // Create sibling civ session (kept for the current Planet Sprint view;
-    // the dedicated taken-on surface reads the participation row instead).
-    // Strands are copied into the plan so a joined challenge shows what to do
-    // rather than rendering blank.
-    const now = new Date().toISOString()
-    const planetData = {
-      __planet_sprint__: {
-        serves:      call.domain || '',
-        commitment:  call.the_move || call.title,
-        source:      'designed',
-        designedBy:  call.actor_id || null,
-        challenge_id: call_id,
-        strands,
-        tasks:       strands.map(s => ({ text: s.text })),
-        taskChecked: {},
-      }
-    }
-    const sessionPayload = {
-      user_id: userId, scale: 'civ', domains: [],
-      status: 'active', challenge_id: call_id, designed_by: call.actor_id || null,
-      quarter_type: clk.quarterType, target_date: clk.targetDate, end_date_label: clk.endDateLabel,
-      domain_data: planetData,
-      created_at: now, updated_at: now,
-    }
-    const { data: session } = await supabase.from('target_sprint_sessions').insert(sessionPayload).select('id').single()
-
-    // Record participation — the source of truth for this run.
+    // Record participation — the sole home for a taken-on challenge. No
+    // target_sprint_session is created; /challenges reads this row and the
+    // strand log. (The person's OWN personal stretch and Planet Sprint, both
+    // authored in the Target Stretch tool, are unaffected.)
     const { data: participant, error } = await supabase.from('actor_call_participants').insert({
-      call_id, user_id: userId, session_id: session?.id || null, status: 'active',
+      call_id, user_id: userId, session_id: null, status: 'active',
       scale: call.scale || 'civ',
       started_on: today, ends_on: clk.targetDate,
       protocol_snapshot: strands,
     }).select('*').single()
     if (error) return res.status(500).json({ error: error.message })
 
-    // Refresh counts
     await refreshCounts(call_id)
 
-    return res.json({ participant, session_id: session?.id || null })
+    return res.json({ participant })
   }
 
   // ── log_strand ─────────────────────────────────────────────────────────────
@@ -411,6 +398,155 @@ module.exports = async (req, res) => {
       }
     })
     return res.json({ participations })
+  }
+
+  // ── request_partner ─────────────────────────────────────────────────────────
+  // Open a partnership. Direction is inferred from who's asking: the call's
+  // author names a partner (partner accepts), or an actor's owner asks to join
+  // a call (the author accepts). Nothing is public until accepted.
+  if (action === 'request_partner') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id, partner_actor_id } = body
+    if (!call_id || !partner_actor_id) return res.status(400).json({ error: 'call_id and partner_actor_id required' })
+
+    const ci = await ownsCall(call_id, userId)
+    if (!ci.exists) return res.status(404).json({ error: 'Challenge not found' })
+    if (ci.actor_id && ci.actor_id === partner_actor_id) return res.status(400).json({ error: "A challenge can't partner with its own author." })
+
+    let initiated_by = null
+    if (ci.owned) initiated_by = 'author'
+    else if (await ownsActor(partner_actor_id, userId)) initiated_by = 'partner'
+    if (!initiated_by) return res.status(403).json({ error: 'You must author the challenge or own the partner.' })
+
+    const { data: existing } = await supabase.from('actor_call_partners')
+      .select('*').eq('call_id', call_id).eq('partner_actor_id', partner_actor_id).maybeSingle()
+    if (existing) return res.json({ partnership: existing, already: true })
+
+    const { data, error } = await supabase.from('actor_call_partners').insert({
+      call_id, partner_actor_id, initiated_by, requested_by_user: userId, status: 'pending',
+    }).select('*').single()
+    if (error) return res.status(500).json({ error: error.message })
+    return res.json({ partnership: data })
+  }
+
+  // ── respond_partner ─────────────────────────────────────────────────────────
+  // The OTHER party accepts or declines a pending request.
+  if (action === 'respond_partner') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { partnership_id, decision } = body
+    if (!partnership_id || !['accepted', 'declined'].includes(decision)) return res.status(400).json({ error: 'partnership_id and decision (accepted|declined) required' })
+
+    const { data: row } = await supabase.from('actor_call_partners').select('*').eq('id', partnership_id).maybeSingle()
+    if (!row) return res.status(404).json({ error: 'Not found' })
+    if (row.status !== 'pending') return res.status(409).json({ error: 'Already resolved.' })
+
+    let canRespond = false
+    if (row.initiated_by === 'author') canRespond = await ownsActor(row.partner_actor_id, userId)
+    else { const ci = await ownsCall(row.call_id, userId); canRespond = ci.owned }
+    if (!canRespond) return res.status(403).json({ error: 'Not yours to answer.' })
+
+    const { data, error } = await supabase.from('actor_call_partners').update({
+      status: decision, responded_by_user: userId, responded_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+    }).eq('id', partnership_id).select('*').single()
+    if (error) return res.status(500).json({ error: error.message })
+    return res.json({ partnership: data })
+  }
+
+  // ── withdraw_partner ────────────────────────────────────────────────────────
+  // Either party pulls the request, or an accepted partner steps away.
+  if (action === 'withdraw_partner') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { partnership_id } = body
+    if (!partnership_id) return res.status(400).json({ error: 'partnership_id required' })
+    const { data: row } = await supabase.from('actor_call_partners').select('*').eq('id', partnership_id).maybeSingle()
+    if (!row) return res.status(404).json({ error: 'Not found' })
+
+    let allowed = await ownsActor(row.partner_actor_id, userId)
+    if (!allowed) { const ci = await ownsCall(row.call_id, userId); allowed = ci.owned }
+    if (!allowed) return res.status(403).json({ error: 'Not yours.' })
+
+    await supabase.from('actor_call_partners').update({ status: 'withdrawn', updated_at: new Date().toISOString() }).eq('id', partnership_id)
+    return res.json({ withdrawn: true })
+  }
+
+  // ── partner_inbox ───────────────────────────────────────────────────────────
+  // Pending requests addressed to this user: an actor they own was named as a
+  // partner, or someone asked to join a challenge they author.
+  if (action === 'partner_inbox') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { data: myActors } = await supabase.from('nextus_actors').select('id').eq('profile_owner', userId)
+    const myActorIds = (myActors || []).map(a => a.id)
+
+    const { data: callsByUser } = await supabase.from('actor_calls').select('id').eq('user_id', userId)
+    let callsByActor = []
+    if (myActorIds.length) {
+      const { data } = await supabase.from('actor_calls').select('id').in('actor_id', myActorIds)
+      callsByActor = data || []
+    }
+    const myCallIds = [...new Set([...(callsByUser || []), ...callsByActor].map(c => c.id))]
+
+    let asPartner = []
+    if (myActorIds.length) {
+      const { data } = await supabase.from('actor_call_partners')
+        .select('id, call_id, partner_actor_id, initiated_by')
+        .in('partner_actor_id', myActorIds).eq('status', 'pending').eq('initiated_by', 'author')
+      asPartner = data || []
+    }
+    let asAuthor = []
+    if (myCallIds.length) {
+      const { data } = await supabase.from('actor_call_partners')
+        .select('id, call_id, partner_actor_id, initiated_by')
+        .in('call_id', myCallIds).eq('status', 'pending').eq('initiated_by', 'partner')
+      asAuthor = data || []
+    }
+    const all = [...asPartner, ...asAuthor]
+    if (!all.length) return res.json({ requests: [] })
+
+    const callIds  = [...new Set(all.map(r => r.call_id))]
+    const actorIds = [...new Set(all.map(r => r.partner_actor_id))]
+    const { data: callRows }  = await supabase.from('actor_calls').select('id, title, slug, nextus_actors ( name )').in('id', callIds)
+    const { data: actorRows } = await supabase.from('nextus_actors').select('id, name').in('id', actorIds)
+    const callMap = {}; (callRows || []).forEach(c => { callMap[c.id] = c })
+    const actorMap = {}; (actorRows || []).forEach(a => { actorMap[a.id] = a.name })
+
+    const requests = all.map(r => ({
+      id: r.id, call_id: r.call_id, initiated_by: r.initiated_by,
+      call_title:  callMap[r.call_id]?.title || 'a challenge',
+      call_slug:   callMap[r.call_id]?.slug || null,
+      call_author: callMap[r.call_id]?.nextus_actors?.name || null,
+      partner_name: actorMap[r.partner_actor_id] || 'an actor',
+    }))
+    return res.json({ requests })
+  }
+
+  // ── call_partners ───────────────────────────────────────────────────────────
+  // The author's view of a call's partners (any status), for managing invites.
+  if (action === 'call_partners') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id } = body
+    const ci = await ownsCall(call_id, userId)
+    if (!ci.exists) return res.status(404).json({ error: 'Not found' })
+    if (!ci.owned) return res.status(403).json({ error: 'Not yours.' })
+    const { data } = await supabase.from('actor_call_partners')
+      .select('id, partner_actor_id, status, initiated_by, nextus_actors:partner_actor_id ( name, slug )')
+      .eq('call_id', call_id).order('created_at', { ascending: true })
+    return res.json({ partners: (data || []).map(r => ({
+      id: r.id, status: r.status, initiated_by: r.initiated_by,
+      partner_actor_id: r.partner_actor_id,
+      name: r.nextus_actors?.name || null, slug: r.nextus_actors?.slug || null,
+    })) })
+  }
+
+  // ── search_actors ───────────────────────────────────────────────────────────
+  // Name search for the partner picker. Actor names are public.
+  if (action === 'search_actors') {
+    const { q, limit = 8 } = body
+    if (!q || q.trim().length < 2) return res.json({ actors: [] })
+    const { data } = await supabase.from('nextus_actors')
+      .select('id, name, type, image_url')
+      .ilike('name', `%${q.trim()}%`)
+      .limit(limit)
+    return res.json({ actors: data || [] })
   }
 
   // ── flag ──────────────────────────────────────────────────────────────────

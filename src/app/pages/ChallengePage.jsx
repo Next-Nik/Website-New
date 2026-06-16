@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
+import { supabase } from '../../hooks/useSupabase'
 import { tokens, serif, body, sc } from '../../lib/designTokens'
 import { DOMAIN_COLORS } from '../../constants/domainColors'
 
@@ -494,6 +495,11 @@ export function ChallengePage() {
   const [alreadyJoined, setAlreadyJoined] = useState(false)
   // Co-sign display (Phase E) — count loaded with the call
   const [cosignerCount, setCosignerCount] = useState(0)
+  // Ask to partner (actor owners only)
+  const [ownedActors, setOwnedActors] = useState([])
+  const [askSel,  setAskSel]  = useState('')
+  const [askSent, setAskSent] = useState(false)
+  const [askBusy, setAskBusy] = useState(false)
 
   const isAsk    = call?.type === 'ask'
   const isAuthor = user && call && (
@@ -512,6 +518,28 @@ export function ChallengePage() {
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
   }, [slug])
+
+  useEffect(() => {
+    if (!user) { setOwnedActors([]); return }
+    let live = true
+    supabase.from('nextus_actors').select('id, name, type').eq('profile_owner', user.id)
+      .then(({ data }) => { if (live) { const a = data || []; setOwnedActors(a); if (a.length) setAskSel(a[0].id) } })
+    return () => { live = false }
+  }, [user])
+
+  async function askToPartner() {
+    if (!call || !askSel) return
+    setAskBusy(true)
+    try {
+      const r = await fetch('/api/actor-calls', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'request_partner', userId: user.id, call_id: call.id, partner_actor_id: askSel }),
+      })
+      const d = await r.json()
+      if (!d.error) setAskSent(true)
+    } catch {}
+    setAskBusy(false)
+  }
 
   if (loading) return <div className="loading" />
   if (notFound) return (
@@ -730,6 +758,35 @@ export function ChallengePage() {
         {/* Author feedback — only the author sees this */}
         {isAuthor && (
           <AuthorFeedbackSection callId={call.id} userId={user.id} />
+        )}
+
+        {/* Ask to partner — for actor owners who aren't the author */}
+        {!isAsk && user && !isAuthor && ownedActors.length > 0 && (
+          <div style={{ marginTop: '20px', padding: '16px 20px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
+            {askSent ? (
+              <div style={{ ...body, fontSize: '15px', color: tokens.gold, lineHeight: 1.5 }}>
+                Partner request sent. It shows here once the author accepts.
+              </div>
+            ) : (
+              <div>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: tokens.ghost, textTransform: 'uppercase', marginBottom: '10px' }}>
+                  Want to partner on this?
+                </div>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  {ownedActors.length > 1 && (
+                    <select value={askSel} onChange={e => setAskSel(e.target.value)}
+                      style={{ ...body, fontSize: '15px', color: tokens.dark, background: tokens.bg, border: hair, borderRadius: '8px', padding: '8px 12px' }}>
+                      {ownedActors.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+                    </select>
+                  )}
+                  <button type="button" onClick={askToPartner} disabled={askBusy}
+                    style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: tokens.gold, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 20px', cursor: 'pointer', opacity: askBusy ? 0.5 : 1 }}>
+                    {askBusy ? 'Sending…' : 'Ask to partner →'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Horizon Goals link */}
