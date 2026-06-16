@@ -29,6 +29,7 @@ import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 import WorldMapSubstrate from '../components/mission-control/WorldMapSubstrate'
+import BreathPacer from '../components/daily/BreathPacer'
 import { body, sc } from '../../lib/designTokens'
 
 const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
@@ -385,6 +386,11 @@ export default function Journal() {
             </div>
           )}
         </header>
+
+        {/* ── SETTLE ───────────────────────────────────────── */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
+          <BreathPacer size={68} caption="Settle here first." />
+        </div>
 
         {/* ── TABS ────────────────────────────────────────── */}
         <nav
