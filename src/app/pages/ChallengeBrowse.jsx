@@ -1,0 +1,135 @@
+// /challenges/browse — discover community challenges (Phase 6, June 2026).
+//
+// The place to find challenges to take on, not just reach them by a shared
+// link. Sorted by uptake so what people are doing rises. Scale is never shown;
+// a domain chip says what it's about. Each card links to the public page.
+
+import { useState, useEffect, useMemo } from 'react'
+import { Link }       from 'react-router-dom'
+import { Nav }        from '../../components/Nav'
+import { tokens, serif, body, sc } from '../../lib/designTokens'
+import {
+  SELF_DOMAINS, CIV_DOMAINS, SELF_DOMAIN_COLORS, DOMAIN_COLORS,
+} from '../constants/domains'
+
+const hair  = '1px solid rgba(200,146,42,0.18)'
+const muted = { color: 'rgba(15,21,35,0.78)' }
+
+const LABELS = {
+  ...Object.fromEntries(SELF_DOMAINS.map(d => [d.slug, d.label])),
+  ...Object.fromEntries(CIV_DOMAINS.map(d => [d.slug, d.label])),
+}
+const COLORS = { ...SELF_DOMAIN_COLORS, ...DOMAIN_COLORS }
+
+function DomainChip({ slug }) {
+  if (!slug) return null
+  const color = COLORS[slug] || tokens.goldChrome
+  return (
+    <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color, textTransform: 'uppercase',
+      display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+      <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: color, flexShrink: 0 }} />
+      {LABELS[slug] || slug}
+    </span>
+  )
+}
+
+function Card({ c }) {
+  const n = c.taken_on_count || 0
+  return (
+    <Link to={c.slug ? `/stretch/c/${c.slug}` : '#'}
+      style={{ textDecoration: 'none', display: 'block', background: tokens.bgCard, border: hair, borderRadius: '14px', padding: '20px 22px' }}>
+      <DomainChip slug={c.domain} />
+      <h2 style={{ ...serif, fontWeight: 300, fontSize: '23px', color: tokens.dark, lineHeight: 1.2, margin: '8px 0 4px' }}>{c.title}</h2>
+      {c.tagline && <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.7)', lineHeight: 1.55, margin: '0 0 14px' }}>{c.tagline}</p>}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', ...sc, fontSize: '13px', letterSpacing: '0.08em', color: tokens.ghost, marginTop: '4px' }}>
+        <span>{c.duration_days || 90} days</span>
+        <span>{c.strand_count || 1} {(c.strand_count || 1) === 1 ? 'part' : 'parts'}</span>
+        {n > 0 && <span style={{ color: tokens.gold }}>{n.toLocaleString()} {n === 1 ? 'person' : 'people'} in</span>}
+      </div>
+      {c.author?.name && (
+        <div style={{ ...body, fontSize: '14px', color: tokens.ghost, marginTop: '12px', paddingTop: '12px', borderTop: hair }}>
+          by {c.author.name}
+        </div>
+      )}
+    </Link>
+  )
+}
+
+export default function ChallengeBrowse() {
+  const [rows, setRows]       = useState([])
+  const [loading, setLoading] = useState(true)
+  const [domain, setDomain]   = useState('')   // '' = all
+
+  useEffect(() => {
+    let live = true
+    fetch('/api/actor-calls', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'browse_challenges', sort: 'popular', limit: 60 }),
+    })
+      .then(r => r.json())
+      .then(d => { if (live) setRows(d.challenges || []) })
+      .catch(() => {})
+      .finally(() => { if (live) setLoading(false) })
+    return () => { live = false }
+  }, [])
+
+  const domainsPresent = useMemo(() => {
+    const set = new Set(rows.map(r => r.domain).filter(Boolean))
+    return Array.from(set)
+  }, [rows])
+
+  const shown = domain ? rows.filter(r => r.domain === domain) : rows
+
+  return (
+    <div style={{ minHeight: '100dvh', background: tokens.bg }}>
+      <Nav />
+      <div style={{ maxWidth: '880px', margin: '0 auto', padding: '40px 22px 80px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px', marginBottom: '26px' }}>
+          <div>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '8px' }}>
+              Challenges
+            </div>
+            <h1 style={{ ...serif, fontWeight: 300, fontSize: '38px', color: tokens.dark, lineHeight: 1.1, margin: 0 }}>
+              Take one on
+            </h1>
+          </div>
+          <Link to="/challenges/new" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, textTransform: 'uppercase', textDecoration: 'none' }}>
+            + Author a challenge
+          </Link>
+        </div>
+
+        {/* Domain filter */}
+        {domainsPresent.length > 1 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '26px' }}>
+            {[{ slug: '', label: 'All' }, ...domainsPresent.map(s => ({ slug: s, label: LABELS[s] || s }))].map(d => (
+              <button key={d.slug || 'all'} type="button" onClick={() => setDomain(d.slug)}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '6px 15px', borderRadius: '20px', cursor: 'pointer',
+                  border: `1px solid ${domain === d.slug ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.28)'}`,
+                  background: domain === d.slug ? 'rgba(200,146,42,0.08)' : 'transparent',
+                  color: domain === d.slug ? tokens.gold : tokens.ghost }}>
+                {d.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {loading ? (
+          <p style={{ ...body, fontSize: '1.0625rem', color: tokens.ghost }}>Loading…</p>
+        ) : shown.length === 0 ? (
+          <div style={{ background: tokens.bgCard, border: hair, borderRadius: '14px', padding: '32px 28px' }}>
+            <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: '0 0 6px' }}>
+              No challenges here yet.
+            </p>
+            <p style={{ ...body, fontSize: '15px', color: tokens.ghost, lineHeight: 1.65, margin: 0 }}>
+              Be the first to <Link to="/challenges/new" style={{ color: tokens.gold }}>author one</Link>.
+            </p>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+            {shown.map(c => <Card key={c.id} c={c} />)}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

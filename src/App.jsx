@@ -105,6 +105,7 @@ import { TargetSprintPage }                        from './tools/target-sprint/T
 import { ChallengePage }                           from './app/pages/ChallengePage'
 import MyChallenges                                 from './app/pages/MyChallenges'
 import ChallengeAuthor                              from './app/pages/ChallengeAuthor'
+import ChallengeBrowse                              from './app/pages/ChallengeBrowse'
 import { HorizonPracticePage }                     from './tools/horizon-practice/HorizonPractice'
 import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import JournalPage                                 from './app/pages/Journal'
@@ -306,6 +307,7 @@ function AppInner() {
         <Route path="/stretch/c/:slug"              element={<ChallengePage />} />
         <Route path="/challenges"                   element={<MyChallenges />} />
         <Route path="/challenges/new"               element={<ChallengeAuthor />} />
+        <Route path="/challenges/browse"            element={<ChallengeBrowse />} />
         <Route path="/org/:slug"                    element={<OrgPublicPage />} />
         <Route path="/org/:id/claim"                element={<ClaimPage />} />
         <Route path="/search"                       element={<SearchPage />} />

@@ -508,6 +508,7 @@ module.exports = async (req, res) => {
         visibility, created_at, actor_id, user_id,
         nextus_actors ( id, name, slug, type, image_url )
       `)
+      .eq('type', 'ask')
       .eq('visibility', 'community')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
@@ -518,6 +519,39 @@ module.exports = async (req, res) => {
     const { data, error } = await q
     if (error) return res.status(500).json({ error: error.message })
     return res.json({ calls: data || [] })
+  }
+
+  // ── browse_challenges ──────────────────────────────────────────────────────
+  // Community-visible challenges, for the discovery surface. Sorted by uptake
+  // by default so what people are doing rises. Strand count travels; the full
+  // protocol does not.
+  if (action === 'browse_challenges') {
+    const { domain, limit = 48, offset = 0, sort = 'popular' } = body
+    let q = supabase
+      .from('actor_calls')
+      .select(`
+        id, title, tagline, slug, scale, domain, duration_days,
+        taken_on_count, active_count, protocol, created_at,
+        nextus_actors ( name, slug, image_url, type )
+      `)
+      .eq('type', 'challenge')
+      .eq('visibility', 'community')
+
+    if (domain) q = q.eq('domain', domain)
+    if (sort === 'newest') q = q.order('created_at', { ascending: false })
+    else q = q.order('taken_on_count', { ascending: false }).order('created_at', { ascending: false })
+    q = q.range(offset, offset + limit - 1)
+
+    const { data, error } = await q
+    if (error) return res.status(500).json({ error: error.message })
+    const challenges = (data || []).map(c => ({
+      id: c.id, title: c.title, tagline: c.tagline, slug: c.slug,
+      scale: c.scale, domain: c.domain, duration_days: c.duration_days,
+      taken_on_count: c.taken_on_count, active_count: c.active_count,
+      author: c.nextus_actors || null,
+      strand_count: Array.isArray(c.protocol) ? c.protocol.length : 0,
+    }))
+    return res.json({ challenges })
   }
 
   // ── browse_by_actor ───────────────────────────────────────────────────────

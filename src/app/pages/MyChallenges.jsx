@@ -214,7 +214,10 @@ export default function MyChallenges() {
         </h1>
 
         {user && (
-          <div style={{ marginBottom: '24px' }}>
+          <div style={{ display: 'flex', gap: '20px', marginBottom: '24px' }}>
+            <Link to="/challenges/browse" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, textTransform: 'uppercase', textDecoration: 'none' }}>
+              Browse challenges
+            </Link>
             <Link to="/challenges/new" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, textTransform: 'uppercase', textDecoration: 'none' }}>
               + Author a challenge
             </Link>
@@ -233,7 +236,7 @@ export default function MyChallenges() {
               You haven't taken on a challenge yet.
             </p>
             <p style={{ ...body, fontSize: '15px', color: tokens.ghost, lineHeight: 1.65, margin: 0 }}>
-              Open any challenge and take it on. It starts a clock the day you join, and it appears here.
+              <Link to="/challenges/browse" style={{ color: tokens.gold }}>Browse challenges</Link> and take one on. It starts a clock the day you join, and it appears here.
             </p>
           </div>
         ) : (
