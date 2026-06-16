@@ -49,7 +49,7 @@ import Panel              from '../components/mission-control/Panel'
 import CivDomainPanel             from '../components/mission-control/CivDomainPanel'
 import SelfDomainPanel            from '../components/mission-control/SelfDomainPanel'
 import MyPracticeMissionPanel     from '../components/mission-control/MyPracticeMissionPanel'
-import MyOrgMissionPanel          from '../components/mission-control/MyOrgMissionPanel'
+import OrgRoomOverlay             from '../components/OrgRoomOverlay'
 import MapMissionPanel            from '../components/mission-control/MapMissionPanel'
 import TargetSprintMissionPanel   from '../components/mission-control/TargetSprintMissionPanel'
 import PurposePieceMissionPanel   from '../components/mission-control/PurposePieceMissionPanel'
@@ -396,6 +396,7 @@ export default function MissionControl() {
   // surrounding logic that still uses it keeps working in Step B;
   // Step C will eliminate it entirely.
   const [activeScope, setActiveScope] = useState('self')
+  const [orgOpen, setOrgOpen] = useState(false)
   const currentWheel = activeScope === 'planet' ? 'civ' : 'personal'
 
   const isCiv = currentWheel === 'civ'
@@ -527,6 +528,15 @@ export default function MissionControl() {
     return [...base, armingScope]
   }, [data.userRow, armingScope])
 
+  // My Org is no longer a top scope — it opens from the right-rail
+  // My Org tile (OrgRoomOverlay). Keep it out of the switcher
+  // (My Life / My Practice / Our Planet) even if the saved row or an
+  // in-flight arm includes it.
+  const topScopes = useMemo(
+    () => availableScopes.filter(s => s !== 'org'),
+    [availableScopes],
+  )
+
   // Once the userRow catches up with the arming write, the armingScope
   // override is no longer needed. Clearing it lets the live array take
   // over as the source of truth.
@@ -543,10 +553,10 @@ export default function MissionControl() {
   // active scope (e.g. they just deactivated My Practice while it
   // was selected), fall back to the first available scope.
   useEffect(() => {
-    if (!availableScopes.includes(activeScope)) {
-      setActiveScope(availableScopes[0])
+    if (!topScopes.includes(activeScope)) {
+      setActiveScope(topScopes[0])
     }
-  }, [availableScopes, activeScope])
+  }, [topScopes, activeScope])
 
   function handleScopeSelect(scopeId) {
     setActiveScope(scopeId)
@@ -989,7 +999,7 @@ export default function MissionControl() {
 
       <PoleHeader
         active={activeScope}
-        scopes={availableScopes}
+        scopes={topScopes}
         onSelect={handleScopeSelect}
       />
 
@@ -1140,6 +1150,13 @@ export default function MissionControl() {
               title="Search the Atlas"
             />
             <Tile
+              glyph="◈"
+              label="MY ORG"
+              state={null}
+              onClick={() => setOrgOpen(true)}
+              title="My Org — the org tree you steward"
+            />
+            <Tile
               glyph="＋"
               label="ADD ORG"
               state={null}
@@ -1204,11 +1221,10 @@ export default function MissionControl() {
         {activeScope === 'practice' && (
           <MyPracticeMissionPanel userId={data.user?.id} />
         )}
-
-        {activeScope === 'org' && (
-          <MyOrgMissionPanel userId={data.user?.id} />
-        )}
       </main>
+
+      {/* ─── MY ORG — opens from the right-rail tile, fades up in place ─ */}
+      <OrgRoomOverlay open={orgOpen} onClose={() => setOrgOpen(false)} userId={data.user?.id} />
 
       {/* ─── PANELS ──────────────────────────────────────────── */}
 
