@@ -85,6 +85,12 @@ export default function ChallengeAuthor() {
   const [saving,    setSaving]    = useState(false)
   const [published, setPublished] = useState(null)   // { url, visibility }
 
+  // Creation helper
+  const [chatMsgs,    setChatMsgs]    = useState([])
+  const [chatInput,   setChatInput]   = useState('')
+  const [chatBusy,    setChatBusy]    = useState(false)
+  const [pendingDraft, setPendingDraft] = useState(null)
+
   const scale = domain ? (SELF_SLUGS.has(domain) ? 'self' : 'civ') : 'civ'
   const isSelf = scale === 'self'
 
@@ -114,6 +120,50 @@ export default function ChallengeAuthor() {
   }
   function removeStrand(key) {
     setStrands(ss => ss.length > 1 ? ss.filter(s => s.key !== key) : ss)
+  }
+
+  async function sendChat() {
+    const text = chatInput.trim()
+    if (!text || chatBusy) return
+    const next = [...chatMsgs, { role: 'user', content: text }]
+    setChatMsgs(next); setChatInput(''); setChatBusy(true)
+    try {
+      const r = await fetch('/api/challenge-author-chat', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, messages: next }),
+      })
+      const d = await r.json()
+      setChatMsgs(m => [...m, { role: 'assistant', content: d.message || '…' }])
+      if (d.draft) setPendingDraft(d.draft)
+    } catch {
+      setChatMsgs(m => [...m, { role: 'assistant', content: 'Something went wrong. Try again.' }])
+    }
+    setChatBusy(false)
+  }
+
+  function applyDraft(d) {
+    if (!d) return
+    if (d.title)    setTitle(d.title)
+    if (d.tagline)  setTagline(d.tagline)
+    if (d.domain)   setDomain(d.domain)
+    if (d.horizon_goal_text) { setHorizonText(d.horizon_goal_text); setLastPrefill('') }
+    if (d.measure)   setMeasure(d.measure)
+    if (d.mechanism) setMechanism(d.mechanism)
+    if (d.duration_days) {
+      const n = Number(d.duration_days)
+      if (n === 21 || n === 90) setDurPreset(String(n))
+      else { setDurPreset('custom'); setDurCustom(n) }
+    }
+    if (Array.isArray(d.strands) && d.strands.length) {
+      let k = keySeq
+      const valid = ['daily-absolute', '5-of-7', 'weekly']
+      const mapped = d.strands.map(s => ({
+        key: k++, text: s.text || '',
+        cadence: valid.includes(s.cadence) ? s.cadence : '5-of-7',
+      }))
+      setStrands(mapped); setKeySeq(k)
+    }
+    setPendingDraft(null)
   }
 
   function buildPayload() {
@@ -196,6 +246,40 @@ export default function ChallengeAuthor() {
           <p style={{ ...body, fontSize: '1.0625rem', ...muted }}>Sign in to author a challenge.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '26px' }}>
+
+            {/* Creation helper */}
+            <div style={{ background: tokens.bgCard, border: hair, borderRadius: '14px', padding: '20px 22px' }}>
+              <Eyebrow style={{ marginBottom: '6px' }}>Build it with help</Eyebrow>
+              <p style={{ ...body, fontSize: '15px', color: tokens.ghost, lineHeight: 1.6, margin: '0 0 14px' }}>
+                Describe the idea in a sentence. North Star drafts the whole thing — you refine it below.
+              </p>
+              {chatMsgs.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
+                  {chatMsgs.map((m, i) => (
+                    <div key={i} style={{
+                      alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start', maxWidth: '88%',
+                      ...body, fontSize: '15px', lineHeight: 1.55, color: tokens.dark,
+                      background: m.role === 'user' ? 'rgba(200,146,42,0.08)' : 'rgba(15,21,35,0.04)',
+                      borderRadius: '12px', padding: '9px 13px',
+                    }}>{m.content}</div>
+                  ))}
+                  {chatBusy && <div style={{ ...body, fontSize: '14px', color: tokens.ghost }}>Thinking…</div>}
+                </div>
+              )}
+              {pendingDraft && (
+                <div style={{ marginBottom: '14px' }}>
+                  <Btn onClick={() => applyDraft(pendingDraft)}>Use this draft ↓</Btn>
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input value={chatInput} onChange={e => setChatInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); sendChat() } }}
+                  placeholder="e.g. a 30-day challenge to reconnect with nature" disabled={chatBusy}
+                  style={{ ...inputStyle, flex: 1 }} />
+                <button type="button" onClick={sendChat} disabled={chatBusy || !chatInput.trim()}
+                  style={{ ...sc, fontSize: '14px', letterSpacing: '0.1em', color: '#fff', background: tokens.gold, border: 'none', borderRadius: '10px', padding: '0 18px', cursor: 'pointer', opacity: (chatBusy || !chatInput.trim()) ? 0.5 : 1 }}>Send</button>
+              </div>
+            </div>
 
             {ownedActors.length > 0 && (
               <div>
