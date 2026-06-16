@@ -286,9 +286,6 @@ export default function MyChallenges() {
             <Link to="/challenges/new" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, textTransform: 'uppercase', textDecoration: 'none' }}>
               + Author a challenge
             </Link>
-            <Link to="/challenges/partners" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, textTransform: 'uppercase', textDecoration: 'none' }}>
-              Partner requests
-            </Link>
           </div>
         )}
 
