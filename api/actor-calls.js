@@ -239,8 +239,19 @@ module.exports = async (req, res) => {
     // Compute clock
     const dur = call.duration_days || 90
     const clk = computeClock(clock_type, dur)
+    const today = new Date().toISOString().slice(0, 10)
 
-    // Create sibling civ session
+    // Strands the participant will run. Backfill (migration 131) means most
+    // challenges already carry a protocol; synthesize a single strand from
+    // the_move for any that don't.
+    const strands = (Array.isArray(call.protocol) && call.protocol.length)
+      ? call.protocol
+      : (call.the_move ? [{ id: 's1', text: call.the_move, cadence: call.cadence || '5-of-7' }] : [])
+
+    // Create sibling civ session (kept for the current Planet Sprint view;
+    // the dedicated taken-on surface reads the participation row instead).
+    // Strands are copied into the plan so a joined challenge shows what to do
+    // rather than rendering blank.
     const now = new Date().toISOString()
     const planetData = {
       __planet_sprint__: {
@@ -249,7 +260,8 @@ module.exports = async (req, res) => {
         source:      'designed',
         designedBy:  call.actor_id || null,
         challenge_id: call_id,
-        tasks:       [],
+        strands,
+        tasks:       strands.map(s => ({ text: s.text })),
         taskChecked: {},
       }
     }
@@ -262,9 +274,12 @@ module.exports = async (req, res) => {
     }
     const { data: session } = await supabase.from('target_sprint_sessions').insert(sessionPayload).select('id').single()
 
-    // Record participation
+    // Record participation — the source of truth for this run.
     const { data: participant, error } = await supabase.from('actor_call_participants').insert({
       call_id, user_id: userId, session_id: session?.id || null, status: 'active',
+      scale: call.scale || 'civ',
+      started_on: today, ends_on: clk.targetDate,
+      protocol_snapshot: strands,
     }).select('*').single()
     if (error) return res.status(500).json({ error: error.message })
 
@@ -272,6 +287,68 @@ module.exports = async (req, res) => {
     await refreshCounts(call_id)
 
     return res.json({ participant, session_id: session?.id || null })
+  }
+
+  // ── log_strand ─────────────────────────────────────────────────────────────
+  // Mark a strand done (or undo it) for a given day. Rows are created lazily;
+  // unchecking deletes the row so "done" is simply presence.
+  if (action === 'log_strand') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id, strand_id, log_date, done = true } = body
+    if (!call_id || !strand_id) return res.status(400).json({ error: 'call_id and strand_id required' })
+    const day = log_date || new Date().toISOString().slice(0, 10)
+
+    const { data: p } = await supabase.from('actor_call_participants')
+      .select('id').eq('call_id', call_id).eq('user_id', userId).maybeSingle()
+    if (!p) return res.status(404).json({ error: 'Not a participant' })
+
+    if (done) {
+      const { error } = await supabase.from('actor_call_strand_log').upsert(
+        { participant_id: p.id, strand_id, log_date: day, done: true },
+        { onConflict: 'participant_id,strand_id,log_date' }
+      )
+      if (error) return res.status(500).json({ error: error.message })
+    } else {
+      await supabase.from('actor_call_strand_log')
+        .delete()
+        .eq('participant_id', p.id).eq('strand_id', strand_id).eq('log_date', day)
+    }
+    return res.json({ ok: true, strand_id, log_date: day, done: !!done })
+  }
+
+  // ── get_participation ──────────────────────────────────────────────────────
+  // The participant's run of a challenge: their frozen strands, their clock,
+  // and what they've marked done today. Streak/progress math is computed by
+  // the caller from started_on + cadence; this returns the raw facts.
+  if (action === 'get_participation') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id } = body
+    if (!call_id) return res.status(400).json({ error: 'call_id required' })
+
+    const { data: p } = await supabase.from('actor_call_participants')
+      .select('id, status, scale, started_on, ends_on, protocol_snapshot, completed_at')
+      .eq('call_id', call_id).eq('user_id', userId).maybeSingle()
+    if (!p) return res.json({ participant: null })
+
+    const today = new Date().toISOString().slice(0, 10)
+    const { data: todayRows } = await supabase.from('actor_call_strand_log')
+      .select('strand_id, done').eq('participant_id', p.id).eq('log_date', today)
+    const doneToday = (todayRows || []).filter(r => r.done).map(r => r.strand_id)
+
+    const { count: totalDone } = await supabase.from('actor_call_strand_log')
+      .select('id', { count: 'exact', head: true }).eq('participant_id', p.id).eq('done', true)
+
+    return res.json({
+      participant: {
+        id: p.id, status: p.status, scale: p.scale,
+        started_on: p.started_on, ends_on: p.ends_on,
+        completed_at: p.completed_at,
+        strands: p.protocol_snapshot || [],
+      },
+      today,
+      done_today: doneToday,
+      total_done: totalDone || 0,
+    })
   }
 
   // ── flag ──────────────────────────────────────────────────────────────────
