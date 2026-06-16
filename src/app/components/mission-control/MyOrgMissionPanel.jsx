@@ -1,46 +1,35 @@
 // ─────────────────────────────────────────────────────────────
 // MyOrgMissionPanel.jsx
 //
-// The Mission Control surface for the "My Org" scope. Mirrors
-// MyPracticeMissionPanel's two-mode pattern (setup vs room), but
-// for organisations.
+// The Mission Control surface for the "My Org" scope. The owner's
+// cockpit for one actor: it shows exactly what the entry contributes
+// to the Atlas, how close it sits to the profile floor, and turns
+// every gap into a one-tap fix. It mirrors the public org page's
+// two-layer model (evidence then voice) and matches the sibling
+// practice panel's read-mostly, edit-inline pattern.
 //
-// Data layer: nextus_actors, owned by the user via
-// profile_owner = user.id. No new schema in this drop —
-// OrgManage already writes here. This panel is the day-to-day
-// room. Deep editing of the six tabs (Profile / Offerings / Domains /
-// Matches / Contributions / Needs) continues to happen at
-// /beta/org/:id/manage; the panel links there.
+// Data layer: nextus_actors (owned via profile_owner = user.id) plus
+// actor_links (channels + contact). No new schema in this drop.
 //
-// Multi-org users are deferred per the brief. If a user owns more
-// than one org actor, we surface the first one and flag the rest
-// so they can be reached at /beta/org/:id/manage directly.
+// Three surfaces:
+//   SPINE        the user's ownership tree (parent_id), select + reparent
+//   SETUP MODE   when the user owns no org yet — create the first row
+//   ROOM MODE    the cockpit for the selected actor (this file's heart)
 //
-// SETUP MODE (when no org is found owned by this user):
-//   • URL-paste prompt at top, runs /api/org-extract and takes the
-//     Planet record to pre-fill.
-//   • Field form below with the brief's Section 5.2 minimum eight.
-//   • Ownership confirmation checkbox — required for the row insert.
-//   • Save creates the row; the panel flips to room mode.
+// ROOM MODE structure, in floor order:
+//   • Identity strip — mirrors the public page (mark, name, tagline,
+//     domain · scale · type eyebrow, founder line, status chip)
+//   • Floor readiness — quiet, owner-only, every miss is a fix link
+//   • Evidence cards (inline-editable): Identity, Placement, Story,
+//     Channels, Contact
+//   • Voice cards (inline-editable): Mission, Working on now, Offers
+//   • Footer: View public page · Open full manager
 //
-// ROOM MODE (when an owned org exists):
-//   • Summary cards: identity, placement, mission/offering, scale,
-//     status of needs/offerings counts.
-//   • "Open full manager →" link sends the user to
-//     /beta/org/:id/manage for the deep editor.
-//
-// Required fields for the initial insert (per brief Section 5.2):
-//   1. name                  (org name)
-//   2. description           (one-line description)
-//   3. website
-//   4. domains[0]            (primary civilisational domain)
-//   5. scale
-//   6. description (mission, second pass — same field, but the brief
-//      separates them conceptually; here mission and one-line both
-//      land in description for v1, until we add a dedicated mission
-//      column)
-//   7. impact_summary        (what you offer)
-//   8. ownership_confirmed   (UI-only checkbox before insert)
+// Inline edits write single columns on nextus_actors via saveField,
+// optimistic with revert-on-failure (same contract as the practice
+// panel). Channels and contact live in actor_links and are still
+// managed in the full manager's Links tab; the cockpit reads and
+// links out to it rather than duplicating that CRUD.
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useState, useCallback, useMemo } from 'react'
@@ -48,15 +37,17 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../../../hooks/useSupabase'
 import {
   GOLD, GOLD_DK, GOLD_RULE, GOLD_FAINT, GOLD_HOVER,
-  BG_CARD,
+  BG_CARD, BG_CARD_EMPTY,
   TEXT_INK, TEXT_META, TEXT_FAINT,
   FONT_DISPLAY, FONT_SC, FONT_BODY,
 } from './tokens'
-import { CIV_DOMAINS } from '../../constants/domains'
+import { CIV_DOMAINS, DOMAIN_COLORS } from '../../constants/domains'
 
 // ─── Constants ───────────────────────────────────────────────
 
-const CIV_DOMAIN_OPTIONS = CIV_DOMAINS.map(d => ({ value: d.slug, label: d.name }))
+// CIV_DOMAINS exposes { slug, label, color } — note `label`, not `name`.
+const CIV_DOMAIN_OPTIONS = CIV_DOMAINS.map(d => ({ value: d.slug, label: d.label }))
+const domainLabel = slug => CIV_DOMAINS.find(d => d.slug === slug)?.label || null
 
 const SCALE_OPTIONS = [
   { value: 'individual',    label: 'Individual' },
@@ -67,6 +58,26 @@ const SCALE_OPTIONS = [
   { value: 'international', label: 'International' },
   { value: 'global',        label: 'Global' },
 ]
+const scaleLabelFor = v => SCALE_OPTIONS.find(o => o.value === v)?.label || null
+
+// Channel labels + ordering, mirroring the public page (OrgPublic.jsx).
+const LINK_LABELS = {
+  website: 'Website', podcast_rss: 'Podcast', podcast_apple: 'Apple Podcasts',
+  podcast_spotify: 'Spotify', youtube_channel: 'YouTube', youtube_video: 'YouTube',
+  vimeo: 'Vimeo', substack: 'Substack', newsletter: 'Newsletter',
+  instagram: 'Instagram', twitter: 'X', tiktok: 'TikTok', facebook: 'Facebook',
+  linkedin: 'LinkedIn', medium: 'Medium', github: 'GitHub', book: 'Book',
+  email: 'Email', contact_form: 'Contact form', calendly: 'Book a call',
+  phone: 'Phone', other: 'Link',
+}
+const CONTACT_LINK_TYPES = new Set(['email', 'contact_form', 'calendly', 'phone'])
+const LINK_PRIORITY = {
+  website: 0, podcast_rss: 1, podcast_apple: 2, podcast_spotify: 3,
+  youtube_channel: 4, substack: 5, newsletter: 6, book: 7,
+  instagram: 8, linkedin: 9, twitter: 10, facebook: 11, tiktok: 12,
+  vimeo: 13, medium: 14, github: 15, youtube_video: 16, other: 99,
+}
+const CONTACT_PRIORITY = { email: 0, contact_form: 1, calendly: 2, phone: 3 }
 
 // ─── The panel ───────────────────────────────────────────────
 
@@ -106,7 +117,7 @@ export default function MyOrgMissionPanel({ userId }) {
   // At least one org owned. Build the spine from parent_id, open at the root,
   // retarget the detail on click.
   return (
-    <PanelShell wide>
+    <PanelShell>
       <OrgSpineRoom actors={actors} userId={userId} onChange={load} />
     </PanelShell>
   )
@@ -157,28 +168,81 @@ function pickDefaultRoot(actors) {
 }
 
 function OrgSpineRoom({ actors, userId, onChange }) {
-  const defaultRootId = useMemo(() => pickDefaultRoot(actors)?.id || null, [actors])
+  // Optimistic overlay so inline edits feel instant without a full reload.
+  // Spine structural ops (add / reparent) still call onChange, which reloads
+  // and naturally clears the overlay.
+  const [overlay, setOverlay] = useState({})
+  const merged = useMemo(
+    () => actors.map(a => (overlay[a.id] ? { ...a, ...overlay[a.id] } : a)),
+    [actors, overlay],
+  )
+
+  const defaultRootId = useMemo(() => pickDefaultRoot(merged)?.id || null, [merged])
   const [selectedId, setSelectedId] = useState(defaultRootId)
+  const [savingKey, setSavingKey]   = useState(null)
 
   // Keep the selection valid as the tree changes (after add / reparent).
   useEffect(() => {
-    if (!actors.find(a => a.id === selectedId)) setSelectedId(defaultRootId)
-  }, [actors, selectedId, defaultRootId])
+    if (!merged.find(a => a.id === selectedId)) setSelectedId(defaultRootId)
+  }, [merged, selectedId, defaultRootId])
 
-  const selected = actors.find(a => a.id === selectedId) || actors[0] || null
+  const selected = merged.find(a => a.id === selectedId) || merged[0] || null
+
+  // actor_links for the selected actor (channels + contact).
+  const [links, setLinks]       = useState([])
+  const [linksLoading, setLL]   = useState(true)
+  useEffect(() => {
+    let live = true
+    if (!selected?.id) { setLinks([]); setLL(false); return }
+    setLL(true)
+    supabase.from('actor_links')
+      .select('*').eq('actor_id', selected.id).order('sort_order')
+      .then(({ data }) => { if (live) { setLinks(data || []); setLL(false) } })
+    return () => { live = false }
+  }, [selected?.id])
+
+  // Per-field save on a single actor. Optimistic; reverts on failure.
+  const saveField = useCallback(async (actorId, column, value) => {
+    if (!actorId) return false
+    setSavingKey(`${actorId}:${column}`)
+    setOverlay(o => ({ ...o, [actorId]: { ...(o[actorId] || {}), [column]: value } }))
+    const { error } = await supabase.from('nextus_actors')
+      .update({ [column]: value, updated_at: new Date().toISOString() })
+      .eq('id', actorId)
+    setSavingKey(null)
+    if (error) {
+      // Revert just this column to the underlying truth.
+      setOverlay(o => {
+        const base = actors.find(a => a.id === actorId)
+        const next = { ...(o[actorId] || {}) }
+        if (base) next[column] = base[column]
+        return { ...o, [actorId]: next }
+      })
+      return false
+    }
+    return true
+  }, [actors])
 
   return (
     <div className="mo-spine-layout">
       <style>{PANEL_CSS}</style>
       <OrgSpine
-        actors={actors}
+        actors={merged}
         selectedId={selected?.id}
         onSelect={setSelectedId}
         userId={userId}
         onChange={onChange}
       />
       <div className="mo-spine-detail">
-        {selected && <RoomMode actor={selected} />}
+        {selected && (
+          <RoomMode
+            actor={selected}
+            links={links}
+            linksLoading={linksLoading}
+            savingKey={savingKey}
+            saveField={(col, val) => saveField(selected.id, col, val)}
+          />
+        )}
       </div>
     </div>
   )
@@ -188,7 +252,7 @@ function OrgSpine({ actors, selectedId, onSelect, userId, onChange }) {
   const roots = rootsOf(actors)
   return (
     <aside className="mo-spine">
-      <p className="mo-spine-eyebrow">Your org tree</p>
+      <p className="mo-spine-eyebrow">Your spine</p>
       <div className="mo-spine-tree">
         {roots.map(r => (
           <SpineNode key={r.id} actor={r} actors={actors} depth={0}
@@ -580,79 +644,462 @@ function SetupMode({ userId, onCreated }) {
   )
 }
 
-// ─── Room mode ───────────────────────────────────────────────
+// ─── Room mode — the owner cockpit ───────────────────────────
 
-function RoomMode({ actor }) {
-  const primaryDomain = CIV_DOMAINS.find(d => d.slug === (actor.domains?.[0]))
-  const scaleLabel    = SCALE_OPTIONS.find(o => o.value === actor.scale)?.label
+function RoomMode({ actor, links, linksLoading, savingKey, saveField }) {
+  const [editing, setEditing] = useState(null)   // card key currently open for edit
+
+  const slugOrId      = actor.slug || actor.id
+  const primaryDomain = actor.domains?.[0] || null
+  const dColor        = DOMAIN_COLORS?.[primaryDomain] || GOLD
+  const isPortrait    = actor.type === 'practitioner'
+
+  const channels = useMemo(() => (links || [])
+    .filter(l => !CONTACT_LINK_TYPES.has(l.link_type))
+    .sort((a, b) => (LINK_PRIORITY[a.link_type] ?? 50) - (LINK_PRIORITY[b.link_type] ?? 50)), [links])
+  const contacts = useMemo(() => (links || [])
+    .filter(l => CONTACT_LINK_TYPES.has(l.link_type))
+    .sort((a, b) => (CONTACT_PRIORITY[a.link_type] ?? 9) - (CONTACT_PRIORITY[b.link_type] ?? 9)), [links])
+
+  const floor = useMemo(
+    () => computeFloor(actor, channels, contacts, linksLoading),
+    [actor, channels, contacts, linksLoading],
+  )
+
+  const isSaving = col => savingKey === `${actor.id}:${col}`
+  const open  = key => setEditing(e => (e === key ? null : key))
+  const isOpen = key => editing === key
 
   return (
     <div className="mo-room">
       <style>{PANEL_CSS}</style>
 
-      <header className="mo-header">
-        <p className="mo-eyebrow">MY ORG</p>
-        <h2 className="mo-title">{actor.name}</h2>
-        {actor.description && <p className="mo-headline">{actor.description}</p>}
-        <div className="mo-rule" />
-      </header>
+      {/* ── Identity strip — mirrors the public org page ── */}
+      <div className="mo-eyebrow">MY ORG</div>
+      <div className="moc-identity">
+        <ActorMark actor={actor} isPortrait={isPortrait}
+                   onAdd={() => open('identity')} />
+        <div className="moc-identity-body">
+          <div className="moc-meta">
+            {primaryDomain && (
+              <>
+                <span className="moc-meta-dot" style={{ background: dColor }} />
+                <span className="moc-meta-pill">{domainLabel(primaryDomain)}</span>
+              </>
+            )}
+            {actor.scale && (
+              <><Dot /><span className="moc-meta-pill">{scaleLabelFor(actor.scale)}</span></>
+            )}
+            {actor.type && (
+              <><Dot /><span className="moc-meta-pill">
+                {actor.type.charAt(0).toUpperCase() + actor.type.slice(1)}
+              </span></>
+            )}
+          </div>
 
-      {/* Card 1 — Identity & location. */}
-      <Card eyebrow="IDENTITY">
-        {actor.location_name && (
-          <p className="mo-card-display"><strong>Location:</strong> {actor.location_name}</p>
-        )}
-        {actor.website && (
-          <p className="mo-card-display">
-            <strong>Website:</strong>{' '}
-            <a href={actor.website} target="_blank" rel="noopener noreferrer" style={{ color: GOLD_DK }}>
-              {actor.website}
-            </a>
-          </p>
-        )}
-      </Card>
+          <h2 className="moc-name">{actor.name}</h2>
 
-      {/* Card 2 — Placement. */}
-      <Card eyebrow="PLACEMENT">
-        {primaryDomain ? (
-          <p className="mo-card-display"><strong>Primary domain:</strong> {primaryDomain.name}</p>
+          {actor.tagline
+            ? <p className="moc-tagline">{actor.tagline}</p>
+            : <button type="button" className="moc-inline-add" onClick={() => open('identity')}>
+                Add a tagline
+              </button>}
+
+          {actor.location_name && <div className="moc-loc">{actor.location_name}</div>}
+          {actor.is_platform_founder && <div className="moc-founder">Founder of NextUs</div>}
+
+          <StatusChip actor={actor} floor={floor} />
+        </div>
+      </div>
+
+      {/* ── Floor readiness ── */}
+      <FloorReadiness floor={floor} onFix={open} slugOrId={slugOrId} />
+
+      {/* ── Evidence layer ── */}
+      <SectionLabel>What the map sees</SectionLabel>
+
+      <EditCard eyebrow="IDENTITY" open={isOpen('identity')} onToggle={() => open('identity')}>
+        {isOpen('identity') ? (
+          <div className="moc-edit-grid">
+            <EditText label="Tagline" value={actor.tagline}
+              placeholder="One line: what this org does, and at what scale."
+              saving={isSaving('tagline')}
+              onSave={v => saveField('tagline', v)} />
+            <EditArea label="One-line description" value={actor.description} rows={2} maxLength={240}
+              placeholder="What this org does, in a sentence."
+              saving={isSaving('description')}
+              onSave={v => saveField('description', v)} />
+            <EditText label="Website" value={actor.website} placeholder="https://..."
+              saving={isSaving('website')}
+              onSave={v => saveField('website', v)} />
+            <EditText label="Location" value={actor.location_name}
+              placeholder="City, country, or Distributed."
+              saving={isSaving('location_name')}
+              onSave={v => saveField('location_name', v)} />
+            <EditText label="Logo / image URL" value={actor.image_url}
+              placeholder="https://... (paste a hosted logo URL)"
+              saving={isSaving('image_url')}
+              onSave={v => saveField('image_url', v)}
+              hint="A square logo reads best. Full image upload lands with the actor-images bucket." />
+          </div>
         ) : (
-          <p className="mo-card-display" style={{ color: TEXT_FAINT }}>Primary domain not yet set.</p>
+          <>
+            <Display label="Tagline"      value={actor.tagline} />
+            <Display label="Description"  value={actor.description} />
+            <Display label="Website"      value={actor.website} href={actor.website} />
+            <Display label="Location"     value={actor.location_name} />
+            <Display label="Logo"         value={actor.image_url ? 'Set' : null} />
+          </>
         )}
-        {actor.domains?.length > 1 && (
-          <p className="mo-card-display">
-            <strong>Also working in:</strong>{' '}
-            {actor.domains.slice(1).map(slug => CIV_DOMAINS.find(d => d.slug === slug)?.name).filter(Boolean).join(', ')}
-          </p>
-        )}
-        {scaleLabel && (
-          <p className="mo-card-display"><strong>Scale:</strong> {scaleLabel}</p>
-        )}
-      </Card>
+      </EditCard>
 
-      {/* Card 3 — Offering. */}
-      <Card eyebrow="WHAT YOU OFFER">
-        {actor.impact_summary ? (
-          <p className="mo-card-display">{actor.impact_summary}</p>
+      <EditCard eyebrow="PLACEMENT" open={isOpen('placement')} onToggle={() => open('placement')}>
+        {isOpen('placement') ? (
+          <div className="moc-edit-grid">
+            <EditSelect label="Primary domain" value={primaryDomain || ''}
+              options={CIV_DOMAIN_OPTIONS} placeholder="Select one…"
+              saving={isSaving('domains')}
+              onSave={v => {
+                const rest = (actor.domains || []).slice(1)
+                saveField('domains', v ? [v, ...rest.filter(s => s !== v)] : rest)
+              }} />
+            <EditDomainSet label="Also working in" primary={primaryDomain}
+              value={actor.domains || []}
+              saving={isSaving('domains')}
+              onSave={arr => saveField('domains', arr)} />
+            <EditSelect label="Scale" value={actor.scale || ''}
+              options={SCALE_OPTIONS} placeholder="Select one…"
+              saving={isSaving('scale')}
+              onSave={v => saveField('scale', v || null)} />
+          </div>
         ) : (
-          <p className="mo-card-display" style={{ color: TEXT_FAINT }}>Not yet set.</p>
+          <>
+            <Display label="Primary domain" value={domainLabel(primaryDomain)} />
+            {(actor.domains || []).length > 1 && (
+              <Display label="Also working in"
+                value={(actor.domains || []).slice(1).map(domainLabel).filter(Boolean).join(', ')} />
+            )}
+            <Display label="Scale" value={scaleLabelFor(actor.scale)} />
+          </>
         )}
-        {actor.reach && (
-          <p className="mo-card-display"><em>Reach:</em> {actor.reach}</p>
-        )}
-      </Card>
+      </EditCard>
 
-      {/* Card 4 — Manage link. */}
+      <EditCard eyebrow="STORY" open={isOpen('story')} onToggle={() => open('story')}>
+        {isOpen('story') ? (
+          <EditArea label="Story" value={actor.story} rows={7}
+            placeholder="Two to four short paragraphs, third person. What the org does, who it works with, at what scale. Evidence, not marketing."
+            saving={isSaving('story')}
+            onSave={v => saveField('story', v)} />
+        ) : actor.story ? (
+          <p className="moc-prose">{actor.story}</p>
+        ) : (
+          <Empty>No story yet. The description carries the entry until you add one.</Empty>
+        )}
+      </EditCard>
+
+      {/* Channels + contact live in actor_links; read here, manage in the full manager. */}
+      <LinkCard
+        eyebrow="CHANNELS"
+        items={channels}
+        loading={linksLoading}
+        emptyToward="No channels yet. Add the places this org publishes."
+        manageHref={`/org/${slugOrId}/manage`}
+        manageLabel="Manage channels →"
+      />
+
+      <LinkCard
+        eyebrow="CONTACT"
+        items={contacts}
+        loading={linksLoading}
+        emptyToward="No way to reach this org yet. The floor needs at least one contact path."
+        manageHref={`/org/${slugOrId}/manage`}
+        manageLabel={contacts.length ? 'Manage contact →' : 'Add a contact path →'}
+      />
+
+      {/* ── Voice layer ── */}
+      <SectionLabel>Your voice
+        <span className="moc-section-note">shown on the public page once claimed</span>
+      </SectionLabel>
+
+      <EditCard eyebrow="MISSION" open={isOpen('mission')} onToggle={() => open('mission')}>
+        {isOpen('mission') ? (
+          <EditArea label="Mission statement" value={actor.mission_statement} rows={3}
+            placeholder="First person. What this org is working toward at horizon scale."
+            saving={isSaving('mission_statement')}
+            onSave={v => saveField('mission_statement', v)} />
+        ) : actor.mission_statement ? (
+          <p className="moc-mission">{actor.mission_statement}</p>
+        ) : (
+          <Empty>Not yet set.</Empty>
+        )}
+      </EditCard>
+
+      <EditCard eyebrow="WORKING ON NOW" open={isOpen('working')} onToggle={() => open('working')}>
+        {isOpen('working') ? (
+          <EditArea label="Working on now" value={actor.working_on_now} rows={3}
+            placeholder="Current focus of the work. Time-bound, in your own words."
+            saving={isSaving('working_on_now')}
+            onSave={v => saveField('working_on_now', v)} />
+        ) : actor.working_on_now ? (
+          <p className="moc-prose">{actor.working_on_now}</p>
+        ) : (
+          <Empty>Not yet set.</Empty>
+        )}
+      </EditCard>
+
+      <div className="mo-card mo-card-flat">
+        <div className="mo-card-head"><span className="mo-card-eyebrow">OFFERS &amp; NEEDS</span></div>
+        <div className="mo-card-body">
+          <p className="moc-prose-meta">
+            Offers, needs, credentials, testimonials, and coordination are managed in the full org manager.
+          </p>
+          <Link to={`/org/${slugOrId}/manage`} className="moc-text-link">Open the manager →</Link>
+        </div>
+      </div>
+
+      {/* ── Footer ── */}
       <div className="mo-manage-link-row">
-        <Link to={`/org/${actor.id}/manage`} className="mo-manage-link">
-          Open full manager →
-        </Link>
-        <Link to={`/org/${actor.id}`} className="mo-public-link" target="_blank" rel="noopener noreferrer">
+        <Link to={`/org/${slugOrId}`} className="mo-manage-link"
+              target="_blank" rel="noopener noreferrer">
           View public page →
+        </Link>
+        <Link to={`/org/${slugOrId}/manage`} className="mo-public-link">
+          Open full manager →
         </Link>
       </div>
     </div>
   )
+}
+
+// ─── Cockpit pieces ──────────────────────────────────────────
+
+function Dot() {
+  return <span className="moc-meta-sep" aria-hidden="true">·</span>
+}
+
+function ActorMark({ actor, isPortrait, onAdd }) {
+  if (actor.image_url) {
+    return (
+      <div className="moc-mark-wrap">
+        <div className={`moc-mark-frame${isPortrait ? ' is-portrait' : ''}`}>
+          <img src={actor.image_url} alt={actor.name} className="moc-mark-img"
+               style={{ objectFit: isPortrait ? 'cover' : 'contain',
+                        objectPosition: isPortrait ? 'center top' : 'center' }} />
+        </div>
+      </div>
+    )
+  }
+  return (
+    <div className="moc-mark-wrap">
+      <button type="button" className="moc-mark-frame moc-mark-empty" onClick={onAdd}>
+        <span className="moc-mark-empty-label">Add your mark</span>
+      </button>
+    </div>
+  )
+}
+
+function StatusChip({ actor, floor }) {
+  const live = actor.status === 'live'
+  const owned = !!actor.profile_owner
+  const ownLabel = owned ? 'You manage this' : 'Unclaimed'
+  return (
+    <div className="moc-status">
+      <span className={`moc-status-dot${live ? ' is-live' : ''}`} />
+      <span className="moc-status-text">
+        {live ? 'Live' : 'Draft'} · {ownLabel}
+        {floor.met
+          ? ' · meets the floor'
+          : ` · ${floor.missing.length} from the floor`}
+      </span>
+    </div>
+  )
+}
+
+function FloorReadiness({ floor, onFix, slugOrId }) {
+  if (floor.met) {
+    return (
+      <div className="moc-floor moc-floor-met">
+        <span className="moc-floor-tick" aria-hidden="true" />
+        <span>This entry meets the profile floor. It is the standard.</span>
+      </div>
+    )
+  }
+  return (
+    <div className="moc-floor">
+      <p className="moc-floor-head">
+        {floor.missing.length === 1 ? 'One thing' : `${floor.missing.length} things`} from the floor:
+      </p>
+      <div className="moc-floor-items">
+        {floor.missing.map(m => (
+          m.card
+            ? <button key={m.key} type="button" className="moc-floor-item"
+                      onClick={() => onFix(m.card)}>{m.toward}</button>
+            : <Link key={m.key} to={`/org/${slugOrId}/manage`}
+                    className="moc-floor-item">{m.toward}</Link>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function SectionLabel({ children }) {
+  return <div className="moc-section-label">{children}</div>
+}
+
+function EditCard({ eyebrow, open, onToggle, children }) {
+  return (
+    <div className={`mo-card moc-editcard${open ? ' is-open' : ''}`}>
+      <div className="mo-card-head moc-editcard-head">
+        <span className="mo-card-eyebrow">{eyebrow}</span>
+        <button type="button" className="moc-edit-toggle" onClick={onToggle}>
+          {open ? 'Done' : 'Edit'}
+        </button>
+      </div>
+      <div className="mo-card-body">{children}</div>
+    </div>
+  )
+}
+
+function LinkCard({ eyebrow, items, loading, emptyToward, manageHref, manageLabel }) {
+  return (
+    <div className="mo-card">
+      <div className="mo-card-head moc-editcard-head">
+        <span className="mo-card-eyebrow">{eyebrow}</span>
+        <Link to={manageHref} className="moc-edit-toggle">{manageLabel}</Link>
+      </div>
+      <div className="mo-card-body">
+        {loading ? (
+          <Empty>Loading…</Empty>
+        ) : items.length === 0 ? (
+          <Empty>{emptyToward}</Empty>
+        ) : (
+          <div className="moc-chips">
+            {items.map(l => (
+              <a key={l.id} href={l.url} target="_blank" rel="noopener noreferrer"
+                 className="moc-chip" title={l.url}>
+                {l.label || LINK_LABELS[l.link_type] || l.link_type}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function Display({ label, value, href }) {
+  if (!value) return null
+  return (
+    <p className="mo-card-display">
+      <strong>{label}:</strong>{' '}
+      {href
+        ? <a href={href} target="_blank" rel="noopener noreferrer" style={{ color: GOLD_DK }}>{value}</a>
+        : value}
+    </p>
+  )
+}
+
+function Empty({ children }) {
+  return <p className="moc-empty">{children}</p>
+}
+
+// ─── Inline editors (autosave on blur / change) ──────────────
+
+function EditText({ label, value, placeholder, saving, onSave, hint }) {
+  const [local, setLocal] = useState(value || '')
+  useEffect(() => { setLocal(value || '') }, [value])
+  return (
+    <label className="moc-field">
+      <span className="moc-field-label">{label}{saving && <em className="moc-saving"> saving…</em>}</span>
+      <input
+        className="mo-input"
+        value={local}
+        placeholder={placeholder}
+        onChange={e => setLocal(e.target.value)}
+        onBlur={() => { if ((local || '').trim() !== (value || '').trim()) onSave(local.trim() || null) }}
+      />
+      {hint && <span className="moc-field-hint">{hint}</span>}
+    </label>
+  )
+}
+
+function EditArea({ label, value, rows = 4, maxLength, placeholder, saving, onSave }) {
+  const [local, setLocal] = useState(value || '')
+  useEffect(() => { setLocal(value || '') }, [value])
+  return (
+    <label className="moc-field">
+      <span className="moc-field-label">{label}{saving && <em className="moc-saving"> saving…</em>}</span>
+      <textarea
+        className="mo-textarea"
+        rows={rows}
+        maxLength={maxLength}
+        value={local}
+        placeholder={placeholder}
+        onChange={e => setLocal(e.target.value)}
+        onBlur={() => { if ((local || '').trim() !== (value || '').trim()) onSave(local.trim() || null) }}
+      />
+    </label>
+  )
+}
+
+function EditSelect({ label, value, options, placeholder, saving, onSave }) {
+  return (
+    <label className="moc-field">
+      <span className="moc-field-label">{label}{saving && <em className="moc-saving"> saving…</em>}</span>
+      <select className="mo-input" value={value} onChange={e => onSave(e.target.value)}>
+        {placeholder && <option value="">{placeholder}</option>}
+        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+    </label>
+  )
+}
+
+// Secondary domains: the primary is excluded; the rest are toggled chips.
+// Saves the full domains array with the primary kept at index 0.
+function EditDomainSet({ label, primary, value, saving, onSave }) {
+  const secondary = (value || []).filter(s => s !== primary)
+  function toggle(slug) {
+    const has = secondary.includes(slug)
+    const nextSecondary = has ? secondary.filter(s => s !== slug) : [...secondary, slug]
+    onSave(primary ? [primary, ...nextSecondary] : nextSecondary)
+  }
+  return (
+    <div className="moc-field">
+      <span className="moc-field-label">{label}{saving && <em className="moc-saving"> saving…</em>}</span>
+      <div className="moc-domain-chips">
+        {CIV_DOMAINS.filter(d => d.slug !== primary).map(d => {
+          const on = secondary.includes(d.slug)
+          return (
+            <button type="button" key={d.slug}
+              className={`moc-domain-chip${on ? ' is-on' : ''}`}
+              onClick={() => toggle(d.slug)}>
+              {d.label}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+// ─── Floor computation ───────────────────────────────────────
+// The seven floor requirements, owner-side. `card` set => fixable inline
+// (sets editing card); no `card` => fixed in the full manager.
+
+function computeFloor(actor, channels, contacts, linksLoading) {
+  const has = v => !!(v && String(v).trim())
+  const items = [
+    { key: 'domain',  ok: has(actor.domains?.[0]),                 toward: 'a primary domain', card: 'placement' },
+    { key: 'image',   ok: has(actor.image_url),                    toward: 'a logo',           card: 'identity' },
+    { key: 'tagline', ok: has(actor.tagline),                      toward: 'a tagline',        card: 'identity' },
+    { key: 'desc',    ok: has(actor.description),                  toward: 'a description',    card: 'identity' },
+    { key: 'story',   ok: has(actor.story),                        toward: 'your story',       card: 'story' },
+    { key: 'channel', ok: linksLoading || channels.some(l => l.link_type !== 'website'), toward: 'a channel beyond the website', card: null },
+    { key: 'contact', ok: linksLoading || contacts.length > 0,     toward: 'a contact path',   card: null },
+  ]
+  // While links load, don't flash channel/contact as missing.
+  const missing = items.filter(i => !i.ok)
+  return { met: missing.length === 0, missing, items }
 }
 
 // ─── Pieces ──────────────────────────────────────────────────
@@ -670,19 +1117,8 @@ function FieldRow({ label, helper, required, children }) {
   )
 }
 
-function Card({ eyebrow, children }) {
-  return (
-    <div className="mo-card">
-      <div className="mo-card-head">
-        <span className="mo-card-eyebrow">{eyebrow}</span>
-      </div>
-      <div className="mo-card-body">{children}</div>
-    </div>
-  )
-}
-
-function PanelShell({ children, wide = false }) {
-  return <div className={`mo-shell${wide ? ' mo-shell--wide' : ''}`}>{children}</div>
+function PanelShell({ children }) {
+  return <div className="mo-shell">{children}</div>
 }
 
 function LoadingState() {
@@ -751,13 +1187,6 @@ const PANEL_CSS = `
   color: ${TEXT_INK};
   margin: 0 0 6px;
   letter-spacing: -0.005em;
-}
-.mo-headline {
-  font-family: ${FONT_BODY};
-  font-size: 16px;
-  font-style: italic;
-  color: ${GOLD_DK};
-  margin: 0 0 8px;
 }
 .mo-rule { width: 40px; height: 1px; background: ${GOLD}; margin: 14px 0 16px; }
 .mo-intro {
@@ -935,6 +1364,7 @@ const PANEL_CSS = `
   border: 1px solid ${GOLD_RULE};
   border-radius: 14px;
 }
+.mo-card-flat { background: ${BG_CARD_EMPTY}; }
 .mo-card-head { margin-bottom: 8px; }
 .mo-card-eyebrow {
   font-family: ${FONT_SC};
@@ -978,33 +1408,6 @@ const PANEL_CSS = `
 }
 .mo-public-link:hover { background: ${GOLD_HOVER}; }
 
-.mo-other-orgs {
-  margin-top: 24px;
-  padding: 14px 16px;
-  background: ${GOLD_FAINT};
-  border: 1px dashed ${GOLD_RULE};
-  border-radius: 14px;
-}
-.mo-other-orgs-helper {
-  font-family: ${FONT_BODY};
-  font-size: 13.5px;
-  color: ${TEXT_META};
-  margin: 0 0 8px;
-}
-.mo-other-orgs-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.mo-other-orgs-link {
-  font-family: ${FONT_SC};
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  color: ${GOLD_DK};
-  text-decoration: none;
-}
-.mo-other-orgs-link:hover { color: ${GOLD}; }
-
 .mo-loading {
   font-family: ${FONT_BODY};
   color: ${TEXT_META};
@@ -1018,6 +1421,182 @@ const PANEL_CSS = `
   text-align: center;
   padding: 40px 0;
 }
+
+/* ── Cockpit: identity strip ──────────────────────────────── */
+.moc-identity {
+  display: flex; gap: 20px; align-items: flex-start;
+  margin: 4px 0 22px;
+}
+@media (max-width: 560px) { .moc-identity { gap: 14px; } }
+.moc-mark-wrap { flex-shrink: 0; padding: 6px; }
+.moc-mark-frame {
+  width: 96px; height: 96px;
+  border-radius: 4px; overflow: hidden;
+  border: 1.5px solid rgba(200,146,42,0.70);
+  outline: 1px solid rgba(200,146,42,0.35);
+  outline-offset: 5px;
+  background: ${BG_CARD};
+  display: flex; align-items: center; justify-content: center;
+  padding: 14px; box-sizing: border-box;
+}
+.moc-mark-frame.is-portrait { padding: 0; background: rgba(200,146,42,0.05); }
+.moc-mark-img { width: 100%; height: 100%; display: block; }
+.moc-mark-empty {
+  cursor: pointer; padding: 8px;
+  background: ${BG_CARD_EMPTY};
+  border-style: dashed;
+}
+.moc-mark-empty:hover { background: ${GOLD_HOVER}; }
+.moc-mark-empty-label {
+  font-family: ${FONT_SC}; font-size: 11px; letter-spacing: 0.1em;
+  color: ${GOLD_DK}; text-align: center; line-height: 1.3;
+}
+.moc-identity-body { flex: 1; min-width: 200px; }
+.moc-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.moc-meta-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.moc-meta-sep { color: rgba(200,146,42,0.45); font-size: 13px; }
+.moc-meta-pill {
+  font-family: ${FONT_SC}; font-size: 13px; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase; color: ${TEXT_META};
+}
+.moc-name {
+  font-family: ${FONT_DISPLAY}; font-size: clamp(30px, 5vw, 46px); font-weight: 300;
+  color: ${TEXT_INK}; line-height: 1.05; letter-spacing: -0.012em; margin: 0 0 12px;
+}
+.moc-tagline {
+  font-family: ${FONT_BODY}; font-size: 19px; font-weight: 500;
+  color: rgba(15,21,35,0.82); line-height: 1.45; margin: 0 0 14px;
+}
+.moc-inline-add {
+  font-family: ${FONT_SC}; font-size: 12px; letter-spacing: 0.12em;
+  color: ${GOLD_DK}; background: none; border: 1px dashed ${GOLD_RULE};
+  border-radius: 40px; padding: 5px 12px; cursor: pointer; margin: 0 0 14px;
+}
+.moc-inline-add:hover { background: ${GOLD_HOVER}; }
+.moc-loc, .moc-founder {
+  font-family: ${FONT_SC}; font-size: 13px; font-weight: 600;
+  letter-spacing: 0.16em; text-transform: uppercase; margin-bottom: 8px;
+}
+.moc-loc { color: ${TEXT_META}; }
+.moc-founder { color: ${GOLD_DK}; }
+.moc-status { display: inline-flex; align-items: center; gap: 8px; margin-top: 4px; }
+.moc-status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: ${TEXT_FAINT}; flex-shrink: 0;
+}
+.moc-status-dot.is-live { background: ${GOLD}; }
+.moc-status-text {
+  font-family: ${FONT_SC}; font-size: 13px; letter-spacing: 0.1em;
+  color: ${TEXT_META}; text-transform: uppercase;
+}
+
+/* ── Cockpit: floor readiness ─────────────────────────────── */
+.moc-floor {
+  margin: 0 0 22px; padding: 14px 18px;
+  background: ${GOLD_FAINT}; border: 1px solid ${GOLD_RULE};
+  border-radius: 14px;
+}
+.moc-floor-met {
+  display: flex; align-items: center; gap: 10px;
+  font-family: ${FONT_BODY}; font-size: 14.5px; color: ${GOLD_DK};
+}
+.moc-floor-tick {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 1.5px solid ${GOLD}; flex-shrink: 0; position: relative;
+}
+.moc-floor-tick::after {
+  content: ''; position: absolute; left: 4px; top: 1.5px;
+  width: 4px; height: 7px; border: solid ${GOLD};
+  border-width: 0 1.5px 1.5px 0; transform: rotate(45deg);
+}
+.moc-floor-head {
+  font-family: ${FONT_SC}; font-size: 11px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: ${GOLD_DK}; margin: 0 0 10px;
+}
+.moc-floor-items { display: flex; flex-wrap: wrap; gap: 8px; }
+.moc-floor-item {
+  font-family: ${FONT_BODY}; font-size: 13.5px; color: ${TEXT_INK};
+  background: #FFFFFF; border: 1px solid ${GOLD_RULE};
+  border-radius: 40px; padding: 5px 14px; cursor: pointer;
+  text-decoration: none; display: inline-block;
+}
+.moc-floor-item:hover { border-color: ${GOLD}; background: ${GOLD_HOVER}; }
+
+/* ── Cockpit: section labels ──────────────────────────────── */
+.moc-section-label {
+  font-family: ${FONT_SC}; font-size: 12px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: ${TEXT_META};
+  margin: 12px 0 12px; padding-bottom: 8px;
+  border-bottom: 1px solid ${GOLD_RULE};
+  display: flex; align-items: baseline; gap: 10px;
+}
+.moc-section-note {
+  font-family: ${FONT_BODY}; font-size: 12px; letter-spacing: 0;
+  text-transform: none; color: ${TEXT_FAINT};
+}
+
+/* ── Cockpit: editable cards ──────────────────────────────── */
+.moc-editcard.is-open { border-color: ${GOLD}; }
+.moc-editcard-head {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.moc-edit-toggle {
+  font-family: ${FONT_SC}; font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: ${GOLD_DK};
+  background: none; border: none; cursor: pointer; text-decoration: none;
+  padding: 0;
+}
+.moc-edit-toggle:hover { color: ${GOLD}; }
+.moc-edit-grid { display: flex; flex-direction: column; gap: 14px; }
+.moc-field { display: flex; flex-direction: column; gap: 5px; }
+.moc-field-label {
+  font-family: ${FONT_SC}; font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: ${GOLD_DK};
+}
+.moc-saving { color: ${TEXT_FAINT}; letter-spacing: 0.03em; }
+.moc-field-hint {
+  font-family: ${FONT_BODY}; font-size: 12.5px; color: ${TEXT_FAINT}; line-height: 1.45;
+}
+.moc-prose {
+  font-family: ${FONT_BODY}; font-size: 15px; color: ${TEXT_INK};
+  line-height: 1.6; margin: 0; white-space: pre-wrap;
+}
+.moc-prose-meta {
+  font-family: ${FONT_BODY}; font-size: 13.5px; color: ${TEXT_META};
+  line-height: 1.55; margin: 0 0 8px;
+}
+.moc-mission {
+  font-family: ${FONT_DISPLAY}; font-size: 21px; font-weight: 300;
+  color: ${TEXT_INK}; line-height: 1.4; margin: 0; white-space: pre-wrap;
+}
+.moc-text-link {
+  font-family: ${FONT_SC}; font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: ${GOLD_DK}; text-decoration: none;
+}
+.moc-text-link:hover { color: ${GOLD}; }
+.moc-empty {
+  font-family: ${FONT_BODY}; font-size: 14px; color: ${TEXT_FAINT};
+  margin: 0; line-height: 1.55;
+}
+
+/* ── Cockpit: channel / contact chips ─────────────────────── */
+.moc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.moc-chip {
+  font-family: ${FONT_SC}; font-size: 12px; letter-spacing: 0.1em;
+  color: ${GOLD_DK}; background: rgba(200,146,42,0.06);
+  border: 1px solid ${GOLD_RULE}; border-radius: 40px;
+  padding: 5px 13px; text-decoration: none;
+}
+.moc-chip:hover { border-color: ${GOLD}; background: ${GOLD_HOVER}; }
+
+/* ── Cockpit: domain chips ────────────────────────────────── */
+.moc-domain-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.moc-domain-chip {
+  font-family: ${FONT_BODY}; font-size: 13px; color: ${TEXT_META};
+  background: #FFFFFF; border: 1px solid ${GOLD_RULE};
+  border-radius: 40px; padding: 5px 12px; cursor: pointer;
+}
+.moc-domain-chip.is-on { background: ${GOLD}; color: #FFFFFF; border-color: ${GOLD}; }
 
 @media (max-width: 640px) {
   .mo-shell { padding: 18px 16px 40px; }
@@ -1035,10 +1614,6 @@ const PANEL_CSS = `
 }
 @media (max-width: 680px) {
   .mo-spine-layout { grid-template-columns: 1fr; gap: 18px; }
-}
-@media (min-width: 980px) {
-  .mo-shell--wide { max-width: 1060px; }
-  .mo-spine-layout { grid-template-columns: 300px 1fr; gap: 40px; }
 }
 .mo-spine {
   border: 1px solid ${GOLD_RULE};
