@@ -43,7 +43,7 @@
 //   8. ownership_confirmed   (UI-only checkbox before insert)
 // ─────────────────────────────────────────────────────────────
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../../hooks/useSupabase'
 import {
@@ -103,13 +103,263 @@ export default function MyOrgMissionPanel({ userId }) {
     )
   }
 
-  // Room mode: at least one org owned. Show the most-recently-touched.
-  const primary = actors[0]
-  const others  = actors.slice(1)
+  // At least one org owned. Build the spine from parent_id, open at the root,
+  // retarget the detail on click.
   return (
     <PanelShell>
-      <RoomMode actor={primary} otherActors={others} />
+      <OrgSpineRoom actors={actors} userId={userId} onChange={load} />
     </PanelShell>
+  )
+}
+
+// ─── Org spine (parent_id hierarchy) ─────────────────────────
+// The spine is the user's ownership tree, drawn from nextus_actors.parent_id
+// (single-parent, arbitrary depth, NULL = top level). The user owns every node
+// in their own spine, so no cross-owner consent handshake is needed — the
+// pointer alone records the structure. The nextus_relationships parent_child
+// type is for umbrellas spanning DIFFERENT owners; this is not that.
+
+function childrenOf(actors, id) {
+  return actors
+    .filter(a => a.parent_id === id)
+    .sort((x, y) => (x.name || '').localeCompare(y.name || ''))
+}
+
+function rootsOf(actors) {
+  const ids = new Set(actors.map(a => a.id))
+  // An owned actor whose parent isn't in the owned set still reads as a root here.
+  return actors
+    .filter(a => !a.parent_id || !ids.has(a.parent_id))
+    .sort((x, y) => (x.name || '').localeCompare(y.name || ''))
+}
+
+function descendantIds(actors, id) {
+  const out = new Set()
+  const walk = pid => childrenOf(actors, pid).forEach(c => {
+    if (!out.has(c.id)) { out.add(c.id); walk(c.id) }
+  })
+  walk(id)
+  return out
+}
+
+// "Largest first": the root with the biggest subtree; tie-break org type, then name.
+function pickDefaultRoot(actors) {
+  const roots = rootsOf(actors)
+  if (!roots.length) return actors[0] || null
+  return [...roots].sort((a, b) => {
+    const d = descendantIds(actors, b.id).size - descendantIds(actors, a.id).size
+    if (d) return d
+    const at = a.type === 'organisation' ? 0 : 1
+    const bt = b.type === 'organisation' ? 0 : 1
+    if (at !== bt) return at - bt
+    return (a.name || '').localeCompare(b.name || '')
+  })[0]
+}
+
+function OrgSpineRoom({ actors, userId, onChange }) {
+  const defaultRootId = useMemo(() => pickDefaultRoot(actors)?.id || null, [actors])
+  const [selectedId, setSelectedId] = useState(defaultRootId)
+
+  // Keep the selection valid as the tree changes (after add / reparent).
+  useEffect(() => {
+    if (!actors.find(a => a.id === selectedId)) setSelectedId(defaultRootId)
+  }, [actors, selectedId, defaultRootId])
+
+  const selected = actors.find(a => a.id === selectedId) || actors[0] || null
+
+  return (
+    <div className="mo-spine-layout">
+      <style>{PANEL_CSS}</style>
+      <OrgSpine
+        actors={actors}
+        selectedId={selected?.id}
+        onSelect={setSelectedId}
+        userId={userId}
+        onChange={onChange}
+      />
+      <div className="mo-spine-detail">
+        {selected && <RoomMode actor={selected} />}
+      </div>
+    </div>
+  )
+}
+
+function OrgSpine({ actors, selectedId, onSelect, userId, onChange }) {
+  const roots = rootsOf(actors)
+  return (
+    <aside className="mo-spine">
+      <p className="mo-spine-eyebrow">Your spine</p>
+      <div className="mo-spine-tree">
+        {roots.map(r => (
+          <SpineNode key={r.id} actor={r} actors={actors} depth={0}
+                     selectedId={selectedId} onSelect={onSelect} />
+        ))}
+      </div>
+      <HumanBase />
+      <SpineEditor
+        actors={actors} selectedId={selectedId} userId={userId}
+        onChange={onChange} onSelect={onSelect}
+      />
+    </aside>
+  )
+}
+
+function SpineNode({ actor, actors, depth, selectedId, onSelect }) {
+  const kids = childrenOf(actors, actor.id)
+  const isSel = actor.id === selectedId
+  const typeTag = actor.type === 'practitioner' ? 'practice'
+                : actor.type === 'organisation' ? 'org'
+                : actor.type
+  return (
+    <>
+      <button
+        type="button"
+        className={`mo-spine-node${isSel ? ' is-selected' : ''}`}
+        style={{ paddingLeft: `${10 + depth * 18}px` }}
+        onClick={() => onSelect(actor.id)}
+      >
+        <span className="mo-spine-node-dot" aria-hidden="true" />
+        <span className="mo-spine-node-name">{actor.name}</span>
+        {typeTag && <span className="mo-spine-node-tag">{typeTag}</span>}
+      </button>
+      {kids.map(k => (
+        <SpineNode key={k.id} actor={k} actors={actors} depth={depth + 1}
+                   selectedId={selectedId} onSelect={onSelect} />
+      ))}
+    </>
+  )
+}
+
+// The human grounds the spine. Owner-only, never public, never an actor node —
+// rendered gently as the base the structure rests on, not a thing you manage.
+function HumanBase() {
+  return (
+    <div className="mo-spine-base"
+         title="Your own developmental work stays private and never appears publicly.">
+      <span className="mo-spine-base-rule" aria-hidden="true" />
+      <span className="mo-spine-base-label">rests on you</span>
+    </div>
+  )
+}
+
+// The "Sits under" picker plus inline add. One actor names its parent; new
+// relatives are created in the same flow. Cycle-safe: a node's own descendants
+// are excluded from its parent choices.
+function SpineEditor({ actors, selectedId, userId, onChange, onSelect }) {
+  const selected = actors.find(a => a.id === selectedId)
+  const [busy, setBusy]       = useState(false)
+  const [err, setErr]         = useState(null)
+  const [adding, setAdding]   = useState(null)   // 'parent' | 'child' | null
+  const [newName, setNewName] = useState('')
+  const [newType, setNewType] = useState('organisation')
+
+  if (!selected) return null
+
+  const blocked = descendantIds(actors, selected.id)
+  blocked.add(selected.id)
+  const parentChoices = actors.filter(a => !blocked.has(a.id))
+
+  async function setParent(parentId) {
+    setBusy(true); setErr(null)
+    const { error } = await supabase.from('nextus_actors')
+      .update({ parent_id: parentId, updated_at: new Date().toISOString() })
+      .eq('id', selected.id)
+    setBusy(false)
+    if (error) { setErr(error.message); return }
+    onChange()
+  }
+
+  async function addActor(role) {
+    const name = newName.trim()
+    if (!name) { setErr('Name it first.'); return }
+    setBusy(true); setErr(null)
+    const base = {
+      name, type: newType, profile_owner: userId,
+      status: 'live', claimed: true, seeded_by: 'self',
+      represented_by_adder: true, domains: [],
+    }
+    if (role === 'child') base.parent_id = selected.id
+    const { data: created, error } = await supabase.from('nextus_actors')
+      .insert(base).select('id').single()
+    if (error) { setBusy(false); setErr(error.message); return }
+    if (role === 'parent' && created?.id) {
+      const { error: e2 } = await supabase.from('nextus_actors')
+        .update({ parent_id: created.id, updated_at: new Date().toISOString() })
+        .eq('id', selected.id)
+      if (e2) { setBusy(false); setErr(e2.message); return }
+    }
+    setBusy(false); setAdding(null); setNewName(''); setNewType('organisation')
+    onChange()
+    if (created?.id) onSelect(created.id)
+  }
+
+  return (
+    <div className="mo-spine-editor">
+      <p className="mo-spine-editor-eyebrow">{selected.name}</p>
+
+      <label className="mo-spine-field-label">Sits under</label>
+      <select
+        className="mo-spine-select"
+        value={selected.parent_id || ''}
+        disabled={busy}
+        onChange={e => {
+          if (e.target.value === '__add__') { setAdding('parent'); return }
+          setParent(e.target.value || null)
+        }}
+      >
+        <option value="">Top level (sits under nothing)</option>
+        {parentChoices.map(a => (
+          <option key={a.id} value={a.id}>{a.name}</option>
+        ))}
+        <option value="__add__">+ Add a new one as parent…</option>
+      </select>
+
+      {adding === null && (
+        <button type="button" className="mo-spine-add-btn" disabled={busy}
+                onClick={() => setAdding('child')}>
+          + Add a member under {selected.name}
+        </button>
+      )}
+
+      {adding && (
+        <div className="mo-spine-addbox">
+          <p className="mo-spine-add-title">
+            {adding === 'parent'
+              ? `New parent above ${selected.name}`
+              : `New member under ${selected.name}`}
+          </p>
+          <input
+            className="mo-spine-input"
+            placeholder="Name"
+            value={newName}
+            onChange={e => setNewName(e.target.value)}
+            disabled={busy}
+            autoFocus
+          />
+          <div className="mo-spine-type-toggle">
+            <button type="button"
+              className={`mo-spine-type${newType === 'organisation' ? ' is-on' : ''}`}
+              onClick={() => setNewType('organisation')} disabled={busy}>Organisation</button>
+            <button type="button"
+              className={`mo-spine-type${newType === 'practitioner' ? ' is-on' : ''}`}
+              onClick={() => setNewType('practitioner')} disabled={busy}>Practice</button>
+          </div>
+          <div className="mo-spine-add-actions">
+            <button type="button" className="mo-spine-confirm"
+                    disabled={busy || !newName.trim()}
+                    onClick={() => addActor(adding)}>
+              {busy ? 'Adding…' : 'Add'}
+            </button>
+            <button type="button" className="mo-spine-cancel" disabled={busy}
+                    onClick={() => { setAdding(null); setNewName(''); setErr(null) }}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {err && <p className="mo-spine-err">{err}</p>}
+    </div>
   )
 }
 
@@ -332,7 +582,7 @@ function SetupMode({ userId, onCreated }) {
 
 // ─── Room mode ───────────────────────────────────────────────
 
-function RoomMode({ actor, otherActors }) {
+function RoomMode({ actor }) {
   const primaryDomain = CIV_DOMAINS.find(d => d.slug === (actor.domains?.[0]))
   const scaleLabel    = SCALE_OPTIONS.find(o => o.value === actor.scale)?.label
 
@@ -401,24 +651,6 @@ function RoomMode({ actor, otherActors }) {
           View public page →
         </Link>
       </div>
-
-      {/* Other-orgs notice (multi-org users — deferred but acknowledged). */}
-      {otherActors.length > 0 && (
-        <div className="mo-other-orgs">
-          <p className="mo-other-orgs-helper">
-            You own {otherActors.length === 1 ? '1 other organisation' : `${otherActors.length} other organisations`}. Multi-org support in this room comes in a future drop. You can manage the others directly:
-          </p>
-          <ul className="mo-other-orgs-list">
-            {otherActors.map(o => (
-              <li key={o.id}>
-                <Link to={`/org/${o.id}/manage`} className="mo-other-orgs-link">
-                  {o.name} →
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   )
 }
@@ -793,4 +1025,122 @@ const PANEL_CSS = `
   .mo-section-h { font-size: 17px; }
   .mo-manage-link-row { flex-direction: column; }
 }
+
+/* ── Org spine ─────────────────────────────────────────────── */
+.mo-spine-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 680px) {
+  .mo-spine-layout { grid-template-columns: 1fr; gap: 18px; }
+}
+.mo-spine {
+  border: 1px solid ${GOLD_RULE};
+  border-radius: 10px;
+  background: ${GOLD_FAINT};
+  padding: 16px 14px;
+  position: sticky;
+  top: 16px;
+}
+@media (max-width: 680px) { .mo-spine { position: static; } }
+.mo-spine-eyebrow {
+  font-family: 'Cormorant SC', Georgia, serif;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: ${GOLD_DK};
+  margin: 0 0 12px;
+}
+.mo-spine-tree { display: flex; flex-direction: column; gap: 2px; }
+.mo-spine-node {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 8px 10px;
+  cursor: pointer;
+  color: ${TEXT_INK};
+  font-size: 14px;
+  line-height: 1.3;
+}
+.mo-spine-node:hover { background: ${GOLD_HOVER}; }
+.mo-spine-node.is-selected { background: #fff; border-color: ${GOLD}; }
+.mo-spine-node-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: ${GOLD}; flex-shrink: 0;
+}
+.mo-spine-node-name { flex: 1; }
+.mo-spine-node-tag {
+  font-size: 13px;
+  color: ${TEXT_META};
+  letter-spacing: 0.03em;
+}
+.mo-spine-base {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 8px; padding: 8px 10px;
+}
+.mo-spine-base-rule {
+  width: 16px; height: 1px; background: ${GOLD_RULE}; flex-shrink: 0;
+}
+.mo-spine-base-label {
+  font-size: 13px; color: ${TEXT_FAINT}; letter-spacing: 0.03em;
+}
+.mo-spine-editor {
+  margin-top: 14px; padding-top: 14px;
+  border-top: 1px solid ${GOLD_RULE};
+}
+.mo-spine-editor-eyebrow {
+  font-size: 13px; color: ${GOLD_DK}; margin: 0 0 8px;
+  letter-spacing: 0.05em;
+}
+.mo-spine-field-label {
+  display: block; font-size: 13px; color: ${TEXT_META}; margin: 0 0 4px;
+}
+.mo-spine-select {
+  width: 100%; padding: 8px 10px; font-size: 14px;
+  border: 1px solid ${GOLD_RULE}; border-radius: 7px;
+  background: #fff; color: ${TEXT_INK};
+}
+.mo-spine-select:focus { border-color: ${GOLD}; outline: none; }
+.mo-spine-add-btn {
+  margin-top: 10px; width: 100%;
+  background: transparent; border: 1px dashed ${GOLD_RULE};
+  border-radius: 7px; padding: 8px 10px;
+  font-size: 13px; color: ${GOLD_DK}; cursor: pointer;
+}
+.mo-spine-add-btn:hover { background: ${GOLD_HOVER}; }
+.mo-spine-addbox {
+  margin-top: 10px; padding: 12px;
+  border: 1px solid ${GOLD_RULE}; border-radius: 8px; background: #fff;
+}
+.mo-spine-add-title { font-size: 13px; color: ${TEXT_META}; margin: 0 0 8px; }
+.mo-spine-input {
+  width: 100%; padding: 8px 10px; font-size: 14px;
+  border: 1px solid ${GOLD_RULE}; border-radius: 7px; color: ${TEXT_INK};
+}
+.mo-spine-input:focus { border-color: ${GOLD}; outline: none; }
+.mo-spine-type-toggle { display: flex; gap: 6px; margin: 8px 0; }
+.mo-spine-type {
+  flex: 1; padding: 6px 8px; font-size: 13px;
+  border: 1px solid ${GOLD_RULE}; border-radius: 6px;
+  background: transparent; color: ${TEXT_META}; cursor: pointer;
+}
+.mo-spine-type.is-on { background: ${GOLD}; color: #fff; border-color: ${GOLD}; }
+.mo-spine-add-actions { display: flex; gap: 8px; }
+.mo-spine-confirm {
+  flex: 1; padding: 7px 10px; font-size: 13px;
+  background: ${GOLD}; color: #fff; border: 1px solid ${GOLD};
+  border-radius: 6px; cursor: pointer;
+}
+.mo-spine-confirm:disabled { opacity: 0.55; cursor: default; }
+.mo-spine-cancel {
+  padding: 7px 10px; font-size: 13px;
+  background: transparent; color: ${TEXT_META};
+  border: 1px solid ${GOLD_RULE}; border-radius: 6px; cursor: pointer;
+}
+.mo-spine-err { font-size: 13px; color: #a3402f; margin: 8px 0 0; }
 `
