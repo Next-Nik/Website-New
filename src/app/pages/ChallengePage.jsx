@@ -186,12 +186,12 @@ function TakeItOnModal({ call, userId, onClose, onJoined }) {
         {joined ? (
           <div>
             <p style={{ ...body, fontSize: '1.125rem', ...muted, lineHeight: 1.7, marginBottom: '20px' }}>
-              You're in. This challenge is now in your Target Stretch as a Planet Sprint — it runs on its own clock alongside your personal stretch.
+              You're in. It starts today and runs on its own clock. Track it day by day in your challenges.
             </p>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-              <a href="/tools/target-sprint"
+              <a href="/challenges"
                 style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: tokens.gold, background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '12px 28px', textDecoration: 'none', display: 'inline-block' }}>
-                Open my stretch →
+                Track it →
               </a>
               <Btn variant="ghost" onClick={onClose}>Stay here</Btn>
             </div>
@@ -211,7 +211,7 @@ function TakeItOnModal({ call, userId, onClose, onJoined }) {
               </div>
             </div>
             <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '14px' }}>
-              This becomes your Planet Sprint — the outer arc of your Target Stretch. Choose your clock.
+              It starts the day you take it on and runs on its own clock. Choose your clock.
             </p>
             <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
               {[{ v: 'rolling', l: `Rolling ${call.duration_days || 90} days` }, { v: 'calendar', l: 'Calendar quarter' }].map(o => (

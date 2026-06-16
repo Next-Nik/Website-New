@@ -351,6 +351,63 @@ module.exports = async (req, res) => {
     })
   }
 
+  // ── my_participations ──────────────────────────────────────────────────────
+  // Every challenge the user has taken on, with the data a daily-ritual card
+  // needs: the frozen strands, the clock, what's done today, and the set of
+  // days they've logged (for streak + the habit dots).
+  if (action === 'my_participations') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { data: parts } = await supabase.from('actor_call_participants')
+      .select('id, call_id, status, scale, started_on, ends_on, protocol_snapshot, completed_at, created_at')
+      .eq('user_id', userId)
+      .in('status', ['active', 'complete'])
+      .order('created_at', { ascending: false })
+    const rows = parts || []
+    if (!rows.length) return res.json({ participations: [] })
+
+    const callIds = rows.map(r => r.call_id)
+    const { data: calls } = await supabase.from('actor_calls')
+      .select('id, slug, title, tagline, domain, duration_days, nextus_actors ( name, slug, image_url, type )')
+      .in('id', callIds)
+    const callMap = {}
+    ;(calls || []).forEach(c => { callMap[c.id] = c })
+
+    const partIds = rows.map(r => r.id)
+    const { data: logs } = await supabase.from('actor_call_strand_log')
+      .select('participant_id, strand_id, log_date, done')
+      .in('participant_id', partIds)
+      .eq('done', true)
+    const today = new Date().toISOString().slice(0, 10)
+    const byPart = {}
+    ;(logs || []).forEach(l => {
+      if (!byPart[l.participant_id]) byPart[l.participant_id] = { doneToday: [], doneDates: new Set() }
+      byPart[l.participant_id].doneDates.add(l.log_date)
+      if (l.log_date === today) byPart[l.participant_id].doneToday.push(l.strand_id)
+    })
+
+    const participations = rows.map(r => {
+      const c = callMap[r.call_id] || {}
+      const agg = byPart[r.id] || { doneToday: [], doneDates: new Set() }
+      return {
+        participant_id: r.id,
+        call_id:    r.call_id,
+        slug:       c.slug || null,
+        title:      c.title || 'Challenge',
+        tagline:    c.tagline || null,
+        domain:     c.domain || null,
+        author:     c.nextus_actors || null,
+        status:     r.status,
+        started_on: r.started_on,
+        ends_on:    r.ends_on,
+        completed_at: r.completed_at,
+        strands:    r.protocol_snapshot || [],
+        done_today: agg.doneToday,
+        done_dates: Array.from(agg.doneDates).sort(),
+      }
+    })
+    return res.json({ participations })
+  }
+
   // ── flag ──────────────────────────────────────────────────────────────────
   if (action === 'flag') {
     if (!userId) return res.status(401).json({ error: 'Auth required' })
