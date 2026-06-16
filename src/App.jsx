@@ -301,6 +301,7 @@ function AppInner() {
         <Route path="/feed"                         element={<FeedPage />} />
         <Route path="/contribution"                 element={<ContributionPage />} />
         <Route path="/contribution/legacy"          element={<Contribution />} />
+        <Route path="/stretch/c/:slug"              element={<ChallengePage />} />
         <Route path="/org/:slug"                    element={<OrgPublicPage />} />
         <Route path="/org/:id/claim"                element={<ClaimPage />} />
         <Route path="/search"                       element={<SearchPage />} />
