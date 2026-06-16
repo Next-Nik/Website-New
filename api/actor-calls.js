@@ -97,7 +97,7 @@ module.exports = async (req, res) => {
       .select(`
         id, title, tagline, slug, type, scale, domain,
         horizon_goal_text, the_move, cadence, cadence_note,
-        duration_days, measure, mechanism,
+        duration_days, measure, mechanism, protocol,
         taken_on_count, active_count, completed_count,
         visibility, source, created_at, updated_at,
         actor_id, user_id,

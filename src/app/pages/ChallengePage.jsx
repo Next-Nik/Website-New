@@ -53,13 +53,20 @@ const CADENCE_LABELS = {
   'custom':         'Custom cadence',
 }
 
+const CADENCE_SHORT = {
+  'daily-absolute': 'every day',
+  '5-of-7':         '5 of 7 days',
+  'weekly':         'weekly',
+  'custom':         '',
+}
+
 // ─── Share rail ───────────────────────────────────────────────────────────────
 // Web Share API for native share sheet on mobile;
 // fallbacks to WhatsApp, email, copy-link on desktop.
 
-function ShareRail({ url, title, tagline }) {
+function ShareRail({ url, title, tagline, shareText }) {
   const [copied, setCopied] = useState(false)
-  const text = tagline || title
+  const text = shareText || tagline || title
 
   async function nativeShare() {
     if (navigator.share) {
@@ -528,6 +535,8 @@ export function ChallengePage() {
   const pageUrl = typeof window !== 'undefined' ? window.location.href : `https://nextus.world/stretch/c/${slug}`
   const cadenceLabel = CADENCE_LABELS[call.cadence] || call.cadence
   const authorName   = call.nextus_actors?.name || null
+  const strands      = Array.isArray(call.protocol) ? call.protocol.filter(s => s && s.text) : []
+  const partners     = Array.isArray(call.partners) ? call.partners : []
 
   return (
     <div style={{ background: tokens.bg, minHeight: '100dvh' }}>
@@ -611,14 +620,15 @@ export function ChallengePage() {
               {isAsk ? '✓ Offer sent' : '✓ You\'re in'}
             </span>
             {!isAsk && (
-              <a href="/tools/target-sprint" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
-                Open my stretch →
+              <a href="/challenges" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
+                Track it →
               </a>
             )}
           </div>
         )}
 
-        <ShareRail url={pageUrl} title={call.title} tagline={call.tagline} />
+        <ShareRail url={pageUrl} title={call.title} tagline={call.tagline}
+          shareText={isAsk ? undefined : `Take it on with me: ${call.title}${call.tagline ? ' — ' + call.tagline : ''}`} />
 
         <Rule style={{ margin: '24px 0' }} />
 
@@ -627,25 +637,47 @@ export function ChallengePage() {
           <AskBody call={call} />
         ) : (
           <div>
-            {/* The move */}
-            <div style={{ padding: '20px 22px', background: 'rgba(200,146,42,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
-              <Eyebrow>The move</Eyebrow>
-              <p style={{ ...body, fontSize: '1.125rem', color: tokens.dark, lineHeight: 1.7, margin: 0 }}>
-                {call.the_move}
-              </p>
-            </div>
-            {/* Cadence + duration */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-              <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
-                <Eyebrow style={{ marginBottom: '4px' }}>Cadence</Eyebrow>
-                <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.55 }}>
-                  {cadenceLabel}
-                  {call.cadence === 'daily-absolute' && (
-                    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#D63838', marginTop: '4px' }}>No missed days — this is the commitment.</div>
-                  )}
-                  {call.cadence_note && <div style={{ ...body, fontSize: '14px', color: tokens.ghost, marginTop: '4px' }}>{call.cadence_note}</div>}
+            {/* The package */}
+            {strands.length > 1 ? (
+              <div style={{ padding: '20px 22px', background: 'rgba(200,146,42,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
+                <Eyebrow style={{ marginBottom: '12px' }}>What you'll do</Eyebrow>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {strands.map((s, i) => {
+                    const cad = CADENCE_SHORT[s.cadence] || ''
+                    return (
+                      <div key={s.id || i} style={{ display: 'flex', gap: '12px', alignItems: 'baseline' }}>
+                        <span style={{ ...sc, fontSize: '15px', color: tokens.gold, flexShrink: 0, minWidth: '18px' }}>{i + 1}</span>
+                        <span style={{ flex: 1 }}>
+                          <span style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.6 }}>{s.text}</span>
+                          {cad && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: tokens.ghost, marginLeft: '10px', whiteSpace: 'nowrap' }}>{cad}</span>}
+                        </span>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
+            ) : (
+              <div style={{ padding: '20px 22px', background: 'rgba(200,146,42,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
+                <Eyebrow>The move</Eyebrow>
+                <p style={{ ...body, fontSize: '1.125rem', color: tokens.dark, lineHeight: 1.7, margin: 0 }}>
+                  {call.the_move}
+                </p>
+              </div>
+            )}
+            {/* Cadence + duration */}
+            <div style={{ display: 'grid', gridTemplateColumns: strands.length > 1 ? '1fr' : '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+              {strands.length <= 1 && (
+                <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
+                  <Eyebrow style={{ marginBottom: '4px' }}>Cadence</Eyebrow>
+                  <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.55 }}>
+                    {cadenceLabel}
+                    {call.cadence === 'daily-absolute' && (
+                      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#D63838', marginTop: '4px' }}>No missed days — this is the commitment.</div>
+                    )}
+                    {call.cadence_note && <div style={{ ...body, fontSize: '14px', color: tokens.ghost, marginTop: '4px' }}>{call.cadence_note}</div>}
+                  </div>
+                </div>
+              )}
               <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
                 <Eyebrow style={{ marginBottom: '4px' }}>Duration</Eyebrow>
                 <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.55 }}>{call.duration_days} days</div>
@@ -677,6 +709,19 @@ export function ChallengePage() {
               )}
               {call.nextus_actors?.description && (
                 <div style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.5, marginTop: '2px' }}>{call.nextus_actors.description.slice(0, 120)}</div>
+              )}
+              {partners.length > 0 && (
+                <div style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.5, marginTop: '6px' }}>
+                  in partnership with{' '}
+                  {partners.map((p, i) => (
+                    <span key={p.id || i}>
+                      {p.slug
+                        ? <a href={`/org/${p.slug}`} style={{ color: tokens.gold, textDecoration: 'none' }}>{p.name}</a>
+                        : <span style={{ color: tokens.dark }}>{p.name}</span>}
+                      {i < partners.length - 1 ? (i === partners.length - 2 ? ' and ' : ', ') : ''}
+                    </span>
+                  ))}
+                </div>
               )}
             </div>
           </div>
