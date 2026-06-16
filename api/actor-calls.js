@@ -54,13 +54,13 @@ async function uniqueSlug(base) {
 }
 
 
-// Ownership: profile_owner is the canonical auth column (per OrgManage);
-// owner_id is the legacy/Add.jsx column. Either grants ownership.
+// Ownership: profile_owner is the canonical (and only) auth column on
+// nextus_actors. There is no owner_id column on nextus_actors.
 async function ownsActor(actorId, userId) {
   if (!actorId || !userId) return false
   const { data } = await supabase.from('nextus_actors')
-    .select('profile_owner, owner_id').eq('id', actorId).maybeSingle()
-  return data?.profile_owner === userId || data?.owner_id === userId
+    .select('profile_owner').eq('id', actorId).maybeSingle()
+  return data?.profile_owner === userId
 }
 
 // ─── Participation count helpers ──────────────────────────────────────────────
@@ -116,13 +116,26 @@ module.exports = async (req, res) => {
         .eq('call_id', data.id)
       cosignerCount = count || 0
     } catch {}
-    return res.json({ call: { ...data, cosigner_count: cosignerCount } })
+    // Accepted partners (Phase 2) — table may not exist pre-migration-132; fail soft.
+    // Only accepted partnerships are public; pending/declined never surface here.
+    let partners = []
+    try {
+      const { data: pRows } = await supabase
+        .from('actor_call_partners')
+        .select('partner_actor_id, nextus_actors:partner_actor_id ( id, name, slug, type, image_url )')
+        .eq('call_id', data.id)
+        .eq('status', 'accepted')
+      partners = (pRows || [])
+        .map(r => r.nextus_actors)
+        .filter(Boolean)
+    } catch {}
+    return res.json({ call: { ...data, cosigner_count: cosignerCount, partners } })
   }
 
   // ── get_my_calls ───────────────────────────────────────────────────────────
   if (action === 'get_my_calls') {
     if (!userId) return res.status(401).json({ error: 'Auth required' })
-    const { data: actorRows } = await supabase.from('nextus_actors').select('id').or(`profile_owner.eq.${userId},owner_id.eq.${userId}`)
+    const { data: actorRows } = await supabase.from('nextus_actors').select('id').eq('profile_owner', userId)
     const actorIds = (actorRows || []).map(r => r.id)
     const { data, error } = await supabase.from('actor_calls').select('*')
       .or([
