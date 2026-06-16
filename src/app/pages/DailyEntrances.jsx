@@ -16,6 +16,7 @@ import { tokens, serif, body, sc } from '../../lib/designTokens'
 import { HOUSE, resolve } from '../constants/practiceBlocks'
 import PracticeRunner from '../components/daily/PracticeRunner'
 import PracticeComposer from '../components/daily/PracticeComposer'
+import MiddayRecenter from '../components/daily/MiddayRecenter'
 
 const ENTRANCES = [
   { key: 'morning', label: 'Morning', sub: 'Land, become, aim, breathe out.' },
@@ -131,6 +132,18 @@ export default function DailyEntrances() {
 
   // Running a composed path
   if (active) {
+    // Midday is the pause — a single frameless screen, not a walk.
+    if (active === 'midday') {
+      return (
+        <div style={{ minHeight: '100dvh', background: '#FAFAF7' }}>
+          <Nav />
+          <MiddayRecenter
+            horizonSelfStatement={horizonSelfStatement}
+            onExit={() => setActive(null)}
+          />
+        </div>
+      )
+    }
     return (
       <div style={{ minHeight: '100dvh', background: '#FAFAF7' }}>
         <Nav />
@@ -172,7 +185,7 @@ export default function DailyEntrances() {
               label={e.label}
               sub={e.sub}
               onEnter={() => enter(e.key)}
-              onShape={e.key === 'evening' ? null : () => setComposing(e.key)}
+              onShape={e.key === 'morning' ? () => setComposing(e.key) : null}
             />
           ))}
         </div>

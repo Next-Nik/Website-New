@@ -15,7 +15,8 @@
 //   'link'  — a full page; the runner opens it, then continues
 //   'weld'  — still welded inside Horizon State / Practice; not yet
 //             extracted, so the runner shows a quiet "not wired yet"
-//   'new'   — designed but unbuilt (the midday pieces)
+//   'new'   — designed but unbuilt (none currently; midday became its
+//             own screen, MiddayRecenter)
 //
 // As each welded beat is extracted into a block component, its entry
 // flips from 'weld'/'link' to 'ready' and gains a `component`. The
@@ -46,11 +47,6 @@ export const BLOCKS = {
   breath_out:   { id: 'breath_out',   label: 'Breath — regulate and anchor', region: 'outro', order: 90, status: 'ready', component: 'OpenBreath' },
   embark:       { id: 'embark',       label: 'Check out', region: 'outro', order: 95,  status: 'ready', component: 'FlameCheck' },
   act:          { id: 'act',          label: 'Act · you are live',   region: 'outro', order: 100, status: 'ready', component: 'Act' },
-
-  // Midday-only pieces — designed, not yet built.
-  glimpse:      { id: 'glimpse',      label: 'Who you are',          region: 'meat',  order: 52,  status: 'new',  entrance: 'midday' },
-  recommit:     { id: 'recommit',     label: 'Recommit',             region: 'meat',  order: 54,  status: 'new',  entrance: 'midday' },
-  release:      { id: 'release',      label: 'Back to it',           region: 'outro', order: 92,  status: 'new',  entrance: 'midday' },
 }
 
 // The house versions — what we offer to start. Each is a list of
@@ -58,8 +54,8 @@ export const BLOCKS = {
 // is optional, so these are a starting suggestion, not a frame.
 export const HOUSE = {
   morning: ['flame_arrive', 'breath_in', 'i_am', 'win_the_day', 'breath_out'],
-  midday:  ['breath_in', 'glimpse', 'recommit', 'release'],
   evening: ['journal'],   // evening stays the existing how-was-your-day flow; breath is built into it
+  // midday has no block line — it's a single frameless screen (MiddayRecenter)
 }
 
 export const ENTRANCES = [
