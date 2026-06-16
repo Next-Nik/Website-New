@@ -151,18 +151,23 @@ module.exports = async (req, res) => {
   if (action === 'create') {
     if (!userId) return res.status(401).json({ error: 'Auth required' })
     const { title = '', type = 'challenge', scale = 'civ', actor_id = null, ...rest } = body
+    const cadence = rest.cadence || '5-of-7'
+    const protocol = (Array.isArray(rest.protocol) && rest.protocol.length)
+      ? rest.protocol
+      : (rest.the_move ? [{ id: 's1', text: rest.the_move, cadence }] : [])
     const payload = {
       user_id: userId, actor_id: actor_id || null,
       type, title, scale,
       domain: rest.domain || null,
       horizon_goal_text: rest.horizon_goal_text || null,
       the_move: rest.the_move || null,
-      cadence: rest.cadence || '5-of-7',
+      cadence,
       cadence_note: rest.cadence_note || null,
       duration_days: rest.duration_days || 90,
       measure: rest.measure || null,
       mechanism: rest.mechanism || null,
       tagline: rest.tagline || null,
+      protocol,
       visibility: 'draft',
       source: 'self',
     }
@@ -184,7 +189,7 @@ module.exports = async (req, res) => {
     if (!owned) return res.status(403).json({ error: 'Not your call' })
     if (existing.visibility !== 'draft') return res.status(409).json({ error: 'Published calls cannot be edited (withdraw first).' })
     const safe = {}
-    const editable = ['title','tagline','type','scale','domain','horizon_goal_text','the_move','cadence','cadence_note','duration_days','measure','mechanism','ask_quantity','ask_deadline']
+    const editable = ['title','tagline','type','scale','domain','horizon_goal_text','the_move','cadence','cadence_note','duration_days','measure','mechanism','protocol','ask_quantity','ask_deadline']
     editable.forEach(k => { if (k in patch) safe[k] = patch[k] })
     safe.updated_at = new Date().toISOString()
     const { data, error } = await supabase.from('actor_calls').update(safe).eq('id', call_id).select('*').single()

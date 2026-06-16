@@ -104,6 +104,7 @@ import { PurposePiecePage, PurposePieceDeepPage }  from './tools/purpose-piece/P
 import { TargetSprintPage }                        from './tools/target-sprint/TargetSprint'
 import { ChallengePage }                           from './app/pages/ChallengePage'
 import MyChallenges                                 from './app/pages/MyChallenges'
+import ChallengeAuthor                              from './app/pages/ChallengeAuthor'
 import { HorizonPracticePage }                     from './tools/horizon-practice/HorizonPractice'
 import { NextStepsPage }                           from './tools/nextsteps/NextSteps'
 import JournalPage                                 from './app/pages/Journal'
@@ -304,6 +305,7 @@ function AppInner() {
         <Route path="/contribution/legacy"          element={<Contribution />} />
         <Route path="/stretch/c/:slug"              element={<ChallengePage />} />
         <Route path="/challenges"                   element={<MyChallenges />} />
+        <Route path="/challenges/new"               element={<ChallengeAuthor />} />
         <Route path="/org/:slug"                    element={<OrgPublicPage />} />
         <Route path="/org/:id/claim"                element={<ClaimPage />} />
         <Route path="/search"                       element={<SearchPage />} />

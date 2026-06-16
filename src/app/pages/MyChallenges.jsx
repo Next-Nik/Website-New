@@ -213,6 +213,14 @@ export default function MyChallenges() {
           What you've taken on
         </h1>
 
+        {user && (
+          <div style={{ marginBottom: '24px' }}>
+            <Link to="/challenges/new" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, textTransform: 'uppercase', textDecoration: 'none' }}>
+              + Author a challenge
+            </Link>
+          </div>
+        )}
+
         {!user ? (
           <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7 }}>
             Sign in to see the challenges you've taken on.
