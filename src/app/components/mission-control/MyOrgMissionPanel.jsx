@@ -106,7 +106,7 @@ export default function MyOrgMissionPanel({ userId }) {
   // At least one org owned. Build the spine from parent_id, open at the root,
   // retarget the detail on click.
   return (
-    <PanelShell>
+    <PanelShell wide>
       <OrgSpineRoom actors={actors} userId={userId} onChange={load} />
     </PanelShell>
   )
@@ -188,7 +188,7 @@ function OrgSpine({ actors, selectedId, onSelect, userId, onChange }) {
   const roots = rootsOf(actors)
   return (
     <aside className="mo-spine">
-      <p className="mo-spine-eyebrow">Your spine</p>
+      <p className="mo-spine-eyebrow">Your org tree</p>
       <div className="mo-spine-tree">
         {roots.map(r => (
           <SpineNode key={r.id} actor={r} actors={actors} depth={0}
@@ -681,8 +681,8 @@ function Card({ eyebrow, children }) {
   )
 }
 
-function PanelShell({ children }) {
-  return <div className="mo-shell">{children}</div>
+function PanelShell({ children, wide = false }) {
+  return <div className={`mo-shell${wide ? ' mo-shell--wide' : ''}`}>{children}</div>
 }
 
 function LoadingState() {
@@ -1035,6 +1035,10 @@ const PANEL_CSS = `
 }
 @media (max-width: 680px) {
   .mo-spine-layout { grid-template-columns: 1fr; gap: 18px; }
+}
+@media (min-width: 980px) {
+  .mo-shell--wide { max-width: 1060px; }
+  .mo-spine-layout { grid-template-columns: 300px 1fr; gap: 40px; }
 }
 .mo-spine {
   border: 1px solid ${GOLD_RULE};
