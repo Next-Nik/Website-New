@@ -31,6 +31,17 @@ import Readiness from '../../app/components/daily/blocks/Readiness'
 
 // ─── Domain order (locked NextUs vocabulary) ────────────────────────────────
 const DOMAIN_ORDER = ['path', 'spark', 'body', 'finances', 'connection', 'inner_game', 'signal']
+
+// The Anchor beat voices one line. Older I Am statements were written as a
+// paragraph; show the first sentence as the line until distilled, with the
+// full text available behind "See full".
+function hpAnchorLine(s) {
+  if (!s) return ''
+  const t = String(s).trim()
+  const m = t.match(/^[\s\S]*?[.!?](?=\s|$)/)
+  return (m ? m[0] : t).replace(/[.!?]+\s*$/, '').trim()
+}
+
 const DOMAIN_LABELS = {
   path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances',
   connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal',
@@ -868,7 +879,7 @@ function ManualThresholdAdd({ draftTitle, setDraftTitle, draftTime, setDraftTime
 // ────────────────────────────────────────────────────────────────────────────
 // Morning Sequence — the five beats
 // ────────────────────────────────────────────────────────────────────────────
-function MorningSequence({ userId, iamStatements, horizonSelfStatement, protectorCovenant, icalUrl, onSaveIcalUrl, activeSprint, civSprint, onComplete, onClose }) {
+function MorningSequence({ userId, iamStatements, iamFull = {}, horizonSelfStatement, protectorCovenant, icalUrl, onSaveIcalUrl, activeSprint, civSprint, onComplete, onClose }) {
   const [beat, setBeat] = useState(1)
   const [sweep, setSweep] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -886,12 +897,16 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
   const [voicedFinal, setVoicedFinal] = useState(false)
   const [pulseKey, setPulseKey] = useState(0)
   const [fastMode, setFastMode] = useState(false)
+  const [showFullIam, setShowFullIam] = useState(false)
   const voicedDomainsRef = useRef([])
 
   // The seven iam statements ordered by DOMAIN_ORDER
   const orderedIam = DOMAIN_ORDER
-    .map(d => ({ domain: d, label: DOMAIN_LABELS[d], text: iamStatements[d] }))
+    .map(d => ({ domain: d, label: DOMAIN_LABELS[d], text: iamStatements[d], full: iamFull[d] || '' }))
     .filter(s => s.text && s.text.trim())
+
+  // Reset the full-text reveal as the user moves between statements.
+  useEffect(() => { setShowFullIam(false) }, [iamIdx])
 
   const allYes = answers.ready === 'yes' && answers.allowed === 'yes' && answers.choosing === 'yes'
   const anyNo  = Object.values(answers).includes('no')
@@ -1177,6 +1192,24 @@ function MorningSequence({ userId, iamStatements, horizonSelfStatement, protecto
               margin: 0, maxWidth: '460px', marginLeft: 'auto', marginRight: 'auto',
             }}>{orderedIam[iamIdx].text}</p>
           </div>
+
+          {orderedIam[iamIdx].full && orderedIam[iamIdx].full.trim() !== orderedIam[iamIdx].text.trim() && (
+            <div style={{ textAlign: 'center', marginTop: '12px' }}>
+              <button
+                onClick={() => setShowFullIam(s => !s)}
+                style={{
+                  background: 'transparent', border: 'none', padding: 0, cursor: 'pointer',
+                  ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.14em',
+                  textTransform: 'uppercase', color: tokens.ghost,
+                }}>{showFullIam ? 'Hide full ▴' : 'See full ▾'}</button>
+              {showFullIam && (
+                <p style={{
+                  ...body, fontStyle: 'italic', fontSize: '15px', color: 'rgba(15,21,35,0.72)',
+                  lineHeight: 1.65, margin: '12px auto 0', maxWidth: '460px',
+                }}>{orderedIam[iamIdx].full}</p>
+              )}
+            </div>
+          )}
 
           <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', margin: '22px 0' }}>
             {orderedIam.map((_, i) => (
@@ -2033,7 +2066,8 @@ export function HorizonPracticePage() {
 
   // Profile data
   const [profileLoading, setProfileLoading] = useState(true)
-  const [iamStatements, setIamStatements] = useState({})  // { path: '...', spark: '...' }
+  const [iamStatements, setIamStatements] = useState({})  // { path: '...', spark: '...' } — one-line anchors
+  const [iamFull, setIamFull] = useState({})              // { path: '...', ... } — optional full versions
   const [horizonSelfStatement, setHorizonSelfStatement] = useState(null)
   const [protectorCovenant, setProtectorCovenant] = useState(null)
   const [hasMap, setHasMap] = useState(false)
@@ -2072,15 +2106,22 @@ export function HorizonPracticePage() {
         // horizon_profile — ia_statements per domain
         const { data: hpRows } = await supabase
           .from('horizon_profile')
-          .select('domain, ia_statement, avatar_statement')
+          .select('domain, ia_statement, ia_statement_full, avatar_statement')
           .eq('user_id', user.id)
         if (cancelled) return
 
         const iamMap = {}
+        const iamFullMap = {}
         let protectorFromAvatar = null
         if (hpRows) {
           for (const r of hpRows) {
-            if (r.ia_statement) iamMap[r.domain] = r.ia_statement
+            if (r.ia_statement || r.ia_statement_full) {
+              // The anchor is the one-line distillation. Older statements were
+              // written as a paragraph; show the first sentence as the line
+              // until distilled, with the full text available behind "See full".
+              iamMap[r.domain] = hpAnchorLine(r.ia_statement) || hpAnchorLine(r.ia_statement_full)
+              iamFullMap[r.domain] = r.ia_statement_full || r.ia_statement || ''
+            }
             // Optional: pull protector covenant from inner_game's avatar_statement
             // (architecture allows this until a proper profile field exists)
             if (r.domain === 'inner_game' && r.avatar_statement && r.avatar_statement.length > 80) {
@@ -2089,6 +2130,7 @@ export function HorizonPracticePage() {
           }
         }
         setIamStatements(iamMap)
+        setIamFull(iamFullMap)
         if (protectorFromAvatar) setProtectorCovenant(protectorFromAvatar)
 
         // map_results — life_ia_statement (synthesised Horizon Self)
@@ -2722,6 +2764,7 @@ export function HorizonPracticePage() {
             <MorningSequence
               userId={user?.id}
               iamStatements={iamStatements}
+              iamFull={iamFull}
               horizonSelfStatement={horizonSelfStatement}
               protectorCovenant={protectorCovenant}
               icalUrl={icalUrl}

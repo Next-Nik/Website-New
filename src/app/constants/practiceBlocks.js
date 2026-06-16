@@ -33,7 +33,7 @@ export const REGIONS = {
 export const BLOCKS = {
   flame_arrive: { id: 'flame_arrive', label: 'Check in', region: 'intro', order: 10,  status: 'ready', component: 'FlameCheck' },
   readiness:    { id: 'readiness',    label: 'Choose',            region: 'intro', order: 20,  status: 'ready', component: 'Readiness' },
-  breath_in:    { id: 'breath_in',    label: 'Energy breath',       region: 'intro', order: 30,  status: 'ready', component: 'BreathPacer' },
+  breath_in:    { id: 'breath_in',    label: 'Energy breath',       region: 'intro', order: 30,  status: 'ready', component: 'ChargeBreath' },
   audio_baseline:    { id: 'audio_baseline',    label: 'Audio · Baseline',    region: 'meat', order: 40, status: 'ready', component: 'FoundationAudio', phase: 'baseline' },
   audio_calibration: { id: 'audio_calibration', label: 'Audio · Calibration', region: 'meat', order: 42, status: 'ready', component: 'FoundationAudio', phase: 'calibration' },
   audio_embodiment:  { id: 'audio_embodiment',  label: 'Audio · Embodiment',  region: 'meat', order: 44, status: 'ready', component: 'FoundationAudio', phase: 'embodiment' },

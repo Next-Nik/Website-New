@@ -36,6 +36,16 @@ const tokens = {
   card:      '#FFFFFF',
 }
 
+// The anchor is one line. If a statement is a longer paragraph (older
+// statements were written as a mass), show its first sentence as the line
+// until it is distilled — the full text stays available behind "See full".
+function anchorLine(s) {
+  if (!s) return ''
+  const t = String(s).trim()
+  const m = t.match(/^[\s\S]*?[.!?](?=\s|$)/)
+  return (m ? m[0] : t).replace(/[.!?]+\s*$/, '').trim()
+}
+
 export default function IAmPractice() {
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
@@ -48,6 +58,7 @@ export default function IAmPractice() {
   const [loading, setLoading]   = useState(true)
   const [saving, setSaving]     = useState(false)
   const [savedFlash, setSavedFlash] = useState(false)
+  const [showFull, setShowFull] = useState(false)
 
   useEffect(() => {
     if (authLoading) return
@@ -57,11 +68,13 @@ export default function IAmPractice() {
       setLoading(true)
       const { data } = await supabase
         .from('horizon_profile')
-        .select('domain, ia_statement')
+        .select('domain, ia_statement, ia_statement_full')
         .eq('user_id', user.id)
       if (cancelled) return
       const m = {}
-      ;(data || []).forEach(r => { m[r.domain] = r.ia_statement || '' })
+      ;(data || []).forEach(r => {
+        m[r.domain] = { distill: r.ia_statement || '', full: r.ia_statement_full || '' }
+      })
       setByDomain(m)
       setLoading(false)
     }
@@ -71,7 +84,7 @@ export default function IAmPractice() {
 
   // The deck: declared statements only, in domain order.
   const deck = useMemo(
-    () => DOMAIN_KEYS.filter(k => (byDomain[k] || '').trim().length > 0),
+    () => DOMAIN_KEYS.filter(k => ((byDomain[k]?.distill || byDomain[k]?.full || '').trim().length > 0)),
     [byDomain],
   )
 
@@ -86,7 +99,10 @@ export default function IAmPractice() {
   }, [deck, wantDomain]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const domainKey = deck[idx]
-  const statement = domainKey ? byDomain[domainKey] : ''
+  const entry = domainKey ? byDomain[domainKey] : null
+  const fullText = entry ? (entry.full || entry.distill || '') : ''
+  const line = entry ? (anchorLine(entry.distill) || anchorLine(entry.full)) : ''
+  const hasMore = fullText.trim() && fullText.trim() !== line.trim()
   const title = domainKey ? (DOMAIN_COPY[domainKey]?.title || domainKey) : ''
 
   // A gentle line count, never a score.
@@ -123,6 +139,7 @@ export default function IAmPractice() {
     const next = Math.min(Math.max(idx + delta, 0), deck.length - 1)
     setIdx(next)
     setWritten('')
+    setShowFull(false)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -164,14 +181,29 @@ export default function IAmPractice() {
               </span>
             </div>
 
-            {/* The statement — user's own words, so italic is allowed */}
+            {/* The statement — one line, the anchor. User's own words, so italic is allowed */}
             <div style={{
               background: tokens.card, border: `1px solid ${tokens.goldRule}`, borderRadius: 4,
               padding: '20px 22px', marginBottom: 10,
             }}>
               <p style={{ ...text.userVoice, ...serif, fontWeight: 300, fontSize: 24, lineHeight: 1.35, color: tokens.ink, margin: 0 }}>
-                {statement}
+                {line}
               </p>
+              {hasMore && (
+                <>
+                  <button
+                    onClick={() => setShowFull(s => !s)}
+                    style={{ ...sc, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', background: 'transparent', border: 'none', cursor: 'pointer', color: tokens.gold, padding: 0, marginTop: 14 }}
+                  >
+                    {showFull ? 'Hide full ▴' : 'See full ▾'}
+                  </button>
+                  {showFull && (
+                    <p style={{ ...text.userVoice, ...body, fontSize: 15.5, lineHeight: 1.7, color: tokens.inkSoft, margin: '12px 0 0' }}>
+                      {fullText}
+                    </p>
+                  )}
+                </>
+              )}
             </div>
 
             {/* Edit round-trip */}
@@ -203,7 +235,7 @@ export default function IAmPractice() {
               <textarea
                 value={written}
                 onChange={e => setWritten(e.target.value)}
-                placeholder={statement}
+                placeholder={line}
                 rows={9}
                 style={textareaStyle}
               />

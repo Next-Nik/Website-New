@@ -29,6 +29,15 @@ import {
 
 const ORDINAL_WORDS = ['First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh']
 
+// Show the one-line anchor. Older statements written as a paragraph collapse
+// to their first sentence here; the full text lives in the editor's full field.
+function anchorLine(s) {
+  if (!s) return ''
+  const t = String(s).trim()
+  const m = t.match(/^[\s\S]*?[.!?](?=\s|$)/)
+  return (m ? m[0] : t).replace(/[.!?]+\s*$/, '').trim()
+}
+
 export function IAmChapterPage() {
   const navigate = useNavigate()
   const { user, loading: authLoading } = useAuth()
@@ -40,6 +49,9 @@ export function IAmChapterPage() {
   const [loading, setLoading]     = useState(true)
   const [active, setActive]       = useState(null)   // domain key being written
   const [draft, setDraft]         = useState('')
+  const [draftFull, setDraftFull] = useState('')
+  const [distilling, setDistilling] = useState(false)
+  const [showFullEditor, setShowFullEditor] = useState(false)
   const [justCompleted, setJustCompleted] = useState(false)
 
   useEffect(() => {
@@ -47,7 +59,7 @@ export function IAmChapterPage() {
     if (!user) { setLoading(false); return }
     let cancelled = false
     supabase.from('horizon_profile')
-      .select('domain, current_score, horizon_score, horizon_goal, ia_statement')
+      .select('domain, current_score, horizon_score, horizon_goal, ia_statement, ia_statement_full')
       .eq('user_id', user.id)
       .then(({ data }) => {
         if (cancelled) return
@@ -79,6 +91,8 @@ export function IAmChapterPage() {
   // keep the draft in sync when the active domain changes
   useEffect(() => {
     setDraft(byDomain[current]?.ia_statement || '')
+    setDraftFull(byDomain[current]?.ia_statement_full || '')
+    setShowFullEditor(!!byDomain[current]?.ia_statement_full)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current, rows])
 
@@ -99,8 +113,64 @@ export function IAmChapterPage() {
     queue(value)
   }
 
+  // ── the full version (optional, longer text behind the line) ──
+  const { queue: queueFull, flush: flushFull, whisper: whisperFull } = useAutoSave(async (value) => {
+    if (!user) return
+    await supabase.from('horizon_profile')
+      .update({ ia_statement_full: value || null })
+      .eq('user_id', user.id)
+      .eq('domain', current)
+  })
+
+  function onFullChange(value) {
+    setDraftFull(value)
+    setRows(prev => (prev || []).map(r =>
+      r.domain === current ? { ...r, ia_statement_full: value || null } : r
+    ))
+    queueFull(value)
+  }
+
+  // North Star drafts a one-line distillation from the full version.
+  // If there's no full version yet but the line itself is a paragraph
+  // (older statements), the paragraph is preserved into the full version
+  // first, then distilled — nothing is lost, and the user owns the result.
+  async function distilWithNorthStar() {
+    if (distilling) return
+    let source = draftFull.trim()
+    if (!source && draft.trim().split(/\s+/).length > 12) {
+      source = draft.trim()
+      setShowFullEditor(true)
+      onFullChange(source)        // preserve the paragraph as the full version
+      await flushFull(source)
+    }
+    if (!source) source = draft.trim()
+    if (!source) return
+    setDistilling(true)
+    try {
+      const res = await fetch('/api/ia-distill', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ full: source, domain: current }),
+      })
+      const data = await res.json()
+      if (res.ok && data.line) {
+        const line = data.line.replace(/[\r\n]+/g, ' ').trim()
+        setDraft(line)
+        setRows(prev => (prev || []).map(r =>
+          r.domain === current ? { ...r, ia_statement: line || null } : r
+        ))
+        queue(line)
+      }
+    } catch {
+      // leave the draft as-is on failure
+    } finally {
+      setDistilling(false)
+    }
+  }
+
   async function declareAndContinue() {
     await flush(draft)
+    await flushFull(draftFull)
     const remaining = DOMAIN_ORDER.filter(k =>
       k !== current ? !byDomain[k]?.ia_statement : !draft.trim()
     )
@@ -231,13 +301,9 @@ export function IAmChapterPage() {
                 </p>
               )}
               <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', marginTop: '12px', lineHeight: 1.6 }}>
-                Present tense. Not a goal — a declaration. Write it as if it's already true,
-                and keep refining until you feel a spark when you read it back.
-              </p>
-
-              <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', marginTop: '12px', lineHeight: 1.6 }}>
                 Present tense. One line. Not a goal — a declaration. Write it as if it's already
-                true, and keep refining until you feel a spark when you read it back.
+                true, and keep refining until you feel a spark when you read it back. This is the
+                line you'll say and write each morning.
               </p>
 
               <textarea
@@ -259,6 +325,65 @@ export function IAmChapterPage() {
               />
               <div style={{ marginTop: '8px', minHeight: '18px' }}>
                 <SavedWhisper state={whisper} />
+              </div>
+
+              {/* the full version — optional longer text behind the line */}
+              <div style={{ marginTop: '20px', borderTop: `1px solid ${tokens.goldFaint}`, paddingTop: '18px' }}>
+                {!showFullEditor ? (
+                  <button
+                    onClick={() => setShowFullEditor(true)}
+                    style={{
+                      ...sc, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase',
+                      color: tokens.gold, background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                    }}
+                  >
+                    Add a full version ▾
+                  </button>
+                ) : (
+                  <>
+                    <div style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: tokens.gold }}>
+                      FULL VERSION
+                    </div>
+                    <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', marginTop: '8px', lineHeight: 1.6 }}>
+                      The longer text, kept behind the line. Your daily practice shows the line;
+                      the full version sits one tap away.
+                    </p>
+                    <textarea
+                      value={draftFull}
+                      onChange={e => onFullChange(e.target.value)}
+                      placeholder="The fuller statement, in your own words…"
+                      rows={6}
+                      aria-label={`Your ${DOMAIN_LABELS[current]} full I Am version`}
+                      style={{
+                        width: '100%', boxSizing: 'border-box', marginTop: '14px',
+                        padding: '16px', border: `1px solid ${tokens.goldFaint}`,
+                        borderRadius: '6px', background: '#FFFFFF',
+                        ...body, fontStyle: 'italic', fontSize: '15px', lineHeight: 1.65,
+                        color: tokens.dark, resize: 'vertical', outline: 'none',
+                      }}
+                      onFocus={e => { e.target.style.borderColor = tokens.goldChrome }}
+                      onBlur={e => { e.target.style.borderColor = tokens.goldFaint }}
+                    />
+                    <div style={{ marginTop: '8px', minHeight: '18px' }}>
+                      <SavedWhisper state={whisperFull} />
+                    </div>
+                  </>
+                )}
+
+                {(draftFull.trim() || draft.trim().split(/\s+/).length > 12) && (
+                  <button
+                    onClick={distilWithNorthStar}
+                    disabled={distilling}
+                    style={{
+                      ...sc, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase',
+                      color: tokens.gold, background: 'none', border: `1.5px solid ${tokens.goldChrome}`,
+                      borderRadius: '4px', padding: '9px 16px', cursor: distilling ? 'default' : 'pointer',
+                      opacity: distilling ? 0.55 : 1, marginTop: '14px',
+                    }}
+                  >
+                    {distilling ? 'NORTH STAR IS DISTILLING…' : 'DISTIL INTO A LINE WITH NORTH STAR'}
+                  </button>
+                )}
               </div>
 
               <button
@@ -290,7 +415,7 @@ export function IAmChapterPage() {
                     <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: tokens.gold, fontStyle: 'normal', marginRight: '8px' }}>
                       {DOMAIN_LABELS[k].toUpperCase()}
                     </span>
-                    {byDomain[k].ia_statement}
+                    {anchorLine(byDomain[k].ia_statement) || anchorLine(byDomain[k].ia_statement_full)}
                     <button
                       onClick={() => { setActive(k); window.scrollTo({ top: 0 }) }}
                       style={{
