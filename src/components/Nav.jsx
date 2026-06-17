@@ -38,7 +38,11 @@ export function Nav({ activePath, hideHamburger = false }) {
 
           {/* Logo */}
           <Link to="/" className="nav-logo" onClick={closeMobile}>
-            <img src="/logo_nav.png" alt="NextUs" />
+            <picture>
+              {/* Darker gold mark on mobile — reads better on the light background */}
+              <source srcSet="/logo_nav_mobile.png" media="(max-width: 640px)" />
+              <img src="/logo_nav.png" alt="NextUs" />
+            </picture>
           </Link>
 
           {/* Desktop centre — marketing nav links (signed-out only) */}
