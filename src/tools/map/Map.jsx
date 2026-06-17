@@ -2,6 +2,8 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { ToolCompassPanel } from '../../components/ToolCompassPanel'
 import { Nav } from '../../components/Nav'
 import { DomainTooltip } from '../../components/DomainTooltip'
+import { InfoIcon } from '../../components/InfoIcon'
+import { DOMAIN_COPY } from '../../constants/domainCopy'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
 import { supabase } from '../../hooks/useSupabase'
@@ -1139,7 +1141,13 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
           <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             {domain.label}
-            <DomainTooltip domainKey={domain.id} system="lifeos" position="below" />
+            {DOMAIN_COPY[domain.id] && (
+              <InfoIcon label={`About ${domain.label}`} title={domain.label} align="left">
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.0625rem', color: '#0F1523', lineHeight: 1.6, margin: '0 0 12px', textTransform: 'none', letterSpacing: 'normal' }}>{DOMAIN_COPY[domain.id].gloss}</p>
+                <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: '0 0 12px', textTransform: 'none', letterSpacing: 'normal' }}>{DOMAIN_COPY[domain.id].paragraph}</p>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.0625rem', color: '#A8721A', lineHeight: 1.55, margin: 0, textTransform: 'none', letterSpacing: 'normal' }}>{DOMAIN_COPY[domain.id].question}</p>
+              </InfoIcon>
+            )}
           </span>
           {stage === 3 && (
             <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: '#A8721A' }}>● Complete</span>
@@ -1158,7 +1166,7 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
       {/* Step tabs */}
       <div style={{ display: 'flex', gap: '0', marginBottom: '20px', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
         {['avatar', 'score', 'horizon'].map((s, i) => {
-          const labels   = ['1 · Avatar', '2 · Where are you', '3 · Horizon']
+          const labels   = ['1 · Best in the world', '2 · Where you are', '3 · Horizon Goal']
           const reachable = i === 0 || (i === 1 && getDomainStage(buildData()) >= 1) || (i === 2 && getDomainStage(buildData()) >= 2)
           const active   = step === s || (step === 'done' && s === 'horizon')
           return (
@@ -1182,10 +1190,10 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
           {!avatarLocked || editingAvatar ? (
             <>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '8px' }}>
-                Create a construct of "Best in the World" for you in {domain.label}. Think of it like you're writing a character for a stage play — someone who could walk into a room and be immediately recognised as the pinnacle of this domain for someone like you.
+                Build a character: the best in the world at {domain.label}, for someone like you. Not someone you admire in general — someone who, in {domain.label} specifically, walks into a room and is instantly recognised as the pinnacle. Write them the way you'd write a part for a stage play.
               </p>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '8px' }}>
-                The list is raw material, not a shrine. You're not asking "which of these people do you want to be" — you're asking "what character emerges when you take the best of what each of these people represents and forge it into something that doesn't exist yet."
+                The real people and characters you draw on are raw material, not a shrine. You're not picking which of them to become. You're forging someone new from the best of what each one brings to {domain.label}.
               </p>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.75, marginBottom: '20px' }}>
                 The character is the destination. The references are the ingredients.
@@ -1217,12 +1225,12 @@ export function DomainStep({ domain, existingData, onComplete, onUpdate }) {
                   {/* Section 2 */}
                   <div style={{ padding: '16px 18px 0', borderBottom: '1px solid rgba(200,146,42,0.08)' }}>
                     <label style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.72)', display: 'block', marginBottom: '6px' }}>
-                      PEOPLE AND CHARACTERS FOR REFERENCE
+                      PEOPLE AND CHARACTERS EXCEPTIONAL AT {domain.label.toUpperCase()}
                     </label>
                     <textarea
                       value={avatarDoc?.references || ''}
                       onChange={e => setAvatarDoc(d => ({ ...d, references: e.target.value }))}
-                      placeholder="Real people, fictional characters, composites... name them and what you're borrowing from each"
+                      placeholder={`People (real or fictional) who are exceptional at ${domain.label} specifically — name them and what you'd borrow from each`}
                       rows={3}
                       style={{ width: '100%', padding: '4px 0 12px', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: '#0F1523', background: 'transparent', border: 'none', outline: 'none', resize: 'none', lineHeight: 1.7 }}
                     />
@@ -1663,34 +1671,6 @@ export function ResultsCard({ mapData, domainData, currentScores, horizonScores 
 
 // ─── Auth Modal ───────────────────────────────────────────────────────────────
 
-function MapWelcomeModal({ onBegin }) {
-  const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-  const body  = { fontFamily: "'Lora', Georgia, serif" }
-  return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}>
-      <div style={{ background: '#FAFAF7', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '44px 36px 36px', maxWidth: '460px', width: '100%', textAlign: 'center' }}>
-        <span style={{ display: 'block', ...sc, fontSize: '17px', letterSpacing: '0.18em', color: '#A8721A', textTransform: 'uppercase', marginBottom: '14px' }}>The Map</span>
-        <h2 style={{ ...sc, fontSize: '1.5rem', fontWeight: 400, color: '#0F1523', marginBottom: '16px', lineHeight: 1.1 }}>An honest read.</h2>
-        <p style={{ ...body, fontSize: '1.125rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.75, marginBottom: '32px' }}>
-          Seven domains of your life. Where you are, where you want to be, and what the gap is telling you. This is deliberate work — give a first pass an honest hour, and come back domain by domain. The only instruction: answer from where you actually are.
-        </p>
-        <button onClick={onBegin} style={{
-          display: 'block', width: '100%', padding: '15px 24px', borderRadius: '40px',
-          border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)',
-          color: '#A8721A', fontFamily: "'Cormorant SC', Georgia, serif",
-          fontSize: '15px', letterSpacing: '0.14em', cursor: 'pointer', transition: 'all 0.2s',
-        }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 28px rgba(15,21,35,0.08)'; e.currentTarget.style.borderColor = 'rgba(200,146,42,1)' }}
-          onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = ''; e.currentTarget.style.borderColor = 'rgba(200,146,42,0.78)' }}
-        >
-          Begin {'→'}
-        </button>
-      </div>
-    </div>
-  )
-}
-
 function AuthModal() {
   const returnUrl = encodeURIComponent(window.location.href)
   return (
@@ -1970,7 +1950,20 @@ export function MapPage() {
   const [spinCount,    setSpinCount]    = useState(0)
   const [currentScores,setCurrentScores]= useState({})
   const [horizonScores,setHorizonScores]= useState({})
-  const [phase,        setPhase]        = useState('mapping') // 'welcome' | 'mapping' | 'synthesis' | 'debrief' | 'results' | 'crisis_gate'
+  // 'welcome' | 'mapping' | 'synthesis' | 'debrief' | 'results' | 'crisis_gate'
+  // null = undecided — the Supabase check resolves fresh→'welcome' vs returning→'mapping'
+  const [phase,        setPhase]        = useState(() => {
+    try {
+      const saved = localStorage.getItem(LS_KEY)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (parsed.domainData && Object.keys(parsed.domainData).length > 0) {
+          return (parsed.phase && parsed.phase !== 'results') ? parsed.phase : 'mapping'
+        }
+      }
+    } catch {}
+    return null
+  })
   const [synthesis,    setSynthesis]    = useState(null)
   const [showMapDebrief, setShowMapDebrief] = useState(false)
   const [mapData,      setMapData]      = useState(null)
@@ -1978,16 +1971,6 @@ export function MapPage() {
   const [thinking,     setThinking]     = useState(false)
   const [scaleOpen,    setScaleOpen]    = useState(false)
   const [sessionId,    setSessionId]    = useState(null)
-  const [showWelcome,  setShowWelcome]  = useState(() => {
-    try {
-      const saved = localStorage.getItem('lifeos_themap_v4')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (parsed.domainData && Object.keys(parsed.domainData).length > 0) return false
-      }
-    } catch {}
-    return null // null = still loading — wait for Supabase check
-  })
   const hasLoadedRef = useRef(false)
 
   // Load saved data from localStorage + Supabase on mount
@@ -2052,24 +2035,23 @@ export function MapPage() {
             // Has domain data but no completed synthesis — show mapping view
             setPhase('mapping')
           }
-          setShowWelcome(false)
         } else if (data && !data.session?.domainData) {
           // Row exists but session is empty/corrupt — treat as returning user, skip welcome
-          setShowWelcome(false)
+          setPhase(prev => prev === null ? 'mapping' : prev)
         } else {
-          // No record — fresh user
-          setShowWelcome(prev => prev === null ? true : prev)
+          // No record — fresh user: open with the North Star orientation panel
+          setPhase(prev => prev === null ? 'welcome' : prev)
         }
       } catch {
-        // On any error, unblock the UI — default to showing the map
-        setShowWelcome(prev => prev === null ? false : prev)
+        // On any error, unblock the UI — orient a likely-fresh user, leave returning users put
+        setPhase(prev => prev === null ? 'welcome' : prev)
       }
     }
     load()
 
     // Safety net: if Supabase never responds, unblock UI after 8 seconds
     const timeout = setTimeout(() => {
-      setShowWelcome(prev => prev === null ? false : prev)
+      setPhase(prev => prev === null ? 'welcome' : prev)
     }, 8000)
     return () => clearTimeout(timeout)
   }, [user])
@@ -2085,6 +2067,15 @@ export function MapPage() {
     <>
       <Nav activePath="nextus-self" />
       <AuthModal />
+    </>
+  )
+
+  // Fresh users sit at phase === null until the Supabase check resolves to 'welcome'.
+  // Hold a light loading state so the content area is never momentarily empty.
+  if (phase === null) return (
+    <>
+      <Nav activePath="nextus-self" />
+      <div className="loading" />
     </>
   )
 
@@ -2233,7 +2224,6 @@ export function MapPage() {
   return (
     <div className="page-shell">
       <Nav activePath="nextus-self" />
-      {user && showWelcome === true && <MapWelcomeModal onBegin={() => setShowWelcome(false)} />}
 
       {/* Left — domain thread panel */}
       <DomainThreadPanel
@@ -2278,11 +2268,11 @@ export function MapPage() {
                 If that work was done — what life would you be living, and who would you be?
               </p>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', fontWeight: 300, color: 'rgba(15,21,35,0.78)', lineHeight: 1.8, marginBottom: '28px' }}>
-                Seven domains. Three steps each. You can move between domains in any order — do all the avatars first, then come back to score them, then set your horizons. Work at your pace. Your progress saves as you go.
+                Seven domains. The same three steps repeat in each one, and every answer is about that domain specifically — your Path is not your Body. You can move between domains in any order: do all of step one first, then come back for the scores, then the Horizon Goals. Work at your pace, your progress saves as you go, and answer from where you actually are.
               </p>
               <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', paddingTop: '24px' }}>
                 {[
-                  { n: '1', label: 'Best in the world', desc: 'Build a character representing your ideal in that area. This calibrates the scale to you specifically.' },
+                  { n: '1', label: 'Best in the world', desc: 'Build the character who would be the best in the world at that specific domain, for someone like you. This sets your personal 10/10.' },
                   { n: '2', label: 'Where are you now?', desc: 'Establish honestly where you are in each domain right now, relative to that 10/10 mark.' },
                   { n: '3', label: 'Horizon Goal', desc: 'If a genie tapped you on the head and granted your wish in this area — what would it be?' },
                 ].map(s => (
@@ -2463,7 +2453,11 @@ export function MapPage() {
                         onUpdate={handleDomainUpdate}
                         onComplete={handleDomainComplete}
                       />
-                    ) : null}
+                    ) : (
+                      <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.25rem', color: 'rgba(15,21,35,0.78)', textAlign: 'center', padding: '20px 0' }}>
+                        Select a domain on the wheel to begin.
+                      </p>
+                    )}
                     {allComplete && (
                       <div style={{ marginTop: '24px', padding: '20px 22px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '12px', textAlign: 'center' }}>
                         <p style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '1.125rem', letterSpacing: '0.14em', color: '#A8721A', marginBottom: '6px' }}>ALL SEVEN DOMAINS COMPLETE</p>
