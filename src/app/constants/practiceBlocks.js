@@ -11,8 +11,12 @@
 // they run smallest number to largest.
 //
 // `status` tells the runner how to handle a block today:
-//   'ready' — a standalone, embeddable component exists (renders inline)
-//   'link'  — a full page; the runner opens it, then continues
+//   'ready' — a compact, embeddable block component (renders inline)
+//   'page'  — a full writing tool, rendered inline inside the walk via
+//             its own component in embedded mode (no nav, no chrome);
+//             the same component still serves its standalone route
+//   'link'  — a full page that stays its own room; the runner shows a
+//             quiet, non-trapping pass-through (open it, or carry on)
 //   'weld'  — still welded inside Horizon State / Practice; not yet
 //             extracted, so the runner shows a quiet "not wired yet"
 //   'new'   — designed but unbuilt (none currently; midday became its
@@ -37,10 +41,10 @@ export const BLOCKS = {
   audio_baseline:    { id: 'audio_baseline',    label: 'Audio · Baseline',    region: 'meat', order: 40, status: 'ready', component: 'FoundationAudio', phase: 'baseline' },
   audio_calibration: { id: 'audio_calibration', label: 'Audio · Calibration', region: 'meat', order: 42, status: 'ready', component: 'FoundationAudio', phase: 'calibration' },
   audio_embodiment:  { id: 'audio_embodiment',  label: 'Audio · Embodiment',  region: 'meat', order: 44, status: 'ready', component: 'FoundationAudio', phase: 'embodiment' },
-  i_am:         { id: 'i_am',         label: 'I Am written',        region: 'meat',  order: 50,  status: 'link', route: '/tools/i-am' },
+  i_am:         { id: 'i_am',         label: 'I Am',                region: 'meat',  order: 50,  status: 'page', component: 'IAmPractice', route: '/tools/i-am' },
   i_am_spoken:  { id: 'i_am_spoken',  label: 'I Am spoken',          region: 'meat',  order: 51,  status: 'weld' },
-  sentence:     { id: 'sentence',     label: 'Sentence completion',  region: 'meat',  order: 60,  status: 'link', route: '/tools/sentence-completion' },
-  morning_pages:{ id: 'morning_pages',label: 'Open pages',        region: 'meat',  order: 70,  status: 'link', route: '/tools/morning-pages' },
+  sentence:     { id: 'sentence',     label: 'Sentence completion',  region: 'meat',  order: 60,  status: 'page', component: 'SentenceCompletion', route: '/tools/sentence-completion' },
+  morning_pages:{ id: 'morning_pages',label: 'Open pages',        region: 'meat',  order: 70,  status: 'page', component: 'MorningPages', route: '/tools/morning-pages' },
   journal:      { id: 'journal',      label: 'Journal · free write', region: 'meat',  order: 75,  status: 'link', route: '/journal' },
   win_the_day:  { id: 'win_the_day',  label: 'Win the Day',          region: 'meat',  order: 80,  status: 'ready', component: 'WinTheDay' },
   thresholds:   { id: 'thresholds',   label: 'Calendar intention',region: 'meat',  order: 85,  status: 'ready', component: 'Thresholds' },

@@ -150,6 +150,8 @@ export default function DailyEntrances() {
         <PracticeRunner
           blocks={resolve(shapeFor(active))}
           title={active.charAt(0).toUpperCase() + active.slice(1)}
+          entrance={active}
+          userId={user?.id}
           data={{ horizonSelfStatement, userId: user?.id }}
           onExit={() => setActive(null)}
           onNavigate={(route) => navigate(route)}

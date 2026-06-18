@@ -46,7 +46,7 @@ function anchorLine(s) {
   return (m ? m[0] : t).replace(/[.!?]+\s*$/, '').trim()
 }
 
-export default function IAmPractice() {
+export default function IAmPractice({ embedded = false } = {}) {
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
   const [params] = useSearchParams()
@@ -144,12 +144,15 @@ export default function IAmPractice() {
   }
 
   return (
-    <div style={{ ...body, background: tokens.bg, minHeight: '100dvh', color: tokens.ink, position: 'relative' }}>
-      <WorldMapSubstrate />
-      <Nav />
+    <div style={ embedded
+        ? { ...body, color: tokens.ink }
+        : { ...body, background: tokens.bg, minHeight: '100dvh', color: tokens.ink, position: 'relative' } }>
+      {!embedded && <WorldMapSubstrate />}
+      {!embedded && <Nav />}
 
-      <main style={{ position: 'relative', maxWidth: 680, margin: '0 auto', padding: '40px 22px 120px' }}>
+      <main style={{ position: 'relative', maxWidth: 680, margin: '0 auto', padding: embedded ? '0 0 8px' : '40px 22px 120px' }}>
 
+        {!embedded && (
         <header style={{ marginBottom: 24 }}>
           <h1 style={{ ...serif, fontWeight: 300, fontSize: 34, margin: '0 0 6px', color: tokens.ink }}>
             I Am
@@ -159,6 +162,7 @@ export default function IAmPractice() {
             the last — and tells you, over time, what you actually want to be true.
           </p>
         </header>
+        )}
 
         {loading ? (
           <p style={{ ...body, fontSize: 14, color: tokens.inkFaint }}>Loading your statements…</p>
@@ -206,12 +210,14 @@ export default function IAmPractice() {
               )}
             </div>
 
-            {/* Edit round-trip */}
+            {/* Edit round-trip — kept out of the walk so the flow never breaks */}
+            {!embedded && (
             <div style={{ marginBottom: 22 }}>
               <button onClick={goEdit} style={linkBtn}>
                 Edit this statement →
               </button>
             </div>
+            )}
 
             {/* Feeling cue */}
             <p style={{ ...body, fontSize: 14.5, lineHeight: 1.6, color: tokens.inkSoft, margin: '0 0 12px' }}>
@@ -264,11 +270,13 @@ export default function IAmPractice() {
           </>
         )}
 
+        {!embedded && (
         <div style={{ marginTop: 40, paddingTop: 18, borderTop: `1px solid ${tokens.goldRule}` }}>
           <button onClick={() => navigate('/journal')} style={linkBtn}>
             ← Your journal
           </button>
         </div>
+        )}
       </main>
     </div>
   )

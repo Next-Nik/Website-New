@@ -30,7 +30,7 @@ const tokens = {
   card:      '#FFFFFF',
 }
 
-export default function MorningPages() {
+export default function MorningPages({ embedded = false } = {}) {
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
@@ -61,12 +61,15 @@ export default function MorningPages() {
   }
 
   return (
-    <div style={{ ...body, background: tokens.bg, minHeight: '100dvh', color: tokens.ink, position: 'relative' }}>
-      <WorldMapSubstrate />
-      <Nav />
+    <div style={ embedded
+        ? { ...body, color: tokens.ink }
+        : { ...body, background: tokens.bg, minHeight: '100dvh', color: tokens.ink, position: 'relative' } }>
+      {!embedded && <WorldMapSubstrate />}
+      {!embedded && <Nav />}
 
-      <main style={{ position: 'relative', maxWidth: 680, margin: '0 auto', padding: '40px 22px 120px' }}>
+      <main style={{ position: 'relative', maxWidth: 680, margin: '0 auto', padding: embedded ? '0 0 8px' : '40px 22px 120px' }}>
 
+        {!embedded && (
         <header style={{ marginBottom: 18 }}>
           <h1 style={{ ...serif, fontWeight: 300, fontSize: 34, margin: '0 0 8px', color: tokens.ink }}>
             Morning Pages
@@ -79,6 +82,7 @@ export default function MorningPages() {
             the page.
           </p>
         </header>
+        )}
 
         {/* Breath first */}
         <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 24px' }}>
@@ -124,6 +128,7 @@ export default function MorningPages() {
           )}
         </div>
 
+        {!embedded && (
         <div style={{ marginTop: 40, paddingTop: 18, borderTop: `1px solid ${tokens.goldRule}` }}>
           <button
             onClick={() => navigate('/journal')}
@@ -135,6 +140,7 @@ export default function MorningPages() {
             ← Your journal
           </button>
         </div>
+        )}
       </main>
     </div>
   )

@@ -44,7 +44,7 @@ const MODES = [
   { key: 'map',    label: 'Follow my Map' },
 ]
 
-export default function SentenceCompletion() {
+export default function SentenceCompletion({ embedded = false } = {}) {
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
@@ -246,13 +246,16 @@ export default function SentenceCompletion() {
 
   // ─────────────────────────────────────────────────────────────
   return (
-    <div style={{ ...body, background: tokens.bg, minHeight: '100dvh', color: tokens.ink, position: 'relative' }}>
-      <WorldMapSubstrate />
-      <Nav />
+    <div style={ embedded
+        ? { ...body, color: tokens.ink }
+        : { ...body, background: tokens.bg, minHeight: '100dvh', color: tokens.ink, position: 'relative' } }>
+      {!embedded && <WorldMapSubstrate />}
+      {!embedded && <Nav />}
 
-      <main style={{ position: 'relative', maxWidth: 720, margin: '0 auto', padding: '40px 22px 120px' }}>
+      <main style={{ position: 'relative', maxWidth: 720, margin: '0 auto', padding: embedded ? '0 0 8px' : '40px 22px 120px' }}>
 
         {/* Title */}
+        {!embedded && (
         <header style={{ marginBottom: 26 }}>
           <h1 style={{ ...serif, fontWeight: 300, fontSize: 34, margin: '0 0 6px', color: tokens.ink }}>
             Sentence Completion
@@ -263,6 +266,7 @@ export default function SentenceCompletion() {
             you’d have written if you’d stopped to think.
           </p>
         </header>
+        )}
 
         {/* Mode switch */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 28, flexWrap: 'wrap' }}>
@@ -356,6 +360,7 @@ export default function SentenceCompletion() {
         )}
 
         {/* Quiet door back to the journal */}
+        {!embedded && (
         <div style={{ marginTop: 48, paddingTop: 18, borderTop: `1px solid ${tokens.goldRule}` }}>
           <button
             onClick={() => navigate('/journal')}
@@ -367,6 +372,7 @@ export default function SentenceCompletion() {
             ← Your journal
           </button>
         </div>
+        )}
       </main>
     </div>
   )
