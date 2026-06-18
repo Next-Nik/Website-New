@@ -165,6 +165,7 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
   const [loading, setLoading]       = useState(true)
   const [reorder, setReorder]       = useState(false)
   const [draft, setDraft]           = useState('')
+  const [draftPriority, setDraftPriority] = useState(false)
   const [adding, setAdding]         = useState(false)
 
   const [showConsistency, setShowConsistency] = useState(false)
@@ -225,11 +226,21 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
     const row = {
       user_id: userId, kind: 'daily', body: text,
       sort_order: maxOrder + 1, week_anchor: getWeekAnchor(),
+      is_priority: draftPriority,
     }
     const { data } = await supabase.from('get_to_do_items').insert(row).select().single()
     if (data) setItems(prev => [...prev, data])
     setDraft('')
+    setDraftPriority(false)
     setAdding(false)
+  }
+
+  async function togglePriority(item) {
+    const next = !item.is_priority
+    setItems(prev => prev.map(r => r.id === item.id ? { ...r, is_priority: next } : r))
+    await supabase.from('get_to_do_items')
+      .update({ is_priority: next, updated_at: new Date().toISOString() })
+      .eq('id', item.id)
   }
 
   async function toggleComplete(item, done) {
@@ -369,10 +380,10 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
       {tab === 'today' && (
         <ListView
           rows={items} reorder={reorder} setReorder={setReorder}
-          showDomain emptyMsg="Nothing on the list yet. Add something in Daily, or set a Target Stretch to pull items in."
+          emptyMsg="Nothing on the list yet. Add something in Daily, or set a Target Stretch to pull items in."
           domByKey={domByKey.current}
-          onToggle={toggleComplete} onMove={(it, d) => move(items, it, d)}
-          onRemove={removeDaily}
+          onToggle={toggleComplete} onMove={(it, d, tier) => move(tier, it, d)}
+          onStar={togglePriority} onRemove={removeDaily}
         />
       )}
 
@@ -386,8 +397,9 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
         ) : (
           <ListView
             rows={stretchItems} reorder={reorder} setReorder={setReorder}
-            showDomain domByKey={domByKey.current}
-            onToggle={toggleComplete} onMove={(it, d) => move(stretchItems, it, d)}
+            domByKey={domByKey.current}
+            onToggle={toggleComplete} onMove={(it, d, tier) => move(tier, it, d)}
+            onStar={togglePriority}
           />
         )
       )}
@@ -409,6 +421,15 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
                 outline: 'none', background: '#FFFFFF', color: TEXT_INK,
               }}
             />
+            <button onClick={() => setDraftPriority(p => !p)}
+              aria-label={draftPriority ? 'Adding as important' : 'Add as important'}
+              title="Mark especially important"
+              style={{
+                ...starBtn, fontSize: '18px', padding: '0 4px',
+                color: draftPriority ? GOLD_DK : TEXT_META,
+              }}>
+              {draftPriority ? '★' : '☆'}
+            </button>
             <button onClick={addDaily} disabled={!draft.trim() || adding}
               style={{
                 ...sc, fontSize: '11px', letterSpacing: '0.12em',
@@ -426,8 +447,9 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
           ) : (
             <ListView
               rows={dailyItems} reorder={reorder} setReorder={setReorder}
-              onToggle={toggleComplete} onMove={(it, d) => move(dailyItems, it, d)}
-              onRemove={removeDaily}
+              domByKey={domByKey.current}
+              onToggle={toggleComplete} onMove={(it, d, tier) => move(tier, it, d)}
+              onStar={togglePriority} onRemove={removeDaily}
             />
           )}
         </div>
@@ -452,13 +474,41 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
 }
 
 // ─── List view (shared by Today / Stretch / Daily) ────────────
+// Priority items pin to the top in their own "Important" block; the
+// rest follow in manual order. Both blocks are flat and ordered by
+// sort_order, so reordering reads true (domain shows as an inline
+// tag rather than a section header, which would fight the order).
 
-function ListView({ rows, reorder, setReorder, showDomain, domByKey, emptyMsg, onToggle, onMove, onRemove }) {
+function ListView({ rows, reorder, setReorder, domByKey, emptyMsg, onToggle, onMove, onStar, onRemove }) {
   if (!rows.length && emptyMsg) {
     return <p style={{ ...body, fontSize: '14px', color: TEXT_META, lineHeight: 1.6 }}>{emptyMsg}</p>
   }
 
-  let lastDom = null
+  const byOrder  = (a, b) => (a.sort_order || 0) - (b.sort_order || 0)
+  const priority = rows.filter(r => r.is_priority).sort(byOrder)
+  const rest     = rows.filter(r => !r.is_priority).sort(byOrder)
+
+  const tagFor = (item) => {
+    const dom = domByKey?.get(item.source_key)
+    return dom ? (DOMAIN_LABELS[dom] || dom) : null
+  }
+
+  const renderRow = (item, i, tier) => (
+    <Row
+      key={item.id}
+      item={item}
+      reorder={reorder}
+      first={i === 0}
+      last={i === tier.length - 1}
+      tag={tagFor(item)}
+      onToggle={(done) => onToggle(item, done)}
+      onStar={() => onStar(item)}
+      onUp={() => onMove(item, -1, tier)}
+      onDown={() => onMove(item, +1, tier)}
+      onRemove={item.kind === 'daily' && onRemove ? () => onRemove(item) : null}
+    />
+  )
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '6px' }}>
@@ -466,45 +516,28 @@ function ListView({ rows, reorder, setReorder, showDomain, domByKey, emptyMsg, o
           {reorder ? 'DONE' : 'REORDER'}
         </button>
       </div>
-      {rows.map((item, i) => {
-        let header = null
-        if (showDomain) {
-          const dom = domByKey?.get(item.source_key)
-          const label = dom ? (DOMAIN_LABELS[dom] || dom)
-                            : (item.kind === 'daily' ? 'Written today' : null)
-          if (label && label !== lastDom) {
-            lastDom = label
-            header = (
-              <div style={{
-                ...sc, fontSize: '10px', letterSpacing: '0.16em', color: TEXT_META,
-                textTransform: 'uppercase', marginTop: i > 0 ? '18px' : '2px', marginBottom: '6px',
-              }}>{label}</div>
-            )
-          }
-        }
-        return (
-          <div key={item.id}>
-            {header}
-            <Row
-              item={item}
-              reorder={reorder}
-              first={i === 0}
-              last={i === rows.length - 1}
-              onToggle={(done) => onToggle(item, done)}
-              onUp={() => onMove(item, -1)}
-              onDown={() => onMove(item, +1)}
-              onRemove={item.kind === 'daily' && onRemove ? () => onRemove(item) : null}
-            />
+
+      {priority.length > 0 && (
+        <>
+          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em',
+            color: GOLD_DK, marginBottom: '6px' }}>
+            IMPORTANT
           </div>
-        )
-      })}
+          {priority.map((it, i) => renderRow(it, i, priority))}
+          {rest.length > 0 && (
+            <div style={{ height: '1px', background: GOLD_RULE, margin: '14px 0 10px' }} />
+          )}
+        </>
+      )}
+
+      {rest.map((it, i) => renderRow(it, i, rest))}
     </div>
   )
 }
 
 // ─── A single item row ────────────────────────────────────────
 
-function Row({ item, done, reorder, first, last, onToggle, onUp, onDown, onRemove }) {
+function Row({ item, done, reorder, first, last, tag, onToggle, onStar, onUp, onDown, onRemove }) {
   const isDone = done || !!item.completed_at
   return (
     <div style={{
@@ -529,13 +562,30 @@ function Row({ item, done, reorder, first, last, onToggle, onUp, onDown, onRemov
         )}
       </button>
 
-      <div style={{
-        ...body, fontSize: '14px', lineHeight: 1.45, flex: 1,
-        color: isDone ? TEXT_META : TEXT_INK,
-        textDecoration: isDone ? 'line-through' : 'none',
-      }}>
-        {item.body}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          ...body, fontSize: '14px', lineHeight: 1.45,
+          color: isDone ? TEXT_META : TEXT_INK,
+          textDecoration: isDone ? 'line-through' : 'none',
+        }}>
+          {item.body}
+        </div>
+        {tag && (
+          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
+            color: TEXT_META, textTransform: 'uppercase', marginTop: '3px' }}>
+            {tag}
+          </div>
+        )}
       </div>
+
+      {/* Star — mark especially important (not shown on completed items) */}
+      {onStar && !isDone && (
+        <button onClick={onStar}
+          aria-label={item.is_priority ? 'Unmark important' : 'Mark important'}
+          style={{ ...starBtn, color: item.is_priority ? GOLD_DK : TEXT_META }}>
+          {item.is_priority ? '★' : '☆'}
+        </button>
+      )}
 
       {/* Reorder controls */}
       {reorder && (
@@ -742,6 +792,11 @@ async function computeStreak(userId) {
 const linkBtn = {
   ...sc, fontSize: '11px', letterSpacing: '0.14em',
   background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: GOLD_DK,
+}
+
+const starBtn = {
+  flexShrink: 0, background: 'none', border: 'none', padding: '0 2px',
+  cursor: 'pointer', fontSize: '16px', lineHeight: 1, marginTop: '1px',
 }
 
 function chevron(disabled) {

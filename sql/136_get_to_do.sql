@@ -30,11 +30,19 @@ CREATE TABLE IF NOT EXISTS get_to_do_items (
   body         text NOT NULL,
   source_key   text,                       -- 'sprintId:itemId' for stretch; NULL for daily
   sort_order   double precision NOT NULL DEFAULT 0,
+  is_priority  boolean NOT NULL DEFAULT false,
   completed_at timestamptz,
   week_anchor  date,                        -- Monday that begins the daily item's week; NULL for stretch
   created_at   timestamptz NOT NULL DEFAULT now(),
   updated_at   timestamptz NOT NULL DEFAULT now()
 );
+
+-- Idempotent add for installs where the table already existed.
+ALTER TABLE get_to_do_items
+  ADD COLUMN IF NOT EXISTS is_priority boolean NOT NULL DEFAULT false;
+
+COMMENT ON COLUMN get_to_do_items.is_priority IS
+  'User-flagged "especially important". Priority items pin to the top of every list view, above the manual order, so new or urgent items do not get lost in the pile.';
 
 COMMENT ON TABLE get_to_do_items IS
   'Unified to-do rows for the Get To Do tool. kind=daily are user-written and weekly-scoped; kind=stretch are projected from the active Target Stretch by stable source_key. One global sort_order across both.';
