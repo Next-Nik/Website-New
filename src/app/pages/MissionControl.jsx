@@ -58,7 +58,6 @@ import ProfileMissionPanel        from '../components/mission-control/ProfileMis
 import SettingsMissionPanel       from '../components/mission-control/SettingsMissionPanel'
 import WorldViewMissionPanel      from '../components/mission-control/WorldViewMissionPanel'
 import GetToDoMissionPanel        from '../components/mission-control/GetToDoMissionPanel'
-import CurriculumGatePanel        from '../components/mission-control/CurriculumGatePanel'
 import AddOverlay                 from '../components/AddOverlay'
 import FocusPanelContent          from '../components/FocusPanelContent'
 import { useActiveFocus }         from '../hooks/useActiveFocus'
@@ -237,6 +236,22 @@ function activeSprintKey(sprintData) {
   const domain = Array.isArray(s.domains) ? s.domains[0] : null
   if (!domain) return null
   return SELF_KEYS.includes(domain) ? domain : null
+}
+
+// Total stretch items across the active sprint — mirrors the
+// flatten in GetToDoMissionPanel (every milestone + every task).
+// Drives the Get To Do tile badge.
+function getToDoCount(sprintData) {
+  if (!Array.isArray(sprintData) || !sprintData.length) return 0
+  const s = sprintData[0]
+  const domains = Array.isArray(s?.domains) ? s.domains : []
+  const domData = s?.domain_data || {}
+  let n = 0
+  for (const domId of domains) {
+    const dd = domData[domId] || {}
+    n += (dd.milestones?.length || 0) + (dd.tasks?.length || 0)
+  }
+  return n
 }
 
 function formatPlacement(purposeData) {
@@ -940,7 +955,7 @@ export default function MissionControl() {
     ? `${data.foundationData.streak_days}D STREAK`
     : null
 
-  const hpState = data.practiceData?.check_date ? 'RECENT' : null
+  const toDoCount = getToDoCount(data.sprintData)
 
   const mapAudited = countPlaced(selfCurrent)
 
@@ -1030,11 +1045,8 @@ export default function MissionControl() {
             <Tile
               glyph="✦"
               label={<>GET TO<br/>DO</>}
-              state={hpState}
-              onClick={() => mapComplete
-                ? openPersonalPanel('get-to-do')
-                : openPersonalPanel('horizon-practice-gate')
-              }
+              state={toDoCount > 0 ? `${toDoCount} TO DO` : null}
+              onClick={() => openPersonalPanel('get-to-do')}
               title="Get To Do — your stretch items and calendar"
             />
             <Tile
@@ -1427,22 +1439,6 @@ export default function MissionControl() {
         <GetToDoMissionPanel
           userId={data.user?.id}
           sprintData={data.sprintData}
-        />
-      </Panel>
-
-      {/* ── Horizon Practice gate (map not yet complete) ─── */}
-      <Panel
-        open={activePanel === 'horizon-practice-gate'}
-        onClose={closePanel}
-        eyebrow="DAILY · HORIZON PRACTICE"
-        title="Horizon Practice"
-        actions={[{ label: 'CLOSE', onClick: closePanel }]}
-      >
-        <CurriculumGatePanel
-          toolName="Horizon Practice"
-          reason="Your morning practice voices your I Am statements — the ones you declare in Chapters One and Two of your journey. The full sequence begins the moment they're declared."
-          ctaLabel="Continue your journey →"
-          ctaPath="/nextu"
         />
       </Panel>
 

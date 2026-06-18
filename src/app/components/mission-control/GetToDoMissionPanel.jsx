@@ -17,7 +17,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../../hooks/useSupabase'
 import {
   GOLD, GOLD_DK, GOLD_RULE,
-  TEXT_INK, TEXT_META, TEXT_FAINT,
+  TEXT_INK, TEXT_META,
   FONT_SC, FONT_BODY, FONT_DISPLAY,
 } from './tokens'
 
@@ -157,7 +157,7 @@ function SprintItems({ sprintData }) {
             </div>
             <div style={{
               ...body, fontSize: isMilestone ? '14.5px' : '13.5px',
-              color: done ? TEXT_FAINT : TEXT_INK,
+              color: done ? TEXT_META : TEXT_INK,
               fontWeight: isMilestone ? 500 : 400,
               lineHeight: 1.45,
               textDecoration: done ? 'line-through' : 'none',
@@ -264,7 +264,7 @@ function CalendarSection({ userId }) {
           <button onClick={() => setShowSetup(true)} style={{
             background: 'none', border: 'none', cursor: 'pointer',
             ...sc, fontSize: '10px', letterSpacing: '0.14em',
-            color: TEXT_FAINT, padding: 0,
+            color: TEXT_META, padding: 0,
           }}>
             CHANGE CALENDAR
           </button>
@@ -300,7 +300,7 @@ function CalendarSection({ userId }) {
           </div>
         </div>
       ) : calLoading ? (
-        <div style={{ ...body, fontSize: '13px', color: TEXT_FAINT, fontStyle: 'italic' }}>
+        <div style={{ ...body, fontSize: '13px', color: TEXT_META }}>
           Loading your calendar…
         </div>
       ) : calError ? (
@@ -315,7 +315,7 @@ function CalendarSection({ userId }) {
           </button>
         </div>
       ) : calEvents.length === 0 ? (
-        <div style={{ ...body, fontSize: '13px', color: TEXT_FAINT, fontStyle: 'italic' }}>
+        <div style={{ ...body, fontSize: '13px', color: TEXT_META }}>
           Nothing scheduled for today.
         </div>
       ) : (
@@ -350,7 +350,7 @@ function EmptyState({ eyebrow, message, linkLabel, linkTo }) {
   return (
     <div style={{ padding: '24px 0' }}>
       <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em',
-        color: TEXT_FAINT, marginBottom: '10px' }}>
+        color: TEXT_META, marginBottom: '10px' }}>
         {eyebrow}
       </div>
       <p style={{ ...body, fontSize: '14px', color: TEXT_META,
