@@ -33,6 +33,7 @@ const SRC = path.join(__dirname, '..', 'src')
 // italic law. Add "relative/path.jsx:line-ish-context" entries
 // only after a human confirms the italic wraps the user's words.
 const ITALIC_WHITELIST = [
+  'components/Wheel.jsx', // Horizon Goal text in the node detail card — user-authored
   // e.g. 'components/NorthStarPortal.jsx' — user messages in the chat
 ]
 

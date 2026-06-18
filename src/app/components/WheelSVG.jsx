@@ -1,20 +1,17 @@
 // ─────────────────────────────────────────────────────────────
-// WheelSVG.jsx — personal wheel with labelled spokes
+// WheelSVG.jsx — personal-wheel adapter
 //
-// Extracted from FirstLight.jsx so the marketing home can render
-// the same wheel. Self-contained SVG with generous padding so
-// domain labels never clip.
+// Thin wrapper over the unified <Wheel> instrument. Kept as its own
+// export so the marketing home and First Light can keep importing
+// { WheelSVG, SELF_DOMAINS } unchanged — the prop signature
+// ({ scores, size }) is preserved. The drawing now lives in Wheel.jsx,
+// so personal and planetary render through the same code.
 //
-// Exports:
-//   WheelSVG       — { scores, size }  the personal seven-domain wheel
-//   SELF_DOMAINS   — canonical personal domain list (key, name, hex,
-//                    desc, cards) shared with First Light
-//
-// Chrome 148 law: no style= props on <svg> — presentation
-// attributes only.
+// SELF_DOMAINS stays here because First Light's Personal screen reads
+// `desc` and `cards` off it; the shared instrument only needs key/name/hex.
 // ─────────────────────────────────────────────────────────────
 
-const LORA = "'Lora', Georgia, serif"
+import Wheel from './Wheel'
 
 export const SELF_DOMAINS = [
   { key: 'path',       name: 'Path',       hex: '#6B1F2E', desc: 'Dharma, mission, purpose, meaning',                              cards: ['Direction', 'Purpose', 'Career', 'Meaning', "What I'm here for"] },
@@ -26,70 +23,8 @@ export const SELF_DOMAINS = [
   { key: 'signal',     name: 'Signal',     hex: '#6B3FA8', desc: "Your relationship with the world, how you're seen and show up", cards: ['My impact', 'How I come across', "How I'm seen", 'Feeling heard'] },
 ]
 
+// Now-only personal wheel. Headed/interactive/severity are opt-in via the
+// shared instrument when the Map adopts it; First Light stays now-only.
 export function WheelSVG({ scores, size = 200 }) {
-  const N      = 7
-  const PAD    = 64
-  const VB     = size + PAD * 2
-  const cx     = VB / 2
-  const cy     = VB / 2
-  const maxR   = (size / 2) * 0.78
-  const labelR = (size / 2) + 44
-
-  function angleFor(i) { return (Math.PI * 2 * i) / N - Math.PI / 2 }
-
-  const ringPts = SELF_DOMAINS.map((_, i) => {
-    const a = angleFor(i)
-    return `${(cx + maxR * Math.cos(a)).toFixed(2)},${(cy + maxR * Math.sin(a)).toFixed(2)}`
-  }).join(' ')
-
-  const polyPts = SELF_DOMAINS.map((d, i) => {
-    const a     = angleFor(i)
-    const ratio = (scores?.[d.key] ?? 5) / 10
-    const r     = Math.max(ratio * maxR, maxR * 0.06)
-    return `${(cx + r * Math.cos(a)).toFixed(2)},${(cy + r * Math.sin(a)).toFixed(2)}`
-  }).join(' ')
-
-  return (
-    <svg
-      width={VB}
-      height={VB}
-      viewBox={`0 0 ${VB} ${VB}`}
-      display="block"
-      overflow="visible"
-    >
-      <polygon points={ringPts} fill="none" stroke="rgba(200,146,42,0.32)" strokeWidth="1.5" strokeDasharray="3 4" />
-      {SELF_DOMAINS.map((_, i) => {
-        const a = angleFor(i)
-        return <line key={i} x1={cx} y1={cy} x2={cx + maxR * Math.cos(a)} y2={cy + maxR * Math.sin(a)} stroke="rgba(200,146,42,0.25)" strokeWidth="1.5" />
-      })}
-      <polygon points={polyPts} fill="rgba(200,146,42,0.15)" stroke="rgba(200,146,42,0.85)" strokeWidth="2.5" strokeLinejoin="round" />
-      {SELF_DOMAINS.map((d, i) => {
-        const a     = angleFor(i)
-        const ratio = (scores?.[d.key] ?? 5) / 10
-        const r     = Math.max(ratio * maxR, maxR * 0.06)
-        return <circle key={d.key} cx={cx + r * Math.cos(a)} cy={cy + r * Math.sin(a)} r={5} fill={d.hex} />
-      })}
-      {SELF_DOMAINS.map((d, i) => {
-        const a      = angleFor(i)
-        const lx     = cx + labelR * Math.cos(a)
-        const ly     = cy + labelR * Math.sin(a)
-        const anchor = Math.cos(a) > 0.25 ? 'start' : Math.cos(a) < -0.25 ? 'end' : 'middle'
-        return (
-          <text
-            key={d.key}
-            x={lx} y={ly}
-            textAnchor={anchor}
-            dominantBaseline="middle"
-            fontFamily={LORA}
-            fontSize={13}
-            letterSpacing="0.06em"
-            fill={d.hex}
-          >
-            {d.name.toUpperCase()}
-          </text>
-        )
-      })}
-      <circle cx={cx} cy={cy} r={size * 0.06} fill="#C8922A" />
-    </svg>
-  )
+  return <Wheel domains={SELF_DOMAINS} now={scores} size={size} />
 }
