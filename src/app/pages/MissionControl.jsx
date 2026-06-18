@@ -1428,8 +1428,8 @@ export default function MissionControl() {
       <Panel
         open={activePanel === 'get-to-do'}
         onClose={closePanel}
-        eyebrow="YOUR STRETCH · GET TO DO"
-        title="What's yours to do today"
+        eyebrow="MY LIFE · GET TO DO"
+        title="Get To Do"
         actions={[
           { label: 'TARGET STRETCH →', primary: true,
             onClick: () => navigate('/tools/target-sprint') },
