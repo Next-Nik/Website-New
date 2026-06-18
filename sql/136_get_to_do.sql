@@ -105,3 +105,19 @@ ALTER TABLE contributor_profiles_beta
 
 COMMENT ON COLUMN contributor_profiles_beta.daily_consistency IS
   'Per-tool opt-in for the consistency display: { "get_to_do": true, ... }. Default off (absent/false). Read by the shared consistency module.';
+
+-- ── Outbound calendar feed ────────────────────────────────────────────────────
+-- Per-user secret token that gates a public iCal feed of dated, incomplete
+-- to-dos (api/gtd-feed). Google/Apple/Outlook subscribe to the URL once and
+-- poll it on their own clock — the same mechanism as the read feed, pointed
+-- outward. The token is the secret, like Google's own private iCal address.
+
+ALTER TABLE contributor_profiles_beta
+  ADD COLUMN IF NOT EXISTS gtd_feed_token text;
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_cpb_gtd_feed_token
+  ON contributor_profiles_beta (gtd_feed_token)
+  WHERE gtd_feed_token IS NOT NULL;
+
+COMMENT ON COLUMN contributor_profiles_beta.gtd_feed_token IS
+  'Unguessable token in the Get To Do calendar feed URL. The feed endpoint resolves the user from it (service role), so subscribing clients need no login.';

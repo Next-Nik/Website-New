@@ -748,14 +748,16 @@ function CalendarSection({ userId }) {
   const [calEvents,  setCalEvents]  = useState([])
   const [calLoading, setCalLoading] = useState(false)
   const [calError,   setCalError]   = useState(null)
+  const [feedToken,  setFeedToken]  = useState(null)
 
   useEffect(() => {
     if (!userId) return
-    supabase.from('contributor_profiles_beta').select('ical_url')
+    supabase.from('contributor_profiles_beta').select('ical_url, gtd_feed_token')
       .eq('user_id', userId).maybeSingle()
       .then(({ data }) => {
         if (data?.ical_url) { setIcalUrl(data.ical_url); setUrlDraft(data.ical_url) }
         else setShowSetup(true)
+        if (data?.gtd_feed_token) setFeedToken(data.gtd_feed_token)
       })
   }, [userId])
 
@@ -848,6 +850,95 @@ function CalendarSection({ userId }) {
           ))}
         </div>
       )}
+
+      <FeedSubscribe userId={userId} initialToken={feedToken} />
+    </div>
+  )
+}
+
+// ─── Outbound feed subscribe ──────────────────────────────────
+// Publishes the user's dated to-dos as a private iCal feed they add to
+// their calendar once. One-way; the calendar polls it on its own clock.
+
+function FeedSubscribe({ userId, initialToken }) {
+  const [token, setToken]   = useState(initialToken || null)
+  const [busy, setBusy]     = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  const origin    = typeof window !== 'undefined' ? window.location.origin : ''
+  const feedUrl   = token ? `${origin}/api/gtd-feed?token=${token}` : ''
+  const webcalUrl = feedUrl.replace(/^https?:\/\//, 'webcal://')
+  const googleUrl = feedUrl
+    ? `https://calendar.google.com/calendar/u/0/r/settings/addbyurl?url=${encodeURIComponent(feedUrl)}`
+    : ''
+
+  async function ensure() {
+    if (token || !userId || busy) return
+    setBusy(true)
+    const t = (typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}-${Math.random().toString(36).slice(2)}`).replace(/-/g, '')
+    await supabase.from('contributor_profiles_beta')
+      .update({ gtd_feed_token: t }).eq('user_id', userId)
+    setToken(t)
+    setBusy(false)
+  }
+
+  function copy() {
+    if (!feedUrl) return
+    try { navigator.clipboard?.writeText(feedUrl) } catch { /* ignore */ }
+    setCopied(true); setTimeout(() => setCopied(false), 1800)
+  }
+
+  return (
+    <div style={{ marginTop: '26px', paddingTop: '20px', borderTop: `1px solid ${GOLD_RULE}` }}>
+      <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: GOLD_DK, marginBottom: '8px' }}>
+        SYNC YOUR TO-DOS
+      </div>
+      <p style={{ ...body, fontSize: '14px', color: TEXT_META, lineHeight: 1.6, margin: '0 0 14px' }}>
+        Publish your dated to-dos as a private calendar feed. Subscribe once and they
+        keep appearing and updating on their own, no tapping each one.
+      </p>
+
+      {!token ? (
+        <button onClick={ensure} disabled={busy}
+          style={{
+            ...sc, fontSize: '11px', letterSpacing: '0.14em',
+            background: 'none', border: `1px solid ${GOLD_RULE}`, borderRadius: '40px',
+            padding: '8px 18px', color: GOLD_DK, cursor: busy ? 'default' : 'pointer',
+          }}>
+          {busy ? 'SETTING UP…' : 'SET UP CALENDAR SYNC'}
+        </button>
+      ) : (
+        <div>
+          <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+            <input readOnly value={feedUrl} onFocus={e => e.target.select()}
+              style={{
+                flex: 1, ...body, fontSize: '12px', padding: '8px 10px', borderRadius: '6px',
+                border: `1px solid ${GOLD_RULE}`, outline: 'none', background: '#FFFFFF',
+                color: TEXT_META,
+              }} />
+            <button onClick={copy} style={{
+              ...sc, fontSize: '11px', letterSpacing: '0.12em', padding: '8px 14px',
+              borderRadius: '40px', border: 'none', background: GOLD, color: '#FFFFFF', cursor: 'pointer',
+            }}>
+              {copied ? 'COPIED' : 'COPY'}
+            </button>
+          </div>
+          <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+            <a href={googleUrl} target="_blank" rel="noopener noreferrer" style={feedLink}>
+              ADD IN GOOGLE CALENDAR →
+            </a>
+            <a href={webcalUrl} style={feedLink}>
+              SUBSCRIBE IN APPLE CALENDAR →
+            </a>
+          </div>
+          <p style={{ ...body, fontSize: '13px', color: TEXT_META, lineHeight: 1.6, margin: '12px 0 0' }}>
+            In Google Calendar, if it does not prefill, choose Other calendars, then From URL,
+            and paste the link. On iPad or Mac the Apple Calendar button subscribes in one tap.
+          </p>
+        </div>
+      )}
     </div>
   )
 }
@@ -889,6 +980,11 @@ const linkBtn = {
 const starBtn = {
   flexShrink: 0, background: 'none', border: 'none', padding: '2px 4px',
   cursor: 'pointer', fontSize: '16px', lineHeight: 1, marginTop: '1px',
+}
+
+const feedLink = {
+  ...sc, fontSize: '11px', letterSpacing: '0.14em', color: GOLD_DK,
+  textDecoration: 'none', cursor: 'pointer',
 }
 
 function chevron(disabled) {
