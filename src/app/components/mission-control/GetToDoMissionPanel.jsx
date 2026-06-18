@@ -72,6 +72,31 @@ function genId() {
   return `id-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
 }
 
+// One-tap "Add to Google Calendar": opens Google's new-event composer
+// with the item text prefilled, and the due date as an all-day event
+// when the item has one. The user adjusts and saves there. No OAuth,
+// no tokens — same prefilled-link approach Target Stretch uses.
+function addToGoogleCalendar(title, dueDate) {
+  let q = `text=${encodeURIComponent(title || '')}`
+  if (dueDate) {
+    const start = dueDate.replace(/-/g, '')
+    const endD = new Date(`${dueDate}T00:00:00`)
+    endD.setDate(endD.getDate() + 1)           // Google all-day end is exclusive
+    const end = getLocalDateStr(endD).replace(/-/g, '')
+    q += `&dates=${start}/${end}`
+  }
+  const url = `https://calendar.google.com/calendar/r/eventedit?${q}`
+  if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener')
+}
+
+// Short label for a YYYY-MM-DD date, e.g. "JUN 22".
+function formatDate(d) {
+  if (!d) return ''
+  return new Date(`${d}T12:00:00`)
+    .toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    .toUpperCase()
+}
+
 // ─── Stretch projection ───────────────────────────────────────
 // Walks the active stretch session(s), stamps stable ids where
 // missing (writing them back into the stretch JSON), and returns
@@ -81,10 +106,21 @@ async function buildStretchSources(sprintData) {
   if (!Array.isArray(sprintData) || !sprintData.length) return []
   const sources = []
 
+  // Milestone date: explicit, else spaced back from the stretch's
+  // target_date (mirrors Target Stretch's defaultMilestoneDate).
+  const milestoneDate = (m, index, targetDate) => {
+    if (m && m.date) return m.date
+    if (!targetDate) return null
+    const d = new Date(`${targetDate}T00:00:00`)
+    d.setDate(d.getDate() - (2 - index) * 30)
+    return getLocalDateStr(d)
+  }
+
   for (const sprint of sprintData) {
     const sprintId = sprint.id
     const domData  = sprint.domain_data || {}
     const domains  = Array.isArray(sprint.domains) ? sprint.domains : []
+    const targetDate = sprint.target_date || null
     let dirty = false
 
     for (const domId of domains) {
@@ -93,17 +129,23 @@ async function buildStretchSources(sprintData) {
       const milestones = Array.isArray(dd.milestones) ? dd.milestones : []
       const tasks      = Array.isArray(dd.tasks) ? dd.tasks : []
 
-      milestones.forEach((m) => {
+      milestones.forEach((m, mi) => {
         if (m && typeof m === 'object' && !m.id) { m.id = genId(); dirty = true }
         const text = (m && (m.text ?? m)) || ''
         const id   = (m && m.id) || `m-${text.slice(0, 24)}`
-        if (text) sources.push({ source_key: `${sprintId}:${id}`, body: text, domId })
+        if (text) sources.push({
+          source_key: `${sprintId}:${id}`, body: text, domId,
+          date: milestoneDate(m, mi, targetDate),
+        })
       })
       tasks.forEach((t) => {
         if (t && typeof t === 'object' && !t.id) { t.id = genId(); dirty = true }
         const text = (t && (t.text ?? t)) || ''
         const id   = (t && t.id) || `t-${text.slice(0, 24)}`
-        if (text) sources.push({ source_key: `${sprintId}:${id}`, body: text, domId })
+        const mi   = (t && typeof t.milestone === 'number') ? t.milestone : null
+        const date = (t && t.date) ||
+          (mi != null ? milestoneDate(milestones[mi], mi, targetDate) : null)
+        if (text) sources.push({ source_key: `${sprintId}:${id}`, body: text, domId, date })
       })
     }
 
@@ -134,7 +176,7 @@ async function reconcileStretch(userId, sources, existingStretchRows, maxOrder) 
       order += 1
       inserts.push({
         user_id: userId, kind: 'stretch', body: s.body,
-        source_key: s.source_key, sort_order: order,
+        source_key: s.source_key, sort_order: order, due_date: s.date || null,
       })
     } else if (row.body !== s.body) {
       await supabase.from('get_to_do_items')
@@ -240,6 +282,14 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
     setItems(prev => prev.map(r => r.id === item.id ? { ...r, is_priority: next } : r))
     await supabase.from('get_to_do_items')
       .update({ is_priority: next, updated_at: new Date().toISOString() })
+      .eq('id', item.id)
+  }
+
+  async function setDueDate(item, value) {
+    const v = value || null
+    setItems(prev => prev.map(r => r.id === item.id ? { ...r, due_date: v } : r))
+    await supabase.from('get_to_do_items')
+      .update({ due_date: v, updated_at: new Date().toISOString() })
       .eq('id', item.id)
   }
 
@@ -383,7 +433,7 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
           emptyMsg="Nothing on the list yet. Add something in Daily, or set a Target Stretch to pull items in."
           domByKey={domByKey.current}
           onToggle={toggleComplete} onMove={(it, d, tier) => move(tier, it, d)}
-          onStar={togglePriority} onRemove={removeDaily}
+          onStar={togglePriority} onSetDate={setDueDate} onRemove={removeDaily}
         />
       )}
 
@@ -399,7 +449,7 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
             rows={stretchItems} reorder={reorder} setReorder={setReorder}
             domByKey={domByKey.current}
             onToggle={toggleComplete} onMove={(it, d, tier) => move(tier, it, d)}
-            onStar={togglePriority}
+            onStar={togglePriority} onSetDate={setDueDate}
           />
         )
       )}
@@ -449,7 +499,7 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
               rows={dailyItems} reorder={reorder} setReorder={setReorder}
               domByKey={domByKey.current}
               onToggle={toggleComplete} onMove={(it, d, tier) => move(tier, it, d)}
-              onStar={togglePriority} onRemove={removeDaily}
+              onStar={togglePriority} onSetDate={setDueDate} onRemove={removeDaily}
             />
           )}
         </div>
@@ -479,7 +529,7 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
 // sort_order, so reordering reads true (domain shows as an inline
 // tag rather than a section header, which would fight the order).
 
-function ListView({ rows, reorder, setReorder, domByKey, emptyMsg, onToggle, onMove, onStar, onRemove }) {
+function ListView({ rows, reorder, setReorder, domByKey, emptyMsg, onToggle, onMove, onStar, onSetDate, onRemove }) {
   if (!rows.length && emptyMsg) {
     return <p style={{ ...body, fontSize: '14px', color: TEXT_META, lineHeight: 1.6 }}>{emptyMsg}</p>
   }
@@ -503,6 +553,7 @@ function ListView({ rows, reorder, setReorder, domByKey, emptyMsg, onToggle, onM
       tag={tagFor(item)}
       onToggle={(done) => onToggle(item, done)}
       onStar={() => onStar(item)}
+      onSetDate={(v) => onSetDate(item, v)}
       onUp={() => onMove(item, -1, tier)}
       onDown={() => onMove(item, +1, tier)}
       onRemove={item.kind === 'daily' && onRemove ? () => onRemove(item) : null}
@@ -537,8 +588,9 @@ function ListView({ rows, reorder, setReorder, domByKey, emptyMsg, onToggle, onM
 
 // ─── A single item row ────────────────────────────────────────
 
-function Row({ item, done, reorder, first, last, tag, onToggle, onStar, onUp, onDown, onRemove }) {
+function Row({ item, done, reorder, first, last, tag, onToggle, onStar, onSetDate, onUp, onDown, onRemove }) {
   const isDone = done || !!item.completed_at
+  const [editingDate, setEditingDate] = useState(false)
   return (
     <div style={{
       display: 'flex', alignItems: 'flex-start', gap: '10px',
@@ -570,21 +622,61 @@ function Row({ item, done, reorder, first, last, tag, onToggle, onStar, onUp, on
         }}>
           {item.body}
         </div>
-        {tag && (
-          <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
-            color: TEXT_META, textTransform: 'uppercase', marginTop: '3px' }}>
-            {tag}
+        {(tag || (!isDone && onSetDate) || item.due_date) && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px',
+            marginTop: '4px', flexWrap: 'wrap' }}>
+            {tag && (
+              <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
+                color: TEXT_META, textTransform: 'uppercase' }}>
+                {tag}
+              </span>
+            )}
+            {/* Date control */}
+            {!isDone && onSetDate ? (
+              editingDate ? (
+                <input type="date" defaultValue={item.due_date || ''} autoFocus
+                  onChange={(e) => { onSetDate(e.target.value); setEditingDate(false) }}
+                  onBlur={() => setEditingDate(false)}
+                  style={{ ...sc, fontSize: '11px', letterSpacing: '0.06em',
+                    border: `1px solid ${GOLD_RULE}`, borderRadius: '4px',
+                    padding: '2px 6px', color: TEXT_INK, outline: 'none', background: '#FFFFFF' }} />
+              ) : (
+                <button onClick={() => setEditingDate(true)}
+                  style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
+                    background: 'none', border: 'none', padding: 0, cursor: 'pointer',
+                    color: item.due_date ? GOLD_DK : TEXT_META }}>
+                  {item.due_date ? formatDate(item.due_date) : '＋ DATE'}
+                </button>
+              )
+            ) : item.due_date ? (
+              <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: TEXT_META }}>
+                {formatDate(item.due_date)}
+              </span>
+            ) : null}
           </div>
         )}
       </div>
 
-      {/* Star — mark especially important (not shown on completed items) */}
-      {onStar && !isDone && (
-        <button onClick={onStar}
-          aria-label={item.is_priority ? 'Unmark important' : 'Mark important'}
-          style={{ ...starBtn, color: item.is_priority ? GOLD_DK : TEXT_META }}>
-          {item.is_priority ? '★' : '☆'}
-        </button>
+      {/* Active-item actions: add to Google Calendar + mark important */}
+      {!isDone && !reorder && (
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '4px', flexShrink: 0 }}>
+          <button onClick={() => addToGoogleCalendar(item.body, item.due_date)}
+            aria-label="Add to Google Calendar" title="Add to Google Calendar"
+            style={{ ...starBtn, display: 'flex', alignItems: 'center', marginTop: '2px' }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <rect x="2" y="3" width="12" height="11" rx="1.5" stroke={GOLD_DK} strokeWidth="1.3" />
+              <path d="M2 6.5h12" stroke={GOLD_DK} strokeWidth="1.3" />
+              <path d="M5.5 1.5v3M10.5 1.5v3" stroke={GOLD_DK} strokeWidth="1.3" strokeLinecap="round" />
+            </svg>
+          </button>
+          {onStar && (
+            <button onClick={onStar}
+              aria-label={item.is_priority ? 'Unmark important' : 'Mark important'}
+              style={{ ...starBtn, color: item.is_priority ? GOLD_DK : TEXT_META }}>
+              {item.is_priority ? '★' : '☆'}
+            </button>
+          )}
+        </div>
       )}
 
       {/* Reorder controls */}
@@ -795,7 +887,7 @@ const linkBtn = {
 }
 
 const starBtn = {
-  flexShrink: 0, background: 'none', border: 'none', padding: '0 2px',
+  flexShrink: 0, background: 'none', border: 'none', padding: '2px 4px',
   cursor: 'pointer', fontSize: '16px', lineHeight: 1, marginTop: '1px',
 }
 
