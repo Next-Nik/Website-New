@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nextus-v1';
+const CACHE_NAME = 'nextus-v2';
 
 const SHELL_ASSETS = [
   '/',
