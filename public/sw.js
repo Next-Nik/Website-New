@@ -1,12 +1,12 @@
-const CACHE_NAME = 'nextus-v2';
+const CACHE_NAME = 'nextus-v3';
 
 const SHELL_ASSETS = [
   '/',
   '/manifest.json',
   '/favicon.svg',
-  '/icon-192.png',
-  '/icon-512.png',
-  '/apple-touch-icon.png',
+  '/icon-192-v2.png',
+  '/icon-512-v2.png',
+  '/apple-touch-icon-v2.png',
 ];
 
 // Install: cache shell assets
