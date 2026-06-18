@@ -389,7 +389,7 @@ export default function Journal() {
 
         {/* ── SETTLE ───────────────────────────────────────── */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
-          <BreathPacer size={68} caption="Settle here first." />
+          <BreathPacer size={68} caption="Match your breath to the circle." />
         </div>
 
         {/* ── TABS ────────────────────────────────────────── */}

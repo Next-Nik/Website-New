@@ -172,7 +172,7 @@ export default function IAmPractice({ embedded = false } = {}) {
           <>
             {/* Breath first */}
             <div style={{ display: 'flex', justifyContent: 'center', margin: '4px 0 26px' }}>
-              <BreathPacer caption="Settle here first." />
+              <BreathPacer caption="Match your breath to the circle." />
             </div>
 
             {/* Which statement, and where in the seven */}

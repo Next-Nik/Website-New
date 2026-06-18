@@ -86,7 +86,7 @@ export default function MorningPages({ embedded = false } = {}) {
 
         {/* Breath first */}
         <div style={{ display: 'flex', justifyContent: 'center', margin: '6px 0 24px' }}>
-          <BreathPacer caption="Settle here first." />
+          <BreathPacer caption="Match your breath to the circle." />
         </div>
 
         <textarea

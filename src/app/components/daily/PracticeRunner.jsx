@@ -16,7 +16,7 @@
 //   'weld'  — not yet extracted; same quiet pass-through.
 //
 // The walk freezes the day's line on entry and remembers where you
-// are (daily_practice_progress, migration 131). Leave the app and
+// are (daily_practice_progress, migration 135). Leave the app and
 // come back: you land on the exact beat. Nothing here is gated.
 // ─────────────────────────────────────────────────────────────
 import { useState, useEffect, useRef } from 'react'
