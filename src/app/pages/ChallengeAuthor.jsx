@@ -10,7 +10,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Nav }        from '../../components/Nav'
 import { useAuth }    from '../../hooks/useAuth'
-import { useActingAs } from '../../context/ActingAsContext'
+import { useActingAs } from '../context/ActingAsContext'
 import { supabase }   from '../../hooks/useSupabase'
 import { tokens, serif, body, sc } from '../../lib/designTokens'
 import {
