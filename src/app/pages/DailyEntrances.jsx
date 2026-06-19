@@ -25,7 +25,6 @@ const ENTRANCES = [
 ]
 
 const MODULES = [
-  { label: 'Training',          sub: 'Today\u2019s block, by domain. Log it.',          route: '/tools/training' },
   { label: 'Horizon State',      sub: 'The full protocol — arrive, listen, embark.', route: '/tools/horizon-state' },
   { label: 'Horizon Practice',   sub: 'The morning sequence.',                        route: '/tools/horizon-practice' },
   { label: 'Consistency challenge', sub: 'Your cadence, streak, and showing up.',      route: '/tools/horizon-practice' },
@@ -181,7 +180,7 @@ export default function DailyEntrances() {
         </p>
 
         {/* the three entrances */}
-        <div style={{ display: 'grid', gap: '14px', marginBottom: '44px' }}>
+        <div style={{ display: 'grid', gap: '14px' }}>
           {ENTRANCES.map(e => (
             <EntranceRow
               key={e.key}
@@ -191,6 +190,11 @@ export default function DailyEntrances() {
               onShape={e.key === 'morning' ? () => setComposing(e.key) : null}
             />
           ))}
+        </div>
+
+        {/* Training — a wide button, set a notch below the three */}
+        <div style={{ marginTop: '24px', marginBottom: '44px' }}>
+          <Card big label="Training" sub="Today’s block, by domain. Log it." onClick={() => navigate('/tools/training')} />
         </div>
 
         {/* every tool as a module, any time */}
