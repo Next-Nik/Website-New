@@ -49,16 +49,64 @@ function scolor(v, invert) { return scaleBand(invert ? 10 - v : v) }
 
 // ── Standard blocks: structure + rep scheme, adapt your movements ──
 const STANDARD_BLOCKS = {
+  // Body: strength first, then conditioning. Structures only; you fill the movements and ranges.
   body: [
     { name: 'Strength · 3 × 5', kind: 'Block', note: 'Three movements, three sets of five.', rows: [{ n: 'Movement A', sets: 3, reps: 5 }, { n: 'Movement B', sets: 3, reps: 5 }, { n: 'Movement C', sets: 3, reps: 5 }] },
     { name: 'Strength · 5 × 5', kind: 'Block', note: 'Three movements, five sets of five.', rows: [{ n: 'Movement A', sets: 5, reps: 5 }, { n: 'Movement B', sets: 5, reps: 5 }, { n: 'Movement C', sets: 5, reps: 5 }] },
-    { name: 'Circuit · 3 rounds', kind: 'Block', note: 'Four movements, three rounds.', rows: [{ n: 'Movement A', bw: true, sets: 3, reps: 12 }, { n: 'Movement B', bw: true, sets: 3, reps: 12 }, { n: 'Movement C', bw: true, sets: 3, reps: 12 }, { n: 'Movement D', bw: true, sets: 3, reps: 12 }] },
+    { name: 'Top set + back-offs', kind: 'Block', note: 'Build to a top set, then drop the load.', rows: [{ n: 'Movement A', sets: 4, reps: 5, cue: 'First set heaviest, then back off.' }] },
+    { name: 'Wave · descending reps', kind: 'Block', note: 'Reps fall as the load climbs.', rows: [{ n: 'Movement A', sets: 3, reps: 5, cue: 'Reps drop 5, then 3, then 1; load climbs.' }] },
+    { name: 'Pyramid', kind: 'Block', note: 'Reps climb then fall; load mirrors.', rows: [{ n: 'Movement A', sets: 5, reps: 12, cue: 'Reps like 12, 10, 8, 10, 12.' }] },
+    { name: 'Superset', kind: 'Block', note: 'Two movements paired, little rest between.', rows: [{ n: 'Movement A', sets: 3, reps: 8 }, { n: 'Movement B', sets: 3, reps: 8 }] },
+    { name: 'Density · set the clock', kind: 'Block', note: 'As many quality sets as the time allows.', rows: [{ n: 'Movement A', flow: true }] },
     { name: 'AMRAP · 20 min', kind: 'Block', note: 'As many rounds as possible.', rows: [{ n: 'Movement A', bw: true, reps: 10 }, { n: 'Movement B', bw: true, reps: 10 }, { n: 'Movement C', bw: true, reps: 10 }] },
+    { name: 'For time', kind: 'Block', note: 'Set the work, race the clock.', rows: [{ n: 'Movement A', flow: true }, { n: 'Movement B', flow: true }, { n: 'Movement C', flow: true }] },
+    { name: 'Rounds for time', kind: 'Block', note: 'A circuit, fixed rounds, for time.', rows: [{ n: 'Movement A', flow: true }, { n: 'Movement B', flow: true }, { n: 'Movement C', flow: true }] },
+    { name: 'Circuit · 3 rounds', kind: 'Block', note: 'Four movements, three rounds.', rows: [{ n: 'Movement A', bw: true, sets: 3, reps: 12 }, { n: 'Movement B', bw: true, sets: 3, reps: 12 }, { n: 'Movement C', bw: true, sets: 3, reps: 12 }, { n: 'Movement D', bw: true, sets: 3, reps: 12 }] },
+    { name: 'Ladder · 21-15-9', kind: 'Block', note: 'Two movements, 21-15-9 reps, for time.', rows: [{ n: 'Movement A', flow: true }, { n: 'Movement B', flow: true }] },
+    { name: 'EMOM · 10 min', kind: 'Block', note: 'Every minute on the minute, rest the rest.', rows: [{ n: 'Movement A', flow: true }] },
     { name: 'Intervals', kind: 'Block', note: 'Work, then rest.', rows: [{ n: 'Work', flow: true }, { n: 'Rest', flow: true }] },
+    { name: 'Tabata', kind: 'Block', note: 'Twenty seconds on, ten off, eight rounds.', rows: [{ n: 'Movement A', flow: true }] },
+    { name: 'Chipper', kind: 'Block', note: 'One pass down the list, for time.', rows: [{ n: 'Movement A', flow: true }, { n: 'Movement B', flow: true }, { n: 'Movement C', flow: true }, { n: 'Movement D', flow: true }, { n: 'Movement E', flow: true }] },
+    { name: 'Death by · ascending', kind: 'Block', note: 'One rep the first minute, two the next, climbing.', rows: [{ n: 'Movement A', flow: true }] },
+    { name: 'Reps for load', kind: 'Block', note: 'Heaviest load you can hold across the scheme.', rows: [{ n: 'Movement A', flow: true, cue: 'Falling reps, e.g. 15, 12, 9.' }] },
+    { name: 'Max reps', kind: 'Block', note: 'Set rounds, max reps each, one load.', rows: [{ n: 'Movement A', flow: true }] },
   ],
   inner_game: [
     { name: 'Sit · three parts', kind: 'Block', note: 'Three parts by time.', rows: [{ n: 'Settle', flow: true }, { n: 'Practice', flow: true }, { n: 'Close', flow: true }] },
     { name: 'Single practice · by time', kind: 'Block', note: 'One practice, set the time.', rows: [{ n: 'Practice', flow: true }] },
+    { name: 'Breath then sit', kind: 'Block', note: 'Charge the breath, then settle in.', rows: [{ n: 'Part A', flow: true, cue: 'Breath.' }, { n: 'Part B', flow: true, cue: 'Sit.' }] },
+    { name: 'Scan · head to feet', kind: 'Block', note: 'One slow pass through the body.', rows: [{ n: 'Part A', flow: true }] },
+    { name: 'Visualize · by time', kind: 'Block', note: 'One scene, held and rehearsed.', rows: [{ n: 'Part A', flow: true }] },
+  ],
+  spark: [
+    { name: 'Sprint · single', kind: 'Block', note: 'One timed push on the work.', rows: [{ n: 'Part A', flow: true }] },
+    { name: 'Sprint · three rounds', kind: 'Block', note: 'Three pushes, breaks between.', rows: [{ n: 'Part A', flow: true }, { n: 'Part B', flow: true }, { n: 'Part C', flow: true }] },
+    { name: 'Wide then narrow', kind: 'Block', note: 'Generate freely, then choose and refine.', rows: [{ n: 'Part A', flow: true, cue: 'Generate wide.' }, { n: 'Part B', flow: true, cue: 'Choose and refine.' }] },
+    { name: 'Ship one piece', kind: 'Block', note: 'One small piece, start to done.', rows: [{ n: 'Part A', flow: true }] },
+  ],
+  signal: [
+    { name: 'Warm up + reps', kind: 'Block', note: 'Open the instrument, then drill.', rows: [{ n: 'Part A', flow: true, cue: 'Warm up.' }, { n: 'Part B', flow: true, cue: 'Drill the rep.' }] },
+    { name: 'Take, review, retake', kind: 'Block', note: 'Record, watch it back, run it again.', rows: [{ n: 'Part A', flow: true, cue: 'Take.' }, { n: 'Part B', flow: true, cue: 'Review.' }, { n: 'Part C', flow: true, cue: 'Retake.' }] },
+    { name: 'Range · low to full', kind: 'Block', note: 'Move through the range, easy to full.', rows: [{ n: 'Part A', flow: true }] },
+    { name: 'Single rep · by time', kind: 'Block', note: 'One piece, run for the time.', rows: [{ n: 'Part A', flow: true }] },
+  ],
+  path: [
+    { name: 'Drill · one skill', kind: 'Block', note: 'One skill, focused reps.', rows: [{ n: 'Part A', flow: true }] },
+    { name: 'Three drills', kind: 'Block', note: 'Three drills, one skill each.', rows: [{ n: 'Part A', flow: true }, { n: 'Part B', flow: true }, { n: 'Part C', flow: true }] },
+    { name: 'Edge of ability', kind: 'Block', note: 'Work just past current reach.', rows: [{ n: 'Part A', flow: true, cue: 'Just past what is easy.' }] },
+    { name: 'Study, attempt, review', kind: 'Block', note: 'Take it in, try it, check it.', rows: [{ n: 'Part A', flow: true, cue: 'Study.' }, { n: 'Part B', flow: true, cue: 'Attempt.' }, { n: 'Part C', flow: true, cue: 'Review.' }] },
+  ],
+  connection: [
+    { name: 'Reach out', kind: 'Block', note: 'One contact, made today.', rows: [{ n: 'Part A', flow: true }] },
+    { name: 'Presence block', kind: 'Block', note: 'Time with someone, fully there.', rows: [{ n: 'Part A', flow: true }] },
+    { name: 'Listen then share', kind: 'Block', note: 'Hear them fully, then speak.', rows: [{ n: 'Part A', flow: true, cue: 'Listen.' }, { n: 'Part B', flow: true, cue: 'Share.' }] },
+    { name: 'Repair', kind: 'Block', note: 'One thing named and set right.', rows: [{ n: 'Part A', flow: true }] },
+  ],
+  finances: [
+    { name: 'Weekly review', kind: 'Block', note: 'A short look at the week.', rows: [{ n: 'Part A', flow: true, cue: 'In and out.' }, { n: 'Part B', flow: true, cue: 'Next move.' }] },
+    { name: 'Monthly close', kind: 'Block', note: 'Reconcile the month, set the next.', rows: [{ n: 'Part A', flow: true, cue: 'Reconcile.' }, { n: 'Part B', flow: true, cue: 'Plan ahead.' }] },
+    { name: 'One decision', kind: 'Block', note: 'One money decision, made cleanly.', rows: [{ n: 'Part A', flow: true }] },
+    { name: 'Build cadence', kind: 'Block', note: 'One move toward the longer build.', rows: [{ n: 'Part A', flow: true }] },
   ],
   _default: [
     { name: 'Block · three parts', kind: 'Block', note: 'Three parts. Adapt to the work.', rows: [{ n: 'Part A', flow: true }, { n: 'Part B', flow: true }, { n: 'Part C', flow: true }] },
@@ -69,17 +117,43 @@ function blocksFor(key) { return STANDARD_BLOCKS[key] || STANDARD_BLOCKS._defaul
 // ── Discipline movement shelves (vocabulary, in the composer) ──
 const DISCIPLINES = {
   body: {
-    Calisthenics: [{ n: 'Pull-ups', k: 'bw' }, { n: 'Dips', k: 'bw' }, { n: 'Push-ups', k: 'bw' }, { n: 'Ring Rows', k: 'bw' }, { n: 'Hanging Leg Raises', k: 'bw' }],
-    Strength: [{ n: 'Back Squat', k: 'load' }, { n: 'Bench Press', k: 'load' }, { n: 'Deadlift', k: 'load' }, { n: 'Overhead Press', k: 'load' }, { n: 'Power Clean', k: 'load' }],
-    CrossFit: [{ n: 'Thruster', k: 'flow' }, { n: 'Burpee', k: 'flow' }, { n: 'Kettlebell Swing', k: 'flow' }, { n: 'Box Jump', k: 'flow' }],
-    Cardio: [{ n: 'Run', k: 'flow' }, { n: 'Row', k: 'flow' }, { n: 'Bike', k: 'flow' }, { n: 'Intervals', k: 'flow' }],
-    'Movement & Mobility': [{ n: 'Hops / Shakes', k: 'flow' }, { n: 'Spinal Wave', k: 'flow' }, { n: 'Trunk Twist', k: 'flow' }, { n: 'Cat Walk', k: 'flow' }, { n: 'Rope Flow', k: 'flow' }],
-    Yoga: [{ n: 'Sun Salutation', k: 'flow' }, { n: 'Flow', k: 'flow' }],
+    Calisthenics: [{ n: 'Pull-ups', k: 'bw' }, { n: 'Chin-ups', k: 'bw' }, { n: 'Dips', k: 'bw' }, { n: 'Ring Dips', k: 'bw' }, { n: 'Push-ups', k: 'bw' }, { n: 'Ring Rows', k: 'bw' }, { n: 'Hanging Leg Raises', k: 'bw' }, { n: 'Pistols', k: 'bw' }, { n: 'Handstand Push-ups', k: 'bw' }],
+    Strength: [{ n: 'Back Squat', k: 'load' }, { n: 'Front Squat', k: 'load' }, { n: 'Deadlift', k: 'load' }, { n: 'Bench Press', k: 'load' }, { n: 'Overhead Press', k: 'load' }, { n: 'Power Clean', k: 'load' }, { n: 'Clean and Jerk', k: 'load' }, { n: 'Snatch', k: 'load' }, { n: 'Barbell Row', k: 'load' }],
+    CrossFit: [{ n: 'Thruster', k: 'flow' }, { n: 'Burpee', k: 'flow' }, { n: 'Kettlebell Swing', k: 'flow' }, { n: 'Box Jump', k: 'flow' }, { n: 'Wall Ball', k: 'flow' }, { n: 'Double-under', k: 'flow' }, { n: 'Toes-to-bar', k: 'flow' }, { n: 'Muscle-up', k: 'flow' }],
+    Cardio: [{ n: 'Run', k: 'flow' }, { n: 'Row', k: 'flow' }, { n: 'Bike', k: 'flow' }, { n: 'Ski', k: 'flow' }, { n: 'Swim', k: 'flow' }, { n: 'Intervals', k: 'flow' }],
+    'Movement & Mobility': [{ n: 'Hops / Shakes', k: 'flow' }, { n: 'Spinal Wave', k: 'flow' }, { n: 'Trunk Twist', k: 'flow' }, { n: 'Cat Walk', k: 'flow' }, { n: 'Rope Flow', k: 'flow' }, { n: 'Crawl', k: 'flow' }, { n: 'Hang', k: 'flow' }],
+    Yoga: [{ n: 'Sun Salutation', k: 'flow' }, { n: 'Flow', k: 'flow' }, { n: 'Hold', k: 'flow' }],
   },
   inner_game: {
-    Meditation: [{ n: 'Settle', k: 'flow' }, { n: 'Open awareness', k: 'flow' }, { n: 'Body scan', k: 'flow' }],
-    Breathwork: [{ n: 'Box breath', k: 'flow' }, { n: 'Coherence', k: 'flow' }],
-    Visualization: [{ n: 'Rehearsal', k: 'flow' }, { n: 'Future self', k: 'flow' }],
+    Meditation: [{ n: 'Settle', k: 'flow' }, { n: 'Open awareness', k: 'flow' }, { n: 'Body scan', k: 'flow' }, { n: 'Noting', k: 'flow' }, { n: 'Loving-kindness', k: 'flow' }],
+    Breathwork: [{ n: 'Box breath', k: 'flow' }, { n: 'Coherence', k: 'flow' }, { n: 'Charge breath', k: 'flow' }, { n: 'Long exhale', k: 'flow' }],
+    Visualization: [{ n: 'Rehearsal', k: 'flow' }, { n: 'Future self', k: 'flow' }, { n: 'Recall', k: 'flow' }, { n: 'Scene-setting', k: 'flow' }],
+    Focus: [{ n: 'Single point', k: 'flow' }, { n: 'Counting', k: 'flow' }],
+  },
+  spark: {
+    Generative: [{ n: 'Freewrite', k: 'flow' }, { n: 'Sketch', k: 'flow' }, { n: 'Riff', k: 'flow' }, { n: 'Brainstorm', k: 'flow' }, { n: 'Voice memo', k: 'flow' }],
+    Craft: [{ n: 'Draft', k: 'flow' }, { n: 'Edit', k: 'flow' }, { n: 'Arrange', k: 'flow' }, { n: 'Prototype', k: 'flow' }],
+    Input: [{ n: 'Study a master', k: 'flow' }, { n: 'Collect references', k: 'flow' }, { n: 'Remix', k: 'flow' }],
+  },
+  signal: {
+    Voice: [{ n: 'Resonance', k: 'flow' }, { n: 'Articulation', k: 'flow' }, { n: 'Range', k: 'flow' }, { n: 'Projection', k: 'flow' }, { n: 'Pacing', k: 'flow' }],
+    Speaking: [{ n: 'Cold open', k: 'flow' }, { n: 'Story beat', k: 'flow' }, { n: 'Q and A', k: 'flow' }, { n: 'Pitch', k: 'flow' }],
+    Recording: [{ n: 'Take', k: 'flow' }, { n: 'Playback', k: 'flow' }, { n: 'Retake', k: 'flow' }],
+  },
+  path: {
+    Drills: [{ n: 'Skill rep', k: 'flow' }, { n: 'Sub-skill', k: 'flow' }, { n: 'Tempo drill', k: 'flow' }, { n: 'Edge work', k: 'flow' }],
+    Study: [{ n: 'Read', k: 'flow' }, { n: 'Review', k: 'flow' }, { n: 'Annotate', k: 'flow' }, { n: 'Model an expert', k: 'flow' }],
+    Application: [{ n: 'Live attempt', k: 'flow' }, { n: 'Scenario', k: 'flow' }, { n: 'Debrief', k: 'flow' }],
+  },
+  connection: {
+    Reach: [{ n: 'Call', k: 'flow' }, { n: 'Message', k: 'flow' }, { n: 'Meet', k: 'flow' }, { n: 'Invite', k: 'flow' }],
+    Presence: [{ n: 'Listen', k: 'flow' }, { n: 'Ask', k: 'flow' }, { n: 'Share', k: 'flow' }, { n: 'Hold space', k: 'flow' }],
+    Repair: [{ n: 'Name it', k: 'flow' }, { n: 'Own it', k: 'flow' }, { n: 'Make it right', k: 'flow' }],
+  },
+  finances: {
+    Review: [{ n: 'Income', k: 'flow' }, { n: 'Outflow', k: 'flow' }, { n: 'Net', k: 'flow' }, { n: 'Runway', k: 'flow' }],
+    Plan: [{ n: 'Allocate', k: 'flow' }, { n: 'Set a target', k: 'flow' }, { n: 'Schedule a move', k: 'flow' }],
+    Action: [{ n: 'Pay', k: 'flow' }, { n: 'Invest', k: 'flow' }, { n: 'Negotiate', k: 'flow' }, { n: 'Cancel', k: 'flow' }],
   },
   _default: { Practices: [{ n: 'Skill drill', k: 'flow' }, { n: 'Study block', k: 'flow' }, { n: 'Rep practice', k: 'flow' }] },
 }
