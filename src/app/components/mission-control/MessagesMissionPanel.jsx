@@ -129,8 +129,8 @@ function MessageDetail({
     setSending(true)
     try {
       await onReply({
-        recipientUserId:  thread.otherUserId,
-        recipientActorId: null,
+        recipientUserId:  thread.otherActorId ? null : thread.otherUserId,
+        recipientActorId: thread.otherActorId || null,
         body:             replyBody.trim(),
         senderActorId:    ibx?.actorId || null,
       })

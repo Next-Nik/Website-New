@@ -78,10 +78,11 @@ export function useMessages(userId) {
     if (!userId) return
     setLoading(true)
     try {
-      // Fetch all threads where the user is a participant
+      // Threads where I am a party (either human side). Identity hats live on
+      // actor_a / actor_b; a self-thread has me on both sides under two hats.
       const { data: threads } = await supabase
         .from('nextus_message_threads')
-        .select('id, user_a, user_b, last_message_at, unread_for_user_a, unread_for_user_b, created_at')
+        .select('id, user_a, actor_a, user_b, actor_b, last_message_at, unread_for_user_a, unread_for_user_b, created_at')
         .or(`user_a.eq.${userId},user_b.eq.${userId}`)
         .order('last_message_at', { ascending: false })
 
@@ -91,8 +92,6 @@ export function useMessages(userId) {
         return
       }
 
-      // For each thread, get the latest message and determine which inbox it belongs to
-      // (based on the recipient_actor_id of messages addressed to this user's side)
       const threadIds = threads.map(t => t.id)
       const { data: allMessages } = await supabase
         .from('nextus_messages')
@@ -100,60 +99,69 @@ export function useMessages(userId) {
         .in('thread_id', threadIds)
         .order('created_at', { ascending: false })
 
-      // Resolve the "other user" display name for each thread
+      // For each thread, resolve MY side(s) and the OTHER party on each.
+      // A normal thread yields one side; a self-thread yields two (one per hat).
+      const sidesByThread = new Map()
       const otherUserIds = new Set()
-      threads.forEach(t => {
-        const other = t.user_a === userId ? t.user_b : t.user_a
-        otherUserIds.add(other)
-      })
-      const { data: profiles } = await supabase
-        .from('contributor_profiles_beta')
-        .select('user_id, display_name')
-        .in('user_id', Array.from(otherUserIds))
-      const profileMap = Object.fromEntries((profiles || []).map(p => [p.user_id, p.display_name]))
+      const actorIds = new Set()
+      for (const t of threads) {
+        const sides = []
+        if (t.user_a === userId) sides.push({ myActor: t.actor_a || null, otherUser: t.user_b, otherActor: t.actor_b || null, unread: t.unread_for_user_a })
+        if (t.user_b === userId) sides.push({ myActor: t.actor_b || null, otherUser: t.user_a, otherActor: t.actor_a || null, unread: t.unread_for_user_b })
+        sidesByThread.set(t.id, sides)
+        for (const s of sides) {
+          if (s.otherActor) actorIds.add(s.otherActor)
+          else otherUserIds.add(s.otherUser)
+        }
+      }
 
-      // Get filing lanes for each (inbox, sender) pair
+      const [{ data: profiles }, { data: actors }] = await Promise.all([
+        otherUserIds.size
+          ? supabase.from('contributor_profiles_beta').select('user_id, display_name').in('user_id', Array.from(otherUserIds))
+          : Promise.resolve({ data: [] }),
+        actorIds.size
+          ? supabase.from('nextus_actors').select('id, name').in('id', Array.from(actorIds))
+          : Promise.resolve({ data: [] }),
+      ])
+      const profileMap = Object.fromEntries((profiles || []).map(p => [p.user_id, p.display_name]))
+      const actorNameMap = Object.fromEntries((actors || []).map(a => [a.id, a.name]))
+
+      // Filing lanes, keyed (my inbox hat, sender human).
       const { data: filings } = await supabase
         .from('nextus_inbox_filing')
         .select('recipient_actor_id, sender_user_id, lane')
         .eq('owner_user_id', userId)
       const filingMap = new Map()
       for (const f of (filings || [])) {
-        const k = `${f.recipient_actor_id || 'personal'}::${f.sender_user_id}`
-        filingMap.set(k, f.lane)
+        filingMap.set(`${f.recipient_actor_id || 'personal'}::${f.sender_user_id}`, f.lane)
       }
 
-      // Build per-inbox thread lists, grouped by lane
       const grouped = {}
       for (const ibx of inboxes) grouped[ibx.id] = []
 
       for (const t of threads) {
-        const other = t.user_a === userId ? t.user_b : t.user_a
-        // Find the latest message of this thread that was addressed to "this user's side"
-        // — i.e. either user-direct (this inbox = personal) or to one of our actors.
         const threadMsgs = (allMessages || []).filter(m => m.thread_id === t.id)
         if (threadMsgs.length === 0) continue
         const latest = threadMsgs[0]
-        // Which inbox does this thread surface in?
-        // Use the latest INCOMING message's recipient field to pick the inbox.
-        // (Outgoing messages don't determine the inbox.)
-        const incoming = threadMsgs.find(m => m.sender_user_id !== userId)
-        const inboxKey = incoming
-          ? (incoming.recipient_actor_id || 'personal')
-          : (latest.recipient_actor_id ? latest.recipient_actor_id : 'personal')
-        if (!grouped[inboxKey]) grouped[inboxKey] = []
-        const lane = filingMap.get(`${inboxKey === 'personal' ? null : inboxKey}::${other}`)
-                   || filingMap.get(`${inboxKey}::${other}`)
-                   || 'general'
-        if (lane === 'blocked') continue  // hide blocked from regular view
-        grouped[inboxKey].push({
-          thread: t,
-          otherUserId: other,
-          otherName: profileMap[other] || 'Unknown',
-          latestMessage: latest,
-          unread: (t.user_a === userId ? t.unread_for_user_a : t.unread_for_user_b),
-          lane,
-        })
+
+        for (const side of sidesByThread.get(t.id)) {
+          const inboxKey = side.myActor || 'personal'
+          if (!grouped[inboxKey]) grouped[inboxKey] = []
+          const otherName = side.otherActor
+            ? (actorNameMap[side.otherActor] || 'Unknown')
+            : (profileMap[side.otherUser] || 'Unknown')
+          const lane = filingMap.get(`${inboxKey}::${side.otherUser}`) || 'general'
+          if (lane === 'blocked') continue
+          grouped[inboxKey].push({
+            thread: t,
+            otherUserId: side.otherUser,
+            otherActorId: side.otherActor,
+            otherName,
+            latestMessage: latest,
+            unread: side.unread,
+            lane,
+          })
+        }
       }
 
       setThreadsByInbox(grouped)
