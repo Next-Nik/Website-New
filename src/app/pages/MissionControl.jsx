@@ -628,6 +628,20 @@ export default function MissionControl() {
   const placedCount = countPlaced(selfCurrent)
   const sprintKey = activeSprintKey(data.sprintData)
 
+  // Acting as an actor (org / practitioner / project): the personal map is
+  // not theirs to see. Suppress the scores entirely — they are never passed
+  // into the wheel — and show the actor's mark in the empty well instead.
+  const actingAsActorNow = actingAsActor.id !== 'personal'
+  const personalOffState = actingAsActorNow ? {
+    eyebrow:     `Acting as ${actingAsActor.name}`,
+    caption:     'Your personal map is private',
+    markUrl:     actingAsActor.imageUrl || null,
+    markInitial: (actingAsActor.name || '?').trim().charAt(0).toUpperCase(),
+  } : null
+  const personalCurrentSafe  = actingAsActorNow ? {} : selfCurrent
+  const personalHorizonsSafe = actingAsActorNow ? {} : selfHorizons
+  const personalIsEmpty      = actingAsActorNow ? true : (placedCount === 0)
+
   // ── Civ wheel domain tree
   const [domainTree, setDomainTree] = useState(() => orderTopLevel(STATIC_DOMAINS))
 
@@ -1114,11 +1128,12 @@ export default function MissionControl() {
               personalProps={{
                 labels:    SELF_LABELS,
                 keys:      SELF_KEYS,
-                horizons:  selfHorizons,
-                current:   selfCurrent,
-                activeKey: selfActiveIndex !== null ? SELF_KEYS[selfActiveIndex] : null,
+                horizons:  personalHorizonsSafe,
+                current:   personalCurrentSafe,
+                activeKey: (!actingAsActorNow && selfActiveIndex !== null) ? SELF_KEYS[selfActiveIndex] : null,
                 walkers:   personalWalkers,
-                isEmpty:   placedCount === 0,
+                isEmpty:   personalIsEmpty,
+                offState:  personalOffState,
                 onSelect:  handleSelfSelect,
                 onCentreClick: handleSelfCentreClick,
               }}
@@ -1196,7 +1211,7 @@ export default function MissionControl() {
         {/* SCROLL-BELOW — civ side gets the slim civ-domain panel.
             Self side now gets its parchment-mode counterpart, fed
             with the user's actual Map data per domain. */}
-        {!isCiv && (
+        {!isCiv && !actingAsActorNow && (
           <SelfDomainPanel
             currentList={SELF_DOMAINS}
             selectedItem={selfActiveIndex !== null ? SELF_DOMAINS[selfActiveIndex] : null}

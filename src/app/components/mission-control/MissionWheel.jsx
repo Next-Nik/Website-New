@@ -44,7 +44,7 @@ import {
   GOLD, GOLD_DK, GOLD_LT, GOLD_RULE,
   BG_CARD, BG_INK,
   TEXT_META, TEXT_WHITE_META, TEXT_FAINT, TEXT_WHITE_FAINT,
-  FONT_SC,
+  FONT_SC, FONT_DISPLAY, FONT_BODY,
 } from './tokens'
 import { selfColor, civColor } from '../../../constants/domainColors'
 
@@ -147,6 +147,8 @@ function SelfWheel({
   dark = false,
   onSelect,
   onCentreClick,
+  offState = null,   // when set, the personal map is hidden (acting as an actor):
+                     // { eyebrow, caption, markUrl, markInitial }
 }) {
   const cx = CX
   const cy = CY
@@ -721,6 +723,54 @@ function SelfWheel({
           >
             <title>My life overview</title>
           </circle>
+        </g>
+      )}
+
+      {/* Off-state — the personal map is hidden because you are acting as
+          an actor. The shell above stays; this drops the actor's mark in
+          the centre and a quiet caption. Your scores are never passed in
+          while acting as an actor, so there is nothing here to leak. */}
+      {offState && (
+        <g aria-label="Personal map hidden while acting as another identity" style={{ pointerEvents: 'none' }}>
+          <defs>
+            <clipPath id="mc-off-mark-clip"><circle cx={cx} cy={cy} r={24} /></clipPath>
+          </defs>
+          <circle cx={cx} cy={cy} r={24} fill="#FFFFFF" stroke="rgba(200,146,42,0.55)" strokeWidth="1.4" />
+          {offState.markUrl ? (
+            <image
+              href={offState.markUrl}
+              x={cx - 24} y={cy - 24} width={48} height={48}
+              clipPath="url(#mc-off-mark-clip)"
+              preserveAspectRatio="xMidYMid slice"
+            />
+          ) : (
+            <text
+              x={cx} y={cy + 8} textAnchor="middle"
+              fill={GOLD_DK}
+              fontFamily={FONT_DISPLAY} fontWeight="300" fontSize="26"
+            >
+              {offState.markInitial || '·'}
+            </text>
+          )}
+          <circle cx={cx} cy={cy} r={24} fill="none" stroke="rgba(200,146,42,0.30)" strokeWidth="1" />
+          {offState.eyebrow && (
+            <text
+              x={cx} y={cy + 46} textAnchor="middle"
+              fill={GOLD_DK}
+              fontFamily={FONT_SC} fontSize="11" letterSpacing="2.2"
+            >
+              {String(offState.eyebrow).toUpperCase()}
+            </text>
+          )}
+          {offState.caption && (
+            <text
+              x={cx} y={cy + 64} textAnchor="middle"
+              fill={TEXT_META}
+              fontFamily={FONT_BODY} fontSize="12"
+            >
+              {offState.caption}
+            </text>
+          )}
         </g>
       )}
     </svg>
