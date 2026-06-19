@@ -6,10 +6,11 @@
 // domain means civ. The Horizon Goal anchor prefills from that choice (the
 // fractal: a personal Body challenge ladders to Nature's Horizon Goal).
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Nav }        from '../../components/Nav'
 import { useAuth }    from '../../hooks/useAuth'
+import { useActingAs } from '../../context/ActingAsContext'
 import { supabase }   from '../../hooks/useSupabase'
 import { tokens, serif, body, sc } from '../../lib/designTokens'
 import {
@@ -65,10 +66,12 @@ function Btn({ children, onClick, disabled, variant = 'solid' }) {
 
 export default function ChallengeAuthor() {
   const { user } = useAuth()
+  const { actingAsActorId } = useActingAs()
   const nav = useNavigate()
 
   const [ownedActors, setOwnedActors] = useState([])
   const [authorActor, setAuthorActor] = useState('')   // '' = as yourself
+  const authorTouched = useRef(false)
   const [domain,      setDomain]      = useState('')
   const [lastPrefill, setLastPrefill] = useState('')
   const [title,       setTitle]       = useState('')
@@ -105,6 +108,16 @@ export default function ChallengeAuthor() {
     supabase.from('nextus_actors').select('id, name, type').eq('profile_owner', user.id)
       .then(({ data }) => setOwnedActors(data || []))
   }, [user])
+
+  // Default the author to whoever you're currently acting as. Seeded once,
+  // after owned actors load; a manual pick from the dropdown wins from then on.
+  useEffect(() => {
+    if (authorTouched.current) return
+    if (!ownedActors.length) return
+    if (actingAsActorId && ownedActors.some(a => a.id === actingAsActorId)) {
+      setAuthorActor(actingAsActorId)
+    }
+  }, [ownedActors, actingAsActorId])
 
   function pickDomain(slug) {
     setDomain(slug)
@@ -341,7 +354,7 @@ export default function ChallengeAuthor() {
             {ownedActors.length > 0 && (
               <div>
                 <Label>Author as</Label>
-                <select value={authorActor} onChange={e => setAuthorActor(e.target.value)} style={inputStyle}>
+                <select value={authorActor} onChange={e => { authorTouched.current = true; setAuthorActor(e.target.value) }} style={inputStyle}>
                   <option value="">Yourself</option>
                   {ownedActors.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                 </select>

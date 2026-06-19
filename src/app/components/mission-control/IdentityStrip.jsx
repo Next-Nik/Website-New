@@ -31,6 +31,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from 'react'
+import IdentitySwitcher from './IdentitySwitcher'
 import {
   GOLD, GOLD_DK, GOLD_RULE,
   TEXT_INK, TEXT_WHITE, TEXT_META, TEXT_WHITE_META,
@@ -166,7 +167,9 @@ export default function IdentityStrip({
             <span className="mc-fit-placed">{placement}</span>
           )}
         </div>
-        <div className="mc-identity-spacer" aria-hidden="true" />
+        <div className="mc-identity-switch">
+          <IdentitySwitcher personalName={displayName} />
+        </div>
       </div>
     </header>
   )
@@ -395,6 +398,12 @@ const STRIP_CSS = `
 
 .mc-fit-placed {
   text-transform: uppercase;
+}
+
+.mc-identity-switch {
+  display: flex;
+  justify-content: flex-end;
+  align-self: center;
 }
 
 .mc-fit-invite {

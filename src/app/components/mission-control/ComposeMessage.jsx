@@ -20,6 +20,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../hooks/useSupabase'
+import { useActingAs } from '../../context/ActingAsContext'
 import {
   GOLD, GOLD_DK, GOLD_RULE, TEXT_INK, TEXT_META, FONT_DISPLAY,
 } from './tokens'
@@ -30,7 +31,12 @@ export function ComposeMessage({
   recipientActor: prefilledRecipient,
   onSend, onClose,
 }) {
-  const [senderInboxId, setSenderInboxId] = useState(defaultSenderInboxId || 'personal')
+  const { actingAsId } = useActingAs()
+  // Default the hat to whoever you're acting as; the active inbox or
+  // personal is the fallback. Still overridable per message below.
+  const [senderInboxId, setSenderInboxId] = useState(
+    actingAsId || defaultSenderInboxId || 'personal'
+  )
   const [recipient, setRecipient] = useState(prefilledRecipient || null)
   const [search, setSearch]       = useState('')
   const [searchResults, setSearchResults] = useState([])

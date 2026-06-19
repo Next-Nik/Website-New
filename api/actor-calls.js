@@ -161,6 +161,11 @@ module.exports = async (req, res) => {
   if (action === 'create') {
     if (!userId) return res.status(401).json({ error: 'Auth required' })
     const { title = '', type = 'challenge', scale = 'civ', actor_id = null, ...rest } = body
+    // Authoring as an actor requires owning it. Personal authorship
+    // (actor_id null) is always allowed for a signed-in user.
+    if (actor_id && !(await ownsActor(actor_id, userId))) {
+      return res.status(403).json({ error: 'You can only author as an actor you own.' })
+    }
     const cadence = rest.cadence || '5-of-7'
     const protocol = (Array.isArray(rest.protocol) && rest.protocol.length)
       ? rest.protocol

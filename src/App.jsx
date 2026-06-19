@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from '
 import { useAuth } from './hooks/useAuth'
 import { supabase } from './hooks/useSupabase'
 import { hasMapEngagement } from './app/util/onboarding'
+import { ActingAsProvider } from './app/context/ActingAsContext'
 import { useEffect, useState, Component } from 'react'
 import { BottomTabs } from './components/BottomTabs'
 
@@ -415,7 +416,9 @@ export default function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
-        <AppInner />
+        <ActingAsProvider>
+          <AppInner />
+        </ActingAsProvider>
       </BrowserRouter>
     </ErrorBoundary>
   )
