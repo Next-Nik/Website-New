@@ -161,15 +161,16 @@ export default function IdentityStrip({
 
       {/* IDENTITY BAR */}
       <div className="mc-identity-bar">
-        <div className="mc-identity-name">{displayName}</div>
+        <div className="mc-identity-name-wrap">
+          <span className="mc-identity-name">{displayName}</span>
+          <IdentitySwitcher personalName={displayName} />
+        </div>
         <div className="mc-identity-fit">
           {isPlaced && (
             <span className="mc-fit-placed">{placement}</span>
           )}
         </div>
-        <div className="mc-identity-switch">
-          <IdentitySwitcher personalName={displayName} />
-        </div>
+        <div className="mc-identity-spacer" aria-hidden="true" />
       </div>
     </header>
   )
@@ -400,10 +401,10 @@ const STRIP_CSS = `
   text-transform: uppercase;
 }
 
-.mc-identity-switch {
-  display: flex;
-  justify-content: flex-end;
-  align-self: center;
+.mc-identity-name-wrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
 }
 
 .mc-fit-invite {

@@ -1,16 +1,18 @@
 // ─────────────────────────────────────────────────────────────
 // IdentitySwitcher.jsx
 //
-// The control by your name in Mission Control that sets which
-// identity you are acting as. Tap it, pick "You" or any actor you
-// own, and every author surface (challenges, asks, handshakes,
-// messages) follows that choice until you change it.
+// A small caret beside your name that sets which identity you are
+// acting as. Tap it, pick "You" or any actor you own, and every
+// author surface (challenges, asks, handshakes, messages) follows
+// that choice. Acting as an actor also moves Mission Control to the
+// civ rail, where actors operate.
 //
-// Renders nothing when you own no actors — there is nothing to
-// switch between, so the strip stays clean.
+// Compact by design: when you are being You it is just the caret;
+// when you are acting as an actor it shows "as <name>" so the
+// current identity is never ambiguous. Renders nothing when you own
+// no actors — there is nothing to switch between.
 //
-// It reads and writes the shared ActingAs context, so it is also
-// the always-visible answer to "who am I posting as right now."
+// Reads and writes the shared ActingAs context.
 //
 // Props:
 //   personalName — your display name, shown as the "You" option
@@ -19,7 +21,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useActingAs } from '../../context/ActingAsContext'
 import {
-  GOLD, GOLD_DK, GOLD_RULE,
+  GOLD, GOLD_DK,
   TEXT_INK, TEXT_WHITE, TEXT_META, TEXT_WHITE_META,
   FONT_SC, BG_PARCHMENT, BG_INK,
 } from './tokens'
@@ -52,7 +54,7 @@ export default function IdentitySwitcher({ personalName = 'You' }) {
   // Nothing to switch between.
   if (!identities || identities.length <= 1) return null
 
-  const currentName = actingAsId === 'personal' ? personalName : actingAsActor.name
+  const isPersonal = actingAsId === 'personal'
 
   function choose(id) {
     setActingAs(id)
@@ -60,7 +62,7 @@ export default function IdentitySwitcher({ personalName = 'You' }) {
   }
 
   return (
-    <div className="mc-acting-wrap" ref={wrapRef}>
+    <span className="mc-acting-wrap" ref={wrapRef}>
       <style>{SWITCH_CSS}</style>
 
       <button
@@ -69,10 +71,12 @@ export default function IdentitySwitcher({ personalName = 'You' }) {
         onClick={() => setOpen(v => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
+        aria-label="Switch the identity you are acting as"
         title="Switch the identity you are acting as"
       >
-        <span className="mc-acting-eyebrow">Acting as</span>
-        <span className="mc-acting-name">{currentName}</span>
+        {!isPersonal && (
+          <span className="mc-acting-tag">as {actingAsActor.name}</span>
+        )}
         <Chevron open={open} />
       </button>
 
@@ -99,7 +103,7 @@ export default function IdentitySwitcher({ personalName = 'You' }) {
           })}
         </div>
       )}
-    </div>
+    </span>
   )
 }
 
@@ -109,7 +113,7 @@ function Chevron({ open }) {
   return (
     <svg
       className={`mc-acting-chevron${open ? ' mc-acting-chevron--open' : ''}`}
-      width="12" height="12" viewBox="0 0 24 24"
+      width="14" height="14" viewBox="0 0 24 24"
       fill="none" stroke="currentColor" strokeWidth="2"
       strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
     >
@@ -135,60 +139,52 @@ const SWITCH_CSS = `
 .mc-acting-wrap {
   position: relative;
   display: inline-flex;
-  justify-content: flex-end;
-  width: 100%;
+  align-items: center;
 }
 
 .mc-acting-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 12px;
-  background: rgba(200, 146, 42, 0.05);
-  border: 1px solid ${GOLD_RULE};
+  gap: 6px;
+  padding: 4px 6px;
+  background: transparent;
+  border: none;
   border-radius: 40px;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  color: ${TEXT_META};
+  transition: color 0.15s ease, background 0.15s ease;
 }
 .mc-acting-btn:hover,
 .mc-acting-btn--open {
-  border-color: ${GOLD};
+  color: ${GOLD_DK};
   background: rgba(200, 146, 42, 0.08);
 }
+[data-stage="dark"] .mc-acting-btn { color: ${TEXT_WHITE_META}; }
+[data-stage="dark"] .mc-acting-btn:hover,
+[data-stage="dark"] .mc-acting-btn--open { color: ${GOLD}; }
 
-.mc-acting-eyebrow {
+.mc-acting-tag {
   font-family: ${FONT_SC};
   font-size: 13px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: ${TEXT_META};
-}
-[data-stage="dark"] .mc-acting-eyebrow { color: ${TEXT_WHITE_META}; }
-
-.mc-acting-name {
-  font-family: ${FONT_SC};
-  font-size: 13px;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.10em;
   color: ${GOLD_DK};
-  max-width: 180px;
+  max-width: 200px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-[data-stage="dark"] .mc-acting-name { color: ${GOLD}; }
+[data-stage="dark"] .mc-acting-tag { color: ${GOLD}; }
 
 .mc-acting-chevron {
-  color: ${TEXT_META};
   transition: transform 0.16s ease;
   flex-shrink: 0;
 }
 .mc-acting-chevron--open { transform: rotate(180deg); }
-[data-stage="dark"] .mc-acting-chevron { color: ${TEXT_WHITE_META}; }
 
 .mc-acting-menu {
   position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
+  top: calc(100% + 8px);
+  left: 0;
   min-width: 240px;
   background: ${BG_PARCHMENT};
   border: 1px solid rgba(200, 146, 42, 0.22);
@@ -265,8 +261,6 @@ const SWITCH_CSS = `
 }
 
 @media (max-width: 640px) {
-  .mc-acting-wrap { justify-content: flex-start; }
-  .mc-acting-btn { padding: 6px 10px; gap: 6px; }
-  .mc-acting-name { max-width: 120px; }
+  .mc-acting-tag { max-width: 130px; }
 }
 `

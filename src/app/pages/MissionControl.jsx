@@ -37,6 +37,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { supabase } from '../../hooks/useSupabase'
+import { useActingAs } from '../context/ActingAsContext'
 
 import IdentityStrip      from '../components/mission-control/IdentityStrip'
 import PoleHeader         from '../components/mission-control/PoleHeader'
@@ -377,6 +378,7 @@ export default function MissionControl() {
   const navigate = useNavigate()
   const location = useLocation()
   const data = useMissionControlData()
+  const { actingAsActor } = useActingAs()
   const [activePanel, setActivePanel] = useState(null)
   const { focus: activeFocus, hasFocus: hasActiveFocus } = useActiveFocus()
 
@@ -440,6 +442,18 @@ export default function MissionControl() {
   // up yet.
   const [armingScope, setArmingScope] = useState(null)
   const armingHandledRef = useRef(false)
+
+  // Acting as an actor (org / practitioner / project) puts you on the
+  // civ rail, where actors operate — the Self rail belongs to the human.
+  // Returning to You drops you back to My Life. Keyed on identity only,
+  // so manual tab clicks are never overridden. Deferred while a welcome
+  // handoff is arming a scope, so it doesn't fight that flow.
+  useEffect(() => {
+    if (armingScope) return
+    if (new URLSearchParams(location.search).get('scope')) return
+    setActiveScope(actingAsActor.id === 'personal' ? 'self' : 'planet')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [actingAsActor.id, armingScope])
 
   useEffect(() => {
     if (armingHandledRef.current) return
