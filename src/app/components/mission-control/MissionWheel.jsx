@@ -254,11 +254,12 @@ function SelfWheel({
 
   // Score polygon vertices — unrotated coords; the rotating <g> handles placement.
   // (displayRot must NOT be baked in here — the group transform would double-rotate.)
+  // ABSOLUTE 0–10 scale, matching the Map: a domain sits at current/10 of the
+  // radius (10 = outer ring = World-Class), not at its progress toward its goal.
   const verts = useMemo(() => {
     return keys.map((k, i) => {
-      const h = renderHorizons[k] || 10
       const c = showEmpty ? 0 : (current[k] ?? 0)
-      const ratio = h === 0 ? 0 : Math.min(c / h, 1)
+      const ratio = Math.min(Math.max(c / 10, 0), 1)
       const a = angleFor(i)   // unrotated — group transform rotates the group
       const r = ratio * maxR
       return {
@@ -268,7 +269,22 @@ function SelfWheel({
         color: selfColor(k).base,
       }
     })
-  }, [keys, renderHorizons, current, showEmpty, cx, cy, maxR])
+  }, [keys, current, showEmpty, cx, cy, maxR])
+
+  // Horizon Goal web — the authored horizon score, also absolute 0–10. Drawn as
+  // the dashed gold web sitting ahead of the now web; the gap between is the work.
+  const goalVerts = useMemo(() => {
+    if (showEmpty) return []
+    return keys.map((k, i) => {
+      const h = horizons[k]
+      if (h == null) return null
+      const ratio = Math.min(Math.max(h / 10, 0), 1)
+      const a = angleFor(i)
+      const r = ratio * maxR
+      return { i, key: k, x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) }
+    }).filter(Boolean)
+  }, [keys, horizons, showEmpty, cx, cy, maxR])
+  const hasGoalWeb = goalVerts.length >= 3
 
   // Outer ring polygon — rotates with the spokes so tips stay at corners
   const ringPts = useMemo(() => {
@@ -310,7 +326,37 @@ function SelfWheel({
             floodOpacity={dark ? 0.95 : 0.90}
           />
         </filter>
+        {/* Translucent depth well — lets the map substrate read through */}
+        <radialGradient id={`mw-well-${dark ? 'dark' : 'light'}`} cx="50%" cy="46%" r="58%">
+          {dark ? (
+            <>
+              <stop offset="0%"   stopColor="rgba(205,217,242,0.14)" />
+              <stop offset="55%"  stopColor="rgba(150,170,205,0.07)" />
+              <stop offset="100%" stopColor="rgba(120,140,175,0.015)" />
+            </>
+          ) : (
+            <>
+              <stop offset="0%"   stopColor="rgba(255,253,247,0.40)" />
+              <stop offset="55%"  stopColor="rgba(255,250,240,0.18)" />
+              <stop offset="100%" stopColor="rgba(200,146,42,0.05)" />
+            </>
+          )}
+        </radialGradient>
+        {/* Soft glow behind the domain-coloured nodes */}
+        <filter id={`mw-glow-${dark ? 'dark' : 'light'}`} x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="3.2" />
+        </filter>
       </defs>
+
+      {/* Translucent well + faint edge ring (fixed, behind everything) */}
+      <circle cx={cx} cy={cy} r={maxR * 1.2} fill={`url(#mw-well-${dark ? 'dark' : 'light'})`} pointerEvents="none" />
+      <circle
+        cx={cx} cy={cy} r={maxR * 1.2}
+        fill="none"
+        stroke={dark ? 'rgba(210,222,245,0.10)' : 'rgba(200,146,42,0.10)'}
+        strokeWidth="1"
+        pointerEvents="none"
+      />
 
       {/* Outer dashed ring — rotates with spokes so tips stay at corners */}
       <polygon
@@ -327,6 +373,29 @@ function SelfWheel({
           transform does not rotate the glyphs — same pattern as
           CivWheel, which has done this correctly from the start. ── */}
       <g transform={`rotate(${displayRot} ${cx} ${cy})`}>
+
+        {/* Graded reference rings — Pass/Fail line emphasised at 5 (absolute scale) */}
+        {[0.2, 0.4, 0.5, 0.6, 0.8].map(fr => {
+          const pts = []
+          for (let i = 0; i < N; i++) {
+            const a = angleFor(i)
+            pts.push(`${(cx + fr * maxR * Math.cos(a)).toFixed(1)},${(cy + fr * maxR * Math.sin(a)).toFixed(1)}`)
+          }
+          const isPass = fr === 0.5
+          return (
+            <polygon
+              key={`gring-${fr}`}
+              points={pts.join(' ')}
+              fill="none"
+              stroke={isPass
+                ? (dark ? 'rgba(200,146,42,0.34)' : 'rgba(200,146,42,0.32)')
+                : (dark ? 'rgba(200,146,42,0.11)' : 'rgba(200,146,42,0.12)')}
+              strokeWidth={isPass ? 1.4 : 1}
+              strokeDasharray={isPass ? '5 5' : undefined}
+              pointerEvents="none"
+            />
+          )
+        })}
 
         {/* Spokes + tip dots — positions at rot=0; <g> rotation handles placement */}
         {Array.from({ length: N }).map((_, i) => {
@@ -399,6 +468,30 @@ function SelfWheel({
           />
         ) : (
           <>
+            {/* Horizon Goal web — dashed gold, sits ahead of the now web */}
+            {hasGoalWeb && (
+              <>
+                <polygon
+                  points={goalVerts.map(v => `${v.x},${v.y}`).join(' ')}
+                  fill="none"
+                  stroke={GOLD}
+                  strokeWidth="1.4"
+                  strokeOpacity={dark ? 0.55 : 0.5}
+                  strokeDasharray="4 5"
+                  strokeLinejoin="round"
+                  style={{ pointerEvents: 'none' }}
+                />
+                {goalVerts.map(v => (
+                  <circle
+                    key={`goal-${v.i}`}
+                    cx={v.x} cy={v.y} r={3}
+                    fill="none" stroke={GOLD} strokeWidth="1.3"
+                    strokeOpacity={dark ? 0.6 : 0.55}
+                    style={{ pointerEvents: 'none' }}
+                  />
+                ))}
+              </>
+            )}
             <polygon
               points={verts.map(v => `${v.x},${v.y}`).join(' ')}
               fill={dark ? 'rgba(200,146,42,0.14)' : 'rgba(200,146,42,0.10)'}
@@ -417,6 +510,12 @@ function SelfWheel({
                 {onSelect && (
                   <circle cx={v.x} cy={v.y} r={12} fill="transparent" />
                 )}
+                <circle
+                  cx={v.x} cy={v.y} r={8}
+                  fill={v.color} opacity="0.45"
+                  filter={`url(#mw-glow-${dark ? 'dark' : 'light'})`}
+                  style={{ pointerEvents: 'none' }}
+                />
                 <circle
                   cx={v.x} cy={v.y} r={4}
                   fill={v.color}
