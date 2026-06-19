@@ -1032,7 +1032,61 @@ function CivWheel({
             floodOpacity={dark ? 0.95 : 0.90}
           />
         </filter>
+        {/* Translucent depth well */}
+        <radialGradient id={`mw-well-${dark ? 'dark' : 'light'}-civ`} cx="50%" cy="46%" r="58%">
+          {dark ? (
+            <>
+              <stop offset="0%"   stopColor="rgba(205,217,242,0.14)" />
+              <stop offset="55%"  stopColor="rgba(150,170,205,0.07)" />
+              <stop offset="100%" stopColor="rgba(120,140,175,0.015)" />
+            </>
+          ) : (
+            <>
+              <stop offset="0%"   stopColor="rgba(255,253,247,0.40)" />
+              <stop offset="55%"  stopColor="rgba(255,250,240,0.18)" />
+              <stop offset="100%" stopColor="rgba(200,146,42,0.05)" />
+            </>
+          )}
+        </radialGradient>
+        {/* Node glow */}
+        <filter id={`mw-glow-${dark ? 'dark' : 'light'}-civ`} x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="3.2" />
+        </filter>
       </defs>
+
+      {/* Translucent well + faint edge ring */}
+      <circle cx={CX} cy={CY} r={RADIUS * 1.2} fill={`url(#mw-well-${dark ? 'dark' : 'light'}-civ)`} pointerEvents="none" />
+      <circle
+        cx={CX} cy={CY} r={RADIUS * 1.2}
+        fill="none"
+        stroke={dark ? 'rgba(210,222,245,0.10)' : 'rgba(200,146,42,0.10)'}
+        strokeWidth="1"
+        pointerEvents="none"
+      />
+
+      {/* Graded reference rings — Pass/Fail line emphasised at 5 (absolute scale) */}
+      {[0.2, 0.4, 0.5, 0.6, 0.8].map(fr => {
+        const rotRad = (displayRot * Math.PI) / 180
+        const pts = []
+        for (let i = 0; i < count; i++) {
+          const a = angleFor(i, count) + rotRad
+          pts.push(`${(CX + fr * RADIUS * Math.cos(a)).toFixed(1)},${(CY + fr * RADIUS * Math.sin(a)).toFixed(1)}`)
+        }
+        const isPass = fr === 0.5
+        return (
+          <polygon
+            key={`civ-gring-${fr}`}
+            points={pts.join(' ')}
+            fill="none"
+            stroke={isPass
+              ? (dark ? 'rgba(200,146,42,0.34)' : 'rgba(200,146,42,0.32)')
+              : (dark ? 'rgba(200,146,42,0.11)' : 'rgba(200,146,42,0.12)')}
+            strokeWidth={isPass ? 1.4 : 1}
+            strokeDasharray={isPass ? '5 5' : undefined}
+            pointerEvents="none"
+          />
+        )
+      })}
 
       {/* Outer dashed ring — rotates with spokes so tips stay at corners */}
       <polygon
@@ -1061,8 +1115,7 @@ function CivWheel({
         // Compute vertex positions and metadata once
         const civVerts = keys.map((k, i) => {
           const score = current[k]
-          const horizon = horizons[k] ?? 10
-          const ratio = (score != null && horizon > 0) ? Math.min(score / horizon, 1) : 0
+          const ratio = score != null ? Math.min(Math.max(score / 10, 0), 1) : 0  // absolute 0–10 (matches the Map)
           // Minimum visible radius — keep the vertex outside the centre
           // orb so low-scoring domains don't disappear behind it.
           const minR = centreRadius + 8
@@ -1107,6 +1160,13 @@ function CivWheel({
               >
                 {/* Generous invisible hit zone */}
                 <circle cx={v.x} cy={v.y} r={12} fill="transparent" />
+                {/* Soft glow */}
+                <circle
+                  cx={v.x} cy={v.y} r={7}
+                  fill={v.color} opacity="0.45"
+                  filter={`url(#mw-glow-${dark ? 'dark' : 'light'}-civ)`}
+                  style={{ pointerEvents: 'none' }}
+                />
                 {/* Visible coloured dot */}
                 <circle
                   cx={v.x} cy={v.y} r={3.5}
