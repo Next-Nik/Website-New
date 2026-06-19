@@ -538,9 +538,8 @@ export default function Training({ embedded = false } = {}) {
   function weekView() {
     return (
       <div>
-        <div style={eyebrow}>Off the day · Your week</div>
-        <h1 style={{ ...serif, fontWeight: 300, fontSize: 'clamp(34px,7vw,50px)', lineHeight: 1.04, margin: '10px 0 0', color: tokens.dark }}>Week</h1>
-        <p style={{ ...body, fontSize: '15px', color: tokens.meta, margin: '10px 0 0' }}>What lands on each day in {LABEL[domain]}. More than one is fine.</p>
+        <div style={eyebrow}>Off the day</div>
+        <h1 style={{ ...serif, fontWeight: 300, fontSize: 'clamp(34px,7vw,50px)', lineHeight: 1.04, margin: '10px 0 0', color: tokens.dark }}>Your training week</h1>
         <div style={cardStyle}>
           {WEEK.map((day, idx) => {
             const ids = idsFor(domain, idx)
@@ -559,23 +558,34 @@ export default function Training({ embedded = false } = {}) {
                     ))}
                   </div>
                   <button onClick={() => setOpenDay(openDay === idx ? null : idx)} style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.04em', border: `1px solid ${GOLD_RULE}`, background: 'transparent', color: tokens.gold, borderRadius: '40px', padding: '6px 13px', cursor: 'pointer', flex: 'none' }}>
-                    {openDay === idx ? 'Close' : 'Change'}
+                    {openDay === idx ? 'Close' : (ids.length ? 'Edit' : 'Add')}
                   </button>
                 </div>
                 {openDay === idx && (
                   <div style={{ padding: '4px 0 16px', borderTop: `1px solid ${GOLD_RULE}` }}>
-                    <div style={listLabel}>Add one you programmed</div>
-                    {mine.length === 0 && <div style={tplNote}>None yet in {LABEL[domain]}. Make a new one below.</div>}
-                    <div>
-                      {mine.map(s => (
-                        <button key={s.id} onClick={() => addToDay(idx, s.id)} style={{ ...body, fontSize: '14px', border: `1px solid ${GOLD_RULE}`, borderRadius: '40px', background: '#FFFFFF', color: tokens.dark, padding: '7px 13px', cursor: 'pointer', margin: '0 8px 8px 0' }}>
-                          <span style={{ ...sc, color: tokens.gold, fontWeight: 600 }}>+ </span>{s.name}
-                        </button>
-                      ))}
-                    </div>
-                    <div style={{ marginTop: '10px' }}>
-                      <button style={ghostBtn} onClick={() => { setComposerTargetDay(idx); setEditStage('blocks') }}>Make a new one</button>
-                    </div>
+                    <div style={listLabel}>Your sessions</div>
+                    {mine.length === 0
+                      ? <div style={tplNote}>None yet in {LABEL[domain]}. Start blank or from a template below.</div>
+                      : (
+                        <div>
+                          {mine.map(s => (
+                            <button key={s.id} onClick={() => addToDay(idx, s.id)} style={{ ...body, fontSize: '14px', border: `1px solid ${GOLD_RULE}`, borderRadius: '40px', background: '#FFFFFF', color: tokens.dark, padding: '7px 13px', cursor: 'pointer', margin: '0 8px 8px 0' }}>
+                              <span style={{ ...sc, color: tokens.gold, fontWeight: 600 }}>+ </span>{s.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    <div style={listLabel}>Start new</div>
+                    <button style={tplCard} onClick={() => { setComposerTargetDay(idx); openCustom() }}>
+                      <div style={tplName}>Blank page</div>
+                      <div style={tplNote}>Build it from scratch.</div>
+                    </button>
+                    {blocksFor(domain).map((t, i) => (
+                      <button key={i} style={tplCard} onClick={() => { setComposerTargetDay(idx); openBlock(t) }}>
+                        <div style={tplName}>{t.name}</div>
+                        <div style={tplNote}>{t.note}</div>
+                      </button>
+                    ))}
                   </div>
                 )}
               </div>
