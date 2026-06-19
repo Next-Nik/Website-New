@@ -25,6 +25,7 @@ const ENTRANCES = [
 ]
 
 const MODULES = [
+  { label: 'Training',          sub: 'Today\u2019s block, by domain. Log it.',          route: '/tools/training' },
   { label: 'Horizon State',      sub: 'The full protocol — arrive, listen, embark.', route: '/tools/horizon-state' },
   { label: 'Horizon Practice',   sub: 'The morning sequence.',                        route: '/tools/horizon-practice' },
   { label: 'Consistency challenge', sub: 'Your cadence, streak, and showing up.',      route: '/tools/horizon-practice' },

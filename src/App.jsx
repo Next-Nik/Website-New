@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from '
 import { useAuth } from './hooks/useAuth'
 import { supabase } from './hooks/useSupabase'
 import { hasMapEngagement } from './app/util/onboarding'
-import { ActingAsProvider } from './app/context/ActingAsContext'
 import { useEffect, useState, Component } from 'react'
 import { BottomTabs } from './components/BottomTabs'
 
@@ -115,6 +114,7 @@ import SentenceCompletion                          from './app/pages/SentenceCom
 import IAmPractice                                 from './app/pages/IAmPractice'
 import MorningPages                                 from './app/pages/MorningPages'
 import DailyEntrances                               from './app/pages/DailyEntrances'
+import Training                                     from './app/pages/Training'
 import AnchorBreathPage                             from './app/pages/AnchorBreathPage'
 import ChargeBreathPage                             from './app/pages/ChargeBreathPage'
 import PlanetMap                                    from './tools/planet/PlanetMap'
@@ -289,6 +289,7 @@ function AppInner() {
         <Route path="/tools/i-am"                element={<IAmPractice />} />
         <Route path="/tools/morning-pages"       element={<MorningPages />} />
         <Route path="/daily"                     element={<DailyEntrances />} />
+        <Route path="/tools/training"            element={<Training />} />
         <Route path="/tools/anchor-breath"       element={<AnchorBreathPage />} />
         <Route path="/tools/charge-breath"       element={<ChargeBreathPage />} />
         <Route path="/tools/planet"              element={<PlanetMap />} />  {/* founder-only beta — gate inside PlanetMap */}
@@ -416,9 +417,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
-        <ActingAsProvider>
-          <AppInner />
-        </ActingAsProvider>
+        <AppInner />
       </BrowserRouter>
     </ErrorBoundary>
   )
