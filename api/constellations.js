@@ -410,5 +410,39 @@ module.exports = async (req, res) => {
     return res.json({ routed: true, sibling_call_id: sibling.id, sibling_title: sibling.title })
   }
 
+  // ── meter ────────────────────────────────────────────────────────────────
+  // The constellation participation meter: the whole rising from the parts.
+  // One tick = one person in (taken_on_count), summed across every community
+  // challenge in the domain. Parts are returned as contributors to a shared
+  // whole — never ranked competitively (honesty locks). The domain is the
+  // binding for v1; a horizon_goal_id filter can tighten it later.
+  if (action === 'meter') {
+    const { domain } = body
+    if (!domain) return res.status(400).json({ error: 'domain required' })
+
+    const { data: calls, error } = await supabase
+      .from('actor_calls')
+      .select('id, title, slug, taken_on_count, active_count, actor_id, nextus_actors ( name )')
+      .eq('visibility', 'community')
+      .eq('type', 'challenge')
+      .eq('domain', domain)
+    if (error) return res.status(500).json({ error: error.message })
+
+    const rows  = calls || []
+    const total = rows.reduce((s, c) => s + (c.taken_on_count || 0), 0)
+    const parts = rows
+      .map(c => ({
+        id:       c.id,
+        title:    c.title,
+        slug:     c.slug,
+        by:       c.nextus_actors?.name || null,
+        count:    c.taken_on_count || 0,
+      }))
+      .filter(p => p.count > 0)
+      .sort((a, b) => b.count - a.count)   // largest segment first for the bar, not a public rank
+
+    return res.json({ domain, total, count: rows.length, parts })
+  }
+
   return res.status(400).json({ error: `Unknown action: ${action}` })
 }

@@ -5,6 +5,11 @@ import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 import { tokens, serif, body, sc } from '../../lib/designTokens'
 import { DOMAIN_COLORS } from '../../constants/domainColors'
+import ChallengeIdentityVoice from '../components/challenge/ChallengeIdentityVoice'
+import ChallengeLineage from '../components/challenge/ChallengeLineage'
+import BroadcastComposer from '../components/challenge/BroadcastComposer'
+import BroadcastFeed from '../components/challenge/BroadcastFeed'
+import ConstellationMeter from '../components/challenge/ConstellationMeter'
 
 // ─── Design shortcuts ─────────────────────────────────────────────────────────
 
@@ -753,7 +758,14 @@ export function ChallengePage() {
               )}
             </div>
           </div>
-        )}
+
+        {/* ── Constellation surfaces (June 2026) ── */}
+        <ChallengeIdentityVoice call={call} colour={colour} />
+        <ChallengeLineage callId={call.id} colour={colour} />
+        {user && isAuthor
+          ? <BroadcastComposer call={call} userId={user.id} colour={colour} />
+          : (alreadyJoined && <BroadcastFeed callId={call.id} userId={user?.id} authorName={authorName} colour={colour} />)}
+        {!isAsk && <ConstellationMeter domain={call.domain} colour={colour} />}
 
         {/* Author feedback — only the author sees this */}
         {isAuthor && (
