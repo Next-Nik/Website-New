@@ -110,7 +110,7 @@ module.exports = async (req, res) => {
         duration_days, measure, mechanism, protocol,
         taken_on_count, active_count, completed_count,
         visibility, source, created_at, updated_at,
-        actor_id, user_id, parent_call_id, author_statement,
+        actor_id, user_id, parent_call_id, author_statement, body_long, video_url, intensity_level,
         nextus_actors ( id, name, slug, type, description, image_url, profile_owner )
       `)
       .eq('slug', slug)
@@ -184,6 +184,9 @@ module.exports = async (req, res) => {
       tagline: rest.tagline || null,
       parent_call_id: rest.parent_call_id || null,
       author_statement: rest.author_statement || null,
+      body_long: rest.body_long || null,
+      video_url: rest.video_url || null,
+      intensity_level: rest.intensity_level || null,
       protocol,
       visibility: 'draft',
       source: 'self',
@@ -214,7 +217,7 @@ module.exports = async (req, res) => {
       }
     }
     const safe = {}
-    const editable = ['title','tagline','type','scale','domain','horizon_goal_text','the_move','cadence','cadence_note','duration_days','measure','mechanism','protocol','ask_quantity','ask_deadline','parent_call_id','author_statement']
+    const editable = ['title','tagline','type','scale','domain','horizon_goal_text','the_move','cadence','cadence_note','duration_days','measure','mechanism','protocol','ask_quantity','ask_deadline','parent_call_id','author_statement','body_long','video_url','intensity_level']
     editable.forEach(k => { if (k in patch) safe[k] = patch[k] })
     safe.updated_at = new Date().toISOString()
     const { data, error } = await supabase.from('actor_calls').update(safe).eq('id', call_id).select('*').single()
@@ -677,18 +680,19 @@ module.exports = async (req, res) => {
   // by default so what people are doing rises. Strand count travels; the full
   // protocol does not.
   if (action === 'browse_challenges') {
-    const { domain, limit = 48, offset = 0, sort = 'popular' } = body
+    const { domain, intensity = null, limit = 48, offset = 0, sort = 'popular' } = body
     let q = supabase
       .from('actor_calls')
       .select(`
         id, title, tagline, slug, scale, domain, duration_days,
-        taken_on_count, active_count, protocol, created_at,
+        taken_on_count, active_count, protocol, created_at, intensity_level,
         nextus_actors ( name, slug, image_url, type )
       `)
       .eq('type', 'challenge')
       .eq('visibility', 'community')
 
     if (domain) q = q.eq('domain', domain)
+    if (intensity) q = q.eq('intensity_level', intensity)
     if (sort === 'newest') q = q.order('created_at', { ascending: false })
     else q = q.order('taken_on_count', { ascending: false }).order('created_at', { ascending: false })
     q = q.range(offset, offset + limit - 1)
@@ -699,6 +703,7 @@ module.exports = async (req, res) => {
       id: c.id, title: c.title, tagline: c.tagline, slug: c.slug,
       scale: c.scale, domain: c.domain, duration_days: c.duration_days,
       taken_on_count: c.taken_on_count, active_count: c.active_count,
+      intensity_level: c.intensity_level || null,
       author: c.nextus_actors || null,
       strand_count: Array.isArray(c.protocol) ? c.protocol.length : 0,
     }))

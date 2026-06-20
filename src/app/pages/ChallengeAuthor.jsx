@@ -16,6 +16,9 @@ import { tokens, serif, body, sc } from '../../lib/designTokens'
 import {
   SELF_DOMAINS, CIV_DOMAINS, SELF_TO_ATLAS_MAP, DOMAIN_HORIZON_GOALS,
 } from '../constants/domains'
+import { INTENSITY_LEVELS } from '../../constants/challengeIntensity'
+import IntensityInfo from '../components/challenge/IntensityInfo'
+import ChiliRung from '../components/challenge/ChiliRung'
 
 const GOLD_C = tokens.goldChrome
 const hair   = '1px solid rgba(200,146,42,0.18)'
@@ -85,6 +88,9 @@ export default function ChallengeAuthor() {
   const [keySeq,      setKeySeq]      = useState(2)
   const [parentCallId,    setParentCallId]    = useState('')   // builds-on: sets parent_call_id
   const [authorStatement, setAuthorStatement] = useState('')   // in their words: sets author_statement
+  const [bodyLong,        setBodyLong]        = useState('')   // a longer piece
+  const [videoUrl,        setVideoUrl]        = useState('')   // optional video link
+  const [intensity,       setIntensity]       = useState(null) // optional 1–5
   const [parentOptions,   setParentOptions]   = useState([])
 
   // Eligible parents: community challenges in the same domain. Clears the
@@ -246,6 +252,9 @@ export default function ChallengeAuthor() {
       measure: measure.trim(), mechanism: mechanism.trim(),
       parent_call_id: parentCallId || null,
       author_statement: authorStatement.trim() || null,
+      body_long: bodyLong.trim() || null,
+      video_url: videoUrl.trim() || null,
+      intensity_level: intensity || null,
       protocol: cleanStrands,
     }
   }
@@ -475,6 +484,43 @@ export default function ChallengeAuthor() {
               <Label>In your words (optional)</Label>
               <textarea value={authorStatement} onChange={e => setAuthorStatement(e.target.value)} rows={2}
                 placeholder="One line in your own voice — shown on the challenge page" style={{ ...inputStyle, resize: 'vertical' }} />
+            </div>
+
+            <div>
+              <Label>A longer piece (optional)</Label>
+              <textarea value={bodyLong} onChange={e => setBodyLong(e.target.value)} rows={6}
+                placeholder="Room to say more — the fuller invitation, in your own hand. Shown as paragraphs on the challenge page." style={{ ...inputStyle, resize: 'vertical' }} />
+            </div>
+
+            <div>
+              <Label>Video link (optional)</Label>
+              <input type="text" value={videoUrl} onChange={e => setVideoUrl(e.target.value)}
+                placeholder="A YouTube or Vimeo link — embedded on the page" style={inputStyle} />
+            </div>
+
+            <div>
+              <Label>Intensity (optional) <IntensityInfo colour={GOLD_C} /></Label>
+              <p style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.6, margin: '0 0 10px' }}>
+                Like a spiciness level on a menu, so people can find what they can take on. It orients, it never ranks.
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {INTENSITY_LEVELS.map(l => {
+                  const on = intensity === l.level
+                  return (
+                    <button key={l.level} type="button" title={l.blurb}
+                      onClick={() => setIntensity(on ? null : l.level)}
+                      style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', cursor: 'pointer',
+                        display: 'inline-flex', alignItems: 'center', gap: '7px',
+                        border: `1px solid ${on ? GOLD_C : 'rgba(200,146,42,0.28)'}`,
+                        background: on ? 'rgba(200,146,42,0.10)' : 'transparent',
+                        color: on ? tokens.gold : tokens.ghost,
+                        borderRadius: '24px', padding: '8px 14px' }}>
+                      <ChiliRung level={l.level} size={13} />
+                      {l.label}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
 
             {parentOptions.length > 0 && (

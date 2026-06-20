@@ -5,6 +5,9 @@ import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 import { tokens, serif, body, sc } from '../../lib/designTokens'
 import { DOMAIN_COLORS } from '../../constants/domainColors'
+import { INTENSITY_BY_LEVEL } from '../../constants/challengeIntensity'
+import IntensityInfo from '../components/challenge/IntensityInfo'
+import ChiliRung from '../components/challenge/ChiliRung'
 import ChallengeIdentityVoice from '../components/challenge/ChallengeIdentityVoice'
 import ChallengeLineage from '../components/challenge/ChallengeLineage'
 import BroadcastComposer from '../components/challenge/BroadcastComposer'
@@ -17,6 +20,19 @@ const gold   = { color: tokens.gold }
 const muted  = { color: 'rgba(15,21,35,0.78)' }
 const hair   = '1px solid rgba(200,146,42,0.18)'
 const GOLD_C = tokens.goldChrome
+
+// Turn a YouTube or Vimeo URL into an embeddable src. Returns null otherwise,
+// so an unrecognised or empty link simply renders nothing.
+function videoEmbedSrc(url) {
+  if (!url) return null
+  const u = String(url).trim()
+  let m
+  if ((m = u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/)))
+    return `https://www.youtube.com/embed/${m[1]}`
+  if ((m = u.match(/vimeo\.com\/(?:video\/)?(\d+)/)))
+    return `https://player.vimeo.com/video/${m[1]}`
+  return null
+}
 
 function Eyebrow({ children, style = {} }) {
   return (
@@ -698,6 +714,15 @@ export function ChallengePage() {
               </div>
             )}
             {/* Cadence + duration */}
+            {INTENSITY_BY_LEVEL[call.intensity_level] && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+                <ChiliRung level={call.intensity_level} size={18} />
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.6)', textTransform: 'uppercase' }}>
+                  {INTENSITY_BY_LEVEL[call.intensity_level].label}
+                </span>
+                <IntensityInfo />
+              </div>
+            )}
             <div style={{ display: 'grid', gridTemplateColumns: strands.length > 1 ? '1fr' : '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
               {strands.length <= 1 && (
                 <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
@@ -716,6 +741,27 @@ export function ChallengePage() {
                 <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.55 }}>{call.duration_days} days</div>
               </div>
             </div>
+            {call.body_long && (
+              <div style={{ marginBottom: '20px' }}>
+                {String(call.body_long).split(/\n{2,}/).map((para, i) => (
+                  <p key={i} style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.75, margin: i === 0 ? '0 0 14px' : '0 0 14px' }}>
+                    {para.split('\n').map((line, j) => <span key={j}>{j > 0 && <br />}{line}</span>)}
+                  </p>
+                ))}
+              </div>
+            )}
+            {videoEmbedSrc(call.video_url) && (
+              <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', borderRadius: '12px', overflow: 'hidden', border: hair, marginBottom: '20px' }}>
+                <iframe
+                  src={videoEmbedSrc(call.video_url)}
+                  title="Challenge video"
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', border: 'none' }}
+                />
+              </div>
+            )}
             {(call.horizon_goal_text || call.mechanism || call.measure) && (
               <div style={{ marginBottom: '20px' }}>
                 {call.horizon_goal_text && <div style={{ marginBottom: '14px' }}><Eyebrow>Horizon goal</Eyebrow><p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: 0 }}>{call.horizon_goal_text}</p></div>}

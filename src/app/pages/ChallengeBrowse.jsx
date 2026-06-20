@@ -11,6 +11,8 @@ import { tokens, serif, body, sc } from '../../lib/designTokens'
 import {
   SELF_DOMAINS, CIV_DOMAINS, SELF_DOMAIN_COLORS, DOMAIN_COLORS,
 } from '../constants/domains'
+import { INTENSITY_LEVELS, INTENSITY_BY_LEVEL } from '../../constants/challengeIntensity'
+import ChiliRung from '../components/challenge/ChiliRung'
 
 const hair  = '1px solid rgba(200,146,42,0.18)'
 const muted = { color: 'rgba(15,21,35,0.78)' }
@@ -45,6 +47,12 @@ function Card({ c }) {
         <span>{c.duration_days || 90} days</span>
         <span>{c.strand_count || 1} {(c.strand_count || 1) === 1 ? 'part' : 'parts'}</span>
         {n > 0 && <span style={{ color: tokens.gold }}>{n.toLocaleString()} {n === 1 ? 'person' : 'people'} in</span>}
+        {INTENSITY_BY_LEVEL[c.intensity_level] && (
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <ChiliRung level={c.intensity_level} size={13} />
+            {INTENSITY_BY_LEVEL[c.intensity_level].label}
+          </span>
+        )}
       </div>
       {c.author?.name && (
         <div style={{ ...body, fontSize: '14px', color: tokens.ghost, marginTop: '12px', paddingTop: '12px', borderTop: hair }}>
@@ -59,6 +67,7 @@ export default function ChallengeBrowse() {
   const [rows, setRows]       = useState([])
   const [loading, setLoading] = useState(true)
   const [domain, setDomain]   = useState('')   // '' = all
+  const [intensity, setIntensity] = useState(null) // null = any
 
   useEffect(() => {
     let live = true
@@ -78,7 +87,7 @@ export default function ChallengeBrowse() {
     return Array.from(set)
   }, [rows])
 
-  const shown = domain ? rows.filter(r => r.domain === domain) : rows
+  const shown = rows.filter(r => (!domain || r.domain === domain) && (!intensity || r.intensity_level === intensity))
 
   return (
     <div style={{ minHeight: '100dvh', background: tokens.bg }}>
@@ -108,6 +117,22 @@ export default function ChallengeBrowse() {
                   background: domain === d.slug ? 'rgba(200,146,42,0.08)' : 'transparent',
                   color: domain === d.slug ? tokens.gold : tokens.ghost }}>
                 {d.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Intensity filter (the menu's spiciness scale) */}
+        {rows.some(r => r.intensity_level) && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '26px' }}>
+            {[{ level: null, label: 'Any intensity' }, ...INTENSITY_LEVELS].map(l => (
+              <button key={l.level || 'any'} type="button" onClick={() => setIntensity(l.level)}
+                title={l.blurb || ''}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '6px 15px', borderRadius: '20px', cursor: 'pointer',
+                  border: `1px solid ${intensity === l.level ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.28)'}`,
+                  background: intensity === l.level ? 'rgba(200,146,42,0.08)' : 'transparent',
+                  color: intensity === l.level ? tokens.gold : tokens.ghost }}>
+                {l.level ? `${l.level} · ${l.label}` : l.label}
               </button>
             ))}
           </div>
