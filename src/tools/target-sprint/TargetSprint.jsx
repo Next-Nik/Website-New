@@ -703,7 +703,11 @@ function EditableList({ items, onSave, addLabel = '+ Add', itemKey = 'text' }) {
   const [editing, setEditing] = useState(false)
   const [local,   setLocal]   = useState(items)
 
-  useEffect(() => setLocal(items), [items])
+  // Sync from props only while NOT editing. Most call sites pass a fresh
+  // `[{ text: … }]` literal every render, so an unguarded reset would wipe
+  // the user's in-progress edits the moment the parent re-renders for any
+  // reason. While editing, `local` is the sole source of truth.
+  useEffect(() => { if (!editing) setLocal(items) }, [items, editing])
 
   if (!editing) {
     return (
