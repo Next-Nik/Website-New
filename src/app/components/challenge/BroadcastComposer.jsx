@@ -35,7 +35,7 @@ export default function BroadcastComposer({ call, userId, colour }) {
       })
       const d = await r.json()
       if (!d.error) {
-        setSent({ reached: d.reached })
+        setSent({ reached: d.reached, emailed: d.emailed || 0 })
         setRecent(prev => [d.broadcast, ...prev])
         setText('')
       }
@@ -67,7 +67,7 @@ export default function BroadcastComposer({ call, userId, colour }) {
         </div>
         {sent && (
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: tokens.gold, marginTop: '12px' }}>
-            Sent · reached {sent.reached} running this · the branches below have their own authors
+            Sent · reached {sent.reached} running this{sent.emailed > 0 ? ` · emailed ${sent.emailed}` : ''} · the branches below have their own authors
           </div>
         )}
       </div>

@@ -13,6 +13,8 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
+const { Resend } = require('resend')
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 // True if userId authored call_id (directly, or as owner of the authoring actor).
 async function isCallAuthor(callId, userId) {
@@ -45,6 +47,68 @@ async function participantRow(callId, userId) {
   return data || null
 }
 
+function escapeHtml(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+function digestHtml({ authorName, title, body, url }) {
+  const safeBody = escapeHtml(body).replace(/\n/g, '<br>')
+  return `
+  <div style="max-width:520px;margin:0 auto;padding:32px 24px;font-family:Georgia,'Times New Roman',serif;color:#0F1523;background:#FAFAF7;">
+    <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#A8721A;">A NextUs Challenge</div>
+    <div style="font-size:24px;line-height:1.2;color:#0F1523;margin:6px 0 4px;">${escapeHtml(title)}</div>
+    <div style="font-size:13px;letter-spacing:0.06em;color:#4A8C6F;text-transform:uppercase;">Update from ${escapeHtml(authorName)}</div>
+    <div style="height:1px;background:rgba(200,146,42,0.25);margin:18px 0;"></div>
+    <p style="font-size:16px;line-height:1.6;color:rgba(15,21,35,0.82);margin:0 0 22px;">${safeBody}</p>
+    <a href="${url}" style="display:inline-block;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;color:#FFFFFF;background:#C8922A;text-decoration:none;border-radius:30px;padding:11px 24px;">Open the challenge</a>
+    <div style="height:1px;background:rgba(200,146,42,0.18);margin:24px 0 14px;"></div>
+    <p style="font-size:13px;line-height:1.6;color:rgba(15,21,35,0.55);margin:0;">
+      You're receiving this because you took on ${escapeHtml(title)}. Mute updates any time on the challenge page; your run continues either way.
+    </p>
+  </div>`
+}
+
+// Best-effort email digest to a challenge's un-muted, active takers. Never the
+// author, never the branches below — scoped to this one call_id (no cascade).
+// Returns the number of recipients emailed. Throws nothing the caller must catch.
+async function sendDigest(callId, body) {
+  const { data: call } = await supabase
+    .from('actor_calls')
+    .select('title, slug, user_id, nextus_actors ( name )')
+    .eq('id', callId)
+    .maybeSingle()
+  if (!call) return 0
+
+  const { data: parts } = await supabase
+    .from('actor_call_participants')
+    .select('user_id')
+    .eq('call_id', callId)
+    .eq('status', 'active')
+    .eq('muted', false)
+  const ids = [...new Set((parts || []).map(p => p.user_id).filter(id => id && id !== call.user_id))]
+  if (ids.length === 0) return 0
+
+  const { data: users } = await supabase.from('users').select('email').in('id', ids)
+  const emails = (users || []).map(u => u.email).filter(Boolean)
+  if (emails.length === 0) return 0
+
+  const authorName = call.nextus_actors?.name || 'The author'
+  const subject = `Update from ${authorName} · ${call.title}`
+  const html = digestHtml({ authorName, title: call.title, body, url: `https://nextus.world/stretch/c/${call.slug}` })
+
+  // One recipient per message (privacy), batched in chunks of 100.
+  let sent = 0
+  for (let i = 0; i < emails.length; i += 100) {
+    const chunk = emails.slice(i, i + 100).map(to => ({
+      from: 'NextUs <outreach@nextus.world>', to, subject, html,
+    }))
+    try { await resend.batch.send(chunk); sent += chunk.length } catch { /* best effort */ }
+  }
+  return sent
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
@@ -71,8 +135,13 @@ module.exports = async (req, res) => {
       .eq('call_id', call_id)
       .eq('status', 'active')
 
-    // Email digest is opt-in and best-effort; never block the post on it.
-    return res.json({ broadcast: data, reached: count || 0 })
+    // Email digest is opt-in and best-effort; never block or fail the post on it.
+    let emailed = 0
+    if (send_email) {
+      try { emailed = await sendDigest(call_id, data.body) } catch { emailed = 0 }
+    }
+
+    return res.json({ broadcast: data, reached: count || 0, emailed })
   }
 
   // ── list ──────────────────────────────────────────────────────────────────
