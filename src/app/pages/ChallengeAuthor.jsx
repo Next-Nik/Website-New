@@ -83,6 +83,25 @@ export default function ChallengeAuthor() {
   const [durCustom,   setDurCustom]   = useState(60)
   const [strands,     setStrands]     = useState([{ key: 1, text: '', cadence: '5-of-7' }])
   const [keySeq,      setKeySeq]      = useState(2)
+  const [parentCallId,    setParentCallId]    = useState('')   // builds-on: sets parent_call_id
+  const [authorStatement, setAuthorStatement] = useState('')   // in their words: sets author_statement
+  const [parentOptions,   setParentOptions]   = useState([])
+
+  // Eligible parents: community challenges in the same domain. Clears the
+  // selection whenever the domain changes so a parent never outlives its domain.
+  useEffect(() => {
+    if (!domain) { setParentOptions([]); setParentCallId(''); return }
+    let live = true
+    setParentCallId('')
+    fetch('/api/actor-calls', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'browse_challenges', domain, limit: 50, sort: 'popular' }),
+    })
+      .then(r => r.json())
+      .then(d => { if (live) setParentOptions(d.challenges || []) })
+      .catch(() => {})
+    return () => { live = false }
+  }, [domain])
 
   const [errors,    setErrors]    = useState([])
   const [saving,    setSaving]    = useState(false)
@@ -225,6 +244,8 @@ export default function ChallengeAuthor() {
       horizon_goal_text: horizonText.trim(),
       the_move, cadence, duration_days,
       measure: measure.trim(), mechanism: mechanism.trim(),
+      parent_call_id: parentCallId || null,
+      author_statement: authorStatement.trim() || null,
       protocol: cleanStrands,
     }
   }
@@ -449,6 +470,25 @@ export default function ChallengeAuthor() {
               <textarea value={mechanism} onChange={e => setMechanism(e.target.value)} rows={2}
                 placeholder="The mechanism — why doing this moves the needle" style={{ ...inputStyle, resize: 'vertical' }} />
             </div>
+
+            <div>
+              <Label>In your words (optional)</Label>
+              <textarea value={authorStatement} onChange={e => setAuthorStatement(e.target.value)} rows={2}
+                placeholder="One line in your own voice — shown on the challenge page" style={{ ...inputStyle, resize: 'vertical' }} />
+            </div>
+
+            {parentOptions.length > 0 && (
+              <div>
+                <Label>Builds on (optional)</Label>
+                <select value={parentCallId} onChange={e => setParentCallId(e.target.value)} style={inputStyle}>
+                  <option value="">A root — stands on its own</option>
+                  {parentOptions.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
+                </select>
+                <p style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.6, margin: '6px 0 0' }}>
+                  Hang this beneath a challenge it continues. It joins that challenge's living tree.
+                </p>
+              </div>
+            )}
 
             {errors.length > 0 && (
               <div style={{ background: 'rgba(214,56,56,0.06)', border: '1px solid rgba(214,56,56,0.3)', borderRadius: '10px', padding: '12px 16px' }}>

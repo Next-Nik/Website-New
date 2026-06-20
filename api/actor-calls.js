@@ -110,7 +110,7 @@ module.exports = async (req, res) => {
         duration_days, measure, mechanism, protocol,
         taken_on_count, active_count, completed_count,
         visibility, source, created_at, updated_at,
-        actor_id, user_id,
+        actor_id, user_id, parent_call_id, author_statement,
         nextus_actors ( id, name, slug, type, description, image_url, profile_owner )
       `)
       .eq('slug', slug)
@@ -182,6 +182,8 @@ module.exports = async (req, res) => {
       measure: rest.measure || null,
       mechanism: rest.mechanism || null,
       tagline: rest.tagline || null,
+      parent_call_id: rest.parent_call_id || null,
+      author_statement: rest.author_statement || null,
       protocol,
       visibility: 'draft',
       source: 'self',
@@ -203,8 +205,16 @@ module.exports = async (req, res) => {
     if (!owned && existing.actor_id) owned = await ownsActor(existing.actor_id, userId)
     if (!owned) return res.status(403).json({ error: 'Not your call' })
     if (existing.visibility !== 'draft') return res.status(409).json({ error: 'Published calls cannot be edited (withdraw first).' })
+    // Lineage cycle guard: a challenge can't build on itself or one of its own branches.
+    if (patch.parent_call_id) {
+      if (patch.parent_call_id === call_id) return res.status(400).json({ error: 'A challenge cannot build on itself.' })
+      const { data: desc } = await supabase.rpc('challenge_descendants', { p_call_id: call_id, p_max_depth: null })
+      if ((desc || []).some(d => d.id === patch.parent_call_id)) {
+        return res.status(400).json({ error: 'A challenge cannot build on one of its own branches.' })
+      }
+    }
     const safe = {}
-    const editable = ['title','tagline','type','scale','domain','horizon_goal_text','the_move','cadence','cadence_note','duration_days','measure','mechanism','protocol','ask_quantity','ask_deadline']
+    const editable = ['title','tagline','type','scale','domain','horizon_goal_text','the_move','cadence','cadence_note','duration_days','measure','mechanism','protocol','ask_quantity','ask_deadline','parent_call_id','author_statement']
     editable.forEach(k => { if (k in patch) safe[k] = patch[k] })
     safe.updated_at = new Date().toISOString()
     const { data, error } = await supabase.from('actor_calls').update(safe).eq('id', call_id).select('*').single()
