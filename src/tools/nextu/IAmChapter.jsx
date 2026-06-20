@@ -88,6 +88,18 @@ export function IAmChapterPage() {
     if (wantDomain && DOMAIN_ORDER.includes(wantDomain)) setActive(wantDomain)
   }, [wantDomain])
 
+  // Pin the active domain once the data lands. Without this, `current`
+  // derives from the live next-missing domain — and the first keystroke
+  // (which fills that domain) makes it no longer missing, advancing
+  // `current` to the next blank domain and ejecting the writer mid-word.
+  // Pinned, the surface only moves on an explicit declare / revisit / ?domain.
+  useEffect(() => {
+    if (loading || active) return
+    if (wantDomain && DOMAIN_ORDER.includes(wantDomain)) return  // handled above
+    if (nextMissing) setActive(nextMissing)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading])
+
   // keep the draft in sync when the active domain changes
   useEffect(() => {
     setDraft(byDomain[current]?.ia_statement || '')
