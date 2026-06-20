@@ -41,6 +41,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { useAuth } from '../../hooks/useAuth'
 import { Nav } from '../../components/Nav'
 import HorizonFloorAdmissionCheck from '../components/HorizonFloorAdmissionCheck'
+import SeedTab from '../components/admin/SeedTab'
 import PrincipleStrip from '../components/PrincipleStrip'
 
 // ── Beta constants — import instead of inline ─────────────────
@@ -250,7 +251,7 @@ function HorizonFloorModal({ domainSlug, contextLabel, onResolve, onCancel }) {
 
 // ── Tab navigation ────────────────────────────────────────────
 
-const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Place', 'Flags', 'Chains', 'Practices', 'Floor', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
+const TABS = ['Now', 'Platform', 'Actors', 'Add', 'Seed', 'Place', 'Flags', 'Chains', 'Practices', 'Floor', 'Domain Data', 'Indicators', 'Subdomains', 'Needs', 'Contributions', 'Waitlist', 'Resources', 'Groups', 'Members', 'Entitlements', 'Users', 'Grants']
 
 function TabBar({ active, setActive }) {
   return (
@@ -4340,6 +4341,7 @@ export function AdminConsolePage() {
         {tab === 'Platform'      && <PlatformTab onNavigate={setTab} />}
         {tab === 'Actors'        && <ActorsTab       toast={showToast} />}
         {tab === 'Add'           && <AddTab          toast={showToast} />}
+        {tab === 'Seed'          && <SeedTab         toast={showToast} />}
         {tab === 'Place'         && <PlaceTab        toast={showToast} />}
         {tab === 'Flags'         && <FlagsTab        toast={showToast} />}
         {tab === 'Chains'        && <ChainsTab       toast={showToast} />}
