@@ -410,6 +410,44 @@ module.exports = async (req, res) => {
     return res.json({ routed: true, sibling_call_id: sibling.id, sibling_title: sibling.title })
   }
 
+  // ── get_constellation_page ────────────────────────────────────────────────
+  // Everything the public constellation landing needs in one call: the goal,
+  // the actors in the domain (by domain membership, so seeded founding orgs
+  // surface even before they set a primary goal), the community challenges, and
+  // the summed total. Actors are listed, never ranked (honesty locks).
+  if (action === 'get_constellation_page') {
+    const { domain } = body
+    if (!domain) return res.status(400).json({ error: 'domain required' })
+
+    const { data: goal } = await supabase
+      .from('horizon_goal_objects').select('*').eq('domain', domain).maybeSingle()
+    if (!goal) return res.status(404).json({ error: 'Not found' })
+
+    // Actors by domain membership: domains[] contains the slug, or legacy domain_id.
+    const [byArray, byLegacy] = await Promise.all([
+      supabase.from('nextus_actors')
+        .select('id, name, slug, type, image_url, tagline, domains')
+        .eq('status', 'live').contains('domains', [domain]).limit(60),
+      supabase.from('nextus_actors')
+        .select('id, name, slug, type, image_url, tagline, domains')
+        .eq('status', 'live').eq('domain_id', domain).limit(60),
+    ])
+    const seen = new Set()
+    const actors = [...(byArray.data || []), ...(byLegacy.data || [])]
+      .filter(a => (seen.has(a.id) ? false : (seen.add(a.id), true)))
+      .sort((a, b) => a.name.localeCompare(b.name))
+
+    const { data: calls } = await supabase
+      .from('actor_calls')
+      .select('id, title, slug, type, the_move, taken_on_count, active_count, parent_call_id, nextus_actors ( name )')
+      .eq('visibility', 'community').eq('type', 'challenge').eq('domain', domain)
+      .order('taken_on_count', { ascending: false }).limit(24)
+
+    const total = (calls || []).reduce((s, c) => s + (c.taken_on_count || 0), 0)
+
+    return res.json({ goal, actors, calls: calls || [], total })
+  }
+
   // ── meter ────────────────────────────────────────────────────────────────
   // The constellation participation meter: the whole rising from the parts.
   // One tick = one person in (taken_on_count), summed across every community
