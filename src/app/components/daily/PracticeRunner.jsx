@@ -300,8 +300,11 @@ export default function PracticeRunner({
         <div style={{ width: '100%' }}>{renderBlock()}</div>
       </div>
 
-      {/* the one nav rail — Back on every beat, Continue where the beat
-          has no commit of its own (the writing tools and pass-throughs) */}
+      {/* the one nav rail · Back and Forward on EVERY beat, so the walk
+          is never a trap. On writing tools and pass-throughs the Forward
+          is the solid primary (the beat has no commit of its own). On the
+          compact beats, the block owns its own primary action, so the
+          rail's Forward is a quiet "carry on" that always lets you move. */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         gap: '12px', padding: '14px 20px calc(18px + env(safe-area-inset-bottom))',
@@ -319,8 +322,17 @@ export default function PracticeRunner({
           >← Back</button>
         ) : <span />}
 
-        {(isPage || isPassThrough) && (
+        {(isPage || isPassThrough) ? (
           <StepButton solid onClick={next}>{isLast ? 'Done' : 'Continue →'}</StepButton>
+        ) : (
+          <button
+            onClick={next}
+            style={{
+              ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
+              background: 'transparent', border: `1px solid ${tokens.goldFaint}`, cursor: 'pointer',
+              color: tokens.gold, borderRadius: '40px', padding: '10px 22px',
+            }}
+          >{isLast ? 'Done →' : 'Carry on →'}</button>
         )}
       </div>
     </div>

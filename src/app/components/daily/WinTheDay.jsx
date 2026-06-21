@@ -1,39 +1,32 @@
 // ─────────────────────────────────────────────────────────────
 // WinTheDay.jsx
 //
-// The Get To Do morning practice: Nikhedonia — anticipating
-// victory. Three beats:
+// The Get To Do morning beat, rebuilt as a real open-and-close loop.
 //
-//   1. The framing (once, ever) — installs what "winning"
-//      means here: winning WITH, not winning over. Effort and
-//      being, not outcome. Shown on first open, then lives
-//      behind the ⓘ beside the header.
-//   2. The field — today's material: tasks from the active
-//      Target Stretch plus freehand adds. Pick up to three wins.
-//   3. The pre-living — one win at a time, full card. Press and
-//      hold while the flame fills (~2.6s): the hold IS the
-//      visualization beat. Release early and it resets. On
-//      completion, a haptic pulse, and the next win slides in.
+//   Set    · one line: "What's the one thing that would make today
+//            a win?" You write it. Then, optionally, bonus wins.
+//   Play   · the day in motion. The one win sits at the top with a
+//            check; bonus wins below. Close each loop as you land it.
 //
-// Closes with one optional won-tense line — "Tonight, what's
-// true?" — written by the user, resurfaced above the evening
-// journal at Embark.
+// Everything writes to get_to_do_items (migration 136), the same
+// table the Mission Control Get To Do tile reads, so there is one
+// source of truth. The one win is a daily item with is_priority=true
+// and due_date=today; bonus wins are is_priority=false. "Done" is
+// completed_at. No new table.
 //
-// Winning is dealing with the day powerfully, not clearing the
-// list. The evening confirms effort ("Showed up"), never outcome.
-// That confirmation happens at Embark, not here.
+// What winning means here lives behind the ⓘ, not as a screen you
+// have to walk through: winning with, not over. Effort and being,
+// not outcome.
 //
 // Props:
-//   sprintData   — target_sprint_session rows (from
-//                  useMissionControlData), source of the field
-//   wins         — current session wins array (may be from an
-//                  earlier visit today; flow resumes done state)
-//   victoryLine  — current session victory line
-//   onComplete   — ({ wins, victoryLine }) => void
-//   onClose      — () => void (back to deck without completing)
+//   userId       · optional; resolved from auth if absent
+//   sprintData   · target_sprint rows; source of optional quick-adds
+//   onComplete   · () => void   (walk advances / panel closes)
+//   onClose      · () => void   (back without finishing)
 // ─────────────────────────────────────────────────────────────
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { supabase } from '../../../hooks/useSupabase'
 
 const GOLD     = '#C8922A'
 const GOLD_DK  = '#A8721A'
@@ -44,410 +37,423 @@ const DISP     = "'Cormorant Garamond', Georgia, serif"
 const META     = 'rgba(15,21,35,0.72)'
 const FAINT    = 'rgba(15,21,35,0.55)'
 const RULE     = 'rgba(200,146,42,0.20)'
-
-const FRAMING_KEY = 'nextus_wtd_framing_seen'
-const MAX_WINS    = 3
-const HOLD_MS     = 2600
+const TINT     = 'rgba(200,146,42,0.05)'
 
 const DOMAIN_LABELS = {
   path: 'Path', spark: 'Spark', body: 'Body', finances: 'Finances',
   connection: 'Connection', inner_game: 'Inner Game', signal: 'Signal',
 }
 
-// ─── Framing screen ───────────────────────────────────────────
+// ── date helpers · mirror GetToDoMissionPanel so the daily lane
+//    reconciles identically (week runs Mon–Sun) ─────────────────
+function localDateStr(date = new Date()) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+function weekAnchor(date = new Date()) {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+  const offset = (d.getDay() + 6) % 7
+  d.setDate(d.getDate() - offset)
+  return localDateStr(d)
+}
 
-function Framing({ onDismiss }) {
+// ── small flame mark (presentation attributes only, no style=) ──
+function Flame({ size = 16, lit = false }) {
   return (
-    <div
-      onClick={onDismiss}
-      style={{
-        padding: '36px 24px', textAlign: 'center', cursor: 'pointer',
-        display: 'flex', flexDirection: 'column', alignItems: 'center',
-      }}
-    >
-      <span style={{ fontFamily: SC, fontSize: '12px', letterSpacing: '0.22em', color: GOLD_DK, textTransform: 'uppercase', marginBottom: '18px' }}>
-        Win the Day
-      </span>
-      <p style={{ fontFamily: BODY, fontSize: '1.125rem', color: INK, lineHeight: 1.8, margin: '0 0 14px', maxWidth: '340px' }}>
-        Winning here isn't winning over. It's winning with.
-      </p>
-      <p style={{ fontFamily: BODY, fontSize: '0.9375rem', color: META, lineHeight: 1.75, margin: '0 0 18px', maxWidth: '340px' }}>
-        No one to beat. Nothing to outdo except your own past limitations.
-        The question is whether you showed up as your most powerful self —
-        the action is yours; the outcome isn't.
-      </p>
-      <p style={{ fontFamily: BODY, fontSize: '0.875rem', color: FAINT, lineHeight: 1.7, margin: '0 0 22px', maxWidth: '340px' }}>
-        "Success is peace of mind, which is a direct result of
-        self-satisfaction in knowing you made the effort to do the best
-        of which you are capable." — John Wooden
-      </p>
-      <span style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.18em', color: GOLD_DK }}>
-        Tap anywhere to begin
-      </span>
-    </div>
+    <svg width={size} height={size * 1.25} viewBox="0 0 32 40" aria-hidden="true">
+      <path
+        d="M16 2 C16 2 27 13 27 24 C27 31.2 22.1 37 16 37 C9.9 37 5 31.2 5 24 C5 16.5 11 10.5 13.2 6.5 C14.3 4.5 16 2 16 2 Z"
+        fill="#E8901A" fillOpacity={lit ? 0.95 : 0.32}
+      />
+    </svg>
   )
 }
 
-// ─── Hold-to-see card ─────────────────────────────────────────
+export default function WinTheDay({ userId: userIdProp = null, sprintData = null, onComplete = () => {}, onClose = () => {} }) {
+  const [uid, setUid]         = useState(userIdProp)
+  const [loaded, setLoaded]   = useState(false)
+  const [beat, setBeat]       = useState('set')   // 'set' | 'play'
+  const [showWhy, setShowWhy] = useState(false)
+  const [busy, setBusy]       = useState(false)
 
-function PreLiveCard({ win, index, total, onSeen }) {
-  const [fill, setFill]   = useState(0)       // 0..1
-  const [done, setDone]   = useState(false)
-  const holdRef  = useRef(null)
-  const startRef = useRef(0)
+  // The one win + the bonus wins (rows from get_to_do_items).
+  const [winItem, setWinItem]   = useState(null)   // is_priority=true row, or null
+  const [bonus, setBonus]       = useState([])     // is_priority=false rows
+  const [winDraft, setWinDraft] = useState('')
+  const [bonusDraft, setBonusDraft] = useState('')
 
-  function startHold(e) {
-    if (done) return
-    e.preventDefault()
-    startRef.current = Date.now()
-    holdRef.current = setInterval(() => {
-      const elapsed = Date.now() - startRef.current
-      const f = Math.min(1, elapsed / HOLD_MS)
-      setFill(f)
-      if (f >= 1) {
-        clearInterval(holdRef.current)
-        holdRef.current = null
-        setDone(true)
-        if (navigator.vibrate) navigator.vibrate([14, 50, 14])
-        setTimeout(() => onSeen(), 450)
-      }
-    }, 40)
-  }
+  const today = localDateStr()
 
-  function endHold() {
-    if (done) return
-    if (holdRef.current) {
-      clearInterval(holdRef.current)
-      holdRef.current = null
-    }
-    setFill(0)
-  }
-
-  useEffect(() => () => { if (holdRef.current) clearInterval(holdRef.current) }, [])
-
-  return (
-    <div style={{ textAlign: 'center', padding: '20px 12px 8px' }}>
-      <p style={{ fontFamily: SC, fontSize: '11px', letterSpacing: '0.2em', color: FAINT, margin: '0 0 18px' }}>
-        WIN {index + 1} OF {total}
-      </p>
-      <p style={{ fontFamily: DISP, fontSize: '1.375rem', color: INK, lineHeight: 1.5, margin: '0 0 6px' }}>
-        {win.text}
-      </p>
-      {win.dom_id && (
-        <p style={{ fontFamily: SC, fontSize: '10.5px', letterSpacing: '0.16em', color: FAINT, margin: '0 0 22px', textTransform: 'uppercase' }}>
-          {DOMAIN_LABELS[win.dom_id] || win.dom_id}
-        </p>
-      )}
-
-      {/* The hold flame — press and hold while it fills */}
-      <div
-        onPointerDown={startHold}
-        onPointerUp={endHold}
-        onPointerLeave={endHold}
-        onPointerCancel={endHold}
-        onContextMenu={e => e.preventDefault()}
-        style={{
-          position: 'relative', width: '96px', height: '96px',
-          margin: '8px auto 14px', borderRadius: '50%',
-          border: `1.5px solid ${done ? GOLD : 'rgba(200,146,42,0.55)'}`,
-          cursor: 'pointer', touchAction: 'none', userSelect: 'none',
-          WebkitUserSelect: 'none', overflow: 'hidden',
-          transition: 'border-color 0.3s ease',
-        }}
-      >
-        {/* Fill rises from the bottom as the hold progresses */}
-        <div style={{
-          position: 'absolute', left: 0, right: 0, bottom: 0,
-          height: `${Math.round(fill * 100)}%`,
-          background: 'rgba(232,144,26,0.18)',
-          transition: fill === 0 ? 'height 0.3s ease' : 'none',
-        }} />
-        <div style={{
-          position: 'absolute', inset: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <svg width="40" height="50" viewBox="0 0 32 40" aria-hidden="true"
-            style={{ transform: `scale(${0.85 + fill * 0.3})`, transition: 'transform 0.1s linear' }}>
-            <path d="M16 2 C16 2 27 13 27 24 C27 31.2 22.1 37 16 37 C9.9 37 5 31.2 5 24 C5 16.5 11 10.5 13.2 6.5 C14.3 4.5 16 2 16 2 Z"
-              fill="#E8901A" opacity={0.35 + fill * 0.6} />
-            <path d="M16 14 C16 14 21.5 19.5 21.5 25.5 C21.5 29.6 19 32.6 16 32.6 C13 32.6 10.5 29.6 10.5 25.5 C10.5 21.5 14 17.8 16 14 Z"
-              fill="#F8C868" opacity={0.3 + fill * 0.65} />
-          </svg>
-        </div>
-      </div>
-
-      <p style={{ fontFamily: BODY, fontSize: '0.9375rem', color: META, margin: '0 0 4px' }}>
-        {done ? 'Seen.' : 'See it done.'}
-      </p>
-      {!done && (
-        <p style={{ fontFamily: SC, fontSize: '11px', letterSpacing: '0.18em', color: FAINT, margin: 0 }}>
-          HOLD…
-        </p>
-      )}
-    </div>
-  )
-}
-
-// ─── Main flow ────────────────────────────────────────────────
-
-export default function WinTheDay({ sprintData, wins: existingWins, victoryLine: existingLine, onComplete, onClose }) {
-  const alreadySeen = (existingWins || []).filter(w => w.seen)
-  const resumeDone  = alreadySeen.length > 0
-
-  const [showFraming, setShowFraming] = useState(() => {
-    try { return !localStorage.getItem(FRAMING_KEY) } catch { return false }
-  })
-  // 'field' | 'prelive' | 'line'
-  const [beat, setBeat]       = useState(resumeDone ? 'line' : 'field')
-  const [selected, setSelected] = useState(existingWins || [])
-  const [customText, setCustomText] = useState('')
-  const [preIndex, setPreIndex] = useState(0)
-  const [line, setLine]       = useState(existingLine || '')
-
-  // Flatten stretch tasks into field candidates
-  const fieldItems = []
+  // Optional quick-adds from the active Stretch.
+  const stretchPicks = []
   if (Array.isArray(sprintData) && sprintData.length > 0) {
-    const sprint  = sprintData[0]
-    const domains = sprint.domains || []
-    const domData = sprint.domain_data || {}
-    for (const domId of domains) {
-      const tasks = (domData[domId] || {}).tasks || []
+    const sp = sprintData[0]
+    const doms = sp.domains || []
+    const dd   = sp.domain_data || {}
+    for (const domId of doms) {
+      const tasks = (dd[domId] || {}).tasks || []
       tasks.forEach((t, ti) => {
         const text = (t.text || t || '').toString().trim()
-        if (text) fieldItems.push({ id: `stretch-${domId}-${ti}`, text, source: 'stretch', dom_id: domId })
+        if (text) stretchPicks.push({ key: `${domId}-${ti}`, text, dom_id: domId })
       })
     }
   }
 
-  function dismissFraming() {
-    try { localStorage.setItem(FRAMING_KEY, '1') } catch { /* private mode */ }
-    setShowFraming(false)
-  }
+  // ── load ──────────────────────────────────────────────────
+  useEffect(() => {
+    let alive = true
+    async function load() {
+      let id = userIdProp
+      if (!id) {
+        try {
+          const { data } = await supabase.auth.getUser()
+          id = data?.user?.id || null
+        } catch { id = null }
+      }
+      if (!alive) return
+      setUid(id)
+      if (!id) { setLoaded(true); return }
 
-  function toggleItem(item) {
-    setSelected(prev => {
-      const has = prev.some(w => w.id === item.id)
-      if (has) return prev.filter(w => w.id !== item.id)
-      if (prev.length >= MAX_WINS) return prev
-      return [...prev, { ...item, seen: false, showed_up: null }]
-    })
-  }
-
-  function addCustom() {
-    const text = customText.trim()
-    if (!text || selected.length >= MAX_WINS) return
-    setSelected(prev => [...prev, {
-      id: `custom-${Date.now()}`, text, source: 'custom', dom_id: null,
-      seen: false, showed_up: null,
-    }])
-    setCustomText('')
-  }
-
-  function handleSeen() {
-    setSelected(prev => prev.map((w, i) => i === preIndex ? { ...w, seen: true } : w))
-    if (preIndex + 1 < selected.length) {
-      setPreIndex(i => i + 1)
-    } else {
-      setBeat('line')
+      try {
+        const { data: rows } = await supabase
+          .from('get_to_do_items')
+          .select('*')
+          .eq('user_id', id).eq('kind', 'daily').eq('due_date', today)
+          .order('sort_order', { ascending: true })
+        const list = rows || []
+        const win  = list.find(r => r.is_priority) || null
+        const rest = list.filter(r => !r.is_priority)
+        if (!alive) return
+        setWinItem(win)
+        setBonus(rest)
+        setWinDraft(win ? win.body : '')
+        // If the day's win is already set, resume straight into Play.
+        setBeat(win ? 'play' : 'set')
+      } catch { /* fall through to empty set */ }
+      setLoaded(true)
     }
+    load()
+    return () => { alive = false }
+  }, [userIdProp, today])
+
+  // ── writes ────────────────────────────────────────────────
+  async function saveWin() {
+    const text = winDraft.trim()
+    if (!text || !uid || busy) return
+    setBusy(true)
+    try {
+      if (winItem) {
+        await supabase.from('get_to_do_items')
+          .update({ body: text, updated_at: new Date().toISOString() })
+          .eq('id', winItem.id)
+        setWinItem({ ...winItem, body: text })
+      } else {
+        const row = {
+          user_id: uid, kind: 'daily', body: text, is_priority: true,
+          due_date: today, week_anchor: weekAnchor(), sort_order: 0,
+        }
+        const { data } = await supabase.from('get_to_do_items').insert(row).select().single()
+        if (data) setWinItem(data)
+      }
+      setBeat('play')
+    } catch { /* keep them on the set beat to retry */ }
+    setBusy(false)
   }
 
-  function finish() {
-    onComplete({
-      wins: selected.map(w => ({ ...w, seen: true })),
-      victoryLine: line.trim() || null,
-    })
+  async function addBonus(text) {
+    const t = (text || bonusDraft).trim()
+    if (!t || !uid) return
+    const order = bonus.reduce((mx, r) => Math.max(mx, r.sort_order || 0), 1) + 1
+    const row = {
+      user_id: uid, kind: 'daily', body: t, is_priority: false,
+      due_date: today, week_anchor: weekAnchor(), sort_order: order,
+    }
+    try {
+      const { data } = await supabase.from('get_to_do_items').insert(row).select().single()
+      if (data) setBonus(prev => [...prev, data])
+    } catch { /* no-op */ }
+    setBonusDraft('')
   }
 
-  // ── Render ──────────────────────────────────────────────────
+  async function removeBonus(id) {
+    setBonus(prev => prev.filter(r => r.id !== id))
+    try { await supabase.from('get_to_do_items').delete().eq('id', id) } catch { /* no-op */ }
+  }
 
-  if (showFraming) return <Framing onDismiss={dismissFraming} />
+  async function toggleDone(item, isWin) {
+    const done = !item.completed_at
+    const stamp = done ? new Date().toISOString() : null
+    if (isWin) setWinItem({ ...item, completed_at: stamp })
+    else setBonus(prev => prev.map(r => r.id === item.id ? { ...r, completed_at: stamp } : r))
+    try {
+      await supabase.from('get_to_do_items')
+        .update({ completed_at: stamp, updated_at: new Date().toISOString() })
+        .eq('id', item.id)
+    } catch { /* optimistic; will reconcile on next load */ }
+  }
 
+  // ── chrome ────────────────────────────────────────────────
   const header = (
-    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '14px' }}>
+    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '16px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px' }}>
-        <span style={{ fontFamily: SC, fontSize: '12px', letterSpacing: '0.18em', color: GOLD_DK, textTransform: 'uppercase' }}>
+        <span style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.18em', color: GOLD_DK, textTransform: 'uppercase' }}>
           Get To Do · Win the Day
         </span>
         <button
-          onClick={() => setShowFraming(true)}
+          onClick={() => setShowWhy(s => !s)}
           aria-label="What winning means here"
           style={{
-            fontFamily: SC, fontSize: '11px', width: '17px', height: '17px',
+            fontFamily: SC, fontSize: '13px', width: '18px', height: '18px',
             borderRadius: '50%', border: `1px solid ${RULE}`, background: 'none',
-            color: GOLD, cursor: 'pointer', opacity: 0.75, lineHeight: 1, padding: 0,
+            color: GOLD, cursor: 'pointer', lineHeight: 1, padding: 0,
           }}
-        >
-          i
-        </button>
+        >i</button>
       </div>
       <button
         onClick={onClose}
-        style={{ fontFamily: SC, fontSize: '11px', letterSpacing: '0.16em', background: 'none', border: 'none', color: FAINT, cursor: 'pointer', padding: 0 }}
-      >
-        BACK
-      </button>
+        style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.16em', background: 'none', border: 'none', color: FAINT, cursor: 'pointer', padding: 0 }}
+      >BACK</button>
     </div>
   )
 
-  if (beat === 'field') {
+  const why = showWhy && (
+    <div style={{ padding: '14px 16px', marginBottom: '16px', background: TINT, border: `1px solid ${RULE}`, borderRadius: '10px' }}>
+      <p style={{ fontFamily: BODY, fontSize: '14px', color: META, lineHeight: 1.7, margin: 0 }}>
+        Winning here is winning with, not winning over. No one to beat, nothing to outdo
+        except your own past limits. The question is whether you showed up as your most
+        powerful self. The action is yours; the outcome isn’t.
+      </p>
+    </div>
+  )
+
+  if (!loaded) {
     return (
       <div>
         {header}
-        <p style={{ fontFamily: DISP, fontSize: '1.25rem', color: INK, margin: '0 0 16px' }}>
-          What does winning your day look like?
+        <p style={{ fontFamily: BODY, fontSize: '14px', color: FAINT, textAlign: 'center', padding: '30px 0' }}>Finding today…</p>
+      </div>
+    )
+  }
+
+  if (!uid) {
+    return (
+      <div>
+        {header}
+        <p style={{ fontFamily: BODY, fontSize: '14px', color: FAINT, textAlign: 'center', padding: '24px 0' }}>
+          Sign in to set today’s win.
+        </p>
+      </div>
+    )
+  }
+
+  // ── SET ───────────────────────────────────────────────────
+  if (beat === 'set') {
+    const ready = winDraft.trim().length > 0
+    return (
+      <div>
+        {header}
+        {why}
+
+        <p style={{ fontFamily: DISP, fontSize: '1.375rem', color: INK, lineHeight: 1.35, margin: '0 0 12px' }}>
+          What’s the one thing that would make today a win?
+        </p>
+        <textarea
+          value={winDraft}
+          onChange={e => setWinDraft(e.target.value)}
+          rows={2}
+          placeholder="Name it. One clear thing."
+          style={{
+            width: '100%', padding: '12px 14px', fontFamily: BODY, fontSize: '15px',
+            color: INK, background: TINT, border: `1.5px solid ${RULE}`, borderRadius: '10px',
+            outline: 'none', resize: 'none', lineHeight: 1.6, boxSizing: 'border-box',
+          }}
+        />
+
+        {/* bonus wins */}
+        <p style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.16em', color: GOLD_DK, textTransform: 'uppercase', margin: '22px 0 4px' }}>
+          Bonus wins
+        </p>
+        <p style={{ fontFamily: BODY, fontSize: '13px', color: FAINT, margin: '0 0 10px' }}>
+          Optional. The extras that would make today even better.
         </p>
 
-        {fieldItems.length === 0 && (
-          <p style={{ fontFamily: BODY, fontSize: '13.5px', color: FAINT, lineHeight: 1.65, margin: '0 0 12px' }}>
-            No Stretch items today — name your wins below.
-          </p>
-        )}
-
-        {fieldItems.map(item => {
-          const isSel = selected.some(w => w.id === item.id)
-          const full  = !isSel && selected.length >= MAX_WINS
-          return (
+        {bonus.map(b => (
+          <div key={b.id} style={{
+            display: 'flex', alignItems: 'center', gap: '10px',
+            padding: '9px 12px', marginBottom: '6px',
+            border: `1px solid ${RULE}`, borderRadius: '8px', background: TINT,
+          }}>
+            <span style={{ flex: 1, fontFamily: BODY, fontSize: '14px', color: META, lineHeight: 1.4 }}>{b.body}</span>
             <button
-              key={item.id}
-              onClick={() => toggleItem(item)}
-              disabled={full}
-              style={{
-                display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
-                textAlign: 'left', padding: '11px 12px', marginBottom: '8px',
-                border: `1px solid ${isSel ? GOLD : RULE}`,
-                borderRadius: '8px', background: isSel ? 'rgba(200,146,42,0.06)' : 'none',
-                cursor: full ? 'default' : 'pointer', opacity: full ? 0.45 : 1,
-                transition: 'border-color 0.15s ease, background 0.15s ease',
-              }}
-            >
-              <span style={{ flex: 1 }}>
-                <span style={{ fontFamily: BODY, fontSize: '13.5px', color: INK, display: 'block', lineHeight: 1.5 }}>
-                  {item.text}
-                </span>
-                <span style={{ fontFamily: SC, fontSize: '9.5px', letterSpacing: '0.16em', color: FAINT, textTransform: 'uppercase' }}>
-                  Stretch · {DOMAIN_LABELS[item.dom_id] || item.dom_id}
-                </span>
-              </span>
-              {isSel && (
-                <span style={{ fontFamily: SC, fontSize: '12px', color: GOLD_DK, flexShrink: 0 }}>✓</span>
-              )}
-            </button>
-          )
-        })}
+              onClick={() => removeBonus(b.id)}
+              aria-label="Remove"
+              style={{ fontFamily: SC, fontSize: '14px', background: 'none', border: 'none', color: FAINT, cursor: 'pointer', padding: '0 2px' }}
+            >✕</button>
+          </div>
+        ))}
 
-        {/* Freehand win */}
         <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
           <input
-            value={customText}
-            onChange={e => setCustomText(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter') addCustom() }}
-            placeholder="Name another win…"
-            disabled={selected.length >= MAX_WINS}
+            value={bonusDraft}
+            onChange={e => setBonusDraft(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') addBonus() }}
+            placeholder="Add a bonus win…"
             style={{
-              flex: 1, padding: '10px 12px', fontFamily: BODY, fontSize: '13.5px',
-              color: META, background: 'rgba(200,146,42,0.04)',
-              border: `1px dashed rgba(200,146,42,0.30)`, borderRadius: '8px',
-              outline: 'none', opacity: selected.length >= MAX_WINS ? 0.45 : 1,
+              flex: 1, padding: '10px 12px', fontFamily: BODY, fontSize: '14px',
+              color: META, background: TINT, border: `1px dashed rgba(200,146,42,0.30)`,
+              borderRadius: '8px', outline: 'none',
             }}
           />
           <button
-            onClick={addCustom}
-            disabled={!customText.trim() || selected.length >= MAX_WINS}
+            onClick={() => addBonus()}
+            disabled={!bonusDraft.trim()}
             style={{
-              fontFamily: SC, fontSize: '13px', padding: '0 16px',
+              fontFamily: SC, fontSize: '15px', padding: '0 16px',
               border: `1px solid ${RULE}`, borderRadius: '8px', background: 'none',
-              color: GOLD_DK, cursor: 'pointer',
-              opacity: (!customText.trim() || selected.length >= MAX_WINS) ? 0.4 : 1,
+              color: GOLD_DK, cursor: 'pointer', opacity: bonusDraft.trim() ? 1 : 0.4,
             }}
-          >
-            +
-          </button>
+          >+</button>
         </div>
 
+        {stretchPicks.length > 0 && (
+          <div style={{ marginTop: '14px' }}>
+            <p style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.14em', color: FAINT, textTransform: 'uppercase', margin: '0 0 8px' }}>
+              From your Stretch
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {stretchPicks.slice(0, 6).map(p => (
+                <button
+                  key={p.key}
+                  onClick={() => addBonus(p.text)}
+                  style={{
+                    fontFamily: BODY, fontSize: '13px', color: META,
+                    padding: '6px 11px', border: `1px solid ${RULE}`, borderRadius: '40px',
+                    background: 'none', cursor: 'pointer',
+                  }}
+                >+ {p.text}</button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <button
-          onClick={() => { setPreIndex(0); setBeat('prelive') }}
-          disabled={selected.length === 0}
+          onClick={saveWin}
+          disabled={!ready || busy}
           style={{
-            width: '100%', padding: '12px', marginTop: '16px',
-            fontFamily: SC, fontSize: '14px', letterSpacing: '0.14em',
-            color: GOLD_DK, background: 'rgba(200,146,42,0.05)',
-            border: `1.5px solid ${selected.length > 0 ? 'rgba(200,146,42,0.78)' : RULE}`,
-            borderRadius: '40px', cursor: selected.length > 0 ? 'pointer' : 'default',
-            opacity: selected.length > 0 ? 1 : 0.5, transition: 'all 0.2s',
+            width: '100%', padding: '13px', marginTop: '22px',
+            fontFamily: SC, fontSize: '15px', letterSpacing: '0.14em',
+            color: ready ? '#FFFFFF' : GOLD_DK, background: ready ? GOLD : TINT,
+            border: `1.5px solid ${ready ? GOLD : RULE}`, borderRadius: '40px',
+            cursor: ready ? 'pointer' : 'default', opacity: busy ? 0.6 : 1, transition: 'all 0.2s',
           }}
         >
-          See them done → <span style={{ fontSize: '11px', color: FAINT, letterSpacing: '0.1em' }}>{selected.length} of {MAX_WINS}</span>
+          Lock it in →
         </button>
       </div>
     )
   }
 
-  if (beat === 'prelive') {
-    return (
-      <div>
-        {header}
-        <PreLiveCard
-          key={selected[preIndex]?.id}
-          win={selected[preIndex]}
-          index={preIndex}
-          total={selected.length}
-          onSeen={handleSeen}
-        />
-      </div>
-    )
-  }
-
-  // beat === 'line' — the day, won
+  // ── PLAY ──────────────────────────────────────────────────
+  const winDone = winItem && !!winItem.completed_at
   return (
     <div>
       {header}
-      <div style={{ textAlign: 'center', margin: '4px 0 18px' }}>
-        {selected.map(w => (
-          <div key={w.id} style={{
-            display: 'flex', alignItems: 'center', gap: '10px',
-            padding: '9px 12px', marginBottom: '6px',
-            border: `1px solid ${RULE}`, borderRadius: '8px',
-            background: 'rgba(200,146,42,0.04)', textAlign: 'left',
-          }}>
-            <svg width="13" height="16" viewBox="0 0 32 40" aria-hidden="true" style={{ flexShrink: 0 }}>
-              <path d="M16 2 C16 2 27 13 27 24 C27 31.2 22.1 37 16 37 C9.9 37 5 31.2 5 24 C5 16.5 11 10.5 13.2 6.5 C14.3 4.5 16 2 16 2 Z" fill="#E8901A" opacity="0.9" />
-            </svg>
-            <span style={{ fontFamily: BODY, fontSize: '13px', color: META, lineHeight: 1.4 }}>{w.text}</span>
-          </div>
-        ))}
-      </div>
+      {why}
 
-      <p style={{ fontFamily: DISP, fontSize: '1.125rem', color: INK, margin: '0 0 4px', textAlign: 'center' }}>
-        Tonight, what's true?
+      <p style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.18em', color: GOLD_DK, textTransform: 'uppercase', margin: '0 0 12px' }}>
+        Today’s win
       </p>
-      <p style={{ fontFamily: BODY, fontSize: '12.5px', color: FAINT, margin: '0 0 12px', textAlign: 'center' }}>
-        One line, written as the day already won. Optional.
+
+      {winItem && (
+        <button
+          onClick={() => toggleDone(winItem, true)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: '14px', width: '100%', textAlign: 'left',
+            padding: '16px 16px', marginBottom: '18px', cursor: 'pointer',
+            border: `1.5px solid ${winDone ? GOLD : RULE}`, borderRadius: '12px',
+            background: winDone ? 'rgba(200,146,42,0.10)' : TINT,
+          }}
+        >
+          <span style={{
+            flexShrink: 0, width: '34px', height: '34px', borderRadius: '50%',
+            border: `1.5px solid ${winDone ? GOLD : 'rgba(200,146,42,0.55)'}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: winDone ? GOLD : 'transparent',
+          }}>
+            {winDone
+              ? <span style={{ color: '#FFFFFF', fontFamily: SC, fontSize: '16px', lineHeight: 1 }}>✓</span>
+              : <Flame size={16} />}
+          </span>
+          <span style={{
+            flex: 1, fontFamily: DISP, fontSize: '1.25rem', color: INK, lineHeight: 1.4,
+            textDecoration: winDone ? 'line-through' : 'none', opacity: winDone ? 0.7 : 1,
+          }}>
+            {winItem.body}
+          </span>
+        </button>
+      )}
+
+      {bonus.length > 0 && (
+        <>
+          <p style={{ fontFamily: SC, fontSize: '13px', letterSpacing: '0.16em', color: FAINT, textTransform: 'uppercase', margin: '0 0 8px' }}>
+            Bonus
+          </p>
+          {bonus.map(b => {
+            const done = !!b.completed_at
+            return (
+              <button
+                key={b.id}
+                onClick={() => toggleDone(b, false)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '12px', width: '100%', textAlign: 'left',
+                  padding: '11px 13px', marginBottom: '6px', cursor: 'pointer',
+                  border: `1px solid ${RULE}`, borderRadius: '8px',
+                  background: done ? 'rgba(200,146,42,0.07)' : 'none',
+                }}
+              >
+                <span style={{
+                  flexShrink: 0, width: '22px', height: '22px', borderRadius: '50%',
+                  border: `1.5px solid ${done ? GOLD : 'rgba(200,146,42,0.45)'}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: done ? GOLD : 'transparent',
+                }}>
+                  {done && <span style={{ color: '#FFFFFF', fontFamily: SC, fontSize: '13px', lineHeight: 1 }}>✓</span>}
+                </span>
+                <span style={{
+                  flex: 1, fontFamily: BODY, fontSize: '14px', color: META, lineHeight: 1.4,
+                  textDecoration: done ? 'line-through' : 'none', opacity: done ? 0.65 : 1,
+                }}>
+                  {b.body}
+                </span>
+              </button>
+            )
+          })}
+        </>
+      )}
+
+      <p style={{ fontFamily: BODY, fontSize: '13px', color: FAINT, lineHeight: 1.6, margin: '16px 0 0', textAlign: 'center' }}>
+        {winDone ? 'The day is won. Anything else is a bonus.' : 'Close each loop as you land it. The check is the win.'}
       </p>
-      <textarea
-        value={line}
-        onChange={e => setLine(e.target.value)}
-        rows={2}
-        placeholder="I handled the pitch as the calm center I am…"
-        style={{
-          width: '100%', padding: '10px 14px', fontFamily: BODY, fontSize: '0.9375rem',
-          fontStyle: 'italic', color: META, background: 'rgba(200,146,42,0.05)',
-          border: '1px solid rgba(200,146,42,0.18)', borderRadius: '8px',
-          outline: 'none', resize: 'none', lineHeight: 1.6, boxSizing: 'border-box',
-        }}
-      />
-      <button
-        onClick={finish}
-        style={{
-          width: '100%', padding: '12px', marginTop: '12px',
-          fontFamily: SC, fontSize: '14px', letterSpacing: '0.14em',
-          color: GOLD_DK, background: 'rgba(200,146,42,0.05)',
-          border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px',
-          cursor: 'pointer', transition: 'all 0.2s',
-        }}
-      >
-        Day won →
-      </button>
+
+      <div style={{ display: 'flex', gap: '10px', marginTop: '18px' }}>
+        <button
+          onClick={() => setBeat('set')}
+          style={{
+            flex: 1, padding: '12px', fontFamily: SC, fontSize: '14px', letterSpacing: '0.12em',
+            color: GOLD_DK, background: 'none', border: `1px solid ${RULE}`, borderRadius: '40px', cursor: 'pointer',
+          }}
+        >
+          Edit
+        </button>
+        <button
+          onClick={onComplete}
+          style={{
+            flex: 2, padding: '12px', fontFamily: SC, fontSize: '14px', letterSpacing: '0.14em',
+            color: '#FFFFFF', background: GOLD, border: `1.5px solid ${GOLD}`, borderRadius: '40px', cursor: 'pointer',
+          }}
+        >
+          Done →
+        </button>
+      </div>
     </div>
   )
 }

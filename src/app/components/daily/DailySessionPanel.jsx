@@ -640,7 +640,7 @@ export default function DailySessionPanel({ user, sprintData, practiceData, mapC
       />
       <ToolCard
         name="GET TO DO · WIN THE DAY"
-        sub="What does winning your day look like?"
+        sub="Name the one thing that would make today a win."
         onClick={() => setActive('get-to-do')}
       />
       <ToolCard
