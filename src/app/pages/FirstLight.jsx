@@ -1,566 +1,178 @@
 // ─────────────────────────────────────────────────────────────
 // FirstLight.jsx  —  /welcome/first-light
 //
-// Four screens: Cover → Personal → Zoom → Placement
-// Writes to: users + contributor_profiles_beta
-// Fires background concern-resolution → problem_chains
-// Redirects to Mission Control on completion.
+// The light-touch activation of the personal side. The user does one
+// thing: mark where each of the seven personal domains is NOW. The
+// system aims them automatically — under the line, the aim is to cross
+// to 5 as fast as possible (a focus); at or above the line, a level up
+// (a full level low, half a level high) — until the Map, where real
+// targets get set. The wheel opens dormant behind a Start button so the
+// personal side invites rather than forces.
+//
+// Writes: users.welcome_scores (now) + first_light_completed_at.
+// The aim is a pure function of where-you-are (aimFor), so it is derived
+// everywhere, never stored — the Map remains the source of real targets.
 // ─────────────────────────────────────────────────────────────
-
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useRef } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
-import { FocusSearch } from '../components/FocusSearch'
-import WorldWheel from '../components/mission-control/WorldWheel'
-import { WheelSVG, SELF_DOMAINS } from '../components/WheelSVG'
-import { useCivDomainScores } from '../hooks/useDomainIndicators'
+import Wheel from '../components/Wheel'
+import { SELF_DOMAINS } from '../components/WheelSVG'
 
-// ── Design tokens ──────────────────────────────────────────────
-const BG   = '#FAFAF7'
-const INK  = '#0F1523'
-const GOLD = '#A8721A'
-const GC   = '#C8922A'
-const DARK = '#0F1523'
+const BG='#FAFAF7', CARD='#FFFFFF', INK='#0F1523', GOLD='#A8721A', CHROME='#C8922A', RED='#8A3030'
+const META='rgba(15,21,35,0.72)', GHOST='rgba(15,21,35,0.55)', RULE='rgba(200,146,42,0.20)'
+const SERIF="'Cormorant Garamond',Georgia,serif", SC="'Cormorant SC',Georgia,serif", LORA="'Lora',Georgia,serif"
 
-const SERIF = "'Cormorant Garamond', Georgia, serif"
-const SC    = "'Cormorant SC', Georgia, serif"
-const LORA  = "'Lora', Georgia, serif"
+const LABELS={10:'the best there is',9:'really good',8:'solid',7:'getting there',6:'getting by',5:'the line',4:'trying but not moving',3:'pretty rough',2:'barely holding on',1:'really struggling',0:'zero'}
+const lab=v=>LABELS[Math.round(v)]
+const fmt=v=>(v%1===0)?''+v:v.toFixed(1)
 
-// ── Scale labels ───────────────────────────────────────────────
-const SCALE_LABELS = {
-  10: 'The best there is',     9: 'Really, really good',
-  8:  'Solid',                 7: 'Getting there',
-  6:  'Getting by',            5: 'The Pass/Fail Mark',
-  4:  'Trying but not moving', 3: 'Pretty rough',
-  2:  'Barely holding on',     1: 'Really struggling',
-  0:  'Zero',
+// THE SYSTEM AIMS YOU — automatically, from where you are.
+export function aimFor(now){
+  if(now>=10) return 10
+  if(now<5)   return 5                       // focus: cross the line as fast as possible
+  if(now<7)   return Math.min(10, now+1)     // a level up
+  return Math.min(10, now+0.5)               // half a level when already high
 }
+export const isFocus = now => now < 5
+function scoreColor(n){ if(n>=8)return'#3B6B9E'; if(n>=6.5)return'#5A8AB8'; if(n>=5)return'#8A8070'; if(n>=3)return'#8A7030'; return RED }
 
-// ── Domain data ────────────────────────────────────────────────
-// SELF_DOMAINS now lives in src/app/components/WheelSVG.jsx (shared
-// with the marketing home) and is imported above.
+const pct = v => (v/10)*100
 
-// CIV_DOMAINS keys match useCivDomainScores return shape exactly.
-// 'finance' not 'economy' — aligned to the indicator rollup.
-const CIV_DOMAINS = [
-  { key: 'vision',  name: 'Vision',      hex: '#6B1F2E' },
-  { key: 'human',   name: 'Human Being', hex: '#E8722E' },
-  { key: 'nature',  name: 'Nature',      hex: '#2A8C4F' },
-  { key: 'finance', name: 'Economy',     hex: '#E8B92E' },
-  { key: 'society', name: 'Society',     hex: '#D63838' },
-  { key: 'legacy',  name: 'Legacy',      hex: '#2767B8' },
-  { key: 'tech',    name: 'Technology',  hex: '#6B3FA8' },
-]
-
-const CIV_DIMS = CIV_DOMAINS.map(d => ({ slug: d.key, label: d.name, color: d.hex }))
-
-const SCALE_OPTIONS = [
-  { key: 'circle',  label: 'My circle'  },
-  { key: 'city',    label: 'My city'    },
-  { key: 'country', label: 'My country' },
-  { key: 'planet',  label: 'My planet'  },
-]
-
-// ── Desktop breakpoint ─────────────────────────────────────────
-// First Light was designed mobile-first. On desktop we widen the
-// column and scale the wheels up so the ritual doesn't feel like
-// a phone strip floating in a void.
-function useDesktop() {
-  const [desktop, setDesktop] = useState(() =>
-    typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches
-  )
-  useEffect(() => {
-    const mq = window.matchMedia('(min-width: 768px)')
-    const fn = e => setDesktop(e.matches)
-    mq.addEventListener('change', fn)
-    return () => mq.removeEventListener('change', fn)
-  }, [])
-  return desktop
-}
-
-// ── WheelSVG — now imported from ../components/WheelSVG ────────
-
-// ── Shared styles ──────────────────────────────────────────────
-const s = {
-  app:   { maxWidth: 430, margin: '0 auto', height: '100%', display: 'flex', flexDirection: 'column', background: 'transparent', overscrollBehavior: 'none' },
-  eyebrow: { fontFamily: SC, fontSize: 13, letterSpacing: '0.18em', color: GOLD, textTransform: 'uppercase', margin: '0 0 6px' },
-  btn:   { fontFamily: SC, fontSize: 13, letterSpacing: '0.12em', textTransform: 'uppercase', padding: '15px 24px', borderRadius: 30, border: 'none', cursor: 'pointer', background: INK, color: '#fff', transition: 'all 0.2s' },
-  ghost: { fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '15px 0', border: 'none', cursor: 'pointer', background: 'transparent', color: 'rgba(15,21,35,0.55)' },
-  foot:  { flexShrink: 0, display: 'flex', gap: 12, alignItems: 'center', padding: '16px 24px', paddingBottom: 'calc(28px + env(safe-area-inset-bottom))', background: BG },
-  card:  { fontFamily: LORA, fontSize: 14, padding: '8px 13px', border: '1px solid rgba(15,21,35,0.14)', borderRadius: 20, background: 'transparent', color: INK, cursor: 'pointer', transition: 'all 0.15s', lineHeight: 1 },
-}
-
-// ── Progress bar — shown only on Personal and Placement screens ─
-function Progress({ step, total }) {
-  return (
-    <div style={{ display: 'flex', gap: 4, padding: '14px 24px 10px', flexShrink: 0 }}>
-      {Array.from({ length: total }).map((_, i) => (
-        <div key={i} style={{
-          flex: 1, height: 3, borderRadius: 2,
-          background: i < step ? GC : i === step ? GOLD : 'rgba(15,21,35,0.1)',
-          transition: 'background 0.4s',
-        }} />
-      ))}
-    </div>
-  )
-}
-
-// ── Screen 0: Cover ────────────────────────────────────────────
-function CoverScreen({ onBegin }) {
-  return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', textAlign: 'center', padding: '24px 32px', paddingBottom: 'calc(60px + env(safe-area-inset-bottom))' }}>
-      <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.14em', color: 'rgba(15,21,35,0.65)', margin: '0 0 6px' }}>Welcome to</p>
-      <h1 style={{ fontFamily: SC, fontSize: 46, letterSpacing: '0.04em', margin: '0 0 18px', color: INK }}>NextUs</h1>
-      <p style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', color: 'rgba(15,21,35,0.65)', margin: '0 0 6px' }}>Building the future for</p>
-      <h2 style={{ fontFamily: SERIF, fontWeight: 500, fontSize: 22, lineHeight: 1.1, margin: '0 0 32px', color: INK }}>The Person and the Planet.</h2>
-      <p style={{ fontFamily: LORA, fontSize: 15, color: 'rgba(15,21,35,0.7)', lineHeight: 1.6, margin: '0 0 40px' }}>
-        Let's find where you are.<br />Five minutes.
-      </p>
-      <button style={{ ...s.btn, maxWidth: 160, margin: '0 auto', display: 'block' }} onClick={onBegin}>
-        Begin
-      </button>
-    </div>
-  )
-}
-
-// ── Screen 1: Personal domains ─────────────────────────────────
-function PersonalScreen({ scores, setScores, cards, setCards, onNext, onBack }) {
-  function handleScore(key, val) { setScores(prev => ({ ...prev, [key]: parseInt(val) })) }
-  function toggleCard(key, label) {
-    setCards(prev => {
-      const cur = prev[key] || []
-      return { ...prev, [key]: cur.includes(label) ? cur.filter(x => x !== label) : [...cur, label] }
-    })
+function Track({ d, now, onSet }){
+  const ref = useRef(null)
+  const aim = aimFor(now), focus = isFocus(now), reaching = aim > now
+  function valAt(clientX){
+    const r = ref.current.getBoundingClientRect()
+    return Math.max(0, Math.min(10, Math.round(((clientX - r.left) / r.width) * 10)))
   }
+  function down(e){ e.currentTarget.setPointerCapture?.(e.pointerId); onSet(valAt(e.clientX)) }
+  function move(e){ if(e.buttons) onSet(valAt(e.clientX)) }
+
+  const lo = Math.min(now, aim), hi = Math.max(now, aim)
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-      <div style={{ flexShrink: 0, padding: '20px 24px 0' }}>
-        <p style={s.eyebrow}>Where you are</p>
-        <h1 style={{ fontFamily: SERIF, fontSize: 24, fontWeight: 500, lineHeight: 1.1, margin: '0 0 6px', color: INK }}>Seven areas of your life.</h1>
-        <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, margin: '0 0 6px' }}>Tap what feels relevant, then slide to show where you are.</p>
-        <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)', margin: '0 0 20px' }}>Honest beats optimistic.</p>
-      </div>
-      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', padding: '0 24px' }}>
-        {SELF_DOMAINS.map(d => (
-          <div key={d.key} style={{ borderLeft: `3px solid ${d.hex}`, paddingLeft: 16, marginBottom: 32 }}>
-            <span style={{ fontFamily: SC, fontSize: 15, letterSpacing: '0.1em', color: INK, display: 'block', marginBottom: 4 }}>{d.name.toUpperCase()}</span>
-            <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)', margin: '0 0 12px', lineHeight: 1.4 }}>{d.desc}</p>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 16 }}>
-              {d.cards.map(label => {
-                const sel = (cards[d.key] || []).includes(label)
-                return (
-                  <button key={label} onClick={() => toggleCard(d.key, label)}
-                    style={{ ...s.card, background: sel ? d.hex : 'transparent', color: sel ? '#fff' : INK, borderColor: sel ? 'transparent' : 'rgba(15,21,35,0.14)' }}
-                  >{label}</button>
-                )
-              })}
-            </div>
-            <p style={{ fontFamily: SC, fontSize: 12, letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', margin: '0 0 10px' }}>Where are you right now?</p>
-            <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-              <input type="range" min="0" max="10" step="1"
-                value={scores[d.key] ?? 5}
-                onChange={e => handleScore(d.key, e.target.value)}
-                style={{ flex: 1, accentColor: d.hex, height: 4 }}
-              />
-              <div style={{ minWidth: 82 }}>
-                <div style={{ fontFamily: SC, fontSize: 24, fontWeight: 600, color: d.hex, lineHeight: 1 }}>
-                  {scores[d.key] ?? 5}<span style={{ fontFamily: SC, fontSize: 12, color: 'rgba(15,21,35,0.55)', letterSpacing: '0.1em' }}> *</span>
-                </div>
-                <div style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)', lineHeight: 1.3, marginTop: 2 }}>
-                  {SCALE_LABELS[scores[d.key] ?? 5]}
-                </div>
-              </div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
-              <span style={{ fontFamily: LORA, fontSize: 12, color: 'rgba(15,21,35,0.55)' }}>Zero</span>
-              <span style={{ fontFamily: LORA, fontSize: 12, color: 'rgba(15,21,35,0.55)' }}>The best there is</span>
-            </div>
-          </div>
-        ))}
-        <div style={{ height: 24 }} />
-      </div>
-      <div style={s.foot}>
-        <button style={s.ghost} onClick={onBack}>Back</button>
-        <button style={{ ...s.btn, flex: 1 }} onClick={onNext}>Next</button>
-      </div>
-    </div>
-  )
-}
-
-// ── Screen 2: The Zoom ─────────────────────────────────────────
-// No progress bar. No overflow. Vertically centred.
-// Planet wheel shows live civ domain scores from useCivDomainScores.
-// Background colour is owned by the outer wrapper (via onPhase) so
-// the light→dark shift covers the full viewport on desktop, not
-// just the inner column.
-function ZoomScreen({ scores, onNext, onPhase, isDesktop }) {
-  const [phase, setPhase]           = useState('personal')
-  const [planetVisible, setPlanetVisible] = useState(false)
-  const { scores: civScores }       = useCivDomainScores()
-
-  // Build the current scores object for WorldWheel
-  const civCurrent = {}
-  CIV_DOMAINS.forEach(d => {
-    if (civScores?.[d.key] != null) civCurrent[d.key] = civScores[d.key]
-  })
-
-  function handleZoom() {
-    setPhase('zooming')
-    onPhase?.('zooming')
-    setTimeout(() => { setPhase('planet'); setPlanetVisible(true); onPhase?.('planet') }, 1600)
-  }
-
-  const personalScale   = phase === 'zooming' ? 0.32 : 1
-  const personalOpacity = phase === 'planet'  ? 0    : 1
-  const planetOpacity   = phase === 'planet'  ? 1    : 0
-
-  const stackHeight  = isDesktop ? 470 : 340
-  const personalSize = isDesktop ? 250 : 180
-  const planetSize   = isDesktop ? 290 : 210
-
-  return (
-    <div style={{
-      flex: 1,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      textAlign: 'center',
-      background: 'transparent',
-      padding: '24px 0 calc(40px + env(safe-area-inset-bottom))',
-    }}>
-
-      {/* Wheel stack — uses a fixed height to avoid layout shift */}
-      <div style={{ position: 'relative', width: '100%', height: stackHeight, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-
-        {/* Planet wheel — fades in */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          opacity: planetOpacity, transition: 'opacity 1.4s 0.4s',
-          overflow: 'visible',
-        }}>
-          <WorldWheel
-            dimensions={CIV_DIMS}
-            current={civCurrent}
-            size={planetSize}
-            dark
-          />
+    <div style={{ background:CARD, border:`1px solid ${focus?'rgba(138,48,48,0.45)':RULE}`, borderRadius:14, padding:'13px 16px 16px', marginBottom:10 }}>
+      <div style={{ display:'flex', alignItems:'baseline', justifyContent:'space-between', marginBottom:13 }}>
+        <div style={{ display:'flex', alignItems:'center', gap:9 }}>
+          <span style={{ width:9, height:9, borderRadius:'50%', background:d.hex }} />
+          <b style={{ fontFamily:SERIF, fontWeight:600, fontSize:20, color:INK }}>{d.name}</b>
+          {focus && <span style={{ fontFamily:SC, fontWeight:700, fontSize:10.5, letterSpacing:'0.12em', color:RED, border:'1px solid rgba(138,48,48,0.4)', borderRadius:20, padding:'1px 7px', marginLeft:3 }}>FOCUS</span>}
         </div>
-
-        {/* Personal wheel — scales down and fades out */}
-        <div style={{
-          position: 'absolute', inset: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          transform: `scale(${personalScale})`,
-          transition: 'transform 1.6s cubic-bezier(0.6,0.01,0.2,1), opacity 0.5s 1.1s',
-          opacity: personalOpacity,
-          overflow: 'visible',
-        }}>
-          <WheelSVG scores={scores} size={personalSize} />
+        <div style={{ fontFamily:SC, fontWeight:600, fontSize:15, letterSpacing:'0.04em', color:META, whiteSpace:'nowrap' }}>
+          <span style={{ color:INK }}>{fmt(now)}</span>
+          {reaching
+            ? <><span style={{ color:GHOST, margin:'0 5px' }}>→</span><span style={{ color:focus?RED:GOLD }}>{fmt(aim)}</span></>
+            : <span style={{ color:GHOST, fontStyle:'italic' }}> · at the top</span>}
         </div>
       </div>
-
-      {/* Text content — switches between phases */}
-      <div style={{ padding: '0 32px', width: '100%', boxSizing: 'border-box' }}>
-
-        {phase === 'personal' && (
-          <div style={{ animation: 'fl-fadein 0.7s ease' }}>
-            <p style={{ fontFamily: SERIF, fontSize: 20, lineHeight: 1.5, margin: '0 0 6px', color: 'rgba(15,21,35,0.72)' }}>
-              This is your map.
-            </p>
-            <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.55)', margin: '0 0 28px' }}>
-              Take a moment with it.
-            </p>
-            <button
-              style={{ ...s.btn, background: 'transparent', border: '1px solid rgba(15,21,35,0.28)', color: INK }}
-              onClick={handleZoom}
-            >
-              Next
-            </button>
-          </div>
-        )}
-
-        {phase === 'zooming' && (
-          <div style={{ height: 96 }} />
-        )}
-
-        {phase === 'planet' && (
-          <div style={{ opacity: planetVisible ? 1 : 0, transition: 'opacity 1s 0.4s', animation: planetVisible ? 'fl-fadein 1s ease' : 'none' }}>
-            <p style={{ fontFamily: SC, fontSize: 12, letterSpacing: '0.2em', color: GC, textTransform: 'uppercase', margin: '0 0 10px' }}>
-              Our planet
-            </p>
-            <p style={{ fontFamily: SERIF, fontSize: 22, lineHeight: 1.4, margin: '0 0 14px', color: BG }}>
-              The seven domains of life on Earth.
-            </p>
-            <p style={{ fontFamily: LORA, fontSize: 14, lineHeight: 1.65, margin: '0 0 10px', color: 'rgba(250,250,247,0.6)' }}>
-              The current state of the planet is a reflection of the average of all the people on it.
-            </p>
-            <p style={{ fontFamily: SERIF, fontSize: 17, color: GC, margin: '0 0 28px', lineHeight: 1.4, fontStyle: 'italic' }}>
-              Where would you like to see the world?
-            </p>
-            <button
-              style={{ ...s.btn, background: BG, color: INK, display: 'block', margin: '0 auto', maxWidth: 280 }}
-              onClick={onNext}
-            >
-              What future are you helping to build?
-            </button>
-          </div>
-        )}
+      <div style={{ fontSize:12.5, color:GHOST, marginTop:-7, marginBottom:12, minHeight:16 }}>
+        {focus
+          ? <><span style={{ color:RED, fontWeight:500 }}>below the line</span> · cross to <b style={{ color:GOLD, fontWeight:500 }}>5</b> first — this is the priority</>
+          : reaching
+            ? <>{lab(now)} · aim <b style={{ color:GOLD, fontWeight:500 }}>{fmt(aim)}</b> — {(aim-now)>=1?'a level':'half a level'} up</>
+            : <>{lab(now)} · already at the top</>}
       </div>
-
-      <style>{`
-        @keyframes fl-fadein {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: none; }
-        }
-      `}</style>
+      <div ref={ref} onPointerDown={down} onPointerMove={move}
+        style={{ position:'relative', height:30, touchAction:'none', cursor:'pointer' }}>
+        <div style={{ position:'absolute', top:'50%', left:0, right:0, height:4, transform:'translateY(-50%)', background:'rgba(15,21,35,0.10)', borderRadius:3 }} />
+        <div style={{ position:'absolute', top:'50%', left:0, width:'50%', height:4, transform:'translateY(-50%)', background:'rgba(138,48,48,0.10)', borderRadius:'3px 0 0 3px' }} />
+        <div style={{ position:'absolute', top:'50%', height:4, transform:'translateY(-50%)', borderRadius:3, left:pct(lo)+'%', width:pct(hi-lo)+'%', background:focus?'rgba(138,48,48,0.30)':'rgba(200,146,42,0.34)' }} />
+        <div style={{ position:'absolute', top:'50%', left:'50%', width:2, height:16, transform:'translate(-50%,-50%)', background:'rgba(15,21,35,0.30)' }} />
+        <div style={{ position:'absolute', top:'calc(50% + 12px)', left:'50%', transform:'translateX(-50%)', fontFamily:SC, fontSize:10, letterSpacing:'0.08em', color:GHOST, whiteSpace:'nowrap' }}>THE LINE</div>
+        {reaching && <div style={{ position:'absolute', top:'50%', left:pct(aim)+'%', width:15, height:15, transform:'translate(-50%,-50%)', borderRadius:'50%', background:CARD, border:`2.5px solid ${focus?RED:CHROME}`, boxShadow:'0 1px 4px rgba(15,21,35,0.18)', pointerEvents:'none' }} />}
+        <div style={{ position:'absolute', top:'50%', left:pct(now)+'%', width:26, height:26, transform:'translate(-50%,-50%)', borderRadius:'50%', background:scoreColor(now), border:'2px solid #FFFFFF', boxShadow:'0 1px 5px rgba(15,21,35,0.28)', cursor:'grab', zIndex:3 }} />
+      </div>
     </div>
   )
 }
 
-// ── Screen 3: Placement ────────────────────────────────────────
-function PlacementScreen({ vision, setVision, concerns, setConcerns, location, setLocation, scale, setScale, onFinish, saving }) {
-  function setConcern(i, val) {
-    setConcerns(prev => { const n = [...prev]; n[i] = val; return n })
+export default function FirstLight(){
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const [params] = useSearchParams()
+  const dest = params.get('from') || '/'   // a personal-rail gate sends people back to what they reached for
+  const [phase, setPhase] = useState('cover')   // cover | place
+  const [scores, setScores] = useState(() => Object.fromEntries(SELF_DOMAINS.map(d => [d.key, 5])))
+  const [saving, setSaving] = useState(false)
+
+  const aims = Object.fromEntries(SELF_DOMAINS.map(d => [d.key, aimFor(scores[d.key])]))
+  const below = SELF_DOMAINS.filter(d => isFocus(scores[d.key]))
+  const setOne = (key, v) => setScores(s => ({ ...s, [key]: v }))
+
+  async function finish(){
+    setSaving(true)
+    try {
+      if (user) await supabase.from('users').update({
+        first_light_completed_at: new Date().toISOString(),
+        welcome_scores: scores,
+      }).eq('id', user.id)
+    } catch (e) { console.error('First Light save error:', e) }
+    finally { setSaving(false); navigate(dest, { replace:true }) }
   }
-  function addConcern() {
-    if (concerns.length < 3) setConcerns(prev => [...prev, ''])
-  }
-  function removeConcern(i) {
-    setConcerns(prev => prev.filter((_, idx) => idx !== i))
+  async function skip(){
+    try { if (user) await supabase.from('users').update({ first_light_skipped_at: new Date().toISOString() }).eq('id', user.id) }
+    catch {}
+    navigate(dest, { replace:true })
   }
 
-  const canFinish = vision.trim().length > 0
-    && concerns[0]?.trim().length > 0
-    && location !== null
-    && scale !== null
-
-  const textareaBase = {
-    width: '100%', fontFamily: LORA, fontSize: 15, lineHeight: 1.6,
-    color: INK, background: 'transparent', border: 'none',
-    borderBottom: '1px solid rgba(15,21,35,0.18)', borderRadius: 0,
-    padding: '8px 0', resize: 'none', outline: 'none', boxSizing: 'border-box', display: 'block',
-  }
-  const promptLabel = {
-    fontFamily: SERIF, fontSize: 17, fontWeight: 400,
-    color: 'rgba(15,21,35,0.55)', lineHeight: 1.5, display: 'block', marginBottom: 4,
-  }
+  const wrap = { maxWidth:480, margin:'0 auto', padding:'26px 22px 150px' }
+  const cover = phase === 'cover'
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-      <div style={{ flex: 1, overflowY: 'auto', WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', padding: '20px 24px 0' }}>
-
-        {/* Vision */}
-        <div style={{ marginBottom: 40 }}>
-          <p style={s.eyebrow}>Your world</p>
-          <span style={promptLabel}>I want to live in a world where...</span>
-          <textarea rows={3} value={vision} onChange={e => setVision(e.target.value)}
-            placeholder="people feel they belong to something larger than themselves"
-            style={textareaBase}
-          />
+    <div style={{ minHeight:'100dvh', background:BG, color:INK, fontFamily:LORA }}>
+      <div style={wrap}>
+        <div style={{ fontFamily:SC, fontWeight:600, letterSpacing:'0.20em', textTransform:'uppercase', fontSize:13, color:GOLD }}>
+          {cover ? 'The personal side' : 'Light it up'}
         </div>
+        <h1 style={{ fontFamily:SERIF, fontWeight:500, fontSize:34, lineHeight:1.06, letterSpacing:'-0.01em', margin:'10px 0 8px' }}>Your first light</h1>
+        <p style={{ fontSize:16, color:META, margin:'0 0 4px' }}>
+          {cover
+            ? <>Two minutes to wake up the personal side. Mark where each part of life is now — the system points you at the next move on its own.</>
+            : <>Mark where each part of life is <b style={{ color:INK, fontWeight:500 }}>now</b>. The system <span style={{ color:GOLD }}>aims you</span> — above the line fast where you&rsquo;re under it, a level up where you&rsquo;re over it.</>}
+        </p>
 
-        {/* Concerns */}
-        <div style={{ marginBottom: 40 }}>
-          <p style={s.eyebrow}>What matters</p>
-          {concerns.map((c, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 16 }}>
-              <div style={{ flex: 1 }}>
-                <span style={promptLabel}>{i === 0 ? 'Issues I care most about...' : '...'}</span>
-                <textarea rows={2} value={c} onChange={e => setConcern(i, e.target.value)}
-                  placeholder={i === 0 ? 'e.g. climate breakdown, inequality, loneliness...' : i === 1 ? 'Another issue...' : 'One more...'}
-                  style={textareaBase}
-                />
-              </div>
-              {i > 0 && (
-                <button onClick={() => removeConcern(i)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(15,21,35,0.55)', fontSize: 20, padding: '6px 0', marginTop: 22, lineHeight: 1 }}
-                  aria-label="Remove"
-                >×</button>
-              )}
+        {/* the wheel */}
+        <div style={{ background:CARD, border:`1px solid ${RULE}`, borderRadius:14, padding:'16px 12px 10px', margin:'16px 0 6px', position:'relative' }}>
+          <div style={{ opacity:cover?0.42:1, filter:cover?'saturate(0.45)':'none', transition:'opacity .5s ease, filter .5s ease' }}>
+            <Wheel domains={SELF_DOMAINS} now={scores} headed={cover ? null : aims} size={300} />
+          </div>
+          {!cover && (
+            <div style={{ fontSize:15, color:META, textAlign:'center', margin:'10px 8px 4px', lineHeight:1.42, minHeight:42 }}>
+              {below.length > 0
+                ? <>Your focus: {below.map((d,i)=><span key={d.key}><span style={{ color:RED, fontWeight:500 }}>{d.name}</span>{i<below.length-1?(i===below.length-2?' and ':', '):''}</span>)} — under the line, so the aim is to cross to <b style={{ color:GOLD, fontWeight:500 }}>5</b> as fast as possible, before anything above gets pushed.</>
+                : <>Everything&rsquo;s above the line. The system&rsquo;s pointing each a level up — the Map is where you set real targets.</>}
             </div>
-          ))}
-          {concerns.length < 3 && (
-            <button onClick={addConcern}
-              style={{ fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', color: GOLD, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0', display: 'flex', alignItems: 'center', gap: 6 }}
-            >
-              <span style={{ fontSize: 20, lineHeight: 1 }}>+</span> Add another
-            </button>
+          )}
+          {cover && (
+            <div style={{ position:'absolute', top:'46%', left:'50%', transform:'translate(-50%,-50%)', zIndex:5, display:'flex', flexDirection:'column', alignItems:'center', gap:10 }}>
+              <button onClick={() => setPhase('place')} style={{ fontFamily:SC, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', fontSize:16, color:'#fff', background:GOLD, border:'none', borderRadius:40, padding:'16px 40px', cursor:'pointer', boxShadow:'0 6px 22px -6px rgba(168,114,26,0.7), 0 0 0 6px rgba(200,146,42,0.12)' }}>Start</button>
+              <span style={{ fontFamily:LORA, fontSize:12.5, color:META, background:'rgba(250,250,247,0.86)', padding:'2px 10px', borderRadius:20 }}>about two minutes</span>
+            </div>
           )}
         </div>
 
-        {/* Location */}
-        <div style={{ marginBottom: 40 }}>
-          <p style={s.eyebrow}>Where you are</p>
-          <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.55)', margin: '0 0 12px', lineHeight: 1.5 }}>Helps us find people and work near you.</p>
-          <FocusSearch
-            value={location}
-            onChange={setLocation}
-            placeholder="Search — e.g. Mexico City, Canada, East Africa…"
-          />
-        </div>
+        {!cover && (
+          <>
+            <div style={{ marginTop:18 }}>
+              {SELF_DOMAINS.map(d => <Track key={d.key} d={d} now={scores[d.key]} onSet={v => setOne(d.key, v)} />)}
+            </div>
+            <p style={{ fontSize:13, color:GHOST, textAlign:'center', marginTop:16, fontStyle:'italic' }}>
+              The system aims you until the Map. The Map is where you set real targets.
+            </p>
+            <div style={{ position:'fixed', left:0, right:0, bottom:0, padding:'14px 22px calc(16px + env(safe-area-inset-bottom))', background:'linear-gradient(to top, #FAFAF7 72%, rgba(250,250,247,0))' }}>
+              <div style={{ maxWidth:480, margin:'0 auto' }}>
+                <button onClick={finish} disabled={saving} style={{ width:'100%', padding:16, border:'none', borderRadius:40, background:GOLD, color:'#fff', fontFamily:SC, fontWeight:700, letterSpacing:'0.14em', fontSize:16, textTransform:'uppercase', cursor:saving?'default':'pointer', opacity:saving?0.6:1 }}>
+                  {saving ? 'Saving…' : 'This is my starting line →'}
+                </button>
+                <button onClick={skip} style={{ display:'block', width:'100%', textAlign:'center', background:'none', border:'none', marginTop:10, fontFamily:LORA, fontSize:13.5, color:GHOST, textDecoration:'underline', cursor:'pointer' }}>Not now</button>
+              </div>
+            </div>
+          </>
+        )}
 
-        {/* Scale */}
-        <div style={{ marginBottom: 40 }}>
-          <p style={s.eyebrow}>At what scale</p>
-          <p style={{ fontFamily: LORA, fontSize: 14, color: 'rgba(15,21,35,0.55)', margin: '0 0 16px', lineHeight: 1.5 }}>Where do you want to show up?</p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {SCALE_OPTIONS.map(o => (
-              <button key={o.key} onClick={() => setScale(o.key)}
-                style={{
-                  fontFamily: LORA, fontSize: 16, padding: '14px 20px',
-                  border: `1px solid ${scale === o.key ? GC : 'rgba(15,21,35,0.14)'}`,
-                  borderRadius: 12,
-                  background: scale === o.key ? 'rgba(200,146,42,0.08)' : 'transparent',
-                  color: scale === o.key ? INK : 'rgba(15,21,35,0.6)',
-                  cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
-                  fontWeight: scale === o.key ? 500 : 400,
-                }}
-              >{o.label}</button>
-            ))}
-          </div>
-        </div>
-
-        <p style={{ fontFamily: LORA, fontSize: 13, color: 'rgba(15,21,35,0.55)', margin: '0 0 8px', lineHeight: 1.5 }}>
-          * Provisional scores — your starting point. Begin NextU for your full map.
-        </p>
-        <div style={{ height: 24 }} />
-      </div>
-
-      <div style={s.foot}>
-        <button
-          style={{ ...s.btn, flex: 1, opacity: canFinish && !saving ? 1 : 0.38, cursor: canFinish && !saving ? 'pointer' : 'default' }}
-          onClick={canFinish && !saving ? onFinish : undefined}
-        >
-          {saving ? 'Stepping in…' : 'Step into NextUs'}
-        </button>
-      </div>
-    </div>
-  )
-}
-
-// ── Main component ─────────────────────────────────────────────
-export default function FirstLight() {
-  const { user } = useAuth()
-  const navigate = useNavigate()
-  const isDesktop = useDesktop()
-
-  const [step, setStep]           = useState(0)
-  const [zoomPhase, setZoomPhase] = useState('personal')
-  const [scores, setScores]     = useState({ path: 5, spark: 5, body: 5, finances: 5, connection: 5, inner_game: 5, signal: 5 })
-  const [cards, setCards]       = useState({})
-  const [vision, setVision]     = useState('')
-  const [concerns, setConcerns] = useState([''])
-  const [location, setLocation] = useState(null)
-  const [scale, setScale]       = useState(null)
-  const [saving, setSaving]     = useState(false)
-  const [skipping, setSkipping] = useState(false)
-
-  async function handleFinish() {
-    if (!user) return
-    setSaving(true)
-    try {
-      const cleanConcerns = concerns.map(c => c.trim()).filter(Boolean)
-
-      await supabase.from('users').update({
-        first_light_completed_at: new Date().toISOString(),
-        welcome_scores:           scores,
-        welcome_challenges:       cards,
-      }).eq('id', user.id)
-
-      const cp = {
-        id:               user.id,
-        welcome_vision:   vision.trim(),
-        welcome_concerns: cleanConcerns,
-        welcome_scale:    scale,
-        updated_at:       new Date().toISOString(),
-      }
-      if (location?.id) cp.location_focus_id = location.id
-      await supabase.from('contributor_profiles_beta').upsert(cp, { onConflict: 'id' })
-
-      if (cleanConcerns.length > 0) {
-        fetch('/api/firstlight-resolve-concerns', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_id: user.id, vision: vision.trim(), concerns: cleanConcerns }),
-        }).catch(() => {})
-      }
-    } catch (e) {
-      console.error('First Light save error:', e)
-    } finally {
-      setSaving(false)
-      navigate('/', { replace: true })
-    }
-  }
-
-  // Skip for now — record the off-ramp and step into the platform.
-  // The user is NOT marked complete, so the re-prompt (FirstLightPrompt
-  // on Mission Control / NextU) will gently invite them back.
-  async function handleSkip() {
-    if (!user || skipping) return
-    setSkipping(true)
-    try {
-      await supabase.from('users').update({
-        first_light_skipped_at: new Date().toISOString(),
-      }).eq('id', user.id)
-    } catch (e) {
-      console.error('First Light skip error:', e)
-    } finally {
-      setSkipping(false)
-      navigate('/', { replace: true })
-    }
-  }
-
-  const next = () => setStep(s => Math.min(s + 1, 3))
-  const back = () => setStep(s => Math.max(s - 1, 0))
-
-  // Progress: show on Personal (step 1) and Placement (step 3) only.
-  // Cover and Zoom are full-bleed — no progress bar.
-  const showProgress = step === 1 || step === 3
-
-  // The viewport goes dark only once the zoom actually fires —
-  // never while the personal map is still on screen. This keeps
-  // desktop (where the column doesn't fill the viewport) from
-  // showing a light strip on a dark page.
-  const dark = step === 2 && zoomPhase !== 'personal'
-
-  return (
-    <div style={{ position: 'relative', height: '100dvh', background: dark ? DARK : BG, overscrollBehavior: 'none', transition: 'background 0.9s 0.5s' }}>
-      {/* Off-ramp — always available. Skipping steps the user into the
-          platform without completing; the re-prompt invites them back. */}
-      <button
-        onClick={handleSkip}
-        disabled={skipping}
-        style={{
-          position: 'absolute',
-          top: 'calc(14px + env(safe-area-inset-top))', right: 16,
-          zIndex: 10,
-          fontFamily: SC, fontSize: 13, letterSpacing: '0.1em', textTransform: 'uppercase',
-          background: 'none', border: 'none', cursor: skipping ? 'default' : 'pointer',
-          padding: '6px 8px',
-          color: dark ? 'rgba(250,250,247,0.6)' : 'rgba(15,21,35,0.5)',
-          transition: 'color 0.9s',
-        }}
-      >
-        {skipping ? 'One sec…' : 'Skip for now'}
-      </button>
-
-      <div style={{ ...s.app, maxWidth: isDesktop ? 560 : 430 }}>
-        {showProgress && <Progress step={step === 1 ? 0 : 1} total={2} />}
-        {step === 0 && <CoverScreen onBegin={next} />}
-        {step === 1 && <PersonalScreen scores={scores} setScores={setScores} cards={cards} setCards={setCards} onNext={next} onBack={back} />}
-        {step === 2 && <ZoomScreen scores={scores} onNext={next} onPhase={setZoomPhase} isDesktop={isDesktop} />}
-        {step === 3 && (
-          <PlacementScreen
-            vision={vision}       setVision={setVision}
-            concerns={concerns}   setConcerns={setConcerns}
-            location={location}   setLocation={setLocation}
-            scale={scale}         setScale={setScale}
-            onFinish={handleFinish}
-            saving={saving}
-          />
+        {cover && (
+          <button onClick={skip} style={{ display:'block', width:'100%', textAlign:'center', background:'none', border:'none', marginTop:18, fontFamily:LORA, fontSize:13.5, color:GHOST, textDecoration:'underline', cursor:'pointer' }}>Not now</button>
         )}
       </div>
     </div>

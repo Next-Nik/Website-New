@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 import { supabase } from './hooks/useSupabase'
-import { hasMapEngagement } from './app/util/onboarding'
 import { ActingAsProvider } from './app/context/ActingAsContext'
 import { useEffect, useState, Component } from 'react'
 import { BottomTabs } from './components/BottomTabs'
@@ -53,6 +52,7 @@ import { WatchPage }              from './pages/Watch'
 import MissionControl         from './app/pages/MissionControl'
 import WelcomeStart           from './app/pages/WelcomeStart'
 import FirstLight             from './app/pages/FirstLight'
+import { hasMapEngagement } from './app/util/onboarding'
 import WelcomeSelf            from './app/pages/WelcomeSelf'
 import OrgWelcome             from './app/pages/OrgWelcome'
 import WelcomePractitioner    from './app/pages/WelcomePractitioner'
@@ -159,47 +159,14 @@ function ComingSoon({ name }) {
 // straight to Mission Control — they don't need a re-introduction.
 function RootRoute() {
   const { user, loading } = useAuth()
-  const [checking, setChecking] = useState(true)
-  const [needsFirstLight, setNeedsFirstLight] = useState(false)
 
-  useEffect(() => {
-    if (!user) { setChecking(false); return }
-    let cancelled = false
-    ;(async () => {
-      try {
-        const [userRes, mapEngaged] = await Promise.all([
-          supabase
-            .from('users')
-            .select('first_light_completed_at, first_light_skipped_at')
-            .eq('id', user.id)
-            .maybeSingle(),
-          hasMapEngagement(user.id),
-        ])
-        if (cancelled) return
-        // Wall only the brand-new user — never completed, never skipped,
-        // and no Map engagement. Anyone who has scored the Map has done
-        // the deeper version of First Light, so they go straight in.
-        const seen = !!userRes?.data?.first_light_completed_at
-          || !!userRes?.data?.first_light_skipped_at
-          || mapEngaged
-        setNeedsFirstLight(!seen)
-      } catch {
-        // Fail open — an error must never trap someone behind First Light.
-        if (!cancelled) setNeedsFirstLight(false)
-      } finally {
-        if (!cancelled) setChecking(false)
-      }
-    })()
-    return () => { cancelled = true }
-  }, [user])
-
-  if (loading || checking) return null
+  if (loading) return null
   if (!user) return <MarketingHomePage />
 
-  // Gate: brand-new user who has neither completed nor skipped First
-  // Light. Skippers fall through to Mission Control below.
-  if (needsFirstLight) return <Navigate to="/welcome/first-light" replace />
-
+  // First Light is no longer forced on login. The civ rail and the whole
+  // site stay open; First Light invites from the personal side (a Start over
+  // the dormant wheel) rather than walling anyone on arrival. Brand-new users
+  // fall straight through to Mission Control.
   // Legacy wrapper welcome flow
   let welcomePath = null
   let seen = true
@@ -222,6 +189,47 @@ function RootRoute() {
   }[path]
 
   return <Navigate to={target} replace />
+}
+
+// ── Personal-rail guard ───────────────────────────────────────
+// First Light is the light-touch activation the personal tools lean on —
+// where you are, where you're headed. When a signed-in user steps onto a
+// personal surface without it (and without the deeper Map, which supersedes
+// it), we surface the First Light cover and send them back to what they
+// reached for. The civ rail is never gated. Session-cached so it checks once,
+// and fails open so an error never walls anyone.
+let _flSeen = false
+function RequirePersonal({ children }) {
+  const { user, loading } = useAuth()
+  const { pathname } = useLocation()
+  const [status, setStatus] = useState(_flSeen ? 'ok' : 'checking')
+
+  useEffect(() => {
+    if (!user || _flSeen) { setStatus('ok'); return }
+    let cancelled = false
+    ;(async () => {
+      try {
+        const [userRes, mapEngaged] = await Promise.all([
+          supabase.from('users')
+            .select('first_light_completed_at, first_light_skipped_at')
+            .eq('id', user.id).maybeSingle(),
+          hasMapEngagement(user.id),
+        ])
+        if (cancelled) return
+        const seen = !!userRes?.data?.first_light_completed_at
+          || !!userRes?.data?.first_light_skipped_at || mapEngaged
+        if (seen) _flSeen = true
+        setStatus(seen ? 'ok' : 'gate')
+      } catch { if (!cancelled) setStatus('ok') }   // fail open — never trap anyone
+    })()
+    return () => { cancelled = true }
+  }, [user])
+
+  if (loading) return null
+  if (!user) return children            // auth is the tools' own concern
+  if (status === 'checking') return null
+  if (status === 'gate') return <Navigate to={`/welcome/first-light?from=${encodeURIComponent(pathname)}`} replace />
+  return children
 }
 
 function AppInner() {
@@ -268,7 +276,7 @@ function AppInner() {
         <Route path="/watch"           element={<WatchPage />} />
 
         {/* ── NextU — the journey (Chapters One–Four) ── */}
-        <Route path="/nextu"              element={<NextUJourneyPage />} />
+        <Route path="/nextu"              element={<RequirePersonal><NextUJourneyPage /></RequirePersonal>} />
         <Route path="/nextu/map"          element={<NextUShell chapter={1} chapterTitle="THE MAP"><MapPage /></NextUShell>} />
         <Route path="/nextu/i-am"         element={<IAmChapterPage />} />
         <Route path="/nextu/horizon-self" element={<HorizonSelfOnboardingPage />} />
@@ -279,18 +287,18 @@ function AppInner() {
         <Route path="/tools/orienteering"        element={<Navigate to="/tools/north-star" replace />} />
         <Route path="/tools/map"                 element={<Navigate to="/nextu/map" replace />} />  {/* re-homed — Chapter One */}
         <Route path="/tools/horizon-state"       element={<HorizonStatePage />} />
-        <Route path="/tools/nextsteps"           element={<NextStepsPage />} />
-        <Route path="/tools/purpose-piece"       element={<PurposePiecePage />} />
-        <Route path="/tools/purpose-piece/deep"  element={<PurposePieceDeepPage />} />
-        <Route path="/tools/target-sprint"       element={<TargetSprintPage />} />
+        <Route path="/tools/nextsteps"           element={<RequirePersonal><NextStepsPage /></RequirePersonal>} />
+        <Route path="/tools/purpose-piece"       element={<RequirePersonal><PurposePiecePage /></RequirePersonal>} />
+        <Route path="/tools/purpose-piece/deep"  element={<RequirePersonal><PurposePieceDeepPage /></RequirePersonal>} />
+        <Route path="/tools/target-sprint"       element={<RequirePersonal><TargetSprintPage /></RequirePersonal>} />
         <Route path="/atlas/goals"              element={<HorizonGoalsPage />} />
         <Route path="/atlas/goals/:domain"      element={<HorizonGoalsPage />} />
-        <Route path="/tools/horizon-practice"    element={<HorizonPracticePage />} />
-        <Route path="/journal"                   element={<JournalPage />} />
+        <Route path="/tools/horizon-practice"    element={<RequirePersonal><HorizonPracticePage /></RequirePersonal>} />
+        <Route path="/journal"                   element={<RequirePersonal><JournalPage /></RequirePersonal>} />
         <Route path="/tools/sentence-completion" element={<SentenceCompletion />} />
         <Route path="/tools/i-am"                element={<IAmPractice />} />
         <Route path="/tools/morning-pages"       element={<MorningPages />} />
-        <Route path="/daily"                     element={<DailyEntrances />} />
+        <Route path="/daily"                     element={<RequirePersonal><DailyEntrances /></RequirePersonal>} />
         <Route path="/tools/training"            element={<Training />} />
         <Route path="/tools/anchor-breath"       element={<AnchorBreathPage />} />
         <Route path="/tools/charge-breath"       element={<ChargeBreathPage />} />
