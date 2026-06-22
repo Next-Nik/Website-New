@@ -970,7 +970,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
   async function generateMilestones() {
     setGenerating(true)
     try {
-      const res  = await fetch('/tools/target-sprint/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'milestones', domain: domainId, targetGoal: dd.targetGoal, horizonText: dd.horizonText, currentStateSummary: dd.currentStateSummary, userId }) })
+      const res  = await fetch('/tools/target-sprint/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'milestones', domain: domainId, targetGoal: dd.targetGoal, horizonText: dd.horizonText, currentStateSummary: dd.currentStateSummary, iaStatement: iaStatement || null, horizonSelfStatement: horizonSelfStatement || null, userId }) })
       const data = await res.json()
       if (data.milestones) update({ milestones: data.milestones })
     } catch {}
@@ -980,7 +980,7 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
   async function generateTasks(milestoneIdx) {
     setGenerating(true)
     try {
-      const res  = await fetch('/tools/target-sprint/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'tasks', domain: domainId, targetGoal: dd.targetGoal, milestoneText: dd.milestones?.[milestoneIdx]?.text, milestoneIndex: milestoneIdx, userId }) })
+      const res  = await fetch('/tools/target-sprint/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'tasks', domain: domainId, targetGoal: dd.targetGoal, milestoneText: dd.milestones?.[milestoneIdx]?.text, milestoneIndex: milestoneIdx, currentStateSummary: dd.currentStateSummary || null, iaStatement: iaStatement || null, horizonSelfStatement: horizonSelfStatement || null, currentScore: currentScore ?? null, horizonScore: horizonScore ?? null, userId }) })
       const data = await res.json()
       if (data.tasks) {
         const existing = (dd.tasks || []).filter(t => t.milestone !== milestoneIdx)

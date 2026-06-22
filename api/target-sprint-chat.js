@@ -272,10 +272,10 @@ When you have enough to build the full plan (after telling them so):
     { "text": "Month 3 milestone — what needs to be true by [specific date]", "why": "why this month matters" }
   ],
   "tasks": [
-    { "milestone": 0, "text": "specific task for milestone 1" },
-    { "milestone": 0, "text": "specific task for milestone 1" },
-    { "milestone": 1, "text": "specific task for milestone 2" },
-    { "milestone": 2, "text": "specific task for milestone 3" }
+    { "milestone": 0, "text": "an action the Horizon Self takes: concrete, doable from where they are now, not a project step" },
+    { "milestone": 0, "text": "another such action for milestone 1" },
+    { "milestone": 1, "text": "such an action for milestone 2" },
+    { "milestone": 2, "text": "such an action for milestone 3" }
   ],
   "conversationInsight": "One sentence on what emerged in this conversation"
 }`;
@@ -283,11 +283,14 @@ When you have enough to build the full plan (after telling them so):
 
 // ── Mode: milestones (regenerate/refine) ──────────────────────────────────────
 
-async function generateMilestones(domain, targetGoal, horizonText, currentStateSummary) {
+async function generateMilestones(domain, targetGoal, horizonText, currentStateSummary, ctx = {}) {
   const d = DOMAINS[domain] || { label: domain, frame: domain };
+  const { iaStatement, horizonSelfStatement } = ctx;
+  const system = `${VOICE}${identityBlock(domain, iaStatement, horizonSelfStatement)}`;
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 1000,
+    system,
     messages: [{
       role: "user",
       content: `Domain: ${d.label} — ${d.frame}
@@ -311,24 +314,49 @@ Return JSON only:
 }
 
 // ── Mode: tasks (regenerate/refine per milestone) ─────────────────────────────
+// Tasks are where the stretch reaches daily life: they surface in the morning
+// practice as the moves the person actually makes. They must carry the same
+// identity charge as the goal. Each task is something the person's Horizon Self
+// DOES, performable from exactly where they stand now. This is NOT project
+// decomposition. The question is never "what moves the milestone forward"
+// (plan-thinking); it is "what does the Horizon Self do this week, from here".
 
-async function generateTasks(domain, targetGoal, milestoneText, milestoneIndex) {
+async function generateTasks(domain, targetGoal, milestoneText, milestoneIndex, ctx = {}) {
   const d = DOMAINS[domain] || { label: domain, frame: domain };
+  const { iaStatement, horizonSelfStatement, currentStateSummary, currentScore, horizonScore } = ctx;
+
+  const system = `${VOICE}${identityBlock(domain, iaStatement, horizonSelfStatement)}`;
+
+  const scaleLine = (currentScore !== undefined && currentScore !== null)
+    ? `\nThey currently sit at ${currentScore}/10 in ${d.label}${horizonScore !== undefined && horizonScore !== null ? `, with their Horizon at ${horizonScore}/10` : ''}. Every task must be performable from ${currentScore}/10: a real move available to them now, not one that assumes they are already further along.`
+    : '';
+
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 1000,
+    system,
     messages: [{
       role: "user",
-      content: `Domain: ${d.label}
+      content: `Domain: ${d.label} · ${d.frame}
 90-day goal: "${targetGoal}"
-Milestone ${milestoneIndex + 1}: "${milestoneText}"
+Milestone ${milestoneIndex + 1}: "${milestoneText}"${currentStateSummary ? `\nWhere they are now: "${currentStateSummary}"` : ''}${scaleLine}
 
-Propose 3-5 specific tasks that would move this milestone forward. Each task should be concrete enough to actually do — not vague intentions, real actions. These tasks surface in the person's daily morning practice, so write them as single doable moves, not projects.
+Propose 3 to 5 tasks for this milestone. These surface in the person's daily morning practice, so each is a single doable move, not a project.
+
+THE TASK IS AN ACT OF THE SELF, NOT A STEP IN A PLAN.
+Write each task as something their Horizon Self DOES, an action taken from that identity this week. The test is not "does this move the milestone forward" (that is plan-thinking). The test is two things, both yes: "is this what the person, embodying their Horizon Self in ${d.label}, actually does?" and "can they do it from exactly where they are right now?"
+
+Screen every task against the same three zones the goal uses:
+· COMFORT: a tidier version of what they already do; it costs them nothing. Reject it. The Horizon Self would not count it.
+· FANTASY: assumes a different starting point, other people's decisions, or luck; it cannot be performed from where they stand now. Reject it.
+· STRETCH: the edge of their current reach. A real move their Horizon Self makes, performable now, that they can feel themselves having to show up for. Every task lands here.
+
+Plain language. Name a clear action, not an intention. No em-dashes; use a middot if you need a pause.
 
 Return JSON only:
 {
   "tasks": [
-    { "text": "specific actionable task" }
+    { "text": "the action: concrete, identity-true, doable from where they are now" }
   ]
 }`
     }]
@@ -423,13 +451,15 @@ module.exports = async (req, res) => {
 
     // ── Generate milestones ───────────────────────────────────────────────────
     if (mode === "milestones") {
-      const result = await generateMilestones(domain, targetGoal, horizonText, currentStateSummary);
+      const result = await generateMilestones(domain, targetGoal, horizonText, currentStateSummary,
+        { iaStatement, horizonSelfStatement });
       return res.json(result);
     }
 
     // ── Generate tasks for a milestone ───────────────────────────────────────
     if (mode === "tasks") {
-      const result = await generateTasks(domain, targetGoal, milestoneText, milestoneIndex || 0);
+      const result = await generateTasks(domain, targetGoal, milestoneText, milestoneIndex || 0,
+        { iaStatement, horizonSelfStatement, currentStateSummary, currentScore, horizonScore });
       return res.json(result);
     }
 
