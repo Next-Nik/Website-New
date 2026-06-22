@@ -1008,6 +1008,19 @@ function DomainPanel({ domainId, domainData, setDomainData, hasMapData, mapData,
         )}
       </div>
 
+      {/* Gentle Map nudge: shown when the identity inputs the tasks draw from are
+          thin. Non-blocking: the stretch works without them, it just lands truer
+          with them. This is the seam where the task generator is weakest. */}
+      {(!iaStatement || !horizonSelfStatement) && (
+        <div style={{ padding: '12px 16px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '8px', margin: '4px 0 16px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: tokens.gold, textTransform: 'uppercase', marginBottom: '6px' }}>Sharpen this stretch</div>
+          <div style={{ ...body, fontSize: '1.0625rem', ...meta, lineHeight: 1.65, marginBottom: '10px' }}>
+            This stretch is built from your Horizon Self in {d.label} · the version of you the daily actions are drawn from. That work isn&rsquo;t in yet. You can carry on, and the actions land truer once your Map and I Am statements are done.
+          </div>
+          <a href="/nextu/map" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, textDecoration: 'none', borderBottom: `1px solid ${tokens.gold}`, paddingBottom: '1px' }}>Do the Map →</a>
+        </div>
+      )}
+
       {/* Step: Current State */}
       {viewStep === 'current_state' && (
         <div>
