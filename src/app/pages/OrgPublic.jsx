@@ -137,13 +137,13 @@ const MEMBERSHIP_STATUS_LABEL = {
 // or when the mode doesn't change order materially. 'practice' foregrounds
 // offerings (programmes / retreats) earlier in the page.
 const MODE_PROFILE_ORDER = {
-  practice:   ['identity', 'mission', 'story', 'description', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'relationships', 'provenance'],
-  enterprise: ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'needs', 'credentials', 'testimonials', 'events', 'listen', 'contact', 'links', 'press', 'relationships', 'provenance'],
-  platform:   ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'credentials', 'testimonials', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'relationships', 'provenance'],
-  collective: ['identity', 'mission', 'description', 'story', 'placement', 'working_on', 'needs', 'offers', 'testimonials', 'credentials', 'events', 'listen', 'contact', 'links', 'press', 'relationships', 'provenance'],
-  mixed:      ['identity', 'mission', 'description', 'story', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'relationships', 'provenance'],
+  practice:   ['identity', 'mission', 'story', 'description', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
+  enterprise: ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'needs', 'credentials', 'testimonials', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
+  platform:   ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'credentials', 'testimonials', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
+  collective: ['identity', 'mission', 'description', 'story', 'placement', 'working_on', 'needs', 'offers', 'testimonials', 'credentials', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
+  mixed:      ['identity', 'mission', 'description', 'story', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
   // default (NULL mode) — close to the original OrgPublic order
-  default:    ['identity', 'mission', 'description', 'working_on', 'placement', 'offers', 'needs', 'story', 'testimonials', 'credentials', 'events', 'listen', 'contact', 'links', 'press', 'relationships', 'provenance'],
+  default:    ['identity', 'mission', 'description', 'working_on', 'placement', 'offers', 'needs', 'story', 'testimonials', 'credentials', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
 }
 
 function getSectionOrder(actorMode) {
@@ -746,6 +746,145 @@ function NeedsSection({ needs, actor, currentUser }) {
           <OfferOrNeedCard key={need.id} item={need} kind="need"
             actor={actor} currentUser={currentUser} />
         ))}
+      </div>
+    </div>
+  )
+}
+
+// ── Calls section — the org's challenges and asks ────────────
+// The home on the profile for what an actor is calling others toward. The
+// extractor never authors these; they are owner-declared Actor Calls. Types are
+// driven by CALL_TYPES so a third type (tasks) slots in later without a rewrite.
+// Group order is fixed; each group only renders when it has rows.
+
+const CALL_TYPES = [
+  { type: 'challenge', groupLabel: 'CHALLENGES', badge: 'Challenge' },
+  { type: 'ask',       groupLabel: 'ASKS',       badge: 'Ask' },
+  // 'task' lands here once the tasks/asks distinction is settled.
+]
+
+function formatCallDate(d) {
+  if (!d) return null
+  const dt = new Date(d)
+  if (isNaN(dt)) return null
+  return dt.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+// One line of quiet metrics under a call, built from the type's own fields.
+function callMeta(call) {
+  const bits = []
+  if (call.type === 'challenge') {
+    if (call.duration_days) bits.push(`${call.duration_days}-day`)
+    if (call.taken_on_count > 0) bits.push(`${call.taken_on_count} taken on`)
+    if (call.active_count > 0)   bits.push(`${call.active_count} active`)
+  } else if (call.type === 'ask') {
+    if (call.ask_quantity)  bits.push(`${call.ask_fulfilled || 0} of ${call.ask_quantity} met`)
+    const by = formatCallDate(call.ask_deadline)
+    if (by) bits.push(`by ${by}`)
+  }
+  return bits.join(' · ')
+}
+
+function CallCard({ call, isOwner }) {
+  const meta = callMeta(call)
+  const line = call.tagline || call.the_move || call.horizon_goal_text || null
+  const badge = (CALL_TYPES.find(t => t.type === call.type) || {}).badge || call.type
+  const unlisted = isOwner && call.visibility === 'link_only'
+
+  const inner = (
+    <>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '7px' }}>
+        <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
+          textTransform: 'uppercase', color: gold,
+          border: '1px solid rgba(200,146,42,0.40)', borderRadius: '40px',
+          padding: '3px 10px' }}>
+          {badge}
+        </span>
+        {unlisted && (
+          <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+            textTransform: 'uppercase', color: 'rgba(15,21,35,0.55)' }}>
+            Unlisted
+          </span>
+        )}
+      </div>
+      <div style={{ ...serif, fontSize: '19px', color: dark, lineHeight: 1.25 }}>
+        {call.title || 'Untitled'}
+      </div>
+      {line && (
+        <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.70)',
+          marginTop: '5px', lineHeight: 1.5 }}>
+          {line}
+        </div>
+      )}
+      {meta && (
+        <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em',
+          color: 'rgba(15,21,35,0.55)', marginTop: '9px' }}>
+          {meta}
+        </div>
+      )}
+    </>
+  )
+
+  const cardStyle = {
+    display: 'block', textDecoration: 'none',
+    background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)',
+    borderRadius: '10px', padding: '16px 18px',
+  }
+
+  return call.slug
+    ? <Link to={`/stretch/c/${call.slug}`} style={cardStyle}>{inner}</Link>
+    : <div style={cardStyle}>{inner}</div>
+}
+
+function CallsSection({ calls, isOwner, actorName }) {
+  // Public viewers see community calls. The owner also sees their own unlisted
+  // (link_only) calls on their own profile, marked as such.
+  const visible = (calls || []).filter(c =>
+    c.visibility === 'community' || (isOwner && c.visibility === 'link_only'))
+
+  if (!visible.length) {
+    // The space still exists for the owner when empty — a quiet invitation.
+    if (!isOwner) return null
+    return (
+      <div>
+        <Eyebrow>Challenges &amp; asks</Eyebrow>
+        <div style={{ background: '#FFFFFF', border: '1px dashed rgba(200,146,42,0.35)',
+          borderRadius: '10px', padding: '18px 20px' }}>
+          <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.70)',
+            lineHeight: 1.5, marginBottom: '12px' }}>
+            Invite others into the work · share a challenge to take on together, or an ask for what you need.
+          </div>
+          <Link to="/challenges/new"
+            style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
+              textTransform: 'uppercase', color: gold, textDecoration: 'none',
+              border: '1px solid rgba(200,146,42,0.50)', borderRadius: '40px',
+              padding: '8px 18px', display: 'inline-block' }}>
+            Create one
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <Eyebrow>Challenges &amp; asks</Eyebrow>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '22px' }}>
+        {CALL_TYPES.map(({ type, groupLabel }) => {
+          const group = visible.filter(c => c.type === type)
+          if (!group.length) return null
+          return (
+            <div key={type}>
+              <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
+                color: 'rgba(15,21,35,0.55)', marginBottom: '10px' }}>
+                {groupLabel}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {group.map(c => <CallCard key={c.id} call={c} isOwner={isOwner} />)}
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
@@ -1464,6 +1603,7 @@ export function OrgPublicPage() {
   const [constellation, setConstellation] = useState([])
   const [credentials, setCredentials]   = useState([])
   const [testimonials, setTestimonials] = useState([])
+  const [calls, setCalls]         = useState([])
   const [loading, setLoading]     = useState(true)
 
   useEffect(() => {
@@ -1483,7 +1623,7 @@ export function OrgPublicPage() {
       setActor(actor)
 
       // Parallel load auxiliary data
-      const [linksRes, pressRes, offersRes, needsRes, parentRes, childrenRes, partnersRes, credentialsRes, testimonialsRes] = await Promise.all([
+      const [linksRes, pressRes, offersRes, needsRes, parentRes, childrenRes, partnersRes, credentialsRes, testimonialsRes, callsRes] = await Promise.all([
         supabase.from('actor_links').select('*').eq('actor_id', actor.id).order('sort_order'),
         supabase.from('actor_press').select('*').eq('actor_id', actor.id).order('sort_order'),
         supabase.from('actor_offers').select('*, target_focus:target_focus_id(id, name, type)').eq('actor_id', actor.id).eq('active', true).order('sort_order'),
@@ -1509,6 +1649,15 @@ export function OrgPublicPage() {
 
         // Testimonials — public read policy restricts to active=true
         supabase.from('actor_testimonials').select('*').eq('actor_id', actor.id).eq('active', true).order('sort_order'),
+
+        // Actor Calls — the org's challenges and asks. Public read policy
+        // already strips drafts; we pull non-draft rows and the UI shows
+        // community to everyone, plus the owner's own unlisted ones.
+        supabase.from('actor_calls')
+          .select('id, type, title, slug, tagline, the_move, horizon_goal_text, scale, domain, duration_days, ask_quantity, ask_deadline, ask_fulfilled, taken_on_count, active_count, visibility, created_at')
+          .eq('actor_id', actor.id)
+          .in('visibility', ['community', 'link_only'])
+          .order('created_at', { ascending: false }),
       ])
 
       setLinks(linksRes.data || [])
@@ -1530,6 +1679,7 @@ export function OrgPublicPage() {
       } catch {}
       setCredentials(credentialsRes.data || [])
       setTestimonials(testimonialsRes.data || [])
+      setCalls(callsRes.data || [])
 
       setLoading(false)
     }
@@ -1661,6 +1811,9 @@ export function OrgPublicPage() {
     },
     press: () => (
       press.length > 0 ? <PressStrip press={press} /> : null
+    ),
+    calls: () => (
+      <CallsSection calls={calls} isOwner={isOwner} actorName={actor.name} />
     ),
     relationships: () => (
       (parent || children.length > 0 || partners.length > 0)
