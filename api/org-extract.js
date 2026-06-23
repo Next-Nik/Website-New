@@ -252,11 +252,29 @@ one from what the source actually shows. If the source provides nothing
 substantive enough to build a tagline from, return null for tagline.
 
 ──────────────────────────────────────────────────────────────────────────────
+DESCRIPTION — 2-3 sentences, third person, TED-tight
+──────────────────────────────────────────────────────────────────────────────
+
+The description is the actor's profile blurb — the two or three sentences their
+own homepage would lead with. It says what they are and what they do, in the
+terms of their own world. A visitor reads it to understand the actor, the way
+they would read the top of that actor's About page.
+
+It is a profile, not a review. Never assess the actor's alignment, value, or
+fit. Phrases like "demonstrates clear alignment", "signals movement toward
+Horizon Goals", "complementary frameworks", or any mention of NextUs, the Atlas,
+domains, scoring, or the platform's framework do NOT belong here. That reasoning
+lives in score_reasoning, which is internal and never shown. Write the actor as
+their own site would describe them.
+
+──────────────────────────────────────────────────────────────────────────────
 STORY — 2-4 short paragraphs, third person, TED-tight
 ──────────────────────────────────────────────────────────────────────────────
 
 The story is the actor's narrative. Three to four short paragraphs at most.
 Built from explicit claims on the source. Third person. No marketing breath.
+Write it as the actor's own About page reads — describing who they are and what
+they do, in the language of their own world. A profile, never an assessment.
 
 What the story IS:
 - What the actor does and at what scale
@@ -270,6 +288,9 @@ What the story is NOT:
 - A manifesto or call to action
 - A sales pitch
 - A list of services (those are offerings — owner-only, not extracted)
+- An assessment of the actor's alignment, value, or fit ("demonstrates
+  alignment", "signals movement toward", "complementary frameworks" — none of
+  this), or any reference to NextUs, the Atlas, Horizon Goals, domains, or scoring
 
 If the source does not contain enough material for an honest 2-4 paragraph
 story, leave the story field null and let the description carry the page.
@@ -588,6 +609,11 @@ Tiers:
   7–8: qualified
   9:   exemplar
 
+The alignment_score, placement_tier, score_reasoning, hal_signals, and
+sfp_patterns are INTERNAL — admin-only. They must never leak into description,
+story, or tagline. Those three fields describe the actor on their own terms, as
+their own site would. The scoring reasoning stays in score_reasoning.
+
 ──────────────────────────────────────────────────────────────────────────────
 OWNER-ONLY FIELDS — DO NOT INFER OR RETURN
 ──────────────────────────────────────────────────────────────────────────────
@@ -622,8 +648,8 @@ Return an array of 1-6 actor objects. Use this exact shape:
     "name": "string",
     "type": "organisation | project | practitioner | programme | place | group | resource",
     "tagline": "string or null — one substantive line, TED-tight",
-    "description": "string — 2-3 sentences, third person, TED-tight",
-    "story": "string or null — 2-4 short paragraphs, third person, TED-tight. Paragraphs separated by blank lines (\\n\\n). Null if source lacks material for an honest story.",
+    "description": "string — 2-3 sentences, third person, TED-tight. Profile blurb in the actor's own terms. Never alignment / evaluation language or platform-framework references.",
+    "story": "string or null — 2-4 short paragraphs, third person, TED-tight. Profile voice — the actor's own About page, never an assessment. Paragraphs separated by blank lines (\\n\\n). Null if source lacks material for an honest story.",
     "image_url": "string or null — single anchor image URL from source",
     "domains": ["primary-domain-slug", "secondary-slug", ...],
     "subdomains": ["subdomain-slug", ...],
@@ -716,23 +742,29 @@ function absolutise(u, base) {
   try { return new URL(u, base).href } catch { return null }
 }
 
-// Harvest candidate anchor images from raw HTML, in preference order:
-// og:image / twitter:image → apple-touch-icon / icon link → logo-ish <img>.
+// Harvest candidate anchor images from raw HTML, ordered best-first for a brand
+// logo: schema.org/JSON-LD "logo" → apple-touch-icon / icon link → logo-ish
+// <img> → og:image / twitter:image. The social share image is last because for
+// an organisation it is usually a hero / campus photo, not the brand mark — it
+// backstops the logo candidates rather than leading them.
 function extractImageCandidates(html, baseUrl) {
   const out = []
   const push = (u) => { const a = absolutise(u, baseUrl); if (a && !out.includes(a)) out.push(a) }
 
   let m
-  const metaRe = /<meta[^>]+(?:property|name)=["'](?:og:image(?::secure_url)?|twitter:image(?::src)?)["'][^>]*>/gi
-  while ((m = metaRe.exec(html))) {
-    const c = m[0].match(/content=["']([^"']+)["']/i)
-    if (c) push(c[1])
-  }
+  // 1. schema.org / JSON-LD "logo" — the brand mark when a site declares it.
+  const ldRe = /"logo"\s*:\s*(?:"([^"]+)"|\{[^}]*?"url"\s*:\s*"([^"]+)")/gi
+  while ((m = ldRe.exec(html))) push(m[1] || m[2])
+
+  // 2. <link rel="...icon"> — apple-touch-icon / icon are normally the brand
+  //    mark, high-res, and reliable. Preferred as the org anchor.
   const linkRe = /<link[^>]+rel=["'][^"']*(?:apple-touch-icon|icon)[^"']*["'][^>]*>/gi
   while ((m = linkRe.exec(html))) {
     const h = m[0].match(/href=["']([^"']+)["']/i)
     if (h) push(h[1])
   }
+
+  // 3. <img> whose markup says logo (class / alt / id / src).
   const imgRe = /<img[^>]+>/gi
   while ((m = imgRe.exec(html))) {
     if (/logo/i.test(m[0])) {
@@ -740,6 +772,15 @@ function extractImageCandidates(html, baseUrl) {
       if (s) push(s[1])
     }
   }
+
+  // 4. og:image / twitter:image — the social share image. Last resort for a
+  //    logo; good as a hero image for places.
+  const metaRe = /<meta[^>]+(?:property|name)=["'](?:og:image(?::secure_url)?|twitter:image(?::src)?)["'][^>]*>/gi
+  while ((m = metaRe.exec(html))) {
+    const c = m[0].match(/content=["']([^"']+)["']/i)
+    if (c) push(c[1])
+  }
+
   return out
 }
 
@@ -977,7 +1018,7 @@ module.exports = async function handler(req, res) {
       readVia = 'html_fetch'
 
       const imageBlock = imageCands.length
-        ? `\n\nIMAGE CANDIDATES found in the page source (pick the single best anchor image for each actor — logo for orgs, portrait for practitioners — and return it as image_url; return null if none fit):\n${imageCands.slice(0, 8).map(u => `  - ${u}`).join('\n')}`
+        ? `\n\nIMAGE CANDIDATES found in the page source, ordered best-first for a brand logo. For an ORGANISATION / programme / project / group / resource, pick the logo (the brand mark). For a PLACE, prefer a hero image of the space. For a PRACTITIONER, a portrait. Return the single best as image_url, or null if none fit:\n${imageCands.slice(0, 8).map(u => `  - ${u}`).join('\n')}`
         : ''
       const linkBlock = linkCands.length
         ? `\n\nLINK CANDIDATES found in the page source (classify the ones that belong to an actor into the link_type vocabulary — socials, podcast feeds, booking/contact pages, email, phone — and attach them to the right record; ignore the rest):\n${linkCands.slice(0, 60).map(u => `  - ${u}`).join('\n')}`
