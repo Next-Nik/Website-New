@@ -135,7 +135,7 @@ module.exports = async (req, res) => {
         duration_days, measure, mechanism, protocol,
         taken_on_count, active_count, completed_count,
         visibility, lifecycle_state, closed_at, source, created_at, updated_at,
-        actor_id, user_id, parent_call_id, author_statement, body_long, video_url, intensity_level,
+        actor_id, user_id, parent_call_id, author_statement, body_long, video_url, cover_image_url, intensity_level,
         nextus_actors ( id, name, slug, type, description, image_url, profile_owner )
       `)
       .eq('slug', slug)
@@ -212,6 +212,7 @@ module.exports = async (req, res) => {
       author_statement: rest.author_statement || null,
       body_long: rest.body_long || null,
       video_url: rest.video_url || null,
+      cover_image_url: rest.cover_image_url || null,
       intensity_level: rest.intensity_level || null,
       protocol,
       visibility: 'draft',
@@ -243,7 +244,7 @@ module.exports = async (req, res) => {
       }
     }
     const safe = {}
-    const editable = ['title','tagline','type','scale','domain','horizon_goal_text','the_move','cadence','cadence_note','duration_days','measure','mechanism','protocol','ask_quantity','ask_deadline','parent_call_id','author_statement','body_long','video_url','intensity_level']
+    const editable = ['title','tagline','type','scale','domain','horizon_goal_text','the_move','cadence','cadence_note','duration_days','measure','mechanism','protocol','ask_quantity','ask_deadline','parent_call_id','author_statement','body_long','video_url','cover_image_url','intensity_level']
     editable.forEach(k => { if (k in patch) safe[k] = patch[k] })
     safe.updated_at = new Date().toISOString()
     const { data, error } = await supabase.from('actor_calls').update(safe).eq('id', call_id).select('*').single()

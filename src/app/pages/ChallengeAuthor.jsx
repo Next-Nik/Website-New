@@ -90,6 +90,7 @@ export default function ChallengeAuthor() {
   const [authorStatement, setAuthorStatement] = useState('')   // in their words: sets author_statement
   const [bodyLong,        setBodyLong]        = useState('')   // a longer piece
   const [videoUrl,        setVideoUrl]        = useState('')   // optional video link
+  const [coverUrl,        setCoverUrl]        = useState('')   // optional hero image URL
   const [intensity,       setIntensity]       = useState(null) // optional 1–5
   const [parentOptions,   setParentOptions]   = useState([])
 
@@ -254,6 +255,7 @@ export default function ChallengeAuthor() {
       author_statement: authorStatement.trim() || null,
       body_long: bodyLong.trim() || null,
       video_url: videoUrl.trim() || null,
+      cover_image_url: coverUrl.trim() || null,
       intensity_level: intensity || null,
       protocol: cleanStrands,
     }
@@ -496,6 +498,17 @@ export default function ChallengeAuthor() {
               <Label>Video link (optional)</Label>
               <input type="text" value={videoUrl} onChange={e => setVideoUrl(e.target.value)}
                 placeholder="A YouTube or Vimeo link — embedded on the page" style={inputStyle} />
+            </div>
+
+            <div>
+              <Label>Cover image (optional)</Label>
+              <input type="text" value={coverUrl} onChange={e => setCoverUrl(e.target.value)}
+                placeholder="An image URL, shown as a plate above the title" style={inputStyle} />
+              {coverUrl.trim() && (
+                <div style={{ marginTop: '10px', textAlign: 'center' }}>
+                  <img src={coverUrl.trim()} alt="" style={{ width: '100%', maxWidth: '220px', height: 'auto', borderRadius: '12px', border: hair, display: 'inline-block' }} />
+                </div>
+              )}
             </div>
 
             <div>

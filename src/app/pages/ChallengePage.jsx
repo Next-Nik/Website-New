@@ -720,6 +720,19 @@ export function ChallengePage() {
 
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: 'clamp(64px,8vw,96px) clamp(20px,5vw,40px) 100px' }}>
 
+        {/* Cover — a single image leading the page, constrained to a centred
+            plate so square illustrations and landscape banners both read whole. */}
+        {call.cover_image_url && (
+          <div style={{ marginBottom: '28px', textAlign: 'center' }}>
+            <img
+              src={call.cover_image_url}
+              alt=""
+              loading="lazy"
+              style={{ width: '100%', maxWidth: '460px', height: 'auto', borderRadius: '16px', border: hair, display: 'inline-block' }}
+            />
+          </div>
+        )}
+
         {/* Header */}
         <div style={{ marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px', flexWrap: 'wrap' }}>
