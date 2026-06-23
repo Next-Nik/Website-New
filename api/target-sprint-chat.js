@@ -109,7 +109,7 @@ Return JSON only:
 }`;
 
   const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-4-6",
     max_tokens: 800,
     system,
     messages: [{ role: "user", content: `Domain scores${hasMapData ? " (from The Map)" : " (self-reported)"}:\n${scoreLines}\n\nRecommend the one arena for this quarter's Target Stretch.` }]
@@ -288,7 +288,7 @@ async function generateMilestones(domain, targetGoal, horizonText, currentStateS
   const { iaStatement, horizonSelfStatement } = ctx;
   const system = `${VOICE}${identityBlock(domain, iaStatement, horizonSelfStatement)}`;
   const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-4-6",
     max_tokens: 1000,
     system,
     messages: [{
@@ -332,7 +332,7 @@ async function generateTasks(domain, targetGoal, milestoneText, milestoneIndex, 
     : '';
 
   const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-4-6",
     max_tokens: 1000,
     system,
     messages: [{
@@ -400,7 +400,7 @@ module.exports = async (req, res) => {
           : m
       );
       const response = await anthropic.messages.create({
-        model: "claude-sonnet-4-20250514", max_tokens: 1000, system, messages: apiMessages
+        model: "claude-sonnet-4-6", max_tokens: 1000, system, messages: apiMessages
       });
       const parsed = extractJSON(response.content[0].text);
       return res.json(parsed);
@@ -418,7 +418,7 @@ module.exports = async (req, res) => {
           : m
       );
       const response = await anthropic.messages.create({
-        model: "claude-sonnet-4-20250514", max_tokens: 1000, system, messages: apiMessages
+        model: "claude-sonnet-4-6", max_tokens: 1000, system, messages: apiMessages
       });
       const parsed = extractJSON(response.content[0].text);
       return res.json(parsed);
@@ -437,7 +437,7 @@ module.exports = async (req, res) => {
           : m
       );
       const response = await anthropic.messages.create({
-        model: "claude-sonnet-4-20250514", max_tokens: 1200, system, messages: apiMessages
+        model: "claude-sonnet-4-6", max_tokens: 1200, system, messages: apiMessages
       });
       const text = response.content[0].text;
       try {

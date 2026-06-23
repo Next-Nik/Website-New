@@ -172,12 +172,12 @@ module.exports = async (req, res) => {
 
     const [synthResponse, horizonResponse] = await Promise.all([
       anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2500,
         messages: [{ role: 'user', content: buildSynthesisPrompt(domainData, northStarCtx) }],
       }),
       anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 800,
         messages: [{ role: 'user', content: buildHorizonPrompt(domainData) }],
       }),

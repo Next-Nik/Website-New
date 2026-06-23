@@ -218,7 +218,7 @@ function isPullAnswerThin(answer) {
 
 async function checkPullSignal(domain, questionLabel, answer) {
   const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: 200,
     messages: [{
       role: 'user',
@@ -479,7 +479,7 @@ async function detectSubdomain(session) {
   if (subdomains.length === 0) return null
 
   const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: 300,
     messages: [{
       role: 'user',

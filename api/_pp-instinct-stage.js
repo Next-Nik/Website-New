@@ -188,7 +188,7 @@ function isConfused(text) {
 
 async function checkInstinctSignal(questionLabel, combinedAnswer) {
   const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: 200,
     messages: [{
       role: 'user',
@@ -546,7 +546,7 @@ ${instinctText}
 Extract the archetype (project role) this person is built to fill.`
 
   const response = await anthropic.messages.create({
-    model:      'claude-sonnet-4-20250514',
+    model:      'claude-sonnet-4-6',
     max_tokens: 1000,
     system:     systemPrompt,
     messages:   [{ role: 'user', content: userPayload }]

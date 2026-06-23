@@ -1,7 +1,7 @@
 // api/planet-map-synthesis.js
 // Generates synthesis statement for completed Planet Map assessment
 // Called from PlanetMap.jsx on assessment submit
-// Uses Claude claude-sonnet-4-20250514 via Anthropic API
+// Uses Claude claude-sonnet-4-6 via Anthropic API
 
 import Anthropic from '@anthropic-ai/sdk'
 import { PLANET_DOMAINS, PLANET_SCALE_BY_SCORE } from '../src/constants/horizonScalePlanet.js'
@@ -55,7 +55,7 @@ Write the synthesis paragraph.`
 
   try {
     const response = await client.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 400,
       system: systemPrompt,
       messages: [{ role: 'user', content: userPrompt }],

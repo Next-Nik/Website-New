@@ -334,7 +334,7 @@ DEEP CONVERSATION:
 ${conversationText}`;
 
   const response = await anthropic.messages.create({
-    model:      "claude-sonnet-4-20250514",
+    model:      "claude-sonnet-4-6",
     max_tokens: 2000,
     system:     nsBlock ? `${NORTH_STAR_IDENTITY}\n\n${nsBlock}\n\n${DEEP_OUTPUT_SYSTEM}` : `${NORTH_STAR_IDENTITY}\n\n${DEEP_OUTPUT_SYSTEM}`,
     messages:   [{ role: "user", content: payload }]
@@ -443,7 +443,7 @@ module.exports = async (req, res) => {
       // Build tension opening
       const tensionSystemPrompt = buildTensionPrompt(firstLook, nsBlock);
       const openingResponse = await anthropic.messages.create({
-        model:      "claude-sonnet-4-20250514",
+        model:      "claude-sonnet-4-6",
         max_tokens: 1000,
         messages:   [{
           role: "user",
@@ -497,7 +497,7 @@ module.exports = async (req, res) => {
 
         const mirrorPrompt = buildMirrorPrompt(session.firstLook, session.conversationHistory, nsBlock);
         const mirrorResponse = await anthropic.messages.create({
-          model:      "claude-sonnet-4-20250514",
+          model:      "claude-sonnet-4-6",
           max_tokens: 1000,
           messages:   [{ role: "user", content: "Write the full mirror now." }],
           system:     mirrorPrompt
@@ -533,7 +533,7 @@ module.exports = async (req, res) => {
         }));
 
         const shadowResponse = await anthropic.messages.create({
-          model:      "claude-sonnet-4-20250514",
+          model:      "claude-sonnet-4-6",
           max_tokens: 1000,
           system:     shadowSystem,
           messages:   apiMessages

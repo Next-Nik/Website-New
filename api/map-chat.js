@@ -385,12 +385,12 @@ module.exports = async (req, res) => {
       const nsBlockMap = northStarCtx ? '\n\n' + formatNorthStarContext(northStarCtx) : ''
       const [synthResponse, horizonResponse] = await Promise.all([
         anthropic.messages.create({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-sonnet-4-6",
           max_tokens: 2500,
           messages: [{ role: "user", content: NORTH_STAR_IDENTITY + '\n\n' + finalSynthesisPrompt(session) + nsBlockMap }]
         }),
         anthropic.messages.create({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-sonnet-4-6",
           max_tokens: 1000,
           messages: [{ role: "user", content: lifeHorizonPrompt(session) }]
         })
@@ -482,7 +482,7 @@ module.exports = async (req, res) => {
         session.domainData[domainId].avatarCharacter = userMessage;
 
         const synthResponse = await anthropic.messages.create({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-sonnet-4-6",
           max_tokens: 1000,
           messages: [{ role: "user", content: avatarSynthesisPrompt(session, domain) }]
         });
@@ -546,7 +546,7 @@ module.exports = async (req, res) => {
         session.domainData[domainId].placement = userMessage;
 
         const inferResponse = await anthropic.messages.create({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-sonnet-4-6",
           max_tokens: 1000,
           messages: [{ role: "user", content: placementInferencePrompt(session, domain) }]
         });
@@ -619,7 +619,7 @@ VOICE: Warm, precise, direct. Short — 2 to 4 sentences. This is not the place 
 ${nsBlockHorizon}`;
 
           const horizonReceptionResponse = await anthropic.messages.create({
-            model: "claude-sonnet-4-20250514",
+            model: "claude-sonnet-4-6",
             max_tokens: 1000,
             messages: [{ role: "user", content: horizonReceptionPrompt }]
           });

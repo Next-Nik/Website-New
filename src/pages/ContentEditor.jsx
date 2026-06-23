@@ -630,7 +630,7 @@ function AskTab() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6',
           max_tokens: 1000,
           system: `You are Next-1, the AI observer for the NextUs platform. You have access to live platform data and answer the founder's questions directly, concisely, and honestly. You speak in the NextUs voice — warm, direct, no unnecessary words. You have the following live context:\n\n${context}`,
           messages: [{ role: 'user', content: query }],

@@ -134,7 +134,7 @@ ${roleText}
 Generate the four-section mirror.`
 
   const response = await anthropic.messages.create({
-    model:      'claude-sonnet-4-20250514',
+    model:      'claude-sonnet-4-6',
     max_tokens: 1500,
     system:     MIRROR_SYSTEM_PROMPT,
     messages:   [{ role: 'user', content: payload }]
@@ -242,7 +242,7 @@ ${roleText}
 Generate the profile card JSON.`
 
   const response = await anthropic.messages.create({
-    model:      'claude-sonnet-4-20250514',
+    model:      'claude-sonnet-4-6',
     max_tokens: 2000,
     system:     PROFILE_SYSTEM_PROMPT,
     messages:   [{ role: 'user', content: payload }]
@@ -337,7 +337,7 @@ ${pullSignal}
 Generate the Placement Card JSON.`
 
   const response = await anthropic.messages.create({
-    model:      'claude-sonnet-4-20250514',
+    model:      'claude-sonnet-4-6',
     max_tokens: 2500,
     system:     PLACEMENT_SYSTEM_PROMPT,
     messages:   [{ role: 'user', content: payload }]

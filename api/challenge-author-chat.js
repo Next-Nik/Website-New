@@ -94,7 +94,7 @@ module.exports = async (req, res) => {
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1200,
       system: buildSystem(northStarCtx),
       messages: apiMessages,

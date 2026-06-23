@@ -33,7 +33,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 )
 
-const MODEL              = 'claude-sonnet-4-20250514'
+const MODEL              = 'claude-sonnet-4-6'
 const THRESHOLD          = 5     // distinct people before a cluster surfaces
 const BATCH_LIMIT        = 200   // gaps clustered per run (oldest first)
 const SAMPLE_SHAPES_MAX  = 6     // phrasings shown to the reviewing admin

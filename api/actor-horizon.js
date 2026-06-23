@@ -35,7 +35,7 @@ const Anthropic        = require('@anthropic-ai/sdk')
 const supabase  = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-const MODEL = 'claude-sonnet-4-20250514'
+const MODEL = 'claude-sonnet-4-6'
 
 // The seven civilisational Horizon Goals (kept in sync with horizon_goal_objects
 // and api/horizon-align.js).

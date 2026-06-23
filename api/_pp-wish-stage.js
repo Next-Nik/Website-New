@@ -181,7 +181,7 @@ Return JSON only:
 }`
 
   const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: 500,
     system: systemPrompt,
     messages: [{
@@ -243,7 +243,7 @@ GENERAL RULES:
 - Match their register. If they're plain-spoken, be plain-spoken. If they're reaching, meet them reaching.`
 
   const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-4-6',
     max_tokens: 300,
     system: systemPrompt,
     messages: [{

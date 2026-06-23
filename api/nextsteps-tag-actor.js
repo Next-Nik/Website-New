@@ -134,7 +134,7 @@ async function tagOneActor(actorId, vocabulary) {
   let response;
   try {
     response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 800,
       system: TAGGER_SYSTEM,
       messages: [{ role: 'user', content: userMsg }],
