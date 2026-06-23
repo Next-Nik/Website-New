@@ -66,6 +66,121 @@ function Btn({ onClick, disabled, children, style = {}, variant = 'solid' }) {
   )
 }
 
+// ─── Author controls ──────────────────────────────────────────────────────────
+// Shown only to the author (or a founder). Close is reversible; Delete is a
+// permanent tombstone that re-roots any children one notch higher. The Delete
+// path fetches its impact first so the author sees what re-roots before committing.
+
+function AuthorControls({ call, userId, onUpdated, onDeleted }) {
+  const [busy,    setBusy]    = useState(false)
+  const [mode,    setMode]    = useState(null)   // null | 'close' | 'confirmDelete'
+  const [impact,  setImpact]  = useState(null)
+  const [err,     setErr]     = useState(null)
+
+  const closed = call.lifecycle_state === 'closed'
+  const hidden = closed && call.visibility !== 'community'
+
+  async function api(action, extra = {}) {
+    setBusy(true); setErr(null)
+    try {
+      const r = await fetch('/api/actor-calls', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, userId, call_id: call.id, ...extra }),
+      })
+      const d = await r.json()
+      if (!r.ok || d.error) { setErr(d.error || 'Something went wrong.'); return null }
+      return d
+    } catch { setErr('Network error.'); return null }
+    finally { setBusy(false) }
+  }
+
+  async function doClose(keep_listed) {
+    const d = await api('close', { keep_listed })
+    if (d?.call) { onUpdated(d.call); setMode(null) }
+  }
+  async function doReopen() {
+    const d = await api('reopen')
+    if (d?.call) onUpdated(d.call)
+  }
+  async function startDelete() {
+    setMode('confirmDelete')
+    const d = await api('delete_impact')
+    if (d) setImpact(d)
+  }
+  async function confirmDelete() {
+    const d = await api('delete')
+    if (d?.deleted) onDeleted()
+  }
+
+  const link = { ...sc, fontSize: '13px', letterSpacing: '0.12em', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }
+
+  return (
+    <div style={{ border: hair, borderRadius: '12px', padding: '14px 16px', marginBottom: '24px', background: 'rgba(200,146,42,0.03)' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
+          You author this
+        </span>
+        {closed && (
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.7)', border: '1px solid rgba(15,21,35,0.18)', borderRadius: '12px', padding: '2px 10px' }}>
+            Closed{hidden ? ' · hidden' : ' · listed'}
+          </span>
+        )}
+      </div>
+
+      {/* Active: offer Close + Delete */}
+      {!closed && mode === null && (
+        <div style={{ display: 'flex', gap: '18px', marginTop: '12px', flexWrap: 'wrap' }}>
+          <button style={{ ...link, ...gold }} disabled={busy} onClick={() => setMode('close')}>Close challenge</button>
+          <button style={{ ...link, color: '#8A3030' }} disabled={busy} onClick={startDelete}>Delete</button>
+        </div>
+      )}
+
+      {/* Close: listed vs hidden */}
+      {!closed && mode === 'close' && (
+        <div style={{ marginTop: '12px' }}>
+          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '0 0 10px' }}>
+            Closing stops new participants. People already in it carry on. Keep it
+            listed and it stays in the constellation, badged closed; hide it and it
+            drops out of view. Either way you can reopen it.
+          </p>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <Btn variant="ghost" disabled={busy} onClick={() => doClose(true)} style={{ fontSize: '13px', padding: '8px 18px' }}>Close · keep listed</Btn>
+            <Btn variant="ghost" disabled={busy} onClick={() => doClose(false)} style={{ fontSize: '13px', padding: '8px 18px' }}>Close · hide it</Btn>
+            <button style={{ ...link, color: 'rgba(15,21,35,0.55)' }} disabled={busy} onClick={() => setMode(null)}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {/* Closed: offer Reopen + Delete */}
+      {closed && mode === null && (
+        <div style={{ display: 'flex', gap: '18px', marginTop: '12px', flexWrap: 'wrap' }}>
+          <button style={{ ...link, ...gold }} disabled={busy} onClick={doReopen}>Reopen</button>
+          <button style={{ ...link, color: '#8A3030' }} disabled={busy} onClick={startDelete}>Delete</button>
+        </div>
+      )}
+
+      {/* Delete confirmation, with re-root impact */}
+      {mode === 'confirmDelete' && (
+        <div style={{ marginTop: '12px' }}>
+          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '0 0 10px' }}>
+            Delete is permanent. {impact == null ? 'Checking what this affects…' : (
+              impact.direct_children > 0
+                ? <>It re-roots {impact.direct_children} challenge{impact.direct_children === 1 ? '' : 's'} built on this one{impact.by_others > 0 ? <> ({impact.by_others} by {impact.by_others === 1 ? 'another actor' : 'other actors'})</> : ''} {impact.children_become_roots ? 'to standalone roots' : 'one notch up the tree'}. {impact.participants > 0 ? `The ${impact.participants} participant record${impact.participants === 1 ? '' : 's'} are kept.` : ''}</>
+                : <>Nothing is built on this one. {impact.participants > 0 ? `The ${impact.participants} participant record${impact.participants === 1 ? '' : 's'} are kept.` : 'No participants to affect.'}</>
+            )}
+          </p>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <Btn variant="ghost" disabled={busy || impact == null} onClick={confirmDelete} style={{ fontSize: '13px', padding: '8px 18px', borderColor: 'rgba(138,48,48,0.5)', color: '#8A3030' }}>Delete permanently</Btn>
+            <button style={{ ...link, color: 'rgba(15,21,35,0.55)' }} disabled={busy} onClick={() => { setMode(null); setImpact(null) }}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {err && <p style={{ ...body, fontSize: '13px', color: '#8A3030', margin: '10px 0 0' }}>{err}</p>}
+    </div>
+  )
+}
+
 // ─── Cadence label ────────────────────────────────────────────────────────────
 
 const CADENCE_LABELS = {
@@ -616,6 +731,11 @@ export function ChallengePage() {
                 Link only
               </span>
             )}
+            {call.lifecycle_state === 'closed' && (
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.7)', border: '1px solid rgba(15,21,35,0.22)', borderRadius: '12px', padding: '2px 10px' }}>
+                Closed
+              </span>
+            )}
           </div>
           <h1 style={{ ...serif, fontSize: 'clamp(1.75rem,5vw,3rem)', fontWeight: 300, color: tokens.dark, lineHeight: 1.1, margin: '0 0 10px' }}>
             {call.title}
@@ -626,6 +746,16 @@ export function ChallengePage() {
             </p>
           )}
         </div>
+
+        {/* Author / founder controls */}
+        {isAuthor && (
+          <AuthorControls
+            call={call}
+            userId={user.id}
+            onUpdated={(c) => setCall(prev => ({ ...prev, ...c }))}
+            onDeleted={() => { window.location.href = '/atlas' }}
+          />
+        )}
 
         {/* Participation count */}
         {(call.taken_on_count > 0 || call.active_count > 0) && (
@@ -648,7 +778,12 @@ export function ChallengePage() {
         )}
 
         {/* CTA */}
-        {!alreadyJoined && (
+        {call.lifecycle_state === 'closed' && !alreadyJoined && (
+          <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.6)', lineHeight: 1.6, marginBottom: '8px' }}>
+            This {isAsk ? 'ask' : 'challenge'} is closed to new {isAsk ? 'offers' : 'participants'}.
+          </div>
+        )}
+        {call.lifecycle_state !== 'closed' && !alreadyJoined && (
           user ? (
             isAsk ? (
               <Btn onClick={() => setShowFulfill(true)} style={{ marginBottom: '8px' }}>

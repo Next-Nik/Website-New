@@ -9,6 +9,11 @@
 //   get_by_slug    — public read for the challenge page (signed-out ok)
 //   get_my_calls   — author's own calls (any visibility)
 //   take_on        — participant joins; creates sibling civ session
+//   close          — reversible retirement (keep_listed flag); author or founder
+//   reopen         — reverse a close; restores prior visibility
+//   delete         — permanent tombstone; reparents children, frees slug, keeps evidence
+//   delete_impact  — preview of what a delete re-roots (read-only)
+//   purge          — founder-only true row removal; refused if anyone ever joined
 //   flag           — file a community-standards complaint
 
 export const config = { maxDuration: 30 }
@@ -73,6 +78,26 @@ async function ownsCall(callId, userId) {
   return { exists: true, owned, actor_id: data.actor_id, user_id: data.user_id }
 }
 
+// Founder = the platform admin role (user_metadata.role === 'founder'). Verified
+// server-side via the service-role auth admin API, never trusted from the body.
+async function isFounder(userId) {
+  if (!userId) return false
+  try {
+    const { data } = await supabase.auth.admin.getUserById(userId)
+    return data?.user?.user_metadata?.role === 'founder'
+  } catch { return false }
+}
+
+// Lifecycle authority: the author may manage their own call; a founder may
+// manage any. Returns { exists, allowed, owned, founder } plus the call's authors.
+async function canManageCall(callId, userId) {
+  const o = await ownsCall(callId, userId)
+  if (!o.exists) return { exists: false, allowed: false }
+  if (o.owned)   return { ...o, allowed: true, founder: false }
+  const founder = await isFounder(userId)
+  return { ...o, allowed: founder, founder }
+}
+
 // ─── Participation count helpers ──────────────────────────────────────────────
 
 async function refreshCounts(callId) {
@@ -109,7 +134,7 @@ module.exports = async (req, res) => {
         horizon_goal_text, the_move, cadence, cadence_note,
         duration_days, measure, mechanism, protocol,
         taken_on_count, active_count, completed_count,
-        visibility, source, created_at, updated_at,
+        visibility, lifecycle_state, closed_at, source, created_at, updated_at,
         actor_id, user_id, parent_call_id, author_statement, body_long, video_url, intensity_level,
         nextus_actors ( id, name, slug, type, description, image_url, profile_owner )
       `)
@@ -152,6 +177,7 @@ module.exports = async (req, res) => {
         `user_id.eq.${userId}`,
         actorIds.length ? `actor_id.in.(${actorIds.join(',')})` : 'id.is.null',
       ].join(','))
+      .neq('lifecycle_state', 'deleted')
       .order('updated_at', { ascending: false })
     if (error) return res.status(500).json({ error: error.message })
     return res.json({ calls: data || [] })
@@ -265,6 +291,9 @@ module.exports = async (req, res) => {
 
     const { data: call } = await supabase.from('actor_calls').select('*').eq('id', call_id).in('visibility', ['link_only','community']).maybeSingle()
     if (!call) return res.status(404).json({ error: 'Challenge not found' })
+    if (call.lifecycle_state && call.lifecycle_state !== 'active') {
+      return res.status(409).json({ error: 'This challenge is closed to new participants.' })
+    }
 
     // Idempotent — existing participation returns the existing row
     const { data: existing } = await supabase.from('actor_call_participants').select('*').eq('call_id', call_id).eq('user_id', userId).maybeSingle()
@@ -590,12 +619,15 @@ module.exports = async (req, res) => {
 
     const { data: call } = await supabase
       .from('actor_calls')
-      .select('id, type, ask_quantity, ask_fulfilled, visibility')
+      .select('id, type, ask_quantity, ask_fulfilled, visibility, lifecycle_state')
       .eq('id', call_id)
       .eq('type', 'ask')
       .in('visibility', ['link_only', 'community'])
       .maybeSingle()
     if (!call) return res.status(404).json({ error: 'Ask not found' })
+    if (call.lifecycle_state && call.lifecycle_state !== 'active') {
+      return res.status(409).json({ error: 'This ask is closed.' })
+    }
 
     // Idempotent — return existing
     const { data: existing } = await supabase
@@ -664,6 +696,7 @@ module.exports = async (req, res) => {
       `)
       .eq('type', 'ask')
       .eq('visibility', 'community')
+      .eq('lifecycle_state', 'active')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
 
@@ -690,6 +723,7 @@ module.exports = async (req, res) => {
       `)
       .eq('type', 'challenge')
       .eq('visibility', 'community')
+      .eq('lifecycle_state', 'active')
 
     if (domain) q = q.eq('domain', domain)
     if (intensity) q = q.eq('intensity_level', intensity)
@@ -717,9 +751,10 @@ module.exports = async (req, res) => {
     if (!targetActor) return res.status(400).json({ error: 'actor_id required' })
     const { data, error } = await supabase
       .from('actor_calls')
-      .select('id, title, tagline, slug, type, scale, domain, the_move, ask_quantity, ask_deadline, taken_on_count, active_count, visibility, created_at')
+      .select('id, title, tagline, slug, type, scale, domain, the_move, ask_quantity, ask_deadline, taken_on_count, active_count, visibility, lifecycle_state, created_at')
       .eq('actor_id', targetActor)
       .in('visibility', ['link_only', 'community'])
+      .neq('lifecycle_state', 'deleted')
       .order('created_at', { ascending: false })
     if (error) return res.status(500).json({ error: error.message })
     return res.json({ calls: data || [] })
@@ -845,6 +880,116 @@ module.exports = async (req, res) => {
       },
       reflections,
     })
+  }
+
+  // ── close ──────────────────────────────────────────────────────────────────
+  // Reversible retirement. No new take-ons. keep_listed=true leaves the call in
+  // the constellation (lineage intact, badged closed); keep_listed=false hides
+  // it (remembering its prior visibility so reopen restores it). Author or founder.
+  if (action === 'close') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id, keep_listed = true } = body
+    if (!call_id) return res.status(400).json({ error: 'call_id required' })
+    const auth = await canManageCall(call_id, userId)
+    if (!auth.exists)  return res.status(404).json({ error: 'Not found' })
+    if (!auth.allowed) return res.status(403).json({ error: 'Not your call' })
+
+    const { data: c } = await supabase.from('actor_calls')
+      .select('visibility, lifecycle_state').eq('id', call_id).maybeSingle()
+    if (c?.lifecycle_state === 'deleted') return res.status(409).json({ error: 'A deleted challenge cannot be closed.' })
+
+    const now = new Date().toISOString()
+    const upd = { lifecycle_state: 'closed', closed_at: now, updated_at: now }
+    if (keep_listed) {
+      upd.prior_visibility = null
+    } else {
+      upd.prior_visibility = c?.visibility || 'community'
+      upd.visibility = 'draft'
+    }
+    const { data, error } = await supabase.from('actor_calls').update(upd).eq('id', call_id).select('*').single()
+    if (error) return res.status(500).json({ error: error.message })
+    return res.json({ call: data, closed: true, listed: !!keep_listed })
+  }
+
+  // ── reopen ─────────────────────────────────────────────────────────────────
+  // Reverses a close. If the call was hidden on close, restores its prior
+  // visibility, which puts it back in the lineage chain automatically.
+  if (action === 'reopen') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id } = body
+    if (!call_id) return res.status(400).json({ error: 'call_id required' })
+    const auth = await canManageCall(call_id, userId)
+    if (!auth.exists)  return res.status(404).json({ error: 'Not found' })
+    if (!auth.allowed) return res.status(403).json({ error: 'Not your call' })
+
+    const { data: c } = await supabase.from('actor_calls')
+      .select('lifecycle_state, prior_visibility').eq('id', call_id).maybeSingle()
+    if (c?.lifecycle_state === 'deleted') return res.status(409).json({ error: 'A deleted challenge cannot be reopened.' })
+
+    const now = new Date().toISOString()
+    const upd = { lifecycle_state: 'active', closed_at: null, updated_at: now }
+    if (c?.prior_visibility) { upd.visibility = c.prior_visibility; upd.prior_visibility = null }
+    const { data, error } = await supabase.from('actor_calls').update(upd).eq('id', call_id).select('*').single()
+    if (error) return res.status(500).json({ error: error.message })
+    return res.json({ call: data, reopened: true })
+  }
+
+  // ── delete_impact ──────────────────────────────────────────────────────────
+  // What a delete would do: how many direct children re-root, and how many of
+  // those belong to other actors (the constellation case). Read-only.
+  if (action === 'delete_impact') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id } = body
+    if (!call_id) return res.status(400).json({ error: 'call_id required' })
+    const auth = await canManageCall(call_id, userId)
+    if (!auth.exists)  return res.status(404).json({ error: 'Not found' })
+    if (!auth.allowed) return res.status(403).json({ error: 'Not your call' })
+
+    const { data: self } = await supabase.from('actor_calls')
+      .select('parent_call_id, actor_id, user_id, taken_on_count').eq('id', call_id).maybeSingle()
+    const { data: kids } = await supabase.from('actor_calls')
+      .select('id, actor_id, user_id').eq('parent_call_id', call_id).neq('lifecycle_state', 'deleted')
+    const children = kids || []
+    const byOthers = children.filter(k =>
+      (k.actor_id || null) !== (self?.actor_id || null) || (k.user_id || null) !== (self?.user_id || null)
+    ).length
+    return res.json({
+      direct_children:    children.length,
+      by_others:          byOthers,
+      children_become_roots: !self?.parent_call_id,
+      participants:       self?.taken_on_count || 0,
+    })
+  }
+
+  // ── delete ─────────────────────────────────────────────────────────────────
+  // Permanent soft-delete (tombstone). Children re-parent to the grandparent,
+  // the slug is freed, the row is kept so participant evidence survives. Author
+  // or founder. Not reversible — use close for anything you might restore.
+  if (action === 'delete') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id } = body
+    if (!call_id) return res.status(400).json({ error: 'call_id required' })
+    const auth = await canManageCall(call_id, userId)
+    if (!auth.exists)  return res.status(404).json({ error: 'Not found' })
+    if (!auth.allowed) return res.status(403).json({ error: 'Not your call' })
+
+    const { data, error } = await supabase.rpc('challenge_soft_delete', { p_call_id: call_id })
+    if (error) return res.status(500).json({ error: error.message })
+    return res.json({ deleted: true, reparented: data?.[0]?.reparented ?? 0 })
+  }
+
+  // ── purge (founder only) ─────────────────────────────────────────────────────
+  // True row removal. Allowed only for a challenge nobody ever joined — the SQL
+  // function refuses if any participation exists, so evidence can't be lost.
+  if (action === 'purge') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    if (!(await isFounder(userId))) return res.status(403).json({ error: 'Founder only.' })
+    const { call_id } = body
+    if (!call_id) return res.status(400).json({ error: 'call_id required' })
+
+    const { data, error } = await supabase.rpc('challenge_hard_purge', { p_call_id: call_id })
+    if (error) return res.status(409).json({ error: error.message })
+    return res.json({ purged: true, reparented: data?.[0]?.reparented ?? 0 })
   }
 
   return res.status(400).json({ error: `Unknown action: ${action}` })

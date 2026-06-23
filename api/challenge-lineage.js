@@ -22,6 +22,18 @@ module.exports = async (req, res) => {
     const { call_id } = body
     if (!call_id) return res.status(400).json({ error: 'call_id required' })
 
+    // The tree is only meaningful for a focus that is itself in the public
+    // chain. A hidden, withdrawn, or deleted focus has no place to show, so we
+    // return an empty lineage rather than re-rooting the view on an ancestor.
+    const { data: focus } = await supabase
+      .from('actor_calls')
+      .select('visibility, lifecycle_state')
+      .eq('id', call_id)
+      .maybeSingle()
+    if (!focus || focus.visibility !== 'community' || focus.lifecycle_state === 'deleted') {
+      return res.json({ ancestors: [], descendants: [] })
+    }
+
     const [anc, desc] = await Promise.all([
       supabase.rpc('challenge_ancestors',   { p_call_id: call_id }),
       supabase.rpc('challenge_descendants', { p_call_id: call_id, p_max_depth: 2 }),

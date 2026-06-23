@@ -2014,6 +2014,7 @@ function FlagBadge({ level }) {
 // ── Call flags sub-tab ────────────────────────────────────────
 
 function CallFlagsSection({ toast }) {
+  const { user } = useAuth()
   const [flags,   setFlags]   = useState([])
   const [loading, setLoading] = useState(true)
   const [filter,  setFilter]  = useState('open')
@@ -2054,6 +2055,32 @@ function CallFlagsSection({ toast }) {
     } else {
       toast('Flag dismissed — call stays live')
     }
+    load()
+  }
+
+  // Founder-authorised lifecycle actions, routed through the service-role API
+  // (which verifies the founder role and runs the re-parent atomically).
+  // delete = permanent tombstone (children re-root, participant evidence kept).
+  // purge  = true row removal, only offered when nobody has joined.
+  async function adminLifecycle(flag, action) {
+    if (!flag.call?.id) return
+    const name = flag.call.title || flag.call.id
+    if (action === 'delete' && !window.confirm(
+      `Delete "${name}"?\n\nChildren re-root one notch up. Participant records are kept. This is permanent.`)) return
+    if (action === 'purge' && !window.confirm(
+      `Permanently remove "${name}"?\n\nOnly allowed because nobody has joined it. The row is gone for good.`)) return
+    const r = await fetch('/api/actor-calls', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, userId: user?.id, call_id: flag.call.id }),
+    })
+    const d = await r.json().catch(() => ({}))
+    if (!r.ok || d.error) { toast(d.error || 'Action failed'); return }
+    await supabase.from('actor_call_flags')
+      .update({ resolved: true, resolved_at: new Date().toISOString() })
+      .eq('id', flag.id)
+    toast(action === 'purge'
+      ? `Call purged: "${name}"`
+      : `Call deleted: "${name}"${d.reparented ? ` · ${d.reparented} re-rooted` : ''}`)
     load()
   }
 
@@ -2132,6 +2159,10 @@ function CallFlagsSection({ toast }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
                   <Btn small onClick={() => resolve(flag, false)}>Dismiss</Btn>
                   <Btn small variant="danger" onClick={() => resolve(flag, true)}>Withdraw call</Btn>
+                  <Btn small variant="danger" onClick={() => adminLifecycle(flag, 'delete')}>Delete</Btn>
+                  {call?.taken_on_count === 0 && (
+                    <Btn small variant="danger" onClick={() => adminLifecycle(flag, 'purge')}>Purge</Btn>
+                  )}
                   {call?.slug && (
                     <a href={`/stretch/c/${call.slug}`} target="_blank" rel="noopener noreferrer"
                       style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold,
