@@ -1010,9 +1010,18 @@ module.exports = async function handler(req, res) {
   // Budget = whatever's left of a 58s envelope after the page fetch / vocab load.
   const callTimeoutMs = Math.max(8000, 58000 - (Date.now() - t0) - 1500)
 
+  // Model by path. The common case — a server-rendered page we fetched ourselves
+  // — runs on Haiku, which generates fast enough that a multi-actor read (the
+  // school + its campus + programmes) finishes inside the budget instead of
+  // overrunning the function on Sonnet. The rare SPA / bot-blocked fallback keeps
+  // Sonnet because it needs the web_search tool and its input is small. Output is
+  // a draft the human reviews and edits field-by-field before any save, so read
+  // speed matters more here than the last increment of placement nuance.
+  const extractModel = useWebSearch ? 'claude-sonnet-4-6' : 'claude-haiku-4-5-20251001'
+
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: extractModel,
       max_tokens: 8000,
       system: systemPrompt,
       tools,
@@ -1035,7 +1044,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (!Array.isArray(parsed)) parsed = [parsed]
-    const results = parsed.slice(0, 6).map(r => enforceShape(r, vocab))
+    const results = parsed.slice(0, 4).map(r => enforceShape(r, vocab))
 
     // Image fallback. The model returns image_url only when it saw a real image
     // in the source — so most reads come back imageless. Backstop it: the first
