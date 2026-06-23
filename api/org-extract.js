@@ -942,6 +942,7 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Method not allowed' })
 
+  const t0 = Date.now()
   const { input } = req.body || {}
   if (!input?.trim()) return res.status(400).json({ error: 'input is required' })
 
@@ -1003,6 +1004,12 @@ module.exports = async function handler(req, res) {
     ? `${SYSTEM_PROMPT}\n${vocab.reference}`
     : SYSTEM_PROMPT
 
+  // Bound the model call so the function returns a clean JSON error before
+  // Vercel's hard 60s limit kills it — an overrun returns a non-JSON 504 that
+  // surfaces on the client as an opaque "could not reach the reading service".
+  // Budget = whatever's left of a 58s envelope after the page fetch / vocab load.
+  const callTimeoutMs = Math.max(8000, 58000 - (Date.now() - t0) - 1500)
+
   try {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
@@ -1010,7 +1017,7 @@ module.exports = async function handler(req, res) {
       system: systemPrompt,
       tools,
       messages: [{ role: 'user', content }],
-    })
+    }, { timeout: callTimeoutMs, maxRetries: 0 })
 
     const rawText = response.content
       .filter(b => b.type === 'text')
@@ -1061,6 +1068,17 @@ module.exports = async function handler(req, res) {
 
   } catch (err) {
     console.error('org-extract error:', err)
+    const isTimeout = err?.name === 'APIConnectionTimeoutError'
+      || err?.name === 'AbortError'
+      || /timeout|timed out|aborted/i.test(err?.message || '')
+    if (isTimeout) {
+      return res.status(200).json({
+        error:   'read_timeout',
+        message: useWebSearch
+          ? "This source couldn't be read automatically — it's likely JS-heavy or bot-protected. Paste its About / description text here and I'll read that instead."
+          : 'Reading this source timed out. Try again, or paste its description text here instead.',
+      })
+    }
     return res.status(500).json({ error: 'extraction_failed', message: err.message })
   }
 }

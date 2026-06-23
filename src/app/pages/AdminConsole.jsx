@@ -1526,7 +1526,18 @@ function AddTab({ toast }) {
         method:'POST', headers:{ 'Content-Type':'application/json' },
         body: JSON.stringify({ input: input.trim() }),
       })
-      const data = await res.json()
+      // The reader can be killed by the platform timeout before it answers, which
+      // returns a non-JSON body. Read text first so that surfaces as a clear
+      // message instead of an opaque "could not reach" parse failure.
+      const body = await res.text()
+      let data
+      try { data = JSON.parse(body) }
+      catch {
+        setAddErr(res.status === 504
+          ? 'The reader timed out on this source. Try again, or paste its description text here instead.'
+          : 'The reader returned an unexpected response. Try again, or paste a description.')
+        return
+      }
       if (data.error) { setAddErr(data.message || 'Could not read the site.'); return }
       const results = data.results || []
       setProposals(results)
