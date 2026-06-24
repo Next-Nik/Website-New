@@ -845,7 +845,15 @@ function ActorsTab({ toast }) {
 
   async function resolveClaim(claimId, actorId, approved, resolverNote = '') {
     if (approved) {
-      await supabase.from('nextus_actors').update({ claimed: true, verified: true, status: 'live' }).eq('id', actorId)
+      // Guard: don't override an existing owner.
+      const { data: actorRow } = await supabase.from('nextus_actors').select('profile_owner').eq('id', actorId).maybeSingle()
+      if (actorRow?.profile_owner) { toast('Already claimed by someone else.'); fetchClaims(); return }
+      // Grant ownership to the claimant — without this, approval marks the actor
+      // claimed but the person still can't edit (the editor gates on profile_owner).
+      const { data: claimRow } = await supabase.from('nextus_claims').select('user_id').eq('id', claimId).maybeSingle()
+      await supabase.from('nextus_actors')
+        .update({ claimed: true, verified: true, status: 'live', profile_owner: claimRow?.user_id || null })
+        .eq('id', actorId)
       await supabase.from('nextus_claims').update({
         status: 'verified',
         resolved_at: new Date().toISOString(),

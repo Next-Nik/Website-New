@@ -1039,6 +1039,37 @@ export function OrgManagePage() {
           </div>
         )}
 
+        {/* Profile completeness — pulls a thin profile toward the few things that
+            make it read like a site. Hides itself once all four are present. */}
+        {(() => {
+          const checklist = [
+            { done: !!actor.image_url,   label: 'Add a photo',     tab: 'profile' },
+            { done: !!actor.tagline,     label: 'Write a tagline', tab: 'voice'   },
+            { done: !!actor.description, label: 'Describe what you do', tab: 'profile' },
+            { done: !!actor.website,     label: 'Add your website', tab: 'profile' },
+          ]
+          const remaining = checklist.filter(c => !c.done)
+          if (remaining.length === 0) return null
+          return (
+            <div style={{ background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '12px', padding: '16px 20px', marginBottom: '28px' }}>
+              <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: '#8A6020', marginBottom: '4px', textTransform: 'uppercase' }}>
+                Finish your profile · {checklist.length - remaining.length} of {checklist.length}
+              </p>
+              <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '0 0 12px' }}>
+                A few more and this reads like a place, not a record.
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                {remaining.map(item => (
+                  <button key={item.label} type="button" onClick={() => setActiveTab(item.tab)}
+                    style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: '#A8721A', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.40)', borderRadius: '40px', padding: '7px 16px', cursor: 'pointer' }}>
+                    {item.label} →
+                  </button>
+                ))}
+              </div>
+            </div>
+          )
+        })()}
+
         {/* Tab bar */}
         <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid rgba(200,146,42,0.20)', marginBottom: '36px', overflowX: 'auto' }}>
           {TABS.map(tab => (

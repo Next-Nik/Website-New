@@ -102,6 +102,25 @@ const LINK_LABELS = {
 // Contact link types — surfaced separately as a "Get in touch" section
 const CONTACT_LINK_TYPES = new Set(['email', 'contact_form', 'calendly', 'phone'])
 
+// The one action a visitor most likely wants, chosen from what's available and
+// labelled by actor type. Booking beats a form beats email beats the website.
+function pickPrimaryCta(actor, links) {
+  const find = t => (links || []).find(l => l.link_type === t)
+  const isPerson = actor.type === 'practitioner'
+  const calendly = find('calendly')
+  if (calendly) return { label: 'Book a call', href: calendly.url, external: true }
+  const form = find('contact_form')
+  if (form) return { label: isPerson ? 'Work with me' : 'Get in touch', href: form.url, external: true }
+  const email = find('email')
+  if (email) {
+    const href = email.url.startsWith('mailto:') ? email.url : `mailto:${email.url}`
+    return { label: isPerson ? 'Work with me' : 'Get in touch', href, external: false }
+  }
+  const website = actor.website || find('website')?.url
+  if (website) return { label: 'Visit site', href: website.startsWith('http') ? website : `https://${website}`, external: true }
+  return null
+}
+
 // Display order for contact links (most direct first)
 const CONTACT_PRIORITY = {
   email: 0, contact_form: 1, calendly: 2, phone: 3,
@@ -152,7 +171,7 @@ function getSectionOrder(actorMode) {
 
 // ── Identity strip ───────────────────────────────────────────
 
-function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
+function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) {
   const domainColor = DOMAIN_COLORS[primaryDomain] || gold
   const tierConfig  = PLACEMENT_TIER?.[principalTier]
 
@@ -272,6 +291,26 @@ function IdentityStrip({ actor, primaryDomain, principalTier, isOwner }) {
               {actor.location_name}
             </div>
           )}
+
+          {/* Primary action — the one thing a visitor most likely wants, drawn
+              from the actor's own contact links or website. Labelled by type. */}
+          {(() => {
+            const cta = pickPrimaryCta(actor, links)
+            if (!cta) return null
+            return (
+              <div style={{ margin: '6px 0 20px' }}>
+                <a href={cta.href}
+                  target={cta.external ? '_blank' : undefined}
+                  rel={cta.external ? 'noopener noreferrer' : undefined}
+                  style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em',
+                    color: '#FFFFFF', background: '#C8922A',
+                    padding: '12px 28px', borderRadius: '40px',
+                    textDecoration: 'none', display: 'inline-block' }}>
+                  {cta.label}
+                </a>
+              </div>
+            )
+          })()}
 
           {/* Founder of NextUs — admin-set badge, small and plain */}
           {actor.is_platform_founder && (
@@ -1724,6 +1763,7 @@ export function OrgPublicPage() {
     identity: () => (
       <IdentityStrip
         actor={actor}
+        links={links}
         primaryDomain={primaryDomain}
         principalTier={tier}
         isOwner={isOwner}
