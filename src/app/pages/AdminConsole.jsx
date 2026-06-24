@@ -1605,6 +1605,17 @@ function AddTab({ toast }) {
   const [floorActive, setFloorActive] = useState(null) // current { proposal, index }
   const [savedNow,    setSavedNow]    = useState([])   // accumulated saved records
 
+  // Skip the per-record Floor confirmation. Persisted so it stays off once set.
+  // When on, placement writes each record as 'compatible' directly — the same
+  // status the bulk Seed flow uses — with no modal.
+  const [skipFloor, setSkipFloor] = useState(() => {
+    try { return localStorage.getItem('nextus.admin.skipFloor') === '1' } catch { return false }
+  })
+  function toggleSkipFloor(next) {
+    setSkipFloor(next)
+    try { localStorage.setItem('nextus.admin.skipFloor', next ? '1' : '0') } catch {}
+  }
+
   async function readSite() {
     if (!input.trim()) return
     setAdding(true); setAddErr(null); setProposals([]); setChecked([]); setSaved([])
@@ -1652,6 +1663,25 @@ function AddTab({ toast }) {
       if (!p.name?.trim())                      { toast(`Name required on ${p.label} entry`); return }
       if (!(p.domains?.length) && !p.domain_id) { toast(`Domain required on ${p.label} entry`); return }
     }
+
+    // Floor check switched off — place directly, marking each compatible (the
+    // same status the bulk Seed flow writes), no per-record modal.
+    if (skipFloor) {
+      setSaving(true)
+      const placed = []
+      for (const p of selected) {
+        const r = await commitProposal(p, 'compatible', null)
+        if (r) placed.push(r)
+      }
+      setSaving(false)
+      if (placed.length) {
+        setSaved(placed)
+        await linkRelationships(selected, placed)
+        toast(`${placed.length} record${placed.length !== 1 ? 's' : ''} placed on the map`)
+      }
+      return
+    }
+
     // Queue proposals through HorizonFloor check one by one
     setSavedNow([])
     setFloorQueue(selected)
@@ -1878,7 +1908,7 @@ function AddTab({ toast }) {
               ))}
 
               <div style={{ paddingTop:'8px', borderTop:'1px solid rgba(200,146,42,0.15)',
-                display:'flex', alignItems:'center', gap:'16px' }}>
+                display:'flex', alignItems:'center', gap:'16px', flexWrap:'wrap' }}>
                 <button onClick={saveSelected} disabled={saving || selectedCount === 0}
                   style={{ ...sc, fontSize:'14px', letterSpacing:'0.16em',
                     padding:'13px 32px', borderRadius:'40px', border:'none',
@@ -1886,8 +1916,18 @@ function AddTab({ toast }) {
                     color:'#FFFFFF', cursor: saving || selectedCount === 0 ? 'not-allowed' : 'pointer' }}>
                   {saving ? 'Saving...' : `Place ${selectedCount} selected`}
                 </button>
+                <label style={{ display:'flex', alignItems:'center', gap:'7px', cursor:'pointer' }}>
+                  <input type="checkbox" checked={skipFloor}
+                    onChange={e => toggleSkipFloor(e.target.checked)}
+                    style={{ width:'16px', height:'16px', accentColor:'#C8922A', cursor:'pointer' }} />
+                  <span style={{ ...body, fontSize:'13px', color:'rgba(15,21,35,0.55)' }}>
+                    Skip Floor check
+                  </span>
+                </label>
                 <p style={{ ...body, fontSize:'13px', color:'rgba(15,21,35,0.55)', margin:0 }}>
-                  Horizon Floor check runs for each selected record.
+                  {skipFloor
+                    ? 'Records place straight onto the map.'
+                    : 'Horizon Floor check runs for each selected record.'}
                 </p>
               </div>
             </>
