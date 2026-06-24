@@ -59,8 +59,9 @@ export default function SeedTab({ toast }) {
   const [items, setItems]     = useState([])   // collected proposals awaiting review
 
   // Faithful copy of the Add tab's save payload, plus the source image and the
-  // seed floor status. Returns { id, name } on success, { error } otherwise.
-  async function commitProposal(p) {
+  // seed floor status. batchId stamps every record from one placing run so a
+  // whole run can be audited or removed together. Returns { id, name } or { error }.
+  async function commitProposal(p, batchId) {
     const domains = p.domains?.length ? p.domains : (p.domain_id ? [p.domain_id] : [])
     const payload = {
       name:            p.name.trim(),
@@ -98,11 +99,13 @@ export default function SeedTab({ toast }) {
         extracted_at:    new Date().toISOString(),
         input_mode:      'admin_seed_batch',
         label:           p.label,
+        seed_batch_id:   batchId,
+        seeded_at:       new Date().toISOString(),
       },
     }
     const { data, error } = await supabase.from('nextus_actors').insert(payload).select('id').single()
     if (error) return { error: error.message }
-    return { id: data.id, name: p.name }
+    return { id: data.id, name: p.name, image_url: payload.image_url }
   }
 
   // Write in-batch relationships, resolving both ends by name within the saved set.
@@ -192,28 +195,40 @@ export default function SeedTab({ toast }) {
   }
 
   // Phase 2 — place only the approved records. Relationships resolve within the
-  // group that came from the same source URL.
+  // group that came from the same source URL. Every record in this run shares one
+  // batch id, and each placed image is rehosted into our bucket so it can't rot.
   async function placeSelected() {
     const chosen = items.filter(it => it._checked)
     if (!chosen.length) { toast('Nothing selected'); return }
     setPlacing(true)
+    const batchId = `seed_${new Date().toISOString().replace(/[:.]/g, '-')}`
     const bySource = {}
     for (const it of chosen) (bySource[it._sourceUrl] = bySource[it._sourceUrl] || []).push(it)
     let seeded = 0
+    const placed = []
     for (const url of Object.keys(bySource)) {
       const group = bySource[url]
       const saved = []
       for (const p of group) {
-        const out = await commitProposal(p)
-        if (out?.id) { saved.push(out); seeded++ }
+        const out = await commitProposal(p, batchId)
+        if (out?.id) { saved.push(out); placed.push(out); seeded++ }
         else if (out?.error) toast(`Error placing ${p.name}: ${out.error}`)
       }
       await linkRelationships(group, saved)
     }
+    // Rehost hotlinked logos into the actor-images bucket so they survive the
+    // source site changing. Fire-and-forget — the record is already live.
+    for (const a of placed) {
+      if (!a.image_url) continue
+      fetch('/api/actor-image-upload', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ actorId: a.id }),
+      }).catch(() => {})
+    }
     setPlacing(false)
     const placedKeys = new Set(chosen.map(c => c._key))
     setItems(its => its.filter(it => !placedKeys.has(it._key)))
-    toast(`${seeded} record${seeded !== 1 ? 's' : ''} placed on the map`)
+    toast(`${seeded} record${seeded !== 1 ? 's' : ''} placed · images rehosting`)
   }
 
   const selectedCount = items.filter(it => it._checked).length

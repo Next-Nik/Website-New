@@ -112,8 +112,50 @@ function ProfileTab({ actor, onSave, toast }) {
     actor.focus_id ? { id: actor.focus_id, name: actor.focus?.name || '', type: actor.focus?.type || '' } : null
   )
   const [saving, setSaving] = useState(false)
+  const [imageUrl, setImageUrl] = useState(actor.image_url || null)
+  const [uploadingImage, setUploadingImage] = useState(false)
 
   function set(field, value) { setForm(f => ({ ...f, [field]: value })) }
+
+  // Read the chosen file as a data URL and hand it to the upload endpoint, which
+  // stores it in the actor-images bucket (so it can't rot) and sets image_url.
+  async function onPickImage(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) { toast('Please choose an image file'); e.target.value = ''; return }
+    if (file.size > 5 * 1024 * 1024) { toast('Image must be under 5MB'); e.target.value = ''; return }
+    setUploadingImage(true)
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const r = new FileReader()
+        r.onload = () => resolve(r.result)
+        r.onerror = () => reject(new Error('read failed'))
+        r.readAsDataURL(file)
+      })
+      const res = await fetch('/api/actor-image-upload', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ actorId: actor.id, imageData: dataUrl }),
+      })
+      const out = await res.json().catch(() => ({}))
+      if (!res.ok || out.error) { toast(out.error || 'Upload failed'); return }
+      setImageUrl(out.image_url)
+      toast('Photo updated')
+      onSave()
+    } catch { toast('Upload failed') }
+    finally { setUploadingImage(false); e.target.value = '' }
+  }
+
+  async function onRemoveImage() {
+    setUploadingImage(true)
+    const { error } = await supabase.from('nextus_actors')
+      .update({ image_url: null, image_provenance: null, updated_at: new Date().toISOString() })
+      .eq('id', actor.id)
+    setUploadingImage(false)
+    if (error) { toast('Could not remove the photo'); return }
+    setImageUrl(null)
+    toast('Photo removed')
+    onSave()
+  }
 
   async function save() {
     if (!form.name.trim()) { toast('Name is required'); return }
@@ -170,6 +212,32 @@ function ProfileTab({ actor, onSave, toast }) {
   return (
     <div style={{ maxWidth: '620px' }}>
       <SectionCard>
+        <div style={{ marginBottom: '24px' }}>
+          <Label>Photo</Label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '6px' }}>
+            <div style={{ width: '76px', height: '76px', borderRadius: '10px', border: '1px solid rgba(200,146,42,0.30)', background: '#FFFFFF', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              {imageUrl
+                ? <img src={imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)' }}>NONE</span>}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#FFFFFF', background: uploadingImage ? 'rgba(200,146,42,0.30)' : '#C8922A', borderRadius: '40px', padding: '9px 20px', cursor: uploadingImage ? 'default' : 'pointer', display: 'inline-block' }}>
+                {uploadingImage ? 'Uploading…' : (imageUrl ? 'Replace photo' : 'Upload photo')}
+                <input type="file" accept="image/*" onChange={onPickImage} disabled={uploadingImage} style={{ display: 'none' }} />
+              </label>
+              {imageUrl && !uploadingImage && (
+                <button type="button" onClick={onRemoveImage}
+                  style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left' }}>
+                  Remove
+                </button>
+              )}
+            </div>
+          </div>
+          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginTop: '10px' }}>
+            A square image reads best · under 5MB. It's stored on NextUs, so it won't break if the source site changes.
+          </p>
+        </div>
+
         <div style={{ marginBottom: '20px' }}>
           <Label required>Name</Label>
           <TextInput value={form.name} onChange={v => set('name', v)} placeholder="Organisation or project name" />
@@ -876,7 +944,13 @@ export function OrgManagePage() {
   useEffect(() => {
     if (authLoading || loading) return
     if (!user) { navigate('/login'); return }
-    if (actor && actor.profile_owner !== user.id) {
+    // Owner manages their own actor. A NextUs founder may also manage any actor
+    // that nobody has claimed yet, as a steward, until the org takes it over.
+    // (UI gate only — writes are still enforced by RLS is_founder(), app_metadata.)
+    const isFounderUser = user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder'
+    const ownsIt    = actor && actor.profile_owner === user.id
+    const stewards  = actor && isFounderUser && !actor.profile_owner
+    if (actor && !ownsIt && !stewards) {
       navigate(`/org/${actor.slug || actor.id}`)
     }
   }, [user, authLoading, actor, loading])
@@ -936,6 +1010,18 @@ export function OrgManagePage() {
         <h1 style={{ ...body, fontSize: 'clamp(26px,3.5vw,40px)', fontWeight: 400, color: dark, lineHeight: 1.1, marginBottom: '40px' }}>
           {actor.name}
         </h1>
+
+        {/* Steward notice — founder editing an unclaimed profile on the org's behalf */}
+        {!actor.profile_owner && user && actor.profile_owner !== user.id && (
+          <div style={{ background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.35)', borderRadius: '12px', padding: '16px 20px', marginBottom: '28px' }}>
+            <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: '#8A6020', marginBottom: '6px' }}>
+              Editing as steward
+            </p>
+            <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>
+              This profile hasn't been claimed yet. You're editing it on the org's behalf · once they take charge of their own account, these controls pass to them.
+            </p>
+          </div>
+        )}
 
         {/* Integrity warning */}
         {actor.needs_visible === false && (

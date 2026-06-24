@@ -55,8 +55,25 @@ import { SCALES as CANONICAL_SCALES } from '../constants/scales'
 
 // ── Founder check ─────────────────────────────────────────────
 // Identical to original: uses user_metadata.role set in Supabase.
+// UI gate only — the real enforcement is RLS is_founder() (app_metadata only).
+// Tolerant of either metadata source so the founder can't be locked out of the
+// console while the role is migrated to app_metadata.
 function isFounder(user) {
-  return user?.user_metadata?.role === 'founder'
+  return user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder'
+}
+
+// Normalised keys for duplicate detection, shared by the Add flow. URL keeps the
+// path so sub-orgs on a shared domain stay distinct; name is trimmed/lower-cased.
+function normActorUrl(u) {
+  if (!u) return null
+  try {
+    const x = new URL(u.startsWith('http') ? u : `https://${u}`)
+    return (x.hostname.replace(/^www\./, '') + x.pathname).toLowerCase().replace(/\/+$/, '') || null
+  } catch { return null }
+}
+function normActorName(n) {
+  const s = (n || '').trim().toLowerCase().replace(/\s+/g, ' ')
+  return s || null
 }
 
 const gold  = '#A8721A'
@@ -491,7 +508,7 @@ const EMPTY_ACTOR_FORM = {
   platform_principles: [],
   scale: 'national', location_name: '', lat: '', lng: '', website: '',
   description: '', impact_summary: '', reach: '',
-  alignment_score: '', winning: false, data_source: '',
+  alignment_score: '', winning: false, is_platform_founder: false, data_source: '',
 }
 
 
@@ -723,6 +740,7 @@ function ActorsTab({ toast }) {
       website: actor.website || '', description: actor.description || '',
       impact_summary: actor.impact_summary || '', reach: actor.reach || '',
       alignment_score: actor.alignment_score ?? '', winning: actor.winning || false,
+      is_platform_founder: actor.is_platform_founder || false,
       data_source: actor.data_source || '',
     })
     setEditId(actor.id)
@@ -762,6 +780,7 @@ function ActorsTab({ toast }) {
       reach: form.reach?.trim() || null,
       alignment_score: form.alignment_score !== '' ? parseFloat(form.alignment_score) : null,
       winning: form.winning || false,
+      is_platform_founder: form.is_platform_founder || false,
       data_source: form.data_source?.trim() || null,
     }
 
@@ -917,11 +936,16 @@ function ActorsTab({ toast }) {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flexShrink: 0 }}>
                   <Btn small onClick={() => startEdit(a)}>Edit</Btn>
+                  <Btn small variant="ghost" onClick={() => window.open(`/org/${a.slug || a.id}`, '_blank', 'noopener')}>
+                    Preview
+                  </Btn>
+                  {!a.profile_owner && (
+                    <Btn small variant="ghost" onClick={() => window.open(`/org/${a.slug || a.id}/manage`, '_blank', 'noopener')}>
+                      Manage
+                    </Btn>
+                  )}
                   <Btn small variant="ghost" onClick={() => toggleWinning(a)}>
                     {a.winning ? 'Un-win' : 'Win'}
-                  </Btn>
-                  <Btn small variant="ghost" onClick={() => toggleFounderBadge(a)}>
-                    {a.is_platform_founder ? 'Unfounder' : 'Founder'}
                   </Btn>
                   <Btn small variant="danger" onClick={() => deleteActor(a.id, a.name)}>Delete</Btn>
                 </div>
@@ -1050,6 +1074,15 @@ function ActorsTab({ toast }) {
                   border: '1.5px solid rgba(200,146,42,0.35)', background: '#FFFFFF', outline: 'none',
                   width: '100%', resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box' }} />
             </div>
+
+            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+              <input type="checkbox" checked={!!form.is_platform_founder}
+                onChange={e => setFormField('is_platform_founder', e.target.checked)}
+                style={{ width: '17px', height: '17px', accentColor: '#C8922A', cursor: 'pointer' }} />
+              <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.78)' }}>
+                Founder of NextUs badge
+              </span>
+            </label>
 
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
               <Btn onClick={saveActor} disabled={saving}>
@@ -1234,6 +1267,14 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
           <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'8px', flexWrap:'wrap' }}>
             <ExLabelBadge label={proposal.label} />
             <ExTierBadge tier={proposal.placement_tier} />
+            {proposal._duplicate && (
+              <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'12px',
+                letterSpacing:'0.10em', textTransform:'uppercase', color:'#8A6020',
+                background:'rgba(200,146,42,0.10)', border:'1px solid rgba(200,146,42,0.40)',
+                borderRadius:'40px', padding:'2px 10px' }}>
+                Already on the map
+              </span>
+            )}
             <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'13px',
               letterSpacing:'0.10em', color:'rgba(15,21,35,0.55)' }}>
               {proposal.confidence}% confidence
@@ -1639,8 +1680,25 @@ function AddTab({ toast }) {
       }
       if (data.error) { setAddErr(data.message || 'Could not read the site.'); return }
       const results = data.results || []
-      setProposals(results)
-      setChecked(results.map(() => true))
+
+      // Flag anything already on the map so the single Add flow doesn't double
+      // it. Match on exact website URL (path kept, so sub-orgs stay distinct) or
+      // exact name. Duplicates are shown but unchecked by default.
+      const existing = { urls: new Set(), names: new Set() }
+      try {
+        const { data: rows } = await supabase.from('nextus_actors').select('name, website').limit(5000)
+        for (const a of (rows || [])) {
+          const u = normActorUrl(a.website); if (u) existing.urls.add(u)
+          const n = normActorName(a.name);   if (n) existing.names.add(n)
+        }
+      } catch {}
+      const marked = results.map(r => {
+        const u = normActorUrl(r.website), n = normActorName(r.name)
+        const dup = !!((u && existing.urls.has(u)) || (n && existing.names.has(n)))
+        return { ...r, _duplicate: dup }
+      })
+      setProposals(marked)
+      setChecked(marked.map(r => !r._duplicate))
     } catch {
       setAddErr('Could not reach the reading service.')
     } finally {

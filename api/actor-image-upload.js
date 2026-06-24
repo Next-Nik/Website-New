@@ -51,10 +51,21 @@ function extFromContentType(ct) {
   return 'jpg'
 }
 
+// Decode a base64 data URL ("data:image/png;base64,...") or bare base64 string
+// into a buffer plus its content type. Returns null if it can't be parsed.
+function decodeImageData(imageData) {
+  if (!imageData || typeof imageData !== 'string') return null
+  const m = imageData.match(/^data:([^;]+);base64,(.*)$/)
+  const contentType = m ? m[1] : 'image/jpeg'
+  const b64 = m ? m[2] : imageData
+  try { return { buffer: Buffer.from(b64, 'base64'), contentType } }
+  catch { return null }
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { actorId, imageUrl } = req.body || {}
+  const { actorId, imageUrl, imageData } = req.body || {}
   if (!actorId) return res.status(400).json({ error: 'actorId required' })
 
   // Load actor to get current image_url if imageUrl not provided
@@ -66,12 +77,24 @@ module.exports = async (req, res) => {
 
   if (!actor) return res.status(404).json({ error: 'Actor not found' })
 
-  const sourceUrl = imageUrl || actor.image_url
-  if (!sourceUrl) return res.status(400).json({ error: 'No image URL to upload' })
-  if (actor.image_provenance === 'storage') return res.json({ alreadyHosted: true, image_url: actor.image_url })
-
   try {
-    const { buffer, contentType } = await fetchBuffer(sourceUrl)
+    let buffer, contentType
+
+    if (imageData) {
+      // Owner-uploaded file from the profile editor. Always overwrites — an
+      // explicit upload is a deliberate replacement, even of a hosted image.
+      const decoded = decodeImageData(imageData)
+      if (!decoded) return res.status(400).json({ error: 'Could not read the uploaded image' })
+      if (decoded.buffer.length > 5 * 1024 * 1024) return res.status(413).json({ error: 'Image is larger than 5MB' })
+      ;({ buffer, contentType } = decoded)
+    } else {
+      // Rehost flow: pull the existing or supplied URL into the bucket.
+      const sourceUrl = imageUrl || actor.image_url
+      if (!sourceUrl) return res.status(400).json({ error: 'No image URL to upload' })
+      if (actor.image_provenance === 'storage') return res.json({ alreadyHosted: true, image_url: actor.image_url })
+      ;({ buffer, contentType } = await fetchBuffer(sourceUrl))
+    }
+
     const ext      = extFromContentType(contentType)
     const filePath = `${actorId}.${ext}`
 
@@ -82,12 +105,15 @@ module.exports = async (req, res) => {
     if (uploadError) throw uploadError
 
     const { data: { publicUrl } } = supabase.storage.from(BUCKET).getPublicUrl(filePath)
+    // Path is keyed by actor id, so a re-upload reuses the same URL. Add a version
+    // query so the new image shows immediately instead of a cached old one.
+    const bustedUrl = `${publicUrl}?v=${Date.now()}`
 
     await supabase.from('nextus_actors')
-      .update({ image_url: publicUrl, image_provenance: 'storage', updated_at: new Date().toISOString() })
+      .update({ image_url: bustedUrl, image_provenance: 'storage', updated_at: new Date().toISOString() })
       .eq('id', actorId)
 
-    return res.json({ uploaded: true, image_url: publicUrl })
+    return res.json({ uploaded: true, image_url: bustedUrl })
   } catch (err) {
     console.error('[actor-image-upload] Error:', err)
     return res.status(500).json({ error: `Upload failed: ${err.message}` })
