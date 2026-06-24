@@ -267,6 +267,18 @@ domains, scoring, or the platform's framework do NOT belong here. That reasoning
 lives in score_reasoning, which is internal and never shown. Write the actor as
 their own site would describe them.
 
+Calibration. For a school whose site says it is a PreK-12 school in the jungles
+of Bali with a wall-less bamboo campus, educating changemakers since 2008:
+  WRONG (a review): "X demonstrates clear commitment to regenerative education
+  and shows demonstrable movement toward civilisational Horizon Goals through
+  youth education and ecological stewardship."
+  RIGHT (a profile): "A PreK-12 school in the jungles of Bali, built around a
+  wall-less bamboo campus. Since 2008 it has taught a research-based,
+  student-guided curriculum to over 500 students from around the world, with
+  sustainability and real-world learning woven through daily life."
+The right version uses the actor's own concrete facts and framing. The wrong
+version grades them against an external standard. Always write the right version.
+
 ──────────────────────────────────────────────────────────────────────────────
 STORY — 2-4 short paragraphs, third person, TED-tight
 ──────────────────────────────────────────────────────────────────────────────
@@ -743,10 +755,11 @@ function absolutise(u, base) {
 }
 
 // Harvest candidate anchor images from raw HTML, ordered best-first for a brand
-// logo: schema.org/JSON-LD "logo" → apple-touch-icon / icon link → logo-ish
-// <img> → og:image / twitter:image. The social share image is last because for
-// an organisation it is usually a hero / campus photo, not the brand mark — it
-// backstops the logo candidates rather than leading them.
+// logo: schema.org/JSON-LD "logo" → msapplication-TileImage → apple-touch-icon /
+// icon / mask-icon → logo-ish <img> → og:image / twitter:image. The social share
+// image is last because for an organisation it is usually a hero / campus photo,
+// not the brand mark. White-named marks are pushed to the back since they vanish
+// on the light profile background.
 function extractImageCandidates(html, baseUrl) {
   const out = []
   const push = (u) => { const a = absolutise(u, baseUrl); if (a && !out.includes(a)) out.push(a) }
@@ -756,15 +769,22 @@ function extractImageCandidates(html, baseUrl) {
   const ldRe = /"logo"\s*:\s*(?:"([^"]+)"|\{[^}]*?"url"\s*:\s*"([^"]+)")/gi
   while ((m = ldRe.exec(html))) push(m[1] || m[2])
 
-  // 2. <link rel="...icon"> — apple-touch-icon / icon are normally the brand
-  //    mark, high-res, and reliable. Preferred as the org anchor.
-  const linkRe = /<link[^>]+rel=["'][^"']*(?:apple-touch-icon|icon)[^"']*["'][^>]*>/gi
+  // 2. msapplication-TileImage — usually a clean square brand icon.
+  const tileRe = /<meta[^>]+name=["']msapplication-TileImage["'][^>]*>/gi
+  while ((m = tileRe.exec(html))) {
+    const c = m[0].match(/content=["']([^"']+)["']/i)
+    if (c) push(c[1])
+  }
+
+  // 3. <link rel="...icon"> — apple-touch-icon / icon / mask-icon are normally
+  //    the brand mark, high-res, and reliable. Preferred as the org anchor.
+  const linkRe = /<link[^>]+rel=["'][^"']*(?:apple-touch-icon|mask-icon|icon)[^"']*["'][^>]*>/gi
   while ((m = linkRe.exec(html))) {
     const h = m[0].match(/href=["']([^"']+)["']/i)
     if (h) push(h[1])
   }
 
-  // 3. <img> whose markup says logo (class / alt / id / src).
+  // 4. <img> whose markup says logo (class / alt / id / src).
   const imgRe = /<img[^>]+>/gi
   while ((m = imgRe.exec(html))) {
     if (/logo/i.test(m[0])) {
@@ -773,7 +793,7 @@ function extractImageCandidates(html, baseUrl) {
     }
   }
 
-  // 4. og:image / twitter:image — the social share image. Last resort for a
+  // 5. og:image / twitter:image — the social share image. Last resort for a
   //    logo; good as a hero image for places.
   const metaRe = /<meta[^>]+(?:property|name)=["'](?:og:image(?::secure_url)?|twitter:image(?::src)?)["'][^>]*>/gi
   while ((m = metaRe.exec(html))) {
@@ -781,7 +801,9 @@ function extractImageCandidates(html, baseUrl) {
     if (c) push(c[1])
   }
 
-  return out
+  // White-named marks vanish on the light background — sink them.
+  const isWhite = (u) => /white|inverse|reversed/i.test(u)
+  return out.slice().sort((a, b) => (isWhite(a) ? 1 : 0) - (isWhite(b) ? 1 : 0))
 }
 
 const SOCIAL_HOST_RE = /(instagram\.com|twitter\.com|x\.com|youtube\.com|youtu\.be|linkedin\.com|facebook\.com|tiktok\.com|substack\.com|medium\.com|open\.spotify\.com|podcasts\.apple\.com|vimeo\.com|github\.com|calendly\.com|cal\.com|savvycal\.com|threads\.net|bsky\.app|t\.me)/i

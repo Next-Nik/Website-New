@@ -1239,9 +1239,37 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
               {proposal.confidence}% confidence
             </span>
           </div>
-          <div style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'19px', fontWeight: 400,
-            color:'#0F1523', marginBottom:'6px' }}>
-            {proposal.name}
+          <div style={{ display:'flex', alignItems:'flex-start', gap:'12px', marginBottom:'8px' }}>
+            {/* Logo / image being placed — so it's reviewable, not approved blind */}
+            <div style={{ flexShrink:0, width:'56px', height:'56px', borderRadius:'8px',
+              border:'1px solid rgba(200,146,42,0.30)', background:'#FFFFFF',
+              overflow:'hidden', display:'flex', alignItems:'center', justifyContent:'center' }}>
+              {proposal.image_url
+                ? <img src={proposal.image_url} alt=""
+                    style={{ width:'100%', height:'100%', objectFit:'contain' }}
+                    onError={e => { e.currentTarget.style.display = 'none'
+                      e.currentTarget.parentNode.dataset.broken = '1' }} />
+                : <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'11px',
+                    letterSpacing:'0.10em', color:'rgba(15,21,35,0.55)', textAlign:'center' }}>NO IMAGE</span>}
+            </div>
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'19px', fontWeight: 400,
+                color:'#0F1523' }}>
+                {proposal.name}
+              </div>
+              {proposal.tagline && (
+                <div style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'14px',
+                  color:'rgba(15,21,35,0.70)', lineHeight:1.4, marginTop:'3px' }}>
+                  {proposal.tagline}
+                </div>
+              )}
+              {proposal.floor_check?.has_favicon_fallback && (
+                <div style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'11px',
+                  letterSpacing:'0.10em', color:'#8A6020', marginTop:'4px' }}>
+                  FAVICON FALLBACK · NO LOGO FOUND
+                </div>
+              )}
+            </div>
           </div>
           <div style={{ display:'flex', alignItems:'baseline', gap:'6px', marginBottom:'8px' }}>
             <span style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'40px',
@@ -1252,10 +1280,48 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
               color:'rgba(15,21,35,0.55)' }}>/10</span>
           </div>
 
+          {/* Description — the profile write-up being placed. This is the copy
+             that should read like the actor's own site, not a review. */}
+          {proposal.description && (
+            <div style={{ marginBottom:'12px' }}>
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'11px',
+                letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px',
+                textTransform:'uppercase' }}>
+                Profile
+              </p>
+              <p style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'15px',
+                color:'#0F1523', lineHeight:1.65, margin:0 }}>
+                {proposal.description}
+              </p>
+            </div>
+          )}
+
+          {/* Story — the longer narrative, shown so it's reviewable before placing */}
+          {proposal.story && (
+            <div style={{ marginBottom:'12px' }}>
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'11px',
+                letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px',
+                textTransform:'uppercase' }}>
+                Story
+              </p>
+              {proposal.story.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean).map((para, i) => (
+                <p key={i} style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'14px',
+                  color:'rgba(15,21,35,0.72)', lineHeight:1.65, margin:'0 0 8px' }}>
+                  {para}
+                </p>
+              ))}
+            </div>
+          )}
+
           {proposal.score_reasoning && (
-            <div style={{ borderLeft:'2px solid rgba(200,146,42,0.28)', paddingLeft:'12px', marginBottom:'12px' }}>
-              <p style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'14px',
-                color:'rgba(15,21,35,0.65)', lineHeight:1.7, margin:0 }}>
+            <div style={{ borderLeft:'2px solid rgba(15,21,35,0.14)', paddingLeft:'12px', marginBottom:'12px' }}>
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'11px',
+                letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'4px',
+                textTransform:'uppercase' }}>
+                Why this score · internal
+              </p>
+              <p style={{ fontFamily:"'Lora',Georgia,serif", fontSize:'13px',
+                color:'rgba(15,21,35,0.55)', lineHeight:1.6, margin:0 }}>
                 {proposal.score_reasoning}
               </p>
             </div>
@@ -1325,6 +1391,28 @@ function ProposalCard({ proposal, index, checked, onToggle, onChange }) {
                     border:'1px solid rgba(15,21,35,0.10)', borderRadius:'40px', padding:'3px 10px' }}>
                     {r.to_name}
                   </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Channels — the links being attached (YouTube, podcast, Substack,
+             socials, contact). Shown so they're reviewable before placing. */}
+          {proposal.links?.length > 0 && (
+            <div style={{ marginBottom:'8px' }}>
+              <p style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'11px',
+                letterSpacing:'0.14em', color:'rgba(15,21,35,0.55)', marginBottom:'5px' }}>
+                Channels · {proposal.links.length}
+              </p>
+              <div style={{ display:'flex', flexWrap:'wrap', gap:'5px' }}>
+                {proposal.links.map((l, i) => (
+                  <a key={i} href={l.url} target="_blank" rel="noreferrer"
+                    style={{ fontFamily:"'Cormorant SC',Georgia,serif", fontSize:'11px',
+                      letterSpacing:'0.08em', textTransform:'uppercase', textDecoration:'none',
+                      color:gold, background:'rgba(200,146,42,0.06)',
+                      border:'1px solid rgba(200,146,42,0.30)', borderRadius:'40px', padding:'3px 10px' }}>
+                    {(l.link_type || 'link').replace(/_/g, ' ')}
+                  </a>
                 ))}
               </div>
             </div>
