@@ -30,6 +30,26 @@ function meetsFloor(p) {
   return !!(p.name?.trim() && hasDomain && (p.image_url || p.description))
 }
 
+// Normalised keys for duplicate detection. URL keeps the path so sub-orgs on a
+// shared domain (e.g. a symposium at /regeneration27) stay distinct from the
+// parent; name is trimmed and lower-cased.
+function normUrl(u) {
+  if (!u) return null
+  try {
+    const x = new URL(u.startsWith('http') ? u : `https://${u}`)
+    return (x.hostname.replace(/^www\./, '') + x.pathname).toLowerCase().replace(/\/+$/, '') || null
+  } catch { return null }
+}
+function normName(n) {
+  const s = (n || '').trim().toLowerCase().replace(/\s+/g, ' ')
+  return s || null
+}
+function isDuplicate(p, existing) {
+  const u = normUrl(p.website)
+  const n = normName(p.name)
+  return !!((u && existing.urls.has(u)) || (n && existing.names.has(n)))
+}
+
 export default function SeedTab({ toast }) {
   const { user } = useAuth()
   const [text, setText]       = useState('')
@@ -117,6 +137,16 @@ export default function SeedTab({ toast }) {
     setItems([])
     setRows(urls.map(url => ({ url, state: 'queued', found: 0, error: null })))
 
+    // Snapshot what's already on the map so duplicates are flagged, not doubled.
+    const existing = { urls: new Set(), names: new Set() }
+    try {
+      const { data } = await supabase.from('nextus_actors').select('name, website').limit(5000)
+      for (const a of (data || [])) {
+        const u = normUrl(a.website); if (u) existing.urls.add(u)
+        const n = normName(a.name);   if (n) existing.names.add(n)
+      }
+    } catch {}
+
     const collected = []
     for (let i = 0; i < urls.length; i++) {
       const url = urls[i]
@@ -134,12 +164,19 @@ export default function SeedTab({ toast }) {
         catch { patch({ state: 'error', error: res.status === 504 ? 'Timed out' : 'Unexpected response' }); continue }
         if (data.error) { patch({ state: 'error', error: data.message || 'Could not read the site' }); continue }
         const proposals = data.results || []
-        proposals.forEach((p, j) => collected.push({
-          ...p,
-          _sourceUrl: url,
-          _key: `${i}-${j}`,
-          _checked: meetsFloor(p),
-        }))
+        proposals.forEach((p, j) => {
+          const dup = isDuplicate(p, existing)
+          collected.push({
+            ...p,
+            _sourceUrl: url,
+            _key: `${i}-${j}`,
+            _duplicate: dup,
+            _checked: meetsFloor(p) && !dup,
+          })
+          // Track within-batch so the same actor read twice also flags.
+          const u = normUrl(p.website); if (u) existing.urls.add(u)
+          const n = normName(p.name);   if (n) existing.names.add(n)
+        })
         patch({ state: 'done', found: proposals.length })
         setItems([...collected])
       } catch {
@@ -311,8 +348,8 @@ function ReviewCard({ item, onToggle }) {
                 {item.tagline}
               </div>
             )}
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
-              from {host}{!floorOk ? ' · below floor' : ''}
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: item._duplicate ? '#8A6020' : 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
+              from {host}{item._duplicate ? ' · already on the map' : (!floorOk ? ' · below floor' : '')}
             </div>
           </div>
         </div>
