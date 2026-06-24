@@ -1,22 +1,19 @@
 // src/app/components/admin/SeedTab.jsx
 //
-// Phase D bulk seeding. Paste a list of URLs (one per line), and for each the
-// engine reads the source via /api/org-extract and writes every floor-meeting
-// actor it proposes, with "Seeded by NextUs" provenance — the same record the
-// Add tab produces, run at batch scale. Floor-meeting is the gate: a proposal
-// without a name, a domain, and an image or description is skipped and listed
-// for a manual pass, never force-admitted.
-//
-// Images are persisted as hotlinks from the source, so seeds are visible
-// immediately; the public actor-images bucket (copying images in-house) is a
-// later nicety, not a prerequisite.
+// Phase D bulk seeding, with review. Paste a list of URLs (one per line); each
+// source is read via /api/org-extract and every actor it proposes is collected
+// into a review list — logo, profile, links, placement, score — the same content
+// the single Add flow shows, at batch scale. Nothing is placed until you approve
+// it. Floor-meeting proposals are pre-selected; below-floor ones are shown
+// unticked and flagged, so you see everything before anything lands.
 
 import { useState } from 'react'
 import { supabase } from '../../../hooks/useSupabase'
 import { useAuth } from '../../../hooks/useAuth'
 import { tokens, body, sc } from '../../../lib/designTokens'
 
-const gold = tokens.gold
+const goldText  = tokens.gold            // text only
+const goldChrome = '#C8922A'             // borders / chrome
 const hair = '1px solid rgba(200,146,42,0.18)'
 
 function parseUrls(text) {
@@ -36,11 +33,13 @@ function meetsFloor(p) {
 export default function SeedTab({ toast }) {
   const { user } = useAuth()
   const [text, setText]       = useState('')
-  const [running, setRunning] = useState(false)
-  const [rows, setRows]       = useState([])   // { url, state, found, seeded, skipped, error }
+  const [reading, setReading] = useState(false)
+  const [placing, setPlacing] = useState(false)
+  const [rows, setRows]       = useState([])   // per-URL read progress
+  const [items, setItems]     = useState([])   // collected proposals awaiting review
 
   // Faithful copy of the Add tab's save payload, plus the source image and the
-  // seed floor status. Returns { id, name } on success, null on error.
+  // seed floor status. Returns { id, name } on success, { error } otherwise.
   async function commitProposal(p) {
     const domains = p.domains?.length ? p.domains : (p.domain_id ? [p.domain_id] : [])
     const payload = {
@@ -86,8 +85,7 @@ export default function SeedTab({ toast }) {
     return { id: data.id, name: p.name }
   }
 
-  // Write in-batch relationships (parent_id / confirmed relationship rows),
-  // resolving both ends by name within the same URL's saved set.
+  // Write in-batch relationships, resolving both ends by name within the saved set.
   async function linkRelationships(proposals, saved) {
     if (!saved?.length) return
     const nameToId = {}
@@ -111,12 +109,15 @@ export default function SeedTab({ toast }) {
     }
   }
 
-  async function run() {
+  // Phase 1 — read every URL and collect proposals. Nothing is written.
+  async function readAll() {
     const urls = parseUrls(text)
     if (urls.length === 0) { toast('Paste at least one URL'); return }
-    setRunning(true)
-    setRows(urls.map(url => ({ url, state: 'queued', found: 0, seeded: 0, skipped: 0, error: null })))
+    setReading(true)
+    setItems([])
+    setRows(urls.map(url => ({ url, state: 'queued', found: 0, error: null })))
 
+    const collected = []
     for (let i = 0; i < urls.length; i++) {
       const url = urls[i]
       const patch = (u) => setRows(rs => rs.map((r, idx) => idx === i ? { ...r, ...u } : r))
@@ -126,45 +127,70 @@ export default function SeedTab({ toast }) {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ input: url }),
         })
-        const data = await res.json()
+        // Read text first so a non-JSON timeout surfaces clearly, not as a crash.
+        const raw = await res.text()
+        let data
+        try { data = JSON.parse(raw) }
+        catch { patch({ state: 'error', error: res.status === 504 ? 'Timed out' : 'Unexpected response' }); continue }
         if (data.error) { patch({ state: 'error', error: data.message || 'Could not read the site' }); continue }
         const proposals = data.results || []
-        patch({ found: proposals.length, state: 'saving' })
-
-        const toSeed = proposals.filter(meetsFloor)
-        const skipped = proposals.length - toSeed.length
-        const saved = []
-        for (const p of toSeed) {
-          const out = await commitProposal(p)
-          if (out?.id) saved.push(out)
-        }
-        await linkRelationships(toSeed, saved)
-        patch({ state: 'done', seeded: saved.length, skipped })
+        proposals.forEach((p, j) => collected.push({
+          ...p,
+          _sourceUrl: url,
+          _key: `${i}-${j}`,
+          _checked: meetsFloor(p),
+        }))
+        patch({ state: 'done', found: proposals.length })
+        setItems([...collected])
       } catch {
         patch({ state: 'error', error: 'Could not reach the reading service' })
       }
     }
-    setRunning(false)
-    toast('Seed run complete')
+    setReading(false)
+    toast(`Read complete · ${collected.length} record${collected.length !== 1 ? 's' : ''} to review`)
   }
 
-  const totals = rows.reduce((a, r) => ({
-    seeded: a.seeded + (r.seeded || 0),
-    skipped: a.skipped + (r.skipped || 0),
-    errored: a.errored + (r.state === 'error' ? 1 : 0),
-  }), { seeded: 0, skipped: 0, errored: 0 })
+  function toggle(key) {
+    setItems(its => its.map(it => it._key === key ? { ...it, _checked: !it._checked } : it))
+  }
 
-  const stateColor = { queued: 'rgba(15,21,35,0.45)', reading: gold, saving: gold, done: '#2A6A3A', error: '#A02020' }
+  // Phase 2 — place only the approved records. Relationships resolve within the
+  // group that came from the same source URL.
+  async function placeSelected() {
+    const chosen = items.filter(it => it._checked)
+    if (!chosen.length) { toast('Nothing selected'); return }
+    setPlacing(true)
+    const bySource = {}
+    for (const it of chosen) (bySource[it._sourceUrl] = bySource[it._sourceUrl] || []).push(it)
+    let seeded = 0
+    for (const url of Object.keys(bySource)) {
+      const group = bySource[url]
+      const saved = []
+      for (const p of group) {
+        const out = await commitProposal(p)
+        if (out?.id) { saved.push(out); seeded++ }
+        else if (out?.error) toast(`Error placing ${p.name}: ${out.error}`)
+      }
+      await linkRelationships(group, saved)
+    }
+    setPlacing(false)
+    const placedKeys = new Set(chosen.map(c => c._key))
+    setItems(its => its.filter(it => !placedKeys.has(it._key)))
+    toast(`${seeded} record${seeded !== 1 ? 's' : ''} placed on the map`)
+  }
+
+  const selectedCount = items.filter(it => it._checked).length
+  const stateColor = { queued: 'rgba(15,21,35,0.55)', reading: goldText, done: '#2A6A3A', error: '#A02020' }
 
   return (
-    <div style={{ maxWidth: '720px' }}>
+    <div style={{ maxWidth: '760px' }}>
       <h2 style={{ ...body, fontSize: '22px', fontWeight: 400, color: '#0F1523', marginBottom: '8px' }}>
         Seed the Atlas
       </h2>
       <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, marginBottom: '20px' }}>
-        Paste URLs, one per line. Each source is read and every floor-meeting actor it proposes is placed with
-        "Seeded by NextUs" provenance, image hotlinked from the source. Anything that doesn't meet the floor is
-        skipped and counted, so you can finish it by hand on the Add tab.
+        Paste URLs, one per line. Each source is read and every actor it proposes is collected below for review —
+        logo, profile, links, placement. Nothing is placed until you approve it. Tick the ones you want and place
+        them; floor-meeting records are pre-selected, anything below floor is shown unticked and flagged.
       </p>
 
       <textarea
@@ -176,37 +202,145 @@ export default function SeedTab({ toast }) {
       />
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginTop: '14px', flexWrap: 'wrap' }}>
-        <button type="button" onClick={run} disabled={running}
-          style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#FFFFFF', background: gold, border: `1.5px solid ${gold}`, borderRadius: '40px', padding: '12px 28px', cursor: running ? 'default' : 'pointer', opacity: running ? 0.5 : 1 }}>
-          {running ? 'Seeding…' : `Run seed (${parseUrls(text).length})`}
+        <button type="button" onClick={readAll} disabled={reading || placing}
+          style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#FFFFFF', background: goldChrome, border: `1.5px solid ${goldChrome}`, borderRadius: '40px', padding: '12px 28px', cursor: (reading || placing) ? 'default' : 'pointer', opacity: (reading || placing) ? 0.5 : 1 }}>
+          {reading ? 'Reading…' : `Read all (${parseUrls(text).length})`}
         </button>
-        {rows.length > 0 && !running && (
+        {items.length > 0 && (
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>
-            {totals.seeded} seeded · {totals.skipped} skipped · {totals.errored} errored
+            {items.length} to review · {selectedCount} selected
           </span>
         )}
       </div>
 
+      {/* Per-URL read progress */}
       {rows.length > 0 && (
         <div style={{ marginTop: '22px', border: hair, borderRadius: '12px', overflow: 'hidden' }}>
           {rows.map((r, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderTop: i === 0 ? 'none' : hair }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '11px 16px', borderTop: i === 0 ? 'none' : hair }}>
               <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.78)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.url}</span>
               {r.state === 'done' && (
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', color: 'rgba(15,21,35,0.55)' }}>
-                  {r.seeded} seeded{r.skipped ? ` · ${r.skipped} skipped` : ''}
+                  {r.found} found
                 </span>
               )}
               {r.state === 'error' && (
                 <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', color: '#A02020' }}>{r.error}</span>
               )}
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: stateColor[r.state] || gold, minWidth: '70px', textAlign: 'right' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', textTransform: 'uppercase', color: stateColor[r.state] || goldText, minWidth: '64px', textAlign: 'right' }}>
                 {r.state}
               </span>
             </div>
           ))}
         </div>
       )}
+
+      {/* Review surface — the generated profiles, approved before they land */}
+      {items.length > 0 && (
+        <>
+          <div style={{ marginTop: '28px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            {items.map(it => (
+              <ReviewCard key={it._key} item={it} onToggle={() => toggle(it._key)} />
+            ))}
+          </div>
+
+          <div style={{ marginTop: '20px', paddingTop: '14px', borderTop: hair, display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <button type="button" onClick={placeSelected} disabled={placing || selectedCount === 0}
+              style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em', color: '#FFFFFF',
+                background: (placing || selectedCount === 0) ? 'rgba(200,146,42,0.30)' : goldChrome,
+                border: 'none', borderRadius: '40px', padding: '13px 32px',
+                cursor: (placing || selectedCount === 0) ? 'not-allowed' : 'pointer' }}>
+              {placing ? 'Placing…' : `Place ${selectedCount} selected`}
+            </button>
+            <span style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>
+              Placed records carry "Seeded by NextUs" and land on the map.
+            </span>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+// ── Review card — what's being generated, before it lands ──────
+function ReviewCard({ item, onToggle }) {
+  const floorOk = meetsFloor(item)
+  const links = item.links || []
+  const domains = item.domains?.length ? item.domains : (item.domain_id ? [item.domain_id] : [])
+  const host = (() => { try { return new URL(item._sourceUrl.startsWith('http') ? item._sourceUrl : `https://${item._sourceUrl}`).hostname.replace(/^www\./, '') } catch { return item._sourceUrl } })()
+
+  return (
+    <div style={{
+      background: item._checked ? '#FFFFFF' : 'rgba(15,21,35,0.03)',
+      border: item._checked ? '1.5px solid rgba(200,146,42,0.40)' : '1.5px solid rgba(15,21,35,0.12)',
+      borderRadius: '14px', padding: '16px 18px',
+      opacity: item._checked ? 1 : 0.7,
+      display: 'flex', gap: '14px', alignItems: 'flex-start',
+    }}>
+      <input type="checkbox" checked={item._checked} onChange={onToggle}
+        style={{ width: '18px', height: '18px', accentColor: goldChrome, marginTop: '3px', flexShrink: 0, cursor: 'pointer' }} />
+
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+          {/* Logo / image being placed */}
+          <div style={{ flexShrink: 0, width: '52px', height: '52px', borderRadius: '8px',
+            border: '1px solid rgba(200,146,42,0.30)', background: '#FFFFFF',
+            overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {item.image_url
+              ? <img src={item.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  onError={e => { e.currentTarget.style.display = 'none' }} />
+              : <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>NONE</span>}
+          </div>
+
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ ...body, fontSize: '18px', color: '#0F1523' }}>{item.name || 'Untitled'}</span>
+              {item.type && (
+                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', textTransform: 'uppercase', color: 'rgba(15,21,35,0.55)' }}>
+                  {item.type}
+                </span>
+              )}
+              {item.alignment_score != null && item.alignment_score !== '' && (
+                <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: goldText }}>
+                  {item.alignment_score}/10
+                </span>
+              )}
+            </div>
+            {item.tagline && (
+              <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.70)', lineHeight: 1.4, marginTop: '3px' }}>
+                {item.tagline}
+              </div>
+            )}
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em', color: 'rgba(15,21,35,0.55)', marginTop: '4px' }}>
+              from {host}{!floorOk ? ' · below floor' : ''}
+            </div>
+          </div>
+        </div>
+
+        {item.description && (
+          <p style={{ ...body, fontSize: '14px', color: '#0F1523', lineHeight: 1.6, margin: '11px 0 0' }}>
+            {item.description}
+          </p>
+        )}
+
+        {domains.length > 0 && (
+          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.06em', color: 'rgba(15,21,35,0.60)', marginTop: '9px' }}>
+            {domains.join(' · ')}{item.scale ? `  ·  ${item.scale}` : ''}
+          </div>
+        )}
+
+        {links.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '9px' }}>
+            {links.map((l, i) => (
+              <span key={i} style={{ ...sc, fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase',
+                color: goldText, background: 'rgba(200,146,42,0.06)',
+                border: '1px solid rgba(200,146,42,0.30)', borderRadius: '40px', padding: '3px 10px' }}>
+                {(l.link_type || 'link').replace(/_/g, ' ')}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
