@@ -114,6 +114,11 @@ export function OrgNeedsTab({ actorId, navigate, toast }) {
 
   return (
     <div style={{ maxWidth: '700px' }}>
+      <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '10px', padding: '14px 18px', marginBottom: '24px' }}>
+        <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.6, margin: 0 }}>
+          These are open asks that broadcast to the network · they surface on the map and in the feed for others to answer. Distinct from the offers and needs on your profile.
+        </p>
+      </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.60)' }}>
           {needs.length === 0

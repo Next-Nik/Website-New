@@ -30,6 +30,7 @@ import { CredentialsTab } from '../components/manage/CredentialsTab'
 import { TestimonialsTab } from '../components/manage/TestimonialsTab'
 import { EventsTab } from '../components/EventsTab'
 import { PracticesTab } from '../components/manage/PracticesTab'
+import { RelationshipsTab } from '../components/manage/RelationshipsTab'
 import { useEffortSignal } from '../hooks/useEffortSignal'
 
 // ── Chip multi-select ────────────────────────────────────────
@@ -886,6 +887,7 @@ const TABS = [
   { key: 'testimonials',  label: 'Testimonials' },
   { key: 'coordination',  label: 'Offers & Needs' },
   { key: 'links',         label: 'Links & Press' },
+  { key: 'relationships', label: 'Relationships' },
   { key: 'domains',       label: 'Domains' },
   { key: 'offerings',     label: 'Offerings' },
   { key: 'practices',     label: 'Practices' },
@@ -1086,6 +1088,7 @@ export function OrgManagePage() {
         {activeTab === 'testimonials'  && <TestimonialsTab  actorId={actor.id} toast={showToast} />}
         {activeTab === 'coordination'  && <CoordinationTab  actorId={actor.id} toast={showToast} />}
         {activeTab === 'links'         && <LinksTab         actorId={actor.id} toast={showToast} />}
+        {activeTab === 'relationships' && <RelationshipsTab actor={actor} onSave={reloadActor} toast={showToast} />}
         {activeTab === 'offerings'     && <OfferingsTab     actorId={actor.id} toast={showToast} />}
         {activeTab === 'practices'     && <PracticesTab     actorId={actor.id} toast={showToast} />}
         {activeTab === 'domains'       && <OrgDomainsTab    actorId={actor.id} toast={showToast} />}
