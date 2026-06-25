@@ -118,11 +118,12 @@ function ProfileTab({ actor, onSave, toast }) {
 
   function set(field, value) { setForm(f => ({ ...f, [field]: value })) }
 
-  // Scale the chosen image down (longest side ≤ 1280px) and re-encode before
-  // sending, so the upload payload stays small — a full phone photo as base64
-  // can otherwise blow past the serverless request-size limit. PNGs keep their
-  // format (transparency for logos); everything else becomes JPEG.
-  function fileToResizedDataUrl(file, maxDim = 1280, quality = 0.85) {
+  // Scale the chosen image down (longest side ≤ 640px) and re-encode before
+  // sending. A profile image is only ever shown small, so this lands every
+  // upload at a few tens of KB — negligible to store and instant to load —
+  // while staying crisp. PNGs keep their format (transparency for logos);
+  // everything else becomes JPEG.
+  function fileToResizedDataUrl(file, maxDim = 640, quality = 0.8) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.onerror = () => reject(new Error('Could not read the file'))
@@ -258,7 +259,7 @@ function ProfileTab({ actor, onSave, toast }) {
             </div>
           </div>
           <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, marginTop: '10px' }}>
-            A square image reads best · under 5MB. It's stored on NextUs, so it won't break if the source site changes.
+            A square image reads best. We resize every upload to a light, fast-loading size and store it on NextUs, so it stays crisp and won't break if the source site changes.
           </p>
         </div>
 
