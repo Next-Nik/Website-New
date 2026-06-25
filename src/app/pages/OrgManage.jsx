@@ -213,7 +213,7 @@ function ProfileTab({ actor, onSave, toast }) {
   return (
     <div style={{ maxWidth: '620px' }}>
       <SectionCard>
-        <div style={{ marginBottom: '24px' }}>
+        <div id="field-photo" style={{ marginBottom: '24px' }}>
           <Label>Photo</Label>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '6px' }}>
             <div style={{ width: '76px', height: '76px', borderRadius: '10px', border: '1px solid rgba(200,146,42,0.30)', background: '#FFFFFF', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
@@ -279,12 +279,12 @@ function ProfileTab({ actor, onSave, toast }) {
           <Hint>Place this organisation on the geographic map.</Hint>
         </div>
 
-        <div style={{ marginBottom: '20px' }}>
+        <div id="field-website" style={{ marginBottom: '20px' }}>
           <Label>Website</Label>
           <TextInput value={form.website} onChange={v => set('website', v)} placeholder="https://…" />
         </div>
 
-        <div style={{ marginBottom: '20px' }}>
+        <div id="field-description" style={{ marginBottom: '20px' }}>
           <Label>Description</Label>
           <TextArea value={form.description} onChange={v => set('description', v)} placeholder="What you do and why it matters." rows={4} />
           <Hint>This is the first thing visitors read. Make it honest and specific.</Hint>
@@ -1042,16 +1042,29 @@ export function OrgManagePage() {
         )}
 
         {/* Profile completeness — pulls a thin profile toward the few things that
-            make it read like a site. Hides itself once all four are present. */}
+            make it read like a site. Each button jumps to the actual field, even
+            if it's on the tab you're already on. Hides once all four are present. */}
         {(() => {
           const checklist = [
-            { done: !!actor.image_url,   label: 'Add a photo',     tab: 'profile' },
-            { done: !!actor.tagline,     label: 'Write a tagline', tab: 'voice'   },
-            { done: !!actor.description, label: 'Describe what you do', tab: 'profile' },
-            { done: !!actor.website,     label: 'Add your website', tab: 'profile' },
+            { done: !!actor.image_url,   label: 'Add a photo',     tab: 'profile', anchor: 'field-photo' },
+            { done: !!actor.tagline,     label: 'Write a tagline', tab: 'voice',   anchor: 'field-tagline' },
+            { done: !!actor.description, label: 'Describe what you do', tab: 'profile', anchor: 'field-description' },
+            { done: !!actor.website,     label: 'Add your website', tab: 'profile', anchor: 'field-website' },
           ]
           const remaining = checklist.filter(c => !c.done)
           if (remaining.length === 0) return null
+          const jumpTo = (tab, anchor) => {
+            setActiveTab(tab)
+            // Wait for the target tab to render, then bring the field into view
+            // and focus its input. Works even when already on that tab.
+            setTimeout(() => {
+              const el = document.getElementById(anchor)
+              if (!el) return
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              const input = el.querySelector('input, textarea')
+              if (input) input.focus({ preventScroll: true })
+            }, 160)
+          }
           return (
             <div style={{ background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.30)', borderRadius: '12px', padding: '16px 20px', marginBottom: '28px' }}>
               <p style={{ ...sc, fontSize: '12px', letterSpacing: '0.18em', color: '#8A6020', marginBottom: '4px', textTransform: 'uppercase' }}>
@@ -1062,7 +1075,7 @@ export function OrgManagePage() {
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {remaining.map(item => (
-                  <button key={item.label} type="button" onClick={() => setActiveTab(item.tab)}
+                  <button key={item.label} type="button" onClick={() => jumpTo(item.tab, item.anchor)}
                     style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: '#A8721A', background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.40)', borderRadius: '40px', padding: '7px 16px', cursor: 'pointer' }}>
                     {item.label} →
                   </button>

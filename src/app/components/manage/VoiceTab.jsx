@@ -79,7 +79,7 @@ export function VoiceTab({ actor, onSave, toast }) {
       </div>
 
       {/* Tagline */}
-      <div>
+      <div id="field-tagline">
         <Label>Tagline</Label>
         <Hint>A short one-liner. Appears under your name. Example: "Transformational Leader · Speaker · Author"</Hint>
         <TextInput value={form.tagline} onChange={v => set('tagline', v)}
