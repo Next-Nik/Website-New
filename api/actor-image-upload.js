@@ -25,7 +25,7 @@ const path  = require('path')
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY,
 )
 
 const BUCKET = 'actor-images'
@@ -65,19 +65,24 @@ function decodeImageData(imageData) {
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { actorId, imageUrl, imageData } = req.body || {}
-  if (!actorId) return res.status(400).json({ error: 'actorId required' })
-
-  // Load actor to get current image_url if imageUrl not provided
-  const { data: actor } = await supabase
-    .from('nextus_actors')
-    .select('id, name, image_url, image_provenance')
-    .eq('id', actorId)
-    .maybeSingle()
-
-  if (!actor) return res.status(404).json({ error: 'Actor not found' })
-
   try {
+    if (!process.env.SUPABASE_URL || !(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY)) {
+      return res.status(500).json({ error: 'Image storage is not configured on the server (missing Supabase env).' })
+    }
+
+    const { actorId, imageUrl, imageData } = req.body || {}
+    if (!actorId) return res.status(400).json({ error: 'actorId required' })
+
+    // Load actor to get current image_url if imageUrl not provided
+    const { data: actor, error: actorErr } = await supabase
+      .from('nextus_actors')
+      .select('id, name, image_url, image_provenance')
+      .eq('id', actorId)
+      .maybeSingle()
+
+    if (actorErr) return res.status(500).json({ error: `Lookup failed: ${actorErr.message}` })
+    if (!actor)   return res.status(404).json({ error: 'Actor not found' })
+
     let buffer, contentType
 
     if (imageData) {
@@ -102,7 +107,12 @@ module.exports = async (req, res) => {
       .from(BUCKET)
       .upload(filePath, buffer, { contentType, upsert: true })
 
-    if (uploadError) throw uploadError
+    if (uploadError) {
+      const hint = /bucket|not found/i.test(uploadError.message || '')
+        ? ` (the "${BUCKET}" storage bucket may not exist — create it as a public bucket in Supabase)`
+        : ''
+      return res.status(500).json({ error: `Storage upload failed: ${uploadError.message}${hint}` })
+    }
 
     const { data: { publicUrl } } = supabase.storage.from(BUCKET).getPublicUrl(filePath)
     // Path is keyed by actor id, so a re-upload reuses the same URL. Add a version

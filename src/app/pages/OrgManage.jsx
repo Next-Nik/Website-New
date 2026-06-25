@@ -118,31 +118,54 @@ function ProfileTab({ actor, onSave, toast }) {
 
   function set(field, value) { setForm(f => ({ ...f, [field]: value })) }
 
-  // Read the chosen file as a data URL and hand it to the upload endpoint, which
-  // stores it in the actor-images bucket (so it can't rot) and sets image_url.
+  // Scale the chosen image down (longest side ≤ 1280px) and re-encode before
+  // sending, so the upload payload stays small — a full phone photo as base64
+  // can otherwise blow past the serverless request-size limit. PNGs keep their
+  // format (transparency for logos); everything else becomes JPEG.
+  function fileToResizedDataUrl(file, maxDim = 1280, quality = 0.85) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onerror = () => reject(new Error('Could not read the file'))
+      reader.onload = () => {
+        const img = new Image()
+        img.onerror = () => reject(new Error('Could not load the image'))
+        img.onload = () => {
+          let { width, height } = img
+          if (Math.max(width, height) > maxDim) {
+            const scale = maxDim / Math.max(width, height)
+            width = Math.round(width * scale)
+            height = Math.round(height * scale)
+          }
+          const canvas = document.createElement('canvas')
+          canvas.width = width; canvas.height = height
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+          const type = file.type === 'image/png' ? 'image/png' : 'image/jpeg'
+          resolve(canvas.toDataURL(type, quality))
+        }
+        img.src = reader.result
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
   async function onPickImage(e) {
     const file = e.target.files?.[0]
     if (!file) return
     if (!file.type.startsWith('image/')) { toast('Please choose an image file'); e.target.value = ''; return }
-    if (file.size > 5 * 1024 * 1024) { toast('Image must be under 5MB'); e.target.value = ''; return }
+    if (file.size > 25 * 1024 * 1024) { toast('Image must be under 25MB'); e.target.value = ''; return }
     setUploadingImage(true)
     try {
-      const dataUrl = await new Promise((resolve, reject) => {
-        const r = new FileReader()
-        r.onload = () => resolve(r.result)
-        r.onerror = () => reject(new Error('read failed'))
-        r.readAsDataURL(file)
-      })
+      const dataUrl = await fileToResizedDataUrl(file)
       const res = await fetch('/api/actor-image-upload', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ actorId: actor.id, imageData: dataUrl }),
       })
       const out = await res.json().catch(() => ({}))
-      if (!res.ok || out.error) { toast(out.error || 'Upload failed'); return }
+      if (!res.ok || out.error) { toast(out.error || `Upload failed (${res.status})`); return }
       setImageUrl(out.image_url)
       toast('Photo updated')
       onSave()
-    } catch { toast('Upload failed') }
+    } catch (err) { toast(err?.message || 'Upload failed') }
     finally { setUploadingImage(false); e.target.value = '' }
   }
 
