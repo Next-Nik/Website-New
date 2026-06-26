@@ -193,6 +193,10 @@
       "destination": "/api/beacon-close-cron"
     },
     {
+      "source": "/api/add-actor",
+      "destination": "/api/add-actor"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

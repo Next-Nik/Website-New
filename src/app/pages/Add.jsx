@@ -440,221 +440,92 @@ export function AddPage() {
 
   const selectedGoal = DOMAIN_HORIZON_GOALS[form.primary_domain]
 
-  // ── Build save payload ───────────────────────────────────────
-  function buildPayload(data, isExtra = false) {
-    const domains = isExtra
-      ? (data.domains?.length ? data.domains : (data.domain_id ? [data.domain_id] : []))
-      : [form.primary_domain, ...form.secondary_domains.filter(s => s !== form.primary_domain)].filter(Boolean)
-
-    return {
-      name:                (data.name || '').trim(),
-      type:                data.type || form.type || 'organisation',
-      track:               data.track || null,
-      tagline:             (data.tagline || '').trim() || null,
-      image_url:           (data.image_url || '').trim() || null,
-      // Hotlinked at save; the post-save upload pass re-hosts to storage.
-      // 'self_uploaded' is reserved for an actual file upload by the owner.
-      image_provenance:    (data.image_url || '').trim() ? 'hotlink' : null,
-      description:         (data.description || '').trim() || null,
-      story:               (data.story || '').trim() || null,
-      domain_id:           domains[0] || null,
-      domains,
-      subdomains:          data.subdomains      || [],
-      fields:              data.fields          || [],
-      lenses:              data.lenses          || [],
-      problem_chains:      data.problem_chains  || [],
-      platform_principles: isExtra ? (data.platform_principles || []) : form.platform_principles,
-      scale:               data.scale           || null,
-      location_name:       (data.location_name || '').trim() || null,
-      website:             normaliseUrl((data.website || '').trim()) || null,
-      impact_summary:      (data.impact_summary || '').trim() || null,
-      alignment_score:     data.alignment_score != null ? parseFloat(data.alignment_score) : null,
-      alignment_score_computed:   true,
-      alignment_score_updated_at: new Date().toISOString(),
-      placement_tier:      data.placement_tier  || null,
-      seeded_by:           represents ? 'self' : 'community',
-      profile_owner:       represents ? user.id : null,
-      represented_by_adder: represents,
-      vetting_status:      'approved',
-      status:              'live',
-      lifecycle_status:    data.lifecycle_status || 'active',
-      data_source:         aiUrl.trim() ? `community | ${aiUrl.trim()}` : 'community | manual',
-      alignment_reasoning: data.hal_signals ? {
-        hal_signals:     data.hal_signals,
-        sfp_patterns:    data.sfp_patterns,
-        score_reasoning: data.score_reasoning,
-        confidence:      data.confidence,
-        extracted_at:    new Date().toISOString(),
-        input_mode:      'public_add',
-        label:           data.label,
-      } : null,
-    }
-  }
-
-  // ── Save extracted links/press for an actor ──────────────────
-  async function saveAuxiliaryData(actorId, data) {
-    // Links
-    if (Array.isArray(data.links) && data.links.length > 0) {
-      const rows = data.links.map((l, idx) => ({
-        actor_id:   actorId,
-        link_type:  l.link_type,
-        url:        l.url,
-        label:      l.label || null,
-        sort_order: idx,
-      }))
-      await supabase.from('actor_links').insert(rows)
-    }
-    // Press
-    if (Array.isArray(data.press) && data.press.length > 0) {
-      const rows = data.press.map((p, idx) => ({
-        actor_id:     actorId,
-        publication:  p.publication,
-        url:          p.url          || null,
-        title:        p.title        || null,
-        published_at: p.published_at || null,
-        sort_order:   idx,
-      }))
-      await supabase.from('actor_press').insert(rows)
-    }
-  }
-
   // ── Submit ───────────────────────────────────────────────────
+  // The save runs entirely server-side via /api/add-actor (service-role). The
+  // browser sends descriptive fields only; ownership, vetting and live status
+  // are set on the server. See api/add-actor.js.
   async function submit(e) {
     e.preventDefault()
     if (!form.name.trim())    { setError('Name is required.'); return }
     if (!form.primary_domain) { setError('Please select a primary domain.'); return }
 
     setSaving(true); setError(null)
-    const results = []
-    const nameToId = {}  // for resolving relationship references
 
-    // Save primary form record
-    const { data: primary, error: pErr } = await supabase
-      .from('nextus_actors').insert(buildPayload(form)).select('id, name, slug').single()
-    if (pErr) {
-      console.error('Add: actor save failed', pErr)
-      setError("Something went wrong saving this entry. Please try again, or email support@nextus.world if it keeps happening.")
+    // Only the rows the user ticked come along as extras.
+    const chosenExtras = extras.filter((_, i) => extraChecked[i])
+
+    // The save runs server-side under the service key: it attributes the add to
+    // this user, sets ownership/vetting/status itself, and writes the actor plus
+    // its links, press, relationships and chain proposals in one trusted pass —
+    // so the browser never touches RLS. Authenticate the call with the session.
+    let token = null
+    try { token = (await supabase.auth.getSession()).data.session?.access_token || null } catch {}
+    if (!token) {
+      setError('Your session has expired. Please sign in again and retry.')
       setSaving(false)
       return
     }
-    results.push({ id: primary.id, slug: primary.slug, name: form.name, label: 'Primary' })
-    nameToId[form.name.trim().toLowerCase()] = primary.id
+
+    let results = []
+    try {
+      const resp = await fetch('/api/add-actor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ represents, aiUrl, primary: form, extras: chosenExtras }),
+      })
+      const json = await resp.json().catch(() => ({}))
+      if (!resp.ok || !json.ok) {
+        console.error('Add: actor save failed', json)
+        setError(json.error || 'Something went wrong saving this entry. Please try again, or email hello@nextus.world if it keeps happening.')
+        setSaving(false)
+        return
+      }
+      results = json.results || []
+      if (json.warnings?.length) console.warn('Add: saved with warnings', json.warnings)
+    } catch (err) {
+      console.error('Add: actor save failed', err)
+      setError('Something went wrong saving this entry. Please try again, or email hello@nextus.world if it keeps happening.')
+      setSaving(false)
+      return
+    }
+
+    // Map saved names → ids so the follow-up passes can target the new rows.
+    const nameToId = {}
+    results.forEach(r => { if (r.name) nameToId[r.name.trim().toLowerCase()] = r.id })
+    const primaryResult = results.find(r => r.label === 'Primary') || results[0]
+
     // The pulse: a new actor is live on the Atlas (public entity).
-    logActivity({
-      eventType: 'actor_added',
-      subjectType: 'actor',
-      subjectId: primary.id,
-      subjectName: primary.name || form.name,
-      subjectSlug: primary.slug,
-      domain: form.primary_domain || null,
-    })
-
-    // Save aux data for primary (from AI-populated form, if any)
-    if (extras.length > 0 || aiUsed) {
-      // Primary form may have aux data carried over from AI fill — save it
-      const primaryAux = {
-        links: form._aiLinks  || [],
-        press: form._aiPress  || [],
-      }
-      await saveAuxiliaryData(primary.id, primaryAux)
+    if (primaryResult) {
+      logActivity({
+        eventType: 'actor_added',
+        subjectType: 'actor',
+        subjectId: primaryResult.id,
+        subjectName: primaryResult.name || form.name,
+        subjectSlug: primaryResult.slug,
+        domain: form.primary_domain || null,
+      })
     }
 
-    // Save any ticked extras
-    for (let i = 0; i < extras.length; i++) {
-      if (!extraChecked[i]) continue
-      const ex = extras[i]
-      if (!ex.name?.trim() || !(ex.domains?.length || ex.domain_id)) continue
-      const { data: saved, error: eErr } = await supabase
-        .from('nextus_actors').insert(buildPayload(ex, true)).select('id, name, slug').single()
-      if (!eErr && saved) {
-        results.push({ id: saved.id, slug: saved.slug, name: ex.name, label: ex.label || 'Additional' })
-        nameToId[ex.name.trim().toLowerCase()] = saved.id
-        await saveAuxiliaryData(saved.id, ex)
-      }
-    }
-
-    // Resolve and write parent/child/partner relationships proposed by AI
-    // Only relationships where BOTH sides exist in this batch are written.
+    // Rebuild the actor set (with their new ids) for the image + practice passes.
     const allActors = [
-      { name: form.name, data: form, id: primary.id },
-      ...extras
-        .map((ex, i) => extraChecked[i] && nameToId[ex.name?.trim().toLowerCase()]
-          ? { name: ex.name, data: ex, id: nameToId[ex.name.trim().toLowerCase()] }
-          : null)
-        .filter(Boolean),
-    ]
+      primaryResult ? { data: form, id: primaryResult.id } : null,
+      ...chosenExtras.map(ex => {
+        const id = nameToId[ex.name?.trim().toLowerCase()]
+        return id ? { data: ex, id } : null
+      }),
+    ].filter(Boolean)
 
-    for (const actor of allActors) {
-      const rels = actor.data.relationships || []
-      for (const rel of rels) {
-        const targetId = nameToId[rel.to_name?.trim().toLowerCase()]
-        if (!targetId) continue
-        // For parent_child, child's actor_id points to parent via parent_id column
-        if (rel.relationship_type === 'parent_child') {
-          await supabase.from('nextus_actors')
-            .update({ parent_id: targetId })
-            .eq('id', actor.id)
-        } else {
-          // member_of, partner — go into nextus_relationships, auto-confirmed
-          // since both parties are being created together by the same user
-          await supabase.from('nextus_relationships').insert({
-            actor_id:          actor.id,
-            related_actor_id:  targetId,
-            relationship_type: rel.relationship_type,
-            status:            'confirmed',
-            initiated_by:      user.id,
-            confirmed_by:      user.id,
-            confirmed_at:      new Date().toISOString(),
-          })
-        }
-      }
-    }
-
-    // Persist any AI-proposed new problem-chains for admin review. These are
-    // suggestions only — never applied to the actor automatically. Each is
-    // linked to the actor it surfaced from. Non-fatal: a failure here never
-    // blocks the save.
+    // Persist proposed practices (service-role, founder-gated endpoint).
+    // Best-effort — never blocks the save.
     try {
-      const proposalRows = []
       for (const actor of allActors) {
-        const proposals = actor.data._proposedChains || actor.data.proposed_chains || []
-        for (const p of proposals) {
-          if (!p?.slug || !p?.label) continue
-          proposalRows.push({
-            proposed_slug: p.slug,
-            label:         p.label,
-            description:   p.description || null,
-            domains:       Array.isArray(p.domains) ? p.domains : [],
-            aliases:       Array.isArray(p.aliases) ? p.aliases : [],
-            rationale:     p.rationale || null,
-            actor_id:      actor.id,
-            proposed_by:   user?.id || null,
-          })
-        }
-      }
-      if (proposalRows.length) {
-        await supabase.from('nextus_problem_chain_proposals').insert(proposalRows)
-      }
-    } catch (propErr) {
-      console.warn('Problem-chain proposal save skipped:', propErr?.message)
-    }
-
-    // Persist proposed practices for each actor (candidate practices + tier
-    // ladder + unconfirmed embodiments). Service-role write via founder token.
-    // Best-effort — a failure never blocks the save.
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      const token = session?.access_token
-      if (token) {
-        for (const actor of allActors) {
-          const practices = actor.data.practices || []
-          if (!practices.length) continue
-          await fetch('/api/practice-persist', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-            body: JSON.stringify({ actorId: actor.id, practices }),
-          }).catch(() => {})
-        }
+        const practices = actor.data.practices || []
+        if (!practices.length) continue
+        await fetch('/api/practice-persist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ actorId: actor.id, practices }),
+        }).catch(() => {})
       }
     } catch (pracErr) {
       console.warn('Practice persistence skipped:', pracErr?.message)
