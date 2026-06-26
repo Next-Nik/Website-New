@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nextus-v5';
+const CACHE_NAME = 'nextus-v6';
 
 const SHELL_ASSETS = [
   '/',
@@ -59,4 +59,33 @@ self.addEventListener('fetch', (event) => {
       })
     );
   }
+});
+
+// ── Push: the beacon's reminders and nudges ──────────────────────────────────
+self.addEventListener('push', (event) => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; }
+  catch (_) { data = { body: event.data ? event.data.text() : '' }; }
+  const title = data.title || 'The beacon';
+  const options = {
+    body: data.body || '',
+    icon: '/icon-192.png',
+    badge: '/favicon-mark.png',
+    tag: data.tag || 'beacon',
+    data: { url: data.url || '/' },
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = (event.notification.data && event.notification.data.url) || '/';
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      for (const c of clients) {
+        if ('focus' in c) { try { c.navigate(target); } catch (_) {} return c.focus(); }
+      }
+      if (self.clients.openWindow) return self.clients.openWindow(target);
+    })
+  );
 });

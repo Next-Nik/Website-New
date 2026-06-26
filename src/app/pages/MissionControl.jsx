@@ -40,6 +40,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { useActingAs } from '../context/ActingAsContext'
 
 import IdentityStrip      from '../components/mission-control/IdentityStrip'
+import BeaconStrip       from '../components/mission-control/BeaconStrip'
 import PoleHeader         from '../components/mission-control/PoleHeader'
 import FirstLightPrompt   from '../components/FirstLightPrompt'
 import WorldMapSubstrate  from '../components/mission-control/WorldMapSubstrate'
@@ -1026,6 +1027,8 @@ export default function MissionControl() {
       className="mc-stage-root"
     >
       <style>{STAGE_CSS}</style>
+
+      <BeaconStrip userId={data.user?.id} />
 
       <WorldMapSubstrate />
 

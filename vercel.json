@@ -21,6 +21,14 @@
     {
       "path": "/api/chain-cluster-cron",
       "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/notify-cron",
+      "schedule": "0 15 * * *"
+    },
+    {
+      "path": "/api/beacon-close-cron",
+      "schedule": "0 16 * * *"
     }
   ],
   "rewrites": [
@@ -167,6 +175,22 @@
     {
       "source": "/api/ical-proxy",
       "destination": "/api/ical-proxy"
+    },
+    {
+      "source": "/api/beacon",
+      "destination": "/api/beacon"
+    },
+    {
+      "source": "/api/push-subscribe",
+      "destination": "/api/push-subscribe"
+    },
+    {
+      "source": "/api/notify-cron",
+      "destination": "/api/notify-cron"
+    },
+    {
+      "source": "/api/beacon-close-cron",
+      "destination": "/api/beacon-close-cron"
     },
     {
       "source": "/(.*)",

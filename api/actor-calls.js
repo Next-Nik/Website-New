@@ -348,6 +348,16 @@ module.exports = async (req, res) => {
         { onConflict: 'participant_id,strand_id,log_date' }
       )
       if (error) return res.status(500).json({ error: error.message })
+
+      // A 'once' challenge finishes on its single check-in: mark the run complete
+      // on the spot (the +5 to the beacon). Idempotent — only flips an active run.
+      const { data: call } = await supabase.from('actor_calls')
+        .select('cadence').eq('id', call_id).maybeSingle()
+      if (call && call.cadence === 'once') {
+        await supabase.from('actor_call_participants')
+          .update({ status: 'complete', completed_at: new Date().toISOString() })
+          .eq('id', p.id).eq('status', 'active')
+      }
     } else {
       await supabase.from('actor_call_strand_log')
         .delete()

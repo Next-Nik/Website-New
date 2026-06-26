@@ -27,9 +27,11 @@ const muted  = { color: 'rgba(15,21,35,0.78)' }
 const SELF_SLUGS = new Set(SELF_DOMAINS.map(d => d.slug))
 
 const CADENCES = [
-  { v: 'daily-absolute', l: 'Every day' },
-  { v: '5-of-7',         l: '5 of 7 days' },
+  { v: 'once',           l: 'Once' },
+  { v: 'daily-absolute', l: 'Daily' },
+  { v: '5-of-7',         l: 'A few times a week' },
   { v: 'weekly',         l: 'Weekly' },
+  { v: 'monthly',        l: 'Monthly' },
 ]
 
 function Eyebrow({ children, style = {} }) {
@@ -201,7 +203,7 @@ export default function ChallengeAuthor() {
     }
     if (Array.isArray(d.strands) && d.strands.length) {
       let k = keySeq
-      const valid = ['daily-absolute', '5-of-7', 'weekly']
+      const valid = ['once', 'daily-absolute', '5-of-7', 'weekly', 'monthly']
       const mapped = d.strands.map(s => ({
         key: k++, text: s.text || '',
         cadence: valid.includes(s.cadence) ? s.cadence : '5-of-7',
@@ -554,6 +556,29 @@ export default function ChallengeAuthor() {
                 {errors.map((e, i) => <div key={i} style={{ ...body, fontSize: '15px', color: '#A02020', lineHeight: 1.5 }}>{e}</div>)}
               </div>
             )}
+
+            {(() => {
+              const primary = (strands.find(s => s.text.trim()) || strands[0] || {}).cadence
+              const once = primary === 'once'
+              return (
+                <div style={{ display: 'grid', gap: '14px', paddingTop: '4px' }}>
+                  <div style={{ background: tokens.goldTint, border: `1px solid ${tokens.goldFaint}`, borderRadius: '12px', padding: '14px 16px' }}>
+                    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: tokens.gold, marginBottom: '4px' }}>How it counts</div>
+                    <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.55 }}>
+                      {once
+                        ? 'Doing it once is a finish, plus five sparks to the beacon.'
+                        : 'Each check-in adds one spark to the beacon. At the close of Climate Week (27 September 2026), we get to see what we were able to get done together.'}
+                    </div>
+                  </div>
+                  <div style={{ borderLeft: `2px solid ${GOLD_C}`, padding: '2px 0 2px 16px' }}>
+                    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: tokens.gold, marginBottom: '4px' }}>What you don&rsquo;t have to do</div>
+                    <div style={{ ...body, fontSize: '14.5px', color: tokens.ghost, lineHeight: 1.5 }}>
+                      No points to set. No game to design. No scoring. People show up, the system counts each one, and your challenge feeds the same beacon as everyone else&rsquo;s.
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
 
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', paddingTop: '4px' }}>
               <Btn onClick={() => createAndPublish('community')} disabled={saving}>{saving ? 'Publishing…' : 'Publish to community'}</Btn>
