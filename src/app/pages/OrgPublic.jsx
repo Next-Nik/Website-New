@@ -439,7 +439,7 @@ function DisputeModal({ actor, user, onClose }) {
       <div style={{ background: parch, border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
           <div style={{ ...sc_style, fontSize: '11px', letterSpacing: '0.22em', color: gold, textTransform: 'uppercase' }}>Dispute this entry</div>
-          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc_style, fontSize: '1.1rem', color: 'rgba(15,21,35,0.45)' }}>×</button>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc_style, fontSize: '1.1rem', color: 'rgba(15,21,35,0.55)' }}>×</button>
         </div>
         {!user ? (
           <div>

@@ -2488,7 +2488,7 @@ function ClaimRequestsSection({ toast }) {
                     </a>
                   </div>
                 )}
-                <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.50)', margin: 0 }}>
+                <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', margin: 0 }}>
                   Submitted {new Date(req.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
                 </p>
               </div>
@@ -2655,7 +2655,7 @@ function ChainsTab({ toast }) {
               <Badge label={isDemand ? 'demand' : 'supply'} color={isDemand ? '#2A6A3A' : gold} />
               <span style={{ ...body, fontSize: '18px', color: '#0F1523' }}>{p.label}</span>
               <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em',
-                color: 'rgba(15,21,35,0.45)' }}>{p.proposed_slug}</span>
+                color: 'rgba(15,21,35,0.55)' }}>{p.proposed_slug}</span>
               {isDemand && typeof p.people_count === 'number' && (
                 <Badge label={`${p.people_count} people`} color="#2A4A8A" />
               )}
@@ -2758,7 +2758,7 @@ function SupplyDemandSection({ toast }) {
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <span style={{ ...body, fontSize: '17px', color: '#0F1523' }}>{r.label}</span>
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.45)' }}>{r.slug}</span>
+              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>{r.slug}</span>
               {r.is_demand_origin && <Badge label="demand-born" color="#2A6A3A" />}
               {(r.domains || []).map(d => <Badge key={d} label={domainLabel(d)} color="#2A4A8A" />)}
             </div>
@@ -2882,9 +2882,9 @@ function PracticesTab({ toast }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', flexWrap: 'wrap' }}>
               <Badge label={slabel} color={scolor} />
               <span style={{ ...body, fontSize: '18px', color: '#0F1523' }}>{p.name}</span>
-              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.45)' }}>{p.slug}</span>
+              <span style={{ ...sc, fontSize: '12px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)' }}>{p.slug}</span>
               {(p.domains || []).map(dm => <Badge key={dm} label={domainLabel(dm)} color="#2A4A8A" />)}
-              <span style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.45)' }}>{p.embodiment_count} embodying</span>
+              <span style={{ ...sc, fontSize: '12px', color: 'rgba(15,21,35,0.55)' }}>{p.embodiment_count} embodying</span>
             </div>
 
             {p.statement && (
@@ -3277,7 +3277,7 @@ function FloorTab({ toast }) {
               )}
               {a.slug && (
                 <a href={`/org/${a.slug}`} target="_blank" rel="noopener noreferrer"
-                  style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.45)', textDecoration: 'none', textAlign: 'center' }}>
+                  style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none', textAlign: 'center' }}>
                   View
                 </a>
               )}

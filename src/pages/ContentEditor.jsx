@@ -4,6 +4,7 @@ import { Nav } from '../components/Nav'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../hooks/useSupabase'
 import { body, sc } from '../lib/designTokens'
+import { COPY_GROUPS, COPY_DEFAULTS } from '../lib/siteCopy'
 
 function isFounder(user) {
   return user?.user_metadata?.role === 'founder'
@@ -63,7 +64,7 @@ function Toast({ message, onClose }) {
 
 // ─── Tabs ─────────────────────────────────────────────────────
 
-const TABS = ['Products', 'Announcements', 'Focus Goals', 'Ask']
+const TABS = ['Site Text', 'Products', 'Announcements', 'Focus Goals', 'Ask']
 
 function TabBar({ active, setActive }) {
   return (
@@ -707,12 +708,174 @@ function AskTab() {
   )
 }
 
+// ─── Site Text tab ────────────────────────────────────────────
+// Edit any registered copy string on the public site. Saves write to
+// site_copy; an unedited string has no row and shows its built-in default.
+// Saving a value back to its default clears the row (reset).
+
+function fieldBase(multiline) {
+  return {
+    ...body, fontSize: '15px', lineHeight: 1.6, color: '#0F1523',
+    width: '100%', boxSizing: 'border-box',
+    padding: '10px 12px', borderRadius: '8px',
+    border: '1px solid rgba(200,146,42,0.30)', background: '#FFFFFF',
+    resize: multiline ? 'vertical' : 'none',
+    minHeight: multiline ? '88px' : 'auto',
+  }
+}
+
+function SiteTextItem({ item, value, dirty, edited, saving, onChange, onSave, onReset }) {
+  return (
+    <div style={{ padding: '16px 0', borderBottom: '1px solid rgba(200,146,42,0.12)' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', marginBottom: '8px' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: gold,
+          textTransform: 'uppercase' }}>{item.label}</span>
+        {edited && (
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
+            color: 'rgba(15,21,35,0.55)' }}>· edited</span>
+        )}
+      </div>
+      {item.multiline ? (
+        <textarea value={value} onChange={e => onChange(item.id, e.target.value)}
+          style={fieldBase(true)} rows={4} />
+      ) : (
+        <input type="text" value={value} onChange={e => onChange(item.id, e.target.value)}
+          style={fieldBase(false)} />
+      )}
+      <div style={{ display: 'flex', gap: '8px', marginTop: '10px', alignItems: 'center' }}>
+        <Btn small disabled={!dirty || saving} onClick={() => onSave(item.id)}>
+          {saving ? 'Saving…' : 'Save'}
+        </Btn>
+        {edited && (
+          <Btn small variant="ghost" disabled={saving} onClick={() => onReset(item.id)}>
+            Reset to default
+          </Btn>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function SiteTextTab({ toast }) {
+  const [overrides, setOverrides] = useState({})
+  const [drafts, setDrafts]       = useState({})
+  const [loading, setLoading]     = useState(true)
+  const [savingId, setSavingId]   = useState(null)
+  const [openGroup, setOpenGroup] = useState(COPY_GROUPS[0]?.id ?? null)
+
+  const load = useCallback(async () => {
+    setLoading(true)
+    const { data, error } = await supabase.from('site_copy').select('id, value')
+    const map = {}
+    if (!error) for (const r of (data || [])) map[r.id] = r.value
+    setOverrides(map)
+    setLoading(false)
+  }, [])
+
+  useEffect(() => { load() }, [load])
+
+  const savedValue   = (id) => (id in overrides ? overrides[id] : (COPY_DEFAULTS[id] ?? ''))
+  const currentValue = (id) => (id in drafts ? drafts[id] : savedValue(id))
+  const isEdited     = (id) => (id in overrides) && overrides[id] !== (COPY_DEFAULTS[id] ?? '')
+  const isDirty      = (id) => (id in drafts) && drafts[id] !== savedValue(id)
+
+  const onChange = (id, v) => setDrafts(prev => ({ ...prev, [id]: v }))
+
+  async function onSave(id) {
+    const value = currentValue(id)
+    setSavingId(id)
+    try {
+      const { data: u } = await supabase.auth.getUser()
+      if (value === (COPY_DEFAULTS[id] ?? '')) {
+        const { error } = await supabase.from('site_copy').delete().eq('id', id)
+        if (error) throw error
+        setOverrides(prev => { const n = { ...prev }; delete n[id]; return n })
+      } else {
+        const { error } = await supabase.from('site_copy').upsert({
+          id, value, updated_by: u?.user?.id ?? null, updated_at: new Date().toISOString(),
+        })
+        if (error) throw error
+        setOverrides(prev => ({ ...prev, [id]: value }))
+      }
+      setDrafts(prev => { const n = { ...prev }; delete n[id]; return n })
+      toast('Saved · live on the site')
+    } catch (e) {
+      toast('Save failed: ' + (e?.message || 'check founder access'))
+    } finally { setSavingId(null) }
+  }
+
+  async function onReset(id) {
+    setSavingId(id)
+    try {
+      const { error } = await supabase.from('site_copy').delete().eq('id', id)
+      if (error) throw error
+      setOverrides(prev => { const n = { ...prev }; delete n[id]; return n })
+      setDrafts(prev => { const n = { ...prev }; delete n[id]; return n })
+      toast('Reset to default')
+    } catch (e) {
+      toast('Reset failed: ' + (e?.message || 'unknown error'))
+    } finally { setSavingId(null) }
+  }
+
+  if (loading) return <div className="loading" />
+
+  return (
+    <div>
+      <p style={{ ...body, fontSize: '15px', lineHeight: 1.65, color: 'rgba(15,21,35,0.72)',
+        marginBottom: '28px', maxWidth: '640px' }}>
+        Edit any text on the public site. Changes save straight to the live site ·
+        leave a field at its default and it stays the default. New surfaces are added
+        here as they are wired up.
+      </p>
+
+      {COPY_GROUPS.map(group => {
+        const open = openGroup === group.id
+        const editedCount = group.items.filter(i => isEdited(i.id)).length
+        return (
+          <div key={group.id} style={{ marginBottom: '14px',
+            border: '1px solid rgba(200,146,42,0.20)', borderRadius: '12px', overflow: 'hidden' }}>
+            <button onClick={() => setOpenGroup(open ? null : group.id)}
+              style={{ ...sc, fontSize: '17px', letterSpacing: '0.10em',
+                width: '100%', textAlign: 'left', cursor: 'pointer',
+                padding: '16px 20px', background: open ? 'rgba(200,146,42,0.05)' : 'transparent',
+                border: 'none', color: '#0F1523',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>{group.label}</span>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em',
+                color: 'rgba(15,21,35,0.55)' }}>
+                {editedCount > 0 ? `${editedCount} edited · ` : ''}{open ? '–' : '+'}
+              </span>
+            </button>
+            {open && (
+              <div style={{ padding: '4px 20px 12px' }}>
+                {group.items.map(item => (
+                  <SiteTextItem
+                    key={item.id}
+                    item={item}
+                    value={currentValue(item.id)}
+                    dirty={isDirty(item.id)}
+                    edited={isEdited(item.id)}
+                    saving={savingId === item.id}
+                    onChange={onChange}
+                    onSave={onSave}
+                    onReset={onReset}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 // ─── Main page ────────────────────────────────────────────────
 
 export function ContentEditorPage() {
   const { user, loading } = useAuth()
   const navigate = useNavigate()
-  const [tab, setTab]     = useState('Products')
+  const [tab, setTab]     = useState('Site Text')
   const [toast, setToast] = useState(null)
 
   const showToast = useCallback((msg) => setToast(msg), [])
@@ -739,11 +902,12 @@ export function ContentEditorPage() {
         </h1>
         <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.72)',
           marginBottom: '48px' }}>
-          Products, announcements, and Next-1.
+          Site text, products, announcements, and Next-1.
         </p>
 
         <TabBar active={tab} setActive={setTab} />
 
+        {tab === 'Site Text'      && <SiteTextTab      toast={showToast} />}
         {tab === 'Products'       && <ProductsTab      toast={showToast} />}
         {tab === 'Announcements'  && <AnnouncementsTab toast={showToast} />}
         {tab === 'Focus Goals'    && <FocusGoalsTab    toast={showToast} />}

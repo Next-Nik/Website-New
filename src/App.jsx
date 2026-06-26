@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation, useParams } from '
 import { useAuth } from './hooks/useAuth'
 import { supabase } from './hooks/useSupabase'
 import { ActingAsProvider } from './app/context/ActingAsContext'
+import { SiteCopyProvider } from './lib/siteCopy'
 import { useEffect, useState, Component } from 'react'
 import { BottomTabs } from './components/BottomTabs'
 
@@ -77,8 +78,6 @@ import { EventManagePage }    from './app/pages/EventManage'
 import { EventPublicPage }    from './app/pages/EventPublic'
 import { DomainPage } from './app/pages/Domain'
 import { ConstellationPage } from './app/pages/ConstellationPage'
-import ConstellationRecord from './app/pages/ConstellationRecord'
-import ConstellationLedger from './app/pages/ConstellationLedger'
 import { IssueViewPage } from './app/pages/IssueView'
 import { MemberPublicPage } from './app/pages/MemberPublic'
 import { FocusProfile } from './app/pages/FocusProfile'
@@ -339,8 +338,6 @@ function AppInner() {
         <Route path="/add"                          element={<AddPage />} />
         <Route path="/member/:slug"                 element={<MemberPublicPage />} />
         <Route path="/domain/:slug"                 element={<DomainPage />} />
-        <Route path="/constellation/record"         element={<ConstellationRecord />} />
-        <Route path="/constellation/ledger"         element={<ConstellationLedger />} />
         <Route path="/constellation/:domain"        element={<ConstellationPage />} />
         <Route path="/issue/:slug"                  element={<IssueViewPage />} />
         <Route path="/focus"                        element={<FocusIndex />} />
@@ -432,9 +429,11 @@ export default function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
-        <ActingAsProvider>
-          <AppInner />
-        </ActingAsProvider>
+        <SiteCopyProvider>
+          <ActingAsProvider>
+            <AppInner />
+          </ActingAsProvider>
+        </SiteCopyProvider>
       </BrowserRouter>
     </ErrorBoundary>
   )

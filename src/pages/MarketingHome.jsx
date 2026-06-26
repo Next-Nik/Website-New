@@ -20,6 +20,8 @@ import { useEffect, useState } from 'react'
 import { Nav }         from '../components/Nav'
 import { SiteFooter }  from '../components/SiteFooter'
 import { serif, body, sc } from '../lib/designTokens'
+import { Copy } from '../components/Copy'
+import { useCopy } from '../lib/siteCopy'
 import { supabase }    from '../hooks/useSupabase'
 import { WheelSVG }    from '../app/components/WheelSVG'
 import WorldWheel      from '../app/components/mission-control/WorldWheel'
@@ -147,7 +149,7 @@ function ProofOfLife() {
     }}>
       <div style={{ textAlign: 'center', marginBottom: countItems.length ? 'clamp(28px,3vw,40px)' : 0 }}>
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '14px' }}>
-          ALREADY ON THE MAP
+          <Copy id="home.pol.eyebrow" />
         </span>
         {counts?.actors && (
           <p style={{ ...serif, fontSize: 'clamp(20px,2.6vw,28px)', fontWeight: 300, color: ink, lineHeight: 1.45, maxWidth: '560px', margin: '0 auto' }}>
@@ -314,40 +316,19 @@ function PathCard({ eyebrow, heading, bodyText, cta, href, image, imageSide, dar
 }
 
 // ── How-it-works content ─────────────────────────────────────
-const PERSONAL_STEPS = [
-  {
-    n: '01',
-    title: 'See where you stand',
-    body: 'The Map gives an honest read of your life across seven domains: Path, Spark, Body, Finances, Connection, Inner Game, and Signal. It is deliberate work, not a quiz. A first pass takes about an hour, and many people return to it domain by domain over weeks. You leave with a clear picture of where your life actually is.',
-  },
-  {
-    n: '02',
-    title: 'Decide where it goes',
-    body: 'With that picture in front of you, you name where you want each part of your life to be, and what you are willing to do to get there. Purpose Piece helps you find the contribution that is yours to make. The result is direction you chose, not direction you drifted into.',
-  },
-  {
-    n: '03',
-    title: 'Build toward it',
-    body: 'Horizon Practice turns that direction into a daily practice you can keep, and the Atlas connects you to the people and work already building the future you named. The result is momentum, and company for the road.',
-  },
+// Step text comes from the copy registry (editable on the founder page);
+// the `n` numerals are structural and stay in code. Built per-render from
+// the resolver so a founder edit shows up without a code change.
+const buildPersonalSteps = (t) => [
+  { n: '01', title: t('home.hiw.life.s1.title'), body: t('home.hiw.life.s1.body') },
+  { n: '02', title: t('home.hiw.life.s2.title'), body: t('home.hiw.life.s2.body') },
+  { n: '03', title: t('home.hiw.life.s3.title'), body: t('home.hiw.life.s3.body') },
 ]
 
-const PLANET_STEPS = [
-  {
-    n: '01',
-    title: 'Name the future worth building',
-    body: 'The same seven domains that map a life map a civilisation: Human Being, Society, Nature, Technology, Finance & Economy, Legacy, and Vision. Humanity has never sat down and agreed what it is building toward. NextUs makes that picture something you can see, and starts with a simpler question: what future do you actually want to live in?',
-  },
-  {
-    n: '02',
-    title: 'Find where you come in',
-    body: 'Of those seven domains, which is yours to work in, and at what scale: close and local, or wide and structural? Name the domain and the scale where you most want to make an impact, and look there.',
-  },
-  {
-    n: '03',
-    title: 'See who is already building it',
-    body: 'The Atlas is a living directory of the people, organisations, and projects doing the real work across those seven domains. In the corner you named, you can see who is already on it: who is worth backing, joining, or learning from. Then add your weight: support the people already building, point others toward work that deserves to be seen, or make your own work visible to those most likely to be served by it. The fractal runs both ways: the work you do on yourself shapes the world, and the world you help build gives that work somewhere to land.',
-  },
+const buildPlanetSteps = (t) => [
+  { n: '01', title: t('home.hiw.world.s1.title'), body: t('home.hiw.world.s1.body') },
+  { n: '02', title: t('home.hiw.world.s2.title'), body: t('home.hiw.world.s2.body') },
+  { n: '03', title: t('home.hiw.world.s3.title'), body: t('home.hiw.world.s3.body') },
 ]
 
 function HiwStep({ n, title, body: stepBody }) {
@@ -386,6 +367,9 @@ function HiwTrack({ label, heading, steps, closing, ctaLabel, ctaHref }) {
 
 // ── Main ────────────────────────────────────────────────────
 export function MarketingHomePage() {
+  const t = useCopy()
+  const PERSONAL_STEPS = buildPersonalSteps(t)
+  const PLANET_STEPS   = buildPlanetSteps(t)
   return (
     <div style={{ background: '#FAFAF7', minHeight: '100dvh' }}>
       <Nav />
@@ -398,7 +382,7 @@ export function MarketingHomePage() {
         textAlign: 'center',
       }}>
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '18px' }}>
-          A LIFE WORTH LIVING. A FUTURE WORTH BUILDING.
+          <Copy id="home.hero.eyebrow" />
         </span>
         <h1
           className="mh-hero-title"
@@ -415,7 +399,7 @@ export function MarketingHomePage() {
             marginRight: 'auto',
           }}
         >
-          Your life and the world run on the same seven domains.
+          <Copy id="home.hero.title" />
         </h1>
         <p
           className="mh-hero-subtitle"
@@ -429,7 +413,7 @@ export function MarketingHomePage() {
             margin: '0 auto',
           }}
         >
-          NextUs is built on that. An honest picture of where you stand, a clear direction for where you're going, and the people already building the future you want to live in. One set of tools, two scales: your life, and your world.
+          <Copy id="home.hero.subtitle" />
         </p>
         <FractalWheels />
       </section>
@@ -442,23 +426,23 @@ export function MarketingHomePage() {
       }}>
         <div style={{ textAlign: 'center', marginBottom: 'clamp(20px,2.4vw,28px)' }}>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: '#A8721A' }}>
-            THE PERSON AND THE PLANET · BUILT FOR BOTH, BUILDING BOTH
+            <Copy id="home.doors.eyebrow" />
           </span>
         </div>
         <div className="mh-cards">
           <PathCard
-            heading="Your life"
-            bodyText="Get an honest read on your life and a practice for closing the gap between where you are and where you mean to be."
-            cta="START"
+            heading={<Copy id="home.door.life.heading" />}
+            bodyText={<Copy id="home.door.life.body" />}
+            cta={<Copy id="home.door.life.cta" />}
             href="/login?path=self"
             image="/hero-personal.jpg"
             imageSide="left"
             dark={false}
           />
           <PathCard
-            heading="Your world"
-            bodyText="Find the people, organisations, and work already building the future you want to live in, and add your own."
-            cta="EXPLORE"
+            heading={<Copy id="home.door.world.heading" />}
+            bodyText={<Copy id="home.door.world.body" />}
+            cta={<Copy id="home.door.world.cta" />}
             href="/explore"
             image="/hero-civ.jpg"
             imageSide="right"
@@ -475,28 +459,28 @@ export function MarketingHomePage() {
       }}>
         <div style={{ textAlign: 'center', marginBottom: 'clamp(36px,4vw,52px)' }}>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '14px' }}>
-            HOW IT WORKS
+            <Copy id="home.hiw.eyebrow" />
           </span>
           <p style={{ ...serif, fontSize: 'clamp(20px,2.6vw,28px)', fontWeight: 300, color: ink, lineHeight: 1.45, maxWidth: '560px', margin: '0 auto' }}>
-            The same three steps, at the scale of a single life and the scale of a civilisation.
+            <Copy id="home.hiw.subtitle" />
           </p>
         </div>
 
         <div className="hiw-grid">
           <HiwTrack
-            label="FOR YOUR LIFE"
-            heading="A life worth living"
+            label={<Copy id="home.hiw.life.label" />}
+            heading={<Copy id="home.hiw.life.heading" />}
             steps={PERSONAL_STEPS}
-            closing="Put in an honest hour to start. What you get back is a picture of your life you can act on, and a direction worth keeping."
-            ctaLabel="START WITH THE MAP →"
+            closing={<Copy id="home.hiw.life.closing" />}
+            ctaLabel={<Copy id="home.hiw.life.cta" />}
             ctaHref="/login?path=self"
           />
           <HiwTrack
-            label="FOR THE WORLD"
-            heading="A future worth building"
+            label={<Copy id="home.hiw.world.label" />}
+            heading={<Copy id="home.hiw.world.heading" />}
             steps={PLANET_STEPS}
-            closing="Start by naming one part of the future you want. What you get back is a map of who is already building it, and a place to add your own."
-            ctaLabel="EXPLORE THE ATLAS →"
+            closing={<Copy id="home.hiw.world.closing" />}
+            ctaLabel={<Copy id="home.hiw.world.cta" />}
             ctaHref="/explore"
           />
         </div>
@@ -511,7 +495,7 @@ export function MarketingHomePage() {
             onMouseEnter={e => { e.currentTarget.style.color = '#8A5C15' }}
             onMouseLeave={e => { e.currentTarget.style.color = gold }}
           >
-            See all the tools →
+            <Copy id="home.hiw.seeall" />
           </a>
         </div>
       </section>
@@ -538,7 +522,7 @@ export function MarketingHomePage() {
         }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.26em', color: gold, display: 'block', marginBottom: '20px' }}>
-            ALIGN WITH WHAT MATTERS
+            <Copy id="home.align.eyebrow" />
           </span>
           <p style={{
             ...serif,
@@ -549,8 +533,8 @@ export function MarketingHomePage() {
             maxWidth: '640px',
             margin: '0 auto 32px',
           }}>
-            Personal growth and global impact are not separate.<br />
-            They are the same work, at different scales.
+            <Copy id="home.align.line1" /><br />
+            <Copy id="home.align.line2" />
           </p>
           <a
             href="/login"
@@ -566,7 +550,7 @@ export function MarketingHomePage() {
             onMouseEnter={e => { e.currentTarget.style.background = '#A8721A' }}
             onMouseLeave={e => { e.currentTarget.style.background = '#C8922A' }}
           >
-            SEE THE WHOLE PICTURE →
+            <Copy id="home.align.cta" />
           </a>
         </div>
       </section>
@@ -579,13 +563,13 @@ export function MarketingHomePage() {
       }}>
         <div style={{ maxWidth: '720px', margin: '0 auto', textAlign: 'center' }}>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '10px' }}>
-            FROM THE FOUNDER
+            <Copy id="home.founder.eyebrow" />
           </span>
           <h3 style={{ ...serif, fontSize: 'clamp(20px,2.4vw,26px)', fontWeight: 400, color: ink, lineHeight: 1.3, marginBottom: '8px' }}>
-            Work with Nik
+            <Copy id="home.founder.heading" />
           </h3>
           <p style={{ ...body, fontSize: '15px', lineHeight: 1.7, color: inkFaint, maxWidth: '520px', margin: '0 auto 18px' }}>
-            Vision and embodiment coaching for people who are ready to move — not just understand.
+            <Copy id="home.founder.body" />
           </p>
           <a
             href="/work-with-nik"
@@ -601,7 +585,7 @@ export function MarketingHomePage() {
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.12)' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.05)' }}
           >
-            SEE THE WORK →
+            <Copy id="home.founder.cta" />
           </a>
         </div>
       </section>
@@ -618,13 +602,13 @@ export function MarketingHomePage() {
           textAlign: 'center',
         }}>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: gold, display: 'block', marginBottom: '14px' }}>
-            FOR MAKERS
+            <Copy id="home.maker.eyebrow" />
           </span>
           <h3 style={{ ...serif, fontSize: 'clamp(22px,3vw,30px)', fontWeight: 400, color: ink, lineHeight: 1.3, marginBottom: '12px' }}>
-            Coach, facilitator, therapist, organisation?
+            <Copy id="home.maker.heading" />
           </h3>
           <p style={{ ...body, fontSize: '15px', lineHeight: 1.75, color: inkFaint, marginBottom: '24px', maxWidth: '520px', margin: '0 auto 24px' }}>
-            Make your work visible to the people most likely to be served by it.
+            <Copy id="home.maker.body" />
           </p>
           <a
             href="/welcome"
@@ -640,7 +624,7 @@ export function MarketingHomePage() {
             onMouseEnter={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.12)' }}
             onMouseLeave={e => { e.currentTarget.style.background = 'rgba(200,146,42,0.05)' }}
           >
-            SEE THE PATHS →
+            <Copy id="home.maker.cta" />
           </a>
         </div>
       </section>

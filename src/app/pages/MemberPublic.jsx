@@ -183,10 +183,10 @@ export function MemberPublicPage() {
 
   if (loading) {
     return (
-      <div style={{ background: BG, minHeight: '100vh' }}>
+      <div style={{ background: BG, minHeight: '100dvh' }}>
         <Nav activePath="" />
         <div style={{ maxWidth: '760px', margin: '0 auto', padding: '120px 32px',
-          textAlign: 'center', ...body, color: 'rgba(15,21,35,0.45)', fontSize: '15px' }}>
+          textAlign: 'center', ...body, color: 'rgba(15,21,35,0.55)', fontSize: '15px' }}>
           Loading…
         </div>
       </div>
@@ -195,7 +195,7 @@ export function MemberPublicPage() {
 
   if (notFound) {
     return (
-      <div style={{ background: BG, minHeight: '100vh' }}>
+      <div style={{ background: BG, minHeight: '100dvh' }}>
         <Nav activePath="" />
         <div style={{ maxWidth: '560px', margin: '0 auto', padding: '140px 32px', textAlign: 'center' }}>
           <h1 style={{ ...serif, fontSize: '34px', fontWeight: 300, color: DARK, marginBottom: '12px' }}>
@@ -221,7 +221,7 @@ export function MemberPublicPage() {
   const unpublished = isOwner && !member.member_card_public
 
   return (
-    <div style={{ background: BG, minHeight: '100vh' }}>
+    <div style={{ background: BG, minHeight: '100dvh' }}>
       <Nav activePath="" />
 
       <div style={{ maxWidth: '760px', margin: '0 auto', padding: '72px 32px 120px' }}>
@@ -369,7 +369,7 @@ export function MemberPublicPage() {
         {/* Empty-but-published fallback */}
         {!member.public_bio && domains.length === 0 && actors.length === 0
           && spaces.length === 0 && sprints.length === 0 && (
-          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.45)',
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)',
             lineHeight: 1.7, fontStyle: 'normal' }}>
             This member is just getting started.
           </p>

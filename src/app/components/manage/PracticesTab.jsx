@@ -144,7 +144,7 @@ export function PracticesTab({ actorId, toast }) {
 
       {declined.length > 0 && (
         <div>
-          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(15,21,35,0.45)', marginBottom: '10px' }}>Declined</div>
+          <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(15,21,35,0.55)', marginBottom: '10px' }}>Declined</div>
           {declined.map(e => <Row key={e.id} e={e} />)}
         </div>
       )}

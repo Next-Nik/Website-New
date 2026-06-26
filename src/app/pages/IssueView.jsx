@@ -61,7 +61,7 @@ function PracticeCard({ p, accent }) {
           <div style={{ ...body, fontSize: '14px', lineHeight: 1.6 }}>
             {actors.map((a, i) => (
               <span key={a.slug || i}>
-                {i > 0 && <span style={{ color: 'rgba(15,21,35,0.4)' }}>{'  ·  '}</span>}
+                {i > 0 && <span style={{ color: 'rgba(15,21,35,0.55)' }}>{'  ·  '}</span>}
                 {a.slug
                   ? <Link to={`/org/${a.slug}`} style={{ color: gold, textDecoration: 'none' }}>{a.name}</Link>
                   : <span style={{ color: 'rgba(15,21,35,0.72)' }}>{a.name}</span>}
@@ -146,7 +146,7 @@ function RuledOutCard({ p }) {
           </div>
         )
       ) : (
-        <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.5)' }}>Settled. Not open to reconsideration.</div>
+        <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>Settled. Not open to reconsideration.</div>
       )}
     </div>
   )
@@ -183,7 +183,7 @@ export function IssueViewPage() {
   const ruled = view?.ruled_out || []
 
   return (
-    <div style={{ minHeight: '100vh', background: parch }}>
+    <div style={{ minHeight: '100dvh', background: parch }}>
       <Nav />
       <div style={{ maxWidth: '760px', margin: '0 auto', padding: '48px 24px 80px' }}>
         {loading && <p style={{ ...body, color: 'rgba(15,21,35,0.55)' }}>Loading…</p>}
