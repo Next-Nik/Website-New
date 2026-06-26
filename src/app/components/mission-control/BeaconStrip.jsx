@@ -40,6 +40,11 @@ function urlBase64ToUint8Array(base64String) {
   return out
 }
 
+const PUSH_SUPPORTED = typeof window !== 'undefined'
+  && typeof Notification !== 'undefined'
+  && 'serviceWorker' in navigator
+  && 'PushManager' in window
+
 export default function BeaconStrip({ userId }) {
   const navigate = useNavigate()
   const [beacon, setBeacon] = useState(null)
@@ -57,29 +62,31 @@ export default function BeaconStrip({ userId }) {
     return b
   }, [])
 
-  useEffect(() => {
-    let alive = true
-    ;(async () => {
+  const reload = useCallback(async () => {
+    const b = await loadTally()
+    if (!b || !b.rooted) { setReady(true); return }
+    if (userId) {
       try {
-        const b = await loadTally()
-        if (!alive || !b || !b.rooted) return
-        if (userId) {
-          const [parts, bd] = await Promise.all([
-            postJSON('/api/actor-calls', { action: 'my_participations', userId }),
-            postJSON('/api/beacon', { action: 'breakdown', slug: 'founding-nature' }),
-          ])
-          if (!alive) return
-          const treeIds = new Set((bd.challenges || []).map((c) => c.call_id))
-          const runs = (parts.participations || []).filter(
-            (p) => treeIds.has(p.call_id) && p.status === 'active',
-          )
-          setMine(runs)
-        }
-      } catch (_) { /* fail quiet; the strip simply shows the tally */ }
-      finally { if (alive) setReady(true) }
-    })()
-    return () => { alive = false }
+        const [parts, bd] = await Promise.all([
+          postJSON('/api/actor-calls', { action: 'my_participations', userId }),
+          postJSON('/api/beacon', { action: 'breakdown', slug: 'founding-nature' }),
+        ])
+        const treeIds = new Set((bd.challenges || []).map((c) => c.call_id))
+        const runs = (parts.participations || []).filter(
+          (p) => treeIds.has(p.call_id) && p.status === 'active',
+        )
+        setMine(runs)
+      } catch (_) { /* keep prior state */ }
+    }
+    setReady(true)
   }, [userId, loadTally])
+
+  useEffect(() => {
+    reload()
+    const onVis = () => { if (document.visibilityState === 'visible') reload() }
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
+  }, [reload])
 
   const openCount = mine.reduce((n, r) => {
     const strands = r.strands || []
@@ -117,7 +124,7 @@ export default function BeaconStrip({ userId }) {
       })))
       await loadTally()
       try {
-        if (typeof Notification !== 'undefined' && Notification.permission === 'default'
+        if (PUSH_SUPPORTED && Notification.permission === 'default'
             && !localStorage.getItem('beaconPushAsked')) {
           setAskPush(true)
         }
@@ -127,15 +134,15 @@ export default function BeaconStrip({ userId }) {
 
   const subscribePush = useCallback(async () => {
     try {
-      if (typeof Notification === 'undefined' || !('serviceWorker' in navigator) || !('PushManager' in window)) {
-        setAskPush(false); return
-      }
+      if (!PUSH_SUPPORTED) { setAskPush(false); return }
+      // Check the server can actually send before asking for permission, so a
+      // missing-key run never spends the user's one permission grant.
+      const { publicKey } = await postJSON('/api/push-subscribe', { action: 'get_key' })
+      if (!publicKey) { try { localStorage.setItem('beaconPushAsked', '1') } catch (_) {}; setAskPush(false); return }
       const perm = await Notification.requestPermission()
       try { localStorage.setItem('beaconPushAsked', '1') } catch (_) {}
       if (perm !== 'granted') { setAskPush(false); return }
       const reg = await navigator.serviceWorker.ready
-      const { publicKey } = await postJSON('/api/push-subscribe', { action: 'get_key' })
-      if (!publicKey) { setAskPush(false); return }
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(publicKey),
@@ -163,6 +170,7 @@ export default function BeaconStrip({ userId }) {
     const next = !open
     setOpen(next)
     setPanelHeight(next ? measure() : 0, true)
+    if (next) reload()
   }
   const onGripDown = (e) => {
     drag.current = { on: true, startY: e.clientY, startH: parseFloat(panelRef.current?.style.maxHeight || '0') || 0, moved: 0, max: measure() }
@@ -246,7 +254,7 @@ export default function BeaconStrip({ userId }) {
             {newcomer ? (
               <div className="bcn-invite">
                 <p className="bcn-lead">The NextUs Nature challenge is the constellation made by an invitation to organisations working for the living world, and the people who show up alongside them. Every spark is one of those people, showing up, and taking action. The beacon is all of our actions, made visible, together. We&rsquo;re mighty together.</p>
-                <button className="bcn-go" onClick={() => navigate('/challenges/browse')}>Take part</button>
+                <button className="bcn-go" onClick={() => navigate(beacon.root_slug ? `/stretch/c/${beacon.root_slug}` : '/challenges/browse')}>Take part</button>
               </div>
             ) : (
               <>

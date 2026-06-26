@@ -56,6 +56,13 @@ module.exports = async (req, res) => {
 
   const base = publicShape(beacon)
 
+  // Carry the founding challenge's slug so surfaces can link straight to it.
+  if (beacon.root_call_id) {
+    const { data: rc } = await supabase
+      .from('actor_calls').select('slug, title').eq('id', beacon.root_call_id).maybeSingle()
+    if (rc) { base.root_slug = rc.slug; base.root_title = rc.title }
+  }
+
   // Pending (not yet rooted): everything is zero, honestly.
   if (!beacon.root_call_id) {
     if (action === 'breakdown') return res.json({ ...base, challenges: [] })
