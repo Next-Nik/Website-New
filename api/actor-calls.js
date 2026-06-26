@@ -133,6 +133,7 @@ module.exports = async (req, res) => {
         id, title, tagline, slug, type, scale, domain,
         horizon_goal_text, the_move, cadence, cadence_note,
         duration_days, measure, mechanism, protocol,
+        ask_quantity, ask_deadline, ask_fulfilled, ask_details,
         taken_on_count, active_count, completed_count,
         visibility, lifecycle_state, closed_at, source, created_at, updated_at,
         actor_id, user_id, parent_call_id, author_statement, body_long, video_url, cover_image_url, intensity_level,
@@ -214,6 +215,9 @@ module.exports = async (req, res) => {
       video_url: rest.video_url || null,
       cover_image_url: rest.cover_image_url || null,
       intensity_level: rest.intensity_level || null,
+      ask_quantity: rest.ask_quantity || null,
+      ask_deadline: rest.ask_deadline || null,
+      ask_details: rest.ask_details || null,
       protocol,
       visibility: 'draft',
       source: 'self',
@@ -244,7 +248,7 @@ module.exports = async (req, res) => {
       }
     }
     const safe = {}
-    const editable = ['title','tagline','type','scale','domain','horizon_goal_text','the_move','cadence','cadence_note','duration_days','measure','mechanism','protocol','ask_quantity','ask_deadline','parent_call_id','author_statement','body_long','video_url','cover_image_url','intensity_level']
+    const editable = ['title','tagline','type','scale','domain','horizon_goal_text','the_move','cadence','cadence_note','duration_days','measure','mechanism','protocol','ask_quantity','ask_deadline','ask_details','parent_call_id','author_statement','body_long','video_url','cover_image_url','intensity_level']
     editable.forEach(k => { if (k in patch) safe[k] = patch[k] })
     safe.updated_at = new Date().toISOString()
     const { data, error } = await supabase.from('actor_calls').update(safe).eq('id', call_id).select('*').single()
@@ -630,7 +634,7 @@ module.exports = async (req, res) => {
 
     const { data: call } = await supabase
       .from('actor_calls')
-      .select('id, type, ask_quantity, ask_fulfilled, visibility, lifecycle_state')
+      .select('id, type, ask_quantity, visibility, lifecycle_state')
       .eq('id', call_id)
       .eq('type', 'ask')
       .in('visibility', ['link_only', 'community'])
@@ -646,18 +650,22 @@ module.exports = async (req, res) => {
       .select('*').eq('call_id', call_id).eq('user_id', userId).maybeSingle()
     if (existing) return res.json({ participant: existing, already_offered: true })
 
-    // Capacity check — if ask_quantity set, check headroom
+    // Capacity — count everyone who has answered (active or complete); a claimed
+    // spot is held until withdrawn.
     if (call.ask_quantity) {
-      const active = (await supabase
+      const taken = (await supabase
         .from('actor_call_participants')
         .select('id', { count: 'exact' })
         .eq('call_id', call_id)
-        .eq('status', 'active')).count || 0
-      if (active >= call.ask_quantity) {
+        .neq('status', 'withdrawn')).count || 0
+      if (taken >= call.ask_quantity) {
         return res.status(409).json({ error: 'This ask has reached capacity. Check back if space opens.' })
       }
     }
 
+    // Accepting an ask is the commitment, not the delivery. The person steps
+    // forward; no spark yet. They mark it complete when the thing is actually
+    // done (action 'complete_ask'), and the spark lands then.
     const { data: participant, error } = await supabase
       .from('actor_call_participants')
       .insert({ call_id, user_id: userId, status: 'active', reflection: note || null })
@@ -665,12 +673,49 @@ module.exports = async (req, res) => {
     if (error) return res.status(500).json({ error: error.message })
 
     await refreshCounts(call_id)
-    // Update ask_fulfilled count
+    return res.json({ participant })
+  }
+
+  // ── complete_ask ────────────────────────────────────────────────────────────
+  // The second click on an ask: the thing is actually done. Flips the run to
+  // complete, lands the spark (logs the ask's once-strand so the beacon counts
+  // it), and moves the delivered count. Must have accepted first.
+  if (action === 'complete_ask') {
+    if (!userId) return res.status(401).json({ error: 'Auth required' })
+    const { call_id, note } = body
+    if (!call_id) return res.status(400).json({ error: 'call_id required' })
+
+    const { data: call } = await supabase
+      .from('actor_calls')
+      .select('id, type, ask_fulfilled, protocol')
+      .eq('id', call_id).eq('type', 'ask').maybeSingle()
+    if (!call) return res.status(404).json({ error: 'Ask not found' })
+
+    const { data: p } = await supabase.from('actor_call_participants')
+      .select('id, status').eq('call_id', call_id).eq('user_id', userId).maybeSingle()
+    if (!p || p.status === 'withdrawn') return res.status(409).json({ error: 'Accept the ask first.' })
+    if (p.status === 'complete') return res.json({ participant: p, already_complete: true })
+
+    const nowIso = new Date().toISOString()
+    await supabase.from('actor_call_participants')
+      .update({ status: 'complete', completed_at: nowIso, ...(note ? { reflection: note } : {}) })
+      .eq('id', p.id)
+
+    // Land the spark: log the ask's strand (the once-strand carrying the need).
+    const strand = Array.isArray(call.protocol) ? call.protocol[0] : null
+    if (strand && strand.id) {
+      await supabase.from('actor_call_strand_log').upsert(
+        { participant_id: p.id, strand_id: strand.id, log_date: nowIso.slice(0, 10), done: true },
+        { onConflict: 'participant_id,strand_id,log_date' }
+      )
+    }
+
+    await refreshCounts(call_id)
     await supabase.from('actor_calls')
-      .update({ ask_fulfilled: (call.ask_fulfilled || 0) + 1, updated_at: new Date().toISOString() })
+      .update({ ask_fulfilled: (call.ask_fulfilled || 0) + 1, updated_at: nowIso })
       .eq('id', call_id)
 
-    return res.json({ participant })
+    return res.json({ participant: { id: p.id, status: 'complete' } })
   }
 
   // ── unfulfill ─────────────────────────────────────────────────────────────

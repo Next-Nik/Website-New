@@ -580,6 +580,11 @@ export default function ChallengeAuthor() {
               )
             })()}
 
+            <div style={{ ...body, fontSize: '14px', color: tokens.ghost, paddingTop: '2px' }}>
+              Need to gather help or things instead of a daily practice?{' '}
+              <a href="/asks/new" style={{ color: tokens.gold, textDecoration: 'underline' }}>Make an ask</a> instead.
+            </div>
+
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', paddingTop: '4px' }}>
               <Btn onClick={() => createAndPublish('community')} disabled={saving}>{saving ? 'Publishing…' : 'Publish to community'}</Btn>
               <Btn variant="ghost" onClick={() => createAndPublish('link_only')} disabled={saving}>Just a link</Btn>

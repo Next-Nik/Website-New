@@ -80,6 +80,7 @@ import { DomainPage } from './app/pages/Domain'
 import { ConstellationPage } from './app/pages/ConstellationPage'
 import ConstellationRecord from './app/pages/ConstellationRecord'
 import ConstellationLedger from './app/pages/ConstellationLedger'
+import AskAuthor from './app/pages/AskAuthor'
 import { IssueViewPage } from './app/pages/IssueView'
 import { MemberPublicPage } from './app/pages/MemberPublic'
 import { FocusProfile } from './app/pages/FocusProfile'
@@ -340,6 +341,7 @@ function AppInner() {
         <Route path="/add"                          element={<AddPage />} />
         <Route path="/member/:slug"                 element={<MemberPublicPage />} />
         <Route path="/domain/:slug"                 element={<DomainPage />} />
+        <Route path="/asks/new"                    element={<AskAuthor />} />
         <Route path="/constellation/record"         element={<ConstellationRecord />} />
         <Route path="/constellation/ledger"         element={<ConstellationLedger />} />
         <Route path="/constellation/:domain"        element={<ConstellationPage />} />

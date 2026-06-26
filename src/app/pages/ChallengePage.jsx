@@ -386,7 +386,7 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
   const [done,    setDone]    = useState(false)
 
   const spotsLeft = call.ask_quantity
-    ? call.ask_quantity - (call.active_count || 0)
+    ? call.ask_quantity - ((call.active_count || 0) + (call.completed_count || 0))
     : null
 
   async function fulfill() {
@@ -411,8 +411,14 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
         {done ? (
           <div>
             <p style={{ ...body, fontSize: '1.125rem', ...muted, lineHeight: 1.7, marginBottom: '20px' }}>
-              Your offer has been received. The author will be in touch.
+              You&rsquo;re in. When it&rsquo;s done, come back and mark it built.
             </p>
+            {call.ask_details && (
+              <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: hair, borderRadius: '10px', marginBottom: '18px' }}>
+                <Eyebrow style={{ marginBottom: '6px' }}>How to complete this</Eyebrow>
+                <div style={{ ...body, fontSize: '1rem', ...muted, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{call.ask_details}</div>
+              </div>
+            )}
             <Btn onClick={onClose}>Done</Btn>
           </div>
         ) : (
@@ -453,7 +459,7 @@ function AskBody({ call }) {
     ? new Date(call.ask_deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     : null
   const spotsTotal = call.ask_quantity || null
-  const spotsLeft  = spotsTotal ? Math.max(0, spotsTotal - (call.active_count || 0)) : null
+  const spotsLeft  = spotsTotal ? Math.max(0, spotsTotal - ((call.active_count || 0) + (call.completed_count || 0))) : null
   const isFull     = spotsLeft !== null && spotsLeft === 0
 
   return (
@@ -629,6 +635,8 @@ export function ChallengePage() {
   const [showFulfill,   setShowFulfill]   = useState(false)
   const [showFlag,      setShowFlag]      = useState(false)
   const [alreadyJoined, setAlreadyJoined] = useState(false)
+  const [myStatus,      setMyStatus]      = useState('none')  // none | active | complete
+  const [busyComplete,  setBusyComplete]  = useState(false)
   // Co-sign display (Phase E) — count loaded with the call
   const [cosignerCount, setCosignerCount] = useState(0)
   // Ask to partner (actor owners only)
@@ -662,6 +670,41 @@ export function ChallengePage() {
       .then(({ data }) => { if (live) { const a = data || []; setOwnedActors(a); if (a.length) setAskSel(a[0].id) } })
     return () => { live = false }
   }, [user])
+
+  useEffect(() => {
+    if (!user || !call?.id) return
+    let live = true
+    fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'get_participation', userId: user.id, call_id: call.id }) })
+      .then(r => r.json())
+      .then(d => {
+        if (!live) return
+        const st = (d.participant && d.participant.status) || 'none'
+        setMyStatus(st)
+        if (st === 'active' || st === 'complete') setAlreadyJoined(true)
+      })
+      .catch(() => {})
+    return () => { live = false }
+  }, [user, call?.id])
+
+  async function completeAsk() {
+    if (!user || !call) return
+    setBusyComplete(true)
+    try {
+      const r = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'complete_ask', userId: user.id, call_id: call.id }) })
+      const d = await r.json()
+      if (d.participant || d.already_complete) {
+        setMyStatus('complete')
+        setCall(c => c ? { ...c,
+          completed_count: (c.completed_count || 0) + 1,
+          active_count: Math.max(0, (c.active_count || 0) - 1),
+          ask_fulfilled: (c.ask_fulfilled || 0) + 1,
+        } : c)
+      }
+    } catch {}
+    setBusyComplete(false)
+  }
 
   async function askToPartner() {
     if (!call || !askSel) return
@@ -712,7 +755,7 @@ export function ChallengePage() {
       )}
       {showFulfill && user && (
         <FulfillModal call={call} userId={user.id} onClose={() => setShowFulfill(false)}
-          onFulfilled={() => { setAlreadyJoined(true); setShowFulfill(false); setCall(c => c ? { ...c, active_count: (c.active_count || 0) + 1 } : c) }} />
+          onFulfilled={() => { setAlreadyJoined(true); setMyStatus('active'); setShowFulfill(false); setCall(c => c ? { ...c, active_count: (c.active_count || 0) + 1 } : c) }} />
       )}
       {showFlag && (
         <FlagModal callId={call.id} userId={user?.id} isAsk={isAsk} onClose={() => setShowFlag(false)} />
@@ -774,7 +817,7 @@ export function ChallengePage() {
         {(call.taken_on_count > 0 || call.active_count > 0) && (
           <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: tokens.gold, marginBottom: '8px' }}>
             {isAsk
-              ? `${call.active_count || 0} ${(call.active_count || 0) === 1 ? 'person has' : 'people have'} offered to help`
+              ? `${(call.active_count || 0) + (call.completed_count || 0)} ${((call.active_count || 0) + (call.completed_count || 0)) === 1 ? 'person has' : 'people have'} offered to help${(call.completed_count || 0) > 0 ? ` · ${call.completed_count} built` : ''}`
               : `${call.taken_on_count.toLocaleString()} ${call.taken_on_count === 1 ? 'person has' : 'people have'} taken this on${call.active_count > 0 ? ` — ${call.active_count} active` : ''}`
             }
           </div>
@@ -813,14 +856,50 @@ export function ChallengePage() {
         )}
         {alreadyJoined && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap', marginBottom: '8px' }}>
-            <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#2A8C4F' }}>
-              {isAsk ? '✓ Offer sent' : '✓ You\'re in'}
-            </span>
-            {!isAsk && (
-              <a href="/challenges" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
-                Track it →
-              </a>
+            {isAsk ? (
+              myStatus === 'complete' ? (
+                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#2A8C4F' }}>
+                  ✓ You built it. Thank you.
+                </span>
+              ) : (
+                <>
+                  <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#2A8C4F' }}>
+                    ✓ Accepted
+                  </span>
+                  <Btn onClick={completeAsk} disabled={busyComplete} style={{ marginBottom: 0 }}>
+                    {busyComplete ? 'Marking…' : 'Mark it built →'}
+                  </Btn>
+                </>
+              )
+            ) : (
+              <>
+                <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#2A8C4F' }}>
+                  ✓ You're in
+                </span>
+                <a href="/challenges" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
+                  Track it →
+                </a>
+              </>
             )}
+          </div>
+        )}
+
+        {isAsk && call.ask_details && (myStatus === 'active' || myStatus === 'complete' || isAuthor) && (
+          <div style={{ padding: '16px 18px', background: 'rgba(200,146,42,0.05)', border: `1px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '12px' }}>
+            <Eyebrow>How to complete this</Eyebrow>
+            <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.6, whiteSpace: 'pre-wrap', margin: 0 }}>
+              {call.ask_details}
+            </div>
+            {isAuthor && myStatus === 'none' && (
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: tokens.ghost, marginTop: '8px' }}>
+                Only shown to people who have accepted.
+              </div>
+            )}
+          </div>
+        )}
+        {isAsk && call.ask_details && myStatus === 'none' && !isAuthor && (
+          <div style={{ ...body, fontSize: '14px', color: tokens.ghost, marginBottom: '12px' }}>
+            Accept to see how to complete this.
           </div>
         )}
 
