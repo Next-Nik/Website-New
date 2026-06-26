@@ -33,16 +33,16 @@ import WinTheDay from './WinTheDay'
 import Thresholds from './blocks/Thresholds'
 import Act from './blocks/Act'
 import IAmPractice from '../../pages/IAmPractice'
+import IAmSpoken from '../../pages/IAmSpoken'
 import SentenceCompletion from '../../pages/SentenceCompletion'
 import MorningPages from '../../pages/MorningPages'
 
 // Full writing tools that render inline, in embedded mode.
-const PAGE_COMPONENTS = { IAmPractice, SentenceCompletion, MorningPages }
+const PAGE_COMPONENTS = { IAmPractice, IAmSpoken, SentenceCompletion, MorningPages }
 
 // Where a not-yet-extracted beat still lives, so we can offer its home
 // without trapping the walk.
 const WELD_HOME = {
-  i_am_spoken: { label: 'Horizon State', route: '/tools/horizon-state' },
   journal:     { label: 'your journal',  route: '/journal' },
   audio:       { label: 'Horizon State', route: '/tools/horizon-state' },
   embark:      { label: 'Horizon State', route: '/tools/horizon-state' },

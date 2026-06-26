@@ -26,9 +26,9 @@ const ENTRANCES = [
 
 const MODULES = [
   { label: 'Horizon State',      sub: 'The full protocol — arrive, listen, embark.', route: '/tools/horizon-state' },
-  { label: 'Horizon Practice',   sub: 'The morning sequence.',                        route: '/tools/horizon-practice' },
-  { label: 'Consistency challenge', sub: 'Your cadence, streak, and showing up.',      route: '/tools/horizon-practice' },
+  { label: 'Horizon Practice',   sub: 'The morning sequence, and the cadence you keep.', route: '/tools/horizon-practice' },
   { label: 'I Am',               sub: 'Write your statements, deeper each pass.',      route: '/tools/i-am' },
+  { label: 'I Am · spoken',      sub: 'Hear your own voice. Say it back, truer each pass.', route: '/tools/i-am-spoken' },
   { label: 'Sentence completion',    sub: 'Finish the sentence, fast.',               route: '/tools/sentence-completion' },
   { label: 'Open pages',      sub: 'Clear the channel.',                           route: '/tools/morning-pages' },
   { label: 'Anchor breath',      sub: 'Chest, belly, sacrum.',                        route: '/tools/anchor-breath' },

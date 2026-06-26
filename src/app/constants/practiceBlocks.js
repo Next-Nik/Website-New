@@ -42,10 +42,7 @@ export const BLOCKS = {
   audio_calibration: { id: 'audio_calibration', label: 'Audio · Calibration', region: 'meat', order: 42, status: 'ready', component: 'FoundationAudio', phase: 'calibration' },
   audio_embodiment:  { id: 'audio_embodiment',  label: 'Audio · Embodiment',  region: 'meat', order: 44, status: 'ready', component: 'FoundationAudio', phase: 'embodiment' },
   i_am:         { id: 'i_am',         label: 'I Am',                region: 'meat',  order: 50,  status: 'page', component: 'IAmPractice', route: '/tools/i-am' },
-  // i_am_spoken retired — the spoken I Am lives inside Horizon State's
-  // Calibration audio, and a standalone voiced tool isn't built yet. The
-  // old 'weld' placeholder rendered as a dead pass-through, so it's gone.
-  // resolve() drops it silently from any saved shape that still lists it.
+  i_am_spoken:  { id: 'i_am_spoken',  label: 'I Am · spoken',        region: 'meat',  order: 51,  status: 'page', component: 'IAmSpoken', route: '/tools/i-am-spoken' },
   sentence:     { id: 'sentence',     label: 'Sentence completion',  region: 'meat',  order: 60,  status: 'page', component: 'SentenceCompletion', route: '/tools/sentence-completion' },
   morning_pages:{ id: 'morning_pages',label: 'Open pages',        region: 'meat',  order: 70,  status: 'page', component: 'MorningPages', route: '/tools/morning-pages' },
   journal:      { id: 'journal',      label: 'Journal · free write', region: 'meat',  order: 75,  status: 'link', route: '/journal' },

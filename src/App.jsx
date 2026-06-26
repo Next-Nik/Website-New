@@ -118,6 +118,7 @@ import { NextStepsPage }                           from './tools/nextsteps/NextS
 import JournalPage                                 from './app/pages/Journal'
 import SentenceCompletion                          from './app/pages/SentenceCompletion'
 import IAmPractice                                 from './app/pages/IAmPractice'
+import IAmSpoken                                    from './app/pages/IAmSpoken'
 import MorningPages                                 from './app/pages/MorningPages'
 import DailyEntrances                               from './app/pages/DailyEntrances'
 import Training                                     from './app/pages/Training'
@@ -301,6 +302,7 @@ function AppInner() {
         <Route path="/journal"                   element={<RequirePersonal><JournalPage /></RequirePersonal>} />
         <Route path="/tools/sentence-completion" element={<SentenceCompletion />} />
         <Route path="/tools/i-am"                element={<IAmPractice />} />
+        <Route path="/tools/i-am-spoken"         element={<IAmSpoken />} />
         <Route path="/tools/morning-pages"       element={<MorningPages />} />
         <Route path="/daily"                     element={<RequirePersonal><DailyEntrances /></RequirePersonal>} />
         <Route path="/tools/training"            element={<Training />} />
