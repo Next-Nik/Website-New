@@ -28,7 +28,7 @@ const MODULES = [
   { label: 'Horizon State',      sub: 'The full protocol — arrive, listen, embark.', route: '/tools/horizon-state' },
   { label: 'Horizon Practice',   sub: 'The morning sequence.',                        route: '/tools/horizon-practice' },
   { label: 'Consistency challenge', sub: 'Your cadence, streak, and showing up.',      route: '/tools/horizon-practice' },
-  { label: 'I Am',               sub: 'Speak your statements.',                       route: '/tools/i-am' },
+  { label: 'I Am',               sub: 'Write your statements, deeper each pass.',      route: '/tools/i-am' },
   { label: 'Sentence completion',    sub: 'Finish the sentence, fast.',               route: '/tools/sentence-completion' },
   { label: 'Open pages',      sub: 'Clear the channel.',                           route: '/tools/morning-pages' },
   { label: 'Anchor breath',      sub: 'Chest, belly, sacrum.',                        route: '/tools/anchor-breath' },
@@ -144,19 +144,19 @@ export default function DailyEntrances() {
         </div>
       )
     }
+    // The walk is its own full-screen room. The runner owns the whole
+    // viewport (fixed, above the nav) and carries its own exit, so the
+    // global nav never sits on top of the header.
     return (
-      <div style={{ minHeight: '100dvh', background: '#FAFAF7' }}>
-        <Nav />
-        <PracticeRunner
-          blocks={resolve(shapeFor(active))}
-          title={active.charAt(0).toUpperCase() + active.slice(1)}
-          entrance={active}
-          userId={user?.id}
-          data={{ horizonSelfStatement, userId: user?.id }}
-          onExit={() => setActive(null)}
-          onNavigate={(route) => navigate(route)}
-        />
-      </div>
+      <PracticeRunner
+        blocks={resolve(shapeFor(active))}
+        title={active.charAt(0).toUpperCase() + active.slice(1)}
+        entrance={active}
+        userId={user?.id}
+        data={{ horizonSelfStatement, userId: user?.id }}
+        onExit={() => setActive(null)}
+        onNavigate={(route) => navigate(route)}
+      />
     )
   }
 

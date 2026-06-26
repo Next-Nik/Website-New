@@ -13,7 +13,7 @@
 // Developmental-rail: private by default, never public.
 // ─────────────────────────────────────────────────────────────
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, forwardRef, useImperativeHandle } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
@@ -46,7 +46,7 @@ function anchorLine(s) {
   return (m ? m[0] : t).replace(/[.!?]+\s*$/, '').trim()
 }
 
-export default function IAmPractice({ embedded = false } = {}) {
+function IAmPractice({ embedded = false } = {}, ref) {
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
   const [params] = useSearchParams()
@@ -129,6 +129,10 @@ export default function IAmPractice({ embedded = false } = {}) {
     setWritten('')
     flashSaved()
   }
+
+  // The runner's Continue calls flush() before advancing, so a walk
+  // never drops the reps you just wrote. No-op when empty.
+  useImperativeHandle(ref, () => ({ flush: () => handleSave() }), [written, saving, user, domainKey])
 
   function goEdit() {
     const back = `/tools/i-am?domain=${domainKey}`
@@ -281,6 +285,8 @@ export default function IAmPractice({ embedded = false } = {}) {
     </div>
   )
 }
+
+export default forwardRef(IAmPractice)
 
 function EmptyState({ onWrite }) {
   return (

@@ -13,7 +13,7 @@
 // stream. Developmental-rail work: private by default, never public.
 // ─────────────────────────────────────────────────────────────
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, forwardRef, useImperativeHandle } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
@@ -44,7 +44,7 @@ const MODES = [
   { key: 'map',    label: 'Follow my Map' },
 ]
 
-export default function SentenceCompletion({ embedded = false } = {}) {
+function SentenceCompletion({ embedded = false } = {}, ref) {
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
@@ -244,6 +244,13 @@ export default function SentenceCompletion({ embedded = false } = {}) {
     setTimeout(() => setSavedFlash(false), 2200)
   }
 
+  // The runner's Continue calls flush() before advancing. Save whatever's
+  // been written — the session endings, the reflection, or both. Each call
+  // no-ops when its field is empty, so nothing is ever lost or duplicated.
+  useImperativeHandle(ref, () => ({
+    flush: async () => { await handleSaveSession(); await handleSaveReflection() },
+  }), [endings, reflectionText, saving, user, activeWeek, mode])
+
   // ─────────────────────────────────────────────────────────────
   return (
     <div style={ embedded
@@ -377,6 +384,8 @@ export default function SentenceCompletion({ embedded = false } = {}) {
     </div>
   )
 }
+
+export default forwardRef(SentenceCompletion)
 
 // ─── Pieces ───────────────────────────────────────────────────
 

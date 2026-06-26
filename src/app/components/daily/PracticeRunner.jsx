@@ -93,6 +93,25 @@ export default function PracticeRunner({
 
   const scrollRef = useRef(null)
 
+  // Imperative handle on the embedded writing tool for the current beat.
+  // The runner's Continue calls flush() before moving, so the obvious
+  // forward button always saves — no lost pages.
+  const pageRef = useRef(null)
+
+  // Visual-viewport height, so the room shrinks to the space the soft
+  // keyboard leaves and the nav rail stays above it (iOS doesn't resize
+  // a fixed 100dvh container for the keyboard on its own).
+  const [vh, setVh] = useState(null)
+  useEffect(() => {
+    const vv = typeof window !== 'undefined' ? window.visualViewport : null
+    if (!vv) return
+    const sync = () => setVh(vv.height)
+    sync()
+    vv.addEventListener('resize', sync)
+    vv.addEventListener('scroll', sync)
+    return () => { vv.removeEventListener('resize', sync); vv.removeEventListener('scroll', sync) }
+  }, [])
+
   // ── Load / resume ──────────────────────────────────────────
   useEffect(() => {
     let alive = true
@@ -161,18 +180,33 @@ export default function PracticeRunner({
   const block = frozen[i]
   const isLast = i >= frozen.length - 1
 
-  const next = () => {
+  // Save the current writing beat before leaving it, so Continue / Back /
+  // a dot tap / Save-and-close never drop the page you were on.
+  async function flushPage() {
+    if (block?.status === 'page' && pageRef.current?.flush) {
+      try { await pageRef.current.flush() } catch { /* keep moving */ }
+    }
+  }
+
+  const next = async () => {
+    await flushPage()
     if (isLast) { persist(i, { completed: true }); onExit(); return }
     const n = i + 1
     setI(n); persist(n)
   }
-  const back = () => {
+  const back = async () => {
     if (i <= 0) return
+    await flushPage()
     const n = i - 1
     setI(n); persist(n)
   }
-  const exitNow = () => { persist(i); onExit() }
-  const openRoom = (route) => { persist(i); onNavigate(route) }
+  const jumpTo = async (n) => {
+    if (n === i) return
+    await flushPage()
+    setI(n); persist(n)
+  }
+  const exitNow = async () => { await flushPage(); persist(i); onExit() }
+  const openRoom = async (route) => { await flushPage(); persist(i); onNavigate(route) }
 
   const isPage = block.status === 'page'
   const isPassThrough = block.status === 'link' || block.status === 'weld' || block.status === 'new'
@@ -240,7 +274,7 @@ export default function PracticeRunner({
             <p style={{ ...serif, fontWeight: 300, fontSize: 'clamp(22px,3.4vw,28px)', color: tokens.dark, textAlign: 'center', margin: '0 0 20px' }}>
               {block.label}
             </p>
-            <Cmp embedded />
+            <Cmp ref={pageRef} embedded />
           </div>
         )
       }
@@ -263,25 +297,33 @@ export default function PracticeRunner({
   }
 
   return (
-    <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
-      {/* header — progress + exit */}
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0,
+      height: vh ? `${vh}px` : '100dvh',
+      zIndex: 1100, background: tokens.bg,
+      display: 'flex', flexDirection: 'column', overflow: 'hidden',
+    }}>
+      {/* header — progress + exit. Padded clear of the status bar so the
+          title and dots never tuck under anything. */}
       <div style={{
+        flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '18px 20px', maxWidth: '900px', margin: '0 auto', width: '100%', boxSizing: 'border-box',
+        padding: 'max(16px, env(safe-area-inset-top)) 20px 12px',
+        maxWidth: '900px', margin: '0 auto', width: '100%', boxSizing: 'border-box',
       }}>
         <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.20em', textTransform: 'uppercase', color: tokens.gold }}>
           {title} · {i + 1} / {frozen.length}
         </span>
         <button onClick={exitNow} style={{
           ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
-          background: 'transparent', border: 'none', color: tokens.ghost, cursor: 'pointer',
-        }}>Save and close ✕</button>
+          background: 'transparent', border: 'none', color: tokens.gold, cursor: 'pointer', padding: '4px 0',
+        }}>Save &amp; close ✕</button>
       </div>
 
       {/* progress rail — tap a dot to move to that beat */}
-      <div style={{ display: 'flex', gap: '6px', justifyContent: 'center', padding: '0 20px 12px', flexWrap: 'wrap' }}>
+      <div style={{ flexShrink: 0, display: 'flex', gap: '6px', justifyContent: 'center', padding: '0 20px 12px', flexWrap: 'wrap' }}>
         {frozen.map((_, n) => (
-          <button key={n} onClick={() => { setI(n); persist(n) }} aria-label={`Beat ${n + 1}`} style={{
+          <button key={n} onClick={() => jumpTo(n)} aria-label={`Beat ${n + 1}`} style={{
             width: n === i ? '22px' : '7px', height: '7px', borderRadius: '4px', border: 'none', padding: 0,
             background: n < i ? tokens.goldChrome : n === i ? tokens.gold : tokens.goldFaint,
             transition: 'all 0.4s ease', cursor: 'pointer',
@@ -289,35 +331,37 @@ export default function PracticeRunner({
         ))}
       </div>
 
-      {/* the beat */}
+      {/* the beat — scrolls; minHeight:0 lets it shrink so the rail below
+          always stays in view, even with the keyboard up */}
       <div ref={scrollRef} style={{
-        flex: 1, display: 'flex',
+        flex: 1, minHeight: 0, display: 'flex',
         alignItems: isPage ? 'flex-start' : 'center',
         justifyContent: 'center',
-        overflowY: 'auto',
+        overflowY: 'auto', WebkitOverflowScrolling: 'touch',
         padding: isPage ? '14px 20px 24px' : '24px 20px 24px',
       }}>
         <div style={{ width: '100%' }}>{renderBlock()}</div>
       </div>
 
-      {/* the one nav rail · Back and Forward on EVERY beat, so the walk
-          is never a trap. On writing tools and pass-throughs the Forward
-          is the solid primary (the beat has no commit of its own). On the
-          compact beats, the block owns its own primary action, so the
-          rail's Forward is a quiet "carry on" that always lets you move. */}
+      {/* the one nav rail · Back and Forward on EVERY beat, so the walk is
+          never a trap. Both read as real buttons now, and the rail rides
+          above the keyboard. On writing tools and pass-throughs Forward is
+          the solid primary (and it saves the page first). On compact beats
+          the block owns its commit, so Forward is a clear "carry on". */}
       <div style={{
+        flexShrink: 0,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        gap: '12px', padding: '14px 20px calc(18px + env(safe-area-inset-bottom))',
+        gap: '12px', padding: '14px 20px calc(16px + env(safe-area-inset-bottom))',
         maxWidth: '720px', margin: '0 auto', width: '100%', boxSizing: 'border-box',
-        borderTop: `1px solid ${tokens.goldFaint}`,
+        borderTop: `1px solid ${tokens.goldFaint}`, background: tokens.bg,
       }}>
         {i > 0 ? (
           <button
             onClick={back}
             style={{
               ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
-              background: 'transparent', border: 'none', cursor: 'pointer',
-              color: tokens.ghost, padding: '8px 4px',
+              background: 'transparent', border: `1px solid ${tokens.goldChrome}`, cursor: 'pointer',
+              color: tokens.gold, borderRadius: '40px', padding: '10px 22px',
             }}
           >← Back</button>
         ) : <span />}
@@ -329,7 +373,7 @@ export default function PracticeRunner({
             onClick={next}
             style={{
               ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
-              background: 'transparent', border: `1px solid ${tokens.goldFaint}`, cursor: 'pointer',
+              background: 'transparent', border: `1px solid ${tokens.goldChrome}`, cursor: 'pointer',
               color: tokens.gold, borderRadius: '40px', padding: '10px 22px',
             }}
           >{isLast ? 'Done →' : 'Carry on →'}</button>

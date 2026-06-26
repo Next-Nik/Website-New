@@ -9,7 +9,7 @@
 // 'morning_pages'. Developmental-rail: private by default.
 // ─────────────────────────────────────────────────────────────
 
-import { useState } from 'react'
+import { useState, forwardRef, useImperativeHandle } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
@@ -30,13 +30,17 @@ const tokens = {
   card:      '#FFFFFF',
 }
 
-export default function MorningPages({ embedded = false } = {}) {
+function MorningPages({ embedded = false } = {}, ref) {
   const { user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
 
   const [written, setWritten]   = useState('')
   const [saving, setSaving]     = useState(false)
   const [savedFlash, setSavedFlash] = useState(false)
+
+  // The runner's Continue calls flush() before advancing, so a walk
+  // never drops the pages. No-op when empty or already saving.
+  useImperativeHandle(ref, () => ({ flush: () => handleSave() }), [written, saving, user])
 
   if (!authLoading && !user) { navigate('/login'); return null }
 
@@ -145,3 +149,5 @@ export default function MorningPages({ embedded = false } = {}) {
     </div>
   )
 }
+
+export default forwardRef(MorningPages)
