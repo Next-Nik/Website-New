@@ -332,6 +332,8 @@ export function NextUJourneyPage() {
   const [streak, setStreak]         = useState(null)
   const [sprintRows, setSprintRows] = useState(null)  // self-scale sessions for ch5
   const [loading, setLoading]       = useState(true)
+  const [loadError, setLoadError]   = useState(false)
+  const [reloadTick, setReloadTick] = useState(0)
   const [vaultOpen, setVaultOpen]   = useState({})   // { map: bool, iam: bool, horizon: bool, stretch: bool }
   const [invite, setInvite]         = useState(null) // chapter number or null
 
@@ -339,9 +341,18 @@ export function NextUJourneyPage() {
     if (authLoading) return
     if (!user) { setLoading(false); return }
     let cancelled = false
+    // A stalled fetch (common on weak mobile connections) neither resolves
+    // nor rejects, which would leave the spinner up forever. Race the load
+    // against a timeout so the page always resolves — to the data if it
+    // arrives, or to a retry prompt if the network stalls.
+    const withTimeout = (p, ms) => Promise.race([
+      p,
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms)),
+    ])
     async function load() {
+      setLoadError(false)
       try {
-        const [mapRes, resultRes, obRes, hsRes, sprintRes] = await Promise.all([
+        const [mapRes, resultRes, obRes, hsRes, sprintRes] = await withTimeout(Promise.all([
           supabase.from('horizon_profile')
             .select('domain, current_score, horizon_score, horizon_goal, ia_statement')
             .eq('user_id', user.id),
@@ -367,19 +378,23 @@ export function NextUJourneyPage() {
             .neq('domains', '{}')
             .order('updated_at', { ascending: false })
             .limit(10),
-        ])
+        ]), 8000)
         if (cancelled) return
         setMapRows(mapRes.data || [])
         setMapResult(resultRes.data || null)
         setOnboarding(obRes.error ? null : (obRes.data || null))
         setStreak(hsRes.data?.streak_days ?? null)
         setSprintRows(sprintRes.data || [])
-      } catch { /* journey renders from whatever loaded */ }
+      } catch {
+        // Stalled or failed before anything arrived. Don't trap the user
+        // behind an endless spinner — offer a retry.
+        if (!cancelled) setLoadError(true)
+      }
       if (!cancelled) setLoading(false)
     }
     load()
     return () => { cancelled = true }
-  }, [user, authLoading])
+  }, [user, authLoading, reloadTick])
 
   // ─── derive chapter states ──────────────────────────────────
   const derived = useMemo(() => {
@@ -500,6 +515,20 @@ export function NextUJourneyPage() {
     return (
       <div style={{ minHeight: '100dvh', background: tokens.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: tokens.ghost }}>NEXTU</span>
+      </div>
+    )
+  }
+  if (loadError) {
+    return (
+      <div style={{ minHeight: '100dvh', background: tokens.bg, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '18px', padding: '24px', textAlign: 'center' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: tokens.ghost }}>NEXTU</span>
+        <p style={{ ...body, fontSize: '15px', lineHeight: 1.6, color: tokens.inkMid || 'rgba(15,21,35,0.60)', margin: 0, maxWidth: '320px' }}>
+          The connection stalled before everything loaded. This is usually a weak signal, not your work.
+        </p>
+        <button
+          onClick={() => { setLoadError(false); setLoading(true); setReloadTick(t => t + 1) }}
+          style={{ ...sc, fontSize: '14px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: '#A8721A', background: 'transparent', border: '1px solid #C8922A', borderRadius: '40px', padding: '11px 26px', cursor: 'pointer' }}
+        >Try again</button>
       </div>
     )
   }
