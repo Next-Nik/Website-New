@@ -23,8 +23,8 @@ import { useAutoSave, SavedWhisper } from './shared'
 
 const PROMPTS = [
   'The same facts. Told by the man who knows where they were leading.',
-  'Write the chapters as he remembers them — what each one was building.',
-  'No wound is wasted in his telling. Everything trained something.',
+  'Write the chapters as your Horizon Self remembers them — what each one was building.',
+  'No wound is wasted in their telling. Everything trained something.',
 ]
 
 export function HorizonBiographyPage() {
@@ -218,7 +218,7 @@ export function HorizonBiographyPage() {
             From Here Forward
           </h1>
           <p style={{ ...body, fontSize: '16px', lineHeight: 1.7, color: 'rgba(15,21,35,0.72)', marginTop: '14px' }}>
-            Present tense. Not what he will do — what he does. The chapter the rest of
+            Present tense. Not what they will do — what they do. The chapter the rest of
             the Biography was leading to, written from inside it.
           </p>
 

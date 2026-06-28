@@ -812,6 +812,8 @@ export function useHorizonStateData(user) {
   const [sessions,        setSessions]        = useState([])
   const [lifeIaStatement, setLifeIaStatement] = useState(null)
   const [currentPhase,    setCurrentPhase]    = useState('baseline')
+  const [mapComplete,         setMapComplete]         = useState(false)
+  const [horizonSelfComplete, setHorizonSelfComplete] = useState(false)
   const [reloadTick,      setReloadTick]      = useState(0)
 
   useEffect(() => {
@@ -906,6 +908,24 @@ export function useHorizonStateData(user) {
       .limit(1)
       .maybeSingle()
       .then(({ data }) => { if (data?.life_ia_statement) setLifeIaStatement(data.life_ia_statement) })
+    // Phase gates: Calibration opens once the Map is done (seven domains
+    // scored); Embodiment opens once Horizon Self is constructed.
+    supabase
+      .from('horizon_profile')
+      .select('domain, current_score')
+      .eq('user_id', user.id)
+      .then(({ data }) => {
+        const scored = (data || []).filter(r => r.current_score != null).length
+        setMapComplete(scored >= 7)
+      })
+    supabase
+      .from('horizon_self_onboarding')
+      .select('status')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        setHorizonSelfComplete(data?.status === 'construction_complete' || data?.status === 'complete')
+      })
   }, [user, reloadTick])
 
   async function advancePhase(nextPhase) {
@@ -925,7 +945,7 @@ export function useHorizonStateData(user) {
 
   function reload() { setReloadTick(t => t + 1) }
 
-  return { audioUrl, audioLoading, audioError, sessions, lifeIaStatement, currentPhase, advancePhase, reload }
+  return { audioUrl, audioLoading, audioError, sessions, lifeIaStatement, currentPhase, mapComplete, horizonSelfComplete, advancePhase, reload }
 }
 
 export function BaselineCard({ user, audioUrl, audioLoading, audioError, sessions, onAfterComplete, lifeIaStatement, currentPhase = 'baseline', compact = false }) {
@@ -1510,18 +1530,19 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
 export function HorizonStatePage() {
   const { user, loading: authLoading } = useAuth()
   const { tier, loading: accessLoading } = useAccess('horizon-state')
-  const { audioUrl, audioLoading, audioError, sessions, lifeIaStatement, currentPhase, advancePhase, reload } = useHorizonStateData(user)
+  const { audioUrl, audioLoading, audioError, sessions, lifeIaStatement, currentPhase, mapComplete, horizonSelfComplete, advancePhase, reload } = useHorizonStateData(user)
 
   const [activePhase, setActivePhase] = useState('baseline')
   const [activeView,  setActiveView]  = useState('reports')
   const [sessionPhase, setSessionPhase] = useState(null)   // non-null = protocol room open for that phase
 
-  // A phase is reachable (startable) once the user has progressed to it.
-  // Foundation is always open; later phases unlock as currentPhase advances.
+  // Phase gates tied to journey progress, not session counts:
+  // Foundation is open from day one, Calibration opens once the Map is
+  // complete, Embodiment once Horizon Self is constructed.
   const phaseAccessible = (key) =>
     key === 'baseline' ||
-    (key === 'calibration' && (currentPhase === 'calibration' || currentPhase === 'embodiment')) ||
-    (key === 'embodiment'  &&  currentPhase === 'embodiment')
+    (key === 'calibration' && mapComplete) ||
+    (key === 'embodiment'  && horizonSelfComplete)
 
   // Keep archive tab in sync with user's actual phase on load
   useEffect(() => {
@@ -1606,7 +1627,7 @@ export function HorizonStatePage() {
                     Start {p.label} {'\u2192'}
                   </button>
                   <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginTop: '12px' }}>
-                    Unlocks after {PHASES[PHASES.findIndex(x => x.key === p.key) - 1]?.label || 'Foundation'}.
+                    {p.key === 'calibration' ? 'Opens once you complete the Map.' : 'Opens once you complete Horizon Self.'}
                   </p>
                 </>
               )}

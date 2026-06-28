@@ -146,7 +146,7 @@ function Invitation({ chapter, gateLine, onClose }) {
             <p style={{ ...body, fontSize: '16px', lineHeight: 1.65, marginTop: '14px', color: tokens.dark }}>
               The journey built you. This chapter is where you act. Ninety days as your
               Horizon Self — in one chosen arena, taking clear action from that identity.
-              The question: if you were already him, what could one quarter accomplish?
+              The question: if you were already that self, what could one quarter accomplish?
             </p>
             <div style={{ marginTop: '18px' }}>
               <Eyebrow>WHAT THIS CHAPTER IS</Eyebrow>
@@ -186,17 +186,17 @@ function Invitation({ chapter, gateLine, onClose }) {
           <>
             <p style={{ ...body, fontSize: '16px', lineHeight: 1.65, marginTop: '14px', color: tokens.dark }}>
               Your Horizon Self is the version of you that exists when you're standing in a
-              future where your full-yes life is already true. This chapter constructs him —
+              future where your full-yes life is already true. This chapter constructs them —
               in the body first, then in language, then in writing you can return to.
             </p>
             <div style={{ marginTop: '18px' }}>
               <Eyebrow>WHAT THIS CHAPTER BUILDS</Eyebrow>
               <ul style={{ listStyle: 'none', margin: '10px 0 0', padding: 0 }}>
                 {[
-                  "Your somatic library — the body's record of what he feels like",
-                  'The Code — his drivers, values, thoughts, feelings, actions, priorities',
-                  'The Quantum Gap — the patterns he has already collapsed',
-                  'Seven Horizon Beliefs — the old belief, and what he knows instead',
+                  "Your somatic library — the body's record of what they feel like",
+                  'The Code — their drivers, values, thoughts, feelings, actions, priorities',
+                  'The Quantum Gap — the patterns they have already collapsed',
+                  'Seven Horizon Beliefs — the old belief, and what they know instead',
                   'Your synthesised Horizon Self statement, in your own words',
                 ].map(t => (
                   <li key={t} style={{
@@ -468,7 +468,7 @@ export function NextUJourneyPage() {
       resumeLine = ob ? `Horizon Self — step ${Math.min(obStep, 7)}` : 'Horizon Self — the Quantum Leap'
       resumeRoute = '/nextu/horizon-self'
     } else if (ch4 === 'current') {
-      position = 'Chapter Four — your story, told through his eyes.'
+      position = 'Chapter Four — your story, told through their eyes.'
       resumeLabel = ob?.biography ? 'CONTINUE WHERE YOU LEFT OFF' : 'BEGIN CHAPTER FOUR'
       resumeLine = 'The Horizon Biography'
       resumeRoute = '/nextu/biography'
@@ -494,7 +494,7 @@ export function NextUJourneyPage() {
       resumeRoute = '/tools/target-sprint'
     } else {
       // ch5 === 'ahead' — biography not done
-      position = 'Chapter Four — your story, told through his eyes.'
+      position = 'Chapter Four — your story, told through their eyes.'
       resumeLabel = ob?.biography ? 'CONTINUE WHERE YOU LEFT OFF' : 'BEGIN CHAPTER FOUR'
       resumeLine  = 'The Horizon Biography'
       resumeRoute = '/nextu/biography'
@@ -572,7 +572,7 @@ export function NextUJourneyPage() {
       ? 'Begins after Chapter Two · eight steps'
       : d.states[3] === 'done' ? 'Constructed · revisit any step' : `Step ${Math.min(d.obStep, 7)} of seven`,
     4: d.states[4] === 'ahead'
-      ? (d.states[3] === 'done' ? 'Ready to write' : 'Your story, told through his eyes')
+      ? (d.states[3] === 'done' ? 'Ready to write' : 'Your story, told through their eyes')
       : d.states[4] === 'done' ? 'Written · From Here Forward' : 'In the writing room',
     5: d.states[5] === 'ahead'
       ? 'Begins after Chapter Four'
@@ -980,6 +980,31 @@ export function NextUJourneyPage() {
           </span>
           <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, whiteSpace: 'nowrap' }}>
             {streak ? `${streak}-DAY STREAK →` : 'OPEN →'}
+          </span>
+        </button>
+
+        {/* Horizon State — the daily protocol. Also reachable from the daily
+            card; both doors land on the same page, which gates its phases. */}
+        <button
+          onClick={() => navigate('/tools/horizon-state')}
+          className="nextu-hover-tint"
+          style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            marginTop: '12px', padding: '16px 20px', width: '100%',
+            border: `1px solid ${tokens.goldFaint}`, borderRadius: '6px',
+            background: 'none', cursor: 'pointer', textAlign: 'left',
+          }}
+        >
+          <span>
+            <span style={{ ...sc, fontSize: '13px', fontWeight: 600, letterSpacing: '0.2em', color: tokens.gold }}>
+              RUNS ALONGSIDE
+            </span>
+            <span style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', display: 'block', marginTop: '3px' }}>
+              Horizon State {'·'} arrive, listen, embark
+            </span>
+          </span>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, whiteSpace: 'nowrap' }}>
+            OPEN →
           </span>
         </button>
       </div>

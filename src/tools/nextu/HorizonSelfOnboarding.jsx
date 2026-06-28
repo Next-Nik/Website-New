@@ -355,7 +355,7 @@ export function HorizonSelfOnboardingPage() {
           </h1>
           <p style={{ ...body, fontSize: '18px', lineHeight: 1.7, marginTop: '20px', color: tokens.dark }}>
             Your Horizon Self is the version of you that exists when you're standing in a
-            future where your full-yes life is already true. This chapter constructs him.
+            future where your full-yes life is already true. This chapter constructs them.
             In the body first. Then in language. Then in writing you can return to.
           </p>
           <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, marginTop: '18px', paddingTop: '18px', borderTop: `1px solid ${tokens.goldFaint}` }}>
@@ -478,7 +478,7 @@ export function HorizonSelfOnboardingPage() {
               operating consciousness running the show.
             </Frame>
             <FrameNote>
-              This isn't visualisation. You're being asked to actually shift — to let him
+              This isn't visualisation. You're being asked to actually shift — to let them
               take the wheel for a few minutes. When you've made the shift, not before:
             </FrameNote>
           </div>
@@ -502,7 +502,7 @@ export function HorizonSelfOnboardingPage() {
               <TextField
                 label="FIRST CONTACT"
                 help="What's the first thing you notice?"
-                placeholder="In his body, right now…"
+                placeholder="In their body, right now…"
                 value={a.notice}
                 onChange={v => setField('arrival_notes', 'notice', v)}
                 whisper={whisper}
@@ -676,11 +676,11 @@ export function HorizonSelfOnboardingPage() {
   if (view === 4) {
     const c = ob.code || {}
     const cats = [
-      { key: 'drivers', label: 'DRIVERS', help: 'What moves him. The engines underneath the action.' },
-      { key: 'values', label: 'VALUES', help: 'What he will not trade. The non-negotiables.' },
-      { key: 'thoughts', label: 'THOUGHTS', help: 'The thoughts that run his inner room.' },
-      { key: 'feelings', label: 'FEELINGS', help: 'The feelings he lives from — and makes room for.' },
-      { key: 'actions', label: 'ACTIONS', help: 'What he does. The signature moves of his days.' },
+      { key: 'drivers', label: 'DRIVERS', help: 'What moves them. The engines underneath the action.' },
+      { key: 'values', label: 'VALUES', help: 'What they will not trade. The non-negotiables.' },
+      { key: 'thoughts', label: 'THOUGHTS', help: 'The thoughts that run their inner room.' },
+      { key: 'feelings', label: 'FEELINGS', help: 'The feelings they live from — and make room for.' },
+      { key: 'actions', label: 'ACTIONS', help: 'What they do. The signature moves of their days.' },
       { key: 'priorities', label: 'PRIORITIES', help: 'What comes first when everything asks at once.' },
     ]
     return (
@@ -690,7 +690,7 @@ export function HorizonSelfOnboardingPage() {
           {topbar('STEP FOUR · THE CODE')}
           <Frame>
             The Code is your Horizon Self's operating manual — what does my Horizon Self
-            do in this situation. Write it in his voice, in present tense.
+            do in this situation. Write it in their voice, in present tense.
           </Frame>
           {cats.map(f => (
             <TextField
@@ -788,7 +788,7 @@ export function HorizonSelfOnboardingPage() {
                 value={p.horizon || ''}
                 onChange={e => setPair(i, 'horizon', e.target.value)}
                 rows={2}
-                placeholder="The pattern he has already collapsed…"
+                placeholder="The pattern they have already collapsed…"
                 style={{
                   width: '100%', boxSizing: 'border-box', marginTop: '8px',
                   padding: '12px 14px', border: `1px solid ${tokens.goldFaint}`,
@@ -913,7 +913,7 @@ export function HorizonSelfOnboardingPage() {
               <Eyebrow>THE SYNTHESIS</Eyebrow>
               <p style={{ ...body, fontSize: '16px', lineHeight: 1.65, color: tokens.dark, marginTop: '10px' }}>
                 One statement that carries the whole man. Draw it from everything you've
-                written — your seven declarations, the Code, what he knows. Your words,
+                written — your seven declarations, the Code, what they know. Your words,
                 present tense. Your morning practice will speak it aloud.
               </p>
               {lifeStatement && !ob.synthesised_statement && (
@@ -959,13 +959,13 @@ export function HorizonSelfOnboardingPage() {
         <div style={wrap}>
           {topbar('STEP SEVEN · THE DAILY LEAP')}
           <Frame>
-            The Horizon Self doesn't wait for the construction to finish — he acts today.
-            One action. One habit. One toleration to stop. Taken as him, immediately.
+            The Horizon Self doesn't wait for the construction to finish — they act today.
+            One action. One habit. One toleration to stop. Taken as them, immediately.
           </Frame>
           {show(0) && (
             <TextField
               label="ONE ACTION — TODAY"
-              help="Something he does before the day ends. It will land at the top of your Get To Do."
+              help="Something they do before the day ends. It will land at the top of your Get To Do."
               value={l.action}
               onChange={v => setField('daily_leap', 'action', v)}
               whisper={whisper}
@@ -976,7 +976,7 @@ export function HorizonSelfOnboardingPage() {
             <div className="nextu-reveal">
               <TextField
                 label="ONE HABIT — STARTING NOW"
-                help="A daily move that belongs to him."
+                help="A daily move that belongs to them."
                 value={l.habit}
                 onChange={v => setField('daily_leap', 'habit', v)}
                 whisper={whisper}
@@ -988,7 +988,7 @@ export function HorizonSelfOnboardingPage() {
             <div className="nextu-reveal">
               <TextField
                 label="ONE TOLERATION — STOPPED"
-                help="Something the old self put up with that he doesn't."
+                help="Something the old self put up with that they don't."
                 value={l.toleration}
                 onChange={v => setField('daily_leap', 'toleration', v)}
                 whisper={whisper}
