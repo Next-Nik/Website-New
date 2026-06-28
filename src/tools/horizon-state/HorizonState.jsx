@@ -31,6 +31,15 @@ const PHASE_DURATION = {
   embodiment:  '20 min',
 }
 
+// Public-bucket audio URL for any phase — resolves synchronously, so the
+// session room can launch the *selected* phase with its own audio rather
+// than whatever the hook last loaded for the current phase.
+function audioUrlForPhase(phase) {
+  const file = PHASE_AUDIO[phase] || PHASE_AUDIO.baseline
+  const { data } = supabase.storage.from(BUCKET).getPublicUrl(file)
+  return data?.publicUrl || null
+}
+
 // Sessions threshold before phase-advance prompt is offered
 const PHASE_ADVANCE_THRESHOLD = {
   baseline:    40,   // ~8 weeks × 5 days
@@ -1501,10 +1510,18 @@ export function BaselineCard({ user, audioUrl, audioLoading, audioError, session
 export function HorizonStatePage() {
   const { user, loading: authLoading } = useAuth()
   const { tier, loading: accessLoading } = useAccess('horizon-state')
-  const { audioUrl, audioLoading, audioError, sessions, lifeIaStatement, currentPhase, advancePhase } = useHorizonStateData(user)
+  const { audioUrl, audioLoading, audioError, sessions, lifeIaStatement, currentPhase, advancePhase, reload } = useHorizonStateData(user)
 
   const [activePhase, setActivePhase] = useState('baseline')
   const [activeView,  setActiveView]  = useState('reports')
+  const [sessionPhase, setSessionPhase] = useState(null)   // non-null = protocol room open for that phase
+
+  // A phase is reachable (startable) once the user has progressed to it.
+  // Foundation is always open; later phases unlock as currentPhase advances.
+  const phaseAccessible = (key) =>
+    key === 'baseline' ||
+    (key === 'calibration' && (currentPhase === 'calibration' || currentPhase === 'embodiment')) ||
+    (key === 'embodiment'  &&  currentPhase === 'embodiment')
 
   // Keep archive tab in sync with user's actual phase on load
   useEffect(() => {
@@ -1541,19 +1558,18 @@ export function HorizonStatePage() {
         <div style={{ display: 'flex', gap: 0, marginBottom: '32px', borderBottom: '1px solid rgba(200,146,42,0.2)' }}>
           {PHASES.map(p => {
             const isActive  = activePhase === p.key
-            // A phase is accessible if the user has reached it or it's Phase 1
-            const accessible = p.key === 'baseline' ||
-              (p.key === 'calibration' && (currentPhase === 'calibration' || currentPhase === 'embodiment')) ||
-              (p.key === 'embodiment'  &&  currentPhase === 'embodiment')
+            // Locked phases stay visible and selectable for preview — only
+            // Start is gated. Accessibility just drives the dimmed styling.
+            const accessible = phaseAccessible(p.key)
             return (
               <button
                 key={p.key}
-                onClick={() => accessible && setActivePhase(p.key)}
+                onClick={() => setActivePhase(p.key)}
                 style={{
                   ...sc, fontSize: '15px', letterSpacing: '0.16em',
                   padding: '12px 20px',
                   background: 'none', border: 'none',
-                  cursor: accessible ? 'pointer' : 'default',
+                  cursor: 'pointer',
                   color: isActive ? '#A8721A' : accessible ? 'rgba(200,146,42,0.55)' : 'rgba(200,146,42,0.25)',
                   borderBottom: isActive ? '2px solid #A8721A' : '2px solid transparent',
                   marginBottom: '-1px',
@@ -1575,6 +1591,28 @@ export function HorizonStatePage() {
         {/* Phase content */}
         {PHASES.map(p => activePhase === p.key && (
           <div key={p.key}>
+            {/* Choose-then-start. The selected phase launches the protocol in
+                a full-screen room. Locked phases preview here (intro + archive)
+                but Start stays disabled until the phase is reached. */}
+            <div style={{ marginBottom: '40px' }}>
+              {phaseAccessible(p.key) ? (
+                <button
+                  onClick={() => setSessionPhase(p.key)}
+                  style={{ width: '100%', padding: '15px', ...sc, fontSize: '15px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#A8721A', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', cursor: 'pointer' }}
+                >Start {p.label} {'\u2192'}</button>
+              ) : (
+                <>
+                  <button disabled style={{ width: '100%', padding: '15px', ...sc, fontSize: '15px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#A8721A', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', cursor: 'not-allowed', opacity: 0.4 }}>
+                    Start {p.label} {'\u2192'}
+                  </button>
+                  <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.55)', textAlign: 'center', marginTop: '12px' }}>
+                    Unlocks after {PHASES[PHASES.findIndex(x => x.key === p.key) - 1]?.label || 'Foundation'}.
+                  </p>
+                </>
+              )}
+              <div style={{ borderTop: '1px solid rgba(200,146,42,0.18)', marginTop: '40px' }} />
+            </div>
+
             {/* First-time pitch for this phase */}
             {isFirstTimeForPhase && p.key === 'baseline' ? (
               <FirstTimePitch onContinue={() => {}} />
@@ -1634,6 +1672,38 @@ export function HorizonStatePage() {
       </div>
       <ToolCompassPanel />
       <ProtocolPanel />
+
+      {/* Full-screen protocol room — the actual practice for the selected
+          phase. Launches with that phase's own audio, writes its session,
+          and closes back to this page. */}
+      {sessionPhase && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1100, background: '#FAFAF7', overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <div style={{ maxWidth: '900px', margin: '0 auto', padding: 'max(16px, env(safe-area-inset-top)) 20px calc(48px + env(safe-area-inset-bottom))' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#A8721A' }}>
+                Horizon State {'·'} {PHASES.find(x => x.key === sessionPhase)?.label || 'Foundation'}
+              </span>
+              <button
+                onClick={() => { setSessionPhase(null); reload() }}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#A8721A', background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px 0' }}
+              >Close ✕</button>
+            </div>
+            <BaselineCard
+              user={user}
+              audioUrl={audioUrlForPhase(sessionPhase)}
+              audioLoading={false}
+              audioError={null}
+              sessions={sessions}
+              lifeIaStatement={lifeIaStatement}
+              currentPhase={sessionPhase}
+              onAfterComplete={async (afterData, beforeData, updatedSessions, phase) => {
+                try { await writeSummary(user, updatedSessions, afterData, beforeData, phase || sessionPhase) } catch (e) { /* archive still reloads */ }
+                reload()
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
