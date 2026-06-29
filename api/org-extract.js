@@ -55,68 +55,62 @@ async function loadVocabulary() {
   if (_vocabCache.data && (now - _vocabCache.at) < VOCAB_TTL_MS) return _vocabCache.data
 
   try {
-    const [domainsRes, subsRes, fieldsRes, chainsRes] = await Promise.all([
-      supabase.from('nextus_domains').select('slug, name, domain_kind, position').eq('domain_kind', 'civ').order('position'),
-      supabase.from('nextus_subdomains').select('slug, name, position, domain_id, nextus_domains!inner(slug)').order('position'),
-      supabase.from('nextus_fields').select('slug, name, position, topics, subdomain_id, nextus_subdomains!inner(slug)').order('position'),
-      supabase.from('nextus_problem_chains').select('slug, label, description, domains, aliases').eq('status', 'active'),
+    const [domainsRes, subsRes] = await Promise.all([
+      supabase.from('nextus_domains').select('id, name'),
+      supabase.from('nextus_subdomains').select('id, name, sort_order, domain_id').order('sort_order'),
     ])
 
     const domains = domainsRes.data || []
     const subs    = subsRes.data || []
-    const fields  = fieldsRes.data || []
-    const chains  = chainsRes.data || []
 
-    if (!domains.length || !subs.length || !fields.length) return null
+    // Problem-chains are optional. Never let their absence disable placement.
+    let chains = []
+    try {
+      const chainsRes = await supabase
+        .from('nextus_problem_chains')
+        .select('slug, label, description, domains, aliases')
+        .eq('status', 'active')
+      chains = chainsRes.data || []
+    } catch { chains = [] }
 
-    const validSubdomains = new Set(subs.map(s => s.slug))
-    const validFields     = new Set(fields.map(f => f.slug))
+    if (!subs.length) return null
+
+    const validSubdomains = new Set(subs.map(s => s.id))
+    const validFields     = new Set()   // field layer retired: placement is domain -> subdomain x lens
     const validChains     = new Set(chains.map(c => c.slug))
 
-    // Build a compact reference block grouped Domain → Subdomain → Field.
+    const domainName = {}
+    for (const d of domains) domainName[d.id] = d.name
+
+    // Group subdomains under their domain (join in code; no FK embed needed).
     const subsByDomain = {}
-    for (const s of subs) {
-      const dslug = s.nextus_domains?.slug
-      if (!dslug) continue
-      ;(subsByDomain[dslug] ||= []).push(s)
-    }
-    const fieldsBySub = {}
-    for (const f of fields) {
-      const sslug = f.nextus_subdomains?.slug
-      if (!sslug) continue
-      ;(fieldsBySub[sslug] ||= []).push(f)
-    }
+    for (const s of subs) (subsByDomain[s.domain_id] ||= []).push(s)
 
     const taxoLines = []
-    for (const d of domains) {
-      taxoLines.push(`\n${d.slug}  (${d.name})`)
-      for (const s of (subsByDomain[d.slug] || [])) {
-        taxoLines.push(`  · ${s.slug}  — ${s.name}`)
-        for (const f of (fieldsBySub[s.slug] || [])) {
-          const topics = Array.isArray(f.topics) && f.topics.length
-            ? `  [${f.topics.slice(0, 5).join('; ')}]` : ''
-          taxoLines.push(`      - ${f.slug}  — ${f.name}${topics}`)
-        }
+    for (const did of Object.keys(subsByDomain)) {
+      taxoLines.push(`\n${did}  (${domainName[did] || did})`)
+      for (const s of subsByDomain[did]) {
+        taxoLines.push(`  \u00b7 ${s.id}  \u2014 ${s.name}`)
       }
     }
 
     const chainLines = chains
       .map(c => {
         const al = Array.isArray(c.aliases) && c.aliases.length ? `  (also: ${c.aliases.slice(0, 6).join(', ')})` : ''
-        return `  ${c.slug}  — ${c.label}${al}`
+        return `  ${c.slug}  \u2014 ${c.label}${al}`
       })
       .sort()
 
     const reference = `
 ──────────────────────────────────────────────────────────────────────────────
-PLACEMENT VOCABULARY — the live taxonomy and chain list (use these EXACT slugs)
+PLACEMENT VOCABULARY \u2014 the live taxonomy and chain list (use these EXACT slugs)
 ──────────────────────────────────────────────────────────────────────────────
 
-DOMAIN → SUBDOMAIN → FIELD (choose the subdomain and field that hold the actor's
-actual problem-shape — the precise area their work changes, not the broad domain):
+DOMAIN \u2192 SUBDOMAIN (choose the subdomain that holds the actor's actual
+problem-shape \u2014 the precise area their work changes, not the broad domain):
 ${taxoLines.join('\n')}
 
-PROBLEM-CHAINS (away-from concerns people walk in with — tag the ones this
+PROBLEM-CHAINS (away-from concerns people walk in with \u2014 tag the ones this
 actor's work genuinely answers; slug exactly as listed):
 ${chainLines.join('\n')}
 `
@@ -252,41 +246,11 @@ one from what the source actually shows. If the source provides nothing
 substantive enough to build a tagline from, return null for tagline.
 
 ──────────────────────────────────────────────────────────────────────────────
-DESCRIPTION — 2-3 sentences, third person, TED-tight
-──────────────────────────────────────────────────────────────────────────────
-
-The description is the actor's profile blurb — the two or three sentences their
-own homepage would lead with. It says what they are and what they do, in the
-terms of their own world. A visitor reads it to understand the actor, the way
-they would read the top of that actor's About page.
-
-It is a profile, not a review. Never assess the actor's alignment, value, or
-fit. Phrases like "demonstrates clear alignment", "signals movement toward
-Horizon Goals", "complementary frameworks", or any mention of NextUs, the Atlas,
-domains, scoring, or the platform's framework do NOT belong here. That reasoning
-lives in score_reasoning, which is internal and never shown. Write the actor as
-their own site would describe them.
-
-Calibration. For a school whose site says it is a PreK-12 school in the jungles
-of Bali with a wall-less bamboo campus, educating changemakers since 2008:
-  WRONG (a review): "X demonstrates clear commitment to regenerative education
-  and shows demonstrable movement toward civilisational Horizon Goals through
-  youth education and ecological stewardship."
-  RIGHT (a profile): "A PreK-12 school in the jungles of Bali, built around a
-  wall-less bamboo campus. Since 2008 it has taught a research-based,
-  student-guided curriculum to over 500 students from around the world, with
-  sustainability and real-world learning woven through daily life."
-The right version uses the actor's own concrete facts and framing. The wrong
-version grades them against an external standard. Always write the right version.
-
-──────────────────────────────────────────────────────────────────────────────
 STORY — 2-4 short paragraphs, third person, TED-tight
 ──────────────────────────────────────────────────────────────────────────────
 
 The story is the actor's narrative. Three to four short paragraphs at most.
 Built from explicit claims on the source. Third person. No marketing breath.
-Write it as the actor's own About page reads — describing who they are and what
-they do, in the language of their own world. A profile, never an assessment.
 
 What the story IS:
 - What the actor does and at what scale
@@ -300,9 +264,6 @@ What the story is NOT:
 - A manifesto or call to action
 - A sales pitch
 - A list of services (those are offerings — owner-only, not extracted)
-- An assessment of the actor's alignment, value, or fit ("demonstrates
-  alignment", "signals movement toward", "complementary frameworks" — none of
-  this), or any reference to NextUs, the Atlas, Horizon Goals, domains, or scoring
 
 If the source does not contain enough material for an honest 2-4 paragraph
 story, leave the story field null and let the description carry the page.
@@ -460,17 +421,17 @@ Classify by IMPACT, not feedstock or means. What problem does this actor
 solve? What change are they trying to create? That is the domain.
 
 ──────────────────────────────────────────────────────────────────────────────
-PLACEMENT — SUBDOMAIN, FIELD, AND PROBLEM-CHAINS (this is what makes a seeded
+PLACEMENT — SUBDOMAIN AND PROBLEM-CHAINS (this is what makes a seeded
 entry discoverable — do not skip it)
 ──────────────────────────────────────────────────────────────────────────────
 
 A domain alone is too coarse to find an actor by. "Society" holds a thousand
 unlike things. The work that lets someone facing a problem find the people
-already solving it — anywhere, at any scale — happens at the subdomain and
-field level, and through the away-from problem-chains.
+already solving it — anywhere, at any scale — happens at the subdomain
+level, and through the away-from problem-chains.
 
 A PLACEMENT VOCABULARY block is provided below the output format with the live
-Domain → Subdomain → Field taxonomy and the active problem-chains. Use ONLY the
+Domain → Subdomain taxonomy and the active problem-chains. Use ONLY the
 exact slugs it lists. If no vocabulary block is present, return empty arrays for
 these fields.
 
@@ -479,12 +440,6 @@ For every actor, return:
 - "subdomains": the subdomain slug(s) under the actor's domain(s) that hold the
   actor's actual problem-shape. Usually one; occasionally two. Choose by the
   problem the actor changes, not by surface topic.
-
-- "fields": the field slug(s) — the precise problem-shape — under those
-  subdomains. One to three. This is the resolution at which the actor becomes
-  findable. Be specific: a group getting more women elected to municipal
-  council belongs in the field for local/municipal governance, not merely the
-  governance subdomain.
 
 - "problem_chains": the chain slug(s) from the vocabulary whose away-from
   concern this actor's work GENUINELY answers. Honesty over coverage — a false
@@ -572,7 +527,6 @@ For each practice, return:
     "statement": "one TED-tight line, third person, the practice not the practitioner, or null",
     "domains": ["domain-slug", ...],
     "subdomains": ["subdomain-slug", ...],
-    "fields": ["field-slug", ...],
     "problem_chains": ["chain-slug", ...],
     "tier": {
       "label": "dignified tier name (never 'basic')",
@@ -621,11 +575,6 @@ Tiers:
   7–8: qualified
   9:   exemplar
 
-The alignment_score, placement_tier, score_reasoning, hal_signals, and
-sfp_patterns are INTERNAL — admin-only. They must never leak into description,
-story, or tagline. Those three fields describe the actor on their own terms, as
-their own site would. The scoring reasoning stays in score_reasoning.
-
 ──────────────────────────────────────────────────────────────────────────────
 OWNER-ONLY FIELDS — DO NOT INFER OR RETURN
 ──────────────────────────────────────────────────────────────────────────────
@@ -660,12 +609,11 @@ Return an array of 1-6 actor objects. Use this exact shape:
     "name": "string",
     "type": "organisation | project | practitioner | programme | place | group | resource",
     "tagline": "string or null — one substantive line, TED-tight",
-    "description": "string — 2-3 sentences, third person, TED-tight. Profile blurb in the actor's own terms. Never alignment / evaluation language or platform-framework references.",
-    "story": "string or null — 2-4 short paragraphs, third person, TED-tight. Profile voice — the actor's own About page, never an assessment. Paragraphs separated by blank lines (\\n\\n). Null if source lacks material for an honest story.",
+    "description": "string — 2-3 sentences, third person, TED-tight",
+    "story": "string or null — 2-4 short paragraphs, third person, TED-tight. Paragraphs separated by blank lines (\\n\\n). Null if source lacks material for an honest story.",
     "image_url": "string or null — single anchor image URL from source",
     "domains": ["primary-domain-slug", "secondary-slug", ...],
     "subdomains": ["subdomain-slug", ...],
-    "fields": ["field-slug", ...],
     "problem_chains": ["chain-slug", ...],
     "proposed_chains": [
       { "slug": "...", "label": "...", "description": "...", "domains": ["..."], "aliases": ["..."], "rationale": "..." }
@@ -695,7 +643,7 @@ Return an array of 1-6 actor objects. Use this exact shape:
     "practices": [
       {
         "name": "...", "slug": "...", "statement": "... or null",
-        "domains": ["..."], "subdomains": ["..."], "fields": ["..."],
+        "domains": ["..."], "subdomains": ["..."],
         "problem_chains": ["..."],
         "tier": { "label": "...", "looks_like": "...", "resource_level": "low|moderate|high", "scale": "..." },
         "evidence_note": "..."
@@ -754,37 +702,23 @@ function absolutise(u, base) {
   try { return new URL(u, base).href } catch { return null }
 }
 
-// Harvest candidate anchor images from raw HTML, ordered best-first for a brand
-// logo: schema.org/JSON-LD "logo" → msapplication-TileImage → apple-touch-icon /
-// icon / mask-icon → logo-ish <img> → og:image / twitter:image. The social share
-// image is last because for an organisation it is usually a hero / campus photo,
-// not the brand mark. White-named marks are pushed to the back since they vanish
-// on the light profile background.
+// Harvest candidate anchor images from raw HTML, in preference order:
+// og:image / twitter:image → apple-touch-icon / icon link → logo-ish <img>.
 function extractImageCandidates(html, baseUrl) {
   const out = []
   const push = (u) => { const a = absolutise(u, baseUrl); if (a && !out.includes(a)) out.push(a) }
 
   let m
-  // 1. schema.org / JSON-LD "logo" — the brand mark when a site declares it.
-  const ldRe = /"logo"\s*:\s*(?:"([^"]+)"|\{[^}]*?"url"\s*:\s*"([^"]+)")/gi
-  while ((m = ldRe.exec(html))) push(m[1] || m[2])
-
-  // 2. msapplication-TileImage — usually a clean square brand icon.
-  const tileRe = /<meta[^>]+name=["']msapplication-TileImage["'][^>]*>/gi
-  while ((m = tileRe.exec(html))) {
+  const metaRe = /<meta[^>]+(?:property|name)=["'](?:og:image(?::secure_url)?|twitter:image(?::src)?)["'][^>]*>/gi
+  while ((m = metaRe.exec(html))) {
     const c = m[0].match(/content=["']([^"']+)["']/i)
     if (c) push(c[1])
   }
-
-  // 3. <link rel="...icon"> — apple-touch-icon / icon / mask-icon are normally
-  //    the brand mark, high-res, and reliable. Preferred as the org anchor.
-  const linkRe = /<link[^>]+rel=["'][^"']*(?:apple-touch-icon|mask-icon|icon)[^"']*["'][^>]*>/gi
+  const linkRe = /<link[^>]+rel=["'][^"']*(?:apple-touch-icon|icon)[^"']*["'][^>]*>/gi
   while ((m = linkRe.exec(html))) {
     const h = m[0].match(/href=["']([^"']+)["']/i)
     if (h) push(h[1])
   }
-
-  // 4. <img> whose markup says logo (class / alt / id / src).
   const imgRe = /<img[^>]+>/gi
   while ((m = imgRe.exec(html))) {
     if (/logo/i.test(m[0])) {
@@ -792,18 +726,7 @@ function extractImageCandidates(html, baseUrl) {
       if (s) push(s[1])
     }
   }
-
-  // 5. og:image / twitter:image — the social share image. Last resort for a
-  //    logo; good as a hero image for places.
-  const metaRe = /<meta[^>]+(?:property|name)=["'](?:og:image(?::secure_url)?|twitter:image(?::src)?)["'][^>]*>/gi
-  while ((m = metaRe.exec(html))) {
-    const c = m[0].match(/content=["']([^"']+)["']/i)
-    if (c) push(c[1])
-  }
-
-  // White-named marks vanish on the light background — sink them.
-  const isWhite = (u) => /white|inverse|reversed/i.test(u)
-  return out.slice().sort((a, b) => (isWhite(a) ? 1 : 0) - (isWhite(b) ? 1 : 0))
+  return out
 }
 
 const SOCIAL_HOST_RE = /(instagram\.com|twitter\.com|x\.com|youtube\.com|youtu\.be|linkedin\.com|facebook\.com|tiktok\.com|substack\.com|medium\.com|open\.spotify\.com|podcasts\.apple\.com|vimeo\.com|github\.com|calendly\.com|cal\.com|savvycal\.com|threads\.net|bsky\.app|t\.me)/i
@@ -1005,7 +928,6 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end()
   if (req.method !== 'POST')    return res.status(405).json({ error: 'Method not allowed' })
 
-  const t0 = Date.now()
   const { input } = req.body || {}
   if (!input?.trim()) return res.status(400).json({ error: 'input is required' })
 
@@ -1040,7 +962,7 @@ module.exports = async function handler(req, res) {
       readVia = 'html_fetch'
 
       const imageBlock = imageCands.length
-        ? `\n\nIMAGE CANDIDATES found in the page source, ordered best-first for a brand logo. For an ORGANISATION / programme / project / group / resource, pick the logo (the brand mark). For a PLACE, prefer a hero image of the space. For a PRACTITIONER, a portrait. Return the single best as image_url, or null if none fit:\n${imageCands.slice(0, 8).map(u => `  - ${u}`).join('\n')}`
+        ? `\n\nIMAGE CANDIDATES found in the page source (pick the single best anchor image for each actor — logo for orgs, portrait for practitioners — and return it as image_url; return null if none fit):\n${imageCands.slice(0, 8).map(u => `  - ${u}`).join('\n')}`
         : ''
       const linkBlock = linkCands.length
         ? `\n\nLINK CANDIDATES found in the page source (classify the ones that belong to an actor into the link_type vocabulary — socials, podcast feeds, booking/contact pages, email, phone — and attach them to the right record; ignore the rest):\n${linkCands.slice(0, 60).map(u => `  - ${u}`).join('\n')}`
@@ -1067,29 +989,14 @@ module.exports = async function handler(req, res) {
     ? `${SYSTEM_PROMPT}\n${vocab.reference}`
     : SYSTEM_PROMPT
 
-  // Bound the model call so the function returns a clean JSON error before
-  // Vercel's hard 60s limit kills it — an overrun returns a non-JSON 504 that
-  // surfaces on the client as an opaque "could not reach the reading service".
-  // Budget = whatever's left of a 58s envelope after the page fetch / vocab load.
-  const callTimeoutMs = Math.max(8000, 58000 - (Date.now() - t0) - 1500)
-
-  // Model by path. The common case — a server-rendered page we fetched ourselves
-  // — runs on Haiku, which generates fast enough that a multi-actor read (the
-  // school + its campus + programmes) finishes inside the budget instead of
-  // overrunning the function on Sonnet. The rare SPA / bot-blocked fallback keeps
-  // Sonnet because it needs the web_search tool and its input is small. Output is
-  // a draft the human reviews and edits field-by-field before any save, so read
-  // speed matters more here than the last increment of placement nuance.
-  const extractModel = useWebSearch ? 'claude-sonnet-4-6' : 'claude-haiku-4-5-20251001'
-
   try {
     const response = await anthropic.messages.create({
-      model: extractModel,
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 8000,
       system: systemPrompt,
       tools,
       messages: [{ role: 'user', content }],
-    }, { timeout: callTimeoutMs, maxRetries: 0 })
+    })
 
     const rawText = response.content
       .filter(b => b.type === 'text')
@@ -1107,7 +1014,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (!Array.isArray(parsed)) parsed = [parsed]
-    const results = parsed.slice(0, 4).map(r => enforceShape(r, vocab))
+    const results = parsed.slice(0, 6).map(r => enforceShape(r, vocab))
 
     // Image fallback. The model returns image_url only when it saw a real image
     // in the source — so most reads come back imageless. Backstop it: the first
@@ -1140,17 +1047,6 @@ module.exports = async function handler(req, res) {
 
   } catch (err) {
     console.error('org-extract error:', err)
-    const isTimeout = err?.name === 'APIConnectionTimeoutError'
-      || err?.name === 'AbortError'
-      || /timeout|timed out|aborted/i.test(err?.message || '')
-    if (isTimeout) {
-      return res.status(200).json({
-        error:   'read_timeout',
-        message: useWebSearch
-          ? "This source couldn't be read automatically — it's likely JS-heavy or bot-protected. Paste its About / description text here and I'll read that instead."
-          : 'Reading this source timed out. Try again, or paste its description text here instead.',
-      })
-    }
     return res.status(500).json({ error: 'extraction_failed', message: err.message })
   }
 }
