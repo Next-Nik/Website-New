@@ -19,6 +19,7 @@ import {
 import { INTENSITY_LEVELS } from '../../constants/challengeIntensity'
 import IntensityInfo from '../components/challenge/IntensityInfo'
 import ChiliRung from '../components/challenge/ChiliRung'
+import { downscaleImage } from '../../lib/imageDownscale'
 
 const GOLD_C = tokens.goldChrome
 const hair   = '1px solid rgba(200,146,42,0.18)'
@@ -33,6 +34,19 @@ const CADENCES = [
   { v: 'weekly',         l: 'Weekly' },
   { v: 'monthly',        l: 'Monthly' },
 ]
+
+function todayStr() {
+  const d = new Date()
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+function daysFromToday(dateStr) {
+  if (!dateStr) return 0
+  const [y, m, d] = dateStr.split('-').map(Number)
+  const end   = new Date(y, m - 1, d)
+  const now   = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  return Math.max(1, Math.ceil((end - today) / 86400000))
+}
 
 function Eyebrow({ children, style = {} }) {
   return (
@@ -82,18 +96,18 @@ export default function ChallengeAuthor() {
   const [title,       setTitle]       = useState('')
   const [tagline,     setTagline]     = useState('')
   const [horizonText, setHorizonText] = useState('')
-  const [measure,     setMeasure]     = useState('')
-  const [mechanism,   setMechanism]   = useState('')
   const [durPreset,   setDurPreset]   = useState('90')
   const [durCustom,   setDurCustom]   = useState(60)
+  const [durDate,     setDurDate]     = useState('')   // custom: an end date instead of a day count
   const [strands,     setStrands]     = useState([{ key: 1, text: '', cadence: '5-of-7' }])
   const [keySeq,      setKeySeq]      = useState(2)
   const [parentCallId,    setParentCallId]    = useState('')   // builds-on: sets parent_call_id
-  const [authorStatement, setAuthorStatement] = useState('')   // in their words: sets author_statement
   const [bodyLong,        setBodyLong]        = useState('')   // a longer piece
   const [videoUrl,        setVideoUrl]        = useState('')   // optional video link
   const [coverUrl,        setCoverUrl]        = useState('')   // optional hero image URL
   const [intensity,       setIntensity]       = useState(null) // optional 1–5
+  const [imgBusy,         setImgBusy]         = useState(false)
+  const [imgErr,          setImgErr]          = useState('')
   const [parentOptions,   setParentOptions]   = useState([])
 
   // Eligible parents: community challenges in the same domain. Clears the
@@ -194,12 +208,14 @@ export default function ChallengeAuthor() {
     if (d.tagline)  setTagline(d.tagline)
     if (d.domain)   setDomain(d.domain)
     if (d.horizon_goal_text) { setHorizonText(d.horizon_goal_text); setLastPrefill('') }
-    if (d.measure)   setMeasure(d.measure)
-    if (d.mechanism) setMechanism(d.mechanism)
     if (d.duration_days) {
       const n = Number(d.duration_days)
       if (n === 21 || n === 90) setDurPreset(String(n))
-      else { setDurPreset('custom'); setDurCustom(n) }
+      else {
+        setDurPreset('custom'); setDurCustom(n)
+        const end = new Date(); end.setDate(end.getDate() + n)
+        setDurDate(`${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`)
+      }
     }
     if (Array.isArray(d.strands) && d.strands.length) {
       let k = keySeq
@@ -240,11 +256,32 @@ export default function ChallengeAuthor() {
     setInviteBusy(false)
   }
 
+  async function onPickImage(e) {
+    const file = e.target.files?.[0]
+    if (e.target) e.target.value = ''
+    if (!file) return
+    setImgErr(''); setImgBusy(true)
+    try {
+      const { dataUrl, ext } = await downscaleImage(file)
+      const res = await fetch('/api/challenge-image-upload', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dataUrl, ext }),
+      })
+      const json = await res.json()
+      if (!res.ok || !json.image_url) throw new Error(json.error || 'Upload failed')
+      setCoverUrl(json.image_url)
+    } catch (err) {
+      setImgErr(err.message || 'Could not upload that image')
+    } finally {
+      setImgBusy(false)
+    }
+  }
+
   function buildPayload() {
     const cleanStrands = strands
       .filter(s => s.text.trim())
       .map((s, i) => ({ id: `s${i + 1}`, text: s.text.trim(), cadence: s.cadence }))
-    const duration_days = durPreset === 'custom' ? Math.max(1, Number(durCustom) || 1) : Number(durPreset)
+    const duration_days = durPreset === 'custom' ? (durDate ? daysFromToday(durDate) : Math.max(1, Number(durCustom) || 1)) : Number(durPreset)
     const the_move = cleanStrands.length === 1 ? cleanStrands[0].text : (tagline.trim() || title.trim())
     const cadence  = cleanStrands[0]?.cadence || '5-of-7'
     return {
@@ -252,9 +289,9 @@ export default function ChallengeAuthor() {
       title: title.trim(), tagline: tagline.trim() || null,
       horizon_goal_text: horizonText.trim(),
       the_move, cadence, duration_days,
-      measure: measure.trim(), mechanism: mechanism.trim(),
+      measure: '', mechanism: '',
       parent_call_id: parentCallId || null,
-      author_statement: authorStatement.trim() || null,
+      author_statement: null,
       body_long: bodyLong.trim() || null,
       video_url: videoUrl.trim() || null,
       cover_image_url: coverUrl.trim() || null,
@@ -410,7 +447,7 @@ export default function ChallengeAuthor() {
 
             <div>
               <Label>Name it</Label>
-              <input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. 75 Hard, Daily Listening" style={inputStyle} />
+              <input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Rewild a Mile, Daily Listening" style={inputStyle} />
             </div>
 
             <div>
@@ -458,10 +495,12 @@ export default function ChallengeAuthor() {
                   </button>
                 ))}
                 {durPreset === 'custom' && (
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                    <input type="number" min="1" value={durCustom} onChange={e => setDurCustom(e.target.value)}
-                      style={{ ...inputStyle, width: '88px', padding: '8px 10px' }} />
-                    <span style={{ ...body, fontSize: '15px', color: tokens.ghost }}>days</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <input type="date" min={todayStr()} value={durDate} onChange={e => setDurDate(e.target.value)}
+                      style={{ ...inputStyle, width: 'auto', padding: '8px 12px' }} />
+                    {durDate && (
+                      <span style={{ ...body, fontSize: '15px', color: tokens.ghost }}>· {daysFromToday(durDate)} days</span>
+                    )}
                   </span>
                 )}
               </div>
@@ -474,38 +513,28 @@ export default function ChallengeAuthor() {
             </div>
 
             <div>
-              <Label>How will someone know it's working?</Label>
-              <input value={measure} onChange={e => setMeasure(e.target.value)} placeholder="The signal that it's landing" style={inputStyle} />
-            </div>
-
-            <div>
-              <Label>Why does this work?</Label>
-              <textarea value={mechanism} onChange={e => setMechanism(e.target.value)} rows={2}
-                placeholder="The mechanism — why doing this moves the needle" style={{ ...inputStyle, resize: 'vertical' }} />
-            </div>
-
-            <div>
-              <Label>In your words (optional)</Label>
-              <textarea value={authorStatement} onChange={e => setAuthorStatement(e.target.value)} rows={2}
-                placeholder="One line in your own voice — shown on the challenge page" style={{ ...inputStyle, resize: 'vertical' }} />
-            </div>
-
-            <div>
               <Label>A longer piece (optional)</Label>
               <textarea value={bodyLong} onChange={e => setBodyLong(e.target.value)} rows={6}
-                placeholder="Room to say more — the fuller invitation, in your own hand. Shown as paragraphs on the challenge page." style={{ ...inputStyle, resize: 'vertical' }} />
+                placeholder="Room to say more · the fuller invitation. Shown as paragraphs on the challenge page." style={{ ...inputStyle, resize: 'vertical' }} />
             </div>
 
             <div>
               <Label>Video link (optional)</Label>
               <input type="text" value={videoUrl} onChange={e => setVideoUrl(e.target.value)}
-                placeholder="A YouTube or Vimeo link — embedded on the page" style={inputStyle} />
+                placeholder="A YouTube or Vimeo link · embedded on the page" style={inputStyle} />
             </div>
 
             <div>
               <Label>Cover image (optional)</Label>
-              <input type="text" value={coverUrl} onChange={e => setCoverUrl(e.target.value)}
-                placeholder="An image URL, shown as a plate above the title" style={inputStyle} />
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <input type="text" value={coverUrl} onChange={e => setCoverUrl(e.target.value)}
+                  placeholder="Upload a photo, or paste an image URL" style={{ ...inputStyle, flex: 1, minWidth: '180px' }} />
+                <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '9px 18px', borderRadius: '20px', cursor: imgBusy ? 'default' : 'pointer', border: '1px solid rgba(200,146,42,0.4)', color: tokens.gold, textTransform: 'uppercase', whiteSpace: 'nowrap', opacity: imgBusy ? 0.55 : 1 }}>
+                  {imgBusy ? 'Uploading…' : 'Upload'}
+                  <input type="file" accept="image/*" disabled={imgBusy} onChange={onPickImage} style={{ display: 'none' }} />
+                </label>
+              </div>
+              {imgErr && <p style={{ ...body, fontSize: '13px', color: '#B5482E', margin: '8px 0 0' }}>{imgErr}</p>}
               {coverUrl.trim() && (
                 <div style={{ marginTop: '10px', textAlign: 'center' }}>
                   <img src={coverUrl.trim()} alt="" style={{ width: '100%', maxWidth: '220px', height: 'auto', borderRadius: '12px', border: hair, display: 'inline-block' }} />
