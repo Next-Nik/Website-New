@@ -19,7 +19,10 @@ function shade(hex, i, n) {
   return `rgb(${mix(r)},${mix(g)},${mix(b)})`
 }
 
-const CLIMATE_WEEK = new Date('2026-09-20T00:00:00Z')
+// Close: Sep 28, 2026, the day after Climate Week NYC ends (the week runs Sep
+// 20–27). Ending a day past the event keeps the challenge's close off the
+// busiest day and gives it a clear day of its own. End of day, NYC time.
+const CLIMATE_WEEK = new Date('2026-09-28T23:59:59-04:00')
 function daysToClimateWeek() {
   return Math.max(0, Math.ceil((CLIMATE_WEEK.getTime() - Date.now()) / 86400000))
 }
