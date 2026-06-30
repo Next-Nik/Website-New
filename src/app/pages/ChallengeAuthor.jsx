@@ -305,7 +305,7 @@ export default function ChallengeAuthor() {
     const payload = buildPayload()
     if (payload.protocol.length === 0) { setErrors(['Add at least one thing someone will do.']); setSaving(false); return }
     try {
-      const vRes = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'validate_floor', ...payload }) })
+      const vRes = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'validate_floor', userId: user.id, ...payload }) })
       const vData = await vRes.json()
       if (!vData.passes) { setErrors(vData.errors || ['Some details are still missing.']); setSaving(false); return }
 

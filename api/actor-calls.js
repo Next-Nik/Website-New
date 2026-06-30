@@ -29,12 +29,16 @@ const supabase = createClient(
 // ─── The Challenge Floor ──────────────────────────────────────────────────────
 // A call below floor can be saved as a draft but cannot publish.
 
-const FLOOR_FIELDS = ['title', 'domain', 'scale', 'horizon_goal_text', 'the_move', 'cadence', 'duration_days', 'measure', 'mechanism']
+const FLOOR_FIELDS = ['title', 'domain', 'scale', 'horizon_goal_text', 'the_move', 'cadence']
 
 function checkFloor(call) {
   const missing = FLOOR_FIELDS.filter(f => !call[f] || String(call[f]).trim().length < 3)
   const errors = []
   if (missing.length) errors.push(`Missing or too short: ${missing.join(', ')}`)
+  // duration_days is a number, not text — check the value, not its length.
+  if (!Number(call.duration_days) || Number(call.duration_days) < 1) {
+    errors.push('Set how long the challenge runs.')
+  }
   if (call.cadence === 'daily-absolute') {
     // Flag it but don't block — absolute cadence is allowed, just labeled
     // (the form discloses it to participants before they commit).
@@ -120,7 +124,8 @@ module.exports = async (req, res) => {
 
   // ── validate_floor ─────────────────────────────────────────────────────────
   if (action === 'validate_floor') {
-    return res.json(checkFloor(body))
+    // Attach the author for the pre-flight check; create/publish set it for real.
+    return res.json(checkFloor({ ...body, user_id: userId }))
   }
 
   // ── get_by_slug (public, no auth required) ─────────────────────────────────
