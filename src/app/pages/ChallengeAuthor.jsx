@@ -586,7 +586,7 @@ export default function ChallengeAuthor() {
               </div>
             )}
 
-            {(() => {
+            {parentCallId && (() => {
               const primary = (strands.find(s => s.text.trim()) || strands[0] || {}).cadence
               const once = primary === 'once'
               return (
@@ -596,7 +596,7 @@ export default function ChallengeAuthor() {
                     <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.55 }}>
                       {once
                         ? 'Doing it once is a finish, plus five sparks to the beacon.'
-                        : 'Each check-in adds one spark to the beacon. At the close of Climate Week (27 September 2026), we get to see what we were able to get done together.'}
+                        : 'Each check-in adds one spark to the beacon. At the close, just past Climate Week (28 September 2026), we get to see what we were able to get done together.'}
                     </div>
                   </div>
                   <div style={{ borderLeft: `2px solid ${GOLD_C}`, padding: '2px 0 2px 16px' }}>
