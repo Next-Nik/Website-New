@@ -7,7 +7,7 @@
 // fractal: a personal Body challenge ladders to Nature's Horizon Goal).
 
 import { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Nav }        from '../../components/Nav'
 import { useAuth }    from '../../hooks/useAuth'
 import { useActingAs } from '../context/ActingAsContext'
@@ -26,6 +26,20 @@ const hair   = '1px solid rgba(200,146,42,0.18)'
 const muted  = { color: 'rgba(15,21,35,0.78)' }
 
 const SELF_SLUGS = new Set(SELF_DOMAINS.map(d => d.slug))
+
+// Founding mode — the Earth Challenge's domain is fixed to Nature, and the author
+// picks which part of the living world their challenge touches (the seven canonical
+// Nature subdomains seeded in migration 145).
+const NATURE_GOAL = DOMAIN_HORIZON_GOALS['nature']
+const NATURE_SUBDOMAINS = [
+  { slug: 'nat-earth',          label: 'Earth' },
+  { slug: 'nat-air',            label: 'Air' },
+  { slug: 'nat-salt-water',     label: 'Salt Water' },
+  { slug: 'nat-fresh-water',    label: 'Fresh Water' },
+  { slug: 'nat-flora',          label: 'Flora' },
+  { slug: 'nat-fauna',          label: 'Fauna' },
+  { slug: 'nat-living-systems', label: 'Living Systems' },
+]
 
 const CADENCES = [
   { v: 'once',           l: 'Once' },
@@ -87,6 +101,8 @@ export default function ChallengeAuthor() {
   const { user } = useAuth()
   const { actingAsActorId } = useActingAs()
   const nav = useNavigate()
+  const [searchParams] = useSearchParams()
+  const founding = searchParams.get('carry') === 'founding-nature'
 
   const [ownedActors, setOwnedActors] = useState([])
   const [authorActor, setAuthorActor] = useState('')   // '' = as yourself
@@ -109,10 +125,14 @@ export default function ChallengeAuthor() {
   const [imgBusy,         setImgBusy]         = useState(false)
   const [imgErr,          setImgErr]          = useState('')
   const [parentOptions,   setParentOptions]   = useState([])
+  const [subdomainSlug,   setSubdomainSlug]   = useState('')
+  const [foundingRoot,    setFoundingRoot]    = useState(null)   // { id, title }
+  const [foundingClose,   setFoundingClose]   = useState(null)   // 'YYYY-MM-DD'
 
   // Eligible parents: community challenges in the same domain. Clears the
   // selection whenever the domain changes so a parent never outlives its domain.
   useEffect(() => {
+    if (founding) return
     if (!domain) { setParentOptions([]); setParentCallId(''); return }
     let live = true
     setParentCallId('')
@@ -125,6 +145,26 @@ export default function ChallengeAuthor() {
       .catch(() => {})
     return () => { live = false }
   }, [domain])
+
+  // Founding mode: lock the domain to Nature, prefill+lock the goal, and resolve
+  // the founding root so this challenge hangs beneath it and inherits the close.
+  useEffect(() => {
+    if (!founding) return
+    setDomain('nature')
+    setHorizonText(NATURE_GOAL)
+    let live = true
+    fetch('/api/beacon', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slug: 'founding-nature' }) })
+      .then(r => r.json())
+      .then(d => {
+        if (!live || !d || !d.rooted || !d.root_slug) return
+        setFoundingClose(d.closes_on || null)
+        return fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'get_by_slug', slug: d.root_slug }) })
+          .then(r => r.json())
+          .then(rc => { if (live && rc.call?.id) { setFoundingRoot({ id: rc.call.id, title: rc.call.title }); setParentCallId(rc.call.id) } })
+      })
+      .catch(() => {})
+    return () => { live = false }
+  }, [founding])
 
   const [errors,    setErrors]    = useState([])
   const [saving,    setSaving]    = useState(false)
@@ -158,8 +198,10 @@ export default function ChallengeAuthor() {
     if (!ownedActors.length) return
     if (actingAsActorId && ownedActors.some(a => a.id === actingAsActorId)) {
       setAuthorActor(actingAsActorId)
+    } else if (founding && !authorActor) {
+      setAuthorActor(ownedActors[0].id)
     }
-  }, [ownedActors, actingAsActorId])
+  }, [ownedActors, actingAsActorId, founding])
 
   function pickDomain(slug) {
     setDomain(slug)
@@ -281,16 +323,21 @@ export default function ChallengeAuthor() {
     const cleanStrands = strands
       .filter(s => s.text.trim())
       .map((s, i) => ({ id: `s${i + 1}`, text: s.text.trim(), cadence: s.cadence }))
-    const duration_days = durPreset === 'custom' ? (durDate ? daysFromToday(durDate) : Math.max(1, Number(durCustom) || 1)) : Number(durPreset)
+    const duration_days = founding
+      ? (foundingClose ? daysFromToday(foundingClose) : 90)
+      : (durPreset === 'custom' ? (durDate ? daysFromToday(durDate) : Math.max(1, Number(durCustom) || 1)) : Number(durPreset))
     const the_move = cleanStrands.length === 1 ? cleanStrands[0].text : (tagline.trim() || title.trim())
     const cadence  = cleanStrands[0]?.cadence || '5-of-7'
     return {
-      type: 'challenge', scale, domain,
+      type: 'challenge',
+      scale: founding ? 'civ' : scale,
+      domain: founding ? 'nature' : domain,
       title: title.trim(), tagline: tagline.trim() || null,
-      horizon_goal_text: horizonText.trim(),
+      horizon_goal_text: founding ? NATURE_GOAL : horizonText.trim(),
       the_move, cadence, duration_days,
       measure: '', mechanism: '',
-      parent_call_id: parentCallId || null,
+      parent_call_id: founding ? (foundingRoot?.id || parentCallId || null) : (parentCallId || null),
+      subdomain_slug: founding ? (subdomainSlug || null) : null,
       author_statement: null,
       body_long: bodyLong.trim() || null,
       video_url: videoUrl.trim() || null,
@@ -301,6 +348,8 @@ export default function ChallengeAuthor() {
   }
 
   async function createAndPublish(visibility) {
+    if (founding && !authorActor) { setErrors(['Choose the org or profile authoring this challenge.']); return }
+    if (founding && !subdomainSlug) { setErrors(['Choose which part of the living world this touches.']); return }
     setSaving(true); setErrors([])
     const payload = buildPayload()
     if (payload.protocol.length === 0) { setErrors(['Add at least one thing someone will do.']); setSaving(false); return }
@@ -375,13 +424,30 @@ export default function ChallengeAuthor() {
     <div style={{ minHeight: '100dvh', background: tokens.bg }}>
       <Nav />
       <div style={{ maxWidth: '640px', margin: '0 auto', padding: '40px 22px 96px' }}>
-        <Eyebrow>Author a challenge</Eyebrow>
-        <h1 style={{ ...serif, fontWeight: 300, fontSize: '38px', color: tokens.dark, lineHeight: 1.1, margin: '0 0 10px' }}>
-          Build something others can take on
-        </h1>
-        <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: '0 0 32px' }}>
-          A challenge is a set of things someone does, on a clock that starts the day they join.
-        </p>
+        {founding ? (
+          <>
+            <Eyebrow>A Nature challenge</Eyebrow>
+            <h1 style={{ ...serif, fontWeight: 300, fontSize: '38px', color: tokens.dark, lineHeight: 1.1, margin: '0 0 10px' }}>
+              What is your challenge to the world?
+            </h1>
+            <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: '0 0 8px' }}>
+              Challenge the world to change the world. Invite others to take on a piece of the work that you do to create a thriving future. Let&rsquo;s see what we can all do together from now to September 28.
+            </p>
+            <p style={{ ...body, fontSize: '14px', color: tokens.ghost, margin: '0 0 32px' }}>
+              <span style={{ color: tokens.gold }}>&middot;</span> Building on the NextUs Earth Challenge
+            </p>
+          </>
+        ) : (
+          <>
+            <Eyebrow>Author a challenge</Eyebrow>
+            <h1 style={{ ...serif, fontWeight: 300, fontSize: '38px', color: tokens.dark, lineHeight: 1.1, margin: '0 0 10px' }}>
+              Build something others can take on
+            </h1>
+            <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: '0 0 32px' }}>
+              A challenge is a set of things someone does, on a clock that starts the day they join.
+            </p>
+          </>
+        )}
 
         {!user ? (
           <p style={{ ...body, fontSize: '1.0625rem', ...muted }}>Sign in to author a challenge.</p>
@@ -422,7 +488,26 @@ export default function ChallengeAuthor() {
               </div>
             </div>
 
-            {ownedActors.length > 0 && (
+            {founding ? (
+              ownedActors.length > 0 ? (
+                <div>
+                  <Label>Author as</Label>
+                  <select value={authorActor} onChange={e => { authorTouched.current = true; setAuthorActor(e.target.value) }} style={inputStyle}>
+                    {ownedActors.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+                  </select>
+                </div>
+              ) : (
+                <div style={{ background: tokens.bgCard, border: hair, borderRadius: '12px', padding: '16px 18px' }}>
+                  <p style={{ ...body, fontSize: '15px', color: tokens.dark, lineHeight: 1.6, margin: '0 0 12px' }}>
+                    A challenge needs an author others can find. Set up your org or profile first. It takes a minute.
+                  </p>
+                  <a href={`/add?then=${encodeURIComponent('/challenges/new?carry=founding-nature')}`}
+                    style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: tokens.gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '9px 20px', display: 'inline-block' }}>
+                    Set yourself up →
+                  </a>
+                </div>
+              )
+            ) : (ownedActors.length > 0 && (
               <div>
                 <Label>Author as</Label>
                 <select value={authorActor} onChange={e => { authorTouched.current = true; setAuthorActor(e.target.value) }} style={inputStyle}>
@@ -430,20 +515,41 @@ export default function ChallengeAuthor() {
                   {ownedActors.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                 </select>
               </div>
-            )}
+            ))}
 
-            <div>
-              <Label>What domain?</Label>
-              <select value={domain} onChange={e => pickDomain(e.target.value)} style={inputStyle}>
-                <option value="">Choose one…</option>
-                <optgroup label="Your life">
-                  {SELF_DOMAINS.map(d => <option key={d.slug} value={d.slug}>{d.label}</option>)}
-                </optgroup>
-                <optgroup label="The world">
-                  {CIV_DOMAINS.map(d => <option key={d.slug} value={d.slug}>{d.label}</option>)}
-                </optgroup>
-              </select>
-            </div>
+            {founding ? (
+              <div>
+                <Label>Which part of the living world</Label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {NATURE_SUBDOMAINS.map(s => {
+                    const on = subdomainSlug === s.slug
+                    return (
+                      <button key={s.slug} type="button" onClick={() => setSubdomainSlug(on ? '' : s.slug)}
+                        style={{ ...sc, fontSize: '14px', letterSpacing: '0.06em', cursor: 'pointer',
+                          border: `1px solid ${on ? GOLD_C : 'rgba(200,146,42,0.28)'}`,
+                          background: on ? 'rgba(200,146,42,0.10)' : 'transparent',
+                          color: on ? tokens.gold : tokens.ghost,
+                          borderRadius: '24px', padding: '8px 16px' }}>
+                        {s.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div>
+                <Label>What domain?</Label>
+                <select value={domain} onChange={e => pickDomain(e.target.value)} style={inputStyle}>
+                  <option value="">Choose one…</option>
+                  <optgroup label="Your life">
+                    {SELF_DOMAINS.map(d => <option key={d.slug} value={d.slug}>{d.label}</option>)}
+                  </optgroup>
+                  <optgroup label="The world">
+                    {CIV_DOMAINS.map(d => <option key={d.slug} value={d.slug}>{d.label}</option>)}
+                  </optgroup>
+                </select>
+              </div>
+            )}
 
             <div>
               <Label>Name it</Label>
@@ -481,7 +587,8 @@ export default function ChallengeAuthor() {
               </button>
             </div>
 
-            {/* Duration */}
+            {/* Duration — hidden in founding mode (locked to the shared close) */}
+            {!founding && (
             <div>
               <Label>How long</Label>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -505,12 +612,15 @@ export default function ChallengeAuthor() {
                 )}
               </div>
             </div>
+            )}
 
+            {!founding && (
             <div>
               <Label>{isSelf ? 'What this builds in you' : 'The Horizon Goal this moves toward'}</Label>
               <textarea value={horizonText} onChange={e => setHorizonText(e.target.value)} rows={2}
                 placeholder={isSelf ? 'The person this makes you' : 'The larger goal this serves'} style={{ ...inputStyle, resize: 'vertical' }} />
             </div>
+            )}
 
             <div>
               <Label>A longer piece (optional)</Label>
@@ -596,7 +706,7 @@ export default function ChallengeAuthor() {
                     <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.55 }}>
                       {once
                         ? 'Doing it once is a finish, plus five sparks to the beacon.'
-                        : 'Each check-in adds one spark to the beacon. At the close, just past Climate Week (28 September 2026), we get to see what we were able to get done together.'}
+                        : 'Each check-in adds one spark to the beacon. At the close, just past Climate Week (September 28, 2026), we get to see what we were able to get done together.'}
                     </div>
                   </div>
                   <div style={{ borderLeft: `2px solid ${GOLD_C}`, padding: '2px 0 2px 16px' }}>
@@ -609,18 +719,33 @@ export default function ChallengeAuthor() {
               )
             })()}
 
+            {!founding && (
             <div style={{ ...body, fontSize: '14px', color: tokens.ghost, paddingTop: '2px' }}>
               Need to gather help or things instead of a daily practice?{' '}
               <a href="/asks/new" style={{ color: tokens.gold, textDecoration: 'underline' }}>Make an ask</a> instead.
             </div>
+            )}
 
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', paddingTop: '4px' }}>
-              <Btn onClick={() => createAndPublish('community')} disabled={saving}>{saving ? 'Publishing…' : 'Publish to community'}</Btn>
-              <Btn variant="ghost" onClick={() => createAndPublish('link_only')} disabled={saving}>Just a link</Btn>
-            </div>
-            <p style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.6, margin: 0 }}>
-              Community lists it for anyone to find. A link is unlisted — only people you send it to can open it.
-            </p>
+            {founding ? (
+              <>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', paddingTop: '4px' }}>
+                  <Btn onClick={() => createAndPublish('community')} disabled={saving}>{saving ? 'Publishing…' : 'Publish →'}</Btn>
+                </div>
+                <p style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.6, margin: 0 }}>
+                  Public · listed in the constellation the moment you publish.
+                </p>
+              </>
+            ) : (
+              <>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', paddingTop: '4px' }}>
+                  <Btn onClick={() => createAndPublish('community')} disabled={saving}>{saving ? 'Publishing…' : 'Publish to community'}</Btn>
+                  <Btn variant="ghost" onClick={() => createAndPublish('link_only')} disabled={saving}>Just a link</Btn>
+                </div>
+                <p style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.6, margin: 0 }}>
+                  Community lists it for anyone to find. A link is unlisted — only people you send it to can open it.
+                </p>
+              </>
+            )}
           </div>
         )}
       </div>

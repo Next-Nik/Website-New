@@ -281,6 +281,11 @@ export function AddPage() {
   const navigate = useNavigate()
   const location = useLocation()
 
+  // Where to send the author after a self-registration, if they arrived mid-flow
+  // (e.g. the Earth Challenge "Create a challenge" door sends a new author here
+  // to set up an org or profile, then back to the builder).
+  const returnTo = new URLSearchParams(location.search).get('then')
+
   // ── Primary form state ───────────────────────────────────────
   const [form, setForm]             = useState(EMPTY_FORM)
   const [represents, setRepresents] = useState(false)
@@ -584,6 +589,14 @@ export function AddPage() {
             </p>
           )}
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            {returnTo && represents && (
+              <button onClick={() => navigate(returnTo)}
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px',
+                  borderRadius: '40px', background: gold,
+                  border: `1.5px solid ${gold}`, color: '#FBF8F0', cursor: 'pointer' }}>
+                Continue &rarr;
+              </button>
+            )}
             <button onClick={reset}
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px',
                 borderRadius: '40px', background: 'rgba(200,146,42,0.06)',

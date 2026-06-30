@@ -377,6 +377,47 @@ function TakeItOnModal({ call, userId, onClose, onJoined }) {
   )
 }
 
+// ─── Founding doors modal ─────────────────────────────────────────────────────
+// The founding Earth Challenge has no daily move of its own. Taking it on means
+// choosing how to take part: author your own challenge beneath it, or accept one
+// already moving. Both doors stay open, and there is no clock to choose —
+// everyone in the constellation plays to the one shared close.
+
+function FoundingDoorsModal({ hasActor, onClose }) {
+  const createHref = hasActor
+    ? '/challenges/new?carry=founding-nature'
+    : `/add?then=${encodeURIComponent('/challenges/new?carry=founding-nature')}`
+  const cream = '#FBF8F0', cream80 = 'rgba(251,248,240,0.82)', cream60 = 'rgba(251,248,240,0.60)', goldT = '#D7A24A'
+  const door = (href, title, sub) => (
+    <a href={href} style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', textDecoration: 'none',
+      background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.30)', borderRadius: '12px', padding: '16px 18px' }}>
+      <span style={{ flex: 1 }}>
+        <span style={{ ...serif, fontWeight: 400, fontSize: '21px', lineHeight: 1.2, color: cream, display: 'block', marginBottom: '4px' }}>{title}</span>
+        <span style={{ ...body, fontSize: '14px', lineHeight: 1.55, color: cream60, display: 'block' }}>{sub}</span>
+      </span>
+      <span style={{ ...sc, fontSize: '1.1rem', color: goldT, marginTop: '2px' }}>&rarr;</span>
+    </a>
+  )
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div style={{ background: '#141B2C', border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '14px', padding: '30px 28px 26px', maxWidth: '480px', width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', textTransform: 'uppercase', color: goldT }}>Accept challenge</div>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.15rem', color: cream60 }}>×</button>
+        </div>
+        <p style={{ ...body, fontSize: '1.0625rem', lineHeight: 1.65, color: cream80, margin: '0 0 18px' }}>
+          The NextUs Earth Challenge runs on one shared clock. Two ways to take it on.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {door(createHref, 'Create a challenge', 'Make your own way of stewarding the living world. Others can take it on and carry it forward.')}
+          {door('/challenges/browse', 'See live challenges', "Take on one that's already moving.")}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Fulfill modal (Ask type) ─────────────────────────────────────────────────
 // The ask fulfillment gesture: express interest, leave an optional note,
 // the actor sees who offered. No session created — fulfillment is not a stretch.
@@ -645,6 +686,9 @@ export function ChallengePage() {
   const [askSel,  setAskSel]  = useState('')
   const [askSent, setAskSent] = useState(false)
   const [askBusy, setAskBusy] = useState(false)
+  // Founding constellation — the Earth Challenge root opens two doors, not a clock.
+  const [foundingRootSlug, setFoundingRootSlug] = useState(null)
+  const [showDoors,        setShowDoors]        = useState(false)
 
   const isAsk    = call?.type === 'ask'
   const isAuthor = user && call && (
@@ -663,6 +707,15 @@ export function ChallengePage() {
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
   }, [slug])
+
+  useEffect(() => {
+    let live = true
+    fetch('/api/beacon', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ slug: 'founding-nature' }) })
+      .then(r => r.json())
+      .then(d => { if (live && d && d.rooted && d.root_slug) setFoundingRootSlug(d.root_slug) })
+      .catch(() => {})
+    return () => { live = false }
+  }, [])
 
   useEffect(() => {
     if (!user) { setOwnedActors([]); return }
@@ -745,6 +798,7 @@ export function ChallengePage() {
   const authorName   = call.nextus_actors?.name || null
   const strands      = Array.isArray(call.protocol) ? call.protocol.filter(s => s && s.text) : []
   const partners     = Array.isArray(call.partners) ? call.partners : []
+  const isFoundingRoot = !!foundingRootSlug && slug === foundingRootSlug
 
   return (
     <div style={{ background: tokens.bg, minHeight: '100dvh' }}>
@@ -753,6 +807,9 @@ export function ChallengePage() {
         .np-lede::first-letter{ -webkit-initial-letter: 2; initial-letter: 2; color: #A8721A; font-weight: 500; font-family: 'Cormorant Garamond', Georgia, serif; margin-right: 14px; }
       `}</style>
 
+      {showDoors && user && (
+        <FoundingDoorsModal hasActor={ownedActors.length > 0} onClose={() => setShowDoors(false)} />
+      )}
       {showTakeItOn && user && (
         <TakeItOnModal call={call} userId={user.id} onClose={() => setShowTakeItOn(false)}
           onJoined={() => { setAlreadyJoined(true); setShowTakeItOn(false); setCall(c => c ? { ...c, taken_on_count: (c.taken_on_count || 0) + 1 } : c) }} />
@@ -853,7 +910,7 @@ export function ChallengePage() {
                 Offer to help →
               </Btn>
             ) : (
-              <Btn variant="primary" onClick={() => setShowTakeItOn(true)} style={{ marginBottom: '8px' }}>
+              <Btn variant="primary" onClick={() => isFoundingRoot ? setShowDoors(true) : setShowTakeItOn(true)} style={{ marginBottom: '8px' }}>
                 Accept challenge →
               </Btn>
             )

@@ -115,6 +115,23 @@ async function refreshCounts(callId) {
   }).eq('id', callId)
 }
 
+// ─── Founding constellation clock lock ────────────────────────────────────────
+// Any challenge in the founding-nature lineage — the founding root itself or a
+// carried-forward descendant — plays to one shared close, not a per-participant
+// clock. Returns the close date (YYYY-MM-DD) when the call is in the lineage and
+// the beacon is live; null otherwise (the ordinary per-participant clock stands).
+async function foundingCloseFor(callId) {
+  const { data: beacon } = await supabase
+    .from('constellation_beacons')
+    .select('root_call_id, closes_on, status')
+    .eq('slug', 'founding-nature').maybeSingle()
+  if (!beacon || beacon.status !== 'live' || !beacon.root_call_id || !beacon.closes_on) return null
+  if (callId === beacon.root_call_id) return beacon.closes_on
+  const { data: ancestors } = await supabase.rpc('challenge_ancestors', { p_call_id: callId })
+  if (Array.isArray(ancestors) && ancestors.some(a => a.id === beacon.root_call_id)) return beacon.closes_on
+  return null
+}
+
 // ─── Handler ──────────────────────────────────────────────────────────────────
 
 module.exports = async (req, res) => {
@@ -220,6 +237,7 @@ module.exports = async (req, res) => {
       video_url: rest.video_url || null,
       cover_image_url: rest.cover_image_url || null,
       intensity_level: rest.intensity_level || null,
+      subdomain_slug: rest.subdomain_slug || null,
       ask_quantity: rest.ask_quantity || null,
       ask_deadline: rest.ask_deadline || null,
       ask_details: rest.ask_details || null,
@@ -309,10 +327,13 @@ module.exports = async (req, res) => {
     const { data: existing } = await supabase.from('actor_call_participants').select('*').eq('call_id', call_id).eq('user_id', userId).maybeSingle()
     if (existing) return res.json({ participant: existing, already_joined: true })
 
-    // Compute clock
+    // Compute clock. Inside the founding constellation, the clock is not the
+    // participant's to choose — everyone plays to the one shared close.
     const dur = call.duration_days || 90
     const clk = computeClock(clock_type, dur)
     const today = new Date().toISOString().slice(0, 10)
+    const foundingClose = await foundingCloseFor(call_id)
+    const endsOn = foundingClose || clk.targetDate
 
     // Strands the participant will run. Backfill (migration 131) means most
     // challenges already carry a protocol; synthesize a single strand from
@@ -328,7 +349,7 @@ module.exports = async (req, res) => {
     const { data: participant, error } = await supabase.from('actor_call_participants').insert({
       call_id, user_id: userId, session_id: null, status: 'active',
       scale: call.scale || 'civ',
-      started_on: today, ends_on: clk.targetDate,
+      started_on: today, ends_on: endsOn,
       protocol_snapshot: strands,
     }).select('*').single()
     if (error) return res.status(500).json({ error: error.message })
