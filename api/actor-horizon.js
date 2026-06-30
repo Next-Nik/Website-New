@@ -32,7 +32,7 @@ const { createClient } = require('@supabase/supabase-js')
 const { computeClock } = require('./_stretch-clock')
 const Anthropic        = require('@anthropic-ai/sdk')
 
-const supabase  = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+const supabase  = createClient(process.env.SUPABASE_URL, (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY))
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 const MODEL = 'claude-sonnet-4-6'
