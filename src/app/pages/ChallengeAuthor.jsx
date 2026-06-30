@@ -433,7 +433,7 @@ export default function ChallengeAuthor() {
             )}
 
             <div>
-              <Label>What is this about?</Label>
+              <Label>What domain?</Label>
               <select value={domain} onChange={e => pickDomain(e.target.value)} style={inputStyle}>
                 <option value="">Choose one…</option>
                 <optgroup label="Your life">
