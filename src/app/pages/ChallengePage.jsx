@@ -53,8 +53,9 @@ function Btn({ onClick, disabled, children, style = {}, variant = 'solid' }) {
     border: '1.5px solid rgba(200,146,42,0.78)', transition: 'all 0.2s',
     opacity: disabled ? 0.45 : 1,
   }
-  const styles = variant === 'ghost'
-    ? { ...base, background: 'transparent', color: tokens.gold }
+  const styles =
+      variant === 'ghost'   ? { ...base, background: 'transparent', color: tokens.gold }
+    : variant === 'primary' ? { ...base, background: tokens.goldChrome, color: '#FBF8F0', border: `1.5px solid ${tokens.gold}`, fontSize: '16px', fontWeight: 500, padding: '15px 36px', boxShadow: '0 10px 26px -14px rgba(168,114,26,0.55)' }
     : { ...base, background: 'rgba(200,146,42,0.08)', color: tokens.gold }
   return (
     <button type="button" onClick={onClick} disabled={disabled}
@@ -225,7 +226,7 @@ function ShareRail({ url, title, tagline, shareText }) {
     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center', margin: '16px 0' }}>
       {hasNative && (
         <button type="button" onClick={nativeShare}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.4)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(168,114,26,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
           Share →
         </button>
       )}
@@ -236,13 +237,13 @@ function ShareRail({ url, title, tagline, shareText }) {
             WhatsApp
           </a>
           <a href={mailUrl}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(200,146,42,0.35)', borderRadius: '20px', padding: '7px 16px', textDecoration: 'none' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(168,114,26,0.55)', borderRadius: '20px', padding: '7px 16px', textDecoration: 'none' }}>
             Email
           </a>
         </>
       )}
       <button type="button" onClick={copyLink}
-        style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: copied ? '#2A8C4F' : tokens.ghost, background: 'none', border: '1px solid rgba(15,21,35,0.18)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer', transition: 'color 0.2s' }}>
+        style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: copied ? '#2A8C4F' : tokens.gold, background: 'none', border: '1px solid rgba(168,114,26,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer', transition: 'color 0.2s' }}>
         {copied ? '✓ Copied' : 'Copy link'}
       </button>
     </div>
@@ -740,7 +741,7 @@ export function ChallengePage() {
 
   const colour  = DOMAIN_COLORS[call.domain] ? Object.values(DOMAIN_COLORS).find((_, i) => Object.keys(DOMAIN_COLORS)[i] === call.domain)?.base : GOLD_C
   const pageUrl = typeof window !== 'undefined' ? window.location.href : `https://nextus.world/stretch/c/${slug}`
-  const cadenceLabel = CADENCE_LABELS[call.cadence] || call.cadence
+  const cadenceLabel = CADENCE_LABELS[call.cadence] || (call.cadence ? call.cadence.charAt(0).toUpperCase() + call.cadence.slice(1) : call.cadence)
   const authorName   = call.nextus_actors?.name || null
   const strands      = Array.isArray(call.protocol) ? call.protocol.filter(s => s && s.text) : []
   const partners     = Array.isArray(call.partners) ? call.partners : []
@@ -748,6 +749,9 @@ export function ChallengePage() {
   return (
     <div style={{ background: tokens.bg, minHeight: '100dvh' }}>
       <Nav />
+      <style>{`
+        .np-lede::first-letter{ -webkit-initial-letter: 2; initial-letter: 2; color: #A8721A; font-weight: 500; font-family: 'Cormorant Garamond', Georgia, serif; margin-right: 14px; }
+      `}</style>
 
       {showTakeItOn && user && (
         <TakeItOnModal call={call} userId={user.id} onClose={() => setShowTakeItOn(false)}
@@ -766,13 +770,16 @@ export function ChallengePage() {
         {/* Cover — a single image leading the page, constrained to a centred
             plate so square illustrations and landscape banners both read whole. */}
         {call.cover_image_url && (
-          <div style={{ marginBottom: '28px', textAlign: 'center' }}>
-            <img
-              src={call.cover_image_url}
-              alt=""
-              loading="lazy"
-              style={{ width: '100%', maxWidth: '460px', height: 'auto', borderRadius: '16px', border: hair, display: 'inline-block' }}
-            />
+          <div style={{ marginBottom: '32px', textAlign: 'center' }}>
+            <div style={{ position: 'relative', display: 'inline-block', maxWidth: '460px', width: '100%' }}>
+              <div aria-hidden="true" style={{ position: 'absolute', inset: '-9%', background: 'radial-gradient(circle at 50% 46%, rgba(200,146,42,0.16), rgba(200,146,42,0.04) 45%, transparent 70%)', zIndex: 0, pointerEvents: 'none' }} />
+              <img
+                src={call.cover_image_url}
+                alt=""
+                loading="lazy"
+                style={{ position: 'relative', zIndex: 1, width: '100%', height: 'auto', borderRadius: '18px', border: hair, boxShadow: '0 18px 50px -28px rgba(15,21,35,0.32)', display: 'block' }}
+              />
+            </div>
           </div>
         )}
 
@@ -793,7 +800,7 @@ export function ChallengePage() {
               </span>
             )}
           </div>
-          <h1 style={{ ...serif, fontSize: 'clamp(1.75rem,5vw,3rem)', fontWeight: 300, color: tokens.dark, lineHeight: 1.1, margin: '0 0 10px' }}>
+          <h1 style={{ ...serif, fontSize: 'clamp(2.1rem,5.5vw,3.6rem)', fontWeight: 300, color: tokens.dark, lineHeight: 1.06, margin: '0 0 12px' }}>
             {call.title}
           </h1>
           {call.tagline && (
@@ -846,8 +853,8 @@ export function ChallengePage() {
                 Offer to help →
               </Btn>
             ) : (
-              <Btn onClick={() => setShowTakeItOn(true)} style={{ marginBottom: '8px' }}>
-                Take it on →
+              <Btn variant="primary" onClick={() => setShowTakeItOn(true)} style={{ marginBottom: '8px' }}>
+                Accept challenge →
               </Btn>
             )
           ) : (
@@ -933,9 +940,9 @@ export function ChallengePage() {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: '20px 22px', background: 'rgba(200,146,42,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
+              <div style={{ padding: '26px 28px', background: 'rgba(200,146,42,0.05)', border: `1.5px solid ${GOLD_C}`, borderRadius: '16px', marginBottom: '20px', boxShadow: '0 10px 40px -28px rgba(168,114,26,0.40)' }}>
                 <Eyebrow>The move</Eyebrow>
-                <p style={{ ...body, fontSize: '1.125rem', color: tokens.dark, lineHeight: 1.7, margin: 0 }}>
+                <p style={{ ...body, fontSize: '1.1875rem', color: tokens.dark, lineHeight: 1.6, margin: 0 }}>
                   {call.the_move}
                 </p>
               </div>
@@ -971,7 +978,7 @@ export function ChallengePage() {
             {call.body_long && (
               <div style={{ marginBottom: '20px' }}>
                 {String(call.body_long).split(/\n{2,}/).map((para, i) => (
-                  <p key={i} style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.75, margin: i === 0 ? '0 0 14px' : '0 0 14px' }}>
+                  <p key={i} className={i === 0 ? 'np-lede' : undefined} style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.75, margin: '0 0 14px' }}>
                     {para.split('\n').map((line, j) => <span key={j}>{j > 0 && <br />}{line}</span>)}
                   </p>
                 ))}
