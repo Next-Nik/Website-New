@@ -31,7 +31,7 @@ const supabase = createClient(
 
 const FLOOR_FIELDS = ['title', 'domain', 'scale', 'horizon_goal_text', 'the_move', 'cadence']
 
-function checkFloor(call) {
+function checkFloor(call, { requireAuthor = true } = {}) {
   const missing = FLOOR_FIELDS.filter(f => !call[f] || String(call[f]).trim().length < 3)
   const errors = []
   if (missing.length) errors.push(`Missing or too short: ${missing.join(', ')}`)
@@ -43,7 +43,7 @@ function checkFloor(call) {
     // Flag it but don't block — absolute cadence is allowed, just labeled
     // (the form discloses it to participants before they commit).
   }
-  if (!call.actor_id && !call.user_id) errors.push('A call must have at least one author (actor or user).')
+  if (requireAuthor && !call.actor_id && !call.user_id) errors.push('A call must have at least one author (actor or user).')
   return { passes: errors.length === 0, errors }
 }
 
@@ -124,8 +124,8 @@ module.exports = async (req, res) => {
 
   // ── validate_floor ─────────────────────────────────────────────────────────
   if (action === 'validate_floor') {
-    // Attach the author for the pre-flight check; create/publish set it for real.
-    return res.json(checkFloor({ ...body, user_id: userId }))
+    // Pre-flight is content only; the author is enforced at create and publish.
+    return res.json(checkFloor(body, { requireAuthor: false }))
   }
 
   // ── get_by_slug (public, no auth required) ─────────────────────────────────
