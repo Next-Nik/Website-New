@@ -90,6 +90,7 @@ import { SearchPage } from './app/pages/Search'
 import { ClaimPage } from './app/pages/Claim'
 import { InviteAuthorPage } from './app/pages/InviteAuthor'
 import { InvitePage } from './app/pages/InvitePage'
+import { RemovePage } from './app/pages/RemovePage'
 import InstallPage from './app/pages/InstallPage'
 import WatchedFeed from './app/pages/WatchedFeed'
 import CuratedFeed from './app/pages/CuratedFeed'
@@ -334,6 +335,7 @@ function AppInner() {
         <Route path="/org/:id/claim"                element={<ClaimPage />} />
         <Route path="/invite/new"                   element={<InviteAuthorPage />} />
         <Route path="/i/:token"                     element={<InvitePage />} />
+        <Route path="/remove/:token"                element={<RemovePage />} />
         <Route path="/search"                       element={<SearchPage />} />
         <Route path="/app"                          element={<InstallPage />} />
         <Route path="/org/:slug/manage"             element={<OrgManagePage />} />

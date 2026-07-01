@@ -104,6 +104,8 @@ const EMPTY = {
   why:               '',
   nominator_name:    '',
   nominator_email:   '',
+  org_email:         '',        // optional: lets us send the honouring note
+  nominator_can_name: false,    // opt-in: may we name you to the org
 }
 
 // ── Main page ─────────────────────────────────────────────────
@@ -189,6 +191,7 @@ export function NominatePage() {
       data_source:        `Nominated by ${form.nominator_name.trim() || form.nominator_email.trim()}`,
       nominator_name:     form.nominator_name.trim() || null,
       nominator_email:    form.nominator_email.trim() || null,
+      nominator_can_name: !!form.nominator_can_name,
       seeded_by:          'community',
       vetting_status:     'nominated',
       horizon_floor_status: 'compatible', // nominator self-attests by submitting
@@ -209,6 +212,20 @@ export function NominatePage() {
     }
 
     if (inserted?.id) setNominatedId(inserted.id)
+
+    // If the nominator gave the org a way to be reached, send the honouring note.
+    // Human-vouched tier only (this is a nomination). Fire-and-forget: never
+    // block the success screen, and silence is fine if there is no email.
+    if (inserted?.id && form.org_email.trim()) {
+      fetch('/api/nomination-note', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          actorId: inserted.id,
+          toEmail: form.org_email.trim(),
+          nominatorName: form.nominator_can_name ? (form.nominator_name.trim() || null) : null,
+        }),
+      }).catch(() => {})
+    }
     setDone(true)
   }
 
@@ -417,6 +434,23 @@ export function NominatePage() {
                 <Hint>We use this to follow up and give you updates on the nomination.</Hint>
               </Field>
             </div>
+
+            <Field style={{ marginTop: '16px' }}>
+              <Label>Their contact email</Label>
+              <TextInput value={form.org_email} onChange={v => set('org_email', v)} placeholder="Optional" type="email" />
+              <Hint>If you have it, we will send a short note letting them know their work was suggested, with a link to claim or remove the profile. If not, we leave them be.</Hint>
+            </Field>
+
+            {form.org_email.trim() && (
+              <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginTop: '14px', cursor: 'pointer' }}>
+                <input type="checkbox" checked={form.nominator_can_name}
+                  onChange={e => set('nominator_can_name', e.target.checked)}
+                  style={{ marginTop: '4px', accentColor: gold, width: '16px', height: '16px' }} />
+                <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.7)', lineHeight: 1.55 }}>
+                  You can tell them I suggested it. Otherwise the note simply says someone in the community did.
+                </span>
+              </label>
+            )}
           </div>
 
           {/* Error */}
