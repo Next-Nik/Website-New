@@ -19,9 +19,10 @@
 //     invites owners to upload their own.
 
 const { createClient } = require('@supabase/supabase-js')
-const https = require('https')
-const http  = require('http')
-const path  = require('path')
+const https  = require('https')
+const http   = require('http')
+const path   = require('path')
+const crypto = require('crypto')
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -71,6 +72,29 @@ module.exports = async (req, res) => {
     }
 
     const { actorId, imageUrl, imageData } = req.body || {}
+
+    // Stateless upload — a file chosen in the Add builder, before the actor row
+    // exists. Store it under a random key in the same bucket and hand back the
+    // public URL. On submit, the row-linked rehost re-keys it to the actor id.
+    if (imageData && !actorId) {
+      const decoded = decodeImageData(imageData)
+      if (!decoded) return res.status(400).json({ error: 'Could not read the uploaded image' })
+      if (decoded.buffer.length > 5 * 1024 * 1024) return res.status(413).json({ error: 'Image is larger than 5MB' })
+      const ext      = extFromContentType(decoded.contentType)
+      const filePath = `pending/${crypto.randomUUID()}.${ext}`
+      const { error: uploadError } = await supabase.storage
+        .from(BUCKET)
+        .upload(filePath, decoded.buffer, { contentType: decoded.contentType, upsert: false })
+      if (uploadError) {
+        const hint = /bucket|not found/i.test(uploadError.message || '')
+          ? ` (the "${BUCKET}" storage bucket may not exist — create it as a public bucket in Supabase)`
+          : ''
+        return res.status(500).json({ error: `Storage upload failed: ${uploadError.message}${hint}` })
+      }
+      const { data: { publicUrl } } = supabase.storage.from(BUCKET).getPublicUrl(filePath)
+      return res.json({ uploaded: true, image_url: publicUrl })
+    }
+
     if (!actorId) return res.status(400).json({ error: 'actorId required' })
 
     // Load actor to get current image_url if imageUrl not provided

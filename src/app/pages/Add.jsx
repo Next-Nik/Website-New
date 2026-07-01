@@ -28,6 +28,7 @@ import { PRINCIPLES_ORDERED } from '../constants/principles'
 import PrincipleStrip from '../components/PrincipleStrip'
 import { SCALES as CANONICAL_SCALES } from '../constants/scales'
 import { serif, body, sc } from '../../lib/designTokens'
+import { downscaleImage } from '../../lib/imageDownscale'
 
 // ── Design tokens ─────────────────────────────────────────────
 const gold  = '#A8721A'
@@ -296,6 +297,8 @@ export function AddPage() {
   // ── Staged flow: 'source' (paste URL / choose manual) → 'form' (review & edit)
   const [stage, setStage]           = useState('source')
   const [imgBroken, setImgBroken]   = useState(false)
+  const [imgBusy, setImgBusy]       = useState(false)
+  const [imgErr, setImgErr]         = useState('')
 
   // ── URL autofill state ───────────────────────────────────────
   const [aiUrl, setAiUrl]           = useState('')
@@ -327,6 +330,29 @@ export function AddPage() {
   }, [])
 
   function set(field, value) { setForm(f => ({ ...f, [field]: value })) }
+
+  // Upload a file from the device, downscale in-browser, host it, and drop the
+  // resulting public URL into image_url — same mechanic as the challenge author.
+  async function onPickImage(e) {
+    const file = e.target.files?.[0]
+    if (e.target) e.target.value = ''
+    if (!file) return
+    setImgErr(''); setImgBusy(true)
+    try {
+      const { dataUrl } = await downscaleImage(file)
+      const res = await fetch('/api/actor-image-upload', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageData: dataUrl }),
+      })
+      const json = await res.json()
+      if (!res.ok || !json.image_url) throw new Error(json.error || 'Upload failed')
+      set('image_url', json.image_url); setImgBroken(false)
+    } catch (err) {
+      setImgErr(err.message || 'Could not upload that image')
+    } finally {
+      setImgBusy(false)
+    }
+  }
 
   // ── Duplicate check on name/website change ───────────────────
   useEffect(() => {
@@ -842,7 +868,7 @@ export function AddPage() {
           {/* Image */}
           <Field>
             <FieldLabel>Image</FieldLabel>
-            <Hint>Logo for organisations, portrait for practitioners. Found automatically when reading a source — paste a different image URL to replace it.</Hint>
+            <Hint>Logo for organisations, portrait for practitioners. Found automatically when reading a source · upload your own or paste an image URL to replace it.</Hint>
             <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginTop: '8px' }}>
               <div style={{ width: '72px', height: '72px', borderRadius: '10px', flexShrink: 0,
                 border: '1.5px solid rgba(200,146,42,0.28)',
@@ -863,9 +889,22 @@ export function AddPage() {
                 )}
               </div>
               <div style={{ flex: 1 }}>
-                <TextInput value={form.image_url} onChange={v => { set('image_url', v); setImgBroken(false) }}
-                  onBlur={() => set('image_url', normaliseUrl(form.image_url))}
-                  placeholder="https://example.org/logo.png" />
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch', flexWrap: 'wrap' }}>
+                  <div style={{ flex: 1, minWidth: '180px' }}>
+                    <TextInput value={form.image_url} onChange={v => { set('image_url', v); setImgBroken(false) }}
+                      onBlur={() => set('image_url', normaliseUrl(form.image_url))}
+                      placeholder="Upload a photo, or paste an image URL" />
+                  </div>
+                  <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase',
+                    display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
+                    padding: '10px 18px', borderRadius: '8px', cursor: imgBusy ? 'default' : 'pointer',
+                    border: '1.5px solid rgba(200,146,42,0.4)', color: gold,
+                    background: '#FFFFFF', opacity: imgBusy ? 0.55 : 1 }}>
+                    {imgBusy ? 'Uploading…' : 'Upload'}
+                    <input type="file" accept="image/*" disabled={imgBusy} onChange={onPickImage} style={{ display: 'none' }} />
+                  </label>
+                </div>
+                {imgErr && <p style={{ ...body, fontSize: '13px', color: '#B5482E', margin: '8px 0 0' }}>{imgErr}</p>}
               </div>
             </div>
           </Field>
