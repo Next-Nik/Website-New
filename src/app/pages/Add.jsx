@@ -285,11 +285,21 @@ export function AddPage() {
   // Where to send the author after a self-registration, if they arrived mid-flow
   // (e.g. the Earth Challenge "Create a challenge" door sends a new author here
   // to set up an org or profile, then back to the builder).
-  const returnTo = new URLSearchParams(location.search).get('then')
+  const _params  = new URLSearchParams(location.search)
+  const returnTo = _params.get('then')
+
+  // Owned-only mode: the author-profile floor. Reached from the challenge author
+  // surface, where the only valid outcome is a profile the person controls.
+  // No third-party option, and name + picture + statement are all required —
+  // you show up as a findable someone, or you don't publish a challenge.
+  const mineMode = _params.get('mine') === '1'
+  const mineType = _params.get('type') || ''   // 'org' | 'practitioner'
 
   // ── Primary form state ───────────────────────────────────────
-  const [form, setForm]             = useState(EMPTY_FORM)
-  const [represents, setRepresents] = useState(false)
+  const [form, setForm]             = useState(mineType === 'practitioner'
+    ? { ...EMPTY_FORM, type: 'practitioner' }
+    : EMPTY_FORM)
+  const [represents, setRepresents] = useState(mineMode ? true : false)
   const [saving, setSaving]         = useState(false)
   const [saved, setSaved]           = useState([])
   const [error, setError]           = useState(null)
@@ -478,6 +488,10 @@ export function AddPage() {
   async function submit(e) {
     e.preventDefault()
     if (!form.name.trim())    { setError('Name is required.'); return }
+    if (mineMode) {
+      if (!form.image_url.trim())   { setError('A picture is required. Add a photo or logo so people can see who is showing up.'); return }
+      if (!form.description.trim()) { setError('A statement of what you do is required.'); return }
+    }
     if (!form.primary_domain) { setError('Please select a primary domain.'); return }
 
     setSaving(true); setError(null)
@@ -652,15 +666,18 @@ export function AddPage() {
 
         {/* Header */}
         <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em', color: gold,
-          textTransform: 'uppercase', marginBottom: '12px' }}>Atlas</div>
+          textTransform: 'uppercase', marginBottom: '12px' }}>{mineMode ? 'Your author profile' : 'Atlas'}</div>
         <h1 style={{ ...serif, fontSize: 'clamp(30px,5vw,46px)', fontWeight: 400,
           color: dark, lineHeight: 1.08, marginBottom: '10px' }}>
-          Add to the ecosystem
+          {mineMode
+            ? (form.type === 'practitioner' ? 'Set up your profile' : 'Set up your organisation')
+            : 'Add to the ecosystem'}
         </h1>
         <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.65)',
           lineHeight: 1.7, marginBottom: '24px', maxWidth: '520px' }}>
-          Know an organisation, practitioner, place, or project doing serious work toward a Horizon Goal?
-          Add them. They go live immediately.
+          {mineMode
+            ? 'This is yours to own and manage. A challenge is published by someone others can find and follow, so a name, a picture, and a statement of what you do are all required.'
+            : 'Know an organisation, practitioner, place, or project doing serious work toward a Horizon Goal? Add them. They go live immediately.'}
         </p>
 
         {/* ── STAGE 1 — SOURCE ────────────────────────────────
@@ -669,7 +686,11 @@ export function AddPage() {
             after a source is read or manual entry is chosen. */}
         {stage === 'source' && (
           <>
-        {/* ── Representation toggle ─────────────────────────── */}
+        {/* ── Representation toggle ───────────────────────────
+            Hidden in owned-only mode: the only valid outcome there is a
+            profile the person controls, so there is no "adding to the
+            ecosystem" option to offer. */}
+        {!mineMode && (
         <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.22)',
           borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
           <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.20em',
@@ -730,18 +751,20 @@ export function AddPage() {
             ))}
           </div>
         </div>
+        )}
 
         {/* ── Optional URL autofill ─────────────────────────── */}
         <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.22)',
           borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
           <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.20em',
             color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '8px' }}>
-            Start from any source
+            {mineMode ? 'Have a website?' : 'Start from any source'}
           </div>
           <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
             lineHeight: 1.55, marginBottom: '12px' }}>
-            Their website, or any page where their work shows up — or a few words if there's no URL.
-            Podcasts, newsletters, and channels become links on their profile.
+            {mineMode
+              ? 'Optional. Paste a link and we will fill in what we can, then you review it. Or skip and fill it in yourself below.'
+              : 'Their website, or any page where their work shows up — or a few words if there\'s no URL. Podcasts, newsletters, and channels become links on their profile.'}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <textarea value={aiUrl}
@@ -795,7 +818,7 @@ export function AddPage() {
                 style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)',
                   background: 'none', border: 'none', cursor: 'pointer',
                   textDecoration: 'underline', textUnderlineOffset: '3px' }}>
-                No URL? Fill in manually
+                {mineMode ? 'Fill it in yourself' : 'No URL? Fill in manually'}
               </button>
             </div>
           </>
@@ -867,8 +890,10 @@ export function AddPage() {
 
           {/* Image */}
           <Field>
-            <FieldLabel>Image</FieldLabel>
-            <Hint>Logo for organisations, portrait for practitioners. Found automatically when reading a source · upload your own or paste an image URL to replace it.</Hint>
+            <FieldLabel required={mineMode}>Image</FieldLabel>
+            <Hint>{mineMode
+              ? 'A picture is required. A portrait if this is you, a logo or mark if it is your organisation. Upload one or paste an image URL.'
+              : 'Logo for organisations, portrait for practitioners. Found automatically when reading a source · upload your own or paste an image URL to replace it.'}</Hint>
             <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginTop: '8px' }}>
               <div style={{ width: '72px', height: '72px', borderRadius: '10px', flexShrink: 0,
                 border: '1.5px solid rgba(200,146,42,0.28)',
@@ -973,8 +998,10 @@ export function AddPage() {
 
           {/* Description */}
           <Field>
-            <FieldLabel>Description</FieldLabel>
-            <Hint>What do they actually do? One sentence on what they are, one on the specific thing that makes them worth adding.</Hint>
+            <FieldLabel required={mineMode}>{mineMode ? 'What you do' : 'Description'}</FieldLabel>
+            <Hint>{mineMode
+              ? 'One or two plain sentences on what you do and the part you are taking. This is what people read before they decide to join you.'
+              : 'What do they actually do? One sentence on what they are, one on the specific thing that makes them worth adding.'}</Hint>
             <div style={{ marginTop: '8px' }}>
               <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={4}
                 style={{ ...body, fontSize: '15px', color: dark, padding: '10px 14px',

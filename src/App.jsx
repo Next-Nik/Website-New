@@ -88,6 +88,8 @@ import { FocusIndex } from './app/pages/FocusIndex'
 import { Explore } from './app/pages/Explore'
 import { SearchPage } from './app/pages/Search'
 import { ClaimPage } from './app/pages/Claim'
+import { InviteAuthorPage } from './app/pages/InviteAuthor'
+import { InvitePage } from './app/pages/InvitePage'
 import InstallPage from './app/pages/InstallPage'
 import WatchedFeed from './app/pages/WatchedFeed'
 import CuratedFeed from './app/pages/CuratedFeed'
@@ -330,6 +332,8 @@ function AppInner() {
         <Route path="/challenges/partners"          element={<PartnerInbox />} />
         <Route path="/org/:slug"                    element={<OrgPublicPage />} />
         <Route path="/org/:id/claim"                element={<ClaimPage />} />
+        <Route path="/invite/new"                   element={<InviteAuthorPage />} />
+        <Route path="/i/:token"                     element={<InvitePage />} />
         <Route path="/search"                       element={<SearchPage />} />
         <Route path="/app"                          element={<InstallPage />} />
         <Route path="/org/:slug/manage"             element={<OrgManagePage />} />

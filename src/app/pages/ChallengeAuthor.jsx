@@ -103,6 +103,8 @@ export default function ChallengeAuthor() {
   const nav = useNavigate()
   const [searchParams] = useSearchParams()
   const founding = searchParams.get('carry') === 'founding-nature'
+  // Where the author-profile builder and invite flow return to.
+  const backTo   = founding ? '/challenges/new?carry=founding-nature' : '/challenges/new'
 
   const [ownedActors, setOwnedActors] = useState([])
   const [authorActor, setAuthorActor] = useState('')   // '' = as yourself
@@ -198,7 +200,7 @@ export default function ChallengeAuthor() {
     if (!ownedActors.length) return
     if (actingAsActorId && ownedActors.some(a => a.id === actingAsActorId)) {
       setAuthorActor(actingAsActorId)
-    } else if (founding && !authorActor) {
+    } else if (!authorActor) {
       setAuthorActor(ownedActors[0].id)
     }
   }, [ownedActors, actingAsActorId, founding])
@@ -348,7 +350,7 @@ export default function ChallengeAuthor() {
   }
 
   async function createAndPublish(visibility) {
-    if (founding && !authorActor) { setErrors(['Choose the org or profile authoring this challenge.']); return }
+    if (!authorActor) { setErrors(['Choose the org or profile authoring this challenge, or set one up.']); return }
     if (founding && !subdomainSlug) { setErrors(['Choose which part of the living world this touches.']); return }
     setSaving(true); setErrors([])
     const payload = buildPayload()
@@ -488,34 +490,45 @@ export default function ChallengeAuthor() {
               </div>
             </div>
 
-            {founding ? (
-              ownedActors.length > 0 ? (
-                <div>
-                  <Label>Author as</Label>
-                  <select value={authorActor} onChange={e => { authorTouched.current = true; setAuthorActor(e.target.value) }} style={inputStyle}>
-                    {ownedActors.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-                  </select>
-                </div>
-              ) : (
-                <div style={{ background: tokens.bgCard, border: hair, borderRadius: '12px', padding: '16px 18px' }}>
-                  <p style={{ ...body, fontSize: '15px', color: tokens.dark, lineHeight: 1.6, margin: '0 0 12px' }}>
-                    A challenge needs an author others can find. Set up your org or profile first. It takes a minute.
-                  </p>
-                  <a href={`/add?then=${encodeURIComponent('/challenges/new?carry=founding-nature')}`}
-                    style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: tokens.gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '9px 20px', display: 'inline-block' }}>
-                    Set yourself up →
-                  </a>
-                </div>
-              )
-            ) : (ownedActors.length > 0 && (
+            {ownedActors.length > 0 ? (
               <div>
                 <Label>Author as</Label>
                 <select value={authorActor} onChange={e => { authorTouched.current = true; setAuthorActor(e.target.value) }} style={inputStyle}>
-                  <option value="">Yourself</option>
                   {ownedActors.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                 </select>
+                <a href={`/invite/new?then=${encodeURIComponent(backTo)}`}
+                  style={{ ...body, fontSize: '14px', color: tokens.gold, textDecoration: 'none',
+                    display: 'inline-block', marginTop: '10px', borderBottom: '1px solid rgba(200,146,42,0.4)' }}>
+                  or invite an organisation to take part
+                </a>
               </div>
-            ))}
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <p style={{ ...body, fontSize: '15px', color: tokens.dark, lineHeight: 1.6, margin: '0 0 4px' }}>
+                  A challenge is published by someone others can find and follow. Choose how you want to show up.
+                </p>
+                {[
+                  { href: `/add?mine=1&type=org&then=${encodeURIComponent(backTo)}`,
+                    title: 'As an organisation you run',
+                    hint: 'Set up the organisation or project you represent, then publish as it.' },
+                  { href: `/add?mine=1&type=practitioner&then=${encodeURIComponent(backTo)}`,
+                    title: 'As yourself',
+                    hint: 'Set up your own profile: name, picture, and what you do. It takes a minute.' },
+                  { href: `/invite/new?then=${encodeURIComponent(backTo)}`,
+                    title: 'Invite an organisation to take part',
+                    hint: 'Reach out to them yourself. Nothing is created in their name until they join.' },
+                ].map(p => (
+                  <a key={p.title} href={p.href}
+                    style={{ display: 'block', background: tokens.bgCard, border: hair,
+                      borderRadius: '12px', padding: '15px 18px', textDecoration: 'none' }}>
+                    <div style={{ ...serif, fontWeight: 400, fontSize: '19px', color: tokens.dark, marginBottom: '3px' }}>
+                      {p.title} <span style={{ color: tokens.gold }}>&rarr;</span>
+                    </div>
+                    <div style={{ ...body, fontSize: '14px', color: tokens.meta, lineHeight: 1.5 }}>{p.hint}</div>
+                  </a>
+                ))}
+              </div>
+            )}
 
             {founding ? (
               <div>

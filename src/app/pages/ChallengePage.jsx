@@ -384,9 +384,10 @@ function TakeItOnModal({ call, userId, onClose, onJoined }) {
 // everyone in the constellation plays to the one shared close.
 
 function FoundingDoorsModal({ hasActor, onClose }) {
-  const createHref = hasActor
-    ? '/challenges/new?carry=founding-nature'
-    : `/add?then=${encodeURIComponent('/challenges/new?carry=founding-nature')}`
+  // Everyone lands on the author surface. If they have no controlled actor yet,
+  // the three-path chooser there sets them up; no one is routed into the generic
+  // "add anyone to the ecosystem" page, where authoring is a dead end.
+  const createHref = '/challenges/new?carry=founding-nature'
   const cream = '#FBF8F0', cream80 = 'rgba(251,248,240,0.82)', cream60 = 'rgba(251,248,240,0.60)', goldT = '#D7A24A'
   const door = (href, title, sub) => (
     <a href={href} style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', textDecoration: 'none',
