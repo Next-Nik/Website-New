@@ -82,13 +82,14 @@ async function ownsCall(callId, userId) {
   return { exists: true, owned, actor_id: data.actor_id, user_id: data.user_id }
 }
 
-// Founder = the platform admin role (user_metadata.role === 'founder'). Verified
-// server-side via the service-role auth admin API, never trusted from the body.
+// Founder = the platform admin role (app_metadata.role === 'founder' or
+// user_metadata.role === 'founder'). Verified server-side via the service-role
+// auth admin API, never trusted from the body.
 async function isFounder(userId) {
   if (!userId) return false
   try {
     const { data } = await supabase.auth.admin.getUserById(userId)
-    return data?.user?.user_metadata?.role === 'founder'
+    return data?.user?.app_metadata?.role === 'founder' || data?.user?.user_metadata?.role === 'founder'
   } catch { return false }
 }
 

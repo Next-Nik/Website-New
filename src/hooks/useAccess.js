@@ -5,7 +5,7 @@ const TIER_RANK = { full: 3, beta: 2, preview: 1, none: 0 }
 
 // Founder check — matches AdminConsole and ContentEditor pattern
 function isFounder(user) {
-  return user?.user_metadata?.role === 'founder'
+  return user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder'
 }
 
 // ─── Paywall disabled ─────────────────────────────────────────────────────────

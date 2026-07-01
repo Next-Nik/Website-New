@@ -465,7 +465,7 @@ export default function ProfileEdit() {
       {/* Founder tools — visible only to founder accounts. Surfaces unfinished
           or restricted tools (e.g. PlanetMap, currently founder-only beta) so
           they're reachable for testing without typing URLs by hand. */}
-      {user?.user_metadata?.role === 'founder' && (
+      {(user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder') && (
         <Section eyebrow="Founder" title="Tools in development">
           <FounderToolsLinks />
         </Section>

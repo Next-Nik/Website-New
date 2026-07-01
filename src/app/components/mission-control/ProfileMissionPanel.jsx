@@ -74,7 +74,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
   const [savingLocation,  setSavingLocation]  = useState(false)
   const [locationPulse,   setLocationPulse]   = useState(false)
 
-  const isFounder = user?.user_metadata?.role === 'founder'
+  const isFounder = user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder'
   const userId    = user?.id
   const email     = user?.email || ''
   const fullName  = user?.user_metadata?.full_name || email.split('@')[0] || 'You'

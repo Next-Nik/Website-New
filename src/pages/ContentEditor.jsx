@@ -7,7 +7,7 @@ import { body, sc } from '../lib/designTokens'
 import { COPY_GROUPS, COPY_DEFAULTS } from '../lib/siteCopy'
 
 function isFounder(user) {
-  return user?.user_metadata?.role === 'founder'
+  return user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder'
 }
 
 const gold  = '#A8721A'

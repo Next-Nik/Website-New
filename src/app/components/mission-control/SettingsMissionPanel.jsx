@@ -51,7 +51,7 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
   const [loaded,     setLoaded]     = useState(false)
   const [copyState,  setCopyState]  = useState(null) // 'id' | 'email' | null
 
-  const isFounder = user?.user_metadata?.role === 'founder'
+  const isFounder = user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder'
   const userId    = user?.id
   const email     = user?.email || ''
 

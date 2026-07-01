@@ -1086,7 +1086,7 @@ function ProfileView({ user, onSignOut }) {
   const name   = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'You'
   const email  = user?.email ?? ''
   const initials = name.charAt(0).toUpperCase()
-  const isFounder = user?.user_metadata?.role === 'founder'
+  const isFounder = user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder'
 
   const [horizonSelf, setHorizonSelf] = useState(user?.user_metadata?.horizon_self ?? '')
   const [editing,     setEditing]     = useState(false)
@@ -1771,7 +1771,7 @@ export function DashboardPage() {
   const hasScores    = Object.keys(currentScores).length > 0
   const name         = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'You'
   const initials     = name.charAt(0).toUpperCase()
-  const isFounder    = user?.user_metadata?.role === 'founder'
+  const isFounder    = user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder'
   const archetype    = purposeData?.session?.tentative?.archetype?.archetype
   const domain       = purposeData?.session?.tentative?.domain?.domain
   const scale        = purposeData?.session?.tentative?.scale?.scale

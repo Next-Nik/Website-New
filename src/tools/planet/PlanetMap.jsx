@@ -20,7 +20,7 @@ import { EffortSignalPanel } from '../../app/components/EffortSignalPanel'
 import { serif, body, sc } from '../../lib/designTokens'
 
 function isFounder(user) {
-  return user?.user_metadata?.role === 'founder'
+  return user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder'
 }
 
 // TODO: confirm this key exists in src/constants/routes.js — add ROUTES.planetMap = '/tools/planet' if missing
