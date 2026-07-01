@@ -5,7 +5,7 @@
 // a domain chip says what it's about. Each card links to the public page.
 
 import { useState, useEffect, useMemo } from 'react'
-import { Link }       from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Nav }        from '../../components/Nav'
 import { tokens, serif, body, sc } from '../../lib/designTokens'
 import {
@@ -64,9 +64,14 @@ function Card({ c }) {
 }
 
 export default function ChallengeBrowse() {
+  // Deep links can pre-filter the shelf (?domain=nature) — the founding doors
+  // use this so someone accepting the Earth Challenge lands among its kin,
+  // not the whole cross-domain catalogue.
+  const [searchParams]        = useSearchParams()
+  const urlDomain             = searchParams.get('domain') || ''
   const [rows, setRows]       = useState([])
   const [loading, setLoading] = useState(true)
-  const [domain, setDomain]   = useState('')   // '' = all
+  const [domain, setDomain]   = useState(LABELS[urlDomain] ? urlDomain : '')   // '' = all
   const [intensity, setIntensity] = useState(null) // null = any
 
   useEffect(() => {

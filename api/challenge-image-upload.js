@@ -18,8 +18,24 @@ const supabase = createClient(
 const BUCKET = 'challenge-images'
 const MAX_BYTES = 6 * 1024 * 1024
 
+// Uploads require a signed-in user. The bucket is public to read, never to
+// write — without this gate the endpoint is anonymous file hosting.
+async function getUserId(req) {
+  const header = req.headers.authorization || ''
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null
+  if (!token) return null
+  try {
+    const { data, error } = await supabase.auth.getUser(token)
+    if (error || !data?.user) return null
+    return data.user.id
+  } catch { return null }
+}
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
+
+  const uid = await getUserId(req)
+  if (!uid) return res.status(401).json({ error: 'Sign in to upload an image.' })
 
   const { dataUrl, ext } = req.body || {}
   if (!dataUrl || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) {

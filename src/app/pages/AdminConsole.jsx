@@ -3287,7 +3287,9 @@ function FloorTab({ toast }) {
               </button>
               {a.image_provenance === 'hotlink' && (
                 <button type="button" onClick={async () => {
-                  const r = await fetch('/api/actor-image-upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ actorId: a.id }) })
+                  let token = null
+                  try { token = (await supabase.auth.getSession()).data.session?.access_token || null } catch {}
+                  const r = await fetch('/api/actor-image-upload', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ actorId: a.id }) })
                   const d = await r.json()
                   d.uploaded ? toast('Image uploaded to storage') : toast('Upload failed: ' + d.error)
                   load()

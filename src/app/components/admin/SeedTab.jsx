@@ -218,10 +218,12 @@ export default function SeedTab({ toast }) {
     }
     // Rehost hotlinked logos into the actor-images bucket so they survive the
     // source site changing. Fire-and-forget — the record is already live.
+    let rehostToken = null
+    try { rehostToken = (await supabase.auth.getSession()).data.session?.access_token || null } catch {}
     for (const a of placed) {
       if (!a.image_url) continue
       fetch('/api/actor-image-upload', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...(rehostToken ? { Authorization: `Bearer ${rehostToken}` } : {}) },
         body: JSON.stringify({ actorId: a.id }),
       }).catch(() => {})
     }

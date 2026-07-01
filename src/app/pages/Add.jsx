@@ -350,8 +350,10 @@ export function AddPage() {
     setImgErr(''); setImgBusy(true)
     try {
       const { dataUrl } = await downscaleImage(file)
+      let imgToken = null
+      try { imgToken = (await supabase.auth.getSession()).data.session?.access_token || null } catch {}
       const res = await fetch('/api/actor-image-upload', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...(imgToken ? { Authorization: `Bearer ${imgToken}` } : {}) },
         body: JSON.stringify({ imageData: dataUrl }),
       })
       const json = await res.json()
@@ -582,7 +584,7 @@ export function AddPage() {
       const img = (actor.data.image_url || '').trim()
       if (!img) continue
       fetch('/api/actor-image-upload', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ actorId: actor.id, imageUrl: img }),
       }).catch(() => {})
     }

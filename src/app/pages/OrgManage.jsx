@@ -157,8 +157,10 @@ function ProfileTab({ actor, onSave, toast }) {
     setUploadingImage(true)
     try {
       const dataUrl = await fileToResizedDataUrl(file)
+      let token = null
+      try { token = (await supabase.auth.getSession()).data.session?.access_token || null } catch {}
       const res = await fetch('/api/actor-image-upload', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ actorId: actor.id, imageData: dataUrl }),
       })
       const out = await res.json().catch(() => ({}))

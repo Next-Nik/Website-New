@@ -19,14 +19,6 @@ function shade(hex, i, n) {
   return `rgb(${mix(r)},${mix(g)},${mix(b)})`
 }
 
-// Close: Sep 28, 2026, the day after Climate Week NYC ends (the week runs Sep
-// 20–27). Ending a day past the event keeps the challenge's close off the
-// busiest day and gives it a clear day of its own. End of day, NYC time.
-const CLIMATE_WEEK = new Date('2026-09-28T23:59:59-04:00')
-function daysToClimateWeek() {
-  return Math.max(0, Math.ceil((CLIMATE_WEEK.getTime() - Date.now()) / 86400000))
-}
-
 export default function ConstellationMeter({ domain, colour }) {
   const [data, setData] = useState(null)
 
@@ -43,7 +35,6 @@ export default function ConstellationMeter({ domain, colour }) {
   if (!data || !data.total) return null
   const parts = data.parts || []
   const sum   = parts.reduce((s, p) => s + p.count, 0) || 1
-  const days  = daysToClimateWeek()
 
   return (
     <div style={{ marginTop: '20px', marginBottom: '20px' }}>
@@ -62,7 +53,7 @@ export default function ConstellationMeter({ domain, colour }) {
           {data.total.toLocaleString()}
         </div>
         <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
-          people in{days > 0 ? ` · ${days} days to Climate Week` : ''}
+          people in
         </div>
 
         {parts.length > 0 && (

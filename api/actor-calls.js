@@ -188,7 +188,13 @@ module.exports = async (req, res) => {
         .map(r => r.nextus_actors)
         .filter(Boolean)
     } catch {}
-    return res.json({ call: { ...data, cosigner_count: cosignerCount, partners } })
+    // Founding constellation membership — lets the page show the shared close
+    // instead of a per-participant clock, and the beacon instead of the
+    // domain meter. Fail soft: a miss just means the ordinary clock UI.
+    let foundingClose = null
+    try { foundingClose = await foundingCloseFor(data.id) } catch {}
+    return res.json({ call: { ...data, cosigner_count: cosignerCount, partners,
+      in_founding_constellation: !!foundingClose, founding_closes_on: foundingClose } })
   }
 
   // ── get_my_calls ───────────────────────────────────────────────────────────
@@ -632,10 +638,14 @@ module.exports = async (req, res) => {
     const { q, limit = 8 } = body
     if (!q || q.trim().length < 2) return res.json({ actors: [] })
     const { data } = await supabase.from('nextus_actors')
-      .select('id, name, type, image_url')
+      .select('id, name, slug, type, image_url, profile_owner')
       .ilike('name', `%${q.trim()}%`)
       .limit(limit)
-    return res.json({ actors: data || [] })
+    // profile_owner travels as a claimed/unclaimed flag only — never the id.
+    return res.json({ actors: (data || []).map(a => ({
+      id: a.id, name: a.name, slug: a.slug, type: a.type, image_url: a.image_url,
+      claimed: !!a.profile_owner,
+    })) })
   }
 
   // ── flag ──────────────────────────────────────────────────────────────────

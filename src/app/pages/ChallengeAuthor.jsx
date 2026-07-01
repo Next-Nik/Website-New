@@ -49,6 +49,13 @@ const CADENCES = [
   { v: 'monthly',        l: 'Monthly' },
 ]
 
+function fmtCloseDate(iso, opts = { month: 'long', day: 'numeric', year: 'numeric' }) {
+  if (!iso) return null
+  const [y, m, d] = String(iso).split('-').map(Number)
+  if (!y || !m || !d) return null
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', opts)
+}
+
 function todayStr() {
   const d = new Date()
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -107,8 +114,18 @@ export default function ChallengeAuthor() {
   const backTo   = founding ? '/challenges/new?carry=founding-nature' : '/challenges/new'
 
   const [ownedActors, setOwnedActors] = useState([])
-  const [authorActor, setAuthorActor] = useState('')   // '' = as yourself
+  const [authorActor, setAuthorActor] = useState('')   // actor id authoring this
   const authorTouched = useRef(false)
+  // Inline author setup — no one leaves this page to become an author.
+  const [authorMode,  setAuthorMode]  = useState('self')  // self | org | invite
+  const [selfName,    setSelfName]    = useState('')
+  const [selfLine,    setSelfLine]    = useState('')
+  const [selfImg,     setSelfImg]     = useState('')
+  const [selfImgBusy, setSelfImgBusy] = useState(false)
+  const [selfBusy,    setSelfBusy]    = useState(false)
+  const [selfErr,     setSelfErr]     = useState('')
+  const [orgQ,        setOrgQ]        = useState('')
+  const [orgResults,  setOrgResults]  = useState([])
   const [domain,      setDomain]      = useState('')
   const [lastPrefill, setLastPrefill] = useState('')
   const [title,       setTitle]       = useState('')
@@ -171,6 +188,44 @@ export default function ChallengeAuthor() {
   const [errors,    setErrors]    = useState([])
   const [saving,    setSaving]    = useState(false)
   const [published, setPublished] = useState(null)   // { url, visibility }
+
+  // A detour (claim an org, build a fuller org profile, send an invite) must
+  // never cost someone the challenge they just wrote. The draft is stashed
+  // before navigation and restored when they return; publishing clears it.
+  const DRAFT_KEY = founding ? 'nx-challenge-draft:founding' : 'nx-challenge-draft'
+  function stashDraft() {
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({
+        savedAt: Date.now(),
+        title, tagline, domain, horizonText, durPreset, durCustom, durDate,
+        strands, bodyLong, videoUrl, coverUrl, intensity, subdomainSlug,
+      }))
+    } catch {}
+  }
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY)
+      if (!raw) return
+      const d = JSON.parse(raw)
+      if (!d.savedAt || Date.now() - d.savedAt > 86400000) { localStorage.removeItem(DRAFT_KEY); return }
+      if (d.title)   setTitle(d.title)
+      if (d.tagline) setTagline(d.tagline)
+      if (!founding && d.domain) setDomain(d.domain)
+      if (d.horizonText) setHorizonText(d.horizonText)
+      if (d.durPreset)   setDurPreset(d.durPreset)
+      if (d.durCustom)   setDurCustom(d.durCustom)
+      if (d.durDate)     setDurDate(d.durDate)
+      if (Array.isArray(d.strands) && d.strands.length) {
+        setStrands(d.strands)
+        setKeySeq(Math.max(...d.strands.map(x => x.key || 1)) + 1)
+      }
+      if (d.bodyLong)      setBodyLong(d.bodyLong)
+      if (d.videoUrl)      setVideoUrl(d.videoUrl)
+      if (d.coverUrl)      setCoverUrl(d.coverUrl)
+      if (d.intensity)     setIntensity(d.intensity)
+      if (d.subdomainSlug) setSubdomainSlug(d.subdomainSlug)
+    } catch {}
+  }, [])
 
   // Creation helper
   const [chatMsgs,    setChatMsgs]    = useState([])
@@ -300,6 +355,88 @@ export default function ChallengeAuthor() {
     setInviteBusy(false)
   }
 
+  // "As yourself" — the mini profile. Name, photo, one line: the floor an
+  // author needs so others can see who is behind a challenge. Created in
+  // place via /api/add-actor; the challenge draft never leaves the screen.
+  async function onPickSelfImage(e) {
+    const file = e.target.files?.[0]
+    if (e.target) e.target.value = ''
+    if (!file) return
+    setSelfErr(''); setSelfImgBusy(true)
+    try {
+      const { dataUrl } = await downscaleImage(file)
+      let token = null
+      try { token = (await supabase.auth.getSession()).data.session?.access_token || null } catch {}
+      const res = await fetch('/api/actor-image-upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ imageData: dataUrl }),
+      })
+      const json = await res.json()
+      if (!res.ok || !json.image_url) throw new Error(json.error || 'Upload failed')
+      setSelfImg(json.image_url)
+    } catch (err) {
+      setSelfErr(err.message || 'Could not upload that photo')
+    } finally {
+      setSelfImgBusy(false)
+    }
+  }
+
+  async function createSelfProfile() {
+    if (!selfName.trim()) { setSelfErr('Your name is required.'); return }
+    if (!selfImg.trim())  { setSelfErr('A photo is required so people can see who is showing up.'); return }
+    if (!selfLine.trim()) { setSelfErr('One line about what you do is required.'); return }
+    setSelfBusy(true); setSelfErr('')
+    try {
+      let token = null
+      try { token = (await supabase.auth.getSession()).data.session?.access_token || null } catch {}
+      if (!token) { setSelfErr('Your session has expired. Sign in again and retry.'); setSelfBusy(false); return }
+      const civ = founding
+        ? 'nature'
+        : (domain ? (SELF_SLUGS.has(domain) ? SELF_TO_ATLAS_MAP[domain] : domain) : 'human-being')
+      const r = await fetch('/api/add-actor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          represents: true, aiUrl: '',
+          primary: {
+            name: selfName.trim(), type: 'practitioner',
+            image_url: selfImg.trim(), description: selfLine.trim(),
+            primary_domain: civ,
+          },
+          extras: [],
+        }),
+      })
+      const d = await r.json().catch(() => ({}))
+      if (!r.ok || !d.ok || !d.results?.length) {
+        setSelfErr(d.error || 'Could not create your profile. Try again.')
+        setSelfBusy(false); return
+      }
+      const created = d.results[0]
+      setOwnedActors([{ id: created.id, name: created.name || selfName.trim(), type: 'practitioner' }])
+      authorTouched.current = true
+      setAuthorActor(created.id)
+    } catch {
+      setSelfErr('Something went wrong. Try again.')
+    }
+    setSelfBusy(false)
+  }
+
+  // "As an organisation" — search the Atlas first. Most orgs worth authoring
+  // as are already on the map; claiming beats creating a duplicate.
+  async function searchOrgs(q) {
+    setOrgQ(q)
+    if (q.trim().length < 2) { setOrgResults([]); return }
+    try {
+      const r = await fetch('/api/actor-calls', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'search_actors', q, limit: 6 }),
+      })
+      const d = await r.json()
+      setOrgResults((d.actors || []).filter(a => a.type !== 'practitioner'))
+    } catch { setOrgResults([]) }
+  }
+
   async function onPickImage(e) {
     const file = e.target.files?.[0]
     if (e.target) e.target.value = ''
@@ -307,8 +444,11 @@ export default function ChallengeAuthor() {
     setImgErr(''); setImgBusy(true)
     try {
       const { dataUrl, ext } = await downscaleImage(file)
+      let token = null
+      try { token = (await supabase.auth.getSession()).data.session?.access_token || null } catch {}
       const res = await fetch('/api/challenge-image-upload', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ dataUrl, ext }),
       })
       const json = await res.json()
@@ -350,7 +490,8 @@ export default function ChallengeAuthor() {
   }
 
   async function createAndPublish(visibility) {
-    if (!authorActor) { setErrors(['Choose the org or profile authoring this challenge, or set one up.']); return }
+    if (!authorActor) { setErrors(['Set up who is authoring this challenge first. It takes a minute, just above.']); return }
+    if (founding && !foundingRoot?.id) { setErrors(['The Earth Challenge could not be reached, so this cannot join the constellation yet. Refresh the page and try again.']); return }
     if (founding && !subdomainSlug) { setErrors(['Choose which part of the living world this touches.']); return }
     setSaving(true); setErrors([])
     const payload = buildPayload()
@@ -367,6 +508,7 @@ export default function ChallengeAuthor() {
       const pRes = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'publish', userId: user.id, call_id: cData.call.id, visibility }) })
       const pData = await pRes.json()
       if (pData.error) { setErrors([pData.error]); setSaving(false); return }
+      try { localStorage.removeItem(DRAFT_KEY) } catch {}
       setPublished({ url: pData.url, visibility, callId: cData.call.id })
     } catch {
       setErrors(['Something went wrong. Try again.'])
@@ -396,7 +538,7 @@ export default function ChallengeAuthor() {
           <div style={{ marginTop: '36px', paddingTop: '24px', borderTop: hair }}>
             <Eyebrow style={{ marginBottom: '6px' }}>In partnership with</Eyebrow>
             <p style={{ ...body, fontSize: '15px', color: tokens.ghost, lineHeight: 1.6, margin: '0 0 12px' }}>
-              Credit a partner. They get a request — nothing shows publicly until they accept.
+              Credit a partner. They get a request. Nothing shows publicly until they accept.
             </p>
             {invited.length > 0 && (
               <div style={{ ...body, fontSize: '15px', color: tokens.dark, marginBottom: '12px' }}>
@@ -433,7 +575,7 @@ export default function ChallengeAuthor() {
               What is your challenge to the world?
             </h1>
             <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, margin: '0 0 8px' }}>
-              Challenge the world to change the world. Invite others to take on a piece of the work that you do to create a thriving future. Let&rsquo;s see what we can all do together from now to September 28.
+              Challenge the world to change the world. Invite others to take on a piece of the work you do to create a thriving future. From now to {fmtCloseDate(foundingClose, { month: 'long', day: 'numeric' }) || 'September 28'}.
             </p>
             <p style={{ ...body, fontSize: '14px', color: tokens.ghost, margin: '0 0 32px' }}>
               <span style={{ color: tokens.gold }}>&middot;</span> Building on the NextUs Earth Challenge
@@ -452,7 +594,15 @@ export default function ChallengeAuthor() {
         )}
 
         {!user ? (
-          <p style={{ ...body, fontSize: '1.0625rem', ...muted }}>Sign in to author a challenge.</p>
+          <div style={{ padding: '24px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '12px', textAlign: 'center' }}>
+            <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '14px' }}>
+              Sign in or create an account to author a challenge.
+            </p>
+            <a href={`/login?redirect=${encodeURIComponent(backTo)}`}
+              style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: tokens.gold, background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '12px 28px', textDecoration: 'none', display: 'inline-block' }}>
+              Sign in →
+            </a>
+          </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '26px' }}>
 
@@ -460,7 +610,7 @@ export default function ChallengeAuthor() {
             <div style={{ background: tokens.bgCard, border: hair, borderRadius: '14px', padding: '20px 22px' }}>
               <Eyebrow style={{ marginBottom: '6px' }}>Build it with help</Eyebrow>
               <p style={{ ...body, fontSize: '15px', color: tokens.ghost, lineHeight: 1.6, margin: '0 0 14px' }}>
-                Describe the idea in a sentence. North Star drafts the whole thing — you refine it below.
+                Describe the idea in a sentence. North Star drafts the whole thing. You refine it below.
               </p>
               {chatMsgs.length > 0 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
@@ -496,37 +646,105 @@ export default function ChallengeAuthor() {
                 <select value={authorActor} onChange={e => { authorTouched.current = true; setAuthorActor(e.target.value) }} style={inputStyle}>
                   {ownedActors.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                 </select>
-                <a href={`/invite/new?then=${encodeURIComponent(backTo)}`}
+                <a href={`/invite/new?then=${encodeURIComponent(backTo)}`} onClick={stashDraft}
                   style={{ ...body, fontSize: '14px', color: tokens.gold, textDecoration: 'none',
                     display: 'inline-block', marginTop: '10px', borderBottom: '1px solid rgba(200,146,42,0.4)' }}>
                   or invite an organisation to take part
                 </a>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <p style={{ ...body, fontSize: '15px', color: tokens.dark, lineHeight: 1.6, margin: '0 0 4px' }}>
-                  A challenge is published by someone others can find and follow. Choose how you want to show up.
+              <div style={{ background: tokens.bgCard, border: hair, borderRadius: '14px', padding: '20px 22px' }}>
+                <Label>Author as</Label>
+                <p style={{ ...body, fontSize: '15px', color: tokens.dark, lineHeight: 1.6, margin: '0 0 12px' }}>
+                  A challenge is published by someone others can find and follow. Choose how you want to show up. Your challenge stays right here while you do.
                 </p>
-                {[
-                  { href: `/add?mine=1&type=org&then=${encodeURIComponent(backTo)}`,
-                    title: 'As an organisation you run',
-                    hint: 'Set up the organisation or project you represent, then publish as it.' },
-                  { href: `/add?mine=1&type=practitioner&then=${encodeURIComponent(backTo)}`,
-                    title: 'As yourself',
-                    hint: 'Set up your own profile: name, picture, and what you do. It takes a minute.' },
-                  { href: `/invite/new?then=${encodeURIComponent(backTo)}`,
-                    title: 'Invite an organisation to take part',
-                    hint: 'Reach out to them yourself. Nothing is created in their name until they join.' },
-                ].map(p => (
-                  <a key={p.title} href={p.href}
-                    style={{ display: 'block', background: tokens.bgCard, border: hair,
-                      borderRadius: '12px', padding: '15px 18px', textDecoration: 'none' }}>
-                    <div style={{ ...serif, fontWeight: 400, fontSize: '19px', color: tokens.dark, marginBottom: '3px' }}>
-                      {p.title} <span style={{ color: tokens.gold }}>&rarr;</span>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+                  {[
+                    { v: 'self',   l: 'As yourself' },
+                    { v: 'org',    l: 'As an organisation' },
+                    { v: 'invite', l: 'Invite an organisation' },
+                  ].map(o => (
+                    <button key={o.v} type="button" onClick={() => setAuthorMode(o.v)}
+                      style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', padding: '7px 16px', borderRadius: '20px', cursor: 'pointer',
+                        border: `1px solid ${authorMode === o.v ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.3)'}`,
+                        background: authorMode === o.v ? 'rgba(200,146,42,0.08)' : 'transparent',
+                        color: authorMode === o.v ? tokens.gold : tokens.ghost }}>
+                      {o.l}
+                    </button>
+                  ))}
+                </div>
+
+                {authorMode === 'self' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <input value={selfName} onChange={e => setSelfName(e.target.value)}
+                      placeholder="Your name" style={inputStyle} />
+                    <input value={selfLine} onChange={e => setSelfLine(e.target.value)}
+                      placeholder="One line on what you do" style={inputStyle} />
+                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '9px 18px', borderRadius: '20px',
+                        cursor: selfImgBusy ? 'default' : 'pointer', border: '1px solid rgba(200,146,42,0.4)',
+                        color: tokens.gold, textTransform: 'uppercase', whiteSpace: 'nowrap', opacity: selfImgBusy ? 0.55 : 1 }}>
+                        {selfImgBusy ? 'Uploading…' : (selfImg ? 'Change photo' : 'Add a photo')}
+                        <input type="file" accept="image/*" disabled={selfImgBusy} onChange={onPickSelfImage} style={{ display: 'none' }} />
+                      </label>
+                      {selfImg && (
+                        <img src={selfImg} alt="" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover' }} />
+                      )}
                     </div>
-                    <div style={{ ...body, fontSize: '14px', color: tokens.meta, lineHeight: 1.5 }}>{p.hint}</div>
-                  </a>
-                ))}
+                    {selfErr && <p style={{ ...body, fontSize: '13px', color: '#B5482E', margin: 0 }}>{selfErr}</p>}
+                    <div>
+                      <Btn onClick={createSelfProfile} disabled={selfBusy}>
+                        {selfBusy ? 'Creating…' : 'Create your profile →'}
+                      </Btn>
+                    </div>
+                  </div>
+                )}
+
+                {authorMode === 'org' && (
+                  <div>
+                    <p style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.6, margin: '0 0 10px' }}>
+                      Your organisation may already be on the Atlas. Search first; claim it if it is there.
+                    </p>
+                    <input value={orgQ} onChange={e => searchOrgs(e.target.value)}
+                      placeholder="Search the Atlas by name" style={inputStyle} />
+                    {orgResults.length > 0 && (
+                      <div style={{ marginTop: '8px', border: hair, borderRadius: '10px', overflow: 'hidden' }}>
+                        {orgResults.map(a => (
+                          <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: tokens.bgCard, borderBottom: hair, padding: '10px 14px' }}>
+                            {a.image_url && <img src={a.image_url} alt="" style={{ width: '28px', height: '28px', borderRadius: '5px', objectFit: 'cover', flexShrink: 0 }} />}
+                            <span style={{ ...body, fontSize: '15px', color: tokens.dark, flex: 1 }}>{a.name}</span>
+                            {a.claimed ? (
+                              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: tokens.ghost }}>Claimed</span>
+                            ) : (
+                              <a href={`/org/${a.slug || a.id}/claim`} onClick={stashDraft}
+                                style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: tokens.gold, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                                This is us · claim it →
+                              </a>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <a href={`/add?mine=1&type=org&then=${encodeURIComponent(backTo)}`} onClick={stashDraft}
+                      style={{ ...body, fontSize: '14px', color: tokens.gold, textDecoration: 'none',
+                        display: 'inline-block', marginTop: '10px', borderBottom: '1px solid rgba(200,146,42,0.4)' }}>
+                      {orgQ.trim() ? `Not there? Create ${orgQ.trim()} as a new organisation` : 'Set up a new organisation'}
+                    </a>
+                  </div>
+                )}
+
+                {authorMode === 'invite' && (
+                  <div>
+                    <p style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.6, margin: '0 0 10px' }}>
+                      Reach out to them yourself. Nothing is created in their name until they join.
+                    </p>
+                    <a href={`/invite/new?then=${encodeURIComponent(backTo)}`} onClick={stashDraft}
+                      style={{ ...body, fontSize: '14px', color: tokens.gold, textDecoration: 'none',
+                        display: 'inline-block', borderBottom: '1px solid rgba(200,146,42,0.4)' }}>
+                      Invite an organisation to take part →
+                    </a>
+                  </div>
+                )}
               </div>
             )}
 
@@ -694,7 +912,7 @@ export default function ChallengeAuthor() {
               <div>
                 <Label>Builds on (optional)</Label>
                 <select value={parentCallId} onChange={e => setParentCallId(e.target.value)} style={inputStyle}>
-                  <option value="">A root — stands on its own</option>
+                  <option value="">A root · stands on its own</option>
                   {parentOptions.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
                 </select>
                 <p style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.6, margin: '6px 0 0' }}>
@@ -719,7 +937,7 @@ export default function ChallengeAuthor() {
                     <div style={{ ...body, fontSize: '15px', color: tokens.meta, lineHeight: 1.55 }}>
                       {once
                         ? 'Doing it once is a finish, plus five sparks to the beacon.'
-                        : 'Each check-in adds one spark to the beacon. At the close, just past Climate Week (September 28, 2026), we get to see what we were able to get done together.'}
+                        : `Each check-in adds one spark to the beacon. At the close, just past Climate Week${fmtCloseDate(foundingClose) ? ` (${fmtCloseDate(foundingClose)})` : ''}, we get to see what we were able to get done together.`}
                     </div>
                   </div>
                   <div style={{ borderLeft: `2px solid ${GOLD_C}`, padding: '2px 0 2px 16px' }}>
@@ -755,7 +973,7 @@ export default function ChallengeAuthor() {
                   <Btn variant="ghost" onClick={() => createAndPublish('link_only')} disabled={saving}>Just a link</Btn>
                 </div>
                 <p style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.6, margin: 0 }}>
-                  Community lists it for anyone to find. A link is unlisted — only people you send it to can open it.
+                  Community lists it for anyone to find. A link is unlisted. Only people you send it to can open it.
                 </p>
               </>
             )}

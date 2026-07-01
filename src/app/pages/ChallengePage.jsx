@@ -4,7 +4,7 @@ import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
 import { tokens, serif, body, sc } from '../../lib/designTokens'
-import { DOMAIN_COLORS } from '../../constants/domainColors'
+import { DOMAIN_COLORS, SELF_DOMAIN_COLORS } from '../constants/domains'
 import { INTENSITY_BY_LEVEL } from '../../constants/challengeIntensity'
 import IntensityInfo from '../components/challenge/IntensityInfo'
 import ChiliRung from '../components/challenge/ChiliRung'
@@ -13,6 +13,7 @@ import ChallengeLineage from '../components/challenge/ChallengeLineage'
 import BroadcastComposer from '../components/challenge/BroadcastComposer'
 import BroadcastFeed from '../components/challenge/BroadcastFeed'
 import ConstellationMeter from '../components/challenge/ConstellationMeter'
+import PublicBeacon from '../components/challenge/PublicBeacon'
 
 // ─── Design shortcuts ─────────────────────────────────────────────────────────
 
@@ -185,7 +186,7 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
 // ─── Cadence label ────────────────────────────────────────────────────────────
 
 const CADENCE_LABELS = {
-  'daily-absolute': 'Every single day — no exceptions',
+  'daily-absolute': 'Every single day, no exceptions',
   '5-of-7':         '5 of 7 days per week',
   'weekly':         'Once per week',
   'custom':         'Custom cadence',
@@ -302,10 +303,18 @@ function FlagModal({ callId, userId, isAsk, onClose }) {
 
 // ─── Take it on modal ─────────────────────────────────────────────────────────
 
-function TakeItOnModal({ call, userId, onClose, onJoined }) {
+function fmtCloseDate(iso) {
+  if (!iso) return null
+  const [y, m, d] = String(iso).split('-').map(Number)
+  if (!y || !m || !d) return null
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+}
+
+function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
   const [clock,   setClock]   = useState('rolling')
   const [loading, setLoading] = useState(false)
   const [joined,  setJoined]  = useState(false)
+  const closeStr = fmtCloseDate(foundingClose)
 
   async function join() {
     setLoading(true)
@@ -331,7 +340,9 @@ function TakeItOnModal({ call, userId, onClose, onJoined }) {
         {joined ? (
           <div>
             <p style={{ ...body, fontSize: '1.125rem', ...muted, lineHeight: 1.7, marginBottom: '20px' }}>
-              You're in. It starts today and runs on its own clock. Track it day by day in your challenges.
+              {closeStr
+                ? <>You're in. Everyone here plays to the one shared close: {closeStr}. Track it day by day in your challenges.</>
+                : <>You're in. It starts today and runs on its own clock. Track it day by day in your challenges.</>}
             </p>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <a href="/challenges"
@@ -350,25 +361,33 @@ function TakeItOnModal({ call, userId, onClose, onJoined }) {
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.ghost }}>
                 {cadenceLabel}
                 {call.cadence === 'daily-absolute' && (
-                  <span style={{ color: '#D63838', marginLeft: '8px' }}>· Absolute — no missed days</span>
+                  <span style={{ color: '#D63838', marginLeft: '8px' }}>· Absolute · no missed days</span>
                 )}
-                {' — '}{call.duration_days} days
+                {closeStr ? ` · to ${closeStr}` : ` · ${call.duration_days} days`}
               </div>
             </div>
-            <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '14px' }}>
-              It starts the day you take it on and runs on its own clock. Choose your clock.
-            </p>
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-              {[{ v: 'rolling', l: `Rolling ${call.duration_days || 90} days` }, { v: 'calendar', l: 'Calendar quarter' }].map(o => (
-                <button key={o.v} type="button" onClick={() => setClock(o.v)}
-                  style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '7px 16px', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.2s',
-                    border: `1px solid ${clock === o.v ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.3)'}`,
-                    background: clock === o.v ? 'rgba(200,146,42,0.08)' : 'transparent',
-                    color: clock === o.v ? tokens.gold : tokens.ghost }}>
-                  {o.l}
-                </button>
-              ))}
-            </div>
+            {closeStr ? (
+              <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '20px' }}>
+                It starts the day you take it on. No clock to choose: everyone in this constellation plays to the one shared close.
+              </p>
+            ) : (
+              <>
+                <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '14px' }}>
+                  It starts the day you take it on and runs on its own clock. Choose your clock.
+                </p>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+                  {[{ v: 'rolling', l: `Rolling ${call.duration_days || 90} days` }, { v: 'calendar', l: 'Calendar quarter' }].map(o => (
+                    <button key={o.v} type="button" onClick={() => setClock(o.v)}
+                      style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '7px 16px', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.2s',
+                        border: `1px solid ${clock === o.v ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.3)'}`,
+                        background: clock === o.v ? 'rgba(200,146,42,0.08)' : 'transparent',
+                        color: clock === o.v ? tokens.gold : tokens.ghost }}>
+                      {o.l}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
             <Btn onClick={join} disabled={loading}>{loading ? 'Joining…' : 'Take it on →'}</Btn>
           </div>
         )}
@@ -412,7 +431,7 @@ function FoundingDoorsModal({ hasActor, onClose }) {
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {door(createHref, 'Create a challenge', 'Make your own way of stewarding the living world. Others can take it on and carry it forward.')}
-          {door('/challenges/browse', 'See live challenges', "Take on one that's already moving.")}
+          {door('/challenges/browse?domain=nature', 'See live challenges', "Take on one that's already moving.")}
         </div>
       </div>
     </div>
@@ -482,7 +501,7 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
             <textarea
               value={note}
               onChange={e => setNote(e.target.value)}
-              placeholder="Any context you'd like to share — optional"
+              placeholder="Any context you'd like to share (optional)"
               rows={3}
               style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(200,146,42,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', background: tokens.bg, boxSizing: 'border-box', marginBottom: '14px' }}
             />
@@ -653,12 +672,15 @@ function AuthorFeedbackSection({ callId, userId }) {
 // ─── Auth prompt ──────────────────────────────────────────────────────────────
 
 function AuthPrompt({ callSlug }) {
+  // Login honours ?redirect= — this is the whole QR round trip: scan, sign in
+  // or sign up, land straight back on this page with the button live.
+  const dest = `/login?redirect=${encodeURIComponent(`/stretch/c/${callSlug}`)}`
   return (
     <div style={{ padding: '24px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '12px', textAlign: 'center', marginTop: '20px' }}>
       <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '14px' }}>
-        Sign in to take on this challenge. Your progress stays with you.
+        Sign in or create an account to take on this challenge. Your progress stays with you.
       </p>
-      <Link to="/login" state={{ from: `/stretch/c/${callSlug}` }}
+      <Link to={dest}
         style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: tokens.gold, background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '12px 28px', textDecoration: 'none', display: 'inline-block' }}>
         Sign in →
       </Link>
@@ -694,7 +716,7 @@ export function ChallengePage() {
   const isAsk    = call?.type === 'ask'
   const isAuthor = user && call && (
     call.user_id === user.id ||
-    (call.nextus_actors && (call.nextus_actors.profile_owner === user.id || call.nextus_actors.owner_id === user.id))
+    (call.nextus_actors && call.nextus_actors.profile_owner === user.id)
   )
 
   useEffect(() => {
@@ -793,7 +815,7 @@ export function ChallengePage() {
     </div>
   )
 
-  const colour  = DOMAIN_COLORS[call.domain] ? Object.values(DOMAIN_COLORS).find((_, i) => Object.keys(DOMAIN_COLORS)[i] === call.domain)?.base : GOLD_C
+  const colour  = DOMAIN_COLORS[call.domain] || SELF_DOMAIN_COLORS[call.domain] || GOLD_C
   const pageUrl = typeof window !== 'undefined' ? window.location.href : `https://nextus.world/stretch/c/${slug}`
   const cadenceLabel = CADENCE_LABELS[call.cadence] || (call.cadence ? call.cadence.charAt(0).toUpperCase() + call.cadence.slice(1) : call.cadence)
   const authorName   = call.nextus_actors?.name || null
@@ -812,7 +834,7 @@ export function ChallengePage() {
         <FoundingDoorsModal hasActor={ownedActors.length > 0} onClose={() => setShowDoors(false)} />
       )}
       {showTakeItOn && user && (
-        <TakeItOnModal call={call} userId={user.id} onClose={() => setShowTakeItOn(false)}
+        <TakeItOnModal call={call} userId={user.id} foundingClose={call.in_founding_constellation ? call.founding_closes_on : null} onClose={() => setShowTakeItOn(false)}
           onJoined={() => { setAlreadyJoined(true); setShowTakeItOn(false); setCall(c => c ? { ...c, taken_on_count: (c.taken_on_count || 0) + 1 } : c) }} />
       )}
       {showFulfill && user && (
@@ -883,7 +905,7 @@ export function ChallengePage() {
           <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: tokens.gold, marginBottom: '8px' }}>
             {isAsk
               ? `${(call.active_count || 0) + (call.completed_count || 0)} ${((call.active_count || 0) + (call.completed_count || 0)) === 1 ? 'person has' : 'people have'} offered to help${(call.completed_count || 0) > 0 ? ` · ${call.completed_count} built` : ''}`
-              : `${call.taken_on_count.toLocaleString()} ${call.taken_on_count === 1 ? 'person has' : 'people have'} taken this on${call.active_count > 0 ? ` — ${call.active_count} active` : ''}`
+              : `${call.taken_on_count.toLocaleString()} ${call.taken_on_count === 1 ? 'person has' : 'people have'} taken this on${call.active_count > 0 ? ` · ${call.active_count} active` : ''}`
             }
           </div>
         )}
@@ -969,7 +991,7 @@ export function ChallengePage() {
         )}
 
         <ShareRail url={pageUrl} title={call.title} tagline={call.tagline}
-          shareText={isAsk ? undefined : `Take it on with me: ${call.title}${call.tagline ? ' — ' + call.tagline : ''}`} />
+          shareText={isAsk ? undefined : `Take it on with me: ${call.title}${call.tagline ? ' · ' + call.tagline : ''}`} />
 
         <Rule style={{ margin: '24px 0' }} />
 
@@ -1022,15 +1044,19 @@ export function ChallengePage() {
                   <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.55 }}>
                     {cadenceLabel}
                     {call.cadence === 'daily-absolute' && (
-                      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#D63838', marginTop: '4px' }}>No missed days — this is the commitment.</div>
+                      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#D63838', marginTop: '4px' }}>No missed days. This is the commitment.</div>
                     )}
                     {call.cadence_note && <div style={{ ...body, fontSize: '14px', color: tokens.ghost, marginTop: '4px' }}>{call.cadence_note}</div>}
                   </div>
                 </div>
               )}
               <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
-                <Eyebrow style={{ marginBottom: '4px' }}>Duration</Eyebrow>
-                <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.55 }}>{call.duration_days} days</div>
+                <Eyebrow style={{ marginBottom: '4px' }}>{call.in_founding_constellation ? 'Runs to' : 'Duration'}</Eyebrow>
+                <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.55 }}>
+                  {call.in_founding_constellation && fmtCloseDate(call.founding_closes_on)
+                    ? `${fmtCloseDate(call.founding_closes_on)} · the shared close`
+                    : `${call.duration_days} days`}
+                </div>
               </div>
             </div>
             {call.body_long && (
@@ -1103,7 +1129,9 @@ export function ChallengePage() {
         {user && isAuthor
           ? <BroadcastComposer call={call} userId={user.id} colour={colour} />
           : (alreadyJoined && <BroadcastFeed callId={call.id} userId={user?.id} authorName={authorName} colour={colour} />)}
-        {!isAsk && <ConstellationMeter domain={call.domain} colour={colour} />}
+        {!isAsk && (call.in_founding_constellation
+          ? <PublicBeacon />
+          : <ConstellationMeter domain={call.domain} colour={colour} />)}
 
         {/* Author feedback — only the author sees this */}
         {isAuthor && (
