@@ -896,11 +896,14 @@ export function AddPage() {
                       placeholder="Upload a photo, or paste an image URL" />
                   </div>
                   <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase',
-                    display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap',
-                    padding: '10px 18px', borderRadius: '8px', cursor: imgBusy ? 'default' : 'pointer',
-                    border: '1.5px solid rgba(200,146,42,0.4)', color: gold,
-                    background: '#FFFFFF', opacity: imgBusy ? 0.55 : 1 }}>
-                    {imgBusy ? 'Uploading…' : 'Upload'}
+                    display: 'inline-flex', alignItems: 'center', gap: '10px', whiteSpace: 'nowrap',
+                    cursor: imgBusy ? 'default' : 'pointer', color: gold, opacity: imgBusy ? 0.55 : 1 }}>
+                    <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', textTransform: 'none', letterSpacing: 'normal' }}>or</span>
+                    <span style={{ display: 'inline-flex', alignItems: 'center',
+                      padding: '10px 18px', borderRadius: '8px',
+                      border: '1.5px solid rgba(200,146,42,0.4)', background: '#FFFFFF' }}>
+                      {imgBusy ? 'Uploading…' : 'Upload'}
+                    </span>
                     <input type="file" accept="image/*" disabled={imgBusy} onChange={onPickImage} style={{ display: 'none' }} />
                   </label>
                 </div>
