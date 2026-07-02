@@ -16,7 +16,7 @@
 // fallback, not the default. False claims can still be flagged.
 
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { Nav }         from '../../components/Nav'
 import { SiteFooter }  from '../../components/SiteFooter'
 import { supabase }    from '../../hooks/useSupabase'
@@ -418,6 +418,13 @@ function RequestPath({ actor, userId, userEmail, onSubmitted }) {
 export function ClaimPage() {
   const { id }   = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  // the return address: an authoring flow that sent someone here to claim gets
+  // them back, draft intact, org now claimable in the author menu
+  const thenUrl = (() => {
+    const t = searchParams.get('then')
+    return t && t.startsWith('/') ? t : null
+  })()
   const { user, loading: authLoading } = useAuth()
 
   const [actor,      setActor]      = useState(null)
@@ -431,8 +438,8 @@ export function ClaimPage() {
   const [actorDomain, setActorDomain] = useState(null)
 
   useEffect(() => {
-    if (!authLoading && !user) navigate('/login', { state: { from: `/org/${id}/claim` } })
-  }, [user, authLoading, id, navigate])
+    if (!authLoading && !user) navigate(`/login?redirect=${encodeURIComponent(`/org/${id}/claim${thenUrl ? `?then=${encodeURIComponent(thenUrl)}` : ''}`)}`)
+  }, [user, authLoading, id, navigate, thenUrl])
 
   useEffect(() => {
     async function load() {
@@ -515,9 +522,22 @@ export function ClaimPage() {
             <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, marginBottom: '28px' }}>
               Verified and claimed. Head to the Voice tab to add your mission, offers, and what you're working on now.
             </p>
-            <PrimaryBtn onClick={() => navigate(`/org/${actor.slug || actor.id}/manage?tab=voice`)}>
-              Go to my profile →
-            </PrimaryBtn>
+            {thenUrl ? (
+              <>
+                <PrimaryBtn onClick={() => navigate(thenUrl)}>
+                  Back to your challenge →
+                </PrimaryBtn>
+                <div style={{ marginTop: '12px' }}>
+                  <GhostBtn onClick={() => navigate(`/org/${actor.slug || actor.id}/manage?tab=voice`)}>
+                    Go to my profile
+                  </GhostBtn>
+                </div>
+              </>
+            ) : (
+              <PrimaryBtn onClick={() => navigate(`/org/${actor.slug || actor.id}/manage?tab=voice`)}>
+                Go to my profile →
+              </PrimaryBtn>
+            )}
           </div>
         )}
 

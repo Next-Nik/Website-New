@@ -17,6 +17,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Nav }         from '../components/Nav'
 import { SiteFooter }  from '../components/SiteFooter'
 import { serif, body, sc } from '../lib/designTokens'
@@ -416,6 +417,40 @@ export function MarketingHomePage() {
           <Copy id="home.hero.subtitle" />
         </p>
         <FractalWheels />
+      </section>
+
+      {/* ── The Earth Challenge · front door ─────── */}
+      <section style={{
+        background: 'radial-gradient(ellipse at 50% 0%, rgba(242,196,90,0.09), transparent 62%), #141B2C',
+        padding: 'clamp(40px,5vw,56px) clamp(20px,5vw,40px)',
+      }}>
+        <div className="mh-earth" style={{
+          maxWidth: '880px', margin: '0 auto',
+          display: 'flex', gap: 'clamp(24px,4vw,40px)', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center',
+        }}>
+          <img src="/beacon/frame.png" alt="" loading="lazy"
+            style={{ width: 'clamp(150px,18vw,210px)', flex: 'none' }} />
+          <div style={{ flex: '1 1 340px', minWidth: '280px', maxWidth: '520px' }}>
+            <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', textTransform: 'uppercase', color: '#D7A24A', display: 'block' }}>
+              The NextUs Earth Challenge
+            </span>
+            <h2 style={{ ...serif, fontWeight: 300, fontSize: 'clamp(28px,3.4vw,38px)', color: '#FBF8F0', lineHeight: 1.1, margin: '8px 0 10px' }}>
+              Our part in the living world
+            </h2>
+            <p style={{ ...body, fontSize: '16px', lineHeight: 1.6, color: 'rgba(251,248,240,0.82)', margin: '0 0 14px', maxWidth: '46ch' }}>
+              Organisations working for the living world are posting real challenges. People are taking them on. Every action adds a spark to one shared beacon.
+            </p>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#D7A24A', marginBottom: '18px' }}>
+              Runs to September 28 &middot; Climate Week NYC
+            </div>
+            <Link to="/earth" style={{
+              display: 'inline-block', ...sc, fontSize: '14px', letterSpacing: '0.14em', textTransform: 'uppercase',
+              color: '#1a1320', background: '#F2C45A', borderRadius: '28px', padding: '13px 28px', textDecoration: 'none',
+            }}>
+              See the challenge →
+            </Link>
+          </div>
+        </div>
       </section>
 
       {/* ── Two doors ────────────────────────────── */}

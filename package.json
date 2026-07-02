@@ -10,7 +10,8 @@
     "@anthropic-ai/sdk": "^0.20.0",
     "stripe": "^14.0.0",
     "resend": "^3.0.0",
-    "web-push": "^3.6.7"
+    "web-push": "^3.6.7",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "vite": "^5.4.0",

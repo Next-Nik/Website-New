@@ -716,7 +716,7 @@ export default function ChallengeAuthor() {
                             {a.claimed ? (
                               <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: tokens.ghost }}>Claimed</span>
                             ) : (
-                              <a href={`/org/${a.slug || a.id}/claim`} onClick={stashDraft}
+                              <a href={`/org/${a.slug || a.id}/claim?then=${encodeURIComponent(window.location.pathname + window.location.search)}`} onClick={stashDraft}
                                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: tokens.gold, textDecoration: 'none', whiteSpace: 'nowrap' }}>
                                 This is us · claim it →
                               </a>

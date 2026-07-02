@@ -15,6 +15,9 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import BeaconFire from '../challenge/BeaconFire'
+import { computeChain, dotRow } from '../../../lib/challengeChain'
+import { VOICE, dayStage } from '../../../constants/companionVoice'
 
 const A = {
   bright: '#F2C45A', glow: '#FFE6A8', amber: '#C8922A', deep: '#7A4A12', night: '#141019',
@@ -30,6 +33,28 @@ async function postJSON(url, body) {
 }
 
 const fmt = (n) => Number(n || 0).toLocaleString('en-GB')
+
+function ago(at) {
+  const secs = Math.max(0, (Date.now() - new Date(at).getTime()) / 1000)
+  if (secs < 90) return 'just now'
+  if (secs < 3600) return `${Math.round(secs / 60)}m ago`
+  if (secs < 86400) return `${Math.round(secs / 3600)}h ago`
+  return `${Math.round(secs / 86400)}d ago`
+}
+function todayStr() { return new Date().toISOString().slice(0, 10) }
+
+// A run's day is KEPT with one real action; only daily-absolute requires the
+// full sweep, because its author chose "every single day, no exceptions".
+function runKeptToday(run) {
+  const doneCount = (run.done_today || []).length
+  const total = (run.strands || []).length
+  if (run.cadence === 'daily-absolute') return total > 0 && doneCount >= total
+  return doneCount > 0
+}
+function runSweptToday(run) {
+  const total = (run.strands || []).length
+  return total > 0 && (run.done_today || []).length >= total
+}
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
@@ -53,8 +78,12 @@ export default function BeaconStrip({ userId }) {
   const [open, setOpen] = useState(false)
   const [showMeaning, setShowMeaning] = useState(false)
   const [askPush, setAskPush] = useState(false)
+  const [expanded, setExpanded] = useState(null)
+  const [feed, setFeed] = useState(null)
+  const [copied, setCopied] = useState(null)
   const panelRef = useRef(null)
   const lanternRef = useRef(null)
+  const fireRef = useRef(null)
 
   const loadTally = useCallback(async () => {
     const b = await postJSON('/api/beacon', { action: 'get', slug: 'founding-nature' })
@@ -76,10 +105,22 @@ export default function BeaconStrip({ userId }) {
           (p) => treeIds.has(p.call_id) && p.status === 'active',
         )
         setMine(runs)
+        setExpanded((cur) => {
+          if (cur && runs.some((r) => r.participant_id === cur)) return cur
+          const firstOpen = runs.find((r) => !runKeptToday(r)) || runs[0]
+          return firstOpen ? firstOpen.participant_id : null
+        })
       } catch (_) { /* keep prior state */ }
     }
     setReady(true)
   }, [userId, loadTally])
+
+  const loadFeed = useCallback(async () => {
+    try {
+      const a = await postJSON('/api/actor-calls', { action: 'constellation_activity', limit: 6 })
+      if (a && a.events) setFeed(a)
+    } catch (_) { /* the fire still shows without the ticker */ }
+  }, [])
 
   useEffect(() => {
     reload()
@@ -88,11 +129,8 @@ export default function BeaconStrip({ userId }) {
     return () => document.removeEventListener('visibilitychange', onVis)
   }, [reload])
 
-  const openCount = mine.reduce((n, r) => {
-    const strands = r.strands || []
-    const allDone = strands.length > 0 && strands.every((s) => (r.done_today || []).includes(s.id))
-    return n + (allDone ? 0 : 1)
-  }, 0)
+  const openCount = mine.reduce((n, r) => n + (runKeptToday(r) ? 0 : 1), 0)
+  const stage = dayStage()
 
   const flySpark = useCallback((fromEl) => {
     if (!fromEl || !lanternRef.current) return
@@ -110,18 +148,20 @@ export default function BeaconStrip({ userId }) {
     setTimeout(() => f.remove(), 700)
   }, [])
 
-  const checkIn = useCallback(async (run, btnEl) => {
-    const strands = run.strands || []
-    const todo = strands.filter((s) => !(run.done_today || []).includes(s.id))
-    if (!todo.length) return
-    // optimistic
+  const checkStrand = useCallback(async (run, strand, btnEl) => {
+    if ((run.done_today || []).includes(strand.id)) return
+    // optimistic: mark the strand and today's date
     setMine((cur) => cur.map((r) => r.participant_id === run.participant_id
-      ? { ...r, done_today: strands.map((s) => s.id) } : r))
+      ? { ...r,
+          done_today: [...(r.done_today || []), strand.id],
+          done_dates: (r.done_dates || []).includes(todayStr()) ? r.done_dates : [...(r.done_dates || []), todayStr()],
+        } : r))
     flySpark(btnEl)
+    try { fireRef.current && fireRef.current.fireSpark() } catch (_) { /* visual only */ }
     try {
-      await Promise.all(todo.map((s) => postJSON('/api/actor-calls', {
-        action: 'log_strand', userId, call_id: run.call_id, strand_id: s.id, done: true,
-      })))
+      await postJSON('/api/actor-calls', {
+        action: 'log_strand', userId, call_id: run.call_id, strand_id: strand.id, done: true,
+      })
       await loadTally()
       try {
         if (PUSH_SUPPORTED && Notification.permission === 'default'
@@ -131,6 +171,13 @@ export default function BeaconStrip({ userId }) {
       } catch (_) { /* ignore */ }
     } catch (_) { /* leave optimistic state; next load reconciles */ }
   }, [userId, flySpark, loadTally])
+
+  const copyInvite = useCallback((run) => {
+    const url = `${window.location.origin}/stretch/c/${run.slug || ''}`
+    try { navigator.clipboard.writeText(url) } catch (_) { /* copy is best-effort */ }
+    setCopied(run.participant_id)
+    setTimeout(() => setCopied(null), 1800)
+  }, [])
 
   const subscribePush = useCallback(async () => {
     try {
@@ -170,7 +217,7 @@ export default function BeaconStrip({ userId }) {
     const next = !open
     setOpen(next)
     setPanelHeight(next ? measure() : 0, true)
-    if (next) reload()
+    if (next) { reload(); if (!mine.length) loadFeed() }
   }
   const onGripDown = (e) => {
     drag.current = { on: true, startY: e.clientY, startH: parseFloat(panelRef.current?.style.maxHeight || '0') || 0, moved: 0, max: measure() }
@@ -196,7 +243,7 @@ export default function BeaconStrip({ userId }) {
   }
 
   // keep height correct when content changes while open
-  useEffect(() => { if (open) setPanelHeight(measure(), false) }, [mine, open])
+  useEffect(() => { if (open) setPanelHeight(measure(), false) }, [mine, feed, expanded, copied, askPush, open])
 
   if (!beacon || beacon.status === 'pending' || !beacon.rooted) return null
 
@@ -204,10 +251,10 @@ export default function BeaconStrip({ userId }) {
   const bandMsg = !ready
     ? beacon.label
     : newcomer
-      ? 'The Founding Nature Constellation is live'
+      ? 'The Earth Challenge is live'
       : openCount > 0
         ? `${openCount === 1 ? '1 challenge' : `${openCount} challenges`} waiting for you`
-        : 'you\u2019ve shown up today'
+        : 'You\u2019ve shown up today. Well done!'
 
   return (
     <div className={`bcn-wrap${open ? ' open' : ''}`}>
@@ -230,12 +277,8 @@ export default function BeaconStrip({ userId }) {
       <div className="bcn-panel" ref={panelRef}>
         <div className="bcn-panel-in">
           <div className="bcn-lcol">
-            <div className="bcn-lantern" ref={lanternRef}>
-              <div className="bcn-l-handle" />
-              <div className="bcn-l-cap" />
-              <div className="bcn-l-glass"><div className="bcn-l-light" /></div>
-              <div className="bcn-l-base" />
-              <div className="bcn-l-halo" />
+            <div className="bcn-fire" ref={lanternRef}>
+              <BeaconFire ref={fireRef} sparks={Number(beacon.sparks || 0)} />
             </div>
             <div className="bcn-lread"><div className="bcn-c">{fmt(beacon.sparks)}</div><div className="bcn-k">sparks</div></div>
             <button className="bcn-what" onClick={() => setShowMeaning(true)}>what is this?</button>
@@ -252,30 +295,120 @@ export default function BeaconStrip({ userId }) {
               </div>
             )}
             {newcomer ? (
-              <div className="bcn-invite">
-                <p className="bcn-lead">The NextUs Nature challenge is the constellation made by an invitation to organisations working for the living world, and the people who show up alongside them. Every spark is one of those people, showing up, and taking action. The beacon is all of our actions, made visible, together. We&rsquo;re mighty together.</p>
-                <button className="bcn-go" onClick={() => navigate(beacon.root_slug ? `/stretch/c/${beacon.root_slug}` : '/challenges/browse')}>Take part</button>
+              <div className="bcn-livein">
+                {feed && feed.sparks_today > 0 && (
+                  <p className="bcn-livetoday"><b>{feed.sparks_today}</b> sparks today, and counting</p>
+                )}
+                {(feed?.events || []).slice(0, 5).map((e, i) => (
+                  <div className="bcn-ev" key={i}>
+                    <span className={`bcn-ev-who${e.kind === 'spark' ? ' hot' : ''}`}>{e.name}</span>
+                    <span className="bcn-ev-what">
+                      {e.kind === 'spark' ? `checked in on ${e.title}`
+                        : e.kind === 'join' ? `took on ${e.title}`
+                        : `published ${e.title}`}
+                    </span>
+                    <span className="bcn-ev-when">{ago(e.at)}</span>
+                  </div>
+                ))}
+                {(!feed || !(feed.events || []).length) && (
+                  <p className="bcn-livetoday">The beacon is lit. Every check-in adds a spark.</p>
+                )}
+                <div className="bcn-live-cta">
+                  <button className="bcn-go" onClick={() => navigate(beacon.root_slug ? `/stretch/c/${beacon.root_slug}` : '/challenges/browse')}>Take one on &rarr;</button>
+                  <button className="bcn-record" onClick={() => navigate('/earth')}>see the whole fire &rarr;</button>
+                </div>
               </div>
             ) : (
               <>
-                <div className="bcn-today-h">Today</div>
-                {openCount === 0 && <p className="bcn-alldone">All checked in. The beacon&rsquo;s brighter for it.</p>}
+                <div className="bcn-today-h">Your runs &middot; today</div>
+                {openCount === 0 && <p className="bcn-alldone">All done for today. Well done!</p>}
                 {mine.map((run) => {
+                  const chain = computeChain({ doneDates: run.done_dates || [], cadence: run.cadence })
+                  const kept = runKeptToday(run)
+                  const swept = runSweptToday(run)
                   const strands = run.strands || []
-                  const done = strands.length > 0 && strands.every((s) => (run.done_today || []).includes(s.id))
+                  const isOpen = expanded === run.participant_id
+                  const chainShown = chain.kept
+                  let voice
+                  if (run.cadence === 'once') {
+                    voice = kept ? VOICE.completeOnce() : VOICE.onceOpen()
+                  } else if (run.cadence === 'weekly' || run.cadence === 'monthly') {
+                    voice = kept
+                      ? VOICE.weekComplete(chainShown)
+                      : (run.cadence === 'weekly' ? VOICE.weekOpen() : VOICE.monthOpen())
+                  } else if (swept && strands.length > 1) {
+                    voice = VOICE.swept()
+                  } else if (kept && strands.length > 1) {
+                    voice = VOICE.firstOfMany(strands.length - (run.done_today || []).length)
+                  } else if (kept) {
+                    voice = VOICE.MILESTONES.includes(chainShown)
+                      ? VOICE.milestone(chainShown, 'days')
+                      : VOICE.complete(chainShown)
+                  } else if (chain.graceUsedYesterday) {
+                    voice = VOICE.graceHeld()
+                  } else if (chain.kept === 0 && (run.done_dates || []).length > 0) {
+                    voice = VOICE.returned()
+                  } else {
+                    voice = VOICE[stage](chain.kept)
+                  }
+                  const chipLabel = kept
+                    ? 'Kept today'
+                    : (run.cadence === 'weekly' ? 'Week open' : run.cadence === 'monthly' ? 'Month open' : 'Today open')
+                  const chainLabel = chain.unit === 'summit'
+                    ? 'one summit'
+                    : `${chainShown} ${chain.unit === 'days' ? (chainShown === 1 ? 'day' : 'days') : chain.unit}`
                   return (
-                    <div className="bcn-ci" key={run.participant_id}>
-                      <div className="bcn-ci-info">
-                        <div className="bcn-ci-nm">{(run.strands && run.strands[0] && run.strands[0].text) || run.title}</div>
-                        <div className="bcn-ci-commit">you committed</div>
+                    <div className={`bcn-card${kept ? '' : ` stage-${stage}`}`} key={run.participant_id}>
+                      <div className="bcn-card-bar" role="button" tabIndex={0}
+                        onClick={() => setExpanded(isOpen ? null : run.participant_id)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') setExpanded(isOpen ? null : run.participant_id) }}>
+                        <span className="bcn-card-t">{run.title}</span>
+                        <span className="bcn-card-chain">{chainLabel}</span>
+                        <span className={`bcn-chip${kept ? ' k' : ''}`}>{chipLabel}</span>
                       </div>
-                      {done
-                        ? <button className="bcn-ci-btn done" disabled>Done &#10003;</button>
-                        : <button className="bcn-ci-btn" onClick={(e) => checkIn(run, e.currentTarget)}>I did this today</button>}
+                      {isOpen && (
+                        <div className="bcn-card-in">
+                          <div className="bcn-voice">{voice}</div>
+                          {strands.map((strand) => {
+                            const done = (run.done_today || []).includes(strand.id)
+                            return (
+                              <div className={`bcn-move${done ? ' done' : ''}`} key={strand.id}>
+                                <span className="bcn-move-t">{strand.text || strand.label || run.title}</span>
+                                {done
+                                  ? <button className="keep-btn done" disabled>Complete for today</button>
+                                  : <button className="keep-btn" onClick={(e) => checkStrand(run, strand, e.currentTarget)}>
+                                      {run.cadence === 'once' ? 'I did this' : 'I did this today'}
+                                    </button>}
+                              </div>
+                            )
+                          })}
+                          {chain.unit === 'days' && (
+                            <div className="bcn-dots">
+                              {dotRow({ doneDates: run.done_dates || [], chain }).map((d, i) => (
+                                <i key={i} className={d} />
+                              ))}
+                            </div>
+                          )}
+                          {chain.graceBanked > 0 && !kept && (
+                            <div className="bcn-grace">{chain.graceBanked} grace {chain.graceBanked === 1 ? 'day' : 'days'} banked &middot; life happens, your chain holds</div>
+                          )}
+                          {kept && (
+                            <div className="bcn-doors">
+                              <button onClick={() => copyInvite(run)}>
+                                {copied === run.participant_id ? 'Link copied' : `${VOICE.doorInvite()} \u2192`}
+                              </button>
+                              <button onClick={() => navigate('/challenges/browse?domain=nature')}>{VOICE.doorAnother()} &rarr;</button>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )
                 })}
-                <button className="bcn-record" onClick={() => navigate('/constellation/record')}>see what we&rsquo;ve done &rarr;</button>
+                <div className="bcn-foot">
+                  <button className="bcn-record" onClick={() => navigate('/earth/journey')}>your journey &rarr;</button>
+                  <button className="bcn-record" onClick={() => navigate('/earth')}>see the whole fire &rarr;</button>
+                </div>
               </>
             )}
           </div>
@@ -314,7 +447,7 @@ const CSS = `
 .bcn-ml-base{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:12px;height:3px;background:linear-gradient(180deg,#3a2c1a,#241a10);clip-path:polygon(0 0,100% 0,86% 100%,14% 100%);border-radius:0 0 2px 2px}
 .bcn-ml-halo{position:absolute;left:50%;top:55%;width:50px;height:50px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,221,128,.4),rgba(255,221,128,0) 64%);pointer-events:none}
 .bcn-title{font-family:'Cormorant SC',Georgia,serif;letter-spacing:.2em;text-transform:uppercase;font-size:14px}
-.bcn-msg{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:18px;color:${A.glow};min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bcn-msg{font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;color:${A.glow};min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bcn-spacer{flex:1}
 .bcn-count{font-family:'Cormorant Garamond',Georgia,serif;font-size:22px;color:#fff;font-variant-numeric:tabular-nums;flex:none}
 .bcn-count small{font-family:'Cormorant SC',Georgia,serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:rgba(250,241,222,.6);margin-left:6px}
@@ -323,30 +456,55 @@ const CSS = `
 .bcn-panel{position:absolute;top:100%;left:0;right:0;z-index:2;max-height:0;overflow:hidden;background:radial-gradient(140% 200% at 20% 0%,#1d1626,${A.night} 76%);border-bottom:1px solid ${A.amber}}
 .bcn-panel-in{padding:10px 22px 24px;display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:start}
 @media(max-width:560px){.bcn-panel-in{grid-template-columns:1fr;gap:16px}}
-.bcn-lantern{position:relative;width:78px;transform-origin:top left;opacity:0;transform:scale(.35) translateY(-6px);transition:opacity .45s ease .08s,transform .5s cubic-bezier(.3,.7,.2,1) .08s}
-.bcn-wrap.open .bcn-lantern{opacity:1;transform:none}
-.bcn-l-handle{width:28px;height:15px;border:2px solid ${A.amber};border-bottom:none;border-radius:15px 15px 0 0;margin:0 auto -1px}
-.bcn-l-cap{width:56px;height:12px;margin:0 auto;background:linear-gradient(180deg,#3a2c1a,#241a10);clip-path:polygon(14% 0,86% 0,100% 100%,0 100%);border-radius:3px 3px 0 0}
-.bcn-l-glass{position:relative;width:66px;height:108px;margin:0 auto;border:1.8px solid ${A.amber};border-radius:8px;overflow:hidden;background:linear-gradient(180deg,rgba(30,22,14,.5),rgba(20,14,9,.82))}
-.bcn-l-light{position:absolute;left:0;right:0;bottom:0;height:60%;background:linear-gradient(180deg,${A.glow},${A.bright} 35%,${A.amber} 70%,${A.deep});box-shadow:0 0 28px rgba(255,221,128,.5)}
-.bcn-l-base{width:52px;height:10px;margin:0 auto;background:linear-gradient(180deg,#3a2c1a,#241a10);clip-path:polygon(0 0,100% 0,86% 100%,14% 100%);border-radius:0 0 4px 4px}
-.bcn-l-halo{position:absolute;left:39px;top:56px;width:180px;height:180px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,221,128,.38),rgba(255,221,128,0) 64%);pointer-events:none}
+.bcn-fire{position:relative;width:180px;max-width:44vw;transform-origin:top left;opacity:0;transform:scale(.55) translateY(-6px);transition:opacity .45s ease .08s,transform .5s cubic-bezier(.3,.7,.2,1) .08s}
+.bcn-wrap.open .bcn-fire{opacity:1;transform:none}
 .bcn-lread{text-align:center;margin-top:6px}
 .bcn-c{font-family:'Cormorant Garamond',Georgia,serif;font-size:32px;color:#fff;line-height:1;font-variant-numeric:tabular-nums}
 .bcn-k{font-family:'Cormorant SC',Georgia,serif;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:rgba(250,241,222,.66);margin-top:3px}
 .bcn-what{display:block;margin:12px auto 0;font-family:'Cormorant SC',Georgia,serif;letter-spacing:.1em;text-transform:uppercase;font-size:13px;color:rgba(242,196,90,.85);background:none;border:none;border-bottom:1px solid rgba(242,196,90,.45);cursor:pointer;padding:0 0 1px}
 
 .bcn-today-h{font-family:'Cormorant SC',Georgia,serif;letter-spacing:.18em;text-transform:uppercase;font-size:13px;color:${A.bright};margin:2px 0 10px}
-.bcn-ci{display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid rgba(250,241,222,.12)}
-.bcn-ci-info{flex:1;min-width:0}
-.bcn-ci-nm{font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;color:#FAF1DE;line-height:1.15}
-.bcn-ci-commit{font-size:13px;color:rgba(250,241,222,.55)}
-.bcn-ci-btn{font-family:'Cormorant SC',Georgia,serif;letter-spacing:.13em;text-transform:uppercase;font-size:13px;color:#1a1320;background:${A.bright};border:none;border-radius:24px;padding:11px 18px;cursor:pointer;white-space:nowrap}
-.bcn-ci-btn.done{background:transparent;color:${A.bright};border:1px solid rgba(242,196,90,.5);cursor:default}
-.bcn-alldone{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:19px;color:${A.glow};padding:6px 0}
-.bcn-invite .bcn-lead{font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;line-height:1.4;color:#FAF1DE;margin:0 0 16px;max-width:48ch}
+.bcn-card{background:rgba(250,241,222,.04);border:1px solid rgba(242,196,90,.25);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.bcn-card-bar{display:flex;align-items:center;gap:12px;padding:12px 15px;cursor:pointer;flex-wrap:wrap}
+.bcn-card-t{font-family:'Cormorant Garamond',Georgia,serif;font-size:19px;color:#FAF1DE;flex:1;line-height:1.2;min-width:0}
+.bcn-card-chain{font-family:'Cormorant SC',Georgia,serif;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#D7A24A;white-space:nowrap}
+.bcn-chip{font-family:'Cormorant SC',Georgia,serif;font-size:13px;letter-spacing:.08em;text-transform:uppercase;border-radius:14px;padding:4px 10px;white-space:nowrap;color:${A.bright};border:1px solid rgba(242,196,90,.5)}
+.bcn-chip.k{color:#7FC7A4;border-color:rgba(74,140,111,.6)}
+.bcn-card-in{padding:2px 15px 14px}
+.bcn-voice{font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;color:#FAF1DE;padding-bottom:10px}
+.bcn-move{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid rgba(242,196,90,.25);border-radius:12px;padding:11px 13px;margin-bottom:8px}
+.bcn-move.done{border-color:rgba(74,140,111,.5)}
+.bcn-move-t{font-family:'Lora',Georgia,serif;font-size:14px;color:rgba(250,241,222,.88);line-height:1.4;min-width:0}
+.keep-btn{position:relative;font-family:'Cormorant SC',Georgia,serif;font-size:13.5px;letter-spacing:.12em;text-transform:uppercase;color:#241703;border:none;border-radius:26px;padding:13px 20px;cursor:pointer;white-space:nowrap;background:linear-gradient(180deg,${A.glow},${A.bright});box-shadow:0 2px 0 rgba(122,74,18,.8);transition:all .3s}
+.stage-afternoon .keep-btn{background:linear-gradient(180deg,#FFF0BE,#FFD86B);box-shadow:0 2px 0 rgba(122,74,18,.8),0 0 18px rgba(242,196,90,.35)}
+.stage-evening .keep-btn{background:linear-gradient(180deg,#FFF4CC,#FFD86B);box-shadow:0 2px 0 rgba(122,74,18,.8),0 0 26px rgba(255,216,107,.55);animation:bcncheer 2.2s ease-in-out infinite}
+.stage-lastlight .keep-btn{background:linear-gradient(180deg,#FFF8DD,#FFDF7E);box-shadow:0 2px 0 rgba(122,74,18,.8),0 0 34px rgba(255,222,126,.75);animation:bcncheer 1.4s ease-in-out infinite}
+.stage-lastlight .keep-btn:after{content:"";position:absolute;inset:-7px;border-radius:32px;border:1.5px solid rgba(255,222,126,.5);animation:bcnring 1.4s ease-out infinite}
+@keyframes bcncheer{0%,100%{transform:scale(1)}50%{transform:scale(1.045)}}
+@keyframes bcnring{0%{opacity:.7;transform:scale(.95)}100%{opacity:0;transform:scale(1.12)}}
+.keep-btn.done{background:transparent;color:#7FC7A4;border:1px solid rgba(74,140,111,.5);box-shadow:none;animation:none;cursor:default}
+.keep-btn.done:after{display:none}
+.bcn-dots{display:flex;gap:5px;padding-top:4px}
+.bcn-dots i{width:11px;height:11px;border-radius:50%;background:rgba(250,241,222,.12);box-sizing:border-box}
+.bcn-dots i.on{background:${A.amber}}
+.bcn-dots i.grace{background:transparent;border:2px solid ${A.amber}}
+.bcn-dots i.today{background:rgba(242,196,90,.25);border:1.5px dashed ${A.amber}}
+.bcn-grace{font-family:'Lora',Georgia,serif;font-size:13px;color:rgba(250,241,222,.6);padding-top:8px}
+.bcn-doors{display:flex;gap:16px;flex-wrap:wrap;padding-top:10px}
+.bcn-doors button{font-family:'Cormorant SC',Georgia,serif;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#D7A24A;background:none;border:none;border-bottom:1px solid rgba(242,196,90,.35);cursor:pointer;padding:0 0 2px}
+.bcn-alldone{font-family:'Cormorant Garamond',Georgia,serif;font-size:19px;color:${A.glow};padding:6px 0}
+.bcn-livein{padding-top:2px}
+.bcn-livetoday{font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;color:#FAF1DE;margin:0 0 8px}
+.bcn-livetoday b{color:${A.bright};font-weight:500}
+.bcn-ev{display:flex;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid rgba(242,196,90,.12);font-size:14.5px}
+.bcn-ev-who{font-family:'Cormorant Garamond',Georgia,serif;font-size:17px;color:#FAF1DE;white-space:nowrap}
+.bcn-ev-who.hot{color:${A.bright}}
+.bcn-ev-what{font-family:'Lora',Georgia,serif;color:rgba(250,241,222,.82);min-width:0}
+.bcn-ev-when{margin-left:auto;font-family:'Cormorant SC',Georgia,serif;font-size:13px;letter-spacing:.06em;color:rgba(250,241,222,.55);white-space:nowrap}
+.bcn-live-cta{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-top:14px}
 .bcn-go{font-family:'Cormorant SC',Georgia,serif;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:#1a1320;background:${A.bright};border:none;border-radius:24px;padding:12px 22px;cursor:pointer}
-.bcn-record{margin-top:14px;font-family:'Cormorant SC',Georgia,serif;letter-spacing:.1em;text-transform:uppercase;font-size:13px;color:rgba(242,196,90,.85);background:none;border:none;border-bottom:1px solid rgba(242,196,90,.45);cursor:pointer;padding:0 0 1px}
+.bcn-foot{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px}
+.bcn-record{font-family:'Cormorant SC',Georgia,serif;letter-spacing:.1em;text-transform:uppercase;font-size:13px;color:rgba(242,196,90,.85);background:none;border:none;border-bottom:1px solid rgba(242,196,90,.45);cursor:pointer;padding:0 0 1px}
 .bcn-push{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;justify-content:space-between;background:rgba(242,196,90,.08);border:1px solid rgba(242,196,90,.3);border-radius:12px;padding:11px 14px;margin-bottom:14px}
 .bcn-push-q{font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;color:#FAF1DE}
 .bcn-push-act{display:flex;gap:8px;flex:none}
@@ -368,5 +526,5 @@ const CSS = `
 .bcn-beat{margin-bottom:16px}
 .bcn-bt{font-family:'Cormorant SC',Georgia,serif;letter-spacing:.12em;text-transform:uppercase;font-size:13px;color:${A.bright};margin-bottom:3px}
 .bcn-bd{font-family:'Lora',Georgia,serif;font-size:15.5px;line-height:1.5;color:rgba(250,241,222,.92)}
-@media (prefers-reduced-motion:reduce){.bcn-ml-light,.bcn-mini,.bcn-lantern,.bcn-chev{animation:none!important;transition:none!important}}
+@media (prefers-reduced-motion:reduce){.bcn-ml-light,.bcn-mini,.bcn-chev{animation:none!important;transition:none!important}.stage-evening .keep-btn,.stage-lastlight .keep-btn{animation:none!important}.stage-lastlight .keep-btn:after{display:none}}
 `

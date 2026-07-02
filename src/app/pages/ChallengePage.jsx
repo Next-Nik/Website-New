@@ -205,7 +205,22 @@ const CADENCE_SHORT = {
 
 function ShareRail({ url, title, tagline, shareText }) {
   const [copied, setCopied] = useState(false)
+  const [qr, setQr] = useState(null)
+  const [showQr, setShowQr] = useState(false)
   const text = shareText || tagline || title
+
+  // The QR is the bridge from rooms to the platform: generated client-side,
+  // downloadable for print. Lazy import keeps the library out of the main bundle.
+  async function toggleQr() {
+    if (!showQr && !qr) {
+      try {
+        const QRCode = (await import('qrcode')).default
+        const dataUrl = await QRCode.toDataURL(url, { width: 480, margin: 2, color: { dark: '#0F1523', light: '#FFFFFF' } })
+        setQr(dataUrl)
+      } catch (_) { return }
+    }
+    setShowQr((v) => !v)
+  }
 
   async function nativeShare() {
     if (navigator.share) {
@@ -247,6 +262,25 @@ function ShareRail({ url, title, tagline, shareText }) {
         style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: copied ? '#2A8C4F' : tokens.gold, background: 'none', border: '1px solid rgba(168,114,26,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer', transition: 'color 0.2s' }}>
         {copied ? '✓ Copied' : 'Copy link'}
       </button>
+      <button type="button" onClick={toggleQr}
+        style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, background: 'none', border: '1px solid rgba(168,114,26,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
+        {showQr ? 'Hide QR' : 'QR code'}
+      </button>
+      {showQr && qr && (
+        <div style={{ flexBasis: '100%', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', marginTop: '6px' }}>
+          <img src={qr} alt="QR code for this challenge"
+            style={{ width: '150px', height: '150px', border: '1px solid rgba(15,21,35,0.12)', borderRadius: '10px', background: '#FFFFFF' }} />
+          <div>
+            <div style={{ ...body, fontSize: '14px', color: tokens.ghost, maxWidth: '38ch', lineHeight: 1.5 }}>
+              Anyone who scans lands on this challenge and can take it on in under a minute.
+            </div>
+            <a href={qr} download="challenge-qr.png"
+              style={{ display: 'inline-block', marginTop: '8px', ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.gold, textDecoration: 'none', borderBottom: '1px solid rgba(168,114,26,0.5)', paddingBottom: '1px' }}>
+              Download PNG
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

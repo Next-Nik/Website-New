@@ -13,6 +13,7 @@ export function Nav({ activePath, hideHamburger = false }) {
 
   const links = [
     { to: '/',              label: 'Home',          key: 'home'          },
+    { to: '/earth',         label: 'Earth Challenge', key: 'earth'       },
     { to: '/tools',         label: 'Tools',         key: 'tools'         },
     { to: '/nextmarket',    label: 'NextMarket',    key: 'nextmarket'    },
     { to: '/about',         label: 'About',         key: 'about'         },

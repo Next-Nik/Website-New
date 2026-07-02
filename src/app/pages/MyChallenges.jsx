@@ -62,7 +62,11 @@ const CADENCE_LABEL = {
 
 // ─── A single challenge card ──────────────────────────────────────────────────
 
-function ChallengeCard({ p, userId }) {
+function ChallengeCard({ p, userId, founding }) {
+  const inConstellation = !!(founding && founding.ids && founding.ids.has(p.call_id))
+  const closeStr = founding && founding.closes_on
+    ? new Date(founding.closes_on + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+    : null
   const [doneToday, setDoneToday] = useState(new Set(p.done_today || []))
   const [busy, setBusy]           = useState(null)
 
@@ -144,11 +148,13 @@ function ChallengeCard({ p, userId }) {
         )}
       </div>
 
-      {/* Clock + streak */}
+      {/* Clock + streak — constellation runs play to the one shared close */}
       <div style={{ display: 'flex', alignItems: 'baseline', gap: '18px', flexWrap: 'wrap', marginBottom: '16px' }}>
         <div>
           <span style={{ ...serif, fontWeight: 300, fontSize: '34px', color: tokens.dark, lineHeight: 1 }}>{complete ? window : dayNo}</span>
-          <span style={{ ...body, fontSize: '15px', color: tokens.ghost }}> of {window} days</span>
+          {inConstellation && closeStr
+            ? <span style={{ ...body, fontSize: '15px', color: tokens.ghost }}> days &middot; runs to {closeStr} &middot; the shared close</span>
+            : <span style={{ ...body, fontSize: '15px', color: tokens.ghost }}> of {window} days</span>}
         </div>
         {streak > 1 && (
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, textTransform: 'uppercase' }}>
@@ -252,16 +258,32 @@ export default function MyChallenges() {
   const { user }  = useAuth()
   const [rows, setRows]       = useState([])
   const [loading, setLoading] = useState(true)
+  const [founding, setFounding] = useState({ ids: new Set(), closes_on: null })
 
   useEffect(() => {
     if (!user) { setLoading(false); return }
     let live = true
-    fetch('/api/actor-calls', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'my_participations', userId: user.id }),
-    })
-      .then(r => r.json())
-      .then(d => { if (live) setRows(d.participations || []) })
+    Promise.all([
+      fetch('/api/actor-calls', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'my_participations', userId: user.id }),
+      }).then(r => r.json()),
+      // the constellation: runs inside it share one close, not private clocks
+      fetch('/api/beacon', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'breakdown', slug: 'founding-nature' }),
+      }).then(r => r.json()).catch(() => null),
+    ])
+      .then(([d, bd]) => {
+        if (!live) return
+        setRows(d.participations || [])
+        if (bd && bd.rooted) {
+          setFounding({
+            ids: new Set((bd.challenges || []).map(c => c.call_id)),
+            closes_on: bd.closes_on || null,
+          })
+        }
+      })
       .catch(() => {})
       .finally(() => { if (live) setLoading(false) })
     return () => { live = false }
@@ -305,7 +327,7 @@ export default function MyChallenges() {
             </p>
           </div>
         ) : (
-          rows.map(p => <ChallengeCard key={p.participant_id} p={p} userId={user.id} />)
+          rows.map(p => <ChallengeCard key={p.participant_id} p={p} userId={user.id} founding={founding} />)
         )}
       </div>
     </div>

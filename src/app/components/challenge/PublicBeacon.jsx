@@ -8,7 +8,7 @@
 
 import { useState, useEffect } from 'react'
 import { serif, sc, body } from '../../../lib/designTokens'
-import BeaconLantern from './BeaconLantern'
+import BeaconFire from './BeaconFire'
 
 const AMBER        = '#C8922A'
 const AMBER_BRIGHT = '#F2C45A'
@@ -68,7 +68,9 @@ export default function PublicBeacon() {
         background: `radial-gradient(ellipse at 50% 30%, rgba(242,196,90,0.10), rgba(242,196,90,0) 65%), ${NIGHT}`,
         padding: '26px 22px 24px', textAlign: 'center',
       }}>
-        <BeaconLantern sparks={sparks} width={150} />
+        <div style={{ maxWidth: '320px', margin: '0 auto' }}>
+          <BeaconFire sparks={sparks} />
+        </div>
         <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', color: GOLD_T, textTransform: 'uppercase', marginTop: '14px' }}>
           The beacon
         </div>
