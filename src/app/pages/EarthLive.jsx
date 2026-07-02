@@ -153,28 +153,6 @@ export default function EarthLive() {
           </>
         )}
 
-        {/* THE FIELD */}
-        {orgs.length > 0 && (
-          <>
-            <K>The organisations in the work</K>
-            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              {orgs.map((o, i) => (
-                <Link key={i} to={o.slug ? `/org/${o.slug}` : '#'}
-                  style={{ display: 'flex', gap: '9px', alignItems: 'center', textDecoration: 'none',
-                    border: '1px solid rgba(242,196,90,0.3)', borderRadius: '24px',
-                    padding: '7px 14px 7px 8px', ...body, fontSize: '14.5px', color: CREAM_80 }}>
-                  {o.image_url
-                    ? <img src={o.image_url} alt="" style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover' }} />
-                    : <span style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'rgba(242,196,90,0.16)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', ...sc, fontSize: '13px', color: GOLD_T }}>
-                        {(o.name || '?')[0]}
-                      </span>}
-                  {o.name}
-                </Link>
-              ))}
-            </div>
-          </>
-        )}
 
         {challenges.length > 0 && (
           <>
@@ -193,6 +171,28 @@ export default function EarthLive() {
                     <b style={{ ...serif, color: CREAM, fontSize: '17px', letterSpacing: 0, fontWeight: 300 }}>{c.people}</b> in
                     {' · '}<b style={{ ...serif, color: CREAM, fontSize: '17px', letterSpacing: 0, fontWeight: 300 }}>{c.checkins}</b> sparks
                   </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+
+        {orgs.length > 0 && (
+          <>
+            <K>Participating organisations</K>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              {orgs.map((o, i) => (
+                <Link key={i} to={o.slug ? `/org/${o.slug}` : '#'}
+                  style={{ display: 'flex', gap: '9px', alignItems: 'center', textDecoration: 'none',
+                    border: '1px solid rgba(242,196,90,0.3)', borderRadius: '24px',
+                    padding: '7px 14px 7px 8px', ...body, fontSize: '14.5px', color: CREAM_80 }}>
+                  {o.image_url
+                    ? <img src={o.image_url} alt="" style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover' }} />
+                    : <span style={{ width: '26px', height: '26px', borderRadius: '50%', background: 'rgba(242,196,90,0.16)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', ...sc, fontSize: '13px', color: GOLD_T }}>
+                        {(o.name || '?')[0]}
+                      </span>}
+                  {o.name}
                 </Link>
               ))}
             </div>
@@ -219,12 +219,21 @@ export default function EarthLive() {
 
         {/* CTA */}
         <div style={{ textAlign: 'center', marginTop: '38px' }}>
-          <Link to={`/stretch/c/${ROOT_SLUG}`}
-            style={{ display: 'inline-block', ...sc, fontSize: '14px', letterSpacing: '0.14em',
-              textTransform: 'uppercase', color: '#1a1320', background: AMBER,
-              borderRadius: '28px', padding: '14px 32px', textDecoration: 'none' }}>
-            Take one on →
-          </Link>
+          <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <Link to={`/stretch/c/${ROOT_SLUG}`}
+              style={{ display: 'inline-block', ...sc, fontSize: '14px', letterSpacing: '0.14em',
+                textTransform: 'uppercase', color: '#1a1320', background: AMBER,
+                borderRadius: '28px', padding: '14px 32px', textDecoration: 'none' }}>
+              See the challenge →
+            </Link>
+            <Link to={`/stretch/c/${ROOT_SLUG}?accept=1`}
+              style={{ display: 'inline-block', ...sc, fontSize: '14px', letterSpacing: '0.14em',
+                textTransform: 'uppercase', color: AMBER, background: 'transparent',
+                border: '1px solid rgba(242,196,90,0.55)',
+                borderRadius: '28px', padding: '13px 30px', textDecoration: 'none' }}>
+              Accept the challenge →
+            </Link>
+          </div>
           <p style={{ ...body, fontSize: '14px', color: CREAM_60, marginTop: '10px' }}>
             Watching is free. Joining takes a minute.
           </p>

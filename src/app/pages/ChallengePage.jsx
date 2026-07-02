@@ -857,6 +857,21 @@ export function ChallengePage() {
   const partners     = Array.isArray(call.partners) ? call.partners : []
   const isFoundingRoot = !!foundingRootSlug && slug === foundingRootSlug
 
+  // arriving with ?accept=1 (from the strip or a shared link) opens the accept
+  // fork directly once the call is loaded and the person is signed in
+  useEffect(() => {
+    if (!call || !user) return
+    try {
+      const q = new URLSearchParams(window.location.search)
+      if (q.get('accept') === '1') {
+        if (isFoundingRoot) setShowDoors(true)
+        else setShowTakeItOn(true)
+        q.delete('accept')
+        window.history.replaceState({}, '', window.location.pathname + (q.toString() ? `?${q}` : ''))
+      }
+    } catch (_) { /* the button on the page still works */ }
+  }, [call, user, isFoundingRoot])
+
   return (
     <div style={{ background: tokens.bg, minHeight: '100dvh' }}>
       <Nav />

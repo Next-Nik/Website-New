@@ -263,10 +263,8 @@ export default function BeaconStrip({ userId }) {
       <div className="bcn-bar" onClick={toggle} role="button" tabIndex={0}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle() } }}>
         <span className="bcn-mini" aria-hidden="true">
-          <span className="bcn-ml-cap" />
-          <span className="bcn-ml-glass"><span className="bcn-ml-light" /></span>
-          <span className="bcn-ml-base" />
-          <span className="bcn-ml-halo" />
+          <span className="bcn-mini-core" />
+          <img className="bcn-mini-img" src="/beacon/frame.png" alt="" />
         </span>
         <span className="bcn-title">The beacon</span>
         <span className="bcn-msg">{bandMsg}</span>
@@ -313,9 +311,19 @@ export default function BeaconStrip({ userId }) {
                 {(!feed || !(feed.events || []).length) && (
                   <p className="bcn-livetoday">The beacon is lit. Every check-in adds a spark.</p>
                 )}
+                {feed && (feed.field?.orgs || []).length > 0 && (
+                  <div className="bcn-orgs">
+                    <div className="bcn-orgs-k">Participating organisations</div>
+                    <div className="bcn-orgs-row">
+                      {(feed.field.orgs || []).slice(0, 6).map((o, i) => (
+                        <span className="bcn-org" key={i}>{o.name}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="bcn-live-cta">
-                  <button className="bcn-go" onClick={() => navigate(beacon.root_slug ? `/stretch/c/${beacon.root_slug}` : '/challenges/browse')}>Take one on &rarr;</button>
-                  <button className="bcn-record" onClick={() => navigate('/earth')}>see the whole fire &rarr;</button>
+                  <button className="bcn-go" onClick={() => navigate(beacon.root_slug ? `/stretch/c/${beacon.root_slug}` : '/challenges/browse')}>See the challenge &rarr;</button>
+                  <button className="bcn-go ghost" onClick={() => navigate(beacon.root_slug ? `/stretch/c/${beacon.root_slug}?accept=1` : '/challenges/browse')}>Accept the challenge &rarr;</button>
                 </div>
               </div>
             ) : (
@@ -407,17 +415,22 @@ export default function BeaconStrip({ userId }) {
                 })}
                 <div className="bcn-foot">
                   <button className="bcn-record" onClick={() => navigate('/earth/journey')}>your journey &rarr;</button>
-                  <button className="bcn-record" onClick={() => navigate('/earth')}>see the whole fire &rarr;</button>
+                  <button className="bcn-record" onClick={() => navigate('/earth')}>Earth Challenge live &rarr;</button>
                 </div>
               </>
             )}
           </div>
         </div>
+        <div className="bcn-grip in-panel" onPointerDown={onGripDown} onPointerMove={onGripMove} onPointerUp={onGripUp} onPointerCancel={onGripUp}>
+          <svg className="bcn-chev" viewBox="0 0 24 24" fill="none" stroke={A.bright} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+        </div>
       </div>
 
-      <div className="bcn-grip" onPointerDown={onGripDown} onPointerMove={onGripMove} onPointerUp={onGripUp} onPointerCancel={onGripUp}>
-        <svg className="bcn-chev" viewBox="0 0 24 24" fill="none" stroke={A.bright} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
-      </div>
+      {!open && (
+        <div className="bcn-grip" onPointerDown={onGripDown} onPointerMove={onGripMove} onPointerUp={onGripUp} onPointerCancel={onGripUp}>
+          <svg className="bcn-chev" viewBox="0 0 24 24" fill="none" stroke={A.bright} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+        </div>
+      )}
 
       {showMeaning && (
         <div className="bcn-veil" onClick={(e) => { if (e.target === e.currentTarget) setShowMeaning(false) }}>
@@ -438,14 +451,11 @@ export default function BeaconStrip({ userId }) {
 const CSS = `
 .bcn-wrap{position:relative;z-index:60;background:radial-gradient(140% 240% at 22% 0%,#1d1626,${A.night} 72%);color:#FAF1DE;border-bottom:1px solid ${A.amber};user-select:none}
 .bcn-bar{position:relative;z-index:3;display:flex;align-items:center;gap:14px;padding:0 20px;height:56px;cursor:pointer}
-.bcn-mini{position:relative;width:18px;height:32px;flex:none;display:block;transform-origin:left center;transition:opacity .4s,transform .4s cubic-bezier(.3,.7,.2,1)}
-.bcn-wrap.open .bcn-mini{opacity:0;transform:scale(2.4) translateX(6px);pointer-events:none}
-.bcn-ml-cap{position:absolute;top:0;left:50%;transform:translateX(-50%);width:14px;height:4px;background:linear-gradient(180deg,#3a2c1a,#241a10);clip-path:polygon(14% 0,86% 0,100% 100%,0 100%);border-radius:2px 2px 0 0}
-.bcn-ml-glass{position:absolute;top:4px;left:50%;transform:translateX(-50%);width:16px;height:24px;border:1.2px solid ${A.amber};border-radius:3px;overflow:hidden;background:rgba(20,14,9,.6)}
-.bcn-ml-light{position:absolute;left:0;right:0;bottom:0;height:62%;background:linear-gradient(180deg,${A.glow},${A.bright} 45%,${A.amber});box-shadow:0 0 11px rgba(255,221,128,.7);animation:bcnbeat 2.6s ease-in-out infinite}
-@keyframes bcnbeat{0%,100%{box-shadow:0 0 8px rgba(255,221,128,.55)}50%{box-shadow:0 0 15px rgba(255,221,128,.85)}}
-.bcn-ml-base{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:12px;height:3px;background:linear-gradient(180deg,#3a2c1a,#241a10);clip-path:polygon(0 0,100% 0,86% 100%,14% 100%);border-radius:0 0 2px 2px}
-.bcn-ml-halo{position:absolute;left:50%;top:55%;width:50px;height:50px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,221,128,.4),rgba(255,221,128,0) 64%);pointer-events:none}
+.bcn-mini{position:relative;width:34px;height:38px;flex:none;display:flex;align-items:center;justify-content:center;transform-origin:left center;transition:opacity .4s,transform .4s cubic-bezier(.3,.7,.2,1)}
+.bcn-wrap.open .bcn-mini{opacity:0;transform:scale(1.8) translateX(6px);pointer-events:none}
+.bcn-mini-img{width:34px;height:34px;object-fit:contain;position:relative;z-index:2}
+.bcn-mini-core{position:absolute;left:50%;top:42%;width:16px;height:16px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#fff 0%,${A.glow} 34%,rgba(242,196,90,.5) 62%,rgba(242,196,90,0) 78%);box-shadow:0 0 12px rgba(255,221,128,.8);animation:bcnbeat 2.6s ease-in-out infinite;z-index:1}
+@keyframes bcnbeat{0%,100%{opacity:.7}50%{opacity:1}}
 .bcn-title{font-family:'Cormorant SC',Georgia,serif;letter-spacing:.2em;text-transform:uppercase;font-size:14px}
 .bcn-msg{font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;color:${A.glow};min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bcn-spacer{flex:1}
@@ -501,8 +511,13 @@ const CSS = `
 .bcn-ev-who.hot{color:${A.bright}}
 .bcn-ev-what{font-family:'Lora',Georgia,serif;color:rgba(250,241,222,.82);min-width:0}
 .bcn-ev-when{margin-left:auto;font-family:'Cormorant SC',Georgia,serif;font-size:13px;letter-spacing:.06em;color:rgba(250,241,222,.55);white-space:nowrap}
-.bcn-live-cta{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding-top:14px}
+.bcn-orgs{padding-top:12px}
+.bcn-orgs-k{font-family:'Cormorant SC',Georgia,serif;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:rgba(250,241,222,.55);margin-bottom:8px}
+.bcn-orgs-row{display:flex;gap:8px;flex-wrap:wrap}
+.bcn-org{font-family:'Lora',Georgia,serif;font-size:13px;color:rgba(250,241,222,.85);border:1px solid rgba(242,196,90,.3);border-radius:18px;padding:5px 12px}
+.bcn-live-cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:14px}
 .bcn-go{font-family:'Cormorant SC',Georgia,serif;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:#1a1320;background:${A.bright};border:none;border-radius:24px;padding:12px 22px;cursor:pointer}
+.bcn-go.ghost{background:transparent;color:${A.bright};border:1px solid rgba(242,196,90,.55)}
 .bcn-foot{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px}
 .bcn-record{font-family:'Cormorant SC',Georgia,serif;letter-spacing:.1em;text-transform:uppercase;font-size:13px;color:rgba(242,196,90,.85);background:none;border:none;border-bottom:1px solid rgba(242,196,90,.45);cursor:pointer;padding:0 0 1px}
 .bcn-push{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;justify-content:space-between;background:rgba(242,196,90,.08);border:1px solid rgba(242,196,90,.3);border-radius:12px;padding:11px 14px;margin-bottom:14px}
@@ -512,6 +527,7 @@ const CSS = `
 .bcn-push-act button.ghost{background:transparent;color:rgba(242,196,90,.85);border:1px solid rgba(242,196,90,.45)}
 
 .bcn-grip{position:relative;z-index:4;height:30px;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none}
+.bcn-grip.in-panel{height:34px;border-top:1px solid rgba(242,196,90,.15)}
 .bcn-grip:active{cursor:grabbing}
 .bcn-chev{width:20px;height:20px;transition:transform .35s}
 .bcn-wrap.open .bcn-chev{transform:rotate(180deg)}
