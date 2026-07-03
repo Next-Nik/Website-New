@@ -42,6 +42,11 @@ function ago(at) {
   return `${Math.round(secs / 86400)}d ago`
 }
 function todayStr() { return new Date().toISOString().slice(0, 10) }
+function fmtShort(iso) {
+  const [y, m, d] = String(iso || '').split('-').map(Number)
+  if (!y) return ''
+  return new Date(y, m - 1, d).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+}
 
 // A run's day is KEPT with one real action; only daily-absolute requires the
 // full sweep, because its author chose "every single day, no exceptions".
@@ -251,7 +256,7 @@ export default function BeaconStrip({ userId }) {
   const bandMsg = !ready
     ? beacon.label
     : newcomer
-      ? 'The Earth Challenge is live'
+      ? 'The Earth Challenge is LIVE'
       : openCount > 0
         ? `${openCount === 1 ? '1 challenge' : `${openCount} challenges`} waiting for you`
         : 'You showed up! Well done!'
@@ -294,22 +299,44 @@ export default function BeaconStrip({ userId }) {
             )}
             {newcomer ? (
               <div className="bcn-livein">
-                {feed && feed.sparks_today > 0 && (
-                  <p className="bcn-livetoday"><b>{feed.sparks_today}</b> sparks today, and counting</p>
-                )}
-                {(feed?.events || []).slice(0, 5).map((e, i) => (
-                  <div className="bcn-ev" key={i}>
-                    <span className={`bcn-ev-who${e.kind === 'spark' ? ' hot' : ''}`}>{e.name}</span>
-                    <span className="bcn-ev-what">
-                      {e.kind === 'spark' ? `checked in on ${e.title}`
-                        : e.kind === 'join' ? `took on ${e.title}`
-                        : `published ${e.title}`}
-                    </span>
-                    <span className="bcn-ev-when">{ago(e.at)}</span>
+                <p className="bcn-livetoday">
+                  {feed && feed.sparks_today > 0
+                    ? <><b>{feed.sparks_today}</b> sparks today, and counting</>
+                    : 'The beacon is lit. Every check-in adds a spark.'}
+                </p>
+                <div className="bcn-live-cta">
+                  <button className="bcn-go" onClick={() => navigate(beacon.root_slug ? `/stretch/c/${beacon.root_slug}` : '/challenges/browse')}>See the challenge &rarr;</button>
+                  <button className="bcn-go ghost" onClick={() => navigate(beacon.root_slug ? `/stretch/c/${beacon.root_slug}?accept=1` : '/challenges/browse')}>Accept the challenge &rarr;</button>
+                </div>
+                {feed && (feed.field?.challenges || []).length > 0 && (
+                  <div className="bcn-chals">
+                    {(feed.field.challenges || []).slice(0, 4).map((c) => (
+                      <button className="bcn-chal" key={c.call_id}
+                        onClick={() => c.slug && navigate(`/stretch/c/${c.slug}`)}>
+                        <span className="bcn-chal-t">{c.title}</span>
+                        <span className="bcn-chal-by">{c.actor_name || 'Community'}</span>
+                        <span className="bcn-chal-n">
+                          {c.people > 0 ? `${c.people} in \u00b7 ${c.checkins} sparks` : 'open to you'}
+                        </span>
+                      </button>
+                    ))}
                   </div>
-                ))}
-                {(!feed || !(feed.events || []).length) && (
-                  <p className="bcn-livetoday">The beacon is lit. Every check-in adds a spark.</p>
+                )}
+                {(feed?.events || []).length > 0 && (
+                  <div className="bcn-now">
+                    <div className="bcn-orgs-k">Now &middot; as it happens</div>
+                    {(feed.events || []).slice(0, 4).map((e, i) => (
+                      <div className="bcn-ev" key={i}>
+                        <span className={`bcn-ev-who${e.kind === 'spark' ? ' hot' : ''}`}>{e.name}</span>
+                        <span className="bcn-ev-what">
+                          {e.kind === 'spark' ? `checked in on ${e.title}`
+                            : e.kind === 'join' ? `took on ${e.title}`
+                            : `published ${e.title}`}
+                        </span>
+                        <span className="bcn-ev-when">{ago(e.at)}</span>
+                      </div>
+                    ))}
+                  </div>
                 )}
                 {feed && (feed.field?.orgs || []).length > 0 && (
                   <div className="bcn-orgs">
@@ -321,10 +348,12 @@ export default function BeaconStrip({ userId }) {
                     </div>
                   </div>
                 )}
-                <div className="bcn-live-cta">
-                  <button className="bcn-go" onClick={() => navigate(beacon.root_slug ? `/stretch/c/${beacon.root_slug}` : '/challenges/browse')}>See the challenge &rarr;</button>
-                  <button className="bcn-go ghost" onClick={() => navigate(beacon.root_slug ? `/stretch/c/${beacon.root_slug}?accept=1` : '/challenges/browse')}>Accept the challenge &rarr;</button>
-                </div>
+                {feed?.beacon?.closes_on && (
+                  <div className="bcn-arc">
+                    <span>{feed.beacon.opens_on ? `Lit ${fmtShort(feed.beacon.opens_on)}` : 'Lit'}</span>
+                    <span>Closes {fmtShort(feed.beacon.closes_on)}</span>
+                  </div>
+                )}
               </div>
             ) : (
               <>
@@ -515,7 +544,15 @@ const CSS = `
 .bcn-orgs-k{font-family:'Cormorant SC',Georgia,serif;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:rgba(250,241,222,.55);margin-bottom:8px}
 .bcn-orgs-row{display:flex;gap:8px;flex-wrap:wrap}
 .bcn-org{font-family:'Lora',Georgia,serif;font-size:13px;color:rgba(250,241,222,.85);border:1px solid rgba(242,196,90,.3);border-radius:18px;padding:5px 12px}
-.bcn-live-cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:14px}
+.bcn-live-cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:14px;padding-bottom:4px}
+.bcn-chals{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:12px}
+@media(max-width:560px){.bcn-chals{grid-template-columns:1fr}}
+.bcn-chal{text-align:left;background:rgba(250,241,222,.04);border:1px solid rgba(242,196,90,.25);border-radius:12px;padding:11px 13px;cursor:pointer;display:flex;flex-direction:column;gap:2px}
+.bcn-chal-t{font-family:'Cormorant Garamond',Georgia,serif;font-size:18px;color:#FAF1DE;line-height:1.15}
+.bcn-chal-by{font-family:'Lora',Georgia,serif;font-size:13px;color:rgba(250,241,222,.6)}
+.bcn-chal-n{font-family:'Cormorant SC',Georgia,serif;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:#D7A24A;margin-top:3px}
+.bcn-now{padding-top:12px}
+.bcn-arc{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:10px;border-top:1px solid rgba(242,196,90,.18);font-family:'Cormorant SC',Georgia,serif;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:rgba(250,241,222,.55)}
 .bcn-go{font-family:'Cormorant SC',Georgia,serif;letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:#1a1320;background:${A.bright};border:none;border-radius:24px;padding:12px 22px;cursor:pointer}
 .bcn-go.ghost{background:transparent;color:${A.bright};border:1px solid rgba(242,196,90,.55)}
 .bcn-foot{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px}

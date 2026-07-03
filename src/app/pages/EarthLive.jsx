@@ -24,7 +24,7 @@ const AMBER    = '#F2C45A'
 const GOLD_T   = '#D7A24A'
 const HAIR     = '1px solid rgba(242,196,90,0.26)'
 
-const ROOT_SLUG = 'nextus-earth-challenge'
+const ROOT_SLUG_FALLBACK = 'inaugural-nextus-earth-challenge'
 const NEWLY_LIT_BELOW = 25 // under this many sparks, the page leads with the story, not the numbers
 
 function fmtDate(iso) {
@@ -99,6 +99,7 @@ export default function EarthLive() {
   const events = feed?.events || []
   const challenges = feed?.field?.challenges || []
   const orgs = feed?.field?.orgs || []
+  const rootSlug = tally?.root_slug || ROOT_SLUG_FALLBACK
 
   const btnSolid = {
     display: 'inline-block', ...sc, fontSize: '14px', letterSpacing: '0.14em',
@@ -157,8 +158,8 @@ export default function EarthLive() {
           </div>
         )}
         <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link to={`/stretch/c/${ROOT_SLUG}`} style={btnSolid}>See the challenge →</Link>
-          <Link to={`/stretch/c/${ROOT_SLUG}?accept=1`} style={btnGhost}>Accept the challenge →</Link>
+          <Link to={`/stretch/c/${rootSlug}`} style={btnSolid}>See the challenge →</Link>
+          <Link to={`/stretch/c/${rootSlug}?accept=1`} style={btnGhost}>Accept the challenge →</Link>
         </div>
       </div>
 
@@ -241,7 +242,7 @@ export default function EarthLive() {
 
         {/* ── closing ask ── */}
         <div style={{ textAlign: 'center', marginTop: '44px' }}>
-          <Link to={`/stretch/c/${ROOT_SLUG}?accept=1`} style={btnGhost}>Accept the challenge →</Link>
+          <Link to={`/stretch/c/${rootSlug}?accept=1`} style={btnGhost}>Accept the challenge →</Link>
           <p style={{ ...body, fontSize: '14px', color: CREAM_60, marginTop: '10px' }}>
             Watching is free. Joining takes a minute.
           </p>

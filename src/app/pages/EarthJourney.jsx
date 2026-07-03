@@ -25,7 +25,7 @@ const GOLD_T  = '#D7A24A'
 const GHOST   = 'rgba(15,21,35,0.55)'
 const FAINT   = 'rgba(200,146,42,0.35)'
 
-const ROOT_SLUG = 'nextus-earth-challenge'
+const ROOT_SLUG_FALLBACK = 'inaugural-nextus-earth-challenge'
 
 function fmtDate(iso) {
   if (!iso) return null
@@ -127,7 +127,7 @@ export default function EarthJourney() {
 
   // resume logic: the surface always knows the next step
   const resume = useMemo(() => {
-    if (!user) return { k: 'Your next step', v: 'See the Earth Challenge', act: () => navigate(`/stretch/c/${ROOT_SLUG}`), b: 'Open it' }
+    if (!user) return { k: 'Your next step', v: 'See the Earth Challenge', act: () => navigate(`/stretch/c/${tally?.root_slug || ROOT_SLUG_FALLBACK}`), b: 'Open it' }
     if (!derived.rr.length) return { k: 'Your next step', v: 'Take on a challenge', act: () => navigate('/challenges/browse?domain=nature'), b: 'See the challenges' }
     const open = derived.rr.find(p => p.status === 'active' && (p.done_today || []).length === 0)
     if (open) return { k: 'Your next step', v: `Check in · ${open.title}`, act: () => navigate('/'), b: 'Open today' }
