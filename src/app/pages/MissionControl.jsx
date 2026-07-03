@@ -413,7 +413,13 @@ export default function MissionControl() {
   // legacy two-state `currentWheel` is derived from this so any
   // surrounding logic that still uses it keeps working in Step B;
   // Step C will eliminate it entirely.
-  const [activeScope, setActiveScope] = useState('self')
+  //
+  // Earth Challenge season: the platform lands on Our Planet by
+  // default. To revert after Climate Week, set DEFAULT_SCOPE back
+  // to 'self' — the identity-change effect below already skips its
+  // initial run, so no other change is needed.
+  const DEFAULT_SCOPE = 'planet'
+  const [activeScope, setActiveScope] = useState(DEFAULT_SCOPE)
   const [orgOpen, setOrgOpen] = useState(false)
   const currentWheel = activeScope === 'planet' ? 'civ' : 'personal'
 
@@ -449,9 +455,16 @@ export default function MissionControl() {
   // Returning to You drops you back to My Life. Keyed on identity only,
   // so manual tab clicks are never overridden. Deferred while a welcome
   // handoff is arming a scope, so it doesn't fight that flow.
+  //
+  // Skips its initial run (prevActorIdRef seeded with the mount-time
+  // identity) so the DEFAULT_SCOPE landing above is respected; it only
+  // fires on a genuine identity switch mid-session.
+  const prevActorIdRef = useRef(actingAsActor.id)
   useEffect(() => {
+    if (prevActorIdRef.current === actingAsActor.id) return
     if (armingScope) return
     if (new URLSearchParams(location.search).get('scope')) return
+    prevActorIdRef.current = actingAsActor.id
     setActiveScope(actingAsActor.id === 'personal' ? 'self' : 'planet')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actingAsActor.id, armingScope])
