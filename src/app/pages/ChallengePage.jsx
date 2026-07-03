@@ -705,19 +705,22 @@ function AuthorFeedbackSection({ callId, userId }) {
 
 // ─── Auth prompt ──────────────────────────────────────────────────────────────
 
-function AuthPrompt({ callSlug }) {
-  // Login honours ?redirect= — this is the whole QR round trip: scan, sign in
-  // or sign up, land straight back on this page with the button live.
-  const dest = `/login?redirect=${encodeURIComponent(`/stretch/c/${callSlug}`)}`
+function AuthPrompt({ callSlug, isAsk }) {
+  // Most people arrive here having never seen the platform: the page is fully
+  // public, and the moment they touch the button we ask them to sign in, then
+  // Login honours ?redirect= and lands them straight back MID-GESTURE — for
+  // challenges the return carries ?accept=1 so the accept fork opens itself.
+  const back = isAsk ? `/stretch/c/${callSlug}` : `/stretch/c/${callSlug}?accept=1`
+  const dest = `/login?redirect=${encodeURIComponent(back)}`
   return (
-    <div style={{ padding: '24px', background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.2)', borderRadius: '12px', textAlign: 'center', marginTop: '20px' }}>
-      <p style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.7, marginBottom: '14px' }}>
-        Sign in or create an account to take on this challenge. Your progress stays with you.
-      </p>
+    <div style={{ marginTop: '4px' }}>
       <Link to={dest}
-        style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: tokens.gold, background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '12px 28px', textDecoration: 'none', display: 'inline-block' }}>
-        Sign in →
+        style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#1a1320', background: '#F2C45A', border: 'none', borderRadius: '40px', padding: '14px 32px', textDecoration: 'none', display: 'inline-block' }}>
+        {isAsk ? 'Offer to help →' : 'Take this on →'}
       </Link>
+      <p style={{ ...body, fontSize: '14px', ...muted, lineHeight: 1.6, marginTop: '10px' }}>
+        You will be asked to sign in or create an account first. It takes a minute, and you land right back here.
+      </p>
     </div>
   )
 }
@@ -726,6 +729,7 @@ function AuthPrompt({ callSlug }) {
 
 export function ChallengePage() {
   const { slug }                    = useParams()
+  const navigate                    = useNavigate()
   const { user }                    = useAuth()
   const [call,          setCall]    = useState(null)
   const [loading,       setLoading] = useState(true)
@@ -822,18 +826,23 @@ export function ChallengePage() {
   // Lives here, above the loading/not-found returns, so the hook count is
   // stable across renders.
   useEffect(() => {
-    if (!call || !user) return
+    if (!call) return
     try {
       const q = new URLSearchParams(window.location.search)
-      if (q.get('accept') === '1') {
-        const isRoot = !!foundingRootSlug && slug === foundingRootSlug
-        if (isRoot) setShowDoors(true)
-        else setShowTakeItOn(true)
-        q.delete('accept')
-        window.history.replaceState({}, '', window.location.pathname + (q.toString() ? `?${q}` : ''))
+      if (q.get('accept') !== '1') return
+      if (user === null) {
+        // resolved signed-out: straight to sign-in, full return preserved
+        navigate(`/login?redirect=${encodeURIComponent(`/stretch/c/${slug}?accept=1`)}`)
+        return
       }
+      if (!user) return // auth still resolving
+      const isRoot = !!foundingRootSlug && slug === foundingRootSlug
+      if (isRoot) setShowDoors(true)
+      else setShowTakeItOn(true)
+      q.delete('accept')
+      window.history.replaceState({}, '', window.location.pathname + (q.toString() ? `?${q}` : ''))
     } catch (_) { /* the button on the page still works */ }
-  }, [call, user, foundingRootSlug, slug])
+  }, [call, user, foundingRootSlug, slug, navigate])
 
   async function askToPartner() {
     if (!call || !askSel) return
@@ -990,7 +999,7 @@ export function ChallengePage() {
               </Btn>
             )
           ) : (
-            <AuthPrompt callSlug={slug} />
+            <AuthPrompt callSlug={slug} isAsk={isAsk} />
           )
         )}
         {alreadyJoined && (
