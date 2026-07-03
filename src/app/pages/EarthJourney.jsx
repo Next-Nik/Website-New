@@ -74,8 +74,8 @@ export default function EarthJourney() {
         if (user) {
           const treeIds = new Set((actRes?.field?.challenges || []).map(c => c.call_id))
           const [mine, myCalls] = await Promise.all([
-            api('my_participations'),
-            api('get_my_calls'),
+            api('my_participations', { userId: user.id }),
+            api('get_my_calls', { userId: user.id }),
           ])
           if (!live) return
           const inTree = (mine?.participations || []).filter(p => treeIds.has(p.call_id))
