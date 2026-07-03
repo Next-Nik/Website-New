@@ -43,6 +43,10 @@ async function postJSON(url, body) {
 
 const fmt = (n) => Number(n || 0).toLocaleString('en-GB')
 
+// Dignity threshold, same rule as /earth: below this many sparks, the strip
+// says the beacon is newly lit instead of arguing with a bald zero.
+const NEWLY_LIT_BELOW = 25
+
 function ago(at) {
   const secs = Math.max(0, (Date.now() - new Date(at).getTime()) / 1000)
   if (secs < 90) return 'just now'
@@ -283,7 +287,11 @@ export default function BeaconStrip({ userId }) {
         <span className="bcn-title">The beacon</span>
         <span className="bcn-msg">{bandMsg}</span>
         <span className="bcn-spacer" />
-        <span className="bcn-count">{fmt(beacon.sparks)}<small>sparks</small></span>
+        <span className="bcn-count">
+          {Number(beacon.sparks || 0) < NEWLY_LIT_BELOW
+            ? 'Newly lit'
+            : <>{fmt(beacon.sparks)}<small>sparks</small></>}
+        </span>
       </div>
 
       <div className="bcn-panel" ref={panelRef}>
@@ -292,7 +300,11 @@ export default function BeaconStrip({ userId }) {
             <div className="bcn-fire" ref={lanternRef}>
               <BeaconFire ref={fireRef} sparks={Number(beacon.sparks || 0)} />
             </div>
-            <div className="bcn-lread"><div className="bcn-c">{fmt(beacon.sparks)}</div><div className="bcn-k">sparks</div></div>
+            <div className="bcn-lread">
+              {Number(beacon.sparks || 0) < NEWLY_LIT_BELOW
+                ? <div className="bcn-c" style={{ fontSize: '22px' }}>Newly lit</div>
+                : <><div className="bcn-c">{fmt(beacon.sparks)}</div><div className="bcn-k">sparks</div></>}
+            </div>
             <button className="bcn-what" onClick={() => setShowMeaning(true)}>what is this?</button>
           </div>
 
