@@ -10,6 +10,7 @@
 
 import { useState, useEffect } from 'react'
 import { ROUTES } from '../../../constants/routes'
+import { authedFetch } from '../../../lib/actorCallsClient'
 
 const ROUTE_LABELS = {
   atlas:       'Connect',
@@ -69,9 +70,8 @@ export function PathView({ track, user, onBackToLoop }) {
     // Mark the step 'active'. In a full build, this also opens a Target
     // Stretch on it. For now we flip state and surface a tooltip.
     try {
-      await fetch('/api/nextsteps-track', {
+      await authedFetch('/api/nextsteps-track', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           step_id: step.id,
           step_update: { state: 'active' },
@@ -126,9 +126,8 @@ export function PathView({ track, user, onBackToLoop }) {
 
   async function markDone(step) {
     try {
-      await fetch('/api/nextsteps-track', {
+      await authedFetch('/api/nextsteps-track', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           step_id: step.id,
           step_update: { state: 'done' },

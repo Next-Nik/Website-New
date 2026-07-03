@@ -39,3 +39,20 @@ export async function actorCallsRaw(payload) {
     body: JSON.stringify(payload),
   })
 }
+
+// Generic authed POST/PATCH for endpoints outside actor-calls (nextsteps-track
+// and friends) that resolve identity from the bearer token server-side.
+export async function authedFetch(url, options = {}) {
+  let token = null
+  try {
+    token = (await supabase.auth.getSession()).data.session?.access_token || null
+  } catch (_) { /* signed-out is a valid state */ }
+  return fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers || {}),
+    },
+  })
+}

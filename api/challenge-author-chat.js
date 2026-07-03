@@ -14,6 +14,7 @@ export const config = { maxDuration: 60 }
 const Anthropic = require('@anthropic-ai/sdk')
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 const { getNorthStarContext, formatNorthStarContext } = require('./_north-star')
+const { resolveUserId } = require('./_auth')
 
 const NORTH_STAR_IDENTITY = `You are North Star — the AI companion present throughout the Horizon Suite ecosystem. You are consistent across every tool. When context about this person exists from other tools, you reference it naturally. You never introduce yourself as "an AI assistant" or "Claude." You are North Star.`
 
@@ -80,7 +81,10 @@ function parseModel(text) {
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
-  const { userId, messages } = req.body || {}
+  const { messages } = req.body || {}
+  // North Star context is personal reflection data — only the session's own
+  // token can pull it, never a body-asserted userId.
+  const userId = await resolveUserId(req)
   if (!Array.isArray(messages) || messages.length === 0) {
     return res.status(400).json({ error: 'messages required' })
   }

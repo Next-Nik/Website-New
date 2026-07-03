@@ -325,20 +325,28 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { mode, user_id, actor_id, requesting_user_id } = req.body || {}
+  const { mode, user_id, actor_id } = req.body || {}
 
   if (!mode) return res.status(400).json({ error: 'mode is required' })
 
+  // Contributor match data (offers, Purpose Piece coords) is personal —
+  // the requester's own token, never a body-asserted id, decides whose it is.
+  const { resolveUserId } = require('./_auth')
+  const sessionUserId = await resolveUserId(req)
+
   try {
     if (mode === 'for_contributor') {
-      if (!user_id) return res.status(400).json({ error: 'user_id required' })
-      const matches = await matchForContributor(user_id, !!requesting_user_id)
+      if (!sessionUserId) return res.status(401).json({ error: 'Sign-in required' })
+      if (user_id && user_id !== sessionUserId) {
+        return res.status(403).json({ error: 'Can only match for your own account' })
+      }
+      const matches = await matchForContributor(sessionUserId, true)
       return res.status(200).json({ matches })
     }
 
     if (mode === 'for_org') {
       if (!actor_id) return res.status(400).json({ error: 'actor_id required' })
-      const matches = await matchForOrg(actor_id, requesting_user_id)
+      const matches = await matchForOrg(actor_id, sessionUserId)
       return res.status(200).json({ matches })
     }
 

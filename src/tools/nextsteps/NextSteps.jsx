@@ -25,6 +25,7 @@ import { DomainLanding } from './phases/DomainLanding'
 import { PathView } from './phases/PathView'
 import { TrackLoop } from './phases/TrackLoop'
 import { serif, body, sc } from '../../lib/designTokens'
+import { authedFetch } from '../../lib/actorCallsClient'
 
 export function NextStepsPage() {
   const { user, loading } = useAuth()
@@ -60,7 +61,7 @@ export function NextStepsPage() {
 
   async function loadTracks() {
     try {
-      const res = await fetch(`/api/nextsteps-track?userId=${user.id}`)
+      const res = await authedFetch('/api/nextsteps-track')
       if (!res.ok) throw new Error(`load tracks ${res.status}`)
       const { tracks: list } = await res.json()
       setTracks(list || [])
@@ -92,11 +93,9 @@ export function NextStepsPage() {
     }
 
     try {
-      const res = await fetch('/api/nextsteps-track', {
+      const res = await authedFetch('/api/nextsteps-track', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: user.id,
           original_concern: originalConcern,
           toward_sentence: reflection.toward_sentence,
           domains: reflection.domains,

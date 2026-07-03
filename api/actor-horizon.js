@@ -30,6 +30,7 @@ export const config = { maxDuration: 30 }
 
 const { createClient } = require('@supabase/supabase-js')
 const { computeClock } = require('./_stretch-clock')
+const { resolveUserId } = require('./_auth')
 const Anthropic        = require('@anthropic-ai/sdk')
 
 const supabase  = createClient(process.env.SUPABASE_URL, (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY))
@@ -86,7 +87,14 @@ async function actorContext(actorId) {
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { action, userId, ...body } = req.body || {}
+  const { action, userId: _clientAssertedUserId, ...body } = req.body || {}
+
+  // Identity from the bearer token only; body userId is a legacy hint that
+  // must match the token when both are present.
+  const userId = await resolveUserId(req)
+  if (_clientAssertedUserId && userId && _clientAssertedUserId !== userId) {
+    return res.status(403).json({ error: 'Identity mismatch' })
+  }
 
   // Everything here is owner-gated. There is no public action on this surface —
   // the civ horizon profile is the developmental rail, private by definition.

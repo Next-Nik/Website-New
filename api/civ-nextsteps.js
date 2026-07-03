@@ -24,6 +24,7 @@
 
 const Anthropic = require('@anthropic-ai/sdk')
 const { getNorthStarContext, formatNorthStarContext } = require('./_north-star')
+const { resolveUserId } = require('./_auth')
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
@@ -47,7 +48,6 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'method-not-allowed' })
 
   const {
-    userId,
     domain,
     domainName,
     currentScore,
@@ -56,6 +56,10 @@ module.exports = async function handler(req, res) {
   } = req.body || {}
 
   if (!domain) return res.status(400).json({ error: 'invalid-domain' })
+
+  // North Star context is personal reflection data — only the session's own
+  // token can pull it, never a body-asserted userId.
+  const userId = await resolveUserId(req)
 
   let nsBlock = ''
   if (userId) {

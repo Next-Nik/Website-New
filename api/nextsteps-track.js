@@ -14,6 +14,7 @@
 export const config = { maxDuration: 15 }
 
 const { createClient } = require('@supabase/supabase-js');
+const { resolveUserId } = require('./_auth');
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -65,7 +66,6 @@ module.exports = async (req, res) => {
   // ── POST /api/nextsteps-track → create a Track from Phase 2 landing ──
   if (method === 'POST') {
     const {
-      userId,
       original_concern,
       toward_sentence,
       domains,
@@ -77,7 +77,9 @@ module.exports = async (req, res) => {
       // mirror branch tracks may have toward_sentence === null
     } = req.body || {};
 
-    if (!userId) return res.status(400).json({ error: 'userId required' });
+    // Reflection content — identity from the verified token only.
+    const userId = await resolveUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Sign-in required' });
     if (!original_concern) {
       return res.status(400).json({ error: 'original_concern required' });
     }
@@ -132,7 +134,7 @@ module.exports = async (req, res) => {
 
   // ── GET /api/nextsteps-track?id=... or ?userId=... ───────────────────
   if (method === 'GET') {
-    const { id, userId } = req.query || {};
+    const { id } = req.query || {};
 
     if (id) {
       // Single track with its steps
@@ -152,12 +154,14 @@ module.exports = async (req, res) => {
       return res.json({ track, steps: steps || [] });
     }
 
-    if (userId) {
-      // All tracks for a user — uses the with_counts view for Mission Control
+    // A track list is personal reflection data — only the session's own
+    // tracks are ever returned, regardless of what was asked for.
+    const sessionUserId = await resolveUserId(req);
+    if (sessionUserId) {
       const { data, error } = await supabase
         .from('nextsteps_tracks_with_counts')
         .select('*')
-        .eq('user_id', userId)
+        .eq('user_id', sessionUserId)
         .order('updated_at', { ascending: false });
       if (error) {
         console.error('NextSteps track list error:', error);
@@ -166,14 +170,25 @@ module.exports = async (req, res) => {
       return res.json({ tracks: data || [] });
     }
 
-    return res.status(400).json({ error: 'id or userId required' });
+    return res.status(401).json({ error: 'Sign-in required' });
   }
 
   // ── PATCH /api/nextsteps-track → update Track or Step state ──────────
   if (method === 'PATCH') {
     const { track_id, step_id, track_update, step_update } = req.body || {};
 
+    // Neither branch previously verified who was making the change — anyone
+    // who knew a track_id or step_id could rewrite any field on it. Every
+    // write below is now gated on the session owning the track first.
+    const sessionUserId = await resolveUserId(req);
+    if (!sessionUserId) return res.status(401).json({ error: 'Sign-in required' });
+
     if (track_id && track_update) {
+      const { data: owned } = await supabase
+        .from('nextsteps_tracks').select('user_id').eq('id', track_id).maybeSingle();
+      if (!owned || owned.user_id !== sessionUserId) {
+        return res.status(403).json({ error: 'Not your track' });
+      }
       const { error } = await supabase
         .from('nextsteps_tracks')
         .update(track_update)
@@ -186,6 +201,14 @@ module.exports = async (req, res) => {
     }
 
     if (step_id && step_update) {
+      const { data: step } = await supabase
+        .from('nextsteps_steps').select('track_id').eq('id', step_id).maybeSingle();
+      if (!step) return res.status(404).json({ error: 'Step not found' });
+      const { data: owned } = await supabase
+        .from('nextsteps_tracks').select('user_id').eq('id', step.track_id).maybeSingle();
+      if (!owned || owned.user_id !== sessionUserId) {
+        return res.status(403).json({ error: 'Not your track' });
+      }
       const { error } = await supabase
         .from('nextsteps_steps')
         .update(step_update)

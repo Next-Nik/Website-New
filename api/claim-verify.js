@@ -15,6 +15,7 @@
 
 const { createClient }  = require('@supabase/supabase-js')
 const { Resend }        = require('resend')
+const { resolveUser }   = require('./_auth')
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -60,9 +61,16 @@ async function approveClaim(actorId, userId) {
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { action, actorId, userId, email, code, note, evidenceUrl, userEmail } = req.body || {}
+  const { action, actorId, email, code, note, evidenceUrl } = req.body || {}
 
-  if (!actorId || !userId) return res.status(400).json({ error: 'actorId and userId required' })
+  // Identity and the session's own email come from the verified token, never
+  // from the body — this is the claim flow; trusting body-asserted identity
+  // here means anyone could claim any unclaimed organisation.
+  const sessionUser = await resolveUser(req)
+  const userId = sessionUser ? sessionUser.id : null
+  const sessionEmail = sessionUser ? sessionUser.email : null
+
+  if (!actorId || !userId) return res.status(401).json({ error: 'Sign-in required' })
 
   // Load actor once for all actions
   const { data: actor } = await supabase
@@ -80,7 +88,7 @@ module.exports = async (req, res) => {
   //   code    — email doesn't match; offer org-email code flow
   //   request — no website on actor; offer admin fallback only
   if (action === 'check_domain') {
-    const userEmailDomain = emailDomain(userEmail || '')
+    const userEmailDomain = emailDomain(sessionEmail || '')
     const actorDomain     = extractDomain(actor.website)
 
     if (!actorDomain) {
@@ -198,7 +206,7 @@ module.exports = async (req, res) => {
       user_id:      userId,
       note:         (note || '').slice(0, 2000),
       evidence_url: (evidenceUrl || '').slice(0, 500) || null,
-      user_email:   (userEmail  || '').slice(0, 254) || null,
+      user_email:   (sessionEmail || '').slice(0, 254) || null,
       status:       'pending',
       updated_at:   new Date().toISOString(),
     }, { onConflict: 'actor_id,user_id' })

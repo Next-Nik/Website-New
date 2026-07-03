@@ -14,6 +14,7 @@
 //   overflow_route     — when an ask fills, route surplus to a sibling ask
 
 const { createClient } = require('@supabase/supabase-js')
+const { resolveUserId } = require('./_auth')
 const supabase = createClient(
   process.env.SUPABASE_URL,
   (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY)
@@ -93,7 +94,14 @@ async function refreshGoalCounts(goalId) {
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { action, userId, ...body } = req.body || {}
+  const { action, userId: _clientAssertedUserId, ...body } = req.body || {}
+
+  // Identity from the bearer token only; body userId is a legacy hint that
+  // must match the token when both are present.
+  const userId = await resolveUserId(req)
+  if (_clientAssertedUserId && userId && _clientAssertedUserId !== userId) {
+    return res.status(403).json({ error: 'Identity mismatch' })
+  }
 
   // ── get_goals ─────────────────────────────────────────────────────────────
   if (action === 'get_goals') {

@@ -27,6 +27,7 @@ export const config = { maxDuration: 60 }
 
 const Anthropic = require('@anthropic-ai/sdk');
 const { createClient } = require('@supabase/supabase-js');
+const { resolveUserId } = require('./_auth');
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const supabase = createClient(
@@ -353,10 +354,14 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { track_id, userId } = req.body || {};
+  const { track_id } = req.body || {};
   if (!track_id) {
     return res.status(400).json({ error: 'track_id required' });
   }
+  // Purpose Piece coords are personal — only the session's own token resolves
+  // whose they are; a track that belongs to nobody in particular falls back
+  // to the track's own recorded user.
+  const userId = await resolveUserId(req);
 
   // 1. Load the Track
   const { data: track, error: trackErr } = await supabase
