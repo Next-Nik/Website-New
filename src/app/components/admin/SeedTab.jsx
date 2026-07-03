@@ -199,7 +199,7 @@ export default function SeedTab({ toast }) {
   // batch id, and each placed image is rehosted into our bucket so it can't rot.
   async function placeSelected() {
     const chosen = items.filter(it => it._checked)
-    if (!chosen.length) { toast('Nothing selected'); return }
+    if (!chosen.length) { toast('Select at least one first'); return }
     setPlacing(true)
     const batchId = `seed_${new Date().toISOString().replace(/[:.]/g, '-')}`
     const bySource = {}

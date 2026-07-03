@@ -1724,7 +1724,7 @@ function AddTab({ toast }) {
 
   async function saveSelected() {
     const selected = proposals.filter((_, i) => checked[i])
-    if (selected.length === 0) { toast('Nothing selected'); return }
+    if (selected.length === 0) { toast('Select at least one first'); return }
     for (const p of selected) {
       if (!p.name?.trim())                      { toast(`Name required on ${p.label} entry`); return }
       if (!(p.domains?.length) && !p.domain_id) { toast(`Domain required on ${p.label} entry`); return }

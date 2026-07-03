@@ -254,7 +254,7 @@ export default function BeaconStrip({ userId }) {
       ? 'The Earth Challenge is live'
       : openCount > 0
         ? `${openCount === 1 ? '1 challenge' : `${openCount} challenges`} waiting for you`
-        : 'You\u2019ve shown up today. Well done!'
+        : 'You showed up! Well done!'
 
   return (
     <div className={`bcn-wrap${open ? ' open' : ''}`}>
