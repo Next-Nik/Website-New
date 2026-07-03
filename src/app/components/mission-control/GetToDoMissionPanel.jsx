@@ -430,7 +430,7 @@ export default function GetToDoMissionPanel({ userId, sprintData }) {
       {tab === 'today' && (
         <ListView
           rows={items} reorder={reorder} setReorder={setReorder}
-          emptyMsg="Nothing on the list yet. Add something in Daily, or set a Target Stretch to pull items in."
+          emptyMsg="Your list is clear. Add something in Daily, or set a Target Stretch to pull items in."
           domByKey={domByKey.current}
           onToggle={toggleComplete} onMove={(it, d, tier) => move(tier, it, d)}
           onStar={togglePriority} onSetDate={setDueDate} onRemove={removeDaily}
@@ -832,7 +832,7 @@ function CalendarSection({ userId }) {
           </button>
         </div>
       ) : calEvents.length === 0 ? (
-        <div style={{ ...body, fontSize: '13px', color: TEXT_META }}>Nothing scheduled for today.</div>
+        <div style={{ ...body, fontSize: '13px', color: TEXT_META }}>All clear for today.</div>
       ) : (
         <div>
           {calEvents.map((evt, i) => (

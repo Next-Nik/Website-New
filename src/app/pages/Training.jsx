@@ -475,7 +475,7 @@ export default function Training({ embedded = false } = {}) {
     if (todaysTypes.length === 0) {
       return (
         <div style={{ border: `1px dashed ${GOLD_RULE}`, borderRadius: '14px', padding: '22px', textAlign: 'center' }}>
-          <p style={{ ...body, fontSize: '15px', color: tokens.ghost, margin: '0 0 14px' }}>Nothing scheduled today in {LABEL[domain]}.</p>
+          <p style={{ ...body, fontSize: '15px', color: tokens.ghost, margin: '0 0 14px' }}>All clear today in {LABEL[domain]}.</p>
           <button style={ghostBtn} onClick={() => { setView('edit'); setEditStage('week') }}>Open your week</button>
         </div>
       )

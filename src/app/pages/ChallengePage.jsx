@@ -817,6 +817,24 @@ export function ChallengePage() {
     setBusyComplete(false)
   }
 
+  // arriving with ?accept=1 (from the strip or a shared link) opens the accept
+  // fork directly once the call is loaded and the person is signed in.
+  // Lives here, above the loading/not-found returns, so the hook count is
+  // stable across renders.
+  useEffect(() => {
+    if (!call || !user) return
+    try {
+      const q = new URLSearchParams(window.location.search)
+      if (q.get('accept') === '1') {
+        const isRoot = !!foundingRootSlug && slug === foundingRootSlug
+        if (isRoot) setShowDoors(true)
+        else setShowTakeItOn(true)
+        q.delete('accept')
+        window.history.replaceState({}, '', window.location.pathname + (q.toString() ? `?${q}` : ''))
+      }
+    } catch (_) { /* the button on the page still works */ }
+  }, [call, user, foundingRootSlug, slug])
+
   async function askToPartner() {
     if (!call || !askSel) return
     setAskBusy(true)
@@ -856,21 +874,6 @@ export function ChallengePage() {
   const strands      = Array.isArray(call.protocol) ? call.protocol.filter(s => s && s.text) : []
   const partners     = Array.isArray(call.partners) ? call.partners : []
   const isFoundingRoot = !!foundingRootSlug && slug === foundingRootSlug
-
-  // arriving with ?accept=1 (from the strip or a shared link) opens the accept
-  // fork directly once the call is loaded and the person is signed in
-  useEffect(() => {
-    if (!call || !user) return
-    try {
-      const q = new URLSearchParams(window.location.search)
-      if (q.get('accept') === '1') {
-        if (isFoundingRoot) setShowDoors(true)
-        else setShowTakeItOn(true)
-        q.delete('accept')
-        window.history.replaceState({}, '', window.location.pathname + (q.toString() ? `?${q}` : ''))
-      }
-    } catch (_) { /* the button on the page still works */ }
-  }, [call, user, isFoundingRoot])
 
   return (
     <div style={{ background: tokens.bg, minHeight: '100dvh' }}>
