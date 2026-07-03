@@ -23,10 +23,19 @@ const A = {
   bright: '#F2C45A', glow: '#FFE6A8', amber: '#C8922A', deep: '#7A4A12', night: '#141019',
 }
 
+import { supabase } from '../../../hooks/useSupabase'
+
 async function postJSON(url, body) {
+  let token = null
+  try {
+    token = (await supabase.auth.getSession()).data.session?.access_token || null
+  } catch (_) { /* signed-out is a valid state */ }
   const r = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: JSON.stringify(body),
   })
   return r.json()
@@ -371,7 +380,7 @@ export default function BeaconStrip({ userId }) {
                     voice = kept ? VOICE.completeOnce() : VOICE.onceOpen()
                   } else if (run.cadence === 'weekly' || run.cadence === 'monthly') {
                     voice = kept
-                      ? VOICE.weekComplete(chainShown)
+                      ? (run.cadence === 'weekly' ? VOICE.weekComplete(chainShown) : VOICE.monthComplete(chainShown))
                       : (run.cadence === 'weekly' ? VOICE.weekOpen() : VOICE.monthOpen())
                   } else if (swept && strands.length > 1) {
                     voice = VOICE.swept()

@@ -8,6 +8,7 @@
 // Legacy redirect: /nextus/actors/:id/needs/new → /ask/new?actor=:id (in App.jsx)
 
 import { useState, useEffect } from 'react'
+import { actorCallsRaw } from '../../lib/actorCallsClient'
 import { Nav }        from '../../components/Nav'
 import { useAuth }    from '../../hooks/useAuth'
 import { supabase }   from '../../hooks/useSupabase'
@@ -149,10 +150,7 @@ export default function ContributionPage() {
   async function loadAsks() {
     setLoading(true)
     try {
-      const res  = await fetch('/api/actor-calls', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'browse_asks', domain: domain || undefined, limit: 24 }),
-      })
+      const res  = await actorCallsRaw({ action: 'browse_asks', domain: domain || undefined, limit: 24 })
       const data = await res.json()
       const rows = data.calls || []
       setCalls(rows)

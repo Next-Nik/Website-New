@@ -73,7 +73,7 @@ export function MessageButton({ actor }) {
 
   function handleClick() {
     if (!user) {
-      navigate('/login', { state: { from: window.location.pathname } })
+      navigate(`/login?redirect=${encodeURIComponent(window.location.pathname)}`)
       return
     }
     if (isUnclaimed) return

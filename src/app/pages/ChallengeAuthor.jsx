@@ -7,6 +7,7 @@
 // fractal: a personal Body challenge ladders to Nature's Horizon Goal).
 
 import { useState, useEffect, useRef } from 'react'
+import { actorCallsRaw } from '../../lib/actorCallsClient'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Nav }        from '../../components/Nav'
 import { useAuth }    from '../../hooks/useAuth'
@@ -155,10 +156,7 @@ export default function ChallengeAuthor() {
     if (!domain) { setParentOptions([]); setParentCallId(''); return }
     let live = true
     setParentCallId('')
-    fetch('/api/actor-calls', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'browse_challenges', domain, limit: 50, sort: 'popular' }),
-    })
+    actorCallsRaw({ action: 'browse_challenges', domain, limit: 50, sort: 'popular' })
       .then(r => r.json())
       .then(d => { if (live) setParentOptions(d.challenges || []) })
       .catch(() => {})
@@ -177,7 +175,7 @@ export default function ChallengeAuthor() {
       .then(d => {
         if (!live || !d || !d.rooted || !d.root_slug) return
         setFoundingClose(d.closes_on || null)
-        return fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'get_by_slug', slug: d.root_slug }) })
+        return actorCallsRaw({ action: 'get_by_slug', slug: d.root_slug })
           .then(r => r.json())
           .then(rc => { if (live && rc.call?.id) { setFoundingRoot({ id: rc.call.id, title: rc.call.title }); setParentCallId(rc.call.id) } })
       })
@@ -332,10 +330,7 @@ export default function ChallengeAuthor() {
     setInviteQ(q)
     if (q.trim().length < 2) { setInviteResults([]); return }
     try {
-      const r = await fetch('/api/actor-calls', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'search_actors', q }),
-      })
+      const r = await actorCallsRaw({ action: 'search_actors', q })
       const d = await r.json()
       setInviteResults(d.actors || [])
     } catch { setInviteResults([]) }
@@ -345,10 +340,7 @@ export default function ChallengeAuthor() {
     if (!published?.callId) return
     setInviteBusy(true)
     try {
-      await fetch('/api/actor-calls', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'request_partner', userId: user.id, call_id: published.callId, partner_actor_id: actor.id }),
-      })
+      await actorCallsRaw({ action: 'request_partner', userId: user.id, call_id: published.callId, partner_actor_id: actor.id })
       setInvited(v => [...v, actor.name])
       setInviteQ(''); setInviteResults([])
     } catch {}
@@ -428,10 +420,7 @@ export default function ChallengeAuthor() {
     setOrgQ(q)
     if (q.trim().length < 2) { setOrgResults([]); return }
     try {
-      const r = await fetch('/api/actor-calls', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'search_actors', q, limit: 6 }),
-      })
+      const r = await actorCallsRaw({ action: 'search_actors', q, limit: 6 })
       const d = await r.json()
       setOrgResults((d.actors || []).filter(a => a.type !== 'practitioner'))
     } catch { setOrgResults([]) }
@@ -497,15 +486,15 @@ export default function ChallengeAuthor() {
     const payload = buildPayload()
     if (payload.protocol.length === 0) { setErrors(['Add at least one thing someone will do.']); setSaving(false); return }
     try {
-      const vRes = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'validate_floor', userId: user.id, ...payload }) })
+      const vRes = await actorCallsRaw({ action: 'validate_floor', userId: user.id, ...payload })
       const vData = await vRes.json()
       if (!vData.passes) { setErrors(vData.errors || ['Some details are still missing.']); setSaving(false); return }
 
-      const cRes = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create', userId: user.id, actor_id: authorActor || null, ...payload }) })
+      const cRes = await actorCallsRaw({ action: 'create', userId: user.id, actor_id: authorActor || null, ...payload })
       const cData = await cRes.json()
       if (!cData.call?.id) { setErrors([cData.error || 'Could not save.']); setSaving(false); return }
 
-      const pRes = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'publish', userId: user.id, call_id: cData.call.id, visibility }) })
+      const pRes = await actorCallsRaw({ action: 'publish', userId: user.id, call_id: cData.call.id, visibility })
       const pData = await pRes.json()
       if (pData.error) { setErrors([pData.error]); setSaving(false); return }
       try { localStorage.removeItem(DRAFT_KEY) } catch {}

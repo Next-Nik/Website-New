@@ -327,7 +327,7 @@ export function AddPage() {
 
   // Auth gate
   useEffect(() => {
-    if (!authLoading && !user) navigate('/login', { state: { from: '/add' } })
+    if (!authLoading && !user) navigate(`/login?redirect=${encodeURIComponent('/add')}`)
   }, [user, authLoading, navigate])
 
   // Prefill from nav state (AddOverlay actor_type)

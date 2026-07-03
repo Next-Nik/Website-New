@@ -990,7 +990,7 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
 
   async function togglePull() {
     if (!currentUser) {
-      navigate('/login', { state: { from: window.location.pathname } })
+      navigate(`/login?redirect=${encodeURIComponent(window.location.pathname)}`)
       return
     }
     setInterestLoading(true)
@@ -1145,7 +1145,7 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
         <button
           onClick={() => {
             if (!currentUser) {
-              navigate('/login', { state: { from: window.location.pathname } })
+              navigate(`/login?redirect=${encodeURIComponent(window.location.pathname)}`)
               return
             }
             if (!actor?.profile_owner) return

@@ -21,15 +21,10 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY,
 )
 
-// Warm, rotating. Each names the challenge and the open day — never a miss.
-function reminderBody(name, dayIndex) {
-  const lines = [
-    `The ${name} challenge is waiting for you.`,
-    `Time to check in on ${name}.`,
-    `${name}, still open for today.`,
-    `A minute for the beacon? ${name} is waiting.`,
-  ]
-  return lines[dayIndex % lines.length]
+// The companion voice, verbatim from the locked deck (companionVoice.js).
+// Simple, clean, almost basic. The title names the challenge; the body cheers.
+function reminderBody() {
+  return "Still time to do your challenge today. You've got this!"
 }
 
 // As the close nears, the voice shifts to a finish call — urgency, not guilt.
@@ -115,7 +110,7 @@ module.exports = async (req, res) => {
     if (!subscribed.has(uid)) continue
     const r = await sendToUser(uid, {
       title: 'The beacon',
-      body: nearClose ? finishCall(openByUser[uid], beacon.closes_on) : reminderBody(openByUser[uid], dayIndex),
+      body: nearClose ? finishCall(openByUser[uid], beacon.closes_on) : reminderBody(),
       url: '/',
       tag: nearClose ? 'beacon-finish' : 'beacon-reminder',
     })

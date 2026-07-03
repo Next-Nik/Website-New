@@ -5,6 +5,7 @@
 // author. Nothing is public until accepted here.
 
 import { useState, useEffect } from 'react'
+import { actorCallsRaw } from '../../lib/actorCallsClient'
 import { Link }     from 'react-router-dom'
 import { Nav }      from '../../components/Nav'
 import { useAuth }  from '../../hooks/useAuth'
@@ -23,10 +24,7 @@ export default function PartnerInbox() {
   useEffect(() => {
     if (!user) { setLoading(false); return }
     let live = true
-    fetch('/api/actor-calls', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'partner_inbox', userId: user.id }),
-    })
+    actorCallsRaw({ action: 'partner_inbox', userId: user.id })
       .then(r => r.json())
       .then(d => { if (live) setReqs(d.requests || []) })
       .catch(() => {})
@@ -37,10 +35,7 @@ export default function PartnerInbox() {
   async function respond(id, decision) {
     setActing(id)
     try {
-      await fetch('/api/actor-calls', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'respond_partner', userId: user.id, partnership_id: id, decision }),
-      })
+      await actorCallsRaw({ action: 'respond_partner', userId: user.id, partnership_id: id, decision })
       setReqs(rs => rs.filter(r => r.id !== id))
     } catch {}
     setActing(null)

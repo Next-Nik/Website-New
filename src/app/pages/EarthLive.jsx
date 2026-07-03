@@ -11,6 +11,7 @@
 // thousand. Public, no auth; polls every 45s, pauses when hidden.
 
 import { useEffect, useState, useRef } from 'react'
+import { actorCallsRaw } from '../../lib/actorCallsClient'
 import { Link } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { serif, sc, body } from '../../lib/designTokens'
@@ -76,8 +77,7 @@ export default function EarthLive() {
       const [tRes, aRes] = await Promise.all([
         fetch('/api/beacon', { method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'get', slug: 'founding-nature' }) }),
-        fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'constellation_activity', limit: 8 }) }),
+        actorCallsRaw({ action: 'constellation_activity', limit: 8 }),
       ])
       const t = await tRes.json()
       const a = await aRes.json()

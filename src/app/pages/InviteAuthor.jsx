@@ -84,7 +84,7 @@ export function InviteAuthorPage() {
   const [copiedLink, setCopiedLink] = useState(false)
 
   useEffect(() => {
-    if (!authLoading && !user) navigate('/login', { state: { from: '/invite/new' } })
+    if (!authLoading && !user) navigate(`/login?redirect=${encodeURIComponent('/invite/new')}`)
   }, [user, authLoading, navigate])
 
   // Prefill the inviter's display name from their profile / email

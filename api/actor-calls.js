@@ -138,7 +138,22 @@ async function foundingCloseFor(callId) {
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  const { action, userId, ...body } = req.body || {}
+  const { action, userId: _clientAssertedUserId, ...body } = req.body || {}
+
+  // Identity comes from the bearer token, never from the body. The client-
+  // asserted userId is accepted only as a legacy hint and only when it matches
+  // the token; without a valid token, auth-required actions see no user at all.
+  let userId = null
+  try {
+    const auth = req.headers.authorization || ''
+    if (auth.startsWith('Bearer ')) {
+      const { data, error } = await supabase.auth.getUser(auth.slice(7))
+      if (!error && data && data.user) userId = data.user.id
+    }
+  } catch (_) { /* unauthenticated */ }
+  if (_clientAssertedUserId && userId && _clientAssertedUserId !== userId) {
+    return res.status(403).json({ error: 'Identity mismatch' })
+  }
 
   // ── validate_floor ─────────────────────────────────────────────────────────
   // ── constellation_activity ─────────────────────────────────────────────────

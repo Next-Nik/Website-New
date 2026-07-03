@@ -7,6 +7,7 @@
 // Scale is never shown — a challenge just plugs into your days.
 
 import { useState, useEffect, useMemo } from 'react'
+import { actorCallsRaw } from '../../lib/actorCallsClient'
 import { Link }       from 'react-router-dom'
 import { Nav }        from '../../components/Nav'
 import { useAuth }    from '../../hooks/useAuth'
@@ -86,16 +87,13 @@ function ChallengeCard({ p, userId, founding }) {
   async function finish() {
     setSavingDone(true)
     try {
-      await fetch('/api/actor-calls', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      await actorCallsRaw({
           action: 'submit_feedback', userId, call_id: p.call_id,
           consent,
           reflection:            consent && reflection.trim() ? reflection.trim() : null,
           reflection_public:     consent && !!reflection.trim(),
           reflection_attributed: consent && attributed,
-        }),
-      })
+        })
       setLocalComplete(true); setFinishing(false)
     } catch {}
     setSavingDone(false)
@@ -118,10 +116,7 @@ function ChallengeCard({ p, userId, founding }) {
     setDoneToday(next)
     setBusy(strandId)
     try {
-      await fetch('/api/actor-calls', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'log_strand', userId, call_id: p.call_id, strand_id: strandId, done: willBeDone }),
-      })
+      await actorCallsRaw({ action: 'log_strand', userId, call_id: p.call_id, strand_id: strandId, done: willBeDone })
     } catch {
       // revert on failure
       const revert = new Set(doneToday)
@@ -264,10 +259,7 @@ export default function MyChallenges() {
     if (!user) { setLoading(false); return }
     let live = true
     Promise.all([
-      fetch('/api/actor-calls', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'my_participations', userId: user.id }),
-      }).then(r => r.json()),
+      actorCallsRaw({ action: 'my_participations', userId: user.id }).then(r => r.json()),
       // the constellation: runs inside it share one close, not private clocks
       fetch('/api/beacon', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },

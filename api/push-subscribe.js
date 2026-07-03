@@ -17,7 +17,21 @@ const supabase = createClient(
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
-  const { action, userId, subscription } = req.body || {}
+  const { action, userId: _clientAssertedUserId, subscription } = req.body || {}
+
+  // Identity from the bearer token only; body userId is a legacy hint that
+  // must match the token when both are present.
+  let userId = null
+  try {
+    const auth = req.headers.authorization || ''
+    if (auth.startsWith('Bearer ')) {
+      const { data, error } = await supabase.auth.getUser(auth.slice(7))
+      if (!error && data && data.user) userId = data.user.id
+    }
+  } catch (_) { /* unauthenticated */ }
+  if (_clientAssertedUserId && userId && _clientAssertedUserId !== userId) {
+    return res.status(403).json({ error: 'Identity mismatch' })
+  }
 
   if (action === 'get_key') {
     return res.json({ publicKey: process.env.VAPID_PUBLIC_KEY || null })

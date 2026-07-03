@@ -24,7 +24,7 @@
     },
     {
       "path": "/api/notify-cron",
-      "schedule": "0 15 * * *"
+      "schedule": "0 1 * * *"
     },
     {
       "path": "/api/beacon-close-cron",

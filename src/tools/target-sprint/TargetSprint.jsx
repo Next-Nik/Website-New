@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { actorCallsRaw } from '../../lib/actorCallsClient'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { useAccess } from '../../hooks/useAccess'
@@ -1219,16 +1220,13 @@ function FeedbackPrompt({ callId, userId, onDone }) {
   async function submit() {
     setSaving(true)
     try {
-      await fetch('/api/actor-calls', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+      await actorCallsRaw({
           action: 'submit_feedback', userId, call_id: callId,
           consent,
           reflection:            consent && reflection.trim() ? reflection.trim() : null,
           reflection_public:     consent && !!reflection.trim(),
           reflection_attributed: consent && attributed,
-        }),
-      })
+        })
     } catch {}
     setSaving(false)
     setStep('thanks')
@@ -1550,12 +1548,12 @@ function PublishPanel({ domainData, domainId, userId, actorId }) {
     setSaving(true); setErrors([])
     try {
       // Floor check
-      const vRes  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'validate_floor', ...form }) })
+      const vRes  = await actorCallsRaw({ action: 'validate_floor', ...form })
       const vData = await vRes.json()
       if (!vData.passes) { setErrors(vData.errors || ['Below Challenge Floor']); setSaving(false); return }
 
       // Create
-      const cRes  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create', userId, actor_id: actorId || null, ...form }) })
+      const cRes  = await actorCallsRaw({ action: 'create', userId, actor_id: actorId || null, ...form })
       const cData = await cRes.json()
       if (cData.call?.id) { setCallId(cData.call.id); setVisibility('draft') }
     } catch { setErrors(['Something went wrong. Try again.']) }
@@ -1566,7 +1564,7 @@ function PublishPanel({ domainData, domainId, userId, actorId }) {
     if (!callId) return
     setSaving(true); setErrors([])
     try {
-      const pRes  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'publish', userId, call_id: callId, visibility: vis }) })
+      const pRes  = await actorCallsRaw({ action: 'publish', userId, call_id: callId, visibility: vis })
       const pData = await pRes.json()
       if (pData.error) { setErrors([pData.error]); setSaving(false); return }
       setVisibility(vis)
@@ -1732,12 +1730,12 @@ function CreateAskPanel({ userId, actorId }) {
     try {
       // Validate floor (reuse challenge floor — same required fields apply)
       const vPayload = { ...form, cadence: 'custom', duration_days: 90, measure: form.mechanism }
-      const vRes  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'validate_floor', ...vPayload }) })
+      const vRes  = await actorCallsRaw({ action: 'validate_floor', ...vPayload })
       const vData = await vRes.json()
       if (!vData.passes) { setErrors(vData.errors || ['Below floor']); setSaving(false); return }
 
       // Create
-      const cRes  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'create', userId, actor_id: actorId || null, type: 'ask', ...form, cadence: 'custom', duration_days: null }) })
+      const cRes  = await actorCallsRaw({ action: 'create', userId, actor_id: actorId || null, type: 'ask', ...form, cadence: 'custom', duration_days: null })
       const cData = await cRes.json()
       if (!cData.call?.id) { setErrors(['Could not save.']); setSaving(false); return }
       const id = cData.call.id
@@ -1745,7 +1743,7 @@ function CreateAskPanel({ userId, actorId }) {
 
       // Publish immediately if not draft
       if (vis !== 'draft') {
-        const pRes  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'publish', userId, call_id: id, visibility: vis }) })
+        const pRes  = await actorCallsRaw({ action: 'publish', userId, call_id: id, visibility: vis })
         const pData = await pRes.json()
         if (pData.url) setPublishedUrl(pData.url)
       }

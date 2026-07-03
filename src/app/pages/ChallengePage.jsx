@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { actorCallsRaw } from '../../lib/actorCallsClient'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
@@ -85,10 +86,7 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
   async function api(action, extra = {}) {
     setBusy(true); setErr(null)
     try {
-      const r = await fetch('/api/actor-calls', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, userId, call_id: call.id, ...extra }),
-      })
+      const r = await actorCallsRaw({ action, userId, call_id: call.id, ...extra })
       const d = await r.json()
       if (!r.ok || d.error) { setErr(d.error || 'Something went wrong.'); return null }
       return d
@@ -296,7 +294,7 @@ function FlagModal({ callId, userId, isAsk, onClose }) {
     if (!reason.trim()) return
     setLoading(true)
     try {
-      await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'flag', userId, call_id: callId, reason }) })
+      await actorCallsRaw({ action: 'flag', userId, call_id: callId, reason })
       setSubmitted(true)
     } catch {}
     setLoading(false)
@@ -353,7 +351,7 @@ function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
   async function join() {
     setLoading(true)
     try {
-      const res  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'take_on', userId, call_id: call.id, clock_type: clock }) })
+      const res  = await actorCallsRaw({ action: 'take_on', userId, call_id: call.id, clock_type: clock })
       const data = await res.json()
       if (data.participant || data.already_joined) { setJoined(true); onJoined && onJoined(data) }
     } catch {}
@@ -488,8 +486,7 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
   async function fulfill() {
     setLoading(true)
     try {
-      const res  = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'fulfill', userId, call_id: call.id, note: note.trim() || null }) })
+      const res  = await actorCallsRaw({ action: 'fulfill', userId, call_id: call.id, note: note.trim() || null })
       const data = await res.json()
       if (data.participant || data.already_offered) { setDone(true); onFulfilled && onFulfilled() }
     } catch {}
@@ -624,10 +621,7 @@ function AuthorFeedbackSection({ callId, userId }) {
 
   useEffect(() => {
     if (!open || data) return
-    fetch('/api/actor-calls', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'get_feedback', userId, call_id: callId }),
-    })
+    actorCallsRaw({ action: 'get_feedback', userId, call_id: callId })
       .then(r => r.json())
       .then(d => { if (d.counts) setData(d) })
       .catch(() => {})
@@ -759,7 +753,7 @@ export function ChallengePage() {
 
   useEffect(() => {
     if (!slug) return
-    fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'get_by_slug', slug }) })
+    actorCallsRaw({ action: 'get_by_slug', slug })
       .then(r => r.json())
       .then(data => {
         if (data.call) { setCall(data.call); setCosignerCount(data.call.cosigner_count || 0) }
@@ -789,8 +783,7 @@ export function ChallengePage() {
   useEffect(() => {
     if (!user || !call?.id) return
     let live = true
-    fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'get_participation', userId: user.id, call_id: call.id }) })
+    actorCallsRaw({ action: 'get_participation', userId: user.id, call_id: call.id })
       .then(r => r.json())
       .then(d => {
         if (!live) return
@@ -806,8 +799,7 @@ export function ChallengePage() {
     if (!user || !call) return
     setBusyComplete(true)
     try {
-      const r = await fetch('/api/actor-calls', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'complete_ask', userId: user.id, call_id: call.id }) })
+      const r = await actorCallsRaw({ action: 'complete_ask', userId: user.id, call_id: call.id })
       const d = await r.json()
       if (d.participant || d.already_complete) {
         setMyStatus('complete')
@@ -848,10 +840,7 @@ export function ChallengePage() {
     if (!call || !askSel) return
     setAskBusy(true)
     try {
-      const r = await fetch('/api/actor-calls', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'request_partner', userId: user.id, call_id: call.id, partner_actor_id: askSel }),
-      })
+      const r = await actorCallsRaw({ action: 'request_partner', userId: user.id, call_id: call.id, partner_actor_id: askSel })
       const d = await r.json()
       if (!d.error) setAskSent(true)
     } catch {}

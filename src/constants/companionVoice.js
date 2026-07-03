@@ -24,6 +24,7 @@ export const VOICE = {
   firstOfMany:   (left) => `Nice, one down. ${left} to go.`,
   swept:         () => 'All done for today. Well done!',
   weekComplete:  (kept) => `Week complete. Good job! ${kept} ${kept === 1 ? 'week' : 'weeks'} in a row!`,
+  monthComplete: (kept) => `Month complete. Good job! ${kept} ${kept === 1 ? 'month' : 'months'} in a row!`,
 
   // milestones (fires on exact chain values)
   milestone: (kept, unit) => `${kept} ${unit} in a row! Keep it up!`,

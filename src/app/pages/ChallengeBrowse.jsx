@@ -5,6 +5,7 @@
 // a domain chip says what it's about. Each card links to the public page.
 
 import { useState, useEffect, useMemo } from 'react'
+import { actorCallsRaw } from '../../lib/actorCallsClient'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Nav }        from '../../components/Nav'
 import { tokens, serif, body, sc } from '../../lib/designTokens'
@@ -76,10 +77,7 @@ export default function ChallengeBrowse() {
 
   useEffect(() => {
     let live = true
-    fetch('/api/actor-calls', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'browse_challenges', sort: 'popular', limit: 60 }),
-    })
+    actorCallsRaw({ action: 'browse_challenges', sort: 'popular', limit: 60 })
       .then(r => r.json())
       .then(d => { if (live) setRows(d.challenges || []) })
       .catch(() => {})

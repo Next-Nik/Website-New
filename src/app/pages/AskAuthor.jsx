@@ -11,6 +11,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect } from 'react'
+import { actorCallsRaw } from '../../lib/actorCallsClient'
 import { useNavigate } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
@@ -103,17 +104,11 @@ export default function AskAuthor() {
         ask_details: details.trim() || null,
         parent_call_id: parentId || null,
       }
-      const cRes = await fetch('/api/actor-calls', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'create', userId: user.id, actor_id: authorActor || null, ...payload }),
-      })
+      const cRes = await actorCallsRaw({ action: 'create', userId: user.id, actor_id: authorActor || null, ...payload })
       const cData = await cRes.json()
       if (!cRes.ok || !cData.call) { setErrors([cData.error || 'Could not create the ask.']); setSaving(false); return }
 
-      const pRes = await fetch('/api/actor-calls', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'publish', userId: user.id, call_id: cData.call.id, visibility }),
-      })
+      const pRes = await actorCallsRaw({ action: 'publish', userId: user.id, call_id: cData.call.id, visibility })
       const pData = await pRes.json()
       if (!pRes.ok) { setErrors([pData.error || 'Could not publish the ask.']); setSaving(false); return }
 

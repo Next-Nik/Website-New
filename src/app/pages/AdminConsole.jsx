@@ -36,6 +36,7 @@
 // Original AdminConsole.jsx not modified.
 
 import { useState, useEffect, useCallback } from 'react'
+import { actorCallsRaw } from '../../lib/actorCallsClient'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../hooks/useSupabase'
 import { useAuth } from '../../hooks/useAuth'
@@ -2274,10 +2275,7 @@ function CallFlagsSection({ toast }) {
       `Delete "${name}"?\n\nChildren re-root one notch up. Participant records are kept. This is permanent.`)) return
     if (action === 'purge' && !window.confirm(
       `Permanently remove "${name}"?\n\nOnly allowed because nobody has joined it. The row is gone for good.`)) return
-    const r = await fetch('/api/actor-calls', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action, userId: user?.id, call_id: flag.call.id }),
-    })
+    const r = await actorCallsRaw({ action, userId: user?.id, call_id: flag.call.id })
     const d = await r.json().catch(() => ({}))
     if (!r.ok || d.error) { toast(d.error || 'Action failed'); return }
     await supabase.from('actor_call_flags')
