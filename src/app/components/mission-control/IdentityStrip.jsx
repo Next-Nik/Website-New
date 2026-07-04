@@ -209,7 +209,9 @@ function GearIcon() {
 const STRIP_CSS = `
 .mc-identity-strip {
   position: relative;
-  z-index: 10;
+  /* Sits above the pole strip (z-index 10) so the Act-as and nav menus,
+     which drop down into the pole row, paint over it instead of behind. */
+  z-index: 20;
   border-bottom: 1px solid ${GOLD_RULE};
 }
 [data-stage="dark"] .mc-identity-strip {
