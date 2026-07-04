@@ -781,6 +781,31 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
         </button>
       )}
 
+      {/* Founder: Movie Magic (hidden screenwriting workspace) */}
+      {isFounder && (
+        <button
+          onClick={() => onNavigate('/movie-magic')}
+          style={{
+            display: 'block',
+            width: '100%',
+            padding: '11px 16px',
+            background: 'rgba(200, 146, 42, 0.06)',
+            border: `1px solid ${GOLD}`,
+            borderRadius: 14,
+            cursor: 'pointer',
+            fontFamily: FONT_SC,
+            fontSize: 11,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color: GOLD_DK,
+            textAlign: 'center',
+            marginBottom: 14,
+          }}
+        >
+          MOVIE MAGIC →
+        </button>
+      )}
+
       {/* Sign out */}
       <button
         onClick={handleSignOut}
