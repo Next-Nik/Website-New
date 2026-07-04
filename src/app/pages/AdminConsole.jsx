@@ -1654,16 +1654,28 @@ function AddTab({ toast }) {
   const [floorQueue,  setFloorQueue]  = useState([])   // proposals waiting floor check
   const [floorActive, setFloorActive] = useState(null) // current { proposal, index }
   const [savedNow,    setSavedNow]    = useState([])   // accumulated saved records
+  const [pendingBatch, setPendingBatch] = useState([]) // ALL selected proposals for this save run — so relationship linking spans records placed directly and records confirmed through the modal
 
-  // Skip the per-record Floor confirmation. Persisted so it stays off once set.
-  // When on, placement writes each record as 'compatible' directly — the same
-  // status the bulk Seed flow uses — with no modal.
-  const [skipFloor, setSkipFloor] = useState(() => {
-    try { return localStorage.getItem('nextus.admin.skipFloor') === '1' } catch { return false }
-  })
-  function toggleSkipFloor(next) {
-    setSkipFloor(next)
-    try { localStorage.setItem('nextus.admin.skipFloor', next ? '1' : '0') } catch {}
+  // Skip the per-record Floor confirmation — for floor-meeting records ONLY.
+  // Session-only by design (no localStorage): it resets to off on every page
+  // load so it can never silently stay on across sessions. Records that fall
+  // below the Actor Profile Floor ALWAYS go through the HorizonFloor modal,
+  // toggle or no toggle — nothing ships thin without an explicit decision.
+  const [skipFloor, setSkipFloor] = useState(false)
+
+  // The Actor Profile Floor (NextUs_Actor_Profile_Floor.md), checked locally
+  // before placement. Mirrors the checks in scripts/batch-seed.js so the
+  // single-add and bulk paths hold the same line.
+  function checkProfileFloor(p) {
+    const errors = []
+    if (!p.name?.trim() || p.name.trim().length < 2)      errors.push('name missing')
+    if (!p.type)                                          errors.push('type missing')
+    if (!p.description?.trim() || p.description.trim().length < 50)
+      errors.push(`description too short (${(p.description || '').trim().length}/50 chars)`)
+    if (!p.image_url?.trim())                             errors.push('no image')
+    if (!p.website?.trim())                               errors.push('no website / contact path')
+    if (!(p.domains?.length) && !p.domain_id)             errors.push('no domain placement')
+    return { passes: errors.length === 0, errors }
   }
 
   async function readSite() {
@@ -1731,16 +1743,31 @@ function AddTab({ toast }) {
       if (!(p.domains?.length) && !p.domain_id) { toast(`Domain required on ${p.label} entry`); return }
     }
 
-    // Floor check switched off — place directly, marking each compatible (the
-    // same status the bulk Seed flow writes), no per-record modal.
+    // The Floor is checked for every record, every time. The skip toggle only
+    // skips the confirmation modal for records that MEET the floor — anything
+    // below the floor is always routed through the HorizonFloor modal so it
+    // cannot ship thin without an explicit, per-record decision.
+    const belowFloor = selected.filter(p => !checkProfileFloor(p).passes)
+    const meetsFloor = selected.filter(p =>  checkProfileFloor(p).passes)
+
+    setPendingBatch(selected)
+
     if (skipFloor) {
       setSaving(true)
       const placed = []
-      for (const p of selected) {
+      for (const p of meetsFloor) {
         const r = await commitProposal(p, 'compatible', null)
         if (r) placed.push(r)
       }
       setSaving(false)
+      if (belowFloor.length) {
+        toast(`${belowFloor.length} record${belowFloor.length !== 1 ? 's' : ''} below the Floor — confirming each`)
+        setSavedNow(placed)
+        setFloorQueue(belowFloor)
+        setFloorActive({ proposal: belowFloor[0], queueIndex: 0, queue: belowFloor })
+        // linkRelationships runs after the modal queue drains (handleFloorResolve)
+        return
+      }
       if (placed.length) {
         setSaved(placed)
         await linkRelationships(selected, placed)
@@ -1828,7 +1855,10 @@ function AddTab({ toast }) {
         setFloorActive({ proposal: queue[nextIndex], queueIndex: nextIndex, queue })
       } else {
         setSaved(next)
-        await linkRelationships(queue, next)
+        // Link across the FULL batch (directly-placed + modal-confirmed), so
+        // relationships between a floor-passing record and a below-floor one
+        // still resolve. pendingBatch holds every selected proposal.
+        await linkRelationships(pendingBatch.length ? pendingBatch : queue, next)
         toast(`${next.length} record${next.length !== 1 ? 's' : ''} placed on the map`)
       }
     }
@@ -1869,7 +1899,7 @@ function AddTab({ toast }) {
 
   function reset() {
     setInput(''); setProposals([]); setChecked([]); setSaved([]); setAddErr(null)
-    setFloorQueue([]); setFloorActive(null); setSavedNow([])
+    setFloorQueue([]); setFloorActive(null); setSavedNow([]); setPendingBatch([])
   }
 
   const selectedCount = checked.filter(Boolean).length
@@ -1963,16 +1993,32 @@ function AddTab({ toast }) {
                 {proposals.length} record{proposals.length !== 1 ? 's' : ''} identified. Tick the ones you want to place.
               </div>
 
-              {proposals.map((p, i) => (
-                <ProposalCard
-                  key={i}
-                  proposal={p}
-                  index={i}
-                  checked={checked[i]}
-                  onToggle={toggleChecked}
-                  onChange={handleChange}
-                />
-              ))}
+              {proposals.map((p, i) => {
+                const floor = checkProfileFloor(p)
+                return (
+                  <div key={i}>
+                    {!floor.passes && (
+                      <div style={{ background:'rgba(168,114,26,0.06)',
+                        border:'1px solid rgba(200,146,42,0.40)', borderBottom:'none',
+                        borderRadius:'10px 10px 0 0', padding:'8px 14px' }}>
+                        <span style={{ ...sc, fontSize:'13px', letterSpacing:'0.14em', color:'#A8721A' }}>
+                          Below the Floor
+                        </span>
+                        <span style={{ ...body, fontSize:'13px', color:'rgba(15,21,35,0.72)', marginLeft:'10px' }}>
+                          {floor.errors.join(' · ')}
+                        </span>
+                      </div>
+                    )}
+                    <ProposalCard
+                      proposal={p}
+                      index={i}
+                      checked={checked[i]}
+                      onToggle={toggleChecked}
+                      onChange={handleChange}
+                    />
+                  </div>
+                )
+              })}
 
               <div style={{ paddingTop:'8px', borderTop:'1px solid rgba(200,146,42,0.15)',
                 display:'flex', alignItems:'center', gap:'16px', flexWrap:'wrap' }}>
@@ -1988,12 +2034,12 @@ function AddTab({ toast }) {
                     onChange={e => toggleSkipFloor(e.target.checked)}
                     style={{ width:'16px', height:'16px', accentColor:'#C8922A', cursor:'pointer' }} />
                   <span style={{ ...body, fontSize:'13px', color:'rgba(15,21,35,0.55)' }}>
-                    Skip Floor check
+                    Skip Floor confirmation
                   </span>
                 </label>
                 <p style={{ ...body, fontSize:'13px', color:'rgba(15,21,35,0.55)', margin:0 }}>
                   {skipFloor
-                    ? 'Records place straight onto the map.'
+                    ? 'Floor-meeting records place directly. Records below the Floor still get a per-record check.'
                     : 'Horizon Floor check runs for each selected record.'}
                 </p>
               </div>
