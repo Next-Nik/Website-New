@@ -248,6 +248,7 @@ function MovieMagicWorkspace({ user }) {
   const [newBoardOpen, setNewBoardOpen] = useState(false)
   const [nameModal, setNameModal] = useState(null)
   const [inboxOpen, setInboxOpen] = useState(false)
+  const [printBoardId, setPrintBoardId] = useState(null)
   const [drag, setDrag] = useState(null)
   const saveTimer = useRef(null)
   const loaded = useRef(false)
@@ -293,6 +294,15 @@ function MovieMagicWorkspace({ user }) {
     }, 600)
     return () => saveTimer.current && clearTimeout(saveTimer.current)
   }, [state, user.id])
+
+  /* print-to-PDF: render the sheet, invoke the system dialog, reset after */
+  useEffect(() => {
+    if (!printBoardId) return
+    const done = () => setPrintBoardId(null)
+    window.addEventListener('afterprint', done)
+    const t = setTimeout(() => window.print(), 120)
+    return () => { clearTimeout(t); window.removeEventListener('afterprint', done) }
+  }, [printBoardId])
 
   /* derived */
   const project = state && state.projects.find((p) => p.id === state.activeProjectId)
@@ -448,7 +458,7 @@ function MovieMagicWorkspace({ user }) {
   }
 
   return (
-    <div style={S.app}>
+    <div style={S.app} className="mm-app">
       <style>{CSS_TEXT}</style>
 
       <header style={S.topbar}>
@@ -510,6 +520,7 @@ function MovieMagicWorkspace({ user }) {
         <BoardView
           board={board}
           projectName={project ? project.name : ''}
+          onExportPdf={() => setPrintBoardId(board.id)}
           drag={drag}
           onAddNote={(laneIdx) => setEditor({ boardId: board.id, laneIdx, noteId: null })}
           onEditNote={(laneIdx, noteId) => setEditor({ boardId: board.id, laneIdx, noteId })}
@@ -571,6 +582,13 @@ function MovieMagicWorkspace({ user }) {
         />
       )}
 
+      {printBoardId && (
+        <PrintSheet
+          project={project}
+          board={state.boards.find((b) => b.id === printBoardId)}
+        />
+      )}
+
       {inboxOpen && (
         <InboxModal
           project={project}
@@ -585,7 +603,7 @@ function MovieMagicWorkspace({ user }) {
 
 /* ── board view ───────────────────────────────────────────── */
 
-function BoardView({ board, projectName, drag, onAddNote, onEditNote, onGripDown, onGripMove, onGripUp, onRename, onDelete }) {
+function BoardView({ board, projectName, onExportPdf, drag, onAddNote, onEditNote, onGripDown, onGripMove, onGripUp, onRename, onDelete }) {
   const lanes = lanesForBoard(board)
   const frameworkMeta = board.kind === 'character' ? FRAMEWORKS[board.framework] : null
 
@@ -602,6 +620,7 @@ function BoardView({ board, projectName, drag, onAddNote, onEditNote, onGripDown
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button className="mm-btn ghost" onClick={() => downloadFountain(projectName, board)}>Export .fountain</button>
+          <button className="mm-btn ghost" onClick={onExportPdf}>Export PDF</button>
           <button className="mm-btn ghost" onClick={onRename}>Rename</button>
           <button className="mm-btn ghost danger" onClick={onDelete}>Take down</button>
         </div>
@@ -907,6 +926,38 @@ function InboxModal({ project, onAdd, onDelete, onClose }) {
   )
 }
 
+/* Hidden on screen, becomes the whole page in print. Linearised:
+   each lane is a heading with its beats beneath, so any board
+   paginates cleanly through the system's Save as PDF. */
+function PrintSheet({ project, board }) {
+  if (!board) return null
+  const lanes = lanesForBoard(board)
+  const frameworkMeta = board.kind === 'character' ? FRAMEWORKS[board.framework] : null
+  return (
+    <div className="mm-print-sheet">
+      <div className="mm-print-eyebrow">{project ? project.name : ''} · Structure Wall</div>
+      <h1 className="mm-print-title">{board.name}</h1>
+      <div className="mm-print-sub">
+        {board.kind === 'story'
+          ? 'Syd Field paradigm'
+          : `${frameworkMeta ? frameworkMeta.label : 'Custom'} · ${frameworkMeta ? frameworkMeta.credit : 'your stages'}`}
+      </div>
+      {lanes.map((lane, i) => (
+        <section key={i} className="mm-print-lane">
+          <h2 className="mm-print-lane-name">{lane.name}</h2>
+          {board.laneNotes[i].length === 0 && <div className="mm-print-empty">no beats pinned</div>}
+          {board.laneNotes[i].map((note) => (
+            <div key={note.id} className="mm-print-beat">
+              <div className="mm-print-beat-title">{note.title || 'Untitled beat'}</div>
+              {note.detail && <div className="mm-print-beat-detail">{note.detail}</div>}
+            </div>
+          ))}
+        </section>
+      ))}
+    </div>
+  )
+}
+
 /* ── styles ───────────────────────────────────────────────── */
 
 const NOTE_FONT = `'Chalkboard SE','Segoe Print','Bradley Hand',cursive`
@@ -1067,5 +1118,34 @@ const CSS_TEXT = `
   @media (max-width: 700px) {
     .mm-lane.act { min-width: 200px; }
     .mm-lane.hinge { min-width: 150px; }
+  }
+
+  /* ── print / Save as PDF ── */
+  .mm-print-sheet { display: none; }
+  @media print {
+    .mm-app { background: #fff !important; }
+    .mm-app > *:not(.mm-print-sheet) { display: none !important; }
+    .mm-print-sheet {
+      display: block; color: #1c242a; font-family: Georgia, 'Times New Roman', serif;
+      padding: 8mm 4mm;
+    }
+    .mm-print-eyebrow {
+      font-family: ${UI_FONT}; font-size: 13px; letter-spacing: .14em;
+      text-transform: uppercase; color: #6b6459; margin-bottom: 4mm;
+    }
+    .mm-print-title { font-size: 26px; margin: 0 0 2mm; font-weight: 700; }
+    .mm-print-sub {
+      font-family: ${UI_FONT}; font-size: 13px; letter-spacing: .08em;
+      text-transform: uppercase; color: #6b6459; margin-bottom: 8mm;
+    }
+    .mm-print-lane { break-inside: avoid-page; margin-bottom: 7mm; }
+    .mm-print-lane-name {
+      font-size: 16px; font-weight: 700; margin: 0 0 3mm;
+      padding-bottom: 1.5mm; border-bottom: 1.5px solid #1c242a;
+    }
+    .mm-print-empty { font-size: 13px; color: #8a8378; margin-bottom: 3mm; }
+    .mm-print-beat { break-inside: avoid; margin: 0 0 3.5mm 4mm; }
+    .mm-print-beat-title { font-size: 14px; font-weight: 700; }
+    .mm-print-beat-detail { font-size: 13px; color: #4A4237; margin-top: 1mm; line-height: 1.4; }
   }
 `
