@@ -351,6 +351,54 @@ export default function SettingsMissionPanel({ user, onNavigate }) {
         </button>
       )}
 
+      {/* Founder: Movie Magic (hidden screenwriting workspace) */}
+      {isFounder && (
+        <button
+          onClick={() => onNavigate('/movie-magic')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            padding: '12px 16px',
+            background: 'rgba(200, 146, 42, 0.06)',
+            border: `1px solid ${GOLD}`,
+            borderRadius: 14,
+            cursor: 'pointer',
+            fontFamily: FONT_BODY,
+            marginBottom: 14,
+            textAlign: 'left',
+          }}
+        >
+          <div>
+            <div style={{
+              fontFamily: FONT_SC,
+              fontSize: 13,
+              letterSpacing: '0.16em',
+              color: GOLD_DK,
+              fontWeight: 500,
+              textTransform: 'uppercase',
+            }}>
+              Movie Magic
+            </div>
+            <div style={{
+              fontFamily: FONT_BODY,
+              fontSize: 13,
+              color: TEXT_META,
+              marginTop: 2,
+            }}>
+              Structure Wall · screenwriting tools
+            </div>
+          </div>
+          <span style={{
+            fontFamily: FONT_DISPLAY,
+            fontSize: 22,
+            color: GOLD_DK,
+            flexShrink: 0,
+          }}>→</span>
+        </button>
+      )}
+
       {/* Support link */}
       <button
         onClick={() => onNavigate('/support')}
