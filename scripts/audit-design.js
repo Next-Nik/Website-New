@@ -8,20 +8,28 @@
 //   node scripts/audit-design.js            — full report
 //   node scripts/audit-design.js --summary  — counts only
 //   node scripts/audit-design.js --law=size — one law only
-//                  (laws: size, opacity, italic, svg, vh)
+//                  (laws: size, opacity, italic, svg, vh, gold, legacyfont)
 //
 // Exit code 1 if any violations — wire into CI/build when the
 // backlog reaches zero:  "build": "node scripts/audit-design.js && vite build"
 //
 // THE LAWS
-//   size     fontSize below 13px (or unitless <13)
-//   opacity  ink text colours below the 0.55 opacity floor
-//   italic   fontStyle italic — legal ONLY for user-authored
-//            words; every hit needs a human verdict, so hits
-//            are listed but can be whitelisted below once
-//            confirmed as user-voice
-//   svg      style= prop on an <svg> open tag (Chrome 148)
-//   vh       100vh instead of 100dvh
+//   size       fontSize below 13px (or unitless <13)
+//   opacity    ink text colours below the 0.55 opacity floor
+//   italic     fontStyle italic — legal ONLY for user-authored
+//              words; every hit needs a human verdict, so hits
+//              are listed but can be whitelisted below once
+//              confirmed as user-voice
+//   svg        style= prop on an <svg> open tag (Chrome 148)
+//   vh         100vh instead of 100dvh
+//   gold       heritage-gold hex/rgba outside the approved whitelist.
+//              THIS IS THE NO-BACKSLIDE MECHANISM for the Field Notes
+//              / The Atlas retheme (see NextUs_Retheme_Master_Spec_v1.md
+//              §4). Gold is legal ONLY in logo assets, beacon
+//              components, and ≤3 explicitly approved moments.
+//   legacyfont any Cormorant Garamond / Cormorant SC / Lora font-family
+//              string — the retired type system. Fraunces / Newsreader
+//              / IBM Plex Mono replace them everywhere.
 // ─────────────────────────────────────────────────────────────
 
 const fs = require('fs')
@@ -36,6 +44,27 @@ const ITALIC_WHITELIST = [
   'components/Wheel.jsx', // Horizon Goal text in the node detail card — user-authored
   // e.g. 'components/NorthStarPortal.jsx' — user messages in the chat
 ]
+
+// Files where heritage gold is legal (Master Spec §4). Keep this
+// list short and explicit — every entry is a deliberate call, not
+// a convenience. Beacon components (constellation stars/sparks) and
+// the mission-control tokens.js bridge (HERITAGE_GOLD export) are
+// the baseline; add ≤3 additional approved moments here ONLY after
+// sign-off, with a comment naming the moment.
+const GOLD_WHITELIST = [
+  'app/components/challenge/BeaconFire.jsx',
+  'app/components/challenge/PublicBeacon.jsx',
+  'app/components/challenge/BeaconLantern.jsx',
+  'app/components/mission-control/BeaconStrip.jsx',
+  'app/components/mission-control/tokens.js', // HERITAGE_GOLD bridge — see file header
+  'lib/designTokens.js',                      // the `gold` export itself
+  'global.css',                                // the --gold-heritage / --gold-glow CSS var declaration itself
+  // e.g. 'app/components/mission-control/SettingsMissionPanel.jsx' — FOUNDER chip (approved moment 1/3)
+]
+
+const GOLD_HEX_RE = /#C8922A|#A8721A|#c8922a|#a8721a/g
+const GOLD_RGBA_RE = /rgba\(\s*200,\s*146,\s*42|rgba\(\s*168,\s*114,\s*26/g
+const LEGACYFONT_RE = /Cormorant(?:\s|\+)?Garamond|Cormorant(?:\s|\+)?SC|(?<![a-zA-Z-])Lora(?!x)/g
 
 const args = process.argv.slice(2)
 const summaryOnly = args.includes('--summary')
@@ -53,7 +82,7 @@ function walk(dir, out = []) {
 }
 
 const files = walk(SRC)
-const violations = { size: [], opacity: [], italic: [], svg: [], vh: [] }
+const violations = { size: [], opacity: [], italic: [], svg: [], vh: [], gold: [], legacyfont: [] }
 
 function rel(f) { return path.relative(path.join(__dirname, '..'), f) }
 function lineOf(src, idx) { return src.slice(0, idx).split('\n').length }
@@ -111,15 +140,32 @@ for (const f of files) {
   for (const m of src.matchAll(/100vh/g)) {
     violations.vh.push(`${r}:${lineOf(src, m.index)}  100vh → use 100dvh`)
   }
+
+  // ── gold: heritage gold outside the whitelist ─────────────
+  if (!GOLD_WHITELIST.some(w => r.includes(w))) {
+    for (const m of src.matchAll(GOLD_HEX_RE)) {
+      violations.gold.push(`${r}:${lineOf(src, m.index)}  gold hex outside whitelist — replace with fn.moss/fn.clay or at.verdigris/at.brass`)
+    }
+    for (const m of src.matchAll(GOLD_RGBA_RE)) {
+      violations.gold.push(`${r}:${lineOf(src, m.index)}  gold rgba outside whitelist — replace with fn.moss/fn.clay or at.verdigris/at.brass`)
+    }
+  }
+
+  // ── legacyfont: retired Cormorant/Lora family strings ─────
+  for (const m of src.matchAll(LEGACYFONT_RE)) {
+    violations.legacyfont.push(`${r}:${lineOf(src, m.index)}  retired font "${m[0]}" — use Fraunces/Newsreader/IBM Plex Mono (designTokens.js: display/bodyFont/mono)`)
+  }
 }
 
 // ── Report ───────────────────────────────────────────────────
 const LAW_TITLES = {
-  size:    'FONT SIZE BELOW 13px',
-  opacity: 'INK TEXT BELOW 0.55 OPACITY',
-  italic:  'ITALIC (needs human verdict: user-voice or violation)',
-  svg:     'style= ON <svg> OPEN TAG (Chrome 148)',
-  vh:      '100vh (use 100dvh)',
+  size:       'FONT SIZE BELOW 13px',
+  opacity:    'INK TEXT BELOW 0.55 OPACITY',
+  italic:     'ITALIC (needs human verdict: user-voice or violation)',
+  svg:        'style= ON <svg> OPEN TAG (Chrome 148)',
+  vh:         '100vh (use 100dvh)',
+  gold:       'HERITAGE GOLD OUTSIDE WHITELIST (no-backslide law — see Master Spec §4)',
+  legacyfont: 'RETIRED FONT (Cormorant/Lora — use Fraunces/Newsreader/IBM Plex Mono)',
 }
 
 let total = 0

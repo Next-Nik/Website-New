@@ -1,47 +1,62 @@
 // ─────────────────────────────────────────────────────────────
 // tokens.js
 //
-// Named-export mirror of the Mission Control v4 CSS variables and
-// the existing global.css tokens. Inline-style consumers import
-// from here; CSS-string consumers can use var(--gold) etc. as the
-// global stylesheet already defines them.
+// Named-export mirror, now sourced entirely from the single design
+// system at src/lib/designTokens.js — no independent values live
+// here. See NextUs_Retheme_Master_Spec_v1.md.
 //
-// One source of truth — if a value changes in global.css, mirror
-// it here.
+// Mission Control is where both rails meet: the Self stage (parchment
+// cards, GOLD_* / BG_PARCHMENT / BG_CARD / TEXT_INK / TEXT_META /
+// TEXT_FAINT) now maps to Field Notes tokens; the Civ stage (dark
+// cards, BG_INK_SOFT / TEXT_WHITE_META / TEXT_WHITE_FAINT — used by
+// WorldViewMissionPanel, CivDomainPanel, MissionWheel, IdentitySwitcher,
+// PoleHeader, Tile, Panel, TopStrip, ActionCard, IdentityStrip, Ticker)
+// now maps to The Atlas tokens. Names are unchanged so no consuming
+// file needs to change — only the underlying values move.
 //
-// v4 additions: GOLD_LT (light-mode active emphasis), BG_INK_SOFT
-// (cards on the dark civ stage), TEXT_WHITE_META and TEXT_WHITE_FAINT
-// (meta hierarchy on dark backgrounds), BG_CARD and BG_CARD_EMPTY
-// (the parchment-card surfaces used on the personal stage).
+// GOLD_* names are a heritage bridge: per the gold policy (Master
+// Spec §4) gold itself is retired from general chrome. These names
+// now point at Field Notes' moss (the equivalent "living accent"
+// role gold used to play). Do not add new GOLD_* consumers — reach
+// for fn.moss / at.verdigris from designTokens.js directly instead.
 // ─────────────────────────────────────────────────────────────
 
-// Colour
-export const GOLD       = '#C8922A'
-export const GOLD_DK    = '#A8721A'
-export const GOLD_LT    = '#D4A744'
-export const GOLD_RULE  = 'rgba(200, 146, 42, 0.20)'
-export const GOLD_FAINT = 'rgba(200, 146, 42, 0.05)'
-export const GOLD_HOVER = 'rgba(200, 146, 42, 0.08)'
+import { fn, at, gold as heritageGold, display, mono, bodyFont } from '../../../lib/designTokens'
 
-export const BG_PARCHMENT  = '#FAFAF7'
-export const BG_PAGE       = '#FFFFFF'
-export const BG_CARD       = '#FDFCF8'
-export const BG_CARD_EMPTY = 'rgba(253, 252, 248, 0.5)'
-export const BG_INK        = '#0F1523'
-export const BG_INK_SOFT   = '#1A2030'
-export const BG_WARM       = '#F5F2EC'
+// Colour — Self stage (Field Notes)
+export const GOLD       = fn.moss
+export const GOLD_DK    = fn.ink
+export const GOLD_LT    = fn.moss
+export const GOLD_RULE  = fn.mossEdge
+export const GOLD_FAINT = fn.mossTint
+export const GOLD_HOVER = fn.mossTint
 
-export const TEXT_INK         = '#0F1523'
-export const TEXT_META        = 'rgba(15, 21, 35, 0.72)'
-export const TEXT_FAINT       = 'rgba(15, 21, 35, 0.40)'
-export const TEXT_WHITE       = '#FFFFFF'
-export const TEXT_WHITE_META  = 'rgba(255, 255, 255, 0.72)'
-export const TEXT_WHITE_FAINT = 'rgba(255, 255, 255, 0.40)'
+export const BG_PARCHMENT  = fn.ground
+export const BG_PAGE       = fn.object
+export const BG_CARD       = fn.object
+export const BG_CARD_EMPTY = 'rgba(244,245,239,0.5)'
+export const BG_INK        = fn.ink
+export const BG_WARM       = fn.ground
+
+export const TEXT_INK         = fn.ink
+export const TEXT_META        = fn.meta
+export const TEXT_FAINT       = fn.ghost
+
+// Colour — Civ stage (The Atlas)
+export const BG_INK_SOFT      = at.object
+export const TEXT_WHITE       = at.text
+export const TEXT_WHITE_META  = at.meta
+export const TEXT_WHITE_FAINT = at.ghost
+
+// Heritage gold — only for the ≤3 explicitly approved moments
+// (FOUNDER chip, North Star mark, Stretch completion seal) and
+// beacon components. See designTokens.js `gold`.
+export const HERITAGE_GOLD = heritageGold.base
 
 // Type
-export const FONT_DISPLAY = "'Cormorant Garamond', Georgia, serif"
-export const FONT_SC      = "'Cormorant SC', Georgia, serif"
-export const FONT_BODY    = "'Lora', Georgia, serif"
+export const FONT_DISPLAY = display.fontFamily
+export const FONT_SC      = mono.fontFamily
+export const FONT_BODY    = bodyFont.fontFamily
 
 // Layout
 export const TILE_W = 78          // side-rail tile width on desktop

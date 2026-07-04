@@ -1,96 +1,156 @@
 /**
  * NextUs Design System — Shared Tokens
- * Single source of truth. Import these instead of defining local consts.
+ * Single source of truth for BOTH rails. Import these instead of
+ * defining local consts. See NextUs_Retheme_Master_Spec_v1.md.
  *
  * Usage:
- *   import { tokens, serif, body, sc } from '../../lib/designTokens'
+ *   import { fn, at, gold, space, shadow, fnText, atText } from '../../lib/designTokens'
  *   // adjust relative path as needed
+ *
+ * RAIL BOUNDARY
+ *   Field Notes (fn.*)  — personal surfaces + shared chrome (nav, footer,
+ *                         homepage, auth). Daylight is the front door.
+ *   The Atlas    (at.*) — civilisational surfaces (Atlas, constellations,
+ *                         actor pages, PlanetMap, Earth Challenge).
+ *   When genuinely ambiguous, default to Field Notes.
  */
 
-export const tokens = {
-  bg:          '#FAFAF7',
-  bgCard:      '#FFFFFF',
-  dark:        '#0F1523',
-  gold:        '#A8721A',          // text only — never use on chrome/borders
-  goldChrome:  '#C8922A',          // chrome/borders only — never use on text
-  goldFaint:   'rgba(200,146,42,0.20)',
-  goldTint:    'rgba(200,146,42,0.05)',
-  goldGlow:    'rgba(200,146,42,0.10)',
-  goldStrong:  'rgba(200,146,42,0.35)',
-  meta:        'rgba(15,21,35,0.88)',
-  ghost:       'rgba(15,21,35,0.55)',
-  whisper:     'rgba(15,21,35,0.55)',  // floor — nothing below this
+/* ── Field Notes — personal rail + shared chrome ──────────────── */
+export const fn = {
+  ground:    '#E9EDE4',                    // sage paper — page background
+  object:    '#F4F5EF',                    // leaf — cards, panels, modals
+  ink:       '#26302A',                    // graphite — primary text
+  moss:      '#6E7F5C',                    // living — active, progress, sync-ok, primary actions
+  mossTint:  'rgba(110,127,92,0.08)',
+  mossEdge:  'rgba(110,127,92,0.30)',
+  clay:      '#B45A3C',                    // attention — needs-you, warnings
+  clayTint:  'rgba(180,90,60,0.08)',
+  clayEdge:  'rgba(180,90,60,0.35)',
+  meta:      'rgba(38,48,42,0.68)',        // secondary text
+  ghost:     'rgba(38,48,42,0.55)',        // floor — nothing below
+  rule:      'rgba(38,48,42,0.14)',        // hairlines, dividers
+}
+
+/* ── The Atlas — civilisational rail ──────────────────────────── */
+export const at = {
+  ground:        '#10222B',                     // sea ink — page background
+  grid:          'rgba(217,226,221,0.05)',       // survey grid lines (56px cell)
+  object:        '#16303B',                      // chart panel — cards
+  text:          '#EAF1ED',                      // display text on ground
+  meta:          'rgba(217,226,221,0.66)',       // secondary text
+  ghost:         'rgba(217,226,221,0.50)',       // floor — nothing below
+  verdigris:     '#58A08A',                      // living systems — active, progress-start, sync-ok
+  verdigrisEdge: 'rgba(88,160,138,0.30)',        // card borders
+  brass:         '#D9B24A',                      // human coordination — calls, chips, progress-end
+  brassEdge:     'rgba(217,178,74,0.40)',
+}
+
+/* ── Heritage gold — TIGHTLY SCOPED. See Master Spec §4. ───────
+ * Legal ONLY in: the logo/wordmark, beacon components (BeaconStrip,
+ * BeaconFire, constellation stars/sparks), and ≤3 explicitly
+ * approved moments (North Star mark, Stretch completion seal,
+ * FOUNDER chip). Nowhere else. Enforced by scripts/audit-design.js
+ * `gold` law — do not add new usages without updating that whitelist
+ * AND getting sign-off; this is the no-backslide mechanism.
+ */
+export const gold = {
+  base: '#C8922A',
+  glow: 'rgba(200,146,42,0.55)',   // beacon halo only
+}
+
+/* ── Shared spacing scale — both rails ────────────────────────── */
+export const space = {
+  xs:  '4px',
+  sm:  '8px',
+  md:  '12px',
+  lg:  '16px',
+  xl:  '24px',
+  xxl: '32px',
+  xxxl:'48px',
+  huge:'72px',
+}
+
+/* ── Shadow pair — one physics, two media ─────────────────────
+ * Field Notes: paper casts shadow (warm, ink-based).
+ * The Atlas:   objects lift with light + depth (black-based, plus
+ *              a light top edge on interactive cards).
+ * Apply ONLY to interactive objects. Static panels stay flat with
+ * hairline rules.
+ */
+export const shadow = {
+  fn: {
+    rest: '0 1px 2px rgba(38,48,42,.08), 0 6px 16px rgba(38,48,42,.07)',
+    lift: '0 2px 4px rgba(38,48,42,.10), 0 12px 28px rgba(38,48,42,.12)',
+  },
+  at: {
+    rest: '0 2px 6px rgba(0,0,0,.35), 0 12px 30px rgba(0,0,0,.30)',
+    lift: '0 4px 10px rgba(0,0,0,.45), 0 22px 48px rgba(0,0,0,.42)',
+    liftEdge: '1px solid rgba(255,255,255,.08)', // border-top for lifted cards
+  },
 }
 
 /**
- * Typography spreads — use with object spread: { ...serif, fontSize: '28px' }
+ * Typography spreads — use with object spread: { ...display, fontSize: '28px' }
  *
- * serif  → Cormorant Garamond: headings/display ≥18px, weight 300
- * body   → Lora:               body/reading text, weight 400
- * sc     → Cormorant SC:       all UI chrome at any size
+ * display  → Fraunces:      "the thing" — titles, card headings, ≥18px
+ * bodyFont → Newsreader:    reading text, meta, user voice
+ * mono     → IBM Plex Mono: chrome — eyebrows, labels, status, coordinates
  */
-export const serif = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-export const body  = { fontFamily: "'Lora', Georgia, serif" }
-export const sc    = { fontFamily: "'Cormorant SC', Georgia, serif" }
+export const display  = { fontFamily: "'Fraunces', Georgia, serif" }
+export const bodyFont = { fontFamily: "'Newsreader', Georgia, serif" }
+export const mono     = { fontFamily: "'IBM Plex Mono', 'Courier New', monospace" }
 
 /**
  * Text presets — locked compositions with the floors baked in.
- * Spread one of these instead of hand-assembling font/size/color.
- * Override what you must (fontSize up, color to a domain hex),
- * never below the floors: 13px minimum, 0.55 opacity minimum.
+ * Two families, one per rail, identical ratios so the rails read
+ * as siblings. Override what you must (fontSize up, color to a
+ * domain hex), never below the floors: 13px minimum, 0.55 opacity
+ * minimum.
  *
- *   <span style={{ ...text.eyebrow }}>ALREADY ON THE MAP</span>
- *   <h2 style={{ ...text.heading, fontSize: '32px' }}>…</h2>
- *   <p style={{ ...text.body }}>…</p>
- *   <span style={{ ...text.caption }}>meta / labels / smallest legal text</span>
- *   <em style={{ ...text.userVoice }}>{theirWords}</em>   // ONLY user-authored words
+ *   <span style={{ ...fnText.eyebrow }}>ALREADY ON THE MAP</span>
+ *   <h2 style={{ ...atText.heading, fontSize: '32px' }}>…</h2>
  */
-export const text = {
-  // Cormorant SC chrome label — the floor size, tracked out, gold.
-  eyebrow: {
-    ...sc,
-    fontSize: '13px',
-    letterSpacing: '0.22em',
-    color: tokens.gold,
-  },
-  // Cormorant SC chrome at ink — tabs, buttons, nav items.
-  chrome: {
-    ...sc,
-    fontSize: '13px',
-    letterSpacing: '0.14em',
-    color: tokens.meta,
-  },
-  // Cormorant Garamond display — never below 18px, weight 300.
-  heading: {
-    ...serif,
-    fontSize: '18px',
-    fontWeight: 300,
-    color: tokens.dark,
-    lineHeight: 1.25,
-  },
-  // Lora reading text.
-  body: {
-    ...body,
-    fontSize: '15px',
-    lineHeight: 1.65,
-    color: tokens.meta,
-  },
-  // The smallest, quietest text that is still legal:
-  // 13px at the 0.55 opacity floor. If you're reaching for
-  // 11px or rgba(...,0.4), reach for this instead.
-  caption: {
-    ...body,
-    fontSize: '13px',
-    lineHeight: 1.5,
-    color: tokens.ghost,
-  },
-  // Italic is reserved for user-authored words — this is the ONLY
-  // preset that carries it. System text is never italic.
-  userVoice: {
-    ...body,
-    fontSize: '15px',
-    fontStyle: 'italic',
-    lineHeight: 1.6,
-    color: tokens.meta,
-  },
+export const fnText = {
+  eyebrow: { ...mono, fontSize: '13px', letterSpacing: '0.18em', textTransform: 'uppercase', color: fn.ghost },
+  chrome:  { ...mono, fontSize: '13px', letterSpacing: '0.14em', color: fn.meta },
+  heading: { ...display, fontSize: '20px', fontWeight: 500, color: fn.ink, lineHeight: 1.15 },
+  body:    { ...bodyFont, fontSize: '15px', lineHeight: 1.65, color: fn.meta },
+  caption: { ...bodyFont, fontSize: '13px', lineHeight: 1.5, color: fn.ghost },
+  // Italic is reserved for user-authored words — the ONLY preset that carries it.
+  userVoice: { ...bodyFont, fontSize: '15px', fontStyle: 'italic', lineHeight: 1.6, color: fn.ink },
 }
+
+export const atText = {
+  eyebrow: { ...mono, fontSize: '13px', letterSpacing: '0.18em', textTransform: 'uppercase', color: at.ghost },
+  chrome:  { ...mono, fontSize: '13px', letterSpacing: '0.14em', color: at.meta },
+  heading: { ...display, fontSize: '20px', fontWeight: 500, color: at.text, lineHeight: 1.15 },
+  body:    { ...bodyFont, fontSize: '15px', lineHeight: 1.65, color: at.meta },
+  caption: { ...bodyFont, fontSize: '13px', lineHeight: 1.5, color: at.ghost },
+  userVoice: { ...bodyFont, fontSize: '15px', fontStyle: 'italic', lineHeight: 1.6, color: at.text },
+}
+
+/* ── Status chrome — identical vocabulary both rails ──────────
+ * "● synced" / "saving…" / "⚠ retrying" — 13px mono, ghost opacity,
+ * consistent position (card footer or header-right). Dot colour
+ * varies by rail; text stays put.
+ */
+export const statusDot = {
+  fn: { synced: fn.moss, saving: fn.ghost, error: fn.clay },
+  at: { synced: at.verdigris, saving: at.ghost, error: '#C97064' }, // desaturated red on dark
+}
+
+/* ── Legacy re-exports (temporary bridge — remove once every
+ *    consumer has migrated off the old names during Phase 2/3) ──
+ */
+export const tokens = {
+  bg:          fn.ground,
+  bgCard:      fn.object,
+  dark:        fn.ink,
+  meta:        fn.meta,
+  ghost:       fn.ghost,
+  whisper:     fn.ghost,
+}
+export const serif = display
+export const body  = bodyFont
+export const sc     = mono
+export const text  = fnText

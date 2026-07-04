@@ -61,15 +61,15 @@ function storeConsent(mailingOptIn) {
 function Checkbox({ checked, onChange, children }) {
   return (
     <label style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', cursor: 'pointer', marginBottom: '14px' }}>
-      <div onClick={onChange} style={{ flexShrink: 0, marginTop: '2px', width: '18px', height: '18px', borderRadius: '4px', border: `1.5px solid ${checked ? '#C8922A' : 'rgba(200,146,42,0.45)'}`, background: checked ? 'rgba(200,146,42,0.10)' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s ease', cursor: 'pointer' }}>
-        {checked && <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#C8922A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+      <div onClick={onChange} style={{ flexShrink: 0, marginTop: '2px', width: '18px', height: '18px', borderRadius: '4px', border: `1.5px solid ${checked ? '#6E7F5C' : 'rgba(110,127,92,0.45)'}`, background: checked ? 'rgba(110,127,92,0.10)' : '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.15s ease', cursor: 'pointer' }}>
+        {checked && <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#6E7F5C" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>}
       </div>
-      <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.55 }}>{children}</span>
+      <span style={{ ...body, fontSize: '14px', color: 'rgba(38,48,42,0.68)', lineHeight: 1.55 }}>{children}</span>
     </label>
   )
 }
 
-const inputStyle = { width: '100%', padding: '13px 16px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', fontFamily: "'Lora', Georgia, serif", fontSize: '16px', color: '#0F1523', outline: 'none', marginBottom: '12px', boxSizing: 'border-box' }
+const inputStyle = { width: '100%', padding: '13px 16px', background: '#FFFFFF', border: '1.5px solid rgba(110,127,92,0.55)', borderRadius: '40px', fontFamily: "'Newsreader', Georgia, serif", fontSize: '16px', color: '#26302A', outline: 'none', marginBottom: '12px', boxSizing: 'border-box' }
 
 function GoogleButton() {
   async function handleGoogle() {
@@ -77,7 +77,7 @@ function GoogleButton() {
     await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(dest)}` } })
   }
   return (
-    <button onClick={handleGoogle} style={{ width: '100%', padding: '13px 16px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', fontFamily: "'Lora', Georgia, serif", fontSize: '15px', color: '#0F1523', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+    <button onClick={handleGoogle} style={{ width: '100%', padding: '13px 16px', background: 'rgba(110,127,92,0.06)', border: '1.5px solid rgba(110,127,92,0.55)', borderRadius: '40px', fontFamily: "'Newsreader', Georgia, serif", fontSize: '15px', color: '#26302A', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
       <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
       Continue with Google
     </button>
@@ -87,33 +87,33 @@ function GoogleButton() {
 function Divider() {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '24px 0' }}>
-      <div style={{ flex: 1, height: '1px', background: 'rgba(200,146,42,0.20)' }} />
-      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: 'rgba(15,21,35,0.72)' }}>or</span>
-      <div style={{ flex: 1, height: '1px', background: 'rgba(200,146,42,0.20)' }} />
+      <div style={{ flex: 1, height: '1px', background: 'rgba(38,48,42,0.14)' }} />
+      <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.16em', color: 'rgba(38,48,42,0.68)' }}>or</span>
+      <div style={{ flex: 1, height: '1px', background: 'rgba(38,48,42,0.14)' }} />
     </div>
   )
 }
 
 function PrimaryButton({ onClick, loading, label }) {
   return (
-    <button onClick={onClick} disabled={loading} style={{ width: '100%', padding: '16px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', color: '#A8721A', cursor: loading ? 'default' : 'pointer', opacity: loading ? 0.5 : 1 }}>
+    <button onClick={onClick} disabled={loading} style={{ width: '100%', padding: '16px', background: 'rgba(110,127,92,0.06)', border: '1.5px solid rgba(110,127,92,0.55)', borderRadius: '40px', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', color: '#56634A', cursor: loading ? 'default' : 'pointer', opacity: loading ? 0.5 : 1 }}>
       {loading ? 'One moment…' : label}
     </button>
   )
 }
 
 function ErrorMsg({ children }) {
-  return <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', marginTop: '8px', padding: '10px 14px', background: 'rgba(200,146,42,0.05)', borderRadius: '14px', border: '1.5px solid rgba(200,146,42,0.35)' }}>{children}</p>
+  return <p style={{ ...body, fontSize: '15px', color: 'rgba(38,48,42,0.68)', marginTop: '8px', padding: '10px 14px', background: 'rgba(110,127,92,0.06)', borderRadius: '14px', border: '1.5px solid rgba(110,127,92,0.35)' }}>{children}</p>
 }
 
 function NoticeMsg({ children }) {
-  return <p style={{ ...body, fontSize: '15px', color: '#A8721A', marginBottom: '16px', padding: '10px 14px', background: 'rgba(200,146,42,0.05)', borderRadius: '14px', border: '1.5px solid rgba(200,146,42,0.35)' }}>{children}</p>
+  return <p style={{ ...body, fontSize: '15px', color: '#56634A', marginBottom: '16px', padding: '10px 14px', background: 'rgba(110,127,92,0.06)', borderRadius: '14px', border: '1.5px solid rgba(110,127,92,0.35)' }}>{children}</p>
 }
 
 function Spinner() {
   return (
     <div style={{ textAlign: 'center', padding: '40px 0' }}>
-      <div style={{ width: '28px', height: '28px', margin: '0 auto', border: '2px solid rgba(200,146,42,0.18)', borderTopColor: '#C8922A', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+      <div style={{ width: '28px', height: '28px', margin: '0 auto', border: '2px solid rgba(110,127,92,0.20)', borderTopColor: '#6E7F5C', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
   )
@@ -145,22 +145,22 @@ function SignInScreen({ onSwitch, onDone, notice }) {
 
   return (
     <>
-      <h1 style={{ ...body, fontSize: '28px', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Welcome.</h1>
-      <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '24px', lineHeight: 1.5 }}>Sign in or create your account.</p>
+      <h1 style={{ ...body, fontSize: '28px', fontWeight: 400, color: '#26302A', marginBottom: '6px', lineHeight: 1.2 }}>Welcome.</h1>
+      <p style={{ ...body, fontSize: '17px', color: 'rgba(38,48,42,0.68)', marginBottom: '24px', lineHeight: 1.5 }}>Sign in or create your account.</p>
       {notice && <NoticeMsg>{notice}</NoticeMsg>}
       <GoogleButton />
       <Divider />
-      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Email</label>
+      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#56634A', display: 'block', marginBottom: '8px' }}>Email</label>
       <input type="email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} placeholder="your@email.com" autoComplete="email" style={inputStyle} />
-      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Password</label>
+      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#56634A', display: 'block', marginBottom: '8px' }}>Password</label>
       <input type="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} placeholder="••••••••" autoComplete="new-password" style={inputStyle} />
       <div style={{ textAlign: 'right', marginTop: '-4px', marginBottom: '20px' }}>
-        <button onClick={() => onSwitch('reset')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', textDecoration: 'underline' }}>Forgot password?</button>
+        <button onClick={() => onSwitch('reset')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...body, fontSize: '13px', color: 'rgba(38,48,42,0.55)', textDecoration: 'underline' }}>Forgot password?</button>
       </div>
       <PrimaryButton onClick={handleSubmit} loading={loading} label="Sign in →" />
       {error && <ErrorMsg>{error}</ErrorMsg>}
-      <div style={{ marginTop: '16px', borderTop: '1px solid rgba(200,146,42,0.15)', paddingTop: '20px' }}>
-        <button onClick={() => onSwitch('signup')} style={{ width: '100%', padding: '14px', background: 'transparent', border: '1.5px solid rgba(200,146,42,0.40)', borderRadius: '40px', ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.14em', color: 'rgba(168,114,26,0.8)', cursor: 'pointer' }}>
+      <div style={{ marginTop: '16px', borderTop: '1px solid rgba(38,48,42,0.14)', paddingTop: '20px' }}>
+        <button onClick={() => onSwitch('signup')} style={{ width: '100%', padding: '14px', background: 'transparent', border: '1.5px solid rgba(110,127,92,0.40)', borderRadius: '40px', ...sc, fontSize: '15px', fontWeight: 600, letterSpacing: '0.14em', color: 'rgba(86,99,74,0.85)', cursor: 'pointer' }}>
           Create an account →
         </button>
       </div>
@@ -224,31 +224,31 @@ function SignUpScreen({ onSwitch, onDone }) {
 
   return (
     <>
-      <h1 style={{ ...body, fontSize: '28px', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Create your account.</h1>
-      <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '32px', lineHeight: 1.5 }}>You only do this once.</p>
+      <h1 style={{ ...body, fontSize: '28px', fontWeight: 400, color: '#26302A', marginBottom: '6px', lineHeight: 1.2 }}>Create your account.</h1>
+      <p style={{ ...body, fontSize: '17px', color: 'rgba(38,48,42,0.68)', marginBottom: '32px', lineHeight: 1.5 }}>You only do this once.</p>
       <GoogleButton />
       <Divider />
-      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Email</label>
+      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#56634A', display: 'block', marginBottom: '8px' }}>Email</label>
       <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" autoComplete="email" style={inputStyle} />
-      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Password</label>
+      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#56634A', display: 'block', marginBottom: '8px' }}>Password</label>
       <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 8 characters" autoComplete="new-password" style={inputStyle} />
-      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Confirm password</label>
+      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#56634A', display: 'block', marginBottom: '8px' }}>Confirm password</label>
       <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} placeholder="••••••••" autoComplete="new-password" style={inputStyle} />
       <div style={{ margin: '4px 0 16px' }}>
         <Checkbox checked={terms} onChange={() => { setTerms(v => !v); setTermsErr(false) }}>
           I agree to the{' '}
-          <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: '#A8721A', textDecoration: 'underline' }}>Terms of Service</a>
+          <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: '#56634A', textDecoration: 'underline' }}>Terms of Service</a>
           {' '}and{' '}
-          <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#A8721A', textDecoration: 'underline' }}>Privacy Policy</a>
+          <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: '#56634A', textDecoration: 'underline' }}>Privacy Policy</a>
         </Checkbox>
-        {termsErr && <p style={{ ...body, fontSize: '13px', color: '#C8922A', margin: '-8px 0 10px 28px' }}>Please accept the terms to continue.</p>}
+        {termsErr && <p style={{ ...body, fontSize: '13px', color: '#6E7F5C', margin: '-8px 0 10px 28px' }}>Please accept the terms to continue.</p>}
         <Checkbox checked={mailing} onChange={() => setMailing(v => !v)}>Keep me in the loop — occasional updates from NextUs</Checkbox>
       </div>
       <PrimaryButton onClick={handleSubmit} loading={loading} label="Create account →" />
       {error && <ErrorMsg>{error}</ErrorMsg>}
-      <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginTop: '24px', textAlign: 'center' }}>
+      <p style={{ ...body, fontSize: '14px', color: 'rgba(38,48,42,0.55)', marginTop: '24px', textAlign: 'center' }}>
         Already have an account?{' '}
-        <button onClick={() => onSwitch('signin')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...body, fontSize: '14px', color: '#A8721A', textDecoration: 'underline' }}>Sign in</button>
+        <button onClick={() => onSwitch('signin')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...body, fontSize: '14px', color: '#56634A', textDecoration: 'underline' }}>Sign in</button>
       </p>
     </>
   )
@@ -278,21 +278,21 @@ function ResetScreen({ onSwitch }) {
 
   if (sent) return (
     <div style={{ textAlign: 'center' }}>
-      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '22px' }}>✶</div>
-      <h2 style={{ ...body, fontSize: '24px', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>Check your email.</h2>
-      <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6 }}>
-        If <span style={{ color: '#A8721A' }}>{email}</span> has an account, a reset link is on its way.
+      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(110,127,92,0.08)', border: '1.5px solid rgba(110,127,92,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: '22px' }}>✶</div>
+      <h2 style={{ ...body, fontSize: '24px', fontWeight: 400, color: '#26302A', marginBottom: '10px' }}>Check your email.</h2>
+      <p style={{ ...body, fontSize: '17px', color: 'rgba(38,48,42,0.68)', lineHeight: 1.6 }}>
+        If <span style={{ color: '#56634A' }}>{email}</span> has an account, a reset link is on its way.
       </p>
-      <button onClick={() => onSwitch('signin')} style={{ marginTop: '24px', background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'underline' }}>Back to sign in</button>
+      <button onClick={() => onSwitch('signin')} style={{ marginTop: '24px', background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(38,48,42,0.55)', textDecoration: 'underline' }}>Back to sign in</button>
     </div>
   )
 
   return (
     <>
-      <button onClick={() => onSwitch('signin')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '6px' }}>← Back</button>
-      <h1 style={{ ...body, fontSize: '28px', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Reset password.</h1>
-      <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '32px', lineHeight: 1.5 }}>We'll send a reset link to your email.</p>
-      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Email</label>
+      <button onClick={() => onSwitch('signin')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(38,48,42,0.55)', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '6px' }}>← Back</button>
+      <h1 style={{ ...body, fontSize: '28px', fontWeight: 400, color: '#26302A', marginBottom: '6px', lineHeight: 1.2 }}>Reset password.</h1>
+      <p style={{ ...body, fontSize: '17px', color: 'rgba(38,48,42,0.68)', marginBottom: '32px', lineHeight: 1.5 }}>We'll send a reset link to your email.</p>
+      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#56634A', display: 'block', marginBottom: '8px' }}>Email</label>
       <input type="email" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} placeholder="your@email.com" autoComplete="email" style={inputStyle} />
       <PrimaryButton onClick={handleSubmit} loading={loading} label="Send reset link →" />
       {error && <ErrorMsg>{error}</ErrorMsg>}
@@ -342,11 +342,11 @@ function NewPasswordScreen({ onDone }) {
 
   if (expired && !ready) return (
     <>
-      <h1 style={{ ...body, fontSize: '24px', fontWeight: 400, color: '#0F1523', marginBottom: '10px' }}>Link expired.</h1>
-      <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '24px', lineHeight: 1.6 }}>
+      <h1 style={{ ...body, fontSize: '24px', fontWeight: 400, color: '#26302A', marginBottom: '10px' }}>Link expired.</h1>
+      <p style={{ ...body, fontSize: '17px', color: 'rgba(38,48,42,0.68)', marginBottom: '24px', lineHeight: 1.6 }}>
         Reset links expire after a short time. Request a new one and try again.
       </p>
-      <a href="/login?screen=reset" style={{ display: 'block', width: '100%', padding: '16px', background: 'rgba(200,146,42,0.05)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', color: '#A8721A', cursor: 'pointer', textAlign: 'center', textDecoration: 'none', boxSizing: 'border-box' }}>
+      <a href="/login?screen=reset" style={{ display: 'block', width: '100%', padding: '16px', background: 'rgba(110,127,92,0.06)', border: '1.5px solid rgba(110,127,92,0.55)', borderRadius: '40px', ...sc, fontSize: '16px', fontWeight: 600, letterSpacing: '0.16em', color: '#56634A', cursor: 'pointer', textAlign: 'center', textDecoration: 'none', boxSizing: 'border-box' }}>
         Request new link →
       </a>
     </>
@@ -356,11 +356,11 @@ function NewPasswordScreen({ onDone }) {
 
   return (
     <>
-      <h1 style={{ ...body, fontSize: '28px', fontWeight: 400, color: '#0F1523', marginBottom: '6px', lineHeight: 1.2 }}>Set new password.</h1>
-      <p style={{ ...body, fontSize: '17px', color: 'rgba(15,21,35,0.72)', marginBottom: '32px', lineHeight: 1.5 }}>Choose something you'll remember.</p>
-      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>New password</label>
+      <h1 style={{ ...body, fontSize: '28px', fontWeight: 400, color: '#26302A', marginBottom: '6px', lineHeight: 1.2 }}>Set new password.</h1>
+      <p style={{ ...body, fontSize: '17px', color: 'rgba(38,48,42,0.68)', marginBottom: '32px', lineHeight: 1.5 }}>Choose something you'll remember.</p>
+      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#56634A', display: 'block', marginBottom: '8px' }}>New password</label>
       <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 8 characters" autoComplete="new-password" style={inputStyle} />
-      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#A8721A', display: 'block', marginBottom: '8px' }}>Confirm password</label>
+      <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.20em', color: '#56634A', display: 'block', marginBottom: '8px' }}>Confirm password</label>
       <input type="password" value={confirm} onChange={e => setConfirm(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSubmit()} placeholder="••••••••" autoComplete="new-password" style={inputStyle} />
       <div style={{ marginBottom: '20px' }} />
       <PrimaryButton onClick={handleSubmit} loading={loading} label="Save password →" />
@@ -402,27 +402,27 @@ export function LoginPage() {
   const showBack = screen === 'signin' || screen === 'signup'
 
   return (
-    <div style={{ minHeight: '100dvh', background: '#FAFAF7', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
+    <div style={{ minHeight: '100dvh', background: '#E9EDE4', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px' }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '48px' }}>
         <img src="/logo_nav.png" alt="NextUs" style={{ width: '52px', height: '52px', objectFit: 'contain', marginBottom: '12px' }} />
-        <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.72)' }}>NextUs</span>
+        <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.18em', color: 'rgba(38,48,42,0.68)' }}>NextUs</span>
       </div>
 
       {showBack && (
-        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '24px', fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', textDecoration: 'none' }}>
+        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '24px', fontFamily: "'IBM Plex Mono', 'Courier New', monospace", fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(38,48,42,0.55)', textDecoration: 'none' }}>
           <span style={{ fontSize: '16px' }}>←</span> Back
         </a>
       )}
 
-      <div style={{ width: '100%', maxWidth: '400px', background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '14px', padding: '40px 36px 36px' }}>
+      <div style={{ width: '100%', maxWidth: '400px', background: '#FFFFFF', border: '1.5px solid rgba(110,127,92,0.55)', borderRadius: '14px', padding: '40px 36px 36px' }}>
         {screen === 'signin'       && <SignInScreen      onSwitch={setScreen} onDone={handleDone} notice={notice} />}
         {screen === 'signup'       && <SignUpScreen      onSwitch={setScreen} onDone={handleDone} />}
         {screen === 'reset'        && <ResetScreen       onSwitch={setScreen} />}
         {screen === 'new-password' && <NewPasswordScreen onDone={handleDone} />}
       </div>
 
-      <p style={{ marginTop: '32px', ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}>
-        <a href="/" style={{ color: '#A8721A', textDecoration: 'none' }}>nextus.world</a>
+      <p style={{ marginTop: '32px', ...sc, fontSize: '15px', letterSpacing: '0.14em', color: 'rgba(38,48,42,0.55)' }}>
+        <a href="/" style={{ color: '#56634A', textDecoration: 'none' }}>nextus.world</a>
       </p>
     </div>
   )
