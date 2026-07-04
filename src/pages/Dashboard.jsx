@@ -1176,6 +1176,12 @@ function ProfileView({ user, onSignOut }) {
         </Link>
       )}
 
+      {isFounder && (
+        <Link to="/movie-magic" style={{ display: 'block', textAlign: 'center', padding: '9px', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '8px', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', textDecoration: 'none', marginBottom: '10px', background: 'rgba(200,146,42,0.04)' }}>
+          Movie Magic →
+        </Link>
+      )}
+
       <button
         onClick={onSignOut}
         style={{ width: '100%', padding: '9px', background: 'none', border: '1px solid rgba(15,21,35,0.55)', borderRadius: '8px', cursor: 'pointer', ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)' }}

@@ -72,6 +72,7 @@ import { OrgManagePage }      from './app/pages/OrgManage'
 import { MapPage as PlanetMapPage } from './app/pages/Map'
 import { NextMarketPage }         from './app/pages/NextMarket'
 import { AdminConsolePage }   from './app/pages/AdminConsole'
+import { MovieMagicPage }     from './pages/MovieMagic'
 import { NominatePage }       from './app/pages/Nominate'
 import { AddPage }            from './app/pages/Add'
 import { EventManagePage }    from './app/pages/EventManage'
@@ -408,6 +409,7 @@ function AppInner() {
 
         {/* ── Admin ── */}
         <Route path="/admin"           element={<AdminConsolePage />} />
+        <Route path="/movie-magic"     element={<MovieMagicPage />} />
         <Route path="/join/:slug"      element={<GroupJoinPage />} />
         <Route path="/auth/callback"   element={<AuthCallbackPage />} />
 
