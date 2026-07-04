@@ -28,12 +28,12 @@ import { useFocusProfile } from '../hooks/useFocusProfile'
 import { AffiliationPicker } from '../components/AffiliationPicker'
 import { WatchButton } from '../components/WatchButton'
 import { TYPE_LABEL, KIND_LABEL } from '../components/FocusSearch'
-import { body, sc } from '../../lib/designTokens'
+import { body, sc, at } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const gold    = '#A8721A'
-const dark    = '#0F1523'
-const parch   = '#FAFAF7'
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const gold    = at.brass
+const dark    = at.text
+const parch   = at.ground
 
 const RELATIONSHIP_PROSE = {
   citizen:         { label: 'Citizens',         verb: 'on NextUs' },
@@ -155,7 +155,7 @@ function IdentityHeader({ focus, ancestors }) {
           ...sc,
           fontSize: '11px',
           letterSpacing: '0.18em',
-          color: 'rgba(15,21,35,0.55)',
+          color: 'at.ghost',
           textTransform: 'uppercase',
           marginBottom: '14px',
         }}>
@@ -163,11 +163,11 @@ function IdentityHeader({ focus, ancestors }) {
             <span key={a.id}>
               <Link
                 to={`/focus/${a.slug}`}
-                style={{ color: 'rgba(15,21,35,0.72)', textDecoration: 'none' }}
+                style={{ color: 'at.meta', textDecoration: 'none' }}
               >
                 {a.name}
               </Link>
-              {i < breadcrumbChain.length - 1 ? <span style={{ color: 'rgba(15,21,35,0.55)' }}> &nbsp;/&nbsp; </span> : null}
+              {i < breadcrumbChain.length - 1 ? <span style={{ color: 'at.ghost' }}> &nbsp;/&nbsp; </span> : null}
             </span>
           ))}
         </div>
@@ -197,8 +197,8 @@ function IdentityHeader({ focus, ancestors }) {
         {typeLabel}
         {kindLabel && (
           <>
-            <span style={{ color: 'rgba(15,21,35,0.55)', margin: '0 10px' }}>·</span>
-            <span style={{ color: 'rgba(15,21,35,0.72)' }}>{kindLabel}</span>
+            <span style={{ color: 'at.ghost', margin: '0 10px' }}>·</span>
+            <span style={{ color: 'at.meta' }}>{kindLabel}</span>
           </>
         )}
       </div>
@@ -208,7 +208,7 @@ function IdentityHeader({ focus, ancestors }) {
         <p style={{
           ...body,
           fontSize: '16.5px',
-          color: 'rgba(15,21,35,0.88)',
+          color: at.text,
           lineHeight: 1.75,
           marginTop: '22px',
           marginBottom: 0,
@@ -228,18 +228,18 @@ function WheelLayer({ focus }) {
       <SectionHeader>The seven domains</SectionHeader>
       <div style={{
         padding: '24px 26px',
-        background: 'rgba(200,146,42,0.04)',
-        border: '1px dashed rgba(200,146,42,0.35)',
+        background: 'rgba(217,178,74,0.04)',
+        border: '1px dashed rgba(217,178,74,0.35)',
         borderRadius: '10px',
       }}>
-        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.7, margin: 0 }}>
+        <p style={{ ...body, fontSize: '15px', color: 'at.meta', lineHeight: 1.7, margin: 0 }}>
           Every Focus has a seven-domain wheel describing the state of the
           place across Human Being, Society, Nature, Technology, Economy,
           Legacy, and Vision. Scores will arrive as the indicator pipeline
           fills them &mdash; sourced from credible monitors, never originated
           by the platform itself.
         </p>
-        <p style={{ ...body, fontSize: '13.5px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', marginTop: '12px', marginBottom: 0 }}>
+        <p style={{ ...body, fontSize: '13.5px', color: 'at.ghost', fontStyle: 'italic', marginTop: '12px', marginBottom: 0 }}>
           {focus.name}&rsquo;s wheel is not yet populated.
         </p>
       </div>
@@ -269,7 +269,7 @@ function NestedLayer({ focus, children }) {
               ...sc,
               fontSize: '11px',
               letterSpacing: '0.14em',
-              color: 'rgba(15,21,35,0.55)',
+              color: 'at.ghost',
               textTransform: 'uppercase',
               marginBottom: '8px',
             }}>
@@ -284,8 +284,8 @@ function NestedLayer({ focus, children }) {
                     ...body,
                     fontSize: '14px',
                     color: dark,
-                    background: '#FFFFFF',
-                    border: '1px solid rgba(200,146,42,0.30)',
+                    background: at.object,
+                    border: '1px solid rgba(217,178,74,0.30)',
                     borderRadius: '20px',
                     padding: '6px 14px',
                     textDecoration: 'none',
@@ -295,7 +295,7 @@ function NestedLayer({ focus, children }) {
                 </Link>
               ))}
               {grouped[t].length > 40 && (
-                <span style={{ ...body, fontSize: '13.5px', color: 'rgba(15,21,35,0.55)', alignSelf: 'center', fontStyle: 'italic' }}>
+                <span style={{ ...body, fontSize: '13.5px', color: 'at.ghost', alignSelf: 'center', fontStyle: 'italic' }}>
                   + {grouped[t].length - 40} more
                 </span>
               )}
@@ -322,8 +322,8 @@ function TouchesLayer({ touches }) {
               ...body,
               fontSize: '14px',
               color: dark,
-              background: '#FFFFFF',
-              border: '1px solid rgba(200,146,42,0.30)',
+              background: at.object,
+              border: '1px solid rgba(217,178,74,0.30)',
               borderRadius: '20px',
               padding: '6px 14px',
               textDecoration: 'none',
@@ -350,8 +350,8 @@ function AffiliationsLayer({ counts, focusName }) {
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: '12px 16px',
-            background: '#FFFFFF',
-            border: '1px solid rgba(200,146,42,0.18)',
+            background: at.object,
+            border: '1px solid rgba(217,178,74,0.18)',
             borderRadius: '8px',
           }}>
             <span style={{ ...body, fontSize: '15px', color: dark }}>
@@ -363,7 +363,7 @@ function AffiliationsLayer({ counts, focusName }) {
           </div>
         ))}
       </div>
-      <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', marginTop: '12px', marginBottom: 0 }}>
+      <p style={{ ...body, fontSize: '13px', color: 'at.ghost', fontStyle: 'italic', marginTop: '12px', marginBottom: 0 }}>
         Counts reflect public affiliations to {focusName} and everything nested
         within it, except citizenship which is counted only at the polity scale
         where it was declared.
@@ -387,8 +387,8 @@ function ActorsLayer({ actors, focusName }) {
               ...body,
               fontSize: '15px',
               color: dark,
-              background: '#FFFFFF',
-              border: '1px solid rgba(200,146,42,0.18)',
+              background: at.object,
+              border: '1px solid rgba(217,178,74,0.18)',
               borderRadius: '8px',
               padding: '10px 16px',
               textDecoration: 'none',
@@ -442,8 +442,8 @@ function AffiliateLayer({ user, focus, showPicker, setShowPicker }) {
           fontSize: '13px',
           letterSpacing: '0.18em',
           color: gold,
-          background: 'rgba(200,146,42,0.04)',
-          border: '1.5px solid rgba(200,146,42,0.55)',
+          background: 'rgba(217,178,74,0.04)',
+          border: '1.5px solid rgba(217,178,74,0.55)',
           borderRadius: '30px',
           padding: '11px 26px',
           cursor: 'pointer',
@@ -476,13 +476,13 @@ function StewardshipFooter() {
     <footer style={{
       marginTop: '40px',
       paddingTop: '24px',
-      borderTop: '1px solid rgba(200,146,42,0.20)',
+      borderTop: '1px solid rgba(217,178,74,0.20)',
       textAlign: 'center',
     }}>
       <p style={{
         ...body,
         fontSize: '13px',
-        color: 'rgba(15,21,35,0.55)',
+        color: 'at.ghost',
         fontStyle: 'italic',
         margin: 0,
         lineHeight: 1.7,
@@ -516,7 +516,7 @@ function Divider() {
   return (
     <div style={{
       height: '1px',
-      background: 'rgba(200,146,42,0.10)',
+      background: 'rgba(217,178,74,0.10)',
       marginBottom: '40px',
       marginTop: '8px',
     }} />
@@ -533,7 +533,7 @@ function LoadingShell() {
         padding: '160px 24px',
         textAlign: 'center',
       }}>
-        <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
+        <p style={{ ...body, fontSize: '15px', color: 'at.ghost' }}>
           Loading&hellip;
         </p>
       </div>
@@ -555,7 +555,7 @@ function NotFoundShell({ slug }) {
           ...body,
           fontSize: '17px',
           fontWeight: 400,
-          color: 'rgba(15,21,35,0.55)',
+          color: 'at.ghost',
           lineHeight: 1.75,
           marginBottom: '24px',
         }}>
@@ -565,8 +565,8 @@ function NotFoundShell({ slug }) {
           to="/focus"
           style={{
             ...sc, fontSize: '12px', letterSpacing: '0.16em',
-            color: gold, background: 'rgba(200,146,42,0.05)',
-            border: '1px solid rgba(200,146,42,0.55)',
+            color: gold, background: 'rgba(217,178,74,0.05)',
+            border: '1px solid rgba(217,178,74,0.55)',
             borderRadius: '30px', padding: '10px 22px',
             textDecoration: 'none', textTransform: 'uppercase',
           }}

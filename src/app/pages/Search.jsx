@@ -19,12 +19,12 @@ import { SiteFooter } from '../../components/SiteFooter'
 import { supabase } from '../../hooks/useSupabase'
 import { CIV_DOMAINS } from '../components/NextUsWheel'
 import { ShareButton } from '../components/ShareButton'
-import { serif, body, sc } from '../../lib/designTokens'
+import { serif, body, sc, at } from '../../lib/designTokens'
 import { SCALES as CANONICAL_SCALES } from '../constants/scales'
 
-const gold  = '#A8721A'
-const dark  = '#0F1523'
-const parch = '#FAFAF7'
+const gold  = at.brass
+const dark  = at.text
+const parch = at.ground
 
 const MODES = [
   { value: 'actors', label: 'Actors',  hint: 'People, organisations, places, programmes' },
@@ -55,13 +55,13 @@ function ActorCard({ actor }) {
   return (
     <Link to={`/org/${actor.slug || actor.id}`}
       style={{ display: 'block', textDecoration: 'none' }}>
-      <div style={{ background: '#FFFFFF',
-        border: '1px solid rgba(200,146,42,0.20)',
+      <div style={{ background: at.object,
+        border: '1px solid rgba(217,178,74,0.20)',
         borderRadius: '10px', padding: '16px 18px',
         transition: 'all 0.15s ease',
         display: 'flex', gap: '14px', alignItems: 'flex-start' }}
-        onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)'}
-        onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(200,146,42,0.20)'}>
+        onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(217,178,74,0.55)'}
+        onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(217,178,74,0.20)'}>
 
         {actor.image_url && (
           <img src={actor.image_url} alt={actor.name}
@@ -77,15 +77,15 @@ function ActorCard({ actor }) {
             </span>
             {actor.type && (
               <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
-                color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
+                color: at.ghost, textTransform: 'uppercase' }}>
                 {actor.type}
               </span>
             )}
             {actor.location_name && (
               <>
-                <span style={{ color: 'rgba(200,146,42,0.30)', fontSize: '10px' }}>·</span>
+                <span style={{ color: 'rgba(217,178,74,0.30)', fontSize: '10px' }}>·</span>
                 <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em',
-                  color: 'rgba(15,21,35,0.55)' }}>
+                  color: at.ghost }}>
                   {actor.location_name}
                 </span>
               </>
@@ -93,14 +93,14 @@ function ActorCard({ actor }) {
           </div>
           {actor.tagline && (
             <p style={{ ...body, fontSize: '13px',
-              color: 'rgba(15,21,35,0.60)', fontStyle: 'italic',
+              color: 'rgba(234,241,237,0.60)', fontStyle: 'italic',
               margin: '0 0 6px', lineHeight: 1.4 }}>
               {actor.tagline}
             </p>
           )}
           {actor.description && (
             <p style={{ ...body, fontSize: '13px',
-              color: 'rgba(15,21,35,0.65)', margin: 0, lineHeight: 1.55,
+              color: at.meta, margin: 0, lineHeight: 1.55,
               overflow: 'hidden', display: '-webkit-box',
               WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
               {actor.description}
@@ -124,7 +124,7 @@ function OfferOrNeedCard({ item, kind }) {
   return (
     <Link to={`/org/${item.actor_slug || item.actor_id}`}
       style={{ display: 'block', textDecoration: 'none' }}>
-      <div style={{ background: '#FFFFFF',
+      <div style={{ background: at.object,
         border: `1px solid ${accentBorder}`,
         borderRadius: '10px', padding: '16px 18px',
         transition: 'all 0.15s ease' }}
@@ -137,7 +137,7 @@ function OfferOrNeedCard({ item, kind }) {
         </h3>
         {item.description && (
           <p style={{ ...body, fontSize: '13px',
-            color: 'rgba(15,21,35,0.65)', lineHeight: 1.55, margin: '0 0 8px',
+            color: at.meta, lineHeight: 1.55, margin: '0 0 8px',
             overflow: 'hidden', display: '-webkit-box',
             WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
             {item.description}
@@ -146,14 +146,14 @@ function OfferOrNeedCard({ item, kind }) {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px',
           flexWrap: 'wrap', paddingTop: '6px',
-          borderTop: '1px solid rgba(200,146,42,0.10)' }}>
+          borderTop: '1px solid rgba(217,178,74,0.10)' }}>
           {item.actor_image && (
             <img src={item.actor_image} alt={item.actor_name}
               style={{ width: '20px', height: '20px', objectFit: 'cover',
                 borderRadius: '50%', flexShrink: 0 }} />
           )}
           <span style={{ ...body, fontSize: '13px',
-            color: 'rgba(15,21,35,0.65)' }}>
+            color: at.meta }}>
             {item.actor_name}
           </span>
           <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.12em',
@@ -165,8 +165,8 @@ function OfferOrNeedCard({ item, kind }) {
           </span>
           {locationLabel && (
             <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
-              color: 'rgba(15,21,35,0.55)',
-              border: '1px solid rgba(200,146,42,0.20)',
+              color: at.ghost,
+              border: '1px solid rgba(217,178,74,0.20)',
               padding: '2px 8px', borderRadius: '40px' }}>
               {locationLabel}
             </span>
@@ -284,7 +284,7 @@ export function SearchPage() {
           The Atlas
         </h1>
         <p style={{ ...body, fontSize: '18px', fontWeight: 400,
-          color: 'rgba(15,21,35,0.78)', lineHeight: 1.5,
+          color: 'rgba(234,241,237,0.78)', lineHeight: 1.5,
           marginBottom: '36px', maxWidth: '560px' }}>
           Find the people, organisations, and projects building the future you want to live in.
         </p>
@@ -300,21 +300,21 @@ export function SearchPage() {
             }
             style={{ ...body, fontSize: '16px', color: dark,
               padding: '14px 18px', borderRadius: '10px',
-              border: '1.5px solid rgba(200,146,42,0.40)',
-              background: '#FFFFFF', outline: 'none', width: '100%',
+              border: '1.5px solid rgba(217,178,74,0.40)',
+              background: at.object, outline: 'none', width: '100%',
               boxSizing: 'border-box' }} />
         </div>
 
         {/* Mode toggle */}
         <div style={{ display: 'flex', gap: 0,
-          borderBottom: '1px solid rgba(200,146,42,0.20)',
+          borderBottom: '1px solid rgba(217,178,74,0.20)',
           marginBottom: '24px' }}>
           {MODES.map(m => (
             <button key={m.value} onClick={() => setMode(m.value)}
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
                 padding: '10px 18px', background: 'none', border: 'none',
                 cursor: 'pointer',
-                color: mode === m.value ? gold : 'rgba(15,21,35,0.55)',
+                color: mode === m.value ? gold : at.ghost,
                 borderBottom: mode === m.value ? `2px solid ${gold}` : '2px solid transparent',
                 marginBottom: '-1px' }}
               title={m.hint}>
@@ -329,9 +329,9 @@ export function SearchPage() {
           <select value={domain} onChange={e => setDomain(e.target.value)}
             style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em',
               padding: '6px 14px', borderRadius: '40px',
-              border: '1.5px solid rgba(200,146,42,0.30)',
-              background: domain ? 'rgba(200,146,42,0.06)' : '#FFFFFF',
-              color: domain ? gold : 'rgba(15,21,35,0.55)',
+              border: '1.5px solid rgba(217,178,74,0.30)',
+              background: domain ? 'rgba(217,178,74,0.06)' : at.object,
+              color: domain ? gold : at.ghost,
               cursor: 'pointer', outline: 'none' }}>
             <option value="">Any domain</option>
             {CIV_DOMAINS.map(d => (
@@ -344,9 +344,9 @@ export function SearchPage() {
               <select value={actorType} onChange={e => setActorType(e.target.value)}
                 style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em',
                   padding: '6px 14px', borderRadius: '40px',
-                  border: '1.5px solid rgba(200,146,42,0.30)',
-                  background: actorType ? 'rgba(200,146,42,0.06)' : '#FFFFFF',
-                  color: actorType ? gold : 'rgba(15,21,35,0.55)',
+                  border: '1.5px solid rgba(217,178,74,0.30)',
+                  background: actorType ? 'rgba(217,178,74,0.06)' : at.object,
+                  color: actorType ? gold : at.ghost,
                   cursor: 'pointer', outline: 'none' }}>
                 {ACTOR_TYPES.map(t => (
                   <option key={t.value} value={t.value}>{t.label}</option>
@@ -356,9 +356,9 @@ export function SearchPage() {
               <select value={scale} onChange={e => setScale(e.target.value)}
                 style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em',
                   padding: '6px 14px', borderRadius: '40px',
-                  border: '1.5px solid rgba(200,146,42,0.30)',
-                  background: scale ? 'rgba(200,146,42,0.06)' : '#FFFFFF',
-                  color: scale ? gold : 'rgba(15,21,35,0.55)',
+                  border: '1.5px solid rgba(217,178,74,0.30)',
+                  background: scale ? 'rgba(217,178,74,0.06)' : at.object,
+                  color: scale ? gold : at.ghost,
                   cursor: 'pointer', outline: 'none' }}>
                 {SCALES.map(s => (
                   <option key={s.value} value={s.value}>{s.label}</option>
@@ -372,7 +372,7 @@ export function SearchPage() {
               style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
                 padding: '6px 12px', borderRadius: '40px',
                 background: 'none', border: 'none',
-                color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}>
+                color: at.ghost, cursor: 'pointer' }}>
               Clear filters
             </button>
           )}
@@ -380,21 +380,21 @@ export function SearchPage() {
 
         {/* Results */}
         {loading && (
-          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
+          <p style={{ ...body, fontSize: '13px', color: at.ghost,
             margin: '24px 0' }}>
             Searching...
           </p>
         )}
 
         {!loading && !searched && (
-          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)',
+          <p style={{ ...body, fontSize: '14px', color: at.ghost,
             margin: '40px 0', textAlign: 'center', fontStyle: 'italic' }}>
             Search by typing above or applying filters.
           </p>
         )}
 
         {!loading && searched && results.length === 0 && (
-          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)',
+          <p style={{ ...body, fontSize: '14px', color: at.ghost,
             margin: '40px 0', textAlign: 'center' }}>
             No results. Try a different search or remove a filter.
           </p>
@@ -403,7 +403,7 @@ export function SearchPage() {
         {!loading && results.length > 0 && (
           <>
             <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em',
-              color: 'rgba(15,21,35,0.55)', marginBottom: '14px' }}>
+              color: at.ghost, marginBottom: '14px' }}>
               {results.length} {results.length === 1 ? 'result' : 'results'}
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>

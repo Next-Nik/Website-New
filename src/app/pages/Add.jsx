@@ -27,13 +27,13 @@ import { CIV_DOMAINS } from '../components/NextUsWheel'
 import { PRINCIPLES_ORDERED } from '../constants/principles'
 import PrincipleStrip from '../components/PrincipleStrip'
 import { SCALES as CANONICAL_SCALES } from '../constants/scales'
-import { serif, body, sc } from '../../lib/designTokens'
+import { serif, body, sc, at } from '../../lib/designTokens'
 import { downscaleImage } from '../../lib/imageDownscale'
 
 // ── Design tokens ─────────────────────────────────────────────
-const gold  = '#A8721A'
-const dark  = '#0F1523'
-const parch = '#FAFAF7'
+const gold  = at.brass
+const dark  = at.text
+const parch = at.ground
 
 const DOMAIN_LIST  = CIV_DOMAINS.map(d => ({ value: d.slug, label: d.label }))
 const DOMAIN_OPTIONS = [{ value: '', label: '-- Select primary domain --' }, ...DOMAIN_LIST]
@@ -67,7 +67,7 @@ const ACTOR_TYPES = [
 const LABEL_COLORS = {
   Planet:       { color: '#2A4A8A', bg: 'rgba(42,74,138,0.08)',  border: 'rgba(42,74,138,0.25)' },
   Self:         { color: '#2A6B3A', bg: 'rgba(42,107,58,0.08)',  border: 'rgba(42,107,58,0.25)' },
-  Practitioner: { color: '#A8721A', bg: 'rgba(168,114,26,0.08)', border: 'rgba(168,114,26,0.25)' },
+  Practitioner: { color: at.brass, bg: 'rgba(217,178,74,0.08)', border: 'rgba(217,178,74,0.25)' },
 }
 
 const EMPTY_FORM = {
@@ -105,7 +105,7 @@ function FieldLabel({ children, required }) {
 }
 
 function Hint({ children }) {
-  return <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
+  return <p style={{ ...body, fontSize: '13px', color: at.ghost,
     marginTop: '5px', marginBottom: 0, lineHeight: 1.5 }}>{children}</p>
 }
 
@@ -115,8 +115,8 @@ function TextInput({ value, onChange, onBlur, placeholder, type = 'text' }) {
       onBlur={onBlur}
       placeholder={placeholder}
       style={{ ...body, fontSize: '15px', color: dark, padding: '10px 14px',
-        borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)',
-        background: '#FFFFFF', outline: 'none', width: '100%', boxSizing: 'border-box' }} />
+        borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)',
+        background: at.object, outline: 'none', width: '100%', boxSizing: 'border-box' }} />
   )
 }
 
@@ -124,8 +124,8 @@ function SelectInput({ value, onChange, options }) {
   return (
     <select value={value ?? ''} onChange={e => onChange(e.target.value)}
       style={{ ...body, fontSize: '15px', color: dark, padding: '10px 14px',
-        borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)',
-        background: '#FFFFFF', outline: 'none', width: '100%' }}>
+        borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)',
+        background: at.object, outline: 'none', width: '100%' }}>
       {options.map(o => <option key={o.value ?? o} value={o.value ?? o}>{o.label ?? o}</option>)}
     </select>
   )
@@ -154,19 +154,19 @@ function DuplicateCard({ actor }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       gap: '12px', padding: '10px 14px', marginBottom: '6px',
-      background: 'rgba(200,146,42,0.04)', borderRadius: '8px',
-      border: '1px solid rgba(200,146,42,0.22)' }}>
+      background: 'rgba(217,178,74,0.04)', borderRadius: '8px',
+      border: '1px solid rgba(217,178,74,0.22)' }}>
       <div>
         <div style={{ ...body, fontSize: '14px', color: dark }}>{actor.name}</div>
         {actor.location_name && (
-          <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)' }}>{actor.location_name}</div>
+          <div style={{ ...body, fontSize: '13px', color: at.ghost }}>{actor.location_name}</div>
         )}
       </div>
       <Link to={`/org/${actor.slug || actor.id}`} target="_blank"
         style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em', color: gold,
           textDecoration: 'none', whiteSpace: 'nowrap', padding: '5px 12px',
-          borderRadius: '40px', border: '1px solid rgba(200,146,42,0.35)',
-          background: 'rgba(200,146,42,0.05)' }}>
+          borderRadius: '40px', border: '1px solid rgba(217,178,74,0.35)',
+          background: 'rgba(217,178,74,0.05)' }}>
         View
       </Link>
     </div>
@@ -179,28 +179,28 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
   const primaryDomain = proposal.domains?.[0] || proposal.domain_id || ''
   return (
     <div style={{
-      background: checked ? '#FFFFFF' : 'rgba(15,21,35,0.02)',
-      border: checked ? '1.5px solid rgba(200,146,42,0.40)' : '1.5px solid rgba(200,146,42,0.16)',
+      background: checked ? at.object : 'rgba(234,241,237,0.04)',
+      border: checked ? '1.5px solid rgba(217,178,74,0.40)' : '1.5px solid rgba(217,178,74,0.16)',
       borderRadius: '10px', padding: '16px 18px', marginBottom: '10px',
       transition: 'all 0.15s ease',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: checked ? '14px' : 0 }}>
         <button type="button" onClick={onToggle}
           style={{ width: '20px', height: '20px', borderRadius: '5px', flexShrink: 0,
-            border: checked ? '2px solid #A8721A' : '2px solid rgba(200,146,42,0.35)',
-            background: checked ? '#A8721A' : '#FFFFFF',
+            border: checked ? '2px solid at.brass' : '2px solid rgba(217,178,74,0.35)',
+            background: checked ? at.brass : at.object,
             cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {checked && <span style={{ color: '#FFFFFF', fontSize: '12px', lineHeight: 1 }}>✓</span>}
+          {checked && <span style={{ color: at.object, fontSize: '12px', lineHeight: 1 }}>✓</span>}
         </button>
         <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
-          color: gold, background: 'rgba(200,146,42,0.08)',
-          border: '1px solid rgba(200,146,42,0.25)',
+          color: gold, background: 'rgba(217,178,74,0.08)',
+          border: '1px solid rgba(217,178,74,0.25)',
           padding: '2px 10px', borderRadius: '40px' }}>
           {proposal.type || 'organisation'}
         </span>
         <span style={{ ...body, fontSize: '15px', color: dark }}>{proposal.name}</span>
         {SHOW_ALIGNMENT_PUBLIC && proposal.alignment_score != null && (
-          <span style={{ ...sc, fontSize: '11px', color: 'rgba(15,21,35,0.55)', marginLeft: 'auto' }}>
+          <span style={{ ...sc, fontSize: '11px', color: at.ghost, marginLeft: 'auto' }}>
             Score {proposal.alignment_score}
           </span>
         )}
@@ -235,8 +235,8 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
             <textarea value={proposal.description ?? ''} rows={2}
               onChange={e => onChange('description', e.target.value)}
               style={{ ...body, fontSize: '14px', color: dark, padding: '8px 12px',
-                borderRadius: '7px', border: '1.5px solid rgba(200,146,42,0.28)',
-                background: '#FFFFFF', outline: 'none', width: '100%',
+                borderRadius: '7px', border: '1.5px solid rgba(217,178,74,0.28)',
+                background: at.object, outline: 'none', width: '100%',
                 resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box' }} />
           </div>
 
@@ -245,15 +245,15 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', paddingTop: '4px' }}>
               {proposal.relationships?.map((r, idx) => (
                 <span key={idx} style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
-                  color: 'rgba(15,21,35,0.55)', background: 'rgba(200,146,42,0.06)',
-                  border: '1px solid rgba(200,146,42,0.20)',
+                  color: at.ghost, background: 'rgba(217,178,74,0.06)',
+                  border: '1px solid rgba(217,178,74,0.20)',
                   borderRadius: '40px', padding: '2px 9px' }}>
                   {r.to_name}
                 </span>
               ))}
               {proposal.links?.length > 0 && (
                 <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
-                  color: 'rgba(15,21,35,0.55)', background: 'rgba(42,107,58,0.06)',
+                  color: at.ghost, background: 'rgba(42,107,58,0.06)',
                   border: '1px solid rgba(42,107,58,0.20)',
                   borderRadius: '40px', padding: '2px 9px' }}>
                   {proposal.links.length} link{proposal.links.length !== 1 ? 's' : ''}
@@ -261,7 +261,7 @@ function ExtraProposalCard({ proposal, checked, onToggle, onChange }) {
               )}
               {proposal.press?.length > 0 && (
                 <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
-                  color: 'rgba(15,21,35,0.55)', background: 'rgba(42,74,138,0.06)',
+                  color: at.ghost, background: 'rgba(42,74,138,0.06)',
                   border: '1px solid rgba(42,74,138,0.20)',
                   borderRadius: '40px', padding: '2px 9px' }}>
                   {proposal.press.length} press mention{proposal.press.length !== 1 ? 's' : ''}
@@ -625,7 +625,7 @@ export function AddPage() {
             ))}
           </div>
           {!represents && (
-            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)',
+            <p style={{ ...body, fontSize: '14px', color: at.meta,
               lineHeight: 1.7, marginBottom: '28px' }}>
               Send the profile link above to anyone who wants to claim and manage their entry.
             </p>
@@ -641,15 +641,15 @@ export function AddPage() {
             )}
             <button onClick={reset}
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px',
-                borderRadius: '40px', background: 'rgba(200,146,42,0.06)',
-                border: '1.5px solid rgba(200,146,42,0.55)', color: gold, cursor: 'pointer' }}>
+                borderRadius: '40px', background: 'rgba(217,178,74,0.06)',
+                border: '1.5px solid rgba(217,178,74,0.55)', color: gold, cursor: 'pointer' }}>
               Add another
             </button>
             <Link to="/feed"
               style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '12px 24px',
                 borderRadius: '40px', background: 'transparent',
-                border: '1px solid rgba(200,146,42,0.30)',
-                color: 'rgba(15,21,35,0.72)', textDecoration: 'none' }}>
+                border: '1px solid rgba(217,178,74,0.30)',
+                color: at.meta, textDecoration: 'none' }}>
               Back to feed
             </Link>
           </div>
@@ -675,7 +675,7 @@ export function AddPage() {
             ? (form.type === 'practitioner' ? 'Set up your profile' : 'Set up your organisation')
             : 'Add to the ecosystem'}
         </h1>
-        <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.65)',
+        <p style={{ ...body, fontSize: '16px', color: at.meta,
           lineHeight: 1.7, marginBottom: '24px', maxWidth: '520px' }}>
           {mineMode
             ? 'This is yours to own and manage. A challenge is published by someone others can find and follow, so a name, a picture, and a statement of what you do are all required.'
@@ -693,10 +693,10 @@ export function AddPage() {
             profile the person controls, so there is no "adding to the
             ecosystem" option to offer. */}
         {!mineMode && (
-        <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.22)',
+        <div style={{ background: at.object, border: '1.5px solid rgba(217,178,74,0.22)',
           borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
           <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.20em',
-            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '12px' }}>
+            color: at.ghost, textTransform: 'uppercase', marginBottom: '12px' }}>
             Your relationship to this entry
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -738,15 +738,15 @@ export function AddPage() {
                 style={{ display: 'flex', alignItems: 'flex-start', gap: '12px',
                   padding: '13px 15px', borderRadius: '9px', cursor: 'pointer', textAlign: 'left',
                   border: represents === opt.val
-                    ? '1.5px solid rgba(200,146,42,0.55)' : '1.5px solid rgba(200,146,42,0.18)',
-                  background: represents === opt.val ? 'rgba(200,146,42,0.04)' : '#FAFAF7' }}>
+                    ? '1.5px solid rgba(217,178,74,0.55)' : '1.5px solid rgba(217,178,74,0.18)',
+                  background: represents === opt.val ? 'rgba(217,178,74,0.04)' : at.object }}>
                 <div style={{ width: '17px', height: '17px', borderRadius: '50%', flexShrink: 0,
                   marginTop: '2px',
-                  border: represents === opt.val ? '5px solid #A8721A' : '2px solid rgba(200,146,42,0.38)',
-                  background: '#FFFFFF', transition: 'all 0.15s ease' }} />
+                  border: represents === opt.val ? '5px solid at.brass' : '2px solid rgba(217,178,74,0.38)',
+                  background: at.object, transition: 'all 0.15s ease' }} />
                 <div>
                   <div style={{ ...body, fontSize: '15px', color: dark, lineHeight: 1.3 }}>{opt.label}</div>
-                  <div style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
+                  <div style={{ ...body, fontSize: '13px', color: at.ghost,
                     lineHeight: 1.5, marginTop: '3px' }}>{opt.hint}</div>
                 </div>
               </button>
@@ -756,13 +756,13 @@ export function AddPage() {
         )}
 
         {/* ── Optional URL autofill ─────────────────────────── */}
-        <div style={{ background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.22)',
+        <div style={{ background: at.object, border: '1.5px solid rgba(217,178,74,0.22)',
           borderRadius: '12px', padding: '18px 20px', marginBottom: '32px' }}>
           <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.20em',
-            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '8px' }}>
+            color: at.ghost, textTransform: 'uppercase', marginBottom: '8px' }}>
             {mineMode ? 'Have a website?' : 'Start from any source'}
           </div>
-          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
+          <p style={{ ...body, fontSize: '13px', color: at.ghost,
             lineHeight: 1.55, marginBottom: '12px' }}>
             {mineMode
               ? 'Optional. Paste a link and we will fill in what we can, then you review it. Or skip and fill it in yourself below.'
@@ -774,24 +774,24 @@ export function AddPage() {
               rows={2}
               placeholder={'Paste a URL or describe them...'}
               style={{ ...body, fontSize: '16px', color: dark, padding: '12px 16px',
-                borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.55)',
-                background: '#FFFFFF', outline: 'none', width: '100%',
-                boxShadow: 'inset 0 1px 3px rgba(15,21,35,0.06)',
+                borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.55)',
+                background: at.object, outline: 'none', width: '100%',
+                boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.30)',
                 resize: 'vertical', lineHeight: 1.6, boxSizing: 'border-box' }}
             />
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={readSite} disabled={reading || !aiUrl.trim()}
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em',
                   padding: '10px 22px', borderRadius: '40px', border: 'none',
-                  background: reading || !aiUrl.trim() ? 'rgba(200,146,42,0.25)' : '#C8922A',
-                  color: '#FFFFFF', whiteSpace: 'nowrap',
+                  background: reading || !aiUrl.trim() ? 'rgba(217,178,74,0.25)' : at.verdigris,
+                  color: at.object, whiteSpace: 'nowrap',
                   cursor: reading || !aiUrl.trim() ? 'not-allowed' : 'pointer' }}>
                 {reading ? (
                   <>
                     <span style={{
                       display: 'inline-block', width: '12px', height: '12px',
                       border: '2px solid rgba(255,255,255,0.4)',
-                      borderTopColor: '#FFFFFF',
+                      borderTopColor: at.object,
                       borderRadius: '50%',
                       animation: 'add-spin 0.7s linear infinite',
                       marginRight: '6px', verticalAlign: 'middle',
@@ -817,7 +817,7 @@ export function AddPage() {
             {/* Quiet manual path — always visible */}
             <div style={{ textAlign: 'center', marginTop: '-12px', marginBottom: '32px' }}>
               <button type="button" onClick={() => setStage('form')}
-                style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)',
+                style={{ ...body, fontSize: '14px', color: at.ghost,
                   background: 'none', border: 'none', cursor: 'pointer',
                   textDecoration: 'underline', textUnderlineOffset: '3px' }}>
                 {mineMode ? 'Fill it in yourself' : 'No URL? Fill in manually'}
@@ -831,9 +831,9 @@ export function AddPage() {
           <>
             {/* Collapsed source summary */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.22)',
+              background: at.object, border: '1px solid rgba(217,178,74,0.22)',
               borderRadius: '10px', padding: '12px 18px', marginBottom: '28px' }}>
-              <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)' }}>
+              <span style={{ ...body, fontSize: '14px', color: at.meta }}>
                 {aiUsed
                   ? `Read from ${(() => { try { return new URL(normaliseUrl(aiUrl.trim())).hostname.replace(/^www\./, '') } catch { return 'source' } })()} — review and edit below.`
                   : 'Filling in manually.'}
@@ -847,7 +847,7 @@ export function AddPage() {
 
         {/* ── Duplicate warning ─────────────────────────────── */}
         {duplicates.length > 0 && !dupDismissed && (
-          <div style={{ background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.28)',
+          <div style={{ background: 'rgba(217,178,74,0.04)', border: '1px solid rgba(217,178,74,0.28)',
             borderRadius: '12px', padding: '16px 18px', marginBottom: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               marginBottom: '10px' }}>
@@ -855,12 +855,12 @@ export function AddPage() {
                 Already on the map
               </div>
               <button onClick={() => setDupDismissed(true)}
-                style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
+                style={{ ...body, fontSize: '13px', color: at.ghost,
                   background: 'none', border: 'none', cursor: 'pointer' }}>
                 These are different, continue
               </button>
             </div>
-            <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.65)',
+            <p style={{ ...body, fontSize: '13px', color: at.meta,
               lineHeight: 1.55, marginBottom: '10px' }}>
               {duplicates.length === 1 ? 'A similar entry is' : 'Similar entries are'} already on the map.
               Is one of these what you're adding?
@@ -898,9 +898,9 @@ export function AddPage() {
               : 'Logo for organisations, portrait for practitioners. Found automatically when reading a source · upload your own or paste an image URL to replace it.'}</Hint>
             <div style={{ display: 'flex', gap: '14px', alignItems: 'flex-start', marginTop: '8px' }}>
               <div style={{ width: '72px', height: '72px', borderRadius: '10px', flexShrink: 0,
-                border: '1.5px solid rgba(200,146,42,0.28)',
-                background: '#FFFFFF',
-                backgroundImage: 'linear-gradient(45deg, rgba(15,21,35,0.07) 25%, transparent 25%), linear-gradient(-45deg, rgba(15,21,35,0.07) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(15,21,35,0.07) 75%), linear-gradient(-45deg, transparent 75%, rgba(15,21,35,0.07) 75%)',
+                border: '1.5px solid rgba(217,178,74,0.28)',
+                background: at.object,
+                backgroundImage: 'linear-gradient(45deg, rgba(234,241,237,0.06) 25%, transparent 25%), linear-gradient(-45deg, rgba(234,241,237,0.06) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, rgba(234,241,237,0.06) 75%), linear-gradient(-45deg, transparent 75%, rgba(234,241,237,0.06) 75%)',
                 backgroundSize: '12px 12px',
                 backgroundPosition: '0 0, 0 6px, 6px -6px, -6px 0',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
@@ -909,7 +909,7 @@ export function AddPage() {
                     style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                     onError={() => setImgBroken(true)} />
                 ) : (
-                  <span style={{ ...sc, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
+                  <span style={{ ...sc, fontSize: '13px', color: at.ghost,
                     textAlign: 'center', padding: '4px' }}>
                     {form.image_url ? 'Broken link' : 'No image'}
                   </span>
@@ -925,10 +925,10 @@ export function AddPage() {
                   <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase',
                     display: 'inline-flex', alignItems: 'center', gap: '10px', whiteSpace: 'nowrap',
                     cursor: imgBusy ? 'default' : 'pointer', color: gold, opacity: imgBusy ? 0.55 : 1 }}>
-                    <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', textTransform: 'none', letterSpacing: 'normal' }}>or</span>
+                    <span style={{ ...body, fontSize: '14px', color: at.ghost, textTransform: 'none', letterSpacing: 'normal' }}>or</span>
                     <span style={{ display: 'inline-flex', alignItems: 'center',
                       padding: '10px 18px', borderRadius: '8px',
-                      border: '1.5px solid rgba(200,146,42,0.4)', background: '#FFFFFF' }}>
+                      border: '1.5px solid rgba(217,178,74,0.4)', background: at.object }}>
                       {imgBusy ? 'Uploading…' : 'Upload'}
                     </span>
                     <input type="file" accept="image/*" disabled={imgBusy} onChange={onPickImage} style={{ display: 'none' }} />
@@ -953,11 +953,11 @@ export function AddPage() {
             </div>
             {selectedGoal && (
               <div style={{ marginTop: '10px', padding: '11px 13px',
-                background: 'rgba(200,146,42,0.04)', border: '1px solid rgba(200,146,42,0.18)',
+                background: 'rgba(217,178,74,0.04)', border: '1px solid rgba(217,178,74,0.18)',
                 borderRadius: '8px' }}>
                 <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em',
-                  color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>HORIZON GOAL</div>
-                <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)',
+                  color: at.ghost, marginBottom: '4px' }}>HORIZON GOAL</div>
+                <p style={{ ...body, fontSize: '13px', color: at.meta,
                   lineHeight: 1.65, margin: 0 }}>{selectedGoal}</p>
               </div>
             )}
@@ -975,9 +975,9 @@ export function AddPage() {
                     <button key={d.slug} type="button" onClick={() => toggleSecondary(d.slug)}
                       style={{ ...sc, fontSize: '12px', letterSpacing: '0.04em',
                         padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
-                        color: isOn ? gold : 'rgba(15,21,35,0.72)',
-                        background: isOn ? 'rgba(200,146,42,0.08)' : '#FFFFFF',
-                        border: isOn ? '1px solid rgba(200,146,42,0.55)' : '1px solid rgba(200,146,42,0.25)' }}>
+                        color: isOn ? gold : at.meta,
+                        background: isOn ? 'rgba(217,178,74,0.08)' : at.object,
+                        border: isOn ? '1px solid rgba(217,178,74,0.55)' : '1px solid rgba(217,178,74,0.25)' }}>
                       {d.label}
                     </button>
                   )
@@ -1007,8 +1007,8 @@ export function AddPage() {
             <div style={{ marginTop: '8px' }}>
               <textarea value={form.description} onChange={e => set('description', e.target.value)} rows={4}
                 style={{ ...body, fontSize: '15px', color: dark, padding: '10px 14px',
-                  borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)',
-                  background: '#FFFFFF', outline: 'none', width: '100%',
+                  borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)',
+                  background: at.object, outline: 'none', width: '100%',
                   resize: 'vertical', lineHeight: 1.65, boxSizing: 'border-box' }} />
             </div>
           </Field>
@@ -1048,15 +1048,15 @@ export function AddPage() {
           <button type="submit" disabled={saving}
             style={{ ...sc, fontSize: '14px', letterSpacing: '0.16em',
               padding: '14px 32px', borderRadius: '40px', border: 'none',
-              background: saving ? 'rgba(200,146,42,0.35)' : '#C8922A',
-              color: '#FFFFFF', cursor: saving ? 'not-allowed' : 'pointer',
+              background: saving ? 'rgba(217,178,74,0.35)' : at.verdigris,
+              color: at.object, cursor: saving ? 'not-allowed' : 'pointer',
               display: 'block', width: '100%', marginTop: '8px' }}>
             {saving ? 'Adding...' : extras.some((_, i) => extraChecked[i])
               ? `Add ${1 + extraChecked.filter(Boolean).length} entries to the Atlas`
               : 'Add to the Atlas'}
           </button>
 
-          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)',
+          <p style={{ ...body, fontSize: '13px', color: at.ghost,
             lineHeight: 1.55, textAlign: 'center', marginTop: '12px' }}>
             {represents
               ? 'Your entry goes live immediately. You can edit it any time.'

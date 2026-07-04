@@ -27,15 +27,15 @@ import { Nav } from '../../components/Nav'
 import { SiteFooter } from '../../components/SiteFooter'
 import { supabase } from '../../hooks/useSupabase'
 import { useAuth } from '../../hooks/useAuth'
-import { serif, body, sc } from '../../lib/designTokens'
+import { serif, body, sc, at } from '../../lib/designTokens'
 import { ShareButton } from '../components/ShareButton'
 import { SELF_DOMAIN_COLORS, SELF_DOMAIN_LABELS } from '../constants/domains'
 
-const BG     = '#FAFAF7'
-const DARK   = '#0F1523'
-const GOLD   = '#C8922A'
-const GOLD_DK= '#A8721A'
-const RULE   = 'rgba(200,146,42,0.20)'
+const BG     = at.ground
+const DARK   = at.text
+const GOLD   = at.verdigris
+const GOLD_DK= at.brass
+const RULE   = at.verdigrisEdge
 
 function SectionLabel({ children }) {
   return (
@@ -186,7 +186,7 @@ export function MemberPublicPage() {
       <div style={{ background: BG, minHeight: '100dvh' }}>
         <Nav activePath="" />
         <div style={{ maxWidth: '760px', margin: '0 auto', padding: '120px 32px',
-          textAlign: 'center', ...body, color: 'rgba(15,21,35,0.55)', fontSize: '15px' }}>
+          textAlign: 'center', ...body, color: at.ghost, fontSize: '15px' }}>
           Loading…
         </div>
       </div>
@@ -201,7 +201,7 @@ export function MemberPublicPage() {
           <h1 style={{ ...serif, fontSize: '34px', fontWeight: 300, color: DARK, marginBottom: '12px' }}>
             No member here
           </h1>
-          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.7 }}>
+          <p style={{ ...body, fontSize: '16px', color: at.ghost, lineHeight: 1.7 }}>
             This member card isn't public, or the link is wrong.
           </p>
           <Link to="/search" style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
@@ -229,10 +229,10 @@ export function MemberPublicPage() {
         {/* Owner preview banner — only the owner sees this, and only while unpublished */}
         {isOwner && (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-            gap: '14px', background: unpublished ? 'rgba(200,146,42,0.06)' : 'rgba(42,140,79,0.06)',
+            gap: '14px', background: unpublished ? 'rgba(217,178,74,0.10)' : 'rgba(42,140,79,0.10)',
             border: `1px solid ${unpublished ? RULE : 'rgba(42,140,79,0.30)'}`,
             borderRadius: '12px', padding: '12px 18px', marginBottom: '28px' }}>
-            <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.70)' }}>
+            <span style={{ ...body, fontSize: '14px', color: at.meta }}>
               {unpublished
                 ? 'This is your preview. It isn\u2019t public yet \u2014 only you can see it.'
                 : 'This card is live. Anyone with the link can see it.'}
@@ -249,7 +249,7 @@ export function MemberPublicPage() {
         {/* Identity */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '40px' }}>
           <div style={{ width: '76px', height: '76px', borderRadius: '50%', flexShrink: 0,
-            border: `2px solid ${GOLD}`, background: '#FFFFFF', color: GOLD_DK,
+            border: `2px solid ${GOLD}`, background: at.object, color: GOLD_DK,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             ...serif, fontSize: '30px', fontWeight: 300 }}>
             {initial}
@@ -260,7 +260,7 @@ export function MemberPublicPage() {
               {fullName}
             </h1>
             {place && (
-              <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', marginTop: '6px' }}>
+              <div style={{ ...body, fontSize: '15px', color: at.ghost, marginTop: '6px' }}>
                 {place}
               </div>
             )}
@@ -302,7 +302,7 @@ export function MemberPublicPage() {
               {actors.map(a => (
                 <Link key={a.id} to={`/org/${a.slug}`} style={{ textDecoration: 'none' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '14px',
-                    background: '#FFFFFF', border: `1px solid ${RULE}`, borderRadius: '12px',
+                    background: at.object, border: `1px solid ${RULE}`, borderRadius: '12px',
                     padding: '14px 18px' }}>
                     <div style={{ width: '44px', height: '44px', borderRadius: '8px', flexShrink: 0,
                       border: `1px solid ${RULE}`, background: BG, overflow: 'hidden',
@@ -314,7 +314,7 @@ export function MemberPublicPage() {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ ...serif, fontSize: '19px', fontWeight: 400, color: DARK }}>{a.name}</div>
                       {a.tagline && (
-                        <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)',
+                        <div style={{ ...body, fontSize: '14px', color: at.ghost,
                           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {a.tagline}
                         </div>
@@ -336,7 +336,7 @@ export function MemberPublicPage() {
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
               {spaces.map(s => (
                 <span key={s.id} style={{ ...body, fontSize: '14px', color: DARK,
-                  background: '#FFFFFF', border: `1px solid ${RULE}`,
+                  background: at.object, border: `1px solid ${RULE}`,
                   borderRadius: '999px', padding: '6px 16px' }}>
                   {s.focus.name}
                 </span>
@@ -353,7 +353,7 @@ export function MemberPublicPage() {
               {sprints.map(s => (
                 <div key={s.id} style={{ display: 'flex', alignItems: 'center',
                   justifyContent: 'space-between', gap: '14px',
-                  background: '#FFFFFF', border: `1px solid ${RULE}`,
+                  background: at.object, border: `1px solid ${RULE}`,
                   borderRadius: '12px', padding: '14px 18px' }}>
                   <span style={{ ...body, fontSize: '16px', color: DARK }}>{s.title}</span>
                   <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.12em',
@@ -369,7 +369,7 @@ export function MemberPublicPage() {
         {/* Empty-but-published fallback */}
         {!member.public_bio && domains.length === 0 && actors.length === 0
           && spaces.length === 0 && sprints.length === 0 && (
-          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.55)',
+          <p style={{ ...body, fontSize: '16px', color: at.ghost,
             lineHeight: 1.7, fontStyle: 'normal' }}>
             This member is just getting started.
           </p>

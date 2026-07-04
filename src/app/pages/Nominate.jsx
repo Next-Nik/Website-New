@@ -20,12 +20,12 @@ import { supabase } from '../../hooks/useSupabase'
 import PrincipleStrip from '../components/PrincipleStrip'
 import { PRINCIPLES_ORDERED } from '../constants/principles'
 import { CIV_DOMAINS } from '../components/NextUsWheel'
-import { serif, body, sc } from '../../lib/designTokens'
+import { serif, body, sc, at } from '../../lib/designTokens'
 import { SCALES as CANONICAL_SCALES } from '../constants/scales'
 
-const gold  = '#A8721A'
-const dark  = '#0F1523'
-const parch = '#FAFAF7'
+const gold  = at.brass
+const dark  = at.text
+const parch = at.ground
 
 // ── Horizon goals (shown when a primary domain is selected) ───
 const DOMAIN_HORIZON_GOALS = {
@@ -60,27 +60,27 @@ function Label({ children, required }) {
 }
 
 function Hint({ children }) {
-  return <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '5px', lineHeight: 1.5 }}>{children}</p>
+  return <p style={{ ...body, fontSize: '13px', color: at.ghost, marginTop: '5px', lineHeight: 1.5 }}>{children}</p>
 }
 
 function TextInput({ value, onChange, placeholder, type = 'text' }) {
   return (
     <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }} />
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)', background: at.object, outline: 'none', width: '100%' }} />
   )
 }
 
 function TextArea({ value, onChange, placeholder, rows = 4 }) {
   return (
     <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows}
-      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }} />
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)', background: at.object, outline: 'none', width: '100%', resize: 'vertical', lineHeight: 1.65 }} />
   )
 }
 
 function SelectInput({ value, onChange, options }) {
   return (
     <select value={value} onChange={e => onChange(e.target.value)}
-      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(200,146,42,0.30)', background: '#FFFFFF', outline: 'none', width: '100%' }}>
+      style={{ ...body, fontSize: '15px', color: dark, padding: '11px 16px', borderRadius: '8px', border: '1.5px solid rgba(217,178,74,0.30)', background: at.object, outline: 'none', width: '100%' }}>
       {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
   )
@@ -247,11 +247,11 @@ export function NominatePage() {
           <h2 style={{ ...serif, fontSize: '30px', fontWeight: 300, color: dark, marginBottom: '14px' }}>
             Nomination received.
           </h2>
-          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.60)', lineHeight: 1.75, maxWidth: '420px', margin: '0 auto 12px' }}>
+          <p style={{ ...body, fontSize: '16px', color: 'rgba(234,241,237,0.60)', lineHeight: 1.75, maxWidth: '420px', margin: '0 auto 12px' }}>
             The profile is in the review queue. We will place it on the map once it meets the criteria and be in touch at the email you provided.
           </p>
           {nominatedId && (
-            <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.65, maxWidth: '420px', margin: '0 auto 32px' }}>
+            <p style={{ ...body, fontSize: '15px', color: at.ghost, lineHeight: 1.65, maxWidth: '420px', margin: '0 auto 32px' }}>
               If this is your organisation, you can claim and manage the profile now.
             </p>
           )}
@@ -259,16 +259,16 @@ export function NominatePage() {
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '32px' }}>
             {nominatedId && (
               <button onClick={() => navigate(`/beta/org/${nominatedId}/manage`)}
-                style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: 'none', background: '#C8922A', color: '#FFFFFF', cursor: 'pointer' }}>
+                style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: 'none', background: at.verdigris, color: at.object, cursor: 'pointer' }}>
                 Manage this profile
               </button>
             )}
             <button onClick={() => { setForm(EMPTY); setDone(false); setNominatedId(null) }}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: '1.5px solid rgba(200,146,42,0.78)', background: 'rgba(200,146,42,0.05)', color: gold, cursor: 'pointer' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: '1.5px solid rgba(217,178,74,0.78)', background: 'rgba(217,178,74,0.05)', color: gold, cursor: 'pointer' }}>
               Nominate another
             </button>
             <button onClick={() => navigate('/beta')}
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: '1px solid rgba(15,21,35,0.55)', background: 'transparent', color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}>
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 24px', borderRadius: '40px', border: '1px solid rgba(234,241,237,0.55)', background: 'transparent', color: at.ghost, cursor: 'pointer' }}>
               Back to NextUs
             </button>
           </div>
@@ -306,7 +306,7 @@ export function NominatePage() {
           <h1 style={{ ...serif, fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 300, color: dark, lineHeight: 1.12, margin: '0 0 10px' }}>
             Who belongs on this map?
           </h1>
-          <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.75, margin: 0 }}>
+          <p style={{ ...body, fontSize: '16px', color: at.meta, lineHeight: 1.75, margin: 0 }}>
             Know an organisation, project, or practitioner doing serious work toward a Horizon Goal?
             Tell us. If they belong, they go on the map.
           </p>
@@ -348,14 +348,14 @@ export function NominatePage() {
               <div style={{
                 marginTop: '10px',
                 padding: '12px 14px',
-                background: 'rgba(200,146,42,0.04)',
-                border: '1px solid rgba(200,146,42,0.20)',
+                background: 'rgba(217,178,74,0.04)',
+                border: '1px solid rgba(217,178,74,0.20)',
                 borderRadius: '8px',
               }}>
-                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', marginBottom: '4px' }}>
+                <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: at.ghost, marginBottom: '4px' }}>
                   HORIZON GOAL
                 </div>
-                <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
+                <p style={{ ...body, fontSize: '14px', color: at.meta, lineHeight: 1.65, margin: 0 }}>
                   {selectedGoal}
                 </p>
               </div>
@@ -378,9 +378,9 @@ export function NominatePage() {
                       style={{
                         ...sc, fontSize: '12px', letterSpacing: '0.04em',
                         padding: '5px 12px', borderRadius: '40px', cursor: 'pointer',
-                        color: isOn ? gold : 'rgba(15,21,35,0.72)',
-                        background: isOn ? 'rgba(200,146,42,0.08)' : '#FFFFFF',
-                        border: isOn ? '1px solid rgba(200,146,42,0.55)' : '1px solid rgba(200,146,42,0.25)',
+                        color: isOn ? gold : at.meta,
+                        background: isOn ? 'rgba(217,178,74,0.08)' : at.object,
+                        border: isOn ? '1px solid rgba(217,178,74,0.55)' : '1px solid rgba(217,178,74,0.25)',
                         fontWeight: isOn ? 600 : 400,
                       }}
                     >
@@ -418,8 +418,8 @@ export function NominatePage() {
           </Field>
 
           {/* Nominator */}
-          <div style={{ paddingTop: '24px', borderTop: '1px solid rgba(200,146,42,0.18)', marginTop: '8px' }}>
-            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase', marginBottom: '20px' }}>
+          <div style={{ paddingTop: '24px', borderTop: '1px solid rgba(217,178,74,0.18)', marginTop: '8px' }}>
+            <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.18em', color: at.ghost, textTransform: 'uppercase', marginBottom: '20px' }}>
               Your details
             </div>
 
@@ -446,7 +446,7 @@ export function NominatePage() {
                 <input type="checkbox" checked={form.nominator_can_name}
                   onChange={e => set('nominator_can_name', e.target.checked)}
                   style={{ marginTop: '4px', accentColor: gold, width: '16px', height: '16px' }} />
-                <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.7)', lineHeight: 1.55 }}>
+                <span style={{ ...body, fontSize: '14px', color: 'rgba(234,241,237,0.7)', lineHeight: 1.55 }}>
                   You can tell them I suggested it. Otherwise the note simply says someone in the community did.
                 </span>
               </label>
@@ -465,14 +465,14 @@ export function NominatePage() {
             style={{
               ...sc, fontSize: '14px', letterSpacing: '0.16em',
               padding: '14px 32px', borderRadius: '40px', border: 'none',
-              background: saving ? 'rgba(200,146,42,0.35)' : '#C8922A',
-              color: '#FFFFFF', cursor: saving ? 'not-allowed' : 'pointer',
+              background: saving ? 'rgba(217,178,74,0.35)' : at.verdigris,
+              color: at.object, cursor: saving ? 'not-allowed' : 'pointer',
               display: 'block', width: '100%', marginTop: '8px',
             }}>
             {saving ? 'Submitting...' : 'Nominate them'}
           </button>
 
-          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.55, textAlign: 'center', marginTop: '12px' }}>
+          <p style={{ ...body, fontSize: '13px', color: at.ghost, lineHeight: 1.55, textAlign: 'center', marginTop: '12px' }}>
             Submissions enter a review queue. The team reviews and places approved nominations on the map.
           </p>
         </form>

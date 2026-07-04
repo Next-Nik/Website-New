@@ -34,6 +34,7 @@ import {
   PLACEMENT_TIER,
   SHOW_ALIGNMENT_PUBLIC,
 } from '../components/OrgShared'
+import { at } from '../../lib/designTokens'
 import { DOMAIN_COLORS } from '../constants/domains'
 import { ShareButton } from '../components/ShareButton'
 import { WatchButton } from '../components/WatchButton'
@@ -46,7 +47,7 @@ import { PodcastPlayer } from '../components/PodcastPlayer'
 function Eyebrow({ children, style = {} }) {
   return (
     <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.22em',
-      color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
+      color: at.ghost, textTransform: 'uppercase',
       marginBottom: '18px', ...style }}>
       {children}
     </div>
@@ -55,7 +56,7 @@ function Eyebrow({ children, style = {} }) {
 
 function Rule() {
   return <div style={{ height: '1px',
-    background: 'rgba(200,146,42,0.10)', margin: '52px 0' }} />
+    background: 'rgba(217,178,74,0.10)', margin: '52px 0' }} />
 }
 
 function NotFound() {
@@ -64,7 +65,7 @@ function NotFound() {
       <Nav />
       <div style={{ maxWidth: '560px', margin: '0 auto', padding: '160px 24px', textAlign: 'center' }}>
         <p style={{ ...body, fontSize: '17px', fontWeight: 400,
-          color: 'rgba(15,21,35,0.55)', lineHeight: 1.75 }}>
+          color: at.ghost, lineHeight: 1.75 }}>
           This profile does not exist or is not publicly visible.
         </p>
       </div>
@@ -140,8 +141,8 @@ const LINK_PRIORITY = {
 
 const ACCEPTING_STATUS_LABEL = {
   yes:      { label: 'Accepting clients',     color: '#2A6B3A', bg: 'rgba(42,107,58,0.08)',  border: 'rgba(42,107,58,0.25)' },
-  waitlist: { label: 'Waitlist',              color: '#A8721A', bg: 'rgba(168,114,26,0.08)', border: 'rgba(168,114,26,0.25)' },
-  not_now:  { label: 'Not accepting now',     color: 'rgba(15,21,35,0.55)', bg: 'rgba(15,21,35,0.55)', border: 'rgba(15,21,35,0.55)' },
+  waitlist: { label: 'Waitlist',              color: at.brass, bg: 'rgba(217,178,74,0.08)', border: 'rgba(217,178,74,0.25)' },
+  not_now:  { label: 'Not accepting now',     color: at.ghost, bg: at.ghost, border: at.ghost },
 }
 
 const MEMBERSHIP_STATUS_LABEL = {
@@ -195,11 +196,11 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
               <div className="org-identity-photo-frame" style={{
                 width: '160px', height: '160px',
                 borderRadius: '4px', overflow: 'hidden',
-                border: '1.5px solid rgba(200,146,42,0.70)',
-                outline: '1px solid rgba(200,146,42,0.35)',
+                border: '1.5px solid rgba(217,178,74,0.70)',
+                outline: '1px solid rgba(217,178,74,0.35)',
                 outlineOffset: '5px',
                 background: isPortrait
-                  ? 'rgba(200,146,42,0.05)'
+                  ? 'rgba(217,178,74,0.05)'
                   : '#FDFCF8',
                 display: 'flex',
                 alignItems: 'center',
@@ -230,25 +231,25 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
                 background: domainColor, flexShrink: 0 }} />
               <span style={{ ...sc, fontSize: '13px', fontWeight: 600,
                 letterSpacing: '0.18em',
-                color: 'rgba(15,21,35,0.72)', textTransform: 'uppercase' }}>
+                color: at.meta, textTransform: 'uppercase' }}>
                 {DOMAIN_LABEL[primaryDomain] || primaryDomain}
               </span>
               {actor.scale && (
                 <>
-                  <span style={{ color: 'rgba(200,146,42,0.45)', fontSize: '13px' }}>·</span>
+                  <span style={{ color: 'rgba(217,178,74,0.45)', fontSize: '13px' }}>·</span>
                   <span style={{ ...sc, fontSize: '13px', fontWeight: 600,
                     letterSpacing: '0.16em',
-                    color: 'rgba(15,21,35,0.65)', textTransform: 'uppercase' }}>
+                    color: at.meta, textTransform: 'uppercase' }}>
                     {SCALE_LABEL?.[actor.scale] || actor.scale}
                   </span>
                 </>
               )}
               {actor.type && (
                 <>
-                  <span style={{ color: 'rgba(200,146,42,0.45)', fontSize: '13px' }}>·</span>
+                  <span style={{ color: 'rgba(217,178,74,0.45)', fontSize: '13px' }}>·</span>
                   <span style={{ ...sc, fontSize: '13px', fontWeight: 600,
                     letterSpacing: '0.16em',
-                    color: 'rgba(15,21,35,0.65)', textTransform: 'uppercase' }}>
+                    color: at.meta, textTransform: 'uppercase' }}>
                     {actor.type.charAt(0).toUpperCase() + actor.type.slice(1)}
                   </span>
                 </>
@@ -266,7 +267,7 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
           {/* Tagline */}
           {actor.tagline && (
             <p style={{ ...body, fontSize: '20px', fontWeight: 400,
-              color: 'rgba(15,21,35,0.82)',
+              color: 'rgba(234,241,237,0.82)',
               lineHeight: 1.45, margin: '0 0 22px' }}>
               {actor.tagline}
             </p>
@@ -278,7 +279,7 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
               below. Skipped when a story exists (Story carries the narrative). */}
           {actor.description && !actor.story && (
             <p style={{ ...body, fontSize: '17px', fontWeight: 400,
-              color: 'rgba(15,21,35,0.78)',
+              color: 'rgba(234,241,237,0.78)',
               lineHeight: 1.55, margin: '0 0 22px', maxWidth: '620px',
               whiteSpace: 'pre-wrap' }}>
               {actor.description}
@@ -289,7 +290,7 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
           {actor.location_name && (
             <div style={{ ...sc, fontSize: '13px', fontWeight: 600,
               letterSpacing: '0.16em',
-              color: 'rgba(15,21,35,0.65)', marginBottom: '14px',
+              color: at.meta, marginBottom: '14px',
               textTransform: 'uppercase' }}>
               {actor.location_name}
             </div>
@@ -306,7 +307,7 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
                   target={cta.external ? '_blank' : undefined}
                   rel={cta.external ? 'noopener noreferrer' : undefined}
                   style={{ ...sc, fontSize: '14px', letterSpacing: '0.14em',
-                    color: '#FFFFFF', background: '#C8922A',
+                    color: at.object, background: at.verdigris,
                     padding: '12px 28px', borderRadius: '40px',
                     textDecoration: 'none', display: 'inline-block' }}>
                   {cta.label}
@@ -319,7 +320,7 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
           {actor.is_platform_founder && (
             <div style={{ ...sc, fontSize: '13px', fontWeight: 600,
               letterSpacing: '0.16em',
-              color: '#A8721A', marginBottom: '18px',
+              color: at.brass, marginBottom: '18px',
               textTransform: 'uppercase' }}>
               Founder of NextUs
             </div>
@@ -374,10 +375,10 @@ function IdentityStrip({ actor, links, primaryDomain, principalTier, isOwner }) 
             <div style={{ marginTop: '8px' }}>
               <Link to={`/org/${actor.slug || actor.id}/manage`}
                 style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
-                  color: 'rgba(15,21,35,0.55)', textDecoration: 'none',
+                  color: at.ghost, textDecoration: 'none',
                   padding: '6px 14px', borderRadius: '40px',
-                  border: '1px solid rgba(200,146,42,0.30)',
-                  background: 'rgba(200,146,42,0.04)' }}>
+                  border: '1px solid rgba(217,178,74,0.30)',
+                  background: 'rgba(217,178,74,0.04)' }}>
                 Manage profile
               </Link>
             </div>
@@ -431,57 +432,57 @@ function DisputeModal({ actor, user, onClose }) {
     setLoading(false)
   }
 
-  const gold = '#A8721A', dark = '#0F1523', parch = '#FAFAF7'
-  const hair = '1px solid rgba(200,146,42,0.22)'
-  const sc_style = { fontFamily: "'Cormorant SC', Georgia, serif" }
-  const body_style = { fontFamily: "'Lora', Georgia, serif" }
+  const gold = at.brass, dark = at.text, parch = at.ground
+  const hair = '1px solid rgba(217,178,74,0.22)'
+  const sc_style = { fontFamily: "'IBM Plex Mono', Georgia, serif" }
+  const body_style = { fontFamily: "'Newsreader', Georgia, serif" }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
+    <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: at.ghost, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={{ background: parch, border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
+      <div style={{ background: parch, border: '1.5px solid rgba(217,178,74,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
           <div style={{ ...sc_style, fontSize: '11px', letterSpacing: '0.22em', color: gold, textTransform: 'uppercase' }}>Dispute this entry</div>
-          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc_style, fontSize: '1.1rem', color: 'rgba(15,21,35,0.55)' }}>×</button>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc_style, fontSize: '1.1rem', color: at.ghost }}>×</button>
         </div>
         {!user ? (
           <div>
-            <p style={{ ...body_style, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, marginBottom: '18px' }}>
+            <p style={{ ...body_style, fontSize: '15px', color: at.meta, lineHeight: 1.7, marginBottom: '18px' }}>
               Sign in to dispute this entry — it takes a moment and lets the team follow up with you directly.
             </p>
             <Link to="/login" state={{ from: `/org/${actor.slug || actor.id}` }}
-              style={{ ...sc_style, fontSize: '13px', letterSpacing: '0.14em', display: 'inline-block', padding: '11px 28px', borderRadius: '40px', background: '#C8922A', color: '#FFFFFF', textDecoration: 'none' }}>
+              style={{ ...sc_style, fontSize: '13px', letterSpacing: '0.14em', display: 'inline-block', padding: '11px 28px', borderRadius: '40px', background: at.verdigris, color: at.object, textDecoration: 'none' }}>
               Sign in →
             </Link>
           </div>
         ) : submitted ? (
           <div>
-            <p style={{ ...body_style, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, marginBottom: '20px' }}>
+            <p style={{ ...body_style, fontSize: '15px', color: at.meta, lineHeight: 1.7, marginBottom: '20px' }}>
               Received. The NextUs team will review this entry and be in touch.
             </p>
             <button type="button" onClick={onClose}
-              style={{ ...sc_style, fontSize: '13px', letterSpacing: '0.14em', color: gold, background: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 20px', cursor: 'pointer' }}>
+              style={{ ...sc_style, fontSize: '13px', letterSpacing: '0.14em', color: gold, background: 'none', border: '1px solid rgba(217,178,74,0.5)', borderRadius: '30px', padding: '8px 20px', cursor: 'pointer' }}>
               Close
             </button>
           </div>
         ) : (
           <div>
-            <p style={{ ...body_style, fontSize: '15px', color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, marginBottom: '18px' }}>
+            <p style={{ ...body_style, fontSize: '15px', color: at.meta, lineHeight: 1.7, marginBottom: '18px' }}>
               If this entry contains wrong, outdated, or harmful information about you or your organisation, tell us what's incorrect. The NextUs team will review and act.
             </p>
             <div style={{ marginBottom: '12px' }}>
               <div style={{ ...sc_style, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '6px', textTransform: 'uppercase' }}>What's incorrect?</div>
               <textarea value={reason} onChange={e => setReason(e.target.value)} rows={4}
                 placeholder="Describe the problem — what's wrong, outdated, or should be removed."
-                style={{ width: '100%', ...body_style, fontSize: '15px', color: dark, border: hair, borderRadius: '8px', padding: '10px 14px', resize: 'vertical', outline: 'none', background: '#FFFFFF', boxSizing: 'border-box' }} />
+                style={{ width: '100%', ...body_style, fontSize: '15px', color: dark, border: hair, borderRadius: '8px', padding: '10px 14px', resize: 'vertical', outline: 'none', background: at.object, boxSizing: 'border-box' }} />
             </div>
             <div style={{ marginBottom: '18px' }}>
               <div style={{ ...sc_style, fontSize: '11px', letterSpacing: '0.18em', color: gold, marginBottom: '6px', textTransform: 'uppercase' }}>Contact email</div>
               <input type="email" value={contactEmail} onChange={e => setContactEmail(e.target.value)} placeholder="Where can we reach you?"
-                style={{ width: '100%', ...body_style, fontSize: '15px', color: dark, border: hair, borderRadius: '8px', padding: '10px 14px', outline: 'none', background: '#FFFFFF', boxSizing: 'border-box' }} />
+                style={{ width: '100%', ...body_style, fontSize: '15px', color: dark, border: hair, borderRadius: '8px', padding: '10px 14px', outline: 'none', background: at.object, boxSizing: 'border-box' }} />
             </div>
             <button type="button" onClick={submit} disabled={!reason.trim() || loading}
-              style={{ ...sc_style, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 28px', borderRadius: '40px', border: 'none', background: !reason.trim() || loading ? 'rgba(200,146,42,0.30)' : '#C8922A', color: '#FFFFFF', cursor: !reason.trim() || loading ? 'not-allowed' : 'pointer' }}>
+              style={{ ...sc_style, fontSize: '13px', letterSpacing: '0.14em', padding: '11px 28px', borderRadius: '40px', border: 'none', background: !reason.trim() || loading ? 'rgba(217,178,74,0.30)' : at.verdigris, color: at.object, cursor: !reason.trim() || loading ? 'not-allowed' : 'pointer' }}>
               {loading ? 'Sending…' : 'Submit dispute →'}
             </button>
           </div>
@@ -506,8 +507,8 @@ function ClaimBanner({ actor, user }) {
   return (
     <>
       {showDispute && <DisputeModal actor={actor} user={user} onClose={() => setShowDispute(false)} />}
-      <div style={{ background: 'rgba(200,146,42,0.06)',
-        border: '1.5px solid rgba(200,146,42,0.35)',
+      <div style={{ background: 'rgba(217,178,74,0.06)',
+        border: '1.5px solid rgba(217,178,74,0.35)',
         borderRadius: '12px', padding: '20px 24px', marginBottom: '40px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px',
           flexWrap: 'wrap' }}>
@@ -516,13 +517,13 @@ function ClaimBanner({ actor, user }) {
               color: gold, marginBottom: '6px' }}>
               HELD IN TRUST
             </div>
-            <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)',
+            <p style={{ ...body, fontSize: '14px', color: at.meta,
               lineHeight: 1.6, margin: '0 0 8px' }}>
               NextUs holds this profile in trust until claimed.
               {actor.name === 'NextUs' ? '' : ` Is this you? Claim ${actor.name} to add your voice.`}
             </p>
             <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
-              color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
+              color: at.ghost, textTransform: 'uppercase' }}>
               {provenance}
             </div>
           </div>
@@ -530,7 +531,7 @@ function ClaimBanner({ actor, user }) {
             {user ? (
               <Link to={`/org/${actor.slug || actor.id}/claim`}
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
-                  color: '#FFFFFF', background: '#C8922A',
+                  color: at.object, background: at.verdigris,
                   padding: '10px 22px', borderRadius: '40px',
                   textDecoration: 'none', whiteSpace: 'nowrap' }}>
                 Claim this profile
@@ -538,7 +539,7 @@ function ClaimBanner({ actor, user }) {
             ) : (
               <Link to="/login"
                 style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em',
-                  color: '#FFFFFF', background: '#C8922A',
+                  color: at.object, background: at.verdigris,
                   padding: '10px 22px', borderRadius: '40px',
                   textDecoration: 'none', whiteSpace: 'nowrap' }}>
                 Sign in to claim
@@ -546,9 +547,9 @@ function ClaimBanner({ actor, user }) {
             )}
             <button type="button" onClick={() => setShowDispute(true)}
               style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-                color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none',
+                color: at.ghost, background: 'none', border: 'none',
                 cursor: 'pointer', padding: '2px 0', textDecoration: 'underline',
-                textDecorationColor: 'rgba(15,21,35,0.18)', textUnderlineOffset: '2px' }}>
+                textDecorationColor: 'rgba(234,241,237,0.15)', textUnderlineOffset: '2px' }}>
               Something is wrong — dispute this entry
             </button>
           </div>
@@ -580,7 +581,7 @@ function WorkingOnNow({ actor }) {
   return (
     <div>
       <Eyebrow>Working on now</Eyebrow>
-      <p style={{ ...body, fontSize: '16px', color: 'rgba(15,21,35,0.78)',
+      <p style={{ ...body, fontSize: '16px', color: 'rgba(234,241,237,0.78)',
         lineHeight: 1.65, margin: 0 }}>
         {actor.working_on_now}
       </p>
@@ -614,8 +615,8 @@ function Placement({ domains, subdomains }) {
         marginBottom: subdomains?.length ? '14px' : 0 }}>
         {domains.map(slug => (
           <span key={slug} style={{ ...sc, fontSize: '12px', letterSpacing: '0.06em',
-            color: gold, background: 'rgba(200,146,42,0.06)',
-            border: '1px solid rgba(200,146,42,0.30)',
+            color: gold, background: 'rgba(217,178,74,0.06)',
+            border: '1px solid rgba(217,178,74,0.30)',
             padding: '4px 11px', borderRadius: '40px' }}>
             {DOMAIN_LABEL[slug] || slug}
           </span>
@@ -625,9 +626,9 @@ function Placement({ domains, subdomains }) {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
           {subdomains.map(s => (
             <span key={s} style={{ ...body, fontSize: '13px',
-              color: 'rgba(15,21,35,0.55)',
+              color: at.ghost,
               background: 'transparent',
-              border: '1px solid rgba(200,146,42,0.18)',
+              border: '1px solid rgba(217,178,74,0.18)',
               padding: '3px 9px', borderRadius: '40px' }}>
               {s}
             </span>
@@ -656,18 +657,18 @@ function LinksRow({ links }) {
         {sorted.map(link => (
           <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer"
             style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em',
-              color: 'rgba(15,21,35,0.72)', textDecoration: 'none',
+              color: at.meta, textDecoration: 'none',
               padding: '7px 14px', borderRadius: '40px',
-              border: '1px solid rgba(200,146,42,0.25)',
-              background: '#FFFFFF',
+              border: '1px solid rgba(217,178,74,0.25)',
+              background: at.object,
               transition: 'all 0.15s ease' }}
             onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'rgba(200,146,42,0.55)'
+              e.currentTarget.style.borderColor = 'rgba(217,178,74,0.55)'
               e.currentTarget.style.color = gold
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'rgba(200,146,42,0.25)'
-              e.currentTarget.style.color = 'rgba(15,21,35,0.72)'
+              e.currentTarget.style.borderColor = 'rgba(217,178,74,0.25)'
+              e.currentTarget.style.color = at.meta
             }}>
             {link.label || LINK_LABELS[link.link_type] || link.link_type}
           </a>
@@ -708,18 +709,18 @@ function ContactSection({ links, actorName }) {
               target={['email','phone'].includes(link.link_type) ? '_self' : '_blank'}
               rel="noopener noreferrer"
               style={{ ...sc, fontSize: '12px', letterSpacing: '0.10em',
-                color: '#FFFFFF', textDecoration: 'none',
+                color: at.object, textDecoration: 'none',
                 padding: '8px 16px', borderRadius: '40px',
-                border: '1px solid #C8922A',
-                background: '#C8922A',
+                border: '1px solid at.verdigris',
+                background: at.verdigris,
                 transition: 'all 0.15s ease' }}
               onMouseEnter={e => {
-                e.currentTarget.style.background = '#A8721A'
-                e.currentTarget.style.borderColor = '#A8721A'
+                e.currentTarget.style.background = at.brass
+                e.currentTarget.style.borderColor = at.brass
               }}
               onMouseLeave={e => {
-                e.currentTarget.style.background = '#C8922A'
-                e.currentTarget.style.borderColor = '#C8922A'
+                e.currentTarget.style.background = at.verdigris
+                e.currentTarget.style.borderColor = at.verdigris
               }}>
               {labelText}
             </a>
@@ -738,20 +739,20 @@ function PressStrip({ press }) {
     <div>
       <Eyebrow>Featured in</Eyebrow>
       <p style={{ ...body, fontSize: '15px',
-        color: 'rgba(15,21,35,0.65)', lineHeight: 1.7, margin: 0,
+        color: at.meta, lineHeight: 1.7, margin: 0,
         fontStyle: 'italic' }}>
         {press.map((p, idx) => (
           <span key={p.id}>
             {p.url ? (
               <a href={p.url} target="_blank" rel="noopener noreferrer"
-                style={{ color: 'rgba(15,21,35,0.72)', textDecoration: 'none',
-                  borderBottom: '1px dotted rgba(200,146,42,0.45)' }}>
+                style={{ color: at.meta, textDecoration: 'none',
+                  borderBottom: '1px dotted rgba(217,178,74,0.45)' }}>
                 {p.publication}
               </a>
             ) : (
               <span>{p.publication}</span>
             )}
-            {idx < press.length - 1 && <span style={{ color: 'rgba(200,146,42,0.30)' }}> · </span>}
+            {idx < press.length - 1 && <span style={{ color: 'rgba(217,178,74,0.30)' }}> · </span>}
           </span>
         ))}
       </p>
@@ -838,13 +839,13 @@ function CallCard({ call, isOwner }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '7px' }}>
         <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.16em',
           textTransform: 'uppercase', color: gold,
-          border: '1px solid rgba(200,146,42,0.40)', borderRadius: '40px',
+          border: '1px solid rgba(217,178,74,0.40)', borderRadius: '40px',
           padding: '3px 10px' }}>
           {badge}
         </span>
         {unlisted && (
           <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-            textTransform: 'uppercase', color: 'rgba(15,21,35,0.55)' }}>
+            textTransform: 'uppercase', color: at.ghost }}>
             Unlisted
           </span>
         )}
@@ -853,14 +854,14 @@ function CallCard({ call, isOwner }) {
         {call.title || 'Untitled'}
       </div>
       {line && (
-        <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.70)',
+        <div style={{ ...body, fontSize: '14px', color: 'rgba(234,241,237,0.70)',
           marginTop: '5px', lineHeight: 1.5 }}>
           {line}
         </div>
       )}
       {meta && (
         <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.10em',
-          color: 'rgba(15,21,35,0.55)', marginTop: '9px' }}>
+          color: at.ghost, marginTop: '9px' }}>
           {meta}
         </div>
       )}
@@ -869,7 +870,7 @@ function CallCard({ call, isOwner }) {
 
   const cardStyle = {
     display: 'block', textDecoration: 'none',
-    background: '#FFFFFF', border: '1px solid rgba(200,146,42,0.25)',
+    background: at.object, border: '1px solid rgba(217,178,74,0.25)',
     borderRadius: '10px', padding: '16px 18px',
   }
 
@@ -890,16 +891,16 @@ function CallsSection({ calls, isOwner, actorName }) {
     return (
       <div>
         <Eyebrow>Challenges &amp; asks</Eyebrow>
-        <div style={{ background: '#FFFFFF', border: '1px dashed rgba(200,146,42,0.35)',
+        <div style={{ background: at.object, border: '1px dashed rgba(217,178,74,0.35)',
           borderRadius: '10px', padding: '18px 20px' }}>
-          <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.70)',
+          <div style={{ ...body, fontSize: '15px', color: 'rgba(234,241,237,0.70)',
             lineHeight: 1.5, marginBottom: '12px' }}>
             Invite others into the work · share a challenge to take on together, or an ask for what you need.
           </div>
           <Link to="/challenges/new"
             style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
               textTransform: 'uppercase', color: gold, textDecoration: 'none',
-              border: '1px solid rgba(200,146,42,0.50)', borderRadius: '40px',
+              border: '1px solid rgba(217,178,74,0.50)', borderRadius: '40px',
               padding: '8px 18px', display: 'inline-block' }}>
             Create one
           </Link>
@@ -918,7 +919,7 @@ function CallsSection({ calls, isOwner, actorName }) {
           return (
             <div key={type}>
               <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-                color: 'rgba(15,21,35,0.55)', marginBottom: '10px' }}>
+                color: at.ghost, marginBottom: '10px' }}>
                 {groupLabel}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1028,7 +1029,7 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
   const compRange     = item.exchange_type === 'paid' && item.compensation_range
 
   return (
-    <div style={{ background: '#FFFFFF',
+    <div style={{ background: at.object,
       border: `1px solid ${accentBorder}`,
       borderRadius: '10px', padding: '16px 18px' }}>
 
@@ -1038,7 +1039,7 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
       </h3>
 
       {item.description && (
-        <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)',
+        <p style={{ ...body, fontSize: '14px', color: at.meta,
           lineHeight: 1.6, margin: '0 0 10px' }}>
           {item.description}
         </p>
@@ -1052,7 +1053,7 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
             color: accent, marginBottom: '4px', textTransform: 'uppercase' }}>
             Why
           </div>
-          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.72)',
+          <p style={{ ...body, fontSize: '13px', color: at.meta,
             lineHeight: 1.55, margin: 0, fontStyle: 'italic' }}>
             {item.why}
           </p>
@@ -1071,24 +1072,24 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
         </span>
         {scaleLabel && (
           <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
-            color: 'rgba(15,21,35,0.65)', background: 'rgba(200,146,42,0.05)',
-            border: '1px solid rgba(200,146,42,0.25)',
+            color: at.meta, background: 'rgba(217,178,74,0.05)',
+            border: '1px solid rgba(217,178,74,0.25)',
             padding: '2px 9px', borderRadius: '40px' }}>
             Scale: {scaleLabel}
           </span>
         )}
         {locationLabel && !scaleLabel && (
           <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
-            color: 'rgba(15,21,35,0.55)',
-            border: '1px solid rgba(200,146,42,0.20)',
+            color: at.ghost,
+            border: '1px solid rgba(217,178,74,0.20)',
             padding: '2px 9px', borderRadius: '40px' }}>
             {locationLabel}
           </span>
         )}
         {timingLabel && (
           <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
-            color: 'rgba(15,21,35,0.55)',
-            border: '1px solid rgba(200,146,42,0.20)',
+            color: at.ghost,
+            border: '1px solid rgba(217,178,74,0.20)',
             padding: '2px 9px', borderRadius: '40px' }}>
             {timingLabel}
           </span>
@@ -1103,16 +1104,16 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
         )}
         {formatLabel && (
           <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.08em',
-            color: 'rgba(15,21,35,0.55)',
-            border: '1px solid rgba(200,146,42,0.20)',
+            color: at.ghost,
+            border: '1px solid rgba(217,178,74,0.20)',
             padding: '2px 9px', borderRadius: '40px' }}>
             {formatLabel}
           </span>
         )}
         {urgencyLabel && (
           <span style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em',
-            color: item.urgency === 'high' ? '#8A3030' : '#A8721A',
-            background: item.urgency === 'high' ? 'rgba(138,48,48,0.05)' : 'rgba(200,146,42,0.06)',
+            color: item.urgency === 'high' ? '#8A3030' : at.brass,
+            background: item.urgency === 'high' ? 'rgba(138,48,48,0.05)' : 'rgba(217,178,74,0.06)',
             border: item.urgency === 'high' ? '1px solid rgba(138,48,48,0.30)' : `1px solid ${accentBorder}`,
             padding: '2px 9px', borderRadius: '40px',
             textTransform: 'uppercase' }}>
@@ -1123,7 +1124,7 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
 
       {/* Action row — Interested + Reach out */}
       <div style={{ display: 'flex', gap: '10px', alignItems: 'center',
-        paddingTop: '10px', borderTop: '1px solid rgba(200,146,42,0.10)' }}>
+        paddingTop: '10px', borderTop: '1px solid rgba(217,178,74,0.10)' }}>
         <button
           onClick={togglePull}
           disabled={interestLoading}
@@ -1131,9 +1132,9 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
           style={{
             ...sc, fontSize: '11px', letterSpacing: '0.10em',
             padding: '7px 14px', borderRadius: '40px',
-            border: imInterested ? `1.5px solid ${accent}` : '1.5px solid rgba(200,146,42,0.25)',
+            border: imInterested ? `1.5px solid ${accent}` : '1.5px solid rgba(217,178,74,0.25)',
             background: imInterested ? `${accent}10` : 'transparent',
-            color: imInterested ? accent : 'rgba(15,21,35,0.65)',
+            color: imInterested ? accent : at.meta,
             cursor: interestLoading ? 'wait' : 'pointer',
             transition: 'all 0.15s ease',
           }}>
@@ -1162,8 +1163,8 @@ function OfferOrNeedCard({ item, kind, actor, currentUser }) {
             ...sc, fontSize: '11px', letterSpacing: '0.10em',
             padding: '7px 14px', borderRadius: '40px',
             border: 'none',
-            background: !actor?.profile_owner ? 'rgba(200,146,42,0.20)' : accent,
-            color: '#FFFFFF',
+            background: !actor?.profile_owner ? 'rgba(217,178,74,0.20)' : accent,
+            color: at.object,
             cursor: !actor?.profile_owner ? 'not-allowed' : 'pointer',
           }}>
           Reach out
@@ -1237,24 +1238,24 @@ function OfferNeedCompose({ item, kind, actor, currentUser, onClose }) {
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 100,
-      background: 'rgba(15,21,35,0.55)',
+      background: at.ghost,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: '20px',
     }} onClick={onClose}>
       <div style={{
-        background: '#FAFAF7', borderRadius: '14px',
+        background: at.object, borderRadius: '14px',
         maxWidth: '520px', width: '100%', maxHeight: '90vh',
         display: 'flex', flexDirection: 'column',
-        boxShadow: '0 20px 60px rgba(15,21,35,0.30)',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.45)',
         overflow: 'hidden',
       }} onClick={e => e.stopPropagation()}>
 
         <div style={{ padding: '18px 22px',
-          borderBottom: '1px solid rgba(200,146,42,0.20)',
+          borderBottom: '1px solid rgba(217,178,74,0.20)',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em',
-              color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
+              color: at.ghost, textTransform: 'uppercase' }}>
               Reach out about
             </div>
             <h3 style={{ ...body, fontSize: '16px', color: dark,
@@ -1264,22 +1265,22 @@ function OfferNeedCompose({ item, kind, actor, currentUser, onClose }) {
           </div>
           <button onClick={onClose}
             style={{ background: 'none', border: 'none', fontSize: '22px',
-              color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}>×</button>
+              color: at.ghost, cursor: 'pointer' }}>×</button>
         </div>
 
         <div style={{ padding: '20px 22px', overflowY: 'auto', flex: 1 }}>
           {inboxes.length > 1 && (
             <div style={{ marginBottom: '14px' }}>
               <label style={{ ...sc, fontSize: '10px', letterSpacing: '0.18em',
-                color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
+                color: at.ghost, textTransform: 'uppercase',
                 display: 'block', marginBottom: '6px' }}>
                 Sending as
               </label>
               <select value={senderInboxId}
                 onChange={e => setSenderInboxId(e.target.value)}
                 style={{ ...body, width: '100%', padding: '10px 14px',
-                  border: '1.5px solid rgba(200,146,42,0.20)',
-                  borderRadius: '8px', background: '#FFFFFF',
+                  border: '1.5px solid rgba(217,178,74,0.20)',
+                  borderRadius: '8px', background: at.object,
                   fontSize: '14px', color: dark, outline: 'none', cursor: 'pointer' }}>
                 {inboxes.map(ibx => (
                   <option key={ibx.id} value={ibx.id}>{ibx.name}</option>
@@ -1294,8 +1295,8 @@ function OfferNeedCompose({ item, kind, actor, currentUser, onClose }) {
             rows={8}
             placeholder="Tell them why you're reaching out..."
             style={{ ...body, width: '100%', padding: '12px 14px',
-              border: '1.5px solid rgba(200,146,42,0.20)',
-              borderRadius: '8px', background: '#FFFFFF',
+              border: '1.5px solid rgba(217,178,74,0.20)',
+              borderRadius: '8px', background: at.object,
               fontSize: '14px', color: dark, outline: 'none',
               resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.55 }}
           />
@@ -1312,21 +1313,21 @@ function OfferNeedCompose({ item, kind, actor, currentUser, onClose }) {
         </div>
 
         <div style={{ padding: '14px 22px',
-          borderTop: '1px solid rgba(200,146,42,0.20)',
+          borderTop: '1px solid rgba(217,178,74,0.20)',
           display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
           <button onClick={onClose}
             style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
               padding: '10px 18px', borderRadius: '40px',
-              background: 'none', border: '1px solid rgba(200,146,42,0.20)',
-              color: 'rgba(15,21,35,0.55)', cursor: 'pointer' }}>
+              background: 'none', border: '1px solid rgba(217,178,74,0.20)',
+              color: at.ghost, cursor: 'pointer' }}>
             Cancel
           </button>
           <button onClick={handleSend}
             disabled={!body_text.trim() || sending}
             style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
               padding: '10px 20px', borderRadius: '40px', border: 'none',
-              background: !body_text.trim() || sending ? 'rgba(200,146,42,0.30)' : '#C8922A',
-              color: '#FFFFFF',
+              background: !body_text.trim() || sending ? 'rgba(217,178,74,0.30)' : at.verdigris,
+              color: at.object,
               cursor: !body_text.trim() || sending ? 'not-allowed' : 'pointer' }}>
             {sending ? 'Sending...' : 'Send'}
           </button>
@@ -1347,12 +1348,12 @@ function RelationshipsSection({ parent, children, partners, constellation }) {
       {parent && (
         <div style={{ marginBottom: children?.length || partners?.length || constellation?.length ? '18px' : 0 }}>
           <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-            color: 'rgba(15,21,35,0.55)', marginBottom: '6px' }}>
+            color: at.ghost, marginBottom: '6px' }}>
             PART OF
           </div>
           <Link to={`/org/${parent.slug || parent.id}`}
             style={{ ...body, fontSize: '15px', color: dark,
-              textDecoration: 'none', borderBottom: '1px dotted rgba(200,146,42,0.45)' }}>
+              textDecoration: 'none', borderBottom: '1px dotted rgba(217,178,74,0.45)' }}>
             {parent.name}
           </Link>
         </div>
@@ -1361,7 +1362,7 @@ function RelationshipsSection({ parent, children, partners, constellation }) {
       {children?.length > 0 && (
         <div style={{ marginBottom: partners?.length || constellation?.length ? '18px' : 0 }}>
           <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-            color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
+            color: at.ghost, marginBottom: '8px' }}>
             INCLUDES
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -1370,8 +1371,8 @@ function RelationshipsSection({ parent, children, partners, constellation }) {
                 style={{ ...body, fontSize: '14px', color: dark,
                   textDecoration: 'none', padding: '5px 12px',
                   borderRadius: '40px',
-                  border: '1px solid rgba(200,146,42,0.25)',
-                  background: '#FFFFFF' }}>
+                  border: '1px solid rgba(217,178,74,0.25)',
+                  background: at.object }}>
                 {c.name}
               </Link>
             ))}
@@ -1382,7 +1383,7 @@ function RelationshipsSection({ parent, children, partners, constellation }) {
       {partners?.length > 0 && (
         <div style={{ marginBottom: constellation?.length ? '18px' : 0 }}>
           <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-            color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
+            color: at.ghost, marginBottom: '8px' }}>
             PARTNERS WITH
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -1391,8 +1392,8 @@ function RelationshipsSection({ parent, children, partners, constellation }) {
                 style={{ ...body, fontSize: '14px', color: dark,
                   textDecoration: 'none', padding: '5px 12px',
                   borderRadius: '40px',
-                  border: '1px solid rgba(200,146,42,0.25)',
-                  background: '#FFFFFF' }}>
+                  border: '1px solid rgba(217,178,74,0.25)',
+                  background: at.object }}>
                 {p.name}
               </Link>
             ))}
@@ -1403,20 +1404,20 @@ function RelationshipsSection({ parent, children, partners, constellation }) {
       {constellation?.length > 0 && (
         <div>
           <div style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-            color: 'rgba(15,21,35,0.55)', marginBottom: '8px' }}>
+            color: at.ghost, marginBottom: '8px' }}>
             CONSTELLATION
           </div>
-          <p style={{ ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.6, margin: '0 0 10px' }}>
+          <p style={{ ...body, fontSize: '13px', color: at.ghost, lineHeight: 1.6, margin: '0 0 10px' }}>
             Aligned to the same Horizon Goal — same destination, retained identity.
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {constellation.map(m => (
               <Link key={m.id} to={`/org/${m.slug || m.id}`}
                 style={{ display: 'flex', gap: '8px', alignItems: 'center', padding: '7px 12px',
-                  background: '#FFFFFF', border: '1.5px solid rgba(200,146,42,0.30)',
+                  background: at.object, border: '1.5px solid rgba(217,178,74,0.30)',
                   borderRadius: '40px', textDecoration: 'none', transition: 'all 0.15s' }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(200,146,42,0.65)'}
-                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(200,146,42,0.30)'}>
+                onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(217,178,74,0.65)'}
+                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(217,178,74,0.30)'}>
                 {m.image_url && <img src={m.image_url} alt={m.name} style={{ width: '20px', height: '20px', borderRadius: '3px', objectFit: 'cover' }} />}
                 <span style={{ ...body, fontSize: '14px', color: dark }}>{m.name}</span>
               </Link>
@@ -1455,12 +1456,12 @@ function ProvenanceBadge({ actor }) {
       paddingTop: '8px', flexWrap: 'wrap' }}>
       <span style={{ ...sc, fontSize: '12px', fontWeight: 600,
         letterSpacing: '0.16em',
-        color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
+        color: at.ghost, textTransform: 'uppercase' }}>
         {label}
       </span>
-      <span style={{ color: 'rgba(200,146,42,0.40)', fontSize: '12px' }}>·</span>
+      <span style={{ color: 'rgba(217,178,74,0.40)', fontSize: '12px' }}>·</span>
       <span style={{ ...body, fontSize: '14px', fontWeight: 400,
-        color: 'rgba(15,21,35,0.62)', lineHeight: 1.5 }}>
+        color: 'rgba(234,241,237,0.62)', lineHeight: 1.5 }}>
         {hint}
       </span>
     </div>
@@ -1527,21 +1528,21 @@ function CredentialsSection({ credentials }) {
           <div style={{ display: 'grid', gap: '14px' }}>
             {grouped[kind].map(c => (
               <div key={c.id} style={{
-                borderLeft: '2px solid rgba(200,146,42,0.20)',
+                borderLeft: '2px solid rgba(217,178,74,0.20)',
                 paddingLeft: '18px' }}>
                 <div style={{ ...body, fontSize: '16px',
                   color: dark, lineHeight: 1.4, marginBottom: '3px' }}>
                   {c.url ? (
                     <a href={c.url} target="_blank" rel="noopener"
                        style={{ color: dark, textDecoration: 'none',
-                         borderBottom: '1px solid rgba(200,146,42,0.30)' }}>
+                         borderBottom: '1px solid rgba(217,178,74,0.30)' }}>
                       {c.title}
                     </a>
                   ) : c.title}
                 </div>
                 {(c.institution || c.year) && (
                   <div style={{ ...sc, fontSize: '12px', letterSpacing: '0.14em',
-                    color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
+                    color: at.ghost, textTransform: 'uppercase' }}>
                     {c.institution}
                     {c.institution && c.year && ' · '}
                     {c.year}
@@ -1579,7 +1580,7 @@ function TestimonialsSection({ testimonials, actorMode }) {
       <Eyebrow>{heading}</Eyebrow>
       {sorted.map(t => (
         <div key={t.id} style={{
-          borderLeft: '2px solid rgba(200,146,42,0.20)',
+          borderLeft: '2px solid rgba(217,178,74,0.20)',
           paddingLeft: '24px',
           marginBottom: '32px',
           maxWidth: '620px' }}>
@@ -1598,7 +1599,7 @@ function TestimonialsSection({ testimonials, actorMode }) {
               )}
               {t.context && (
                 <span style={{ ...sc, fontSize: '11px', letterSpacing: '0.14em',
-                  color: 'rgba(15,21,35,0.55)', marginLeft: '10px' }}>
+                  color: at.ghost, marginLeft: '10px' }}>
                   {t.context}
                 </span>
               )}
@@ -1744,7 +1745,7 @@ export function OrgPublicPage() {
         <Nav />
         <div style={{ maxWidth: '680px', margin: '0 auto',
           padding: '160px 24px', textAlign: 'center' }}>
-          <span style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)' }}>
+          <span style={{ ...body, fontSize: '14px', color: at.ghost }}>
             Loading...
           </span>
         </div>

@@ -10,12 +10,12 @@ import { useSearchParams, Link } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { supabase } from '../../hooks/useSupabase'
 import { TYPE_LABEL } from '../components/FocusSearch'
-import { body, sc } from '../../lib/designTokens'
+import { body, sc, at } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const gold    = '#A8721A'
-const dark    = '#0F1523'
-const parch   = '#FAFAF7'
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const gold    = at.brass
+const dark    = at.text
+const parch   = at.ground
 
 const DOMAINS = [
   { slug: 'human-being',     label: 'Human Being', color: '#2A6B9E' },
@@ -203,18 +203,18 @@ export function FocusIndex() {
         {parent && breadcrumb.length > 0 && (
           <div style={{
             ...sc, fontSize: '11px', letterSpacing: '0.16em',
-            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
+            color: at.ghost, textTransform: 'uppercase',
             marginBottom: '12px',
           }}>
-            <Link to="/focus" style={{ color: 'rgba(15,21,35,0.72)', textDecoration: 'none' }}>
+            <Link to="/focus" style={{ color: at.meta, textDecoration: 'none' }}>
               Directory
             </Link>
             {breadcrumb.map(a => (
               <span key={a.id}>
-                <span style={{ color: 'rgba(15,21,35,0.55)', margin: '0 8px' }}>/</span>
+                <span style={{ color: at.ghost, margin: '0 8px' }}>/</span>
                 <Link
                   to={`/focus?parent=${a.slug}`}
-                  style={{ color: 'rgba(15,21,35,0.72)', textDecoration: 'none' }}
+                  style={{ color: at.meta, textDecoration: 'none' }}
                 >
                   {a.name}
                 </Link>
@@ -229,8 +229,8 @@ export function FocusIndex() {
               to={`/focus/${parent.slug}`}
               style={{
                 ...sc, fontSize: '12px', letterSpacing: '0.16em',
-                color: gold, background: 'rgba(200,146,42,0.05)',
-                border: '1px solid rgba(200,146,42,0.55)',
+                color: gold, background: 'rgba(217,178,74,0.05)',
+                border: '1px solid rgba(217,178,74,0.55)',
                 borderRadius: '30px', padding: '8px 18px',
                 textDecoration: 'none', textTransform: 'uppercase',
               }}
@@ -244,7 +244,7 @@ export function FocusIndex() {
         <div style={{ marginBottom: '24px' }}>
           <div style={{
             ...sc, fontSize: '10.5px', letterSpacing: '0.18em',
-            color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase',
+            color: at.ghost, textTransform: 'uppercase',
             marginBottom: '10px',
           }}>
             Filter by domain {selectedDomains.size > 0 && (
@@ -276,7 +276,7 @@ export function FocusIndex() {
                     letterSpacing: '0.14em',
                     textTransform: 'uppercase',
                     color: active ? '#FFFFFF' : d.color,
-                    background: active ? d.color : 'rgba(15,21,35,0.02)',
+                    background: active ? d.color : 'rgba(234,241,237,0.04)',
                     border: '1.5px solid ' + d.color,
                     borderRadius: '20px',
                     padding: '6px 14px',
@@ -290,7 +290,7 @@ export function FocusIndex() {
             })}
           </div>
           {selectedDomains.size > 0 && (
-            <div style={{ ...body, fontSize: '12.5px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', marginTop: '8px' }}>
+            <div style={{ ...body, fontSize: '12.5px', color: at.ghost, fontStyle: 'italic', marginTop: '8px' }}>
               Showing {filteredCount} of {totalCount} nested entities.
             </div>
           )}
@@ -307,8 +307,8 @@ export function FocusIndex() {
               ...body, fontSize: '15px', color: dark,
               padding: '10px 16px',
               borderRadius: '8px',
-              border: '1.5px solid rgba(200,146,42,0.30)',
-              background: '#FFFFFF', outline: 'none',
+              border: '1.5px solid rgba(217,178,74,0.30)',
+              background: at.object, outline: 'none',
               width: '100%', maxWidth: '420px',
             }}
           />
@@ -316,19 +316,19 @@ export function FocusIndex() {
             <div style={{
               marginTop: '10px',
               maxWidth: '420px',
-              background: '#FFFFFF',
-              border: '1.5px solid rgba(200,146,42,0.30)',
+              background: at.object,
+              border: '1.5px solid rgba(217,178,74,0.30)',
               borderRadius: '8px',
               maxHeight: '320px',
               overflowY: 'auto',
             }}>
               {searching && (
-                <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', padding: '12px 16px' }}>
+                <div style={{ ...body, fontSize: '14px', color: at.ghost, padding: '12px 16px' }}>
                   Searching&hellip;
                 </div>
               )}
               {!searching && searchResults.length === 0 && (
-                <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', padding: '12px 16px' }}>
+                <div style={{ ...body, fontSize: '14px', color: at.ghost, padding: '12px 16px' }}>
                   No matches in the directory yet.
                 </div>
               )}
@@ -339,7 +339,7 @@ export function FocusIndex() {
                   style={{
                     display: 'flex', justifyContent: 'space-between',
                     alignItems: 'center', padding: '10px 16px',
-                    borderBottom: '1px solid rgba(200,146,42,0.10)',
+                    borderBottom: '1px solid rgba(217,178,74,0.10)',
                     textDecoration: 'none', color: dark,
                   }}
                 >
@@ -355,7 +355,7 @@ export function FocusIndex() {
 
         {/* Grouped children */}
         {loading && (
-          <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.55)' }}>
+          <p style={{ ...body, fontSize: '15px', color: at.ghost }}>
             Loading&hellip;
           </p>
         )}
@@ -363,10 +363,10 @@ export function FocusIndex() {
         {!loading && filteredCount === 0 && (
           <div style={{
             ...body, fontSize: '15px',
-            color: 'rgba(15,21,35,0.72)', fontStyle: 'italic',
+            color: at.meta, fontStyle: 'italic',
             padding: '20px',
-            background: 'rgba(200,146,42,0.04)',
-            border: '1px dashed rgba(200,146,42,0.35)',
+            background: 'rgba(217,178,74,0.04)',
+            border: '1px dashed rgba(217,178,74,0.35)',
             borderRadius: '8px',
           }}>
             {totalCount === 0
@@ -403,7 +403,7 @@ export function FocusIndex() {
                         style={{
                           ...sc, fontSize: '11px', letterSpacing: '0.14em',
                           color: gold, background: 'none',
-                          border: '1px dashed rgba(200,146,42,0.45)',
+                          border: '1px dashed rgba(217,178,74,0.45)',
                           borderRadius: '20px',
                           padding: '7px 14px',
                           cursor: 'pointer', textTransform: 'uppercase',
@@ -418,8 +418,8 @@ export function FocusIndex() {
                         onClick={() => toggleExpand(type)}
                         style={{
                           ...sc, fontSize: '11px', letterSpacing: '0.14em',
-                          color: 'rgba(15,21,35,0.55)', background: 'none',
-                          border: '1px dashed rgba(15,21,35,0.20)',
+                          color: at.ghost, background: 'none',
+                          border: '1px dashed rgba(234,241,237,0.15)',
                           borderRadius: '20px',
                           padding: '7px 14px',
                           cursor: 'pointer', textTransform: 'uppercase',
@@ -447,8 +447,8 @@ function ChildCard({ focus }) {
       gap: '6px',
       padding: '7px 14px',
       borderRadius: '20px',
-      border: '1px solid rgba(200,146,42,0.30)',
-      background: '#FFFFFF',
+      border: '1px solid rgba(217,178,74,0.30)',
+      background: at.object,
     }}>
       <Link
         to={'/focus?parent=' + focus.slug}
@@ -459,7 +459,7 @@ function ChildCard({ focus }) {
       <Link
         to={'/focus/' + focus.slug}
         title={'Open ' + focus.name + "'s profile"}
-        style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: gold, textDecoration: 'none', padding: '0 4px', borderLeft: '1px solid rgba(200,146,42,0.20)' }}
+        style={{ ...sc, fontSize: '10px', letterSpacing: '0.10em', color: gold, textDecoration: 'none', padding: '0 4px', borderLeft: '1px solid rgba(217,178,74,0.20)' }}
       >
         OPEN
       </Link>
