@@ -1628,6 +1628,7 @@ export function OrgPublicPage() {
   // produced an undefined identifier → empty RPC result → NotFound.
   const params = useParams()
   const idOrSlug = params.slug || params.id
+  const navigate = useNavigate()
 
   const { user } = useAuth()
 
@@ -1660,6 +1661,15 @@ export function OrgPublicPage() {
 
       if (!actor) { setLoading(false); return }
       setActor(actor)
+
+      // Canonical URL: if this page loaded via the raw id (a share link,
+      // an old bookmark, a redirect from a flow that only had the id in
+      // hand) but the actor has a proper slug, swap the address bar over
+      // to the slug URL. Keeps every link people see looking like a name,
+      // not a UUID, without breaking anything that still points at the id.
+      if (actor.slug && idOrSlug !== actor.slug) {
+        navigate(`/org/${actor.slug}`, { replace: true })
+      }
 
       // Parallel load auxiliary data
       const [linksRes, pressRes, offersRes, needsRes, parentRes, childrenRes, partnersRes, credentialsRes, testimonialsRes, callsRes] = await Promise.all([
