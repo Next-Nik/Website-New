@@ -319,7 +319,7 @@ function makeCss() {
   margin: 0;
 }
 .mc-self-resources-empty-soft {
-  border-color: rgba(168, 114, 26, 0.18);
+  border-color: rgba(38,48,42, 0.18);
 }
 
 .mc-self-resources-show-more {

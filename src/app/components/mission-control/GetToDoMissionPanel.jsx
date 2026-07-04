@@ -595,7 +595,7 @@ function Row({ item, done, reorder, first, last, tag, onToggle, onStar, onSetDat
     <div style={{
       display: 'flex', alignItems: 'flex-start', gap: '10px',
       padding: '9px 10px', marginBottom: '3px', borderRadius: '8px',
-      background: isDone ? 'rgba(200,146,42,0.05)' : 'transparent',
+      background: isDone ? 'rgba(110,127,92,0.05)' : 'transparent',
     }}>
       {/* Checkbox */}
       <button onClick={() => onToggle?.(!isDone)} aria-label={isDone ? 'Mark not done' : 'Mark done'}
@@ -707,7 +707,7 @@ function ConsistencyLine({ streak, onToggle }) {
     <div style={{
       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
       gap: '10px', marginBottom: '16px', padding: '8px 12px',
-      borderRadius: '8px', background: 'rgba(200,146,42,0.05)',
+      borderRadius: '8px', background: 'rgba(110,127,92,0.05)',
     }}>
       <span style={{ ...body, fontSize: '13px', color: TEXT_META }}>{label}</span>
       <button onClick={onToggle} style={{ ...linkBtn, color: TEXT_META, fontSize: '10px' }}>
@@ -838,7 +838,7 @@ function CalendarSection({ userId }) {
           {calEvents.map((evt, i) => (
             <div key={evt.id || i} style={{
               padding: '10px 14px', marginBottom: '6px', borderRadius: '8px',
-              borderLeft: `3px solid ${GOLD_RULE}`, background: 'rgba(200,146,42,0.04)',
+              borderLeft: `3px solid ${GOLD_RULE}`, background: 'rgba(110,127,92,0.04)',
             }}>
               {evt.time_label && (
                 <div style={{ ...sc, fontSize: '10px', letterSpacing: '0.14em', color: GOLD_DK, marginBottom: '3px' }}>

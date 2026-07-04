@@ -204,7 +204,7 @@ export function ComposeMessage({
                         ) : (
                           <div style={{ width: '28px', height: '28px',
                             borderRadius: '50%',
-                            background: 'rgba(200,146,42,0.10)' }} />
+                            background: 'rgba(110,127,92,0.10)' }} />
                         )}
                         <div style={{ flex: 1 }}>
                           <div style={{ ...body, fontSize: '13px',

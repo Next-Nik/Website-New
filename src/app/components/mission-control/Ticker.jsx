@@ -70,7 +70,7 @@ const TICKER_CSS = `
 .mc-ticker {
   padding: 12px 40px;
   border-bottom: 1px solid ${GOLD_RULE};
-  background: rgba(200, 146, 42, 0.04);
+  background: rgba(88,160,138, 0.04);
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 20px;
@@ -82,8 +82,8 @@ const TICKER_CSS = `
   min-height: 50px;
 }
 [data-stage="dark"] .mc-ticker {
-  border-bottom: 1px solid rgba(200, 146, 42, 0.20);
-  background: rgba(200, 146, 42, 0.08);
+  border-bottom: 1px solid rgba(88,160,138, 0.20);
+  background: rgba(88,160,138, 0.08);
   color: ${TEXT_WHITE_META};
 }
 

@@ -721,7 +721,7 @@ const PANEL_CSS = `
 }
 .mc-self-arrow {
   background: transparent;
-  border: 1px solid rgba(200, 146, 42, 0.30);
+  border: 1px solid rgba(110,127,92, 0.30);
   color: ${GOLD_DK};
   width: 28px;
   height: 28px;
@@ -936,7 +936,7 @@ const PANEL_CSS = `
 }
 .mc-self-chip {
   background: #FFFFFF;
-  border: 1px solid rgba(200, 146, 42, 0.30);
+  border: 1px solid rgba(110,127,92, 0.30);
   color: ${TEXT_INK};
   padding: 8px 14px;
   font-family: ${FONT_BODY};
@@ -1241,8 +1241,8 @@ button.mc-self-chip:hover {
 .mc-self-recal-proposal {
   margin: 4px 14px 10px;
   padding: 10px 14px;
-  background: rgba(168, 114, 26, 0.06);
-  border: 1px solid rgba(168, 114, 26, 0.2);
+  background: rgba(38,48,42, 0.06);
+  border: 1px solid rgba(38,48,42, 0.2);
   border-radius: 10px;
 }
 .mc-self-recal-proposal-summary {

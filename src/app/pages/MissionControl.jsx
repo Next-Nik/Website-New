@@ -342,7 +342,7 @@ function ResourcesNextStepsInput({ onSubmit }) {
   }
   return (
     <div>
-      <div style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A', marginBottom: '10px' }}>NEXT STEPS</div>
+      <div style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '11px', letterSpacing: '0.2em', color: '#26302A', marginBottom: '10px' }}>NEXT STEPS</div>
       <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
         <textarea
           value={val}
@@ -351,8 +351,8 @@ function ResourcesNextStepsInput({ onSubmit }) {
           rows={2}
           placeholder="What's on your mind right now…"
           style={{
-            flex: 1, resize: 'none', border: '1px solid rgba(168,114,26,0.28)', borderRadius: '3px',
-            padding: '10px 12px', fontFamily: "'Lora', Georgia, serif", fontSize: '14px',
+            flex: 1, resize: 'none', border: '1px solid rgba(110,127,92,0.28)', borderRadius: '3px',
+            padding: '10px 12px', fontFamily: "'Newsreader', Georgia, serif", fontSize: '14px',
             lineHeight: 1.55, color: '#0F1523', background: '#FAFAF7', outline: 'none',
           }}
         />
@@ -361,14 +361,14 @@ function ResourcesNextStepsInput({ onSubmit }) {
           onClick={() => { if (val.trim()) onSubmit(val.trim()) }}
           disabled={!val.trim()}
           style={{
-            background: val.trim() ? '#C8922A' : 'rgba(15,21,35,0.55)', color: val.trim() ? '#FFFFFF' : 'rgba(15,21,35,0.55)',
+            background: val.trim() ? '#6E7F5C' : 'rgba(15,21,35,0.55)', color: val.trim() ? '#FFFFFF' : 'rgba(15,21,35,0.55)',
             border: 'none', borderRadius: '3px', padding: '10px 16px', cursor: val.trim() ? 'pointer' : 'not-allowed',
-            fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', letterSpacing: '0.16em', textTransform: 'uppercase',
+            fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '10px', letterSpacing: '0.16em', textTransform: 'uppercase',
             transition: 'background 0.15s', flexShrink: 0,
           }}
         >→</button>
       </div>
-      <div style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '6px', fontStyle: 'italic' }}>
+      <div style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '13px', color: 'rgba(15,21,35,0.55)', marginTop: '6px', fontStyle: 'italic' }}>
         Press enter or → to begin
       </div>
     </div>
@@ -1114,7 +1114,7 @@ export default function MissionControl() {
             {/* Civ breadcrumb — appears only on planet side. Sits above
                 the wheel; current segment in gold, prior segments are
                 tappable to jump back up the tree. Lifted from the
-                old DomainPanel breadcrumb (Cormorant SC, 17px,
+                old DomainPanel breadcrumb (IBM Plex Mono, 17px,
                 uppercase, gold separators). */}
             {isCiv && (
               <nav className="mc-civ-crumbs" aria-label="Civilisational breadcrumb">
@@ -1308,13 +1308,13 @@ export default function MissionControl() {
       >
         <FocusPanelContent />
         <div style={{
-          borderTop: '1px solid rgba(200,146,42,0.18)',
+          borderTop: '1px solid rgba(110,127,92,0.18)',
           marginTop: '28px',
           paddingTop: '20px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <span style={{ color: '#A8721A', fontSize: '14px' }}>✦</span>
-            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '11px', letterSpacing: '0.2em', color: '#A8721A' }}>WHAT'S BEEN PULLING AT YOU</span>
+            <span style={{ color: '#26302A', fontSize: '14px' }}>✦</span>
+            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '11px', letterSpacing: '0.2em', color: '#26302A' }}>WHAT'S BEEN PULLING AT YOU</span>
           </div>
           <MyInterestsPanel userId={data.user?.id} />
         </div>
@@ -1377,12 +1377,12 @@ export default function MissionControl() {
         </div>
 
         {/* Feed — empty for now, fills as content is surfaced */}
-        <div style={{ borderTop: '1px solid rgba(200,146,42,0.15)', paddingTop: '20px' }}>
+        <div style={{ borderTop: '1px solid rgba(110,127,92,0.15)', paddingTop: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-            <span style={{ color: '#A8721A', fontSize: '14px' }}>✦</span>
-            <span style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: '10px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.55)' }}>YOUR FEED</span>
+            <span style={{ color: '#26302A', fontSize: '14px' }}>✦</span>
+            <span style={{ fontFamily: "'IBM Plex Mono', Georgia, serif", fontSize: '10px', letterSpacing: '0.2em', color: 'rgba(15,21,35,0.55)' }}>YOUR FEED</span>
           </div>
-          <p style={{ fontFamily: "'Lora', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', margin: 0, lineHeight: 1.6 }}>
+          <p style={{ fontFamily: "'Newsreader', Georgia, serif", fontSize: '14px', color: 'rgba(15,21,35,0.55)', fontStyle: 'italic', margin: 0, lineHeight: 1.6 }}>
             Articles, conversations, practitioners, and exercises — surfaced as your work moves.
           </p>
         </div>
@@ -1549,11 +1549,11 @@ const STAGE_CSS = `
 }
 
 /* Civ breadcrumb — sits above the wheel on planet side. Pattern
-   lifted from the legacy DomainPanel: Cormorant SC, uppercase,
+   lifted from the legacy DomainPanel: IBM Plex Mono, uppercase,
    gold separators, current segment in gold. Prior segments are
    tappable buttons that pop levelPath back to that depth. */
 .mc-civ-crumbs {
-  font-family: 'Cormorant SC', Georgia, serif;
+  font-family: 'IBM Plex Mono', Georgia, serif;
   font-size: 17px;
   font-weight: 400;
   letter-spacing: 0.12em;
@@ -1640,14 +1640,14 @@ const STAGE_CSS = `
   text-align: left;
 }
 .mc-scope-placeholder-eyebrow {
-  font-family: 'Cormorant SC', Georgia, serif;
+  font-family: 'IBM Plex Mono', Georgia, serif;
   font-size: 11px;
   letter-spacing: 0.22em;
-  color: #A8721A;
+  color: #26302A;
   margin: 0 0 10px;
 }
 .mc-scope-placeholder-title {
-  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-family: 'Fraunces', Georgia, serif;
   font-size: 32px;
   font-weight: 500;
   color: #0F1523;
@@ -1657,11 +1657,11 @@ const STAGE_CSS = `
 .mc-scope-placeholder-rule {
   width: 40px;
   height: 1px;
-  background: #A8721A;
+  background: #6E7F5C;
   margin: 14px 0 18px;
 }
 .mc-scope-placeholder-body {
-  font-family: 'Lora', Georgia, serif;
+  font-family: 'Newsreader', Georgia, serif;
   font-size: 15.5px;
   line-height: 1.65;
   color: #555;

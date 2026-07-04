@@ -55,7 +55,7 @@ export default function GlanceWheel({ dimensions, horizons = {}, current = {}, s
       const r = ratio * maxR
       poly.push(`${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`)
       // Domain colour replaces tier colour.
-      colors.push(dim ? selfColor(dim.key).base : 'rgba(200,146,42,0.5)')
+      colors.push(dim ? selfColor(dim.key).base : 'rgba(110,127,92,0.5)')
     }
     return { ringPts: ring.join(' '), polyPts: poly.join(' '), vertColors: colors, hasData: any }
   }, [dimensions, horizons, current, cx, cy, maxR])
@@ -66,7 +66,7 @@ export default function GlanceWheel({ dimensions, horizons = {}, current = {}, s
       <polygon
         points={ringPts}
         fill="none"
-        stroke="rgba(200,146,42,0.32)"
+        stroke="rgba(110,127,92,0.32)"
         strokeWidth="1"
         strokeDasharray="2 3"
       />
@@ -79,7 +79,7 @@ export default function GlanceWheel({ dimensions, horizons = {}, current = {}, s
             x1={cx} y1={cy}
             x2={cx + maxR * Math.cos(a)}
             y2={cy + maxR * Math.sin(a)}
-            stroke="rgba(200,146,42,0.32)"
+            stroke="rgba(110,127,92,0.32)"
             strokeWidth="1"
           />
         )
@@ -88,7 +88,7 @@ export default function GlanceWheel({ dimensions, horizons = {}, current = {}, s
         <>
           <polygon
             points={polyPts}
-            fill="rgba(200,146,42,0.14)"
+            fill="rgba(110,127,92,0.14)"
             stroke={GOLD}
             strokeWidth="1.5"
             strokeLinejoin="round"

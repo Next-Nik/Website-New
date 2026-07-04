@@ -295,7 +295,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
 
       {/* Horizon Self */}
       <div style={{
-        background: 'rgba(200, 146, 42, 0.04)',
+        background: 'rgba(110,127,92, 0.04)',
         border: `1px solid ${GOLD_RULE}`,
         borderRadius: 14,
         padding: '14px 16px',
@@ -441,7 +441,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
           surface region-appropriate crisis-band resources; never shown
           on the public profile, never used elsewhere. */}
       <div style={{
-        background: 'rgba(200, 146, 42, 0.04)',
+        background: 'rgba(110,127,92, 0.04)',
         border: `1px solid ${GOLD_RULE}`,
         borderRadius: 14,
         padding: '14px 16px',
@@ -764,7 +764,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
             display: 'block',
             width: '100%',
             padding: '11px 16px',
-            background: 'rgba(200, 146, 42, 0.06)',
+            background: 'rgba(110,127,92, 0.06)',
             border: `1px solid ${GOLD}`,
             borderRadius: 14,
             cursor: 'pointer',
@@ -789,7 +789,7 @@ export default function ProfileMissionPanel({ user, onNavigate }) {
             display: 'block',
             width: '100%',
             padding: '11px 16px',
-            background: 'rgba(200, 146, 42, 0.06)',
+            background: 'rgba(110,127,92, 0.06)',
             border: `1px solid ${GOLD}`,
             borderRadius: 14,
             cursor: 'pointer',

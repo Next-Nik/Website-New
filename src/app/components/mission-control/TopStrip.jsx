@@ -52,7 +52,7 @@ const TOP_CSS = `
   align-items: center;
 }
 [data-stage="dark"] .mc-top-strip {
-  border-bottom: 1px solid rgba(200, 146, 42, 0.30);
+  border-bottom: 1px solid rgba(88,160,138, 0.30);
 }
 
 .mc-brand {
@@ -85,7 +85,7 @@ const TOP_CSS = `
   background: ${GOLD_RULE};
 }
 [data-stage="dark"] .mc-identity-divider {
-  background: rgba(200, 146, 42, 0.30);
+  background: rgba(88,160,138, 0.30);
 }
 
 .mc-identity-meta {

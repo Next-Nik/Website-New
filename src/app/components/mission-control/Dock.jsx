@@ -27,11 +27,11 @@ const DOCK_CSS = `
   display: flex;
   justify-content: center;
   gap: 0;
-  background: rgba(200, 146, 42, 0.02);
+  background: rgba(88,160,138, 0.02);
 }
 [data-stage="dark"] .mc-utility-rail {
-  border-top: 1px solid rgba(200, 146, 42, 0.20);
-  background: rgba(200, 146, 42, 0.05);
+  border-top: 1px solid rgba(88,160,138, 0.20);
+  background: rgba(88,160,138, 0.05);
 }
 
 @media (max-width: 880px) {

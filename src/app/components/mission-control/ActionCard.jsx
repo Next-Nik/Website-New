@@ -81,15 +81,15 @@ const ACTION_CSS = `
 }
 .mc-action.mc-dark {
   background: ${BG_INK_SOFT};
-  border: 1px solid rgba(200, 146, 42, 0.25);
+  border: 1px solid rgba(88,160,138, 0.25);
 }
 .mc-action.mc-primary {
   border-color: ${GOLD};
   border-left: 4px solid ${GOLD};
-  box-shadow: 0 4px 24px rgba(200, 146, 42, 0.12);
+  box-shadow: 0 4px 24px rgba(88,160,138, 0.12);
 }
 .mc-action.mc-primary.mc-dark {
-  box-shadow: 0 4px 28px rgba(200, 146, 42, 0.18);
+  box-shadow: 0 4px 28px rgba(88,160,138, 0.18);
 }
 .mc-action.mc-empty {
   background: ${BG_CARD_EMPTY};
@@ -99,7 +99,7 @@ const ACTION_CSS = `
 }
 .mc-action.mc-empty.mc-dark {
   background: rgba(26, 32, 48, 0.5);
-  border: 1px dashed rgba(200, 146, 42, 0.30);
+  border: 1px dashed rgba(88,160,138, 0.30);
 }
 
 .mc-action-eyebrow {

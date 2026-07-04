@@ -84,14 +84,14 @@ const WHEEL_STAGE_CSS = `
 }
 [data-stage="light"] .mc-wheel-stage::before {
   background: radial-gradient(ellipse at center,
-    rgba(200,146,42,0.07) 0%,
+    rgba(88,160,138,0.07) 0%,
     rgba(250,250,247,0.88) 40%,
     transparent 72%
   );
 }
 [data-stage="dark"] .mc-wheel-stage::before {
   background: radial-gradient(ellipse at center,
-    rgba(200,146,42,0.14) 0%,
+    rgba(88,160,138,0.14) 0%,
     rgba(20,26,40,0.92) 40%,
     transparent 72%
   );

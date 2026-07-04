@@ -1421,14 +1421,14 @@ const PANEL_CSS = `
 .moc-mark-frame {
   width: 96px; height: 96px;
   border-radius: 4px; overflow: hidden;
-  border: 1.5px solid rgba(200,146,42,0.70);
-  outline: 1px solid rgba(200,146,42,0.35);
+  border: 1.5px solid rgba(110,127,92,0.70);
+  outline: 1px solid rgba(110,127,92,0.35);
   outline-offset: 5px;
   background: ${BG_CARD};
   display: flex; align-items: center; justify-content: center;
   padding: 14px; box-sizing: border-box;
 }
-.moc-mark-frame.is-portrait { padding: 0; background: rgba(200,146,42,0.05); }
+.moc-mark-frame.is-portrait { padding: 0; background: rgba(110,127,92,0.05); }
 .moc-mark-img { width: 100%; height: 100%; display: block; }
 .moc-mark-empty {
   cursor: pointer; padding: 8px;
@@ -1443,7 +1443,7 @@ const PANEL_CSS = `
 .moc-identity-body { flex: 1; min-width: 200px; }
 .moc-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
 .moc-meta-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.moc-meta-sep { color: rgba(200,146,42,0.45); font-size: 13px; }
+.moc-meta-sep { color: rgba(110,127,92,0.45); font-size: 13px; }
 .moc-meta-pill {
   font-family: ${FONT_SC}; font-size: 13px; font-weight: 600;
   letter-spacing: 0.16em; text-transform: uppercase; color: ${TEXT_META};
@@ -1559,7 +1559,7 @@ const PANEL_CSS = `
 .moc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .moc-chip {
   font-family: ${FONT_SC}; font-size: 12px; letter-spacing: 0.1em;
-  color: ${GOLD_DK}; background: rgba(200,146,42,0.06);
+  color: ${GOLD_DK}; background: rgba(110,127,92,0.06);
   border: 1px solid ${GOLD_RULE}; border-radius: 40px;
   padding: 5px 13px; text-decoration: none;
 }
@@ -1601,7 +1601,7 @@ const PANEL_CSS = `
 }
 @media (max-width: 680px) { .mo-spine { position: static; } }
 .mo-spine-eyebrow {
-  font-family: 'Cormorant SC', Georgia, serif;
+  font-family: 'IBM Plex Mono', Georgia, serif;
   font-size: 14px;
   letter-spacing: 0.12em;
   text-transform: uppercase;

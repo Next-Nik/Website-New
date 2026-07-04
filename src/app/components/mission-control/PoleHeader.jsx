@@ -172,7 +172,7 @@ const POLES_CSS = `
   border-bottom: 1px solid ${GOLD_RULE};
 }
 [data-stage="dark"] .mc-poles {
-  border-bottom: 1px solid rgba(200, 146, 42, 0.20);
+  border-bottom: 1px solid rgba(88,160,138, 0.20);
 }
 
 .mc-poles-inner {
@@ -232,7 +232,7 @@ const POLES_CSS = `
   background: ${GOLD_RULE};
 }
 [data-stage="dark"] .mc-pole-divider {
-  background: rgba(200, 146, 42, 0.30);
+  background: rgba(88,160,138, 0.30);
 }
 
 .mc-pole-arrow {
@@ -253,7 +253,7 @@ const POLES_CSS = `
   padding: 0;
 }
 .mc-pole-arrow:hover:not(:disabled) {
-  background: rgba(200, 146, 42, 0.06);
+  background: rgba(88,160,138, 0.06);
   border-color: ${GOLD};
   opacity: 1;
 }
@@ -262,11 +262,11 @@ const POLES_CSS = `
   opacity: 0.18;
 }
 [data-stage="dark"] .mc-pole-arrow {
-  border-color: rgba(200, 146, 42, 0.30);
+  border-color: rgba(88,160,138, 0.30);
   color: #D4A744;
 }
 [data-stage="dark"] .mc-pole-arrow:hover:not(:disabled) {
-  background: rgba(200, 146, 42, 0.10);
+  background: rgba(88,160,138, 0.10);
   border-color: ${GOLD};
 }
 

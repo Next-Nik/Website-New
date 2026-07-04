@@ -118,7 +118,7 @@ const PANEL_CSS = `
 }
 .mc-panel.mc-panel-dark {
   background: ${BG_INK};
-  border: 1px solid rgba(200, 146, 42, 0.50);
+  border: 1px solid rgba(88,160,138, 0.50);
   color: ${TEXT_WHITE};
 }
 
@@ -175,7 +175,7 @@ const PANEL_CSS = `
   align-items: center;
 }
 .mc-panel.mc-panel-dark .mc-panel-actions {
-  border-top: 1px solid rgba(200, 146, 42, 0.20);
+  border-top: 1px solid rgba(88,160,138, 0.20);
 }
 
 .mc-panel-btn-primary {
@@ -214,7 +214,7 @@ const PANEL_CSS = `
   margin-top: 4px;
 }
 .mc-panel.mc-panel-dark .mc-panel-section {
-  border-top: 1px solid rgba(200, 146, 42, 0.20);
+  border-top: 1px solid rgba(88,160,138, 0.20);
 }
 .mc-panel-section-label {
   font-family: ${FONT_SC};
@@ -235,7 +235,7 @@ const PANEL_CSS = `
 .mc-panel-build-edge {
   margin-top: 24px;
   padding: 14px 18px;
-  background: rgba(200, 146, 42, 0.06);
+  background: rgba(88,160,138, 0.06);
   border-left: 3px solid ${GOLD};
   font-family: ${FONT_BODY};
   font-size: 14px;
@@ -243,7 +243,7 @@ const PANEL_CSS = `
   font-style: italic;
 }
 .mc-panel.mc-panel-dark .mc-panel-build-edge {
-  background: rgba(200, 146, 42, 0.10);
+  background: rgba(88,160,138, 0.10);
   color: ${TEXT_WHITE_META};
 }
 `

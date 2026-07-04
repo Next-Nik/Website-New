@@ -214,7 +214,7 @@ export default function CivDomainPanel({
   function trendColor(t) {
     if (t === 'up')   return 'rgba(100,200,120,0.9)'
     if (t === 'down') return 'rgba(220,80,80,0.85)'
-    return 'rgba(200,146,42,0.6)'
+    return 'rgba(88,160,138,0.6)'
   }
 
   return (
@@ -615,7 +615,7 @@ const PANEL_CSS = `
   align-items: center;
   gap: 14px;
   padding: 8px 0 14px;
-  border-bottom: 1px solid rgba(200, 146, 42, 0.16);
+  border-bottom: 1px solid rgba(88,160,138, 0.16);
 }
 .mc-civ-stepper-mid {
   flex: 1;
@@ -627,7 +627,7 @@ const PANEL_CSS = `
 }
 .mc-civ-arrow {
   background: transparent;
-  border: 1px solid rgba(200, 146, 42, 0.30);
+  border: 1px solid rgba(88,160,138, 0.30);
   color: ${GOLD_LT};
   width: 28px;
   height: 28px;
@@ -643,7 +643,7 @@ const PANEL_CSS = `
   padding: 0;
 }
 .mc-civ-arrow:hover:not(:disabled) {
-  background: rgba(200, 146, 42, 0.10);
+  background: rgba(88,160,138, 0.10);
   border-color: ${GOLD};
   opacity: 1;
 }
@@ -719,13 +719,13 @@ const PANEL_CSS = `
   font-family: ${FONT_SC};
   font-size: 11px;
   letter-spacing: 0.12em;
-  color: rgba(200,146,42,0.5);
+  color: rgba(88,160,138,0.5);
 }
 .mc-civ-score-band {
   font-family: ${FONT_SC};
   font-size: 9px;
   letter-spacing: 0.18em;
-  color: rgba(200,146,42,0.55);
+  color: rgba(88,160,138,0.55);
   text-transform: uppercase;
   margin-left: 6px;
   align-self: center;
@@ -739,7 +739,7 @@ const PANEL_CSS = `
   font-family: ${FONT_SC};
   font-size: 8.5px;
   letter-spacing: 0.22em;
-  color: rgba(200,146,42,0.45);
+  color: rgba(88,160,138,0.45);
   display: block;
   margin-bottom: 3px;
 }
@@ -765,7 +765,7 @@ const PANEL_CSS = `
 }
 .mc-civ-why-toggle {
   background: transparent;
-  border: 1px solid rgba(200, 146, 42, 0.20);
+  border: 1px solid rgba(88,160,138, 0.20);
   border-radius: 3px;
   padding: 8px 12px;
   display: flex;
@@ -776,8 +776,8 @@ const PANEL_CSS = `
   transition: background 140ms ease, border-color 140ms ease;
 }
 .mc-civ-why-toggle:hover {
-  background: rgba(200, 146, 42, 0.05);
-  border-color: rgba(200, 146, 42, 0.35);
+  background: rgba(88,160,138, 0.05);
+  border-color: rgba(88,160,138, 0.35);
 }
 .mc-civ-why-toggle-text {
   font-family: ${FONT_SC};
@@ -797,8 +797,8 @@ const PANEL_CSS = `
 .mc-civ-why-body {
   margin-top: 10px;
   padding: 12px 14px;
-  background: rgba(200, 146, 42, 0.04);
-  border: 1px solid rgba(200, 146, 42, 0.12);
+  background: rgba(88,160,138, 0.04);
+  border: 1px solid rgba(88,160,138, 0.12);
   border-radius: 3px;
 }
 .mc-civ-why-section {
@@ -847,8 +847,8 @@ const PANEL_CSS = `
   justify-content: space-between;
   align-items: center;
   padding: 5px 10px;
-  background: rgba(200,146,42,0.05);
-  border: 1px solid rgba(200,146,42,0.12);
+  background: rgba(88,160,138,0.05);
+  border: 1px solid rgba(88,160,138,0.12);
   border-radius: 3px;
 }
 .mc-civ-indicator-name {
@@ -868,7 +868,7 @@ const PANEL_CSS = `
 .mc-civ-indicator-denom {
   font-family: ${FONT_SC};
   font-size: 9px;
-  color: rgba(200,146,42,0.45);
+  color: rgba(88,160,138,0.45);
   margin-left: 1px;
 }
 .mc-civ-indicator-value {
@@ -964,7 +964,7 @@ const PANEL_CSS = `
   display: flex;
   gap: 0;
   margin: 10px 0 16px;
-  border-bottom: 1px solid rgba(200,146,42,0.25);
+  border-bottom: 1px solid rgba(88,160,138,0.25);
 }
 .mc-civ-tab {
   background: transparent;
@@ -1062,8 +1062,8 @@ const PANEL_CSS = `
   gap: 12px;
   align-items: flex-start;
   padding: 12px 14px;
-  background: rgba(200,146,42,0.07);
-  border: 1px solid rgba(200,146,42,0.18);
+  background: rgba(88,160,138,0.07);
+  border: 1px solid rgba(88,160,138,0.18);
   border-radius: 14px;
 }
 .mc-civ-nextstep-type {
@@ -1146,7 +1146,7 @@ const PANEL_CSS = `
 }
 .mc-civ-chip {
   background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(200, 146, 42, 0.30);
+  border: 1px solid rgba(88,160,138, 0.30);
   color: ${TEXT_WHITE};
   padding: 8px 14px;
   font-family: ${FONT_BODY};
@@ -1156,7 +1156,7 @@ const PANEL_CSS = `
   transition: all 0.18s ease;
 }
 .mc-civ-chip:hover:not(:disabled) {
-  background: rgba(200, 146, 42, 0.10);
+  background: rgba(88,160,138, 0.10);
   border-color: ${GOLD};
 }
 .mc-civ-chip:disabled { cursor: default; opacity: 0.4; }
@@ -1190,7 +1190,7 @@ const PANEL_CSS = `
   color: ${GOLD_LT};
 }
 .mc-civ-btn-ghost:hover:not(:disabled) {
-  background: rgba(200, 146, 42, 0.10);
+  background: rgba(88,160,138, 0.10);
 }
 .mc-civ-btn:disabled { cursor: default; opacity: 0.4; }
 

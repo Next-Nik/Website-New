@@ -50,7 +50,7 @@ const DOCK_TILE_CSS = `
   user-select: none;
 }
 [data-stage="dark"] .mc-utility {
-  border-right: 1px solid rgba(200, 146, 42, 0.20);
+  border-right: 1px solid rgba(88,160,138, 0.20);
 }
 .mc-utility:last-child { border-right: none; }
 .mc-utility:hover { background: ${GOLD_HOVER}; }

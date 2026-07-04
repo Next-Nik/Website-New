@@ -58,7 +58,7 @@ function ScoreChip({ label, value, dim, subtitle }) {
         padding: '2px 10px',
         borderRadius: 14,
         border: `1px solid ${GOLD_RULE}`,
-        background: dim ? 'transparent' : 'rgba(200,146,42,0.06)',
+        background: dim ? 'transparent' : 'rgba(110,127,92,0.06)',
         fontFamily: FONT_BODY,
         fontSize: 12,
         lineHeight: 1.2,
@@ -109,7 +109,7 @@ function StageBadge({ stage }) {
     }}>
       <span style={{
         fontSize: 12,
-        color: isComplete ? GOLD : 'rgba(200,146,42,0.45)',
+        color: isComplete ? GOLD : 'rgba(110,127,92,0.45)',
       }}>{STAGE_GLYPH[stage]}</span>
       {STAGE_LABELS[stage]}
     </span>
@@ -473,7 +473,7 @@ export default function MapMissionPanel({ user, onNavigate }) {
         <div style={{
           marginTop: 20,
           padding: '14px 18px',
-          background: 'rgba(200,146,42,0.06)',
+          background: 'rgba(110,127,92,0.06)',
           border: `1px solid ${GOLD}`,
           borderRadius: 14,
         }}>

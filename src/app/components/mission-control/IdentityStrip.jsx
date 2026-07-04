@@ -215,7 +215,7 @@ const STRIP_CSS = `
   border-bottom: 1px solid ${GOLD_RULE};
 }
 [data-stage="dark"] .mc-identity-strip {
-  border-bottom: 1px solid rgba(200, 146, 42, 0.30);
+  border-bottom: 1px solid rgba(88,160,138, 0.30);
 }
 
 /* ─── Brand bar ─────────────────────────
@@ -267,7 +267,7 @@ const STRIP_CSS = `
   left: 0;
   min-width: 220px;
   background: ${BG_PARCHMENT};
-  border: 1px solid rgba(200, 146, 42, 0.22);
+  border: 1px solid rgba(88,160,138, 0.22);
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(15, 21, 35, 0.08);
   padding: 4px 0 6px;
@@ -280,7 +280,7 @@ const STRIP_CSS = `
 }
 [data-stage="dark"] .mc-brand-menu {
   background: ${BG_INK};
-  border-color: rgba(200, 146, 42, 0.30);
+  border-color: rgba(88,160,138, 0.30);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
@@ -296,12 +296,12 @@ const STRIP_CSS = `
   transition: background 0.12s ease, color 0.12s ease;
 }
 .mc-brand-menu-item:hover {
-  background: rgba(200, 146, 42, 0.08);
+  background: rgba(88,160,138, 0.08);
   color: ${GOLD_DK};
 }
 [data-stage="dark"] .mc-brand-menu-item { color: ${TEXT_WHITE}; }
 [data-stage="dark"] .mc-brand-menu-item:hover {
-  background: rgba(200, 146, 42, 0.12);
+  background: rgba(88,160,138, 0.12);
   color: ${GOLD};
 }
 
@@ -324,11 +324,11 @@ const STRIP_CSS = `
 
 .mc-brand-menu-divider {
   height: 1px;
-  background: rgba(200, 146, 42, 0.18);
+  background: rgba(88,160,138, 0.18);
   margin: 6px 14px;
 }
 [data-stage="dark"] .mc-brand-menu-divider {
-  background: rgba(200, 146, 42, 0.28);
+  background: rgba(88,160,138, 0.28);
 }
 
 @keyframes mcBrandMenuIn {

@@ -44,10 +44,10 @@ import ContributorSignalsList from '../ContributorSignalsList'
 import SuggestSourceCTA       from '../SuggestSourceCTA'
 import IndicatorReliabilityPanel from './IndicatorReliabilityPanel'
 import {
-  GOLD, GOLD_DK, GOLD_LT, GOLD_RULE,
   TEXT_INK, TEXT_WHITE, TEXT_WHITE_META, TEXT_WHITE_FAINT,
   FONT_DISPLAY, FONT_SC, FONT_BODY,
 } from './tokens'
+import { at } from '../../../lib/designTokens'
 
 // Display order for the seven civ domains in the panel — same as the
 // civ wheel canonical spoke order so the panel reads as the wheel
@@ -76,9 +76,9 @@ const DOMAIN_TO_WHEEL = {
 // Score colour band — same palette as Design System v3.
 function scoreColour(score) {
   if (score == null) return TEXT_WHITE_FAINT
-  if (score >= 7)    return '#5DBC9D'  // progress (lighter for dark bg)
-  if (score >= 4)    return GOLD_LT    // amber middle
-  if (score >= 2)    return GOLD       // friction
+  if (score >= 7)    return at.verdigris             // progress
+  if (score >= 4)    return at.brass                 // amber middle
+  if (score >= 2)    return 'rgba(217,178,74,0.65)'  // friction (muted brass)
   return '#D86464'                      // crisis (lighter red for dark bg)
 }
 
@@ -141,13 +141,13 @@ export default function WorldViewMissionPanel() {
         justifyContent: 'space-between',
         marginBottom: 14,
         paddingBottom: 12,
-        borderBottom: `1px solid ${GOLD_RULE}`,
+        borderBottom: `1px solid ${at.verdigrisEdge}`,
       }}>
         <div style={{
           fontFamily: FONT_SC,
           fontSize: 10.5,
           letterSpacing: '0.18em',
-          color: GOLD_LT,
+          color: at.brass,
         }}>
           STATE OF THE WORLD
         </div>
@@ -205,7 +205,7 @@ export default function WorldViewMissionPanel() {
       <div style={{
         marginTop: 22,
         paddingTop: 14,
-        borderTop: `1px solid ${GOLD_RULE}`,
+        borderTop: `1px solid ${at.verdigrisEdge}`,
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -229,7 +229,7 @@ function DomainRow({ domain, score, detail, isExpanded, onToggle }) {
   return (
     <div style={{
       background: 'rgba(255, 255, 255, 0.025)',
-      border: `1px solid ${isExpanded ? GOLD : 'rgba(200, 146, 42, 0.22)'}`,
+      border: `1px solid ${isExpanded ? at.verdigris : at.verdigrisEdge}`,
       borderRadius: 14,
       overflow: 'hidden',
       transition: 'border-color 0.2s ease',
@@ -289,7 +289,7 @@ function DomainRow({ domain, score, detail, isExpanded, onToggle }) {
         <span style={{
           fontFamily: FONT_DISPLAY,
           fontSize: 22,
-          color: GOLD_LT,
+          color: at.brass,
           width: 18,
           textAlign: 'center',
           flexShrink: 0,
@@ -300,7 +300,7 @@ function DomainRow({ domain, score, detail, isExpanded, onToggle }) {
 
       {isExpanded && (
         <div style={{
-          borderTop: `1px solid ${GOLD_RULE}`,
+          borderTop: `1px solid ${at.verdigrisEdge}`,
           padding: '16px',
           background: 'rgba(255, 255, 255, 0.02)',
         }}>
@@ -338,7 +338,7 @@ function DomainExpanded({ domain, score, detail }) {
           fontFamily: FONT_SC,
           fontSize: 10,
           letterSpacing: '0.18em',
-          color: GOLD_LT,
+          color: at.brass,
           marginBottom: 10,
         }}>
           HEADLINE INDICATORS
@@ -371,7 +371,7 @@ function DomainExpanded({ domain, score, detail }) {
       {showDomainLevelCTA && (
         <div style={{
           background: 'rgba(255, 255, 255, 0.04)',
-          border: `1px solid ${GOLD_RULE}`,
+          border: `1px solid ${at.verdigrisEdge}`,
           borderRadius: 12,
           padding: '14px 16px',
         }}>

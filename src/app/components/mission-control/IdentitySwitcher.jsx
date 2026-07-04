@@ -157,7 +157,7 @@ const SWITCH_CSS = `
 .mc-acting-btn:hover,
 .mc-acting-btn--open {
   color: ${GOLD_DK};
-  background: rgba(200, 146, 42, 0.08);
+  background: rgba(88,160,138, 0.08);
 }
 [data-stage="dark"] .mc-acting-btn { color: ${TEXT_WHITE_META}; }
 [data-stage="dark"] .mc-acting-btn:hover,
@@ -187,7 +187,7 @@ const SWITCH_CSS = `
   left: 0;
   min-width: 240px;
   background: ${BG_PARCHMENT};
-  border: 1px solid rgba(200, 146, 42, 0.22);
+  border: 1px solid rgba(88,160,138, 0.22);
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(15, 21, 35, 0.08);
   padding: 4px 0 6px;
@@ -196,7 +196,7 @@ const SWITCH_CSS = `
 }
 [data-stage="dark"] .mc-acting-menu {
   background: ${BG_INK};
-  border-color: rgba(200, 146, 42, 0.30);
+  border-color: rgba(88,160,138, 0.30);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
@@ -224,8 +224,8 @@ const SWITCH_CSS = `
   position: relative;
   transition: background 0.12s ease;
 }
-.mc-acting-item:hover { background: rgba(200, 146, 42, 0.08); }
-[data-stage="dark"] .mc-acting-item:hover { background: rgba(200, 146, 42, 0.12); }
+.mc-acting-item:hover { background: rgba(88,160,138, 0.08); }
+[data-stage="dark"] .mc-acting-item:hover { background: rgba(88,160,138, 0.12); }
 
 .mc-acting-item-label {
   font-family: ${FONT_SC};

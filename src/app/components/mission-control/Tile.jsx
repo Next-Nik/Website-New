@@ -102,7 +102,7 @@ const TILE_CSS = `
   border-color: ${GOLD};
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.15),
-    0 6px 16px rgba(200, 146, 42, 0.20),
+    0 6px 16px rgba(88,160,138, 0.20),
     0 2px 4px rgba(15, 21, 35, 0.30);
 }
 [data-stage="dark"] .mc-rail-icon:hover {
@@ -123,7 +123,7 @@ const TILE_CSS = `
     inset 0 1px 0 rgba(255, 255, 255, 0.10),
     0 6px 16px rgba(15, 21, 35, 0.45),
     0 2px 4px rgba(15, 21, 35, 0.30),
-    0 0 0 1px rgba(200, 146, 42, 0.20);
+    0 0 0 1px rgba(88,160,138, 0.20);
 }
 [data-stage="dark"] .mc-rail-icon.mc-rail-active {
   border: 2px solid ${GOLD};
@@ -131,7 +131,7 @@ const TILE_CSS = `
     inset 0 1px 0 rgba(255, 255, 255, 0.90),
     0 6px 20px rgba(0, 0, 0, 0.55),
     0 2px 6px rgba(0, 0, 0, 0.35),
-    0 0 0 1px rgba(200, 146, 42, 0.25);
+    0 0 0 1px rgba(88,160,138, 0.25);
 }
 
 .mc-rail-glyph {
