@@ -1799,6 +1799,13 @@ function AddTab({ toast }) {
       name:            proposal.name.trim(),
       type:            proposal.type || 'organisation',
       track:           proposal.track || null,
+      // The full extracted profile — image, tagline, story — not just the
+      // classification. Dropping these was why records placed from this tab
+      // arrived on the map thinner than their proposal cards.
+      tagline:         proposal.tagline?.trim()   || null,
+      image_url:       proposal.image_url?.trim() || null,
+      image_provenance: proposal.image_url?.trim() ? 'hotlink' : null,
+      story:           proposal.story?.trim()     || null,
       // Legacy backcompat
       domain_id:       domains[0] || null,
       // Four-dimensional placement
@@ -1845,6 +1852,59 @@ function AddTab({ toast }) {
       toast(`Error saving ${proposal.label}: ${error.message}`)
       return null
     }
+
+    // ── Auxiliary profile data — links, press, image rehost ────────────────
+    // Best-effort, mirroring the public /add flow (api/add-actor.js saveAux).
+    // Founder writes to actor_links / actor_press on unclaimed actors pass
+    // RLS via migration 148. Failures warn, never block the placement.
+    const auxLinks = Array.isArray(proposal.links) ? proposal.links : []
+    if (auxLinks.length) {
+      const rows = auxLinks
+        .filter(l => l?.url)
+        .map((l, idx) => ({
+          actor_id:   inserted.id,
+          link_type:  l.link_type || 'website',
+          url:        l.url,
+          label:      l.label || null,
+          sort_order: idx,
+        }))
+      if (rows.length) {
+        const { error: linkErr } = await supabase.from('actor_links').insert(rows)
+        if (linkErr) console.warn(`links not saved for ${proposal.name}:`, linkErr.message)
+      }
+    }
+    const auxPress = Array.isArray(proposal.press) ? proposal.press : []
+    if (auxPress.length) {
+      const rows = auxPress
+        .filter(p => p?.publication)
+        .map((p, idx) => ({
+          actor_id:     inserted.id,
+          publication:  p.publication,
+          url:          p.url          || null,
+          title:        p.title        || null,
+          published_at: p.published_at || null,
+          sort_order:   idx,
+        }))
+      if (rows.length) {
+        const { error: pressErr } = await supabase.from('actor_press').insert(rows)
+        if (pressErr) console.warn(`press not saved for ${proposal.name}:`, pressErr.message)
+      }
+    }
+
+    // Re-host the hotlinked image into Supabase Storage. Fire-and-forget —
+    // a failure leaves the hotlink in place and the Floor tab can retry.
+    const img = proposal.image_url?.trim()
+    if (img) {
+      try {
+        const token = (await supabase.auth.getSession()).data.session?.access_token || null
+        fetch('/api/actor-image-upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+          body: JSON.stringify({ actorId: inserted.id, imageUrl: img }),
+        }).catch(() => {})
+      } catch {}
+    }
+
     return { id: inserted.id, name: proposal.name, label: proposal.label }
   }
 
