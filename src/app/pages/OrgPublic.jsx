@@ -161,8 +161,11 @@ const MODE_PROFILE_ORDER = {
   platform:   ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'credentials', 'testimonials', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
   collective: ['identity', 'mission', 'description', 'story', 'placement', 'working_on', 'needs', 'offers', 'testimonials', 'credentials', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
   mixed:      ['identity', 'mission', 'description', 'story', 'placement', 'offers', 'testimonials', 'credentials', 'working_on', 'needs', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
-  // default (NULL mode) — close to the original OrgPublic order
-  default:    ['identity', 'mission', 'description', 'working_on', 'placement', 'offers', 'needs', 'story', 'testimonials', 'credentials', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
+  // default (NULL mode) — story sits directly after description, matching the
+  // named modes. Every unclaimed seeded actor lands here, and the old order
+  // buried story below placement/offers/needs — so a freshly seeded profile
+  // with a good story read as nearly empty at the top of the page.
+  default:    ['identity', 'mission', 'description', 'story', 'working_on', 'placement', 'offers', 'needs', 'testimonials', 'credentials', 'events', 'listen', 'contact', 'links', 'press', 'calls', 'relationships', 'provenance'],
 }
 
 function getSectionOrder(actorMode) {
