@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { at } from '../../lib/designTokens'
 
 const VIDEO_URL = '/earth-rotation.mp4'
 
@@ -106,9 +107,9 @@ export function EarthIntro({ onEntered }) {
         {labelAlpha > 0 && (
           <span style={{
             position: 'relative', zIndex: 2,
-            fontFamily: "'Lora', Georgia, serif",
+            fontFamily: "'Newsreader', Georgia, serif",
             fontSize: `${Math.max(8, globeSize * 0.17)}px`,
-            fontWeight: 400, color: '#A8721A',
+            fontWeight: 400, color: at.brass,
             textAlign: 'center', lineHeight: 1.3,
             letterSpacing: '0.04em', opacity: labelAlpha,
             userSelect: 'none',
@@ -128,7 +129,7 @@ export function EarthIntro({ onEntered }) {
         pointerEvents: 'none',
       }}>
         <p style={{
-          fontFamily: "'Lora', Georgia, serif",
+          fontFamily: "'Newsreader', Georgia, serif",
           fontSize: 'clamp(14px,2.8vw,19px)', fontWeight: 400,
           color: 'rgba(255,255,255,1)',
           lineHeight: 1.8, letterSpacing: '0.04em',
@@ -139,16 +140,16 @@ export function EarthIntro({ onEntered }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <div style={{
             width: '36px', height: '36px', borderRadius: '50%',
-            border: '1.5px solid rgba(200,146,42,0.60)',
+            border: `1.5px solid ${at.verdigrisEdge}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             animation: 'earthPulse 2.2s ease-in-out infinite',
             flexShrink: 0,
           }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#C8922A' }}/>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: at.verdigris }}/>
           </div>
           <span style={{
-            fontFamily: "'Cormorant SC', Georgia, serif",
-            fontSize: '13px', letterSpacing: '0.22em', color: 'rgba(200,146,42,0.60)',
+            fontFamily: "'IBM Plex Mono', Georgia, serif",
+            fontSize: '13px', letterSpacing: '0.22em', color: at.verdigris,
           }}>Enter</span>
         </div>
       </div>

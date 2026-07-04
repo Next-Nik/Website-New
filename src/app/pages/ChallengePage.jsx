@@ -4,7 +4,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
 import { useAuth } from '../../hooks/useAuth'
 import { supabase } from '../../hooks/useSupabase'
-import { tokens, serif, body, sc } from '../../lib/designTokens'
+import { tokens, serif, body, sc, at } from '../../lib/designTokens'
 import { DOMAIN_COLORS, SELF_DOMAIN_COLORS } from '../constants/domains'
 import { INTENSITY_BY_LEVEL } from '../../constants/challengeIntensity'
 import IntensityInfo from '../components/challenge/IntensityInfo'
@@ -18,10 +18,10 @@ import PublicBeacon from '../components/challenge/PublicBeacon'
 
 // ─── Design shortcuts ─────────────────────────────────────────────────────────
 
-const gold   = { color: tokens.gold }
-const muted  = { color: 'rgba(15,21,35,0.78)' }
-const hair   = '1px solid rgba(200,146,42,0.18)'
-const GOLD_C = tokens.goldChrome
+const gold   = { color: at.brass }
+const muted  = { color: at.meta }
+const hair   = `1px solid ${at.verdigrisEdge}`
+const GOLD_C = at.verdigris
 
 // Turn a YouTube or Vimeo URL into an embeddable src. Returns null otherwise,
 // so an unrecognised or empty link simply renders nothing.
@@ -45,20 +45,20 @@ function Eyebrow({ children, style = {} }) {
 }
 
 function Rule({ style = {} }) {
-  return <div style={{ height: '1px', background: 'rgba(200,146,42,0.18)', margin: '16px 0', ...style }} />
+  return <div style={{ height: '1px', background: 'rgba(217,178,74,0.18)', margin: '16px 0', ...style }} />
 }
 
 function Btn({ onClick, disabled, children, style = {}, variant = 'solid' }) {
   const base = {
     ...sc, fontSize: '15px', letterSpacing: '0.14em', padding: '12px 28px',
     borderRadius: '40px', cursor: disabled ? 'not-allowed' : 'pointer',
-    border: '1.5px solid rgba(200,146,42,0.78)', transition: 'all 0.2s',
+    border: '1.5px solid rgba(217,178,74,0.78)', transition: 'all 0.2s',
     opacity: disabled ? 0.45 : 1,
   }
   const styles =
-      variant === 'ghost'   ? { ...base, background: 'transparent', color: tokens.gold }
-    : variant === 'primary' ? { ...base, background: tokens.goldChrome, color: '#FBF8F0', border: `1.5px solid ${tokens.gold}`, fontSize: '16px', fontWeight: 500, padding: '15px 36px', boxShadow: '0 10px 26px -14px rgba(168,114,26,0.55)' }
-    : { ...base, background: 'rgba(200,146,42,0.08)', color: tokens.gold }
+      variant === 'ghost'   ? { ...base, background: 'transparent', color: at.brass }
+    : variant === 'primary' ? { ...base, background: at.verdigris, color: at.text, border: `1.5px solid ${at.verdigris}`, fontSize: '16px', fontWeight: 500, padding: '15px 36px', boxShadow: '0 10px 26px -14px rgba(88,160,138,0.55)' }
+    : { ...base, background: 'rgba(217,178,74,0.08)', color: at.brass }
   return (
     <button type="button" onClick={onClick} disabled={disabled}
       style={{ ...styles, ...style }}
@@ -115,13 +115,13 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
   const link = { ...sc, fontSize: '13px', letterSpacing: '0.12em', cursor: 'pointer', background: 'none', border: 'none', padding: 0 }
 
   return (
-    <div style={{ border: hair, borderRadius: '12px', padding: '14px 16px', marginBottom: '24px', background: 'rgba(200,146,42,0.03)' }}>
+    <div style={{ border: hair, borderRadius: '12px', padding: '14px 16px', marginBottom: '24px', background: 'rgba(217,178,74,0.03)' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(15,21,35,0.55)', textTransform: 'uppercase' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: 'rgba(234,241,237,0.55)', textTransform: 'uppercase' }}>
           You author this
         </span>
         {closed && (
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.7)', border: '1px solid rgba(15,21,35,0.18)', borderRadius: '12px', padding: '2px 10px' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(234,241,237,0.7)', border: '1px solid rgba(234,241,237,0.18)', borderRadius: '12px', padding: '2px 10px' }}>
             Closed{hidden ? ' · hidden' : ' · listed'}
           </span>
         )}
@@ -138,7 +138,7 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
       {/* Close: listed vs hidden */}
       {!closed && mode === 'close' && (
         <div style={{ marginTop: '12px' }}>
-          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '0 0 10px' }}>
+          <p style={{ ...body, fontSize: '14px', color: 'rgba(234,241,237,0.72)', lineHeight: 1.6, margin: '0 0 10px' }}>
             Closing stops new participants. People already in it carry on. Keep it
             listed and it stays in the constellation, badged closed; hide it and it
             drops out of view. Either way you can reopen it.
@@ -146,7 +146,7 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <Btn variant="ghost" disabled={busy} onClick={() => doClose(true)} style={{ fontSize: '13px', padding: '8px 18px' }}>Close · keep listed</Btn>
             <Btn variant="ghost" disabled={busy} onClick={() => doClose(false)} style={{ fontSize: '13px', padding: '8px 18px' }}>Close · hide it</Btn>
-            <button style={{ ...link, color: 'rgba(15,21,35,0.55)' }} disabled={busy} onClick={() => setMode(null)}>Cancel</button>
+            <button style={{ ...link, color: 'rgba(234,241,237,0.55)' }} disabled={busy} onClick={() => setMode(null)}>Cancel</button>
           </div>
         </div>
       )}
@@ -162,7 +162,7 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
       {/* Delete confirmation, with re-root impact */}
       {mode === 'confirmDelete' && (
         <div style={{ marginTop: '12px' }}>
-          <p style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.6, margin: '0 0 10px' }}>
+          <p style={{ ...body, fontSize: '14px', color: 'rgba(234,241,237,0.72)', lineHeight: 1.6, margin: '0 0 10px' }}>
             Delete is permanent. {impact == null ? 'Checking what this affects…' : (
               impact.direct_children > 0
                 ? <>It re-roots {impact.direct_children} challenge{impact.direct_children === 1 ? '' : 's'} built on this one{impact.by_others > 0 ? <> ({impact.by_others} by {impact.by_others === 1 ? 'another actor' : 'other actors'})</> : ''} {impact.children_become_roots ? 'to standalone roots' : 'one notch up the tree'}. {impact.participants > 0 ? `The ${impact.participants} participant record${impact.participants === 1 ? '' : 's'} are kept.` : ''}</>
@@ -171,7 +171,7 @@ function AuthorControls({ call, userId, onUpdated, onDeleted }) {
           </p>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <Btn variant="ghost" disabled={busy || impact == null} onClick={confirmDelete} style={{ fontSize: '13px', padding: '8px 18px', borderColor: 'rgba(138,48,48,0.5)', color: '#8A3030' }}>Delete permanently</Btn>
-            <button style={{ ...link, color: 'rgba(15,21,35,0.55)' }} disabled={busy} onClick={() => { setMode(null); setImpact(null) }}>Cancel</button>
+            <button style={{ ...link, color: 'rgba(234,241,237,0.55)' }} disabled={busy} onClick={() => { setMode(null); setImpact(null) }}>Cancel</button>
           </div>
         </div>
       )}
@@ -240,7 +240,7 @@ function ShareRail({ url, title, tagline, shareText }) {
     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center', margin: '16px 0' }}>
       {hasNative && (
         <button type="button" onClick={nativeShare}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(168,114,26,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', ...gold, background: 'rgba(217,178,74,0.08)', border: '1px solid rgba(217,178,74,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
           Share →
         </button>
       )}
@@ -251,29 +251,29 @@ function ShareRail({ url, title, tagline, shareText }) {
             WhatsApp
           </a>
           <a href={mailUrl}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(168,114,26,0.55)', borderRadius: '20px', padding: '7px 16px', textDecoration: 'none' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.brass, background: 'rgba(217,178,74,0.07)', border: '1px solid rgba(217,178,74,0.55)', borderRadius: '20px', padding: '7px 16px', textDecoration: 'none' }}>
             Email
           </a>
         </>
       )}
       <button type="button" onClick={copyLink}
-        style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: copied ? '#2A8C4F' : tokens.gold, background: 'none', border: '1px solid rgba(168,114,26,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer', transition: 'color 0.2s' }}>
+        style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: copied ? '#2A8C4F' : at.brass, background: 'none', border: '1px solid rgba(217,178,74,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer', transition: 'color 0.2s' }}>
         {copied ? '✓ Copied' : 'Copy link'}
       </button>
       <button type="button" onClick={toggleQr}
-        style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.gold, background: 'none', border: '1px solid rgba(168,114,26,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
+        style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.brass, background: 'none', border: '1px solid rgba(217,178,74,0.65)', borderRadius: '20px', padding: '7px 16px', cursor: 'pointer' }}>
         {showQr ? 'Hide QR' : 'QR code'}
       </button>
       {showQr && qr && (
         <div style={{ flexBasis: '100%', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', marginTop: '6px' }}>
           <img src={qr} alt="QR code for this challenge"
-            style={{ width: '150px', height: '150px', border: '1px solid rgba(15,21,35,0.12)', borderRadius: '10px', background: '#FFFFFF' }} />
+            style={{ width: '150px', height: '150px', border: '1px solid rgba(234,241,237,0.12)', borderRadius: '10px', background: '#FFFFFF' }} />
           <div>
-            <div style={{ ...body, fontSize: '14px', color: tokens.ghost, maxWidth: '38ch', lineHeight: 1.5 }}>
+            <div style={{ ...body, fontSize: '14px', color: at.ghost, maxWidth: '38ch', lineHeight: 1.5 }}>
               Anyone who scans lands on this challenge and can take it on in under a minute.
             </div>
             <a href={qr} download="challenge-qr.png"
-              style={{ display: 'inline-block', marginTop: '8px', ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.gold, textDecoration: 'none', borderBottom: '1px solid rgba(168,114,26,0.5)', paddingBottom: '1px' }}>
+              style={{ display: 'inline-block', marginTop: '8px', ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.brass, textDecoration: 'none', borderBottom: '1px solid rgba(217,178,74,0.5)', paddingBottom: '1px' }}>
               Download PNG
             </a>
           </div>
@@ -301,12 +301,12 @@ function FlagModal({ callId, userId, isAsk, onClose }) {
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
+    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={{ background: tokens.bg, border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
+      <div style={{ background: at.ground, border: '1.5px solid rgba(217,178,74,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
           <Eyebrow style={{ marginBottom: 0 }}>{isAsk ? 'Flag this ask' : 'Flag this challenge'}</Eyebrow>
-          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.1rem', color: tokens.ghost }}>×</button>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.1rem', color: at.ghost }}>×</button>
         </div>
         {submitted ? (
           <div>
@@ -323,7 +323,7 @@ function FlagModal({ callId, userId, isAsk, onClose }) {
               onChange={e => setReason(e.target.value)}
               placeholder="What's the concern?"
               rows={4}
-              style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(200,146,42,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', background: tokens.bg, boxSizing: 'border-box', marginBottom: '14px' }}
+              style={{ width: '100%', ...body, fontSize: '1.0625rem', color: at.text, border: '1px solid rgba(217,178,74,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', background: at.ground, boxSizing: 'border-box', marginBottom: '14px' }}
             />
             <Btn onClick={submit} disabled={!reason.trim() || loading}>{loading ? 'Sending…' : 'Submit flag'}</Btn>
           </div>
@@ -361,12 +361,12 @@ function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
   const cadenceLabel = CADENCE_LABELS[call.cadence] || call.cadence
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
+    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={{ background: tokens.bg, border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
+      <div style={{ background: at.ground, border: '1.5px solid rgba(217,178,74,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
           <Eyebrow style={{ marginBottom: 0 }}>Take on this challenge</Eyebrow>
-          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.1rem', color: tokens.ghost }}>×</button>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.1rem', color: at.ghost }}>×</button>
         </div>
 
         {joined ? (
@@ -378,7 +378,7 @@ function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
             </p>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
               <a href="/challenges"
-                style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: tokens.gold, background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '40px', padding: '12px 28px', textDecoration: 'none', display: 'inline-block' }}>
+                style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: at.brass, background: 'rgba(217,178,74,0.08)', border: '1.5px solid rgba(217,178,74,0.78)', borderRadius: '40px', padding: '12px 28px', textDecoration: 'none', display: 'inline-block' }}>
                 Track it →
               </a>
               <Btn variant="ghost" onClick={onClose}>Stay here</Btn>
@@ -386,11 +386,11 @@ function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
           </div>
         ) : (
           <div>
-            <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: hair, borderRadius: '10px', marginBottom: '16px' }}>
+            <div style={{ padding: '14px 16px', background: 'rgba(217,178,74,0.05)', border: hair, borderRadius: '10px', marginBottom: '16px' }}>
               <div style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.65, marginBottom: '8px' }}>
                 <strong style={{ ...sc, fontWeight: 400 }}>The move:</strong> {call.the_move}
               </div>
-              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.ghost }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost }}>
                 {cadenceLabel}
                 {call.cadence === 'daily-absolute' && (
                   <span style={{ color: '#D63838', marginLeft: '8px' }}>· Absolute · no missed days</span>
@@ -411,9 +411,9 @@ function TakeItOnModal({ call, userId, onClose, onJoined, foundingClose }) {
                   {[{ v: 'rolling', l: `Rolling ${call.duration_days || 90} days` }, { v: 'calendar', l: 'Calendar quarter' }].map(o => (
                     <button key={o.v} type="button" onClick={() => setClock(o.v)}
                       style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', padding: '7px 16px', borderRadius: '20px', cursor: 'pointer', transition: 'all 0.2s',
-                        border: `1px solid ${clock === o.v ? 'rgba(200,146,42,0.78)' : 'rgba(200,146,42,0.3)'}`,
-                        background: clock === o.v ? 'rgba(200,146,42,0.08)' : 'transparent',
-                        color: clock === o.v ? tokens.gold : tokens.ghost }}>
+                        border: `1px solid ${clock === o.v ? 'rgba(217,178,74,0.78)' : 'rgba(217,178,74,0.3)'}`,
+                        background: clock === o.v ? 'rgba(217,178,74,0.08)' : 'transparent',
+                        color: clock === o.v ? at.brass : at.ghost }}>
                       {o.l}
                     </button>
                   ))}
@@ -439,10 +439,10 @@ function FoundingDoorsModal({ hasActor, onClose }) {
   // the three-path chooser there sets them up; no one is routed into the generic
   // "add anyone to the ecosystem" page, where authoring is a dead end.
   const createHref = '/challenges/new?carry=founding-nature'
-  const cream = '#FBF8F0', cream80 = 'rgba(251,248,240,0.82)', cream60 = 'rgba(251,248,240,0.60)', goldT = '#D7A24A'
+  const cream = at.text, cream80 = 'rgba(251,248,240,0.82)', cream60 = 'rgba(251,248,240,0.60)', goldT = '#D7A24A'
   const door = (href, title, sub) => (
     <a href={href} style={{ display: 'flex', alignItems: 'flex-start', gap: '14px', textDecoration: 'none',
-      background: 'rgba(200,146,42,0.05)', border: '1px solid rgba(200,146,42,0.30)', borderRadius: '12px', padding: '16px 18px' }}>
+      background: 'rgba(217,178,74,0.05)', border: '1px solid rgba(217,178,74,0.30)', borderRadius: '12px', padding: '16px 18px' }}>
       <span style={{ flex: 1 }}>
         <span style={{ ...serif, fontWeight: 400, fontSize: '21px', lineHeight: 1.2, color: cream, display: 'block', marginBottom: '4px' }}>{title}</span>
         <span style={{ ...body, fontSize: '14px', lineHeight: 1.55, color: cream60, display: 'block' }}>{sub}</span>
@@ -451,9 +451,9 @@ function FoundingDoorsModal({ hasActor, onClose }) {
     </a>
   )
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
+    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={{ background: '#141B2C', border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '14px', padding: '30px 28px 26px', maxWidth: '480px', width: '100%' }}>
+      <div style={{ background: at.object, border: '1.5px solid rgba(217,178,74,0.3)', borderRadius: '14px', padding: '30px 28px 26px', maxWidth: '480px', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px' }}>
           <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.22em', textTransform: 'uppercase', color: goldT }}>Accept challenge</div>
           <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.15rem', color: cream60 }}>×</button>
@@ -494,12 +494,12 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
   }
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(15,21,35,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
+    <div style={{ position: 'fixed', inset: 0, zIndex: 300, background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', backdropFilter: 'blur(4px)' }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div style={{ background: tokens.bg, border: '1.5px solid rgba(200,146,42,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
+      <div style={{ background: at.ground, border: '1.5px solid rgba(217,178,74,0.3)', borderRadius: '14px', padding: '32px 28px', maxWidth: '480px', width: '100%' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
           <Eyebrow style={{ marginBottom: 0 }}>Offer to help</Eyebrow>
-          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.1rem', color: tokens.ghost }}>×</button>
+          <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', ...sc, fontSize: '1.1rem', color: at.ghost }}>×</button>
         </div>
         {done ? (
           <div>
@@ -507,7 +507,7 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
               You&rsquo;re in. When it&rsquo;s done, come back and mark it built.
             </p>
             {call.ask_details && (
-              <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: hair, borderRadius: '10px', marginBottom: '18px' }}>
+              <div style={{ padding: '14px 16px', background: 'rgba(217,178,74,0.05)', border: hair, borderRadius: '10px', marginBottom: '18px' }}>
                 <Eyebrow style={{ marginBottom: '6px' }}>How to complete this</Eyebrow>
                 <div style={{ ...body, fontSize: '1rem', ...muted, lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{call.ask_details}</div>
               </div>
@@ -516,15 +516,15 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
           </div>
         ) : (
           <div>
-            <div style={{ padding: '14px 16px', background: 'rgba(200,146,42,0.05)', border: hair, borderRadius: '10px', marginBottom: '16px' }}>
+            <div style={{ padding: '14px 16px', background: 'rgba(217,178,74,0.05)', border: hair, borderRadius: '10px', marginBottom: '16px' }}>
               <div style={{ ...body, fontSize: '1.0625rem', ...muted, lineHeight: 1.65 }}>{call.the_move}</div>
               {spotsLeft !== null && (
-                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.gold, marginTop: '6px' }}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.brass, marginTop: '6px' }}>
                   {spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} remaining
                 </div>
               )}
               {call.ask_deadline && (
-                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.ghost, marginTop: '4px' }}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, marginTop: '4px' }}>
                   Needed by {new Date(call.ask_deadline).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                 </div>
               )}
@@ -534,7 +534,7 @@ function FulfillModal({ call, userId, onClose, onFulfilled }) {
               onChange={e => setNote(e.target.value)}
               placeholder="Any context you'd like to share (optional)"
               rows={3}
-              style={{ width: '100%', ...body, fontSize: '1.0625rem', color: tokens.dark, border: '1px solid rgba(200,146,42,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', background: tokens.bg, boxSizing: 'border-box', marginBottom: '14px' }}
+              style={{ width: '100%', ...body, fontSize: '1.0625rem', color: at.text, border: '1px solid rgba(217,178,74,0.3)', borderRadius: '8px', padding: '12px 14px', resize: 'vertical', outline: 'none', background: at.ground, boxSizing: 'border-box', marginBottom: '14px' }}
             />
             <Btn onClick={fulfill} disabled={loading}>{loading ? 'Sending…' : 'Offer to help →'}</Btn>
           </div>
@@ -558,9 +558,9 @@ function AskBody({ call }) {
   return (
     <div>
       {/* What's needed */}
-      <div style={{ padding: '20px 22px', background: 'rgba(200,146,42,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
+      <div style={{ padding: '20px 22px', background: 'rgba(217,178,74,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
         <Eyebrow>What's needed</Eyebrow>
-        <p style={{ ...body, fontSize: '1.125rem', color: tokens.dark, lineHeight: 1.7, margin: 0 }}>
+        <p style={{ ...body, fontSize: '1.125rem', color: at.text, lineHeight: 1.7, margin: 0 }}>
           {call.the_move}
         </p>
       </div>
@@ -569,17 +569,17 @@ function AskBody({ call }) {
       {(spotsTotal || deadline) && (
         <div style={{ display: 'grid', gridTemplateColumns: spotsTotal && deadline ? '1fr 1fr' : '1fr', gap: '12px', marginBottom: '20px' }}>
           {spotsTotal && (
-            <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
+            <div style={{ padding: '16px 18px', background: at.object, border: hair, borderRadius: '10px' }}>
               <Eyebrow style={{ marginBottom: '4px' }}>Spots</Eyebrow>
-              <div style={{ ...body, fontSize: '1.0625rem', color: isFull ? '#D63838' : tokens.dark }}>
+              <div style={{ ...body, fontSize: '1.0625rem', color: isFull ? '#D63838' : at.text }}>
                 {isFull ? 'Full' : `${spotsLeft} of ${spotsTotal} remaining`}
               </div>
             </div>
           )}
           {deadline && (
-            <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
+            <div style={{ padding: '16px 18px', background: at.object, border: hair, borderRadius: '10px' }}>
               <Eyebrow style={{ marginBottom: '4px' }}>Needed by</Eyebrow>
-              <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark }}>{deadline}</div>
+              <div style={{ ...body, fontSize: '1.0625rem', color: at.text }}>{deadline}</div>
             </div>
           )}
         </div>
@@ -633,7 +633,7 @@ function AuthorFeedbackSection({ callId, userId }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
         <Eyebrow style={{ marginBottom: 0 }}>Author view</Eyebrow>
         <button type="button" onClick={() => setOpen(o => !o)}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.ghost, background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           {open ? 'Close' : 'View feedback →'}
         </button>
       </div>
@@ -641,7 +641,7 @@ function AuthorFeedbackSection({ callId, userId }) {
       {open && (
         <div>
           {loading ? (
-            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: tokens.ghost }}>Loading…</div>
+            <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: at.ghost }}>Loading…</div>
           ) : data ? (
             <div>
               {/* Aggregate counts */}
@@ -651,9 +651,9 @@ function AuthorFeedbackSection({ callId, userId }) {
                   { l: 'Active',    v: data.counts.active    },
                   { l: 'Completed', v: data.counts.completed },
                 ].map(c => (
-                  <div key={c.l} style={{ padding: '14px 16px', background: tokens.bgCard, border: hair, borderRadius: '8px', textAlign: 'center' }}>
-                    <div style={{ ...serif, fontSize: '1.75rem', fontWeight: 300, color: tokens.dark, marginBottom: '2px' }}>{c.v || 0}</div>
-                    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost }}>{c.l.toUpperCase()}</div>
+                  <div key={c.l} style={{ padding: '14px 16px', background: at.object, border: hair, borderRadius: '8px', textAlign: 'center' }}>
+                    <div style={{ ...serif, fontSize: '1.75rem', fontWeight: 300, color: at.text, marginBottom: '2px' }}>{c.v || 0}</div>
+                    <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.ghost }}>{c.l.toUpperCase()}</div>
                   </div>
                 ))}
               </div>
@@ -661,15 +661,15 @@ function AuthorFeedbackSection({ callId, userId }) {
               {/* Reflections */}
               {data.reflections.length > 0 ? (
                 <div>
-                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: tokens.ghost, marginBottom: '12px' }}>
+                  <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: at.ghost, marginBottom: '12px' }}>
                     {data.reflections.length} REFLECTION{data.reflections.length === 1 ? '' : 'S'} SHARED
                   </div>
                   {data.reflections.map((r, i) => (
-                    <div key={i} style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px', marginBottom: '10px' }}>
-                      <p style={{ ...body, fontStyle: 'italic', fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.7, margin: '0 0 8px' }}>
+                    <div key={i} style={{ padding: '16px 18px', background: at.object, border: hair, borderRadius: '10px', marginBottom: '10px' }}>
+                      <p style={{ ...body, fontStyle: 'italic', fontSize: '1.0625rem', color: at.text, lineHeight: 1.7, margin: '0 0 8px' }}>
                         {r.reflection}
                       </p>
-                      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.ghost, display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, display: 'flex', gap: '12px', alignItems: 'center' }}>
                         {r.anonymous ? (
                           <span>Anonymous</span>
                         ) : (
@@ -683,13 +683,13 @@ function AuthorFeedbackSection({ callId, userId }) {
                   ))}
                 </div>
               ) : (
-                <p style={{ ...body, fontSize: '1.0625rem', color: tokens.ghost, lineHeight: 1.7 }}>
+                <p style={{ ...body, fontSize: '1.0625rem', color: at.ghost, lineHeight: 1.7 }}>
                   No reflections shared yet. They appear here as participants complete and consent to share.
                 </p>
               )}
             </div>
           ) : (
-            <p style={{ ...body, fontSize: '1.0625rem', color: tokens.ghost }}>Could not load feedback.</p>
+            <p style={{ ...body, fontSize: '1.0625rem', color: at.ghost }}>Could not load feedback.</p>
           )}
         </div>
       )}
@@ -849,7 +849,7 @@ export function ChallengePage() {
 
   if (loading) return <div className="loading" />
   if (notFound) return (
-    <div style={{ padding: '0 0 0', background: tokens.bg, minHeight: '100dvh' }}>
+    <div style={{ padding: '0 0 0', background: at.ground, minHeight: '100dvh' }}>
       <Nav />
       <div style={{ maxWidth: '600px', margin: '0 auto', padding: '120px 24px', textAlign: 'center' }}>
         <Eyebrow style={{ textAlign: 'center', display: 'block', marginBottom: '12px' }}>Challenge not found</Eyebrow>
@@ -857,7 +857,7 @@ export function ChallengePage() {
           This challenge may have been withdrawn or the link has changed.
         </p>
         <div style={{ marginTop: '24px' }}>
-          <a href="/atlas" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '10px 24px', display: 'inline-block' }}>
+          <a href="/atlas" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(217,178,74,0.5)', borderRadius: '30px', padding: '10px 24px', display: 'inline-block' }}>
             Browse the Atlas →
           </a>
         </div>
@@ -874,10 +874,10 @@ export function ChallengePage() {
   const isFoundingRoot = !!foundingRootSlug && slug === foundingRootSlug
 
   return (
-    <div style={{ background: tokens.bg, minHeight: '100dvh' }}>
+    <div style={{ background: at.ground, minHeight: '100dvh' }}>
       <Nav />
       <style>{`
-        .np-lede::first-letter{ -webkit-initial-letter: 2; initial-letter: 2; color: #A8721A; font-weight: 500; font-family: 'Cormorant Garamond', Georgia, serif; margin-right: 14px; }
+        .np-lede::first-letter{ -webkit-initial-letter: 2; initial-letter: 2; color: ${at.brass}; font-weight: 500; font-family: 'Fraunces', Georgia, serif; margin-right: 14px; }
       `}</style>
 
       {showDoors && user && (
@@ -902,12 +902,12 @@ export function ChallengePage() {
         {call.cover_image_url && (
           <div style={{ marginBottom: '32px', textAlign: 'center' }}>
             <div style={{ position: 'relative', display: 'inline-block', maxWidth: '460px', width: '100%' }}>
-              <div aria-hidden="true" style={{ position: 'absolute', inset: '-9%', background: 'radial-gradient(circle at 50% 46%, rgba(200,146,42,0.16), rgba(200,146,42,0.04) 45%, transparent 70%)', zIndex: 0, pointerEvents: 'none' }} />
+              <div aria-hidden="true" style={{ position: 'absolute', inset: '-9%', background: 'radial-gradient(circle at 50% 46%, rgba(217,178,74,0.16), rgba(217,178,74,0.04) 45%, transparent 70%)', zIndex: 0, pointerEvents: 'none' }} />
               <img
                 src={call.cover_image_url}
                 alt=""
                 loading="lazy"
-                style={{ position: 'relative', zIndex: 1, width: '100%', height: 'auto', borderRadius: '18px', border: hair, boxShadow: '0 18px 50px -28px rgba(15,21,35,0.32)', display: 'block' }}
+                style={{ position: 'relative', zIndex: 1, width: '100%', height: 'auto', borderRadius: '18px', border: hair, boxShadow: '0 18px 50px -28px rgba(234,241,237,0.32)', display: 'block' }}
               />
             </div>
           </div>
@@ -920,21 +920,21 @@ export function ChallengePage() {
               {call.type === 'challenge' ? 'Challenge' : 'Ask'} · {call.domain || call.scale}
             </Eyebrow>
             {call.visibility === 'link_only' && (
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.ghost, border: '1px solid rgba(15,21,35,0.18)', borderRadius: '12px', padding: '2px 10px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, border: '1px solid rgba(234,241,237,0.18)', borderRadius: '12px', padding: '2px 10px' }}>
                 Link only
               </span>
             )}
             {call.lifecycle_state === 'closed' && (
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(15,21,35,0.7)', border: '1px solid rgba(15,21,35,0.22)', borderRadius: '12px', padding: '2px 10px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: 'rgba(234,241,237,0.7)', border: '1px solid rgba(234,241,237,0.22)', borderRadius: '12px', padding: '2px 10px' }}>
                 Closed
               </span>
             )}
           </div>
-          <h1 style={{ ...serif, fontSize: 'clamp(2.1rem,5.5vw,3.6rem)', fontWeight: 300, color: tokens.dark, lineHeight: 1.06, margin: '0 0 12px' }}>
+          <h1 style={{ ...serif, fontSize: 'clamp(2.1rem,5.5vw,3.6rem)', fontWeight: 300, color: at.text, lineHeight: 1.06, margin: '0 0 12px' }}>
             {call.title}
           </h1>
           {call.tagline && (
-            <p style={{ ...body, fontSize: '1.125rem', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>
+            <p style={{ ...body, fontSize: '1.125rem', color: 'rgba(234,241,237,0.72)', lineHeight: 1.65, margin: 0 }}>
               {call.tagline}
             </p>
           )}
@@ -952,7 +952,7 @@ export function ChallengePage() {
 
         {/* Participation count */}
         {(call.taken_on_count > 0 || call.active_count > 0) && (
-          <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: tokens.gold, marginBottom: '8px' }}>
+          <div style={{ ...sc, fontSize: '15px', letterSpacing: '0.12em', color: at.brass, marginBottom: '8px' }}>
             {isAsk
               ? `${(call.active_count || 0) + (call.completed_count || 0)} ${((call.active_count || 0) + (call.completed_count || 0)) === 1 ? 'person has' : 'people have'} offered to help${(call.completed_count || 0) > 0 ? ` · ${call.completed_count} built` : ''}`
               : `${call.taken_on_count.toLocaleString()} ${call.taken_on_count === 1 ? 'person has' : 'people have'} taken this on${call.active_count > 0 ? ` · ${call.active_count} active` : ''}`
@@ -962,7 +962,7 @@ export function ChallengePage() {
 
         {/* Cosigner count */}
         {cosignerCount > 0 && (
-          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: tokens.ghost, marginBottom: '20px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', color: at.ghost, marginBottom: '20px' }}>
             Co-signed by {cosignerCount} constellation {cosignerCount === 1 ? 'member' : 'members'}
           </div>
         )}
@@ -972,7 +972,7 @@ export function ChallengePage() {
 
         {/* CTA */}
         {call.lifecycle_state === 'closed' && !alreadyJoined && (
-          <div style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.6)', lineHeight: 1.6, marginBottom: '8px' }}>
+          <div style={{ ...body, fontSize: '15px', color: 'rgba(234,241,237,0.6)', lineHeight: 1.6, marginBottom: '8px' }}>
             This {isAsk ? 'ask' : 'challenge'} is closed to new {isAsk ? 'offers' : 'participants'}.
           </div>
         )}
@@ -1013,7 +1013,7 @@ export function ChallengePage() {
                 <span style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', color: '#2A8C4F' }}>
                   ✓ You're in
                 </span>
-                <a href="/challenges" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
+                <a href="/challenges" style={{ ...sc, fontSize: '15px', letterSpacing: '0.14em', ...gold, textDecoration: 'none', border: '1px solid rgba(217,178,74,0.5)', borderRadius: '30px', padding: '8px 20px', display: 'inline-block' }}>
                   Track it →
                 </a>
               </>
@@ -1022,20 +1022,20 @@ export function ChallengePage() {
         )}
 
         {isAsk && call.ask_details && (myStatus === 'active' || myStatus === 'complete' || isAuthor) && (
-          <div style={{ padding: '16px 18px', background: 'rgba(200,146,42,0.05)', border: `1px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '12px' }}>
+          <div style={{ padding: '16px 18px', background: 'rgba(217,178,74,0.05)', border: `1px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '12px' }}>
             <Eyebrow>How to complete this</Eyebrow>
-            <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.6, whiteSpace: 'pre-wrap', margin: 0 }}>
+            <div style={{ ...body, fontSize: '1.0625rem', color: at.text, lineHeight: 1.6, whiteSpace: 'pre-wrap', margin: 0 }}>
               {call.ask_details}
             </div>
             {isAuthor && myStatus === 'none' && (
-              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: tokens.ghost, marginTop: '8px' }}>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: at.ghost, marginTop: '8px' }}>
                 Only shown to people who have accepted.
               </div>
             )}
           </div>
         )}
         {isAsk && call.ask_details && myStatus === 'none' && !isAuthor && (
-          <div style={{ ...body, fontSize: '14px', color: tokens.ghost, marginBottom: '12px' }}>
+          <div style={{ ...body, fontSize: '14px', color: at.ghost, marginBottom: '12px' }}>
             Accept to see how to complete this.
           </div>
         )}
@@ -1052,17 +1052,17 @@ export function ChallengePage() {
           <div>
             {/* The package */}
             {strands.length > 1 ? (
-              <div style={{ padding: '20px 22px', background: 'rgba(200,146,42,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
+              <div style={{ padding: '20px 22px', background: 'rgba(217,178,74,0.04)', border: `1.5px solid ${GOLD_C}`, borderRadius: '12px', marginBottom: '20px' }}>
                 <Eyebrow style={{ marginBottom: '12px' }}>What you'll do</Eyebrow>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {strands.map((s, i) => {
                     const cad = CADENCE_SHORT[s.cadence] || ''
                     return (
                       <div key={s.id || i} style={{ display: 'flex', gap: '12px', alignItems: 'baseline' }}>
-                        <span style={{ ...sc, fontSize: '15px', color: tokens.gold, flexShrink: 0, minWidth: '18px' }}>{i + 1}</span>
+                        <span style={{ ...sc, fontSize: '15px', color: at.brass, flexShrink: 0, minWidth: '18px' }}>{i + 1}</span>
                         <span style={{ flex: 1 }}>
-                          <span style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.6 }}>{s.text}</span>
-                          {cad && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: tokens.ghost, marginLeft: '10px', whiteSpace: 'nowrap' }}>{cad}</span>}
+                          <span style={{ ...body, fontSize: '1.0625rem', color: at.text, lineHeight: 1.6 }}>{s.text}</span>
+                          {cad && <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: at.ghost, marginLeft: '10px', whiteSpace: 'nowrap' }}>{cad}</span>}
                         </span>
                       </div>
                     )
@@ -1070,9 +1070,9 @@ export function ChallengePage() {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: '26px 28px', background: 'rgba(200,146,42,0.05)', border: `1.5px solid ${GOLD_C}`, borderRadius: '16px', marginBottom: '20px', boxShadow: '0 10px 40px -28px rgba(168,114,26,0.40)' }}>
+              <div style={{ padding: '26px 28px', background: 'rgba(217,178,74,0.05)', border: `1.5px solid ${GOLD_C}`, borderRadius: '16px', marginBottom: '20px', boxShadow: '0 10px 40px -28px rgba(217,178,74,0.40)' }}>
                 <Eyebrow>The move</Eyebrow>
-                <p style={{ ...body, fontSize: '1.1875rem', color: tokens.dark, lineHeight: 1.6, margin: 0 }}>
+                <p style={{ ...body, fontSize: '1.1875rem', color: at.text, lineHeight: 1.6, margin: 0 }}>
                   {call.the_move}
                 </p>
               </div>
@@ -1081,7 +1081,7 @@ export function ChallengePage() {
             {INTENSITY_BY_LEVEL[call.intensity_level] && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                 <ChiliRung level={call.intensity_level} size={18} />
-                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(15,21,35,0.6)', textTransform: 'uppercase' }}>
+                <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: 'rgba(234,241,237,0.6)', textTransform: 'uppercase' }}>
                   {INTENSITY_BY_LEVEL[call.intensity_level].label}
                 </span>
                 <IntensityInfo />
@@ -1089,20 +1089,20 @@ export function ChallengePage() {
             )}
             <div style={{ display: 'grid', gridTemplateColumns: strands.length > 1 ? '1fr' : '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
               {strands.length <= 1 && (
-                <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
+                <div style={{ padding: '16px 18px', background: at.object, border: hair, borderRadius: '10px' }}>
                   <Eyebrow style={{ marginBottom: '4px' }}>Cadence</Eyebrow>
-                  <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.55 }}>
+                  <div style={{ ...body, fontSize: '1.0625rem', color: at.text, lineHeight: 1.55 }}>
                     {cadenceLabel}
                     {call.cadence === 'daily-absolute' && (
                       <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#D63838', marginTop: '4px' }}>No missed days. This is the commitment.</div>
                     )}
-                    {call.cadence_note && <div style={{ ...body, fontSize: '14px', color: tokens.ghost, marginTop: '4px' }}>{call.cadence_note}</div>}
+                    {call.cadence_note && <div style={{ ...body, fontSize: '14px', color: at.ghost, marginTop: '4px' }}>{call.cadence_note}</div>}
                   </div>
                 </div>
               )}
-              <div style={{ padding: '16px 18px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
+              <div style={{ padding: '16px 18px', background: at.object, border: hair, borderRadius: '10px' }}>
                 <Eyebrow style={{ marginBottom: '4px' }}>{call.in_founding_constellation ? 'Runs to' : 'Duration'}</Eyebrow>
-                <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.55 }}>
+                <div style={{ ...body, fontSize: '1.0625rem', color: at.text, lineHeight: 1.55 }}>
                   {call.in_founding_constellation && fmtCloseDate(call.founding_closes_on)
                     ? `${fmtCloseDate(call.founding_closes_on)} · the shared close`
                     : `${call.duration_days} days`}
@@ -1112,7 +1112,7 @@ export function ChallengePage() {
             {call.body_long && (
               <div style={{ marginBottom: '20px' }}>
                 {String(call.body_long).split(/\n{2,}/).map((para, i) => (
-                  <p key={i} className={i === 0 ? 'np-lede' : undefined} style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.75, margin: '0 0 14px' }}>
+                  <p key={i} className={i === 0 ? 'np-lede' : undefined} style={{ ...body, fontSize: '1.0625rem', color: at.text, lineHeight: 1.75, margin: '0 0 14px' }}>
                     {para.split('\n').map((line, j) => <span key={j}>{j > 0 && <br />}{line}</span>)}
                   </p>
                 ))}
@@ -1141,30 +1141,30 @@ export function ChallengePage() {
         )}
 
         {/* Author — shown for both types */}
-          <div style={{ padding: '16px 20px', background: tokens.bgCard, border: hair, borderRadius: '10px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{ padding: '16px 20px', background: at.object, border: hair, borderRadius: '10px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '14px' }}>
             {call.nextus_actors?.image_url && (
               <img src={call.nextus_actors.image_url} alt={authorName} style={{ width: '44px', height: '44px', borderRadius: call.nextus_actors.type === 'practitioner' ? '50%' : '6px', objectFit: 'cover', flexShrink: 0 }} />
             )}
             <div>
-              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: tokens.ghost, marginBottom: '2px' }}>OFFERED BY</div>
+              <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: at.ghost, marginBottom: '2px' }}>OFFERED BY</div>
               {call.nextus_actors?.slug ? (
-                <a href={`/org/${call.nextus_actors.slug}`} style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, textDecoration: 'none', lineHeight: 1.5 }}>
+                <a href={`/org/${call.nextus_actors.slug}`} style={{ ...body, fontSize: '1.0625rem', color: at.text, textDecoration: 'none', lineHeight: 1.5 }}>
                   {authorName}
                 </a>
               ) : (
-                <div style={{ ...body, fontSize: '1.0625rem', color: tokens.dark, lineHeight: 1.5 }}>{authorName || 'Community member'}</div>
+                <div style={{ ...body, fontSize: '1.0625rem', color: at.text, lineHeight: 1.5 }}>{authorName || 'Community member'}</div>
               )}
               {call.nextus_actors?.description && (
-                <div style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.5, marginTop: '2px' }}>{call.nextus_actors.description.slice(0, 120)}</div>
+                <div style={{ ...body, fontSize: '14px', color: at.ghost, lineHeight: 1.5, marginTop: '2px' }}>{call.nextus_actors.description.slice(0, 120)}</div>
               )}
               {partners.length > 0 && (
-                <div style={{ ...body, fontSize: '14px', color: tokens.ghost, lineHeight: 1.5, marginTop: '6px' }}>
+                <div style={{ ...body, fontSize: '14px', color: at.ghost, lineHeight: 1.5, marginTop: '6px' }}>
                   in partnership with{' '}
                   {partners.map((p, i) => (
                     <span key={p.id || i}>
                       {p.slug
-                        ? <a href={`/org/${p.slug}`} style={{ color: tokens.gold, textDecoration: 'none' }}>{p.name}</a>
-                        : <span style={{ color: tokens.dark }}>{p.name}</span>}
+                        ? <a href={`/org/${p.slug}`} style={{ color: at.brass, textDecoration: 'none' }}>{p.name}</a>
+                        : <span style={{ color: at.text }}>{p.name}</span>}
                       {i < partners.length - 1 ? (i === partners.length - 2 ? ' and ' : ', ') : ''}
                     </span>
                   ))}
@@ -1190,25 +1190,25 @@ export function ChallengePage() {
 
         {/* Ask to partner — for actor owners who aren't the author */}
         {!isAsk && user && !isAuthor && ownedActors.length > 0 && (
-          <div style={{ marginTop: '20px', padding: '16px 20px', background: tokens.bgCard, border: hair, borderRadius: '10px' }}>
+          <div style={{ marginTop: '20px', padding: '16px 20px', background: at.object, border: hair, borderRadius: '10px' }}>
             {askSent ? (
-              <div style={{ ...body, fontSize: '15px', color: tokens.gold, lineHeight: 1.5 }}>
+              <div style={{ ...body, fontSize: '15px', color: at.brass, lineHeight: 1.5 }}>
                 Partner request sent. It shows here once the author accepts.
               </div>
             ) : (
               <div>
-                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: tokens.ghost, textTransform: 'uppercase', marginBottom: '10px' }}>
+                <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: at.ghost, textTransform: 'uppercase', marginBottom: '10px' }}>
                   Want to partner on this?
                 </div>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
                   {ownedActors.length > 1 && (
                     <select value={askSel} onChange={e => setAskSel(e.target.value)}
-                      style={{ ...body, fontSize: '15px', color: tokens.dark, background: tokens.bg, border: hair, borderRadius: '8px', padding: '8px 12px' }}>
+                      style={{ ...body, fontSize: '15px', color: at.text, background: at.ground, border: hair, borderRadius: '8px', padding: '8px 12px' }}>
                       {ownedActors.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
                     </select>
                   )}
                   <button type="button" onClick={askToPartner} disabled={askBusy}
-                    style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: tokens.gold, background: 'rgba(200,146,42,0.08)', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '30px', padding: '8px 20px', cursor: 'pointer', opacity: askBusy ? 0.5 : 1 }}>
+                    style={{ ...sc, fontSize: '14px', letterSpacing: '0.12em', color: at.brass, background: 'rgba(217,178,74,0.08)', border: '1px solid rgba(217,178,74,0.5)', borderRadius: '30px', padding: '8px 20px', cursor: 'pointer', opacity: askBusy ? 0.5 : 1 }}>
                     {askBusy ? 'Sending…' : 'Ask to partner →'}
                   </button>
                 </div>
@@ -1220,7 +1220,7 @@ export function ChallengePage() {
         {/* Horizon Goals link */}
         <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: hair }}>
           <a href={`/atlas/goals${call.domain ? '/' + call.domain : ''}`}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: tokens.ghost, textDecoration: 'none' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: at.ghost, textDecoration: 'none' }}>
             See all challenges building toward {call.domain ? call.domain.replace('-', ' ') : 'this goal'} →
           </a>
         </div>
@@ -1228,7 +1228,7 @@ export function ChallengePage() {
         {/* Flag */}
         <div style={{ marginTop: '32px', textAlign: 'center' }}>
           <button type="button" onClick={() => setShowFlag(true)}
-            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(15,21,35,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', textDecoration: 'underline', textDecorationColor: 'rgba(15,21,35,0.15)', textUnderlineOffset: '3px' }}>
+            style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: 'rgba(234,241,237,0.55)', background: 'none', border: 'none', cursor: 'pointer', padding: '8px', textDecoration: 'underline', textDecorationColor: 'rgba(234,241,237,0.15)', textUnderlineOffset: '3px' }}>
             {isAsk ? 'Flag this ask' : 'Flag this challenge'}
           </button>
         </div>

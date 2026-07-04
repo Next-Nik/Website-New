@@ -17,7 +17,7 @@ import { PlanetDomainCard } from './PlanetDomainCard'
 import { PlanetGapSignal } from './PlanetGapSignal'
 import { ActorClaimGate } from './ActorClaimGate'
 import { EffortSignalPanel } from '../../app/components/EffortSignalPanel'
-import { serif, body, sc } from '../../lib/designTokens'
+import { serif, body, sc, at, atText, shadow } from '../../lib/designTokens'
 
 function isFounder(user) {
   return user?.app_metadata?.role === 'founder' || user?.user_metadata?.role === 'founder'
@@ -29,6 +29,15 @@ const TOOL_PATH = '/tools/planet'
 const NORTH_STAR_KEY = 'planet-map'
 // TODO: confirm table name against Supabase schema — create if not yet existing
 const TABLE = 'planet_map_results'
+
+// Atlas ground — sea-ink page background with the faint survey grid
+// (Master Spec §2.1/§2.6). Shared by every page-level wrapper below.
+const ATLAS_GROUND = {
+  minHeight: '100dvh',
+  background: at.ground,
+  backgroundImage: `linear-gradient(${at.grid} 1px, transparent 1px), linear-gradient(90deg, ${at.grid} 1px, transparent 1px)`,
+  backgroundSize: '56px 56px',
+}
 
 // Assessment steps
 const STEPS = {
@@ -173,7 +182,7 @@ export default function PlanetMap() {
   if (!isFounder(user)) return null  // founder-only beta
 
   return (
-    <div style={{ minHeight: '100dvh', background: '#FAFAF7' }}>
+    <div style={ATLAS_GROUND}>
       <Nav activePath="nextus-self" />
 
       {/* The pulse — the ecosystem's heartbeat, above the map.
@@ -244,7 +253,7 @@ function LandingView({ user, actorRecord, hasExistingScores, onBegin }) {
         ...sc,
         fontSize: 13,
         letterSpacing: '0.12em',
-        color: '#A8721A',
+        color: at.ghost,
         textTransform: 'uppercase',
         marginBottom: 16,
       }}>
@@ -256,7 +265,7 @@ function LandingView({ user, actorRecord, hasExistingScores, onBegin }) {
         ...serif,
         fontSize: 'clamp(36px, 6vw, 56px)',
         fontWeight: 300,
-        color: '#0F1523',
+        color: at.text,
         lineHeight: 1.1,
         marginBottom: 24,
       }}>
@@ -267,7 +276,7 @@ function LandingView({ user, actorRecord, hasExistingScores, onBegin }) {
       <p style={{
         ...body,
         fontSize: 18,
-        color: '#0F1523',
+        color: at.text,
         lineHeight: 1.65,
         marginBottom: 16,
         maxWidth: 600,
@@ -278,7 +287,7 @@ function LandingView({ user, actorRecord, hasExistingScores, onBegin }) {
       <p style={{
         ...body,
         fontSize: 16,
-        color: 'rgba(15,21,35,0.72)',
+        color: at.meta,
         lineHeight: 1.65,
         marginBottom: 48,
         maxWidth: 600,
@@ -310,7 +319,7 @@ function LandingView({ user, actorRecord, hasExistingScores, onBegin }) {
           ...sc,
           fontSize: 13,
           letterSpacing: '0.1em',
-          background: '#C8922A',
+          background: at.verdigris,
           color: '#FFFFFF',
           border: 'none',
           borderRadius: 4,
@@ -325,7 +334,7 @@ function LandingView({ user, actorRecord, hasExistingScores, onBegin }) {
         <p style={{
           ...body,
           fontSize: 13,
-          color: 'rgba(15,21,35,0.55)',
+          color: at.ghost,
           marginTop: 16,
         }}>
           Assessing as: {actorRecord.name}
@@ -337,7 +346,7 @@ function LandingView({ user, actorRecord, hasExistingScores, onBegin }) {
           own assessment. */}
       <div style={{ marginTop: 80,
         paddingTop: 48,
-        borderTop: '1px solid rgba(200,146,42,0.18)' }}>
+        borderTop: `1px solid ${at.verdigrisEdge}` }}>
         <EffortSignalPanel />
       </div>
     </div>
@@ -358,7 +367,7 @@ function AssessmentView({ actorRecord, scores, activeDomain, onSetActiveDomain, 
           ...sc,
           fontSize: 13,
           letterSpacing: '0.12em',
-          color: '#A8721A',
+          color: at.ghost,
           textTransform: 'uppercase',
           marginBottom: 8,
         }}>
@@ -368,7 +377,7 @@ function AssessmentView({ actorRecord, scores, activeDomain, onSetActiveDomain, 
           ...serif,
           fontSize: 'clamp(28px, 4vw, 40px)',
           fontWeight: 300,
-          color: '#0F1523',
+          color: at.text,
           marginBottom: 0,
         }}>
           Score each domain honestly
@@ -376,7 +385,7 @@ function AssessmentView({ actorRecord, scores, activeDomain, onSetActiveDomain, 
         <p style={{
           ...body,
           fontSize: 15,
-          color: 'rgba(15,21,35,0.72)',
+          color: at.meta,
           marginTop: 12,
           lineHeight: 1.6,
         }}>
@@ -387,15 +396,15 @@ function AssessmentView({ actorRecord, scores, activeDomain, onSetActiveDomain, 
       {/* Progress */}
       <div style={{ marginBottom: 40 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-          <span style={{ ...body, fontSize: 13, color: 'rgba(15,21,35,0.72)' }}>
+          <span style={{ ...body, fontSize: 13, color: at.meta }}>
             {completedCount} of 7 domains scored
           </span>
         </div>
-        <div style={{ height: 2, background: 'rgba(200,146,42,0.15)', borderRadius: 1 }}>
+        <div style={{ height: 2, background: at.grid, borderRadius: 1 }}>
           <div style={{
             height: '100%',
             width: `${(completedCount / 7) * 100}%`,
-            background: '#C8922A',
+            background: at.verdigris,
             borderRadius: 1,
             transition: 'width 0.3s ease',
           }} />
@@ -419,7 +428,7 @@ function AssessmentView({ actorRecord, scores, activeDomain, onSetActiveDomain, 
       </div>
 
       {error && (
-        <p style={{ ...body, fontSize: 14, color: '#C0392B', marginBottom: 24 }}>
+        <p style={{ ...body, fontSize: 14, color: '#C97064', marginBottom: 24 }}>
           {error}
         </p>
       )}
@@ -431,7 +440,7 @@ function AssessmentView({ actorRecord, scores, activeDomain, onSetActiveDomain, 
           ...sc,
           fontSize: 13,
           letterSpacing: '0.1em',
-          background: allComplete ? '#C8922A' : 'rgba(200,146,42,0.3)',
+          background: allComplete ? at.verdigris : at.verdigrisEdge,
           color: '#FFFFFF',
           border: 'none',
           borderRadius: 4,
@@ -458,7 +467,7 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
         ...sc,
         fontSize: 13,
         letterSpacing: '0.12em',
-        color: '#A8721A',
+        color: at.ghost,
         textTransform: 'uppercase',
         marginBottom: 8,
       }}>
@@ -469,7 +478,7 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
         ...serif,
         fontSize: 'clamp(28px, 4vw, 40px)',
         fontWeight: 300,
-        color: '#0F1523',
+        color: at.text,
         marginBottom: 48,
       }}>
         The map
@@ -504,7 +513,7 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
           ...serif,
           fontSize: 22,
           fontWeight: 300,
-          color: '#0F1523',
+          color: at.text,
           marginBottom: 24,
         }}>
           Domain by domain
@@ -520,8 +529,8 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
                 alignItems: 'center',
                 gap: 16,
                 padding: '16px 20px',
-                background: '#FFFFFF',
-                border: '1px solid rgba(200,146,42,0.20)',
+                background: at.object,
+                border: `1px solid ${at.verdigrisEdge}`,
                 borderRadius: 6,
               }}>
                 <div style={{
@@ -535,13 +544,13 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
                   <p style={{ ...sc, fontSize: 13, letterSpacing: '0.08em', color: domain.color, marginBottom: 2 }}>
                     {domain.label}
                   </p>
-                  <p style={{ ...body, fontSize: 13, color: 'rgba(15,21,35,0.72)' }}>
+                  <p style={{ ...body, fontSize: 13, color: at.meta }}>
                     {domain.tip}
                   </p>
                 </div>
                 <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
                   <div style={{ textAlign: 'center' }}>
-                    <p style={{ ...sc, fontSize: 13, color: 'rgba(15,21,35,0.55)', marginBottom: 2 }}>Self</p>
+                    <p style={{ ...sc, fontSize: 13, color: at.ghost, marginBottom: 2 }}>Self</p>
                     <p style={{
                       ...serif,
                       fontSize: 28,
@@ -555,7 +564,7 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
                   {nextusScore != null && (
                     <>
                       <div style={{ textAlign: 'center' }}>
-                        <p style={{ ...sc, fontSize: 13, color: 'rgba(15,21,35,0.55)', marginBottom: 2 }}>NextUs</p>
+                        <p style={{ ...sc, fontSize: 13, color: at.ghost, marginBottom: 2 }}>NextUs</p>
                         <p style={{
                           ...serif,
                           fontSize: 28,
@@ -567,12 +576,12 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
                         </p>
                       </div>
                       <div style={{ textAlign: 'center' }}>
-                        <p style={{ ...sc, fontSize: 13, color: 'rgba(15,21,35,0.55)', marginBottom: 2 }}>Gap</p>
+                        <p style={{ ...sc, fontSize: 13, color: at.ghost, marginBottom: 2 }}>Gap</p>
                         <p style={{
                           ...serif,
                           fontSize: 22,
                           fontWeight: 400,
-                          color: Math.abs(gap) >= 2 ? '#C0392B' : 'rgba(15,21,35,0.72)',
+                          color: Math.abs(gap) >= 2 ? '#C97064' : at.meta,
                           lineHeight: 1,
                         }}>
                           {gap > 0 ? `+${gap}` : gap}
@@ -591,9 +600,9 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
       {synthesis && (
         <div style={{
           padding: '32px 36px',
-          background: '#FFFFFF',
-          border: '1px solid rgba(200,146,42,0.20)',
-          borderLeft: '3px solid #C8922A',
+          background: at.object,
+          border: `1px solid ${at.verdigrisEdge}`,
+          borderLeft: `3px solid ${at.verdigris}`,
           borderRadius: 6,
           marginBottom: 48,
         }}>
@@ -601,7 +610,7 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
             ...sc,
             fontSize: 13,
             letterSpacing: '0.12em',
-            color: '#A8721A',
+            color: at.ghost,
             textTransform: 'uppercase',
             marginBottom: 16,
           }}>
@@ -610,7 +619,7 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
           <p style={{
             ...body,
             fontSize: 16,
-            color: '#0F1523',
+            color: at.text,
             lineHeight: 1.7,
           }}>
             {synthesis}
@@ -627,8 +636,8 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
             fontSize: 13,
             letterSpacing: '0.1em',
             background: 'transparent',
-            color: '#A8721A',
-            border: '1px solid #C8922A',
+            color: at.verdigris,
+            border: `1px solid ${at.verdigris}`,
             borderRadius: 4,
             padding: '12px 28px',
             cursor: 'pointer',
@@ -645,7 +654,7 @@ function ResultsView({ actorRecord, scores, nextusScores, synthesis, onReassess 
 
 function LoadingShell() {
   return (
-    <div style={{ minHeight: '100dvh', background: '#FAFAF7' }}>
+    <div style={ATLAS_GROUND}>
       <Nav activePath="nextus-self" />
       <div style={{
         display: 'flex',
@@ -654,10 +663,10 @@ function LoadingShell() {
         height: 'calc(100dvh - 64px)',
       }}>
         <p style={{
-          fontFamily: "'Cormorant SC', Georgia, serif",
+          ...sc,
           fontSize: 13,
           letterSpacing: '0.1em',
-          color: 'rgba(15,21,35,0.55)',
+          color: at.ghost,
         }}>
           Loading…
         </p>

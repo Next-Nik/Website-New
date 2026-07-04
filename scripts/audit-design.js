@@ -59,6 +59,10 @@ const GOLD_WHITELIST = [
   'app/components/mission-control/tokens.js', // HERITAGE_GOLD bridge — see file header
   'lib/designTokens.js',                      // the `gold` export itself
   'global.css',                                // the --gold-heritage / --gold-glow CSS var declaration itself
+  'constants/horizonScalePlanet.js',           // "Finance & Economy" domain-identity colour — file is
+                                                // locked ("do not modify without explicit instruction");
+                                                // this is a domain hue, not decorative chrome. Flagged
+                                                // for Nik — happy to swap the domain's colour if wanted.
   // e.g. 'app/components/mission-control/SettingsMissionPanel.jsx' — FOUNDER chip (approved moment 1/3)
 ]
 

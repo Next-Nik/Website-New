@@ -5,7 +5,7 @@
 
 import { useState } from 'react'
 import { supabase } from '../../hooks/useSupabase'
-import { serif, body, sc } from '../../lib/designTokens'
+import { serif, body, sc, at } from '../../lib/designTokens'
 
 const ACTOR_TYPES = [
   {
@@ -79,7 +79,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
           ...sc,
           fontSize: 13,
           letterSpacing: '0.08em',
-          color: '#A8721A',
+          color: at.brass,
           background: 'transparent',
           border: 'none',
           cursor: 'pointer',
@@ -94,7 +94,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
         ...sc,
         fontSize: 13,
         letterSpacing: '0.12em',
-        color: '#A8721A',
+        color: at.brass,
         textTransform: 'uppercase',
         marginBottom: 12,
       }}>
@@ -105,7 +105,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
         ...serif,
         fontSize: 'clamp(28px, 4vw, 38px)',
         fontWeight: 300,
-        color: '#0F1523',
+        color: at.text,
         marginBottom: 16,
       }}>
         Who are you assessing?
@@ -114,7 +114,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
       <p style={{
         ...body,
         fontSize: 16,
-        color: 'rgba(15,21,35,0.72)',
+        color: at.meta,
         lineHeight: 1.65,
         marginBottom: 40,
       }}>
@@ -132,17 +132,17 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
               flexDirection: 'column',
               gap: 4,
               padding: '16px 20px',
-              background: actorType === type.key ? 'rgba(200,146,42,0.06)' : '#FFFFFF',
-              border: `1.5px solid ${actorType === type.key ? '#C8922A' : 'rgba(200,146,42,0.20)'}`,
+              background: actorType === type.key ? 'rgba(88,160,138,0.10)' : at.object,
+              border: `1.5px solid ${actorType === type.key ? at.verdigris : at.verdigrisEdge}`,
               borderRadius: 6,
               cursor: 'pointer',
               textAlign: 'left',
             }}
           >
-            <span style={{ ...sc, fontSize: 13, letterSpacing: '0.08em', color: actorType === type.key ? '#A8721A' : '#0F1523' }}>
+            <span style={{ ...sc, fontSize: 13, letterSpacing: '0.08em', color: actorType === type.key ? at.verdigris : at.text }}>
               {type.label}
             </span>
-            <span style={{ ...body, fontSize: 13, color: 'rgba(15,21,35,0.72)' }}>
+            <span style={{ ...body, fontSize: 13, color: at.meta }}>
               {type.description}
             </span>
           </button>
@@ -155,7 +155,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
           ...sc,
           fontSize: 13,
           letterSpacing: '0.08em',
-          color: 'rgba(15,21,35,0.55)',
+          color: at.ghost,
           display: 'block',
           marginBottom: 6,
         }}>
@@ -171,10 +171,10 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
             fontSize: 15,
             width: '100%',
             padding: '12px 14px',
-            background: '#FAFAF7',
-            border: '1px solid rgba(200,146,42,0.20)',
+            background: at.ground,
+            border: `1px solid ${at.verdigrisEdge}`,
             borderRadius: 4,
-            color: '#0F1523',
+            color: at.text,
             boxSizing: 'border-box',
             outline: 'none',
           }}
@@ -187,7 +187,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
           ...sc,
           fontSize: 13,
           letterSpacing: '0.08em',
-          color: 'rgba(15,21,35,0.55)',
+          color: at.ghost,
           display: 'block',
           marginBottom: 6,
         }}>
@@ -203,10 +203,10 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
             fontSize: 15,
             width: '100%',
             padding: '12px 14px',
-            background: '#FAFAF7',
-            border: '1px solid rgba(200,146,42,0.20)',
+            background: at.ground,
+            border: `1px solid ${at.verdigrisEdge}`,
             borderRadius: 4,
-            color: '#0F1523',
+            color: at.text,
             boxSizing: 'border-box',
             outline: 'none',
           }}
@@ -214,7 +214,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
       </div>
 
       {error && (
-        <p style={{ ...body, fontSize: 14, color: '#C0392B', marginBottom: 20 }}>
+        <p style={{ ...body, fontSize: 14, color: '#C97064', marginBottom: 20 }}>
           {error}
         </p>
       )}
@@ -226,7 +226,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
           ...sc,
           fontSize: 13,
           letterSpacing: '0.1em',
-          background: actorType && name.trim() ? '#C8922A' : 'rgba(200,146,42,0.3)',
+          background: actorType && name.trim() ? at.verdigris : at.verdigrisEdge,
           color: '#FFFFFF',
           border: 'none',
           borderRadius: 4,
@@ -240,7 +240,7 @@ export function ActorClaimGate({ user, onClaimed, onBack }) {
       <p style={{
         ...body,
         fontSize: 13,
-        color: 'rgba(15,21,35,0.55)',
+        color: at.ghost,
         marginTop: 16,
         lineHeight: 1.5,
       }}>

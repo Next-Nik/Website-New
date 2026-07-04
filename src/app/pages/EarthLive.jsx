@@ -14,10 +14,10 @@ import { useEffect, useState, useRef } from 'react'
 import { actorCallsRaw } from '../../lib/actorCallsClient'
 import { Link } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
-import { serif, sc, body } from '../../lib/designTokens'
+import { serif, sc, body, at } from '../../lib/designTokens'
 import BeaconFire from '../components/challenge/BeaconFire'
 
-const NIGHT2   = '#0F1523'
+const NIGHT2   = at.ground  // Atlas sea-ink — aligned to the canonical rail ground
 const CREAM    = '#FBF8F0'
 const CREAM_80 = 'rgba(251,248,240,0.82)'
 const CREAM_60 = 'rgba(251,248,240,0.60)'
@@ -258,7 +258,7 @@ export default function EarthLive() {
             </div>
             <div style={{ height: '3px', borderRadius: '2px', background: 'rgba(251,248,240,0.08)', overflow: 'hidden', marginTop: '10px' }}>
               <div style={{ height: '100%', borderRadius: '2px', width: `${pct(opens, closes)}%`,
-                background: `linear-gradient(90deg, #C8922A, ${AMBER})` }} />
+                background: `linear-gradient(90deg, ${GOLD_T}, ${AMBER})` }} />
             </div>
           </div>
         )}

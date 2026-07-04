@@ -4,7 +4,7 @@
 
 import { useState } from 'react'
 import { PLANET_SCALE, getPlanetScoreColor } from '../../constants/horizonScalePlanet'
-import { serif, body, sc } from '../../lib/designTokens'
+import { serif, body, sc, at, shadow } from '../../lib/designTokens'
 
 export function PlanetDomainCard({
   domain,
@@ -32,11 +32,12 @@ export function PlanetDomainCard({
   return (
     <div
       style={{
-        background: '#FFFFFF',
-        border: `1px solid ${isActive ? domain.color : 'rgba(200,146,42,0.20)'}`,
+        background: at.object,
+        border: `1px solid ${isActive ? domain.color : at.verdigrisEdge}`,
         borderRadius: 6,
         overflow: 'hidden',
         transition: 'border-color 0.2s ease',
+        boxShadow: shadow.at.rest,
       }}
     >
       {/* Card header — always visible */}
@@ -76,7 +77,7 @@ export function PlanetDomainCard({
           <p style={{
             ...body,
             fontSize: 13,
-            color: 'rgba(15,21,35,0.72)',
+            color: at.meta,
           }}>
             {domain.tip}
           </p>
@@ -98,7 +99,7 @@ export function PlanetDomainCard({
               ...sc,
               fontSize: 13,
               letterSpacing: '0.06em',
-              color: 'rgba(15,21,35,0.55)',
+              color: at.ghost,
             }}>
               {PLANET_SCALE.find(s => s.score === currentScore)?.label}
             </p>
@@ -108,7 +109,7 @@ export function PlanetDomainCard({
             ...sc,
             fontSize: 13,
             letterSpacing: '0.08em',
-            color: 'rgba(15,21,35,0.55)',
+            color: at.ghost,
           }}>
             {isActive ? 'Close ↑' : 'Score →'}
           </p>
@@ -117,18 +118,18 @@ export function PlanetDomainCard({
 
       {/* Expanded panel */}
       {isActive && (
-        <div style={{ padding: '0 20px 24px', borderTop: '1px solid rgba(200,146,42,0.12)' }}>
+        <div style={{ padding: '0 20px 24px', borderTop: `1px solid ${at.verdigrisEdge}` }}>
           {/* Horizon goal */}
           <p style={{
             ...body,
             fontSize: 14,
-            color: 'rgba(15,21,35,0.72)',
+            color: at.meta,
             lineHeight: 1.6,
             padding: '16px 0',
-            borderBottom: '1px solid rgba(200,146,42,0.12)',
+            borderBottom: `1px solid ${at.verdigrisEdge}`,
             marginBottom: 20,
           }}>
-            <span style={{ ...sc, fontSize: 13, letterSpacing: '0.08em', color: '#A8721A', display: 'block', marginBottom: 4 }}>
+            <span style={{ ...sc, fontSize: 13, letterSpacing: '0.08em', color: at.brass, display: 'block', marginBottom: 4 }}>
               HORIZON GOAL
             </span>
             {domain.horizonGoal}
@@ -139,7 +140,7 @@ export function PlanetDomainCard({
             ...sc,
             fontSize: 13,
             letterSpacing: '0.08em',
-            color: 'rgba(15,21,35,0.72)',
+            color: at.meta,
             marginBottom: 12,
           }}>
             Where does this actor stand today?
@@ -165,7 +166,7 @@ export function PlanetDomainCard({
                     ? getPlanetScoreColor(score)
                     : 'transparent',
                   color: currentScore === score
-                    ? '#FFFFFF'
+                    ? at.object
                     : getPlanetScoreColor(score),
                   border: `1.5px solid ${getPlanetScoreColor(score)}`,
                   borderRadius: 4,
@@ -176,7 +177,7 @@ export function PlanetDomainCard({
                   gap: 2,
                 }}
               >
-                <span style={{ fontSize: 16, fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+                <span style={{ fontSize: 16, ...serif }}>
                   {score}
                 </span>
                 <span style={{ fontSize: 13 }}>{label}</span>
@@ -190,7 +191,7 @@ export function PlanetDomainCard({
               ...sc,
               fontSize: 13,
               letterSpacing: '0.08em',
-              color: 'rgba(15,21,35,0.55)',
+              color: at.ghost,
               display: 'block',
               marginBottom: 6,
             }}>
@@ -206,10 +207,10 @@ export function PlanetDomainCard({
                 fontSize: 14,
                 width: '100%',
                 padding: '10px 14px',
-                background: '#FAFAF7',
-                border: '1px solid rgba(200,146,42,0.20)',
+                background: at.ground,
+                border: `1px solid ${at.verdigrisEdge}`,
                 borderRadius: 4,
-                color: '#0F1523',
+                color: at.text,
                 resize: 'vertical',
                 boxSizing: 'border-box',
                 outline: 'none',

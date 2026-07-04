@@ -10,20 +10,20 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
-import { serif, sc, body, tokens } from '../../lib/designTokens'
+import { serif, sc, body, tokens, at } from '../../lib/designTokens'
 import { supabase } from '../../hooks/useSupabase'
 import { useAuth } from '../../hooks/useAuth'
 import BeaconFire from '../components/challenge/BeaconFire'
 import { computeChain, dotRow } from '../../lib/challengeChain'
 
-const GOLD    = '#A8721A'
-const CHROME  = '#C8922A'
+const GOLD    = at.brass       // Atlas accent — chapter labels, coordination-flavoured text
+const CHROME  = at.verdigris   // Atlas accent — progress thread, chapter-done state
 const NIGHT   = '#141B2C'
 const CREAM   = '#FBF8F0'
 const AMBER   = '#F2C45A'
 const GOLD_T  = '#D7A24A'
-const GHOST   = 'rgba(15,21,35,0.55)'
-const FAINT   = 'rgba(200,146,42,0.35)'
+const GHOST   = at.ghost
+const FAINT   = 'rgba(217,178,74,0.35)'  // brass-tinted faint border/underline
 
 const ROOT_SLUG_FALLBACK = 'inaugural-nextus-earth-challenge'
 
@@ -143,7 +143,7 @@ export default function EarthJourney() {
   ]
 
   return (
-    <div style={{ background: tokens.bg, minHeight: '100dvh' }}>
+    <div style={{ background: at.ground, minHeight: '100dvh' }}>
       <Nav />
       {/* hero */}
       <div style={{ background: `radial-gradient(ellipse at 50% 0%, rgba(242,196,90,0.09), transparent 62%), ${NIGHT}`,
@@ -162,13 +162,13 @@ export default function EarthJourney() {
 
       <div style={{ maxWidth: '640px', margin: '0 auto', padding: '0 18px 80px' }}>
         {/* resume card */}
-        <div style={{ background: tokens.bgCard, border: `1.5px solid ${CHROME}`, borderRadius: '16px',
+        <div style={{ background: at.object, border: `1.5px solid ${CHROME}`, borderRadius: '16px',
           padding: '20px 22px', margin: '-22px auto 34px', position: 'relative',
           display: 'flex', gap: '16px', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap',
-          boxShadow: '0 10px 30px rgba(15,21,35,0.08)' }}>
+          boxShadow: '0 10px 30px rgba(0,0,0,0.30)' }}>
           <div>
             <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', color: GOLD }}>{resume.k}</div>
-            <div style={{ ...serif, fontSize: '24px', lineHeight: 1.15, marginTop: '2px', color: tokens.dark }}>{resume.v}</div>
+            <div style={{ ...serif, fontSize: '24px', lineHeight: 1.15, marginTop: '2px', color: at.text }}>{resume.v}</div>
           </div>
           <button onClick={resume.act}
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.13em', textTransform: 'uppercase',
@@ -183,21 +183,21 @@ export default function EarthJourney() {
         ) : (
         <div style={{ position: 'relative', paddingLeft: '34px' }}>
           <div aria-hidden="true" style={{ position: 'absolute', left: '11px', top: '8px', bottom: '8px', width: '2px',
-            background: `linear-gradient(180deg, ${CHROME}, rgba(200,146,42,0.25))` }} />
+            background: `linear-gradient(180deg, ${CHROME}, rgba(88,160,138,0.25))` }} />
           {CH_META.map((c, i) => {
             const state = ch[i]
             return (
               <div key={i} style={{ position: 'relative', marginBottom: '26px', opacity: state === 'dim' ? 0.55 : 1 }}>
                 <div style={{ position: 'absolute', left: '-34px', top: '4px', width: '24px', height: '24px',
                   borderRadius: '50%', border: `2px solid ${CHROME}`,
-                  background: state === 'done' ? CHROME : tokens.bg,
+                  background: state === 'done' ? CHROME : at.ground,
                   boxShadow: state === 'now' ? '0 0 0 4px rgba(242,196,90,0.3)' : 'none',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   ...sc, fontSize: '13px', color: state === 'done' ? '#FFF' : GOLD }}>
                   {state === 'done' ? '✓' : i + 1}
                 </div>
                 <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', textTransform: 'uppercase', color: GOLD }}>{c.n}</div>
-                <h3 style={{ ...serif, fontWeight: 400, fontSize: '26px', margin: '2px 0 6px', color: tokens.dark }}>{c.h}</h3>
+                <h3 style={{ ...serif, fontWeight: 400, fontSize: '26px', margin: '2px 0 6px', color: at.text }}>{c.h}</h3>
 
                 {i === 4 ? (
                   <div style={{ background: NIGHT, color: CREAM, borderRadius: '14px', padding: '18px 20px', marginTop: '8px' }}>
@@ -242,7 +242,7 @@ export default function EarthJourney() {
                 ) : (
                   <div style={{ marginTop: '12px', background: 'rgba(242,196,90,0.07)', border: `1px dashed ${FAINT}`,
                     borderRadius: '14px', padding: '16px 18px' }}>
-                    <div style={{ ...serif, fontSize: '20px', marginBottom: '6px', color: tokens.dark }}>
+                    <div style={{ ...serif, fontSize: '20px', marginBottom: '6px', color: at.text }}>
                       Challenge the world to change the world.
                     </div>
                     <div style={{ ...body, fontSize: '14.5px', color: GHOST, lineHeight: 1.55, marginBottom: '12px' }}>
@@ -269,17 +269,17 @@ export default function EarthJourney() {
 
 function Vault({ t, big, sm, dots }) {
   return (
-    <div style={{ marginTop: '12px', background: '#FFFFFF', border: '1px solid rgba(15,21,35,0.12)',
+    <div style={{ marginTop: '12px', background: at.object, border: `1px solid ${at.verdigrisEdge}`,
       borderRadius: '14px', padding: '16px 18px' }}>
-      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#A8721A', marginBottom: '8px' }}>{t}</div>
-      <div style={{ ...serif, fontWeight: 300, fontSize: '30px', lineHeight: 1.1, color: '#0F1523' }}>{big}</div>
-      {sm ? <div style={{ ...body, fontSize: '14px', color: 'rgba(15,21,35,0.55)', marginTop: '4px', lineHeight: 1.5 }}>{sm}</div> : null}
+      <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: at.brass, marginBottom: '8px' }}>{t}</div>
+      <div style={{ ...serif, fontWeight: 300, fontSize: '30px', lineHeight: 1.1, color: at.text }}>{big}</div>
+      {sm ? <div style={{ ...body, fontSize: '14px', color: at.ghost, marginTop: '4px', lineHeight: 1.5 }}>{sm}</div> : null}
       {dots && (
         <div style={{ display: 'flex', gap: '5px', marginTop: '10px' }}>
           {dots.map((d, i) => (
             <span key={i} style={{ width: '12px', height: '12px', borderRadius: '50%',
-              background: d === 'on' ? '#C8922A' : (d === 'today' ? 'rgba(242,196,90,0.25)' : 'rgba(15,21,35,0.1)'),
-              border: d === 'grace' ? '2px solid #C8922A' : (d === 'today' ? '2px dashed #C8922A' : 'none'),
+              background: d === 'on' ? at.verdigris : (d === 'today' ? 'rgba(242,196,90,0.25)' : 'rgba(234,241,237,0.08)'),
+              border: d === 'grace' ? `2px solid ${at.verdigris}` : (d === 'today' ? '2px dashed #F2C45A' : 'none'),
               boxSizing: 'border-box' }} />
           ))}
         </div>

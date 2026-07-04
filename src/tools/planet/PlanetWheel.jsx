@@ -4,7 +4,7 @@
 // When nextusScores provided, renders two overlapping polygons (self + NextUs)
 
 import { PLANET_DOMAINS, getPlanetScoreColor } from '../../constants/horizonScalePlanet'
-import { sc } from '../../lib/designTokens'
+import { sc, serif, at } from '../../lib/designTokens'
 
 const MAX_SCORE = 10
 const NUM_DOMAINS = 7
@@ -91,7 +91,7 @@ export function PlanetWheel({ scores, nextusScores, size = 400 }) {
             key={ring}
             points={ringPoints.map(p => `${p.x},${p.y}`).join(' ')}
             fill="none"
-            stroke={ring === 10 ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.12)'}
+            stroke={ring === 10 ? at.verdigrisEdge : 'rgba(88,160,138,0.12)'}
             strokeWidth={ring === 10 ? 1.5 : 1}
           />
         )
@@ -105,7 +105,7 @@ export function PlanetWheel({ scores, nextusScores, size = 400 }) {
           y1={cy}
           x2={end.x}
           y2={end.y}
-          stroke="rgba(200,146,42,0.18)"
+          stroke="rgba(88,160,138,0.18)"
           strokeWidth={1}
         />
       ))}
@@ -124,8 +124,8 @@ export function PlanetWheel({ scores, nextusScores, size = 400 }) {
       {/* Self assessment polygon */}
       <path
         d={selfPath}
-        fill="rgba(200,146,42,0.12)"
-        stroke="#C8922A"
+        fill="rgba(88,160,138,0.12)"
+        stroke={at.verdigris}
         strokeWidth={2}
         filter="url(#planet-glow)"
       />
@@ -142,7 +142,7 @@ export function PlanetWheel({ scores, nextusScores, size = 400 }) {
             cy={p.y}
             r={4}
             fill={getPlanetScoreColor(score)}
-            stroke="#FFFFFF"
+            stroke={at.object}
             strokeWidth={1.5}
           />
         )
@@ -164,7 +164,7 @@ export function PlanetWheel({ scores, nextusScores, size = 400 }) {
               y={d.y - (selfScore ? 8 : 0)}
               textAnchor={textAnchor}
               style={{
-                fontFamily: "'Cormorant SC', Georgia, serif",
+                ...sc,
                 fontSize: 13,
                 letterSpacing: '0.06em',
                 fill: d.color,
@@ -178,7 +178,7 @@ export function PlanetWheel({ scores, nextusScores, size = 400 }) {
                 y={d.y + 6}
                 textAnchor={textAnchor}
                 style={{
-                  fontFamily: "'Cormorant Garamond', Georgia, serif",
+                  ...serif,
                   fontSize: 13,
                   fill: getPlanetScoreColor(selfScore),
                 }}
@@ -191,15 +191,15 @@ export function PlanetWheel({ scores, nextusScores, size = 400 }) {
       })}
 
       {/* Centre point */}
-      <circle cx={cx} cy={cy} r={3} fill="rgba(200,146,42,0.4)" />
+      <circle cx={cx} cy={cy} r={3} fill={at.verdigrisEdge} />
 
       {/* Legend (if both modes) */}
       {nextusPath && (
         <g transform={`translate(${size - 130}, ${size - 48})`}>
-          <line x1={0} y1={8} x2={18} y2={8} stroke="#C8922A" strokeWidth={2} />
-          <text x={22} y={12} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: 13, fill: 'rgba(15,21,35,0.72)' }}>Self</text>
+          <line x1={0} y1={8} x2={18} y2={8} stroke={at.verdigris} strokeWidth={2} />
+          <text x={22} y={12} style={{ ...sc, fontSize: 13, fill: at.meta }}>Self</text>
           <line x1={0} y1={22} x2={18} y2={22} stroke="rgba(92,138,184,0.7)" strokeWidth={1.5} strokeDasharray="4 3" />
-          <text x={22} y={26} style={{ fontFamily: "'Cormorant SC', Georgia, serif", fontSize: 13, fill: 'rgba(15,21,35,0.72)' }}>NextUs</text>
+          <text x={22} y={26} style={{ ...sc, fontSize: 13, fill: at.meta }}>NextUs</text>
         </g>
       )}
     </svg>
