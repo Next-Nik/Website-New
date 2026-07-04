@@ -431,6 +431,14 @@ button {
 }
 
 @media (max-width: 640px) {
+  /* Global clearance: whenever the fixed bottom tab bar is present, reserve
+     space beneath every page so no element (buttons especially) hides under
+     it. Scoped with :has() so pages that hide the bar — Mission Control, the
+     first-light gate — keep their full-viewport layout untouched. */
+  body:has([data-bottom-tabs]) {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+
   /* Add bottom padding so content clears the tab bar */
   .page-shell {
     padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
