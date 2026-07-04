@@ -309,21 +309,29 @@ function NowTab({ onNavigate }) {
     async function load() {
       setLoading(true)
       try {
-        const [
-          { count: totalUsers },
-          { count: mapCount },
-          { count: ppCount },
-          { count: sprintCount },
-          { data: recentUsers },
-        ] = await Promise.all([
-          supabase.from('users').select('*', { count: 'exact', head: true }),
-          supabase.from('map_results').select('*', { count: 'exact', head: true }).eq('complete', true),
-          supabase.from('purpose_piece_results').select('*', { count: 'exact', head: true }),
-          supabase.from('target_sprint_sessions').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+        // Aggregate tool-usage counts come from the founder-gated server
+        // endpoint (service role, outside RLS) — counting these tables in
+        // the browser only ever saw the founder's OWN rows, because the
+        // personal-tool tables are correctly RLS-locked per user. The
+        // endpoint returns integers only; no row content crosses the wire.
+        let token = null
+        try { token = (await supabase.auth.getSession()).data.session?.access_token || null } catch {}
+
+        const [statsRes, { data: recentUsers }] = await Promise.all([
+          fetch('/api/admin-stats', {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          }).then(r => r.json()).catch(() => null),
           supabase.from('users').select('id, email, first_name, last_name, created_at, status')
             .order('created_at', { ascending: false }).limit(500),
         ])
-        setStats({ totalUsers, mapCount, ppCount, sprintCount })
+
+        const s = statsRes?.stats || {}
+        setStats({
+          totalUsers:  s.users          ?? null,
+          mapCount:    s.maps_complete  ?? null,
+          ppCount:     s.purpose_pieces ?? null,
+          sprintCount: s.active_sprints ?? null,
+        })
         setRecent(recentUsers ?? [])
       } catch {}
       setLoading(false)
@@ -350,7 +358,7 @@ function NowTab({ onNavigate }) {
           ].map(s => (
             <Card key={s.label} onClick={s.tab && onNavigate ? () => onNavigate(s.tab) : undefined}
               style={{ textAlign: 'center', padding: '18px 12px' }}>
-              <div style={{ ...body, fontSize: '32px', fontWeight: 400, color: '#0F1523', lineHeight: 1 }}>{s.value ?? 0}</div>
+              <div style={{ ...body, fontSize: '32px', fontWeight: 400, color: '#0F1523', lineHeight: 1 }}>{s.value ?? '–'}</div>
               <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: gold, marginTop: '6px' }}>{s.label}</div>
             </Card>
           ))}
