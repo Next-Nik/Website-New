@@ -6,7 +6,7 @@
 // branches below. Shown to the author on their own challenge page.
 
 import { useState, useEffect } from 'react'
-import { sc, body as bodyFont, tokens } from '../../../lib/designTokens'
+import { sc, body as bodyFont, tokens, at } from '../../../lib/designTokens'
 
 export default function BroadcastComposer({ call, userId, colour }) {
   const [text, setText]       = useState('')
@@ -53,7 +53,7 @@ export default function BroadcastComposer({ call, userId, colour }) {
           value={text}
           onChange={e => setText(e.target.value)}
           placeholder="A note to the people running your challenge. They read it; there is no reply thread."
-          style={{ width: '100%', minHeight: '88px', border: '1px solid rgba(200,146,42,0.18)', borderRadius: '10px', background: '#FFFFFF', padding: '13px 15px', ...bodyFont, fontSize: '15px', lineHeight: 1.55, color: 'rgba(15,21,35,0.82)', resize: 'vertical', outline: 'none', boxSizing: 'border-box' }}
+          style={{ width: '100%', minHeight: '88px', border: `1px solid ${at.verdigrisEdge}`, borderRadius: '10px', background: at.object, padding: '13px 15px', ...bodyFont, fontSize: '15px', lineHeight: 1.55, color: at.text, resize: 'vertical', outline: 'none', boxSizing: 'border-box' }}
         />
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginTop: '13px', flexWrap: 'wrap' }}>
           <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)', display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
@@ -75,7 +75,7 @@ export default function BroadcastComposer({ call, userId, colour }) {
       {recent.length > 0 && (
         <div style={{ marginTop: '14px' }}>
           {recent.slice(0, 3).map(b => (
-            <div key={b.id} style={{ ...bodyFont, fontSize: '15px', lineHeight: 1.6, color: 'rgba(15,21,35,0.72)', padding: '12px 0', borderTop: '1px solid rgba(200,146,42,0.18)' }}>
+            <div key={b.id} style={{ ...bodyFont, fontSize: '15px', lineHeight: 1.6, color: at.meta, padding: '12px 0', borderTop: `1px solid ${at.verdigrisEdge}` }}>
               {b.body}
             </div>
           ))}

@@ -7,9 +7,9 @@
 // parent and no children.
 
 import { useState, useEffect } from 'react'
-import { serif, sc, body as bodyFont, tokens } from '../../../lib/designTokens'
+import { serif, sc, body as bodyFont, tokens, at } from '../../../lib/designTokens'
 
-const HAIR = '1px solid rgba(200,146,42,0.18)'
+const HAIR = `1px solid ${at.verdigrisEdge}`
 
 function distanceStyle(absDist) {
   // The frame never dims. Recession lives in size and a light content softening.

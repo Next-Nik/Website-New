@@ -6,7 +6,7 @@
 // are not muted.
 
 import { useState, useEffect } from 'react'
-import { sc, body as bodyFont, tokens } from '../../../lib/designTokens'
+import { sc, body as bodyFont, tokens, at } from '../../../lib/designTokens'
 
 function ago(iso) {
   const d = (Date.now() - new Date(iso).getTime()) / 1000
@@ -65,7 +65,7 @@ export default function BroadcastFeed({ callId, userId, authorName, colour }) {
           From the author
         </span>
         <button type="button" onClick={() => toggleMute(!muted)}
-          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase', color: tokens.gold, background: 'none', border: '1px solid rgba(200,146,42,0.5)', borderRadius: '24px', padding: '6px 16px', cursor: 'pointer' }}>
+          style={{ ...sc, fontSize: '13px', letterSpacing: '0.12em', textTransform: 'uppercase', color: at.brass, background: 'none', border: `1px solid ${at.brassEdge}`, borderRadius: '24px', padding: '6px 16px', cursor: 'pointer' }}>
           {muted ? 'Unmute updates' : 'Mute updates'}
         </button>
       </div>

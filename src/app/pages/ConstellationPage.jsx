@@ -8,14 +8,14 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Nav } from '../../components/Nav'
-import { tokens, serif, body, sc } from '../../lib/designTokens'
+import { tokens, serif, body, sc, at } from '../../lib/designTokens'
 import { DOMAIN_COLORS } from '../../constants/domainColors'
 import ConstellationMeter from '../components/challenge/ConstellationMeter'
 
 function colourFor(domain, goalColour) {
   if (goalColour) return goalColour
   const entry = DOMAIN_COLORS[domain]
-  return entry?.base || tokens.goldChrome
+  return entry?.base || at.verdigris
 }
 
 function Eyebrow({ children, colour }) {
@@ -35,7 +35,7 @@ function ShareButton({ title }) {
   }
   return (
     <button type="button" onClick={share}
-      style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: tokens.gold, background: 'rgba(200,146,42,0.08)', border: '1.5px solid rgba(200,146,42,0.78)', borderRadius: '30px', padding: '10px 22px', cursor: 'pointer' }}>
+      style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', textTransform: 'uppercase', color: at.brass, background: 'rgba(217,178,74,0.08)', border: '1.5px solid rgba(217,178,74,0.78)', borderRadius: '30px', padding: '10px 22px', cursor: 'pointer' }}>
       {copied ? 'Link copied' : 'Share this constellation'}
     </button>
   )
@@ -44,12 +44,12 @@ function ShareButton({ title }) {
 function ChallengeCard({ c, colour }) {
   return (
     <Link to={c.slug ? `/stretch/c/${c.slug}` : '#'}
-      style={{ textDecoration: 'none', display: 'block', background: tokens.bgCard, border: `1.5px solid ${colour}`, borderRadius: '14px', padding: '18px 20px' }}>
-      <div style={{ ...serif, fontWeight: 300, fontSize: '20px', color: tokens.dark, lineHeight: 1.2 }}>{c.title}</div>
+      style={{ textDecoration: 'none', display: 'block', background: at.object, border: `1.5px solid ${colour}`, borderRadius: '14px', padding: '18px 20px' }}>
+      <div style={{ ...serif, fontWeight: 300, fontSize: '20px', color: at.text, lineHeight: 1.2 }}>{c.title}</div>
       {c.the_move && <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.7)', lineHeight: 1.55, margin: '6px 0 0' }}>{c.the_move}</p>}
       <div style={{ display: 'flex', gap: '14px', marginTop: '12px', ...sc, fontSize: '13px', letterSpacing: '0.08em', color: 'rgba(15,21,35,0.55)' }}>
         {c.nextus_actors?.name && <span>{c.nextus_actors.name}</span>}
-        {c.taken_on_count > 0 && <span style={{ color: tokens.gold }}>{c.taken_on_count.toLocaleString()} in</span>}
+        {c.taken_on_count > 0 && <span style={{ color: at.brass }}>{c.taken_on_count.toLocaleString()} in</span>}
         {!c.parent_call_id && <span style={{ color: colour }}>root</span>}
       </div>
     </Link>
@@ -60,12 +60,12 @@ function ActorCard({ a, colour }) {
   const portrait = a.type === 'practitioner'
   return (
     <Link to={a.slug ? `/org/${a.slug}` : '#'}
-      style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '13px', background: tokens.bgCard, border: '1px solid rgba(200,146,42,0.18)', borderRadius: '12px', padding: '14px 16px' }}>
+      style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '13px', background: at.object, border: '1px solid rgba(217,178,74,0.18)', borderRadius: '12px', padding: '14px 16px' }}>
       {a.image_url
         ? <img src={a.image_url} alt={a.name} style={{ width: '42px', height: '42px', borderRadius: portrait ? '50%' : '8px', objectFit: 'cover', flexShrink: 0 }} />
         : <span style={{ width: '42px', height: '42px', borderRadius: portrait ? '50%' : '8px', flexShrink: 0, background: 'rgba(74,140,111,0.12)', border: `1.5px solid ${colour}`, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', ...sc, fontSize: '15px', color: colour }}>{(a.name || '?').slice(0, 1)}</span>}
       <span style={{ minWidth: 0 }}>
-        <span style={{ display: 'block', ...serif, fontWeight: 300, fontSize: '17px', color: tokens.dark, lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.name}</span>
+        <span style={{ display: 'block', ...serif, fontWeight: 300, fontSize: '17px', color: at.text, lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.name}</span>
         {a.tagline && <span style={{ display: 'block', ...body, fontSize: '13px', color: 'rgba(15,21,35,0.55)', lineHeight: 1.4, marginTop: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{a.tagline}</span>}
       </span>
     </Link>
@@ -97,10 +97,10 @@ export function ConstellationPage() {
 
   if (loading) return <div className="loading" />
   if (notFound || !data) return (
-    <div style={{ background: tokens.bg, minHeight: '100dvh' }}>
+    <div style={{ background: at.ground, minHeight: '100dvh' }}>
       <Nav />
       <div style={{ maxWidth: '600px', margin: '0 auto', padding: '120px 24px', textAlign: 'center' }}>
-        <Eyebrow colour={tokens.gold}>Constellation not found</Eyebrow>
+        <Eyebrow colour={at.brass}>Constellation not found</Eyebrow>
         <p style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.78)', lineHeight: 1.7 }}>
           No constellation exists for that domain yet.
         </p>
@@ -112,13 +112,13 @@ export function ConstellationPage() {
   const colour = colourFor(domain, goal.colour)
 
   return (
-    <div style={{ background: tokens.bg, minHeight: '100dvh' }}>
+    <div style={{ background: at.ground, minHeight: '100dvh' }}>
       <Nav />
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: 'clamp(56px,7vw,88px) clamp(20px,5vw,40px) 100px' }}>
 
         {/* Hero */}
         <Eyebrow colour={colour}>The Founding {goal.label} Constellation</Eyebrow>
-        <h1 style={{ ...serif, fontSize: 'clamp(1.9rem,5vw,3rem)', fontWeight: 300, color: tokens.dark, lineHeight: 1.15, margin: '0 0 16px' }}>
+        <h1 style={{ ...serif, fontSize: 'clamp(1.9rem,5vw,3rem)', fontWeight: 300, color: at.text, lineHeight: 1.15, margin: '0 0 16px' }}>
           {goal.goal_text}
         </h1>
         <p style={{ ...body, fontSize: '1.0625rem', color: 'rgba(15,21,35,0.7)', lineHeight: 1.7, margin: '0 0 20px' }}>
