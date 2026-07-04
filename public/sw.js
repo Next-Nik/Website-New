@@ -1,7 +1,6 @@
-const CACHE_NAME = 'nextus-v6';
+const CACHE_NAME = 'nextus-v7';
 
 const SHELL_ASSETS = [
-  '/',
   '/manifest.json',
   '/favicon.svg',
   '/icon-192.png',
@@ -9,7 +8,7 @@ const SHELL_ASSETS = [
   '/apple-touch-icon.png',
 ];
 
-// Install: cache shell assets
+// Install: cache shell assets (NOT '/' — HTML is network-first, see fetch)
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_ASSETS))
@@ -17,7 +16,9 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activate: clean old caches
+// Activate: clean old caches. Bumping CACHE_NAME to v7 purges the v6 cache
+// that was poisoned by the previous cache-first strategy (stale HTML served
+// for hashed JS URLs after deploys — the mobile white-screen bug).
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -29,11 +30,28 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch: network-first for API/auth, cache-first for shell
+// Never cache a response unless it's a real 200 AND its content type matches
+// what was asked for. This is the guard against the poison case: a request
+// for a missing hashed asset that the SPA rewrite answers with index.html
+// (status 200). Caching that HTML under the JS URL bricks the app until the
+// cache is cleared.
+function safeCachePut(request, response) {
+  if (!response || response.status !== 200 || response.type === 'opaque') return;
+  const dest = request.destination; // 'script', 'style', 'document', 'image', ...
+  const ctype = (response.headers.get('content-type') || '').toLowerCase();
+  if ((dest === 'script' || dest === 'style') && ctype.includes('text/html')) return;
+  const clone = response.clone();
+  caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+}
+
+// Fetch strategy:
+//   API / auth / third-party  → network only (untouched)
+//   Navigations (HTML)        → NETWORK-FIRST, cache fallback for offline
+//   /assets/ (hashed, immutable) → cache-first (safe: filenames change per build)
+//   Other same-origin GETs    → stale-while-revalidate
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Always go network for API calls, auth, Supabase
   if (
     url.pathname.startsWith('/api/') ||
     url.pathname.startsWith('/auth/') ||
@@ -44,21 +62,45 @@ self.addEventListener('fetch', (event) => {
     return; // fall through to network
   }
 
-  // Cache-first for same-origin GET requests
-  if (event.request.method === 'GET' && url.origin === self.location.origin) {
+  if (event.request.method !== 'GET' || url.origin !== self.location.origin) return;
+
+  // ── Navigations: network-first ──────────────────────────────
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          safeCachePut(event.request, response);
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((c) => c || caches.match('/')))
+    );
+    return;
+  }
+
+  // ── Hashed build assets: cache-first (immutable per deploy) ─
+  if (url.pathname.startsWith('/assets/')) {
     event.respondWith(
       caches.match(event.request).then((cached) => {
-        const networkFetch = fetch(event.request).then((response) => {
-          if (response && response.status === 200) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
+        if (cached) return cached;
+        return fetch(event.request).then((response) => {
+          safeCachePut(event.request, response);
           return response;
         });
-        return cached || networkFetch;
       })
     );
+    return;
   }
+
+  // ── Everything else same-origin: stale-while-revalidate ─────
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      const networkFetch = fetch(event.request).then((response) => {
+        safeCachePut(event.request, response);
+        return response;
+      });
+      return cached || networkFetch;
+    })
+  );
 });
 
 // ── Push: the beacon's reminders and nudges ──────────────────────────────────

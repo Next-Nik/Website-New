@@ -8,8 +8,9 @@
 // The sky is a tree, not a scatter: one seed at the centre (the founding
 // challenge), and every star grows from a branch of it. Growth is
 // deterministic (seeded PRNG), so every visitor sees the identical
-// constellation for the same spark count. Density scales with live sparks:
-// 24 stars lit and waiting, one more per 25 sparks, up to 78.
+// constellation for the same spark count. The sky is honest: one star per
+// real spark, up to 78 — no decorative baseline. At zero sparks, only the
+// core flame burns.
 //
 // Imperative API via ref: fireSpark() sends an energy pulse through a random
 // lineage. Wire it to a check-in so showing up visibly feeds the fire.
@@ -152,7 +153,11 @@ const BeaconFire = forwardRef(function BeaconFire({ sparks = 0 }, ref) {
       return null
     }
     st.setSparks = function (sp) {
-      const count = Math.min(78, 24 + Math.floor(Number(sp || 0) / 25))
+      // Honest sky: one visible star per real spark, capped at 78. The node
+      // count includes the invisible seed at the core (stars render from
+      // index 1), so N sparks = N + 1 nodes. The old formula rendered a
+      // decorative floor of 24 stars at zero sparks — a fiction removed.
+      const count = 1 + Math.min(78, Math.max(0, Math.floor(Number(sp || 0))))
       if (count < st.nodes.length) {
         reset()
         while (st.nodes.length < count) { if (!growOne()) break }
