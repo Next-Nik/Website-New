@@ -832,7 +832,19 @@ function ActorsTab({ toast }) {
 
   async function deleteActor(id, name) {
     if (!window.confirm(`Delete "${name}"?`)) return
-    await supabase.from('nextus_actors').delete().eq('id', id)
+    // .select('id') makes the delete return the rows it removed — without it,
+    // an RLS-blocked delete matches zero rows and reports success, which is
+    // how this button spent months toasting "Deleted" over surviving rows.
+    const { data: gone, error } = await supabase
+      .from('nextus_actors').delete().eq('id', id).select('id')
+    if (error) {
+      toast(`Delete failed: ${error.message}`)
+      return
+    }
+    if (!gone?.length) {
+      toast('Delete blocked — no rows removed. If this actor is claimed, it cannot be deleted from the console; if unclaimed, check that migration 162 has been run.')
+      return
+    }
     toast('Deleted'); fetchActors()
   }
 
