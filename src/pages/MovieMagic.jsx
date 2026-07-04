@@ -178,6 +178,49 @@ const lanesForBoard = (board) => {
   return names.map((n) => ({ name: n, type: 'act', hint: '' }))
 }
 
+/* ── .fountain export ─────────────────────────────────────────
+   Turns a board into a Fountain outline: lanes become sections
+   (#), beat titles become synopses (=), details become notes
+   ([[ ]]). Beat and DubScript read all three into their outline
+   views, so an exported wall opens as the skeleton of a draft. */
+
+const slugify = (s) =>
+  s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'untitled'
+
+const buildFountain = (projectName, board) => {
+  const lanes = lanesForBoard(board)
+  const today = new Date().toISOString().slice(0, 10)
+  const lines = [
+    `Title: ${board.name}`,
+    `Source: ${projectName}`,
+    `Credit: Structure Wall export`,
+    `Draft date: ${today}`,
+    '',
+  ]
+  lanes.forEach((lane, i) => {
+    lines.push(`# ${lane.name}`)
+    lines.push('')
+    for (const note of board.laneNotes[i]) {
+      lines.push(`= ${(note.title || 'Untitled beat').replace(/\n+/g, ' ')}`)
+      if (note.detail) lines.push(`[[${note.detail.replace(/\n+/g, ' ')}]]`)
+      lines.push('')
+    }
+  })
+  return lines.join('\n')
+}
+
+const downloadFountain = (projectName, board) => {
+  const blob = new Blob([buildFountain(projectName, board)], { type: 'text/plain;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `${slugify(projectName)}-${slugify(board.name)}.fountain`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
 /* ── page ─────────────────────────────────────────────────── */
 
 export function MovieMagicPage() {
@@ -466,6 +509,7 @@ function MovieMagicWorkspace({ user }) {
       {board ? (
         <BoardView
           board={board}
+          projectName={project ? project.name : ''}
           drag={drag}
           onAddNote={(laneIdx) => setEditor({ boardId: board.id, laneIdx, noteId: null })}
           onEditNote={(laneIdx, noteId) => setEditor({ boardId: board.id, laneIdx, noteId })}
@@ -541,7 +585,7 @@ function MovieMagicWorkspace({ user }) {
 
 /* ── board view ───────────────────────────────────────────── */
 
-function BoardView({ board, drag, onAddNote, onEditNote, onGripDown, onGripMove, onGripUp, onRename, onDelete }) {
+function BoardView({ board, projectName, drag, onAddNote, onEditNote, onGripDown, onGripMove, onGripUp, onRename, onDelete }) {
   const lanes = lanesForBoard(board)
   const frameworkMeta = board.kind === 'character' ? FRAMEWORKS[board.framework] : null
 
@@ -557,6 +601,7 @@ function BoardView({ board, drag, onAddNote, onEditNote, onGripDown, onGripMove,
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
+          <button className="mm-btn ghost" onClick={() => downloadFountain(projectName, board)}>Export .fountain</button>
           <button className="mm-btn ghost" onClick={onRename}>Rename</button>
           <button className="mm-btn ghost danger" onClick={onDelete}>Take down</button>
         </div>
