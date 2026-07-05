@@ -3,7 +3,7 @@
 // Used by: NextUs Self (Map tool) and NextUs Planet (domain panels)
 //
 // Three layers per score point:
-//   TIER_MAP       — functional tier label (Cormorant SC, small caps)
+//   TIER_MAP       — functional tier label (IBM Plex Mono, small caps)
 //   LABEL_MAP      — descriptive label, short form (inline in picker)
 //   SIGNATURE_MAP  — energetic signature, full (shown on hover / detail)
 //
@@ -22,7 +22,7 @@ export const SCALE_POINTS = [
 ]
 
 // ── Tier labels ───────────────────────────────────────────────
-// Functional descriptor. Cormorant SC, small caps.
+// Functional descriptor. IBM Plex Mono, small caps.
 // Shared across personal and civilisational scale.
 
 export const TIER_MAP = {

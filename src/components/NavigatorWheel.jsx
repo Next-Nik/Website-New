@@ -26,10 +26,10 @@
 import { useMemo } from 'react'
 import { sc } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
-const GOLD = '#A8721A'
-const GOLD_LIGHT = '#C8922A'
+const GOLD = '#26302A'
+const GOLD_LIGHT = '#6E7F5C'
 const INK = '#0F1523'
 const PARCH = '#FAFAF7'
 
@@ -185,8 +185,8 @@ export function NavigatorWheel({
             position: 'absolute',
             top: '12px',
             right: '12px',
-            background: 'rgba(200,146,42,0.04)',
-            border: '1px solid rgba(200,146,42,0.40)',
+            background: 'rgba(110,127,92,0.04)',
+            border: '1px solid rgba(110,127,92,0.40)',
             borderRadius: '20px',
             padding: '4px 10px',
             cursor: 'pointer',

@@ -71,9 +71,9 @@ export function ProfileIdentityStrip({ displayName, focusName, headline, primary
               ...sc,
               fontSize: '13px',
               letterSpacing: '0.14em',
-              color: '#A8721A',
-              background: 'rgba(200,146,42,0.06)',
-              border: '1px solid rgba(200,146,42,0.25)',
+              color: '#26302A',
+              background: 'rgba(110,127,92,0.06)',
+              border: '1px solid rgba(110,127,92,0.25)',
               borderRadius: '4px',
               padding: '3px 9px',
             }}>

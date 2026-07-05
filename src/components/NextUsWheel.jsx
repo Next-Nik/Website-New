@@ -49,7 +49,7 @@ export default function NextUsWheel({
     <div style={{ position: 'relative', display: 'inline-block' }}>
       {/* Eyebrow */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase' }}>
           Civilisational
         </span>
         {onToggleVisibility && (
@@ -68,7 +68,7 @@ export default function NextUsWheel({
               ...sc,
               fontSize: '13px',
               letterSpacing: '0.1em',
-              color: visible ? '#A8721A' : 'rgba(15,21,35,0.55)',
+              color: visible ? '#26302A' : 'rgba(15,21,35,0.55)',
               transition: 'color 150ms ease',
             }}
           >
@@ -99,7 +99,7 @@ export default function NextUsWheel({
                 key={frac}
                 points={pts}
                 fill="none"
-                stroke="rgba(200,146,42,0.08)"
+                stroke="rgba(110,127,92,0.08)"
                 strokeWidth="0.5"
               />
             )
@@ -115,7 +115,7 @@ export default function NextUsWheel({
                 y1={cy}
                 x2={x}
                 y2={y}
-                stroke="rgba(200,146,42,0.08)"
+                stroke="rgba(110,127,92,0.08)"
                 strokeWidth="0.5"
               />
             )
@@ -178,7 +178,7 @@ export default function NextUsWheel({
                 y={ly}
                 textAnchor={anchor}
                 dominantBaseline="middle"
-                fontFamily="'Cormorant SC', Georgia, serif"
+                fontFamily="'IBM Plex Mono', Georgia, serif"
                 fontSize="11"
                 letterSpacing="0.5"
                 fill={isActive ? d.color : 'rgba(15,21,35,0.55)'}
@@ -205,7 +205,7 @@ export default function NextUsWheel({
             </span>
             <a
               href="/tools/purpose-piece"
-              style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#A8721A', textDecoration: 'none' }}
+              style={{ ...sc, fontSize: '13px', letterSpacing: '0.1em', color: '#26302A', textDecoration: 'none' }}
             >
               Begin
             </a>

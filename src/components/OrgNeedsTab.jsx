@@ -24,7 +24,7 @@ function NeedCard({ need, onUpdateStatus }) {
               {need.need_type} · {need.size}
             </span>
             {need.medium === 'in_person' && (
-              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: gold, background: 'rgba(200,146,42,0.07)', border: '1px solid rgba(200,146,42,0.25)', borderRadius: '4px', padding: '2px 8px' }}>
+              <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em', color: gold, background: 'rgba(88,160,138,0.07)', border: '1px solid rgba(88,160,138,0.25)', borderRadius: '4px', padding: '2px 8px' }}>
                 In person
               </span>
             )}
@@ -94,7 +94,7 @@ export function OrgNeedsTab({ actorId, navigate, toast }) {
 
   if (hasOfferings === false) {
     return (
-      <SectionCard style={{ borderColor: 'rgba(200,146,42,0.35)', background: 'rgba(200,146,42,0.03)' }}>
+      <SectionCard style={{ borderColor: 'rgba(88,160,138,0.35)', background: 'rgba(88,160,138,0.03)' }}>
         <p style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: gold, marginBottom: '8px' }}>
           Add an offering first
         </p>

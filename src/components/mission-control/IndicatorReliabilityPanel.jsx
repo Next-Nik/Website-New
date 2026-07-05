@@ -18,7 +18,7 @@ import { body, sc } from '../../../lib/designTokens'
 //   className    — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
 export default function IndicatorReliabilityPanel({ hours = 24, className }) {
   const [data, setData]       = useState(null)
   const [loading, setLoading] = useState(true)
@@ -93,7 +93,7 @@ export default function IndicatorReliabilityPanel({ hours = 24, className }) {
 
       <div style={{ display: 'flex', gap: '20px', marginBottom: '16px', flexWrap: 'wrap' }}>
         <Stat label="Successful" value={totals.ok} colour="#5DBC9D" />
-        <Stat label="Failed" value={totals.failed} colour="#A8721A" />
+        <Stat label="Failed" value={totals.failed} colour="#26302A" />
         <Stat label="Not yet built" value={totals.not_implemented} colour="rgba(15, 21, 35, 0.45)" />
         {successRate != null && (
           <Stat
@@ -114,7 +114,7 @@ export default function IndicatorReliabilityPanel({ hours = 24, className }) {
               ...sc,
               background: 'transparent',
               border: 'none',
-              color: '#A8721A',
+              color: '#26302A',
               fontSize: '13px',
               letterSpacing: '0.08em',
               fontWeight: 600,
@@ -146,7 +146,7 @@ function Wrap({ className, children }) {
       className={className}
       style={{
         background: '#FFFFFF',
-        border: '1px solid rgba(200, 146, 42, 0.20)',
+        border: '1px solid rgba(110,127,92, 0.20)',
         borderRadius: '14px',
         padding: '20px 22px',
       }}
@@ -205,12 +205,12 @@ function Stat({ label, value, colour }) {
 function FailureRow({ failure }) {
   const isPending = failure.status === 'not-implemented'
   const statusLabel = isPending ? 'fetcher pending' : 'failed'
-  const statusColour = isPending ? 'rgba(15, 21, 35, 0.55)' : '#A8721A'
+  const statusColour = isPending ? 'rgba(15, 21, 35, 0.55)' : '#26302A'
   return (
     <div
       style={{
         padding: '10px 0',
-        borderTop: '1px solid rgba(200, 146, 42, 0.15)',
+        borderTop: '1px solid rgba(110,127,92, 0.15)',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
@@ -251,7 +251,7 @@ function FailureRow({ failure }) {
 }
 
 const muted = {
-  fontFamily: "'Lora', Georgia, serif",
+  fontFamily: "'Newsreader', Georgia, serif",
   fontSize: '13px',
   color: 'rgba(15, 21, 35, 0.55)',
   margin: 0,

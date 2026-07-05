@@ -103,7 +103,7 @@ function GateCard({ toolName, variant, discountPct = 0 }) {
     }}>
       <div style={{
         background: '#FFFFFF',
-        border: '1.5px solid rgba(200,146,42,0.78)',
+        border: '1.5px solid rgba(110,127,92,0.78)',
         borderRadius: '14px',
         padding: '36px 32px',
         maxWidth: '380px', width: '100%',
@@ -111,7 +111,7 @@ function GateCard({ toolName, variant, discountPct = 0 }) {
       }}>
         <span style={{
           ...sc, fontSize: '15px', letterSpacing: '0.2em',
-          color: '#A8721A', display: 'block', marginBottom: '14px',
+          color: '#26302A', display: 'block', marginBottom: '14px',
           textTransform: 'uppercase',
         }}>
           {m.eyebrow}
@@ -133,8 +133,8 @@ function GateCard({ toolName, variant, discountPct = 0 }) {
             display: 'inline-block',
             padding: '14px 28px',
             borderRadius: '40px',
-            border: '1px solid rgba(168,114,26,0.8)',
-            background: '#C8922A',
+            border: '1px solid rgba(38,48,42,0.8)',
+            background: '#6E7F5C',
             ...sc, fontSize: '17px', fontWeight: 600,
             letterSpacing: '0.14em', color: '#FFFFFF',
             textDecoration: 'none',

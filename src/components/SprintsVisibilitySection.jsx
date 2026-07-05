@@ -213,7 +213,7 @@ function SprintGroup({
           display: 'block',
           fontSize: '13px',
           letterSpacing: '0.08em',
-          color: '#A8721A',
+          color: '#26302A',
           fontWeight: 600,
           marginBottom: '10px',
         }}
@@ -269,7 +269,7 @@ function SprintRow({
     <li
       style={{
         background: '#FFFFFF',
-        border: '1px solid rgba(200, 146, 42, 0.20)',
+        border: '1px solid rgba(110,127,92, 0.20)',
         borderRadius: '14px',
         padding: '14px 16px',
         display: 'flex',

@@ -53,7 +53,7 @@ function SectionLabel({ children }) {
   )
 }
 
-function ToggleChip({ label, active, onClick, color = '#A8721A' }) {
+function ToggleChip({ label, active, onClick, color = '#26302A' }) {
   return (
     <button
       type="button"
@@ -64,10 +64,10 @@ function ToggleChip({ label, active, onClick, color = '#A8721A' }) {
         fontSize: '13px',
         letterSpacing: '0.04em',
         color: active ? color : 'rgba(15,21,35,0.72)',
-        background: active ? 'rgba(200,146,42,0.08)' : '#FFFFFF',
+        background: active ? 'rgba(110,127,92,0.08)' : '#FFFFFF',
         border: active
           ? `1px solid ${color}`
-          : '1px solid rgba(200,146,42,0.25)',
+          : '1px solid rgba(110,127,92,0.25)',
         borderRadius: '40px',
         padding: '5px 12px',
         cursor: 'pointer',
@@ -75,7 +75,7 @@ function ToggleChip({ label, active, onClick, color = '#A8721A' }) {
         transition: 'background 120ms ease, border-color 120ms ease',
       }}
       onMouseEnter={(e) => {
-        if (!active) e.currentTarget.style.background = 'rgba(200,146,42,0.04)'
+        if (!active) e.currentTarget.style.background = 'rgba(110,127,92,0.04)'
       }}
       onMouseLeave={(e) => {
         if (!active) e.currentTarget.style.background = '#FFFFFF'
@@ -121,7 +121,7 @@ export default function FilterPanel({
     <div style={{
       padding: '20px 22px',
       background: '#FFFFFF',
-      border: '1px solid rgba(200,146,42,0.18)',
+      border: '1px solid rgba(110,127,92,0.18)',
       borderRadius: '14px',
       marginBottom: '24px',
     }}>
@@ -150,7 +150,7 @@ export default function FilterPanel({
               style={{
                 width: '16px',
                 height: '16px',
-                accentColor: '#A8721A',
+                accentColor: '#26302A',
                 cursor: userHasFocus ? 'pointer' : 'default',
               }}
             />
@@ -158,7 +158,7 @@ export default function FilterPanel({
               ...sc,
               fontSize: '13px',
               letterSpacing: '0.1em',
-              color: filters.nearMeFirst && userHasFocus ? '#A8721A' : 'rgba(15,21,35,0.72)',
+              color: filters.nearMeFirst && userHasFocus ? '#26302A' : 'rgba(15,21,35,0.72)',
               fontWeight: filters.nearMeFirst && userHasFocus ? 600 : 400,
             }}>
               Near me first
@@ -209,9 +209,9 @@ export default function FilterPanel({
               ...sc,
               fontSize: '13px',
               letterSpacing: '0.14em',
-              color: '#A8721A',
+              color: '#26302A',
               background: 'transparent',
-              border: '1px solid rgba(200,146,42,0.30)',
+              border: '1px solid rgba(110,127,92,0.30)',
               borderRadius: '40px',
               padding: '6px 14px',
               cursor: 'pointer',
@@ -267,7 +267,7 @@ export default function FilterPanel({
                   label={d.label}
                   active={(filters.domains || []).includes(d.slug)}
                   onClick={() => toggle('domains', d.slug)}
-                  color={d.color || '#A8721A'}
+                  color={d.color || '#26302A'}
                 />
               ))}
             </div>

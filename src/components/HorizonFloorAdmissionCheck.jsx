@@ -107,7 +107,7 @@ export default function HorizonFloorAdmissionCheck({
           display: 'block',
           fontSize: '13px',
           letterSpacing: '0.08em',
-          color: '#A8721A',
+          color: '#26302A',
           fontWeight: 600,
           marginBottom: '16px',
         }}
@@ -121,7 +121,7 @@ export default function HorizonFloorAdmissionCheck({
         aria-hidden
         style={{
           height: '1px',
-          background: 'rgba(200, 146, 42, 0.20)',
+          background: 'rgba(110,127,92, 0.20)',
           margin: '32px 0',
         }}
       />
@@ -168,7 +168,7 @@ export default function HorizonFloorAdmissionCheck({
                 marginTop: '4px',
                 width: '16px',
                 height: '16px',
-                accentColor: '#A8721A',
+                accentColor: '#26302A',
               }}
             />
             <span
@@ -246,7 +246,7 @@ export default function HorizonFloorAdmissionCheck({
               lineHeight: 1.5,
               color: '#0F1523',
               padding: '10px 12px',
-              border: '1px solid rgba(200, 146, 42, 0.30)',
+              border: '1px solid rgba(110,127,92, 0.30)',
               borderRadius: '14px',
               background: '#FFFFFF',
               resize: 'vertical',
@@ -287,13 +287,13 @@ function PathTab({ active, onClick, label }) {
       onClick={onClick}
       style={{
         ...sc,
-        background: active ? 'rgba(200, 146, 42, 0.08)' : 'transparent',
-        border: '1px solid ' + (active ? 'rgba(200, 146, 42, 0.45)' : 'rgba(200, 146, 42, 0.20)'),
+        background: active ? 'rgba(110,127,92, 0.08)' : 'transparent',
+        border: '1px solid ' + (active ? 'rgba(110,127,92, 0.45)' : 'rgba(110,127,92, 0.20)'),
         borderRadius: '40px',
         padding: '6px 14px',
         fontSize: '14px',
         letterSpacing: '0.04em',
-        color: active ? '#A8721A' : 'rgba(15, 21, 35, 0.72)',
+        color: active ? '#26302A' : 'rgba(15, 21, 35, 0.72)',
         fontWeight: active ? 600 : 400,
         cursor: 'pointer',
       }}
@@ -312,7 +312,7 @@ function ActionRow({ primary, secondary }) {
         disabled={primary.disabled}
         style={{
           ...sc,
-          background: primary.disabled ? 'rgba(200, 146, 42, 0.20)' : '#0F1523',
+          background: primary.disabled ? 'rgba(110,127,92, 0.20)' : '#0F1523',
           color: primary.disabled ? 'rgba(255, 255, 255, 0.7)' : '#FFFFFF',
           border: 'none',
           borderRadius: '40px',

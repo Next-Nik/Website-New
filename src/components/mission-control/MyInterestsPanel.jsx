@@ -9,8 +9,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../../../hooks/useSupabase'
-import {
 import { body, sc } from '../../../lib/designTokens'
+import {
   GOLD, GOLD_DK, GOLD_RULE, TEXT_INK, TEXT_META, FONT_DISPLAY,
 } from './tokens'
 
@@ -85,7 +85,7 @@ export default function MyInterestsPanel({ userId }) {
             style={{ ...sc, fontSize: '13px', letterSpacing: '0.10em',
               padding: '6px 12px', borderRadius: '40px',
               border: filter === opt.v ? `1.5px solid ${GOLD}` : `1.5px solid ${GOLD_RULE}`,
-              background: filter === opt.v ? 'rgba(200,146,42,0.07)' : 'transparent',
+              background: filter === opt.v ? 'rgba(110,127,92,0.07)' : 'transparent',
               color: filter === opt.v ? GOLD_DK : TEXT_META,
               cursor: 'pointer' }}>
             {opt.label}

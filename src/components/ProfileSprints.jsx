@@ -31,7 +31,7 @@ function SprintCard({ sprint }) {
     <div style={{
       padding: '24px',
       background: '#FFFFFF',
-      border: '1px solid rgba(200,146,42,0.18)',
+      border: '1px solid rgba(110,127,92,0.18)',
       borderRadius: '14px',
     }}>
       {/* Sprint domain tags */}
@@ -41,9 +41,9 @@ function SprintCard({ sprint }) {
             ...sc,
             fontSize: '13px',
             letterSpacing: '0.14em',
-            color: '#A8721A',
-            background: 'rgba(200,146,42,0.07)',
-            border: '1px solid rgba(200,146,42,0.22)',
+            color: '#26302A',
+            background: 'rgba(110,127,92,0.07)',
+            border: '1px solid rgba(110,127,92,0.22)',
             borderRadius: '4px',
             padding: '3px 9px',
           }}>

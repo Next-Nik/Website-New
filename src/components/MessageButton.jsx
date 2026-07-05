@@ -91,13 +91,13 @@ export function MessageButton({ actor }) {
           ...sc, fontSize: '13px', letterSpacing: '0.14em',
           padding: '10px 22px', borderRadius: '40px',
           border: 'none',
-          background: isUnclaimed ? 'rgba(200,146,42,0.20)' : '#C8922A',
+          background: isUnclaimed ? 'rgba(110,127,92,0.20)' : '#6E7F5C',
           color: '#FFFFFF',
           cursor: isUnclaimed ? 'not-allowed' : 'pointer',
           transition: 'background 0.15s ease',
         }}
-        onMouseEnter={e => { if (!isUnclaimed) e.currentTarget.style.background = '#A8721A' }}
-        onMouseLeave={e => { if (!isUnclaimed) e.currentTarget.style.background = '#C8922A' }}
+        onMouseEnter={e => { if (!isUnclaimed) e.currentTarget.style.background = '#26302A' }}
+        onMouseLeave={e => { if (!isUnclaimed) e.currentTarget.style.background = '#6E7F5C' }}
       >
         Message {actor.name}
       </button>

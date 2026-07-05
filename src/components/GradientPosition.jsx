@@ -12,7 +12,7 @@ import { body, sc } from '../../lib/designTokens'
 // Greenwashing flag: position > 70 AND (trajectory === "stationary" || trajectory === "declining")
 // Links to /beta/domain/technology?lens=transition-accountability
 
-const gold  = '#A8721A'
+const gold  = '#26302A'
 const dark  = '#0F1523'
 
 // Colour interpolation across the extractive-to-regenerative spectrum.

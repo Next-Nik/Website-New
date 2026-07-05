@@ -21,7 +21,7 @@ function ReceiptCard({ sprint }) {
     <div style={{
       padding: '20px 24px',
       background: '#FFFFFF',
-      border: '1px solid rgba(200,146,42,0.12)',
+      border: '1px solid rgba(110,127,92,0.12)',
       borderRadius: '12px',
       display: 'flex',
       alignItems: 'flex-start',

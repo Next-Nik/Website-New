@@ -15,7 +15,7 @@ import { supabase } from '../../hooks/useSupabase'
 import { InfoButton } from './InfoButton'
 import { body, sc } from '../../lib/designTokens'
 
-const gold = '#A8721A'
+const gold = '#26302A'
 const dark = '#0F1523'
 
 const GROUP_LABEL = {
@@ -164,8 +164,8 @@ export function WatchingSection() {
           color: 'rgba(15,21,35,0.72)',
           fontStyle: 'italic',
           padding: '16px 18px',
-          background: 'rgba(200,146,42,0.04)',
-          border: '1px dashed rgba(200,146,42,0.35)',
+          background: 'rgba(110,127,92,0.04)',
+          border: '1px dashed rgba(110,127,92,0.35)',
           borderRadius: '8px',
         }}>
           You aren&rsquo;t tuned in to anything yet. Find a place, organisation,
@@ -239,12 +239,12 @@ function WatchedRow({ watch, resolved, onRemove, type, resolving }) {
       gap: '12px',
       padding: '10px 14px',
       borderRadius: '8px',
-      border: '1px solid rgba(200,146,42,0.18)',
+      border: '1px solid rgba(110,127,92,0.18)',
       background: '#FFFFFF',
     }}>
       <div style={{ ...body, fontSize: '15px', color: dark }}>
         {href ? (
-          <Link to={href} style={{ color: dark, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.30)' }}>
+          <Link to={href} style={{ color: dark, textDecoration: 'none', borderBottom: '1px solid rgba(110,127,92,0.30)' }}>
             {name}
           </Link>
         ) : (

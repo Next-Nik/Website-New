@@ -51,9 +51,9 @@ export function ContributeModal({ isOpen, onClose, domainName }) {
             background: 'none',
             border: 'none',
             cursor: 'pointer',
-            fontFamily: "'Cormorant SC', Georgia, serif",
+            fontFamily: "'IBM Plex Mono', Georgia, serif",
             fontSize: '18px',
-            color: '#A8721A',
+            color: '#26302A',
             lineHeight: 1,
           }}
         >
@@ -62,10 +62,10 @@ export function ContributeModal({ isOpen, onClose, domainName }) {
 
         <p
           style={{
-            fontFamily: "'Cormorant SC', Georgia, serif",
+            fontFamily: "'IBM Plex Mono', Georgia, serif",
             fontSize: '13px',
             letterSpacing: '0.18em',
-            color: '#A8721A',
+            color: '#26302A',
             textTransform: 'uppercase',
             marginBottom: '12px',
           }}
@@ -75,7 +75,7 @@ export function ContributeModal({ isOpen, onClose, domainName }) {
 
         <h2
           style={{
-            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontFamily: "'Fraunces', Georgia, serif",
             fontSize: '28px',
             fontWeight: 400,
             color: 'rgba(15,21,35,0.9)',
@@ -88,7 +88,7 @@ export function ContributeModal({ isOpen, onClose, domainName }) {
 
         <p
           style={{
-            fontFamily: "'Lora', Georgia, serif",
+            fontFamily: "'Newsreader', Georgia, serif",
             fontSize: '15px',
             color: 'rgba(15,21,35,0.65)',
             lineHeight: 1.7,

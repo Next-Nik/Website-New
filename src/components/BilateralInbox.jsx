@@ -18,7 +18,7 @@ import { BilateralCard } from './BilateralCard'
 import { BilateralCardEditor } from './BilateralCardEditor'
 import { body, sc } from '../../lib/designTokens'
 
-const gold = '#A8721A'
+const gold = '#26302A'
 const dark = '#0F1523'
 
 // ── Helper: resolve display names for a set of user ids ────────
@@ -66,8 +66,8 @@ function InvitationCard({ bilateral, partyAName, onAccepted, onDeclined }) {
   return (
     <div style={{
       padding: '22px 24px',
-      background: 'rgba(200,146,42,0.03)',
-      border: '1.5px solid rgba(200,146,42,0.40)',
+      background: 'rgba(110,127,92,0.03)',
+      border: '1.5px solid rgba(110,127,92,0.40)',
       borderRadius: '12px',
       marginBottom: '12px',
     }}>
@@ -84,7 +84,7 @@ function InvitationCard({ bilateral, partyAName, onAccepted, onDeclined }) {
         <p style={{
           ...body, fontSize: '14px', color: 'rgba(15,21,35,0.65)',
           lineHeight: 1.65, marginBottom: '14px',
-          paddingLeft: '14px', borderLeft: '2px solid rgba(200,146,42,0.30)',
+          paddingLeft: '14px', borderLeft: '2px solid rgba(110,127,92,0.30)',
         }}>
           {bilateral.payload.commitment_note}
         </p>
@@ -119,7 +119,7 @@ function InvitationCard({ bilateral, partyAName, onAccepted, onDeclined }) {
           style={{
             ...sc, fontSize: '13px', letterSpacing: '0.14em',
             padding: '10px 22px', borderRadius: '40px', cursor: acting ? 'not-allowed' : 'pointer',
-            background: '#C8922A', border: '1.5px solid rgba(168,114,26,0.8)',
+            background: '#6E7F5C', border: '1.5px solid rgba(38,48,42,0.8)',
             color: '#FFFFFF', opacity: acting ? 0.6 : 1,
           }}
         >
@@ -152,7 +152,7 @@ function SentDraftRow({ bilateral, partyBName, currentUserId, onWithdrawn, onEdi
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '14px 18px',
       background: '#FFFFFF',
-      border: '1px solid rgba(200,146,42,0.14)',
+      border: '1px solid rgba(110,127,92,0.14)',
       borderRadius: '10px',
       marginBottom: '8px',
       gap: '16px',
@@ -172,8 +172,8 @@ function SentDraftRow({ bilateral, partyBName, currentUserId, onWithdrawn, onEdi
           style={{
             ...sc, fontSize: '13px', letterSpacing: '0.12em',
             padding: '7px 16px', borderRadius: '40px', cursor: 'pointer',
-            background: 'rgba(200,146,42,0.05)',
-            border: '1px solid rgba(200,146,42,0.35)',
+            background: 'rgba(110,127,92,0.05)',
+            border: '1px solid rgba(110,127,92,0.35)',
             color: gold,
           }}
         >
@@ -269,8 +269,8 @@ export function BilateralInbox({ currentUserId, currentDisplayName }) {
             style={{
               ...sc, fontSize: '13px', letterSpacing: '0.14em',
               padding: '10px 20px', borderRadius: '40px', cursor: 'pointer',
-              background: 'rgba(200,146,42,0.05)',
-              border: '1.5px solid rgba(200,146,42,0.55)',
+              background: 'rgba(110,127,92,0.05)',
+              border: '1.5px solid rgba(110,127,92,0.55)',
               color: gold, flexShrink: 0,
             }}
           >

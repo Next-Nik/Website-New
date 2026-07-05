@@ -21,7 +21,7 @@ export function FeedItemShell({
   return (
     <div style={{
       background: '#FFFFFF',
-      border: '1px solid rgba(200,146,42,0.14)',
+      border: '1px solid rgba(110,127,92,0.14)',
       borderLeft: `3px solid ${accent}`,
       borderRadius: '12px',
       padding: '20px 22px',

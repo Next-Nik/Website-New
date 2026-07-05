@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { fetchPriorValue } from '../hooks/useDomainIndicators'
-import { body, sc } from '../../lib/designTokens'
+import { body, sc, at} from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // IndicatorCard
 //
 // One signal card per indicator. Single number per card — no chart, no
 // sparkline. The default render shows:
-//   - Indicator name (Cormorant SC eyebrow)
-//   - The number (Cormorant Garamond display)
+//   - Indicator name (IBM Plex Mono eyebrow)
+//   - The number (Fraunces display)
 //   - The direction arrow (up / down / sideways), coloured per the score
 //     palette: blue for progress, warm grey for plateau, amber for friction,
 //     deep red for crisis
@@ -33,13 +33,13 @@ import { body, sc } from '../../lib/designTokens'
 //   className — passthrough
 // ─────────────────────────────────────────────────────────────────────────────
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
 // Score palette per Design System v3.
 const COLOUR = {
   progress: '#2A6B5E',   // forest blue-green
   plateau:  '#8A8478',   // warm grey
-  friction: '#C8922A',   // amber gold
+  friction: at.verdigris,   // amber gold
   crisis:   '#8A3030',   // deep red
 }
 
@@ -84,8 +84,8 @@ export default function IndicatorCard({ indicator, focusName, className }) {
     <article
       className={className}
       style={{
-        background: '#FFFFFF',
-        border: '1px solid rgba(200, 146, 42, 0.20)',
+        background: at.object,
+        border: '1px solid rgba(88,160,138, 0.20)',
         borderRadius: '14px',
         padding: '20px 22px',
         display: 'flex',
@@ -99,7 +99,7 @@ export default function IndicatorCard({ indicator, focusName, className }) {
           ...sc,
           fontSize: '13px',
           letterSpacing: '0.08em',
-          color: '#A8721A',
+          color: at.brass,
           fontWeight: 600,
           lineHeight: 1.3,
         }}
@@ -137,7 +137,7 @@ export default function IndicatorCard({ indicator, focusName, className }) {
               fontSize: 'clamp(34px, 5vw, 48px)',
               fontWeight: 300,
               lineHeight: 1,
-              color: hasValue ? '#0F1523' : 'rgba(15, 21, 35, 0.55)',
+              color: hasValue ? at.text : at.ghost,
             }}
           >
             {hasValue ? numberDisplay.value : '—'}
@@ -148,7 +148,7 @@ export default function IndicatorCard({ indicator, focusName, className }) {
                 ...sc,
                 fontSize: '14px',
                 letterSpacing: '0.04em',
-                color: 'rgba(15, 21, 35, 0.55)',
+                color: at.ghost,
                 fontWeight: 600,
               }}
             >
@@ -168,7 +168,7 @@ export default function IndicatorCard({ indicator, focusName, className }) {
             ...body,
             fontSize: '14px',
             lineHeight: 1.45,
-            color: 'rgba(15, 21, 35, 0.72)',
+            color: at.meta,
             margin: 0,
           }}
         >
@@ -182,7 +182,7 @@ export default function IndicatorCard({ indicator, focusName, className }) {
           ...sc,
           fontSize: '13px',
           letterSpacing: '0.06em',
-          color: 'rgba(15, 21, 35, 0.55)',
+          color: at.ghost,
           fontWeight: 600,
           margin: '4px 0 0',
           lineHeight: 1.5,

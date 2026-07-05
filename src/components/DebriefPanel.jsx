@@ -19,7 +19,7 @@ import { useState, useRef, useEffect } from 'react'
 import { ROUTES } from '../constants/routes'
 import { body, sc } from '../lib/designTokens'
 
-const gold  = { color: '#A8721A' }
+const gold  = { color: '#26302A' }
 const muted = { color: 'rgba(15,21,35,0.78)' }
 
 function ThinkingDots() {
@@ -106,7 +106,7 @@ export function DebriefPanel({ tool, toolContext, userId, mode = 'full', onCompl
       <div style={{
         padding: '28px',
         background: '#FAFAF7',
-        border: '1.5px solid rgba(200,146,42,0.2)',
+        border: '1.5px solid rgba(110,127,92,0.2)',
         borderRadius: '14px',
       }}>
         <span style={{
@@ -125,8 +125,8 @@ export function DebriefPanel({ tool, toolContext, userId, mode = 'full', onCompl
             onClick={() => setBegun(true)}
             style={{
               ...sc, fontSize: '1.125rem', letterSpacing: '0.14em', ...gold,
-              background: 'rgba(200,146,42,0.05)',
-              border: '1.5px solid rgba(200,146,42,0.78)',
+              background: 'rgba(110,127,92,0.05)',
+              border: '1.5px solid rgba(110,127,92,0.78)',
               borderRadius: '40px', padding: '12px 28px',
               cursor: 'pointer', transition: 'all 0.2s',
             }}
@@ -157,7 +157,7 @@ export function DebriefPanel({ tool, toolContext, userId, mode = 'full', onCompl
     <div style={{
       padding: '28px',
       background: '#FAFAF7',
-      border: '1.5px solid rgba(200,146,42,0.2)',
+      border: '1.5px solid rgba(110,127,92,0.2)',
       borderRadius: '14px',
     }}>
       {/* Header */}

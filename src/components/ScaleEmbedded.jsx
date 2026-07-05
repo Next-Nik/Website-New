@@ -17,17 +17,17 @@ export function ScaleEmbedded() {
   return (
     <div style={{
       background:   '#FFFFFF',
-      border:       '1px solid rgba(200,146,42,0.25)',
+      border:       '1px solid rgba(110,127,92,0.25)',
       borderRadius: '12px',
       padding:      '28px 28px 24px',
     }}>
       {/* Header */}
-      <div style={{ marginBottom: '20px', paddingBottom: '14px', borderBottom: '1px solid rgba(200,146,42,0.15)' }}>
+      <div style={{ marginBottom: '20px', paddingBottom: '14px', borderBottom: '1px solid rgba(110,127,92,0.15)' }}>
         <span style={{
           ...sc,
           fontSize:      '13px',
           letterSpacing: '0.2em',
-          color:         '#A8721A',
+          color:         '#26302A',
           display:       'block',
           marginBottom:  '8px',
         }}>
@@ -73,7 +73,7 @@ export function ScaleEmbedded() {
             ...sc,
             fontSize:      '13px',
             letterSpacing: '0.18em',
-            color:         '#A8721A',
+            color:         '#26302A',
             textTransform: 'uppercase',
             marginRight:   '8px',
           }}>
@@ -132,9 +132,9 @@ export function ScaleEmbedded() {
                 borderRadius:        '8px',
                 marginBottom:        '2px',
                 background:          isLine
-                  ? 'rgba(200,146,42,0.07)'
+                  ? 'rgba(110,127,92,0.07)'
                   : i % 2 === 0 ? 'rgba(15,21,35,0.02)' : 'transparent',
-                border: isLine ? '1px solid rgba(200,146,42,0.2)' : '1px solid transparent',
+                border: isLine ? '1px solid rgba(110,127,92,0.2)' : '1px solid transparent',
               }}>
                 <span style={{
                   ...sc,
@@ -194,7 +194,7 @@ export function ScaleEmbedded() {
         margin:     '20px 0 0',
         fontStyle:  'italic',
         paddingTop: '16px',
-        borderTop:  '1px solid rgba(200,146,42,0.12)',
+        borderTop:  '1px solid rgba(110,127,92,0.12)',
       }}>
         You’ll see this scale at every domain. You can pull it up at any point from the “The Scale” button at the top of the tool.
       </p>

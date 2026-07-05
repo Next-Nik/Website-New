@@ -14,7 +14,7 @@
 import { useState } from 'react'
 import { body, sc } from '../../../lib/designTokens'
 
-const garamond = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
 
 export default function OutcomeReportForm({ practice, supabase, user, onClose, onReported }) {
   const [text, setText]           = useState('')
@@ -71,13 +71,13 @@ export default function OutcomeReportForm({ practice, supabase, user, onClose, o
         style={{
           background: '#FAFAF7',
           borderRadius: '14px',
-          border: '1px solid rgba(200,146,42,0.25)',
+          border: '1px solid rgba(110,127,92,0.25)',
           width: 'min(560px, 100%)', maxHeight: '88vh',
           overflowY: 'auto', padding: '32px',
           boxShadow: '0 24px 64px rgba(15,21,35,0.28)',
         }}
       >
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
           Outcome
         </span>
         <h2 style={{ ...garamond, fontSize: '26px', fontWeight: 400, color: '#0F1523', margin: '0 0 8px', lineHeight: 1.2 }}>
@@ -89,7 +89,7 @@ export default function OutcomeReportForm({ practice, supabase, user, onClose, o
 
         {/* Outcome text */}
         <div style={{ marginBottom: '20px' }}>
-          <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', display: 'block', marginBottom: '6px' }}>
+          <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#26302A', display: 'block', marginBottom: '6px' }}>
             What changed because of this practice?
           </label>
           <textarea
@@ -100,7 +100,7 @@ export default function OutcomeReportForm({ practice, supabase, user, onClose, o
             style={{
               ...body, fontSize: '15px', color: '#0F1523',
               width: '100%', padding: '12px 14px', borderRadius: '10px',
-              border: '1px solid rgba(200,146,42,0.30)', background: '#FFFFFF',
+              border: '1px solid rgba(110,127,92,0.30)', background: '#FFFFFF',
               outline: 'none', resize: 'vertical', lineHeight: 1.65,
               boxSizing: 'border-box',
             }}
@@ -114,7 +114,7 @@ export default function OutcomeReportForm({ practice, supabase, user, onClose, o
               type="checkbox"
               checked={anonymous}
               onChange={e => setAnonymous(e.target.checked)}
-              style={{ width: '16px', height: '16px', accentColor: '#A8721A', cursor: 'pointer' }}
+              style={{ width: '16px', height: '16px', accentColor: '#26302A', cursor: 'pointer' }}
             />
             <span style={{ ...body, fontSize: '14px', color: '#0F1523' }}>
               Submit anonymously
@@ -133,7 +133,7 @@ export default function OutcomeReportForm({ practice, supabase, user, onClose, o
             style={{
               ...sc, fontSize: '13px', letterSpacing: '0.14em',
               padding: '11px 24px', borderRadius: '40px', border: 'none',
-              background: submitting ? 'rgba(200,146,42,0.4)' : '#0F1523',
+              background: submitting ? 'rgba(110,127,92,0.4)' : '#0F1523',
               color: '#FFFFFF', cursor: submitting ? 'wait' : 'pointer',
               fontWeight: 600,
             }}>

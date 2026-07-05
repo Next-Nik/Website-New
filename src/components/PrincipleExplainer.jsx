@@ -35,7 +35,7 @@ import { body, sc } from '../../lib/designTokens'
 //   maxPerType — number of entities to fetch per type (default 50)
 // ─────────────────────────────────────────────────────────────────────────────
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
 
 const TYPE_LABELS = {
   actor:        'Actors',
@@ -113,7 +113,7 @@ export default function PrincipleExplainer({
           display: 'block',
           fontSize: '13px',
           letterSpacing: '0.08em',
-          color: '#A8721A',
+          color: '#26302A',
           fontWeight: 600,
           marginBottom: '8px',
         }}
@@ -150,7 +150,7 @@ export default function PrincipleExplainer({
         aria-hidden
         style={{
           height: '1px',
-          background: 'rgba(200, 146, 42, 0.20)',
+          background: 'rgba(110,127,92, 0.20)',
           margin: '0 0 24px',
         }}
       />
@@ -161,7 +161,7 @@ export default function PrincipleExplainer({
           display: 'block',
           fontSize: '13px',
           letterSpacing: '0.08em',
-          color: '#A8721A',
+          color: '#26302A',
           fontWeight: 600,
           marginBottom: '12px',
         }}
@@ -269,7 +269,7 @@ export default function PrincipleExplainer({
                             fontSize: '16px',
                             color: '#0F1523',
                             textDecoration: 'underline',
-                            textDecorationColor: 'rgba(200, 146, 42, 0.45)',
+                            textDecorationColor: 'rgba(110,127,92, 0.45)',
                             textUnderlineOffset: '3px',
                           }}
                         >
@@ -314,13 +314,13 @@ export function PrincipleIndex({ linkBuilder }) {
               display: 'block',
               padding: '20px 22px',
               background: '#FFFFFF',
-              border: '1px solid rgba(200, 146, 42, 0.20)',
+              border: '1px solid rgba(110,127,92, 0.20)',
               borderRadius: '14px',
               textDecoration: 'none',
               color: '#0F1523',
               transition: 'background 120ms ease',
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(200, 146, 42, 0.05)')}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(110,127,92, 0.05)')}
             onMouseLeave={(e) => (e.currentTarget.style.background = '#FFFFFF')}
           >
             <span
@@ -329,7 +329,7 @@ export function PrincipleIndex({ linkBuilder }) {
                 display: 'block',
                 fontSize: '13px',
                 letterSpacing: '0.08em',
-                color: '#A8721A',
+                color: '#26302A',
                 fontWeight: 600,
                 marginBottom: '6px',
               }}

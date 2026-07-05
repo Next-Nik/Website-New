@@ -85,7 +85,7 @@ export function DomainTooltip({ domainKey, label, system = 'nextus-self', positi
         onBlur={() => setShow(false)}
         style={{
           background: 'none',
-          border: '1px solid rgba(200,146,42,0.45)',
+          border: '1px solid rgba(110,127,92,0.45)',
           borderRadius: '50%',
           width: '14px', height: '14px',
           padding: 0, cursor: 'pointer',
@@ -95,15 +95,15 @@ export function DomainTooltip({ domainKey, label, system = 'nextus-self', positi
         }}
         aria-label={`About ${label || domainKey}`}
       >
-        <span style={{ ...sc, fontSize: '13px', color: '#A8721A', lineHeight: 1 }}>i</span>
+        <span style={{ ...sc, fontSize: '13px', color: '#26302A', lineHeight: 1 }}>i</span>
       </button>
 
       {show && (
         <span style={tipStyle}>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#A8721A', display: 'block', marginBottom: '5px', textTransform: 'uppercase' }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.14em', color: '#26302A', display: 'block', marginBottom: '5px', textTransform: 'uppercase' }}>
             {label || domainKey}
           </span>
-          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', color: '#A8721A', display: 'block', marginBottom: '6px', fontWeight: 300 }}>
+          <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.06em', color: '#26302A', display: 'block', marginBottom: '6px', fontWeight: 300 }}>
             {topLine}
           </span>
           <span style={{ ...body, fontSize: '13px', fontWeight: 400, color: 'rgba(255,255,255,0.80)', lineHeight: 1.65, display: 'block' }}>

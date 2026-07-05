@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useGapSignal } from '../hooks/useGapSignal'
 import { GapSignalExplainer } from './GapSignalExplainer'
-import { body, sc } from '../../lib/designTokens'
+import { body, sc, at} from '../../lib/designTokens'
 
 // Design tokens
-const goldDark = '#A8721A'
+const goldDark = at.brass
 
 // ─────────────────────────────────────────────────────────────
 // GapSignalBadge
@@ -43,15 +43,15 @@ export function GapSignalBadge({ domainId, focusId, focusName }) {
         style={{
           display: 'inline-flex', alignItems: 'center', gap: '8px',
           padding: '8px 14px',
-          background: 'rgba(200,146,42,0.06)',
-          border: '1px solid rgba(200,146,42,0.32)',
+          background: 'rgba(88,160,138,0.06)',
+          border: '1px solid rgba(88,160,138,0.32)',
           borderRadius: '40px',
           cursor: 'pointer',
           textAlign: 'left',
           transition: 'background 0.15s',
         }}
-        onMouseEnter={e => e.currentTarget.style.background = 'rgba(200,146,42,0.10)'}
-        onMouseLeave={e => e.currentTarget.style.background = 'rgba(200,146,42,0.06)'}
+        onMouseEnter={e => e.currentTarget.style.background = 'rgba(88,160,138,0.10)'}
+        onMouseLeave={e => e.currentTarget.style.background = 'rgba(88,160,138,0.06)'}
       >
         {/* Pulse dot — small, slow, so it reads as signal not noise */}
         <span style={{

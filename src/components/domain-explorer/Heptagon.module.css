@@ -12,7 +12,7 @@
 }
 
 .nodeGroup:focus-visible .nodeCircle {
-  stroke: #C8922A;
+  stroke: #6E7F5C;
   stroke-width: 2;
 }
 
@@ -26,7 +26,7 @@
 }
 
 .centreGroup:focus-visible .centreCircle {
-  stroke: #C8922A;
+  stroke: #6E7F5C;
   stroke-width: 1.5;
 }
 
@@ -35,5 +35,5 @@
 }
 
 .centreGroup:hover .centreCircle {
-  stroke: rgba(200,146,42,1);
+  stroke: rgba(110,127,92,1);
 }

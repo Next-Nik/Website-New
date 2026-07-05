@@ -15,7 +15,7 @@ import { useState } from 'react'
 import { CONTRIBUTOR_ROLES } from '../../constants/practices'
 import { body, sc } from '../../../lib/designTokens'
 
-const garamond = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
+const garamond = { fontFamily: "'Fraunces', Georgia, serif" }
 
 export default function AttestationForm({ practice, supabase, user, onClose, onAttested }) {
   const [roles, setRoles]         = useState([])
@@ -96,13 +96,13 @@ export default function AttestationForm({ practice, supabase, user, onClose, onA
         style={{
           background: '#FAFAF7',
           borderRadius: '14px',
-          border: '1px solid rgba(200,146,42,0.25)',
+          border: '1px solid rgba(110,127,92,0.25)',
           width: 'min(560px, 100%)', maxHeight: '88vh',
           overflowY: 'auto', padding: '32px',
           boxShadow: '0 24px 64px rgba(15,21,35,0.28)',
         }}
       >
-        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#A8721A', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+        <span style={{ ...sc, fontSize: '13px', letterSpacing: '0.2em', color: '#26302A', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
           Attest
         </span>
         <h2 style={{ ...garamond, fontSize: '26px', fontWeight: 400, color: '#0F1523', margin: '0 0 8px', lineHeight: 1.2 }}>
@@ -114,7 +114,7 @@ export default function AttestationForm({ practice, supabase, user, onClose, onA
 
         {/* Roles */}
         <div style={{ marginBottom: '20px' }}>
-          <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', display: 'block', marginBottom: '10px' }}>
+          <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#26302A', display: 'block', marginBottom: '10px' }}>
             Your relationship to this practice
           </label>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -124,7 +124,7 @@ export default function AttestationForm({ practice, supabase, user, onClose, onA
                   type="checkbox"
                   checked={roles.includes(r.slug)}
                   onChange={() => toggleRole(r.slug)}
-                  style={{ width: '16px', height: '16px', accentColor: '#A8721A', cursor: 'pointer' }}
+                  style={{ width: '16px', height: '16px', accentColor: '#26302A', cursor: 'pointer' }}
                 />
                 <span style={{ ...body, fontSize: '15px', color: '#0F1523' }}>{r.label}</span>
               </label>
@@ -134,7 +134,7 @@ export default function AttestationForm({ practice, supabase, user, onClose, onA
 
         {/* Attestation text */}
         <div style={{ marginBottom: '20px' }}>
-          <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#A8721A', display: 'block', marginBottom: '6px' }}>
+          <label style={{ ...sc, fontSize: '13px', letterSpacing: '0.16em', color: '#26302A', display: 'block', marginBottom: '6px' }}>
             What did this practice do for you, or for those you serve?
           </label>
           <textarea
@@ -145,7 +145,7 @@ export default function AttestationForm({ practice, supabase, user, onClose, onA
             style={{
               ...body, fontSize: '15px', color: '#0F1523',
               width: '100%', padding: '12px 14px', borderRadius: '10px',
-              border: '1px solid rgba(200,146,42,0.30)', background: '#FFFFFF',
+              border: '1px solid rgba(110,127,92,0.30)', background: '#FFFFFF',
               outline: 'none', resize: 'vertical', lineHeight: 1.65,
               boxSizing: 'border-box',
             }}
@@ -159,7 +159,7 @@ export default function AttestationForm({ practice, supabase, user, onClose, onA
               type="checkbox"
               checked={anonymous}
               onChange={e => setAnonymous(e.target.checked)}
-              style={{ width: '16px', height: '16px', accentColor: '#A8721A', cursor: 'pointer' }}
+              style={{ width: '16px', height: '16px', accentColor: '#26302A', cursor: 'pointer' }}
             />
             <span style={{ ...body, fontSize: '14px', color: '#0F1523' }}>
               Submit anonymously
@@ -183,7 +183,7 @@ export default function AttestationForm({ practice, supabase, user, onClose, onA
             style={{
               ...sc, fontSize: '13px', letterSpacing: '0.14em',
               padding: '11px 24px', borderRadius: '40px', border: 'none',
-              background: submitting ? 'rgba(200,146,42,0.4)' : '#0F1523',
+              background: submitting ? 'rgba(110,127,92,0.4)' : '#0F1523',
               color: '#FFFFFF', cursor: submitting ? 'wait' : 'pointer',
               fontWeight: 600,
             }}>

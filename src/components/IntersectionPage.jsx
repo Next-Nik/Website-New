@@ -22,8 +22,8 @@ import { useFeed } from '../hooks/useFeed'
 import { FeedItem } from './feed/FeedItem'
 import { body, sc } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const GOLD = '#A8721A'
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const GOLD = '#26302A'
 const INK  = '#0F1523'
 
 const SCALE_ORDER = [
@@ -96,8 +96,8 @@ function Header({ domain, subdomain, field, atFocus }) {
             <span key={i} style={{
               ...body, fontSize: '13px',
               color: 'rgba(15,21,35,0.72)',
-              background: 'rgba(200,146,42,0.04)',
-              border: '1px solid rgba(200,146,42,0.18)',
+              background: 'rgba(110,127,92,0.04)',
+              border: '1px solid rgba(110,127,92,0.18)',
               borderRadius: '12px', padding: '3px 10px',
             }}>
               {t}
@@ -174,8 +174,8 @@ function ActorsLayer({ field, atFocus, accentColor }) {
           ...body, fontSize: '14.5px',
           color: 'rgba(15,21,35,0.72)', fontStyle: 'italic',
           padding: '18px',
-          background: 'rgba(200,146,42,0.04)',
-          border: '1px dashed rgba(200,146,42,0.30)',
+          background: 'rgba(110,127,92,0.04)',
+          border: '1px dashed rgba(110,127,92,0.30)',
           borderRadius: '8px',
         }}>
           {atFocus
@@ -218,7 +218,7 @@ function ActorCard({ actor, accentColor }) {
         display: 'block',
         padding: '14px 16px',
         background: '#FFFFFF',
-        border: '1px solid rgba(200,146,42,0.18)',
+        border: '1px solid rgba(110,127,92,0.18)',
         borderRadius: '8px',
         textDecoration: 'none',
         color: INK,
@@ -336,8 +336,8 @@ function Quiet({ text }) {
       ...body, fontSize: '14.5px',
       color: 'rgba(15,21,35,0.72)', fontStyle: 'italic',
       padding: '18px',
-      background: 'rgba(200,146,42,0.04)',
-      border: '1px dashed rgba(200,146,42,0.30)',
+      background: 'rgba(110,127,92,0.04)',
+      border: '1px dashed rgba(110,127,92,0.30)',
       borderRadius: '8px',
     }}>
       {text}

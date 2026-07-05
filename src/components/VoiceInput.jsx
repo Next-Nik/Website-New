@@ -21,8 +21,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 
-const GOLD   = '#A8721A'
-const GOLD_L = '#C8922A'
+const GOLD   = '#26302A'
+const GOLD_L = '#6E7F5C'
 const MUTE   = 'rgba(15,21,35,0.55)'
 
 // Feature detection — run once, cached
@@ -137,7 +137,7 @@ export function VoiceInput({ value, onChange, disabled, size = 44 }) {
         height: size,
         borderRadius: '50%',
         border: `1.5px solid ${listening ? GOLD : 'rgba(15,21,35,0.18)'}`,
-        background: listening ? 'rgba(200,146,42,0.1)' : '#FFFFFF',
+        background: listening ? 'rgba(110,127,92,0.1)' : '#FFFFFF',
         cursor: disabled ? 'not-allowed' : 'pointer',
         padding: 0,
         display: 'inline-flex',

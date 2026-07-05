@@ -11,9 +11,9 @@ import { body, sc } from '../../lib/designTokens'
 // Text opacity is governed by the three-level rule (full / 0.72 / 0.55) and is
 // not used here to imply hierarchy.
 const WEIGHT_STYLES = {
-  primary:   { border: '1.5px solid rgba(200,146,42,0.78)', bg: 'rgba(200,146,42,0.08)' },
-  secondary: { border: '1px solid rgba(200,146,42,0.20)',   bg: 'rgba(200,146,42,0.05)' },
-  tertiary:  { border: '1px solid rgba(200,146,42,0.20)',   bg: 'transparent'           },
+  primary:   { border: '1.5px solid rgba(110,127,92,0.78)', bg: 'rgba(110,127,92,0.08)' },
+  secondary: { border: '1px solid rgba(110,127,92,0.20)',   bg: 'rgba(110,127,92,0.05)' },
+  tertiary:  { border: '1px solid rgba(110,127,92,0.20)',   bg: 'transparent'           },
 }
 
 export function PrincipleBadge({ slug, weight = 'primary', inline = false }) {
@@ -42,7 +42,7 @@ export function PrincipleBadge({ slug, weight = 'primary', inline = false }) {
           ...sc,
           fontSize: '13px',
           letterSpacing: '0.12em',
-          color: '#A8721A',
+          color: '#26302A',
           background: ws.bg,
           border: ws.border,
           borderRadius: '4px',
@@ -57,7 +57,7 @@ export function PrincipleBadge({ slug, weight = 'primary', inline = false }) {
         aria-expanded={open}
       >
         {principle.shortLabel}
-        <span style={{ fontSize: '13px', color: '#A8721A' }}>{open ? '▴' : '▾'}</span>
+        <span style={{ fontSize: '13px', color: '#26302A' }}>{open ? '▴' : '▾'}</span>
       </button>
 
       {open && (
@@ -68,12 +68,12 @@ export function PrincipleBadge({ slug, weight = 'primary', inline = false }) {
           zIndex: 100,
           width: '280px',
           background: '#FFFFFF',
-          border: '1.5px solid rgba(200,146,42,0.20)',
+          border: '1.5px solid rgba(110,127,92,0.20)',
           borderRadius: '14px',
           padding: '14px 16px',
           boxShadow: '0 4px 24px rgba(15,21,35,0.10)',
         }}>
-          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#A8721A', marginBottom: '8px' }}>
+          <div style={{ ...sc, fontSize: '13px', letterSpacing: '0.18em', color: '#26302A', marginBottom: '8px' }}>
             {principle.label}
           </div>
           <p style={{ ...body, fontSize: '15px', color: 'rgba(15,21,35,0.72)', lineHeight: 1.65, margin: 0 }}>

@@ -14,8 +14,8 @@
 import { Link } from 'react-router-dom'
 import { body, sc } from '../../lib/designTokens'
 
-const display = { fontFamily: "'Cormorant Garamond', Georgia, serif" }
-const gold = '#A8721A'
+const display = { fontFamily: "'Fraunces', Georgia, serif" }
+const gold = '#26302A'
 const dark = '#0F1523'
 
 // The label that precedes each group, framed naturally as a phrase a
@@ -116,7 +116,7 @@ function PlaceWithBreadcrumb({ focus, ancestors }) {
     <>
       <Link
         to={`/focus/${focus.slug}`}
-        style={{ color: dark, textDecoration: 'none', borderBottom: '1px solid rgba(200,146,42,0.30)' }}
+        style={{ color: dark, textDecoration: 'none', borderBottom: '1px solid rgba(110,127,92,0.30)' }}
       >
         {focus.name}
       </Link>

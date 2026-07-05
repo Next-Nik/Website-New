@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchAllIndicators } from '../hooks/useDomainIndicators'
 import SuggestSourceCTA from './SuggestSourceCTA'
-import { body, sc } from '../../lib/designTokens'
+import { body, sc, at} from '../../lib/designTokens'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // IndicatorTable
@@ -34,8 +34,8 @@ import { body, sc } from '../../lib/designTokens'
 const TIER_LABEL  = { api: 'Live', scrape: 'Pending', contributor: 'Contributor' }
 const TIER_COLOUR = {
   api:         { bg: 'rgba(93, 188, 157, 0.12)',  fg: '#3F8C6F' },
-  scrape:      { bg: 'rgba(168, 114, 26, 0.10)',  fg: '#A8721A' },
-  contributor: { bg: 'rgba(15, 21, 35, 0.06)',    fg: 'rgba(15, 21, 35, 0.65)' },
+  scrape:      { bg: 'rgba(217,178,74, 0.10)',  fg: at.brass },
+  contributor: { bg: 'rgba(15, 21, 35, 0.06)',    fg: at.meta },
 }
 const SCALE_LABEL = { local: 'Local', regional: 'Regional', planetary: 'Planetary' }
 const DIR_GLYPH   = { up: '↑', down: '↓', context: '→' }
@@ -90,7 +90,7 @@ export default function IndicatorTable({ domainSlug, focusId = null, className }
           ...sc,
           background: 'transparent',
           border: 'none',
-          color: '#A8721A',
+          color: at.brass,
           fontSize: '13px',
           letterSpacing: '0.08em',
           fontWeight: 600,
@@ -108,7 +108,7 @@ export default function IndicatorTable({ domainSlug, focusId = null, className }
               style={{
                 ...body,
                 fontSize: '14px',
-                color: 'rgba(15, 21, 35, 0.55)',
+                color: at.ghost,
                 margin: 0,
               }}
             >
@@ -132,7 +132,7 @@ export default function IndicatorTable({ domainSlug, focusId = null, className }
               style={{
                 ...body,
                 fontSize: '14px',
-                color: 'rgba(15, 21, 35, 0.55)',
+                color: at.ghost,
                 margin: 0,
               }}
             >
@@ -152,8 +152,8 @@ function Table({ rows }) {
   return (
     <div
       style={{
-        background: '#FFFFFF',
-        border: '1px solid rgba(200, 146, 42, 0.20)',
+        background: at.object,
+        border: '1px solid rgba(88,160,138, 0.20)',
         borderRadius: '14px',
         overflow: 'hidden',
       }}
@@ -163,12 +163,12 @@ function Table({ rows }) {
           style={{
             width: '100%',
             borderCollapse: 'collapse',
-            fontFamily: "'Lora', Georgia, serif",
+            fontFamily: "'Newsreader', Georgia, serif",
             fontSize: '14px',
           }}
         >
           <thead>
-            <tr style={{ background: 'rgba(200, 146, 42, 0.05)' }}>
+            <tr style={{ background: 'rgba(88,160,138, 0.05)' }}>
               <Th>Indicator</Th>
               <Th>Source</Th>
               <Th>Resolution</Th>
@@ -211,9 +211,9 @@ function Row({ row }) {
   }
 
   return (
-    <tr style={{ borderTop: '1px solid rgba(200, 146, 42, 0.15)' }}>
+    <tr style={{ borderTop: '1px solid rgba(88,160,138, 0.15)' }}>
       <Td>
-        <span style={{ fontWeight: 600, color: '#0F1523' }}>
+        <span style={{ fontWeight: 600, color: at.text }}>
           {row.name}
         </span>
         {row.subdomain_slug && (
@@ -223,7 +223,7 @@ function Row({ row }) {
               display: 'block',
               fontSize: '13px',
               letterSpacing: '0.06em',
-              color: 'rgba(15, 21, 35, 0.55)',
+              color: at.ghost,
               marginTop: '2px',
             }}
           >
@@ -231,7 +231,7 @@ function Row({ row }) {
           </span>
         )}
         {isContext && (
-          <Pill text="Context" colour="rgba(15, 21, 35, 0.55)" bg="rgba(15, 21, 35, 0.06)" tooltip="Context indicators are descriptive, not aspirational. They do not contribute to the rollup score." />
+          <Pill text="Context" colour={at.ghost} bg="rgba(234,241,237,0.06)" tooltip="Context indicators are descriptive, not aspirational. They do not contribute to the rollup score." />
         )}
         {aliasDomains.length > 0 && (
           <div
@@ -240,7 +240,7 @@ function Row({ row }) {
               display: 'block',
               fontSize: '13px',
               letterSpacing: '0.08em',
-              color: 'rgba(15, 21, 35, 0.55)',
+              color: at.ghost,
               marginTop: '4px',
               fontWeight: 600,
             }}
@@ -256,9 +256,9 @@ function Row({ row }) {
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              color: '#0F1523',
+              color: at.text,
               textDecoration: 'underline',
-              textDecorationColor: 'rgba(200, 146, 42, 0.45)',
+              textDecorationColor: 'rgba(88,160,138, 0.45)',
               textUnderlineOffset: '3px',
             }}
           >
@@ -328,7 +328,7 @@ function Th({ children, align = 'left' }) {
         ...sc,
         fontSize: '13px',
         letterSpacing: '0.08em',
-        color: 'rgba(15, 21, 35, 0.72)',
+        color: at.meta,
         fontWeight: 600,
         textAlign: align,
         padding: '10px 14px',
@@ -357,7 +357,7 @@ function Td({ children, align = 'left' }) {
 
 function formatLatest(row) {
   if (!row.value) {
-    return <span style={{ color: 'rgba(15, 21, 35, 0.55)' }}>—</span>
+    return <span style={{ color: at.ghost }}>—</span>
   }
   const { numeric, text, observed_at } = row.value
   const valueStr = numeric != null
@@ -368,7 +368,7 @@ function formatLatest(row) {
 
   return (
     <span>
-      <span style={{ color: '#0F1523' }}>{valueStr}</span>
+      <span style={{ color: at.text }}>{valueStr}</span>
       {yearStr && (
         <span
           style={{
@@ -376,7 +376,7 @@ function formatLatest(row) {
             display: 'block',
             fontSize: '13px',
             letterSpacing: '0.08em',
-            color: 'rgba(15, 21, 35, 0.55)',
+            color: at.ghost,
             marginTop: '2px',
           }}
         >
