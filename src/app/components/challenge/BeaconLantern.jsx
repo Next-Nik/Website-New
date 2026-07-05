@@ -2,12 +2,13 @@
 //
 // The lantern, alive. A coded rebuild of the beacon artwork: gold frame,
 // glass full of constellation, the NextUs compass at the base. Every star
-// twinkles on its own clock, the core breathes, motes rise inside the glass,
-// and a few sparks drift beyond the frame — the light does not stay inside.
+// twinkles on its own clock and the core breathes.
 //
-// Data-reactive: the number of stars scales with the live spark count, so the
-// lantern visibly fills as the constellation works. Layout is seeded, not
-// random per render — the sky holds still between visits.
+// The sky is honest: exactly one star per real spark, capped by what the
+// glass holds — no decorative baseline, no ambient embers, no drifting
+// motes. On a live-read instrument, any light that isn't a real spark is
+// a fabrication. At zero sparks, only the flame burns. Layout is seeded,
+// not random per render — the sky holds still between visits.
 //
 // Design laws honoured: no style= props on SVG elements (Chrome 148). All
 // animation lives in a scoped <style> block; per-star timing comes from a
@@ -30,7 +31,6 @@ function mulberry32(seed) {
 // Glass interior in viewBox units (viewBox 0 0 240 360).
 const GLASS = { x: 62, y: 78, w: 116, h: 210, r: 18 }
 const TWINKLE_VARIANTS = 8
-const RISE_VARIANTS = 5
 
 function buildSky(starCount, seed = 7) {
   const rnd = mulberry32(seed)
@@ -59,18 +59,8 @@ function buildSky(starCount, seed = 7) {
       if (j !== i && Math.hypot(s.x - stars[j].x, s.y - stars[j].y) < 55) lines.push([i, j])
     }
   })
-  // A handful of free sparks outside the glass — the light escaping.
-  const motes = []
-  for (let i = 0; i < 10; i++) {
-    const side = rnd() < 0.5 ? -1 : 1
-    motes.push({
-      x: 120 + side * (72 + rnd() * 42),
-      y: 100 + rnd() * 200,
-      r: 0.8 + rnd() * 1.3,
-      v: Math.floor(rnd() * TWINKLE_VARIANTS),
-    })
-  }
-  return { stars, lines, motes }
+  // No free sparks, no motes: every point of light is a real spark.
+  return { stars, lines }
 }
 
 // One twinkle keyframe, eight clocks: varied duration and negative delays so
@@ -82,17 +72,13 @@ function timingCss() {
     const delay = (-(i * 1.15) % 6).toFixed(2)
     css += `.nxbl-t${i} { animation: nxblTwinkle ${dur}s ease-in-out ${delay}s infinite; transform-box: fill-box; transform-origin: center; }\n`
   }
-  for (let i = 0; i < RISE_VARIANTS; i++) {
-    const dur = (5 + i * 1.3).toFixed(2)
-    const delay = (-(i * 2.1)).toFixed(2)
-    css += `.nxbl-r${i} { animation: nxblRise ${dur}s linear ${delay}s infinite; }\n`
-  }
   return css
 }
 
 export default function BeaconLantern({ sparks = 0, width = 168 }) {
-  // 20 stars lit and waiting; one more for every 25 sparks; the glass holds ~64.
-  const starCount = Math.min(64, 20 + Math.floor(Number(sparks || 0) / 25))
+  // Honest sky: one star per real spark; the glass holds ~64. At zero
+  // sparks the glass is dark and only the flame burns.
+  const starCount = Math.min(64, Math.max(0, Math.floor(Number(sparks || 0))))
   const sky = useMemo(() => buildSky(starCount), [starCount])
   const height = Math.round(width * 1.5)
 
@@ -107,7 +93,6 @@ export default function BeaconLantern({ sparks = 0, width = 168 }) {
         @keyframes nxblTwinkle { 0%, 100% { opacity: 0.35; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.15); } }
         @keyframes nxblBreathe { 0%, 100% { opacity: 0.85; transform: scale(1); } 50% { opacity: 1; transform: scale(1.12); } }
         @keyframes nxblHalo { 0%, 100% { opacity: 0.30; transform: scale(1); } 50% { opacity: 0.55; transform: scale(1.18); } }
-        @keyframes nxblRise { 0% { transform: translateY(6px); opacity: 0; } 18% { opacity: 0.9; } 82% { opacity: 0.9; } 100% { transform: translateY(-26px); opacity: 0; } }
         @keyframes nxblNet { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.85; } }
         @media (prefers-reduced-motion: reduce) {
           .nxbl [class^="nxbl-"] { animation: none !important; }
@@ -138,11 +123,6 @@ export default function BeaconLantern({ sparks = 0, width = 168 }) {
         {/* ambient glow behind everything */}
         <ellipse className="nxbl-halo" cx="120" cy="188" rx="112" ry="130" fill="url(#nxblGlow)" />
 
-        {/* free sparks outside the glass */}
-        {sky.motes.map((m, i) => (
-          <circle key={`m${i}`} className={`nxbl-t${m.v}`} cx={m.x} cy={m.y} r={m.r} fill="#F2C45A" />
-        ))}
-
         {/* handle */}
         <path d="M96 44 A24 24 0 0 1 144 44" stroke="url(#nxblMetal)" strokeWidth="7" strokeLinecap="round" />
         {/* cap */}
@@ -170,10 +150,6 @@ export default function BeaconLantern({ sparks = 0, width = 168 }) {
               <line x1={st.x - st.r * 3.2} y1={st.y} x2={st.x + st.r * 3.2} y2={st.y} />
               <line x1={st.x} y1={st.y - st.r * 3.2} x2={st.x} y2={st.y + st.r * 3.2} />
             </g>
-          ))}
-          {/* rising motes */}
-          {sky.stars.slice(0, RISE_VARIANTS).map((st, i) => (
-            <circle key={`r${i}`} className={`nxbl-r${i}`} cx={st.x + 4} cy={st.y + 12} r="0.9" fill="#FFE6A8" />
           ))}
           {/* the core */}
           <circle className="nxbl-core" cx="120" cy="182" r="34" fill="url(#nxblCoreG)" />

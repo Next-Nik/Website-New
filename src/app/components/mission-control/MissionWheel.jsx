@@ -10,11 +10,13 @@
 //     stop on parchment, dark stop on ink). The active label uses
 //     the deeper saturated stop.
 //   • Self-side placement-vertex dots carry domain colour. The
-//     polygon they form stays GOLD — the user's life as a single
-//     through-line shape, regardless of which tier each spoke
-//     reads at.
+//     polygon they form takes the stage accent (moss on parchment,
+//     slate on ink) — the user's life as a single through-line
+//     shape, regardless of which tier each spoke reads at.
 //   • Civ-side tip dots carry domain colour. The active-state
-//     ring around the focused tip and the centre-orb stay GOLD.
+//     ring around the focused tip and the centre-orb take the
+//     stage accent. June 2026: no moss renders on the dark stage —
+//     it casts green over the globe artwork. See SLATE below.
 //   • Tier (Scale) colour reading is dropped from the wheels.
 //     Position on the spoke gives fluency; colour gives identity.
 //     Scale Colours retain their job in lists, badges, and
@@ -41,12 +43,22 @@
 
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import {
-  GOLD, GOLD_DK, GOLD_LT, GOLD_RULE,
+  GOLD, GOLD_DK, GOLD_LT,
   BG_CARD, BG_INK,
   TEXT_META, TEXT_WHITE_META, TEXT_FAINT, TEXT_WHITE_FAINT,
   FONT_SC, FONT_DISPLAY, FONT_BODY,
 } from './tokens'
 import { selfColor, civColor } from '../../../constants/domainColors'
+
+// ─── Dark-stage accent ───────────────────────────────────────
+// The dark (planet) stage carries no moss. GOLD/GOLD_LT map to
+// Field Notes moss since the retheme, which reads green over the
+// blue globe artwork. Every accent that is moss on parchment is
+// deep slate blue on ink — the same hue family as the slate
+// rings and spokes (rgba(100,130,185)). Solid for fills and
+// pulsing halos, lighter for labels so text keeps legibility.
+const SLATE      = '#6482B9'
+const SLATE_TEXT = '#A9BCDE'
 
 // ─── Shared geometry ─────────────────────────────────────────
 const N = 7
@@ -301,8 +313,10 @@ function SelfWheel({
   const ringStroke  = dark ? 'rgba(100,130,185,0.42)' : 'rgba(110,127,92,0.30)'
   const spokeStroke = dark ? 'rgba(100,130,185,0.60)' : 'rgba(110,127,92,0.42)'
   const vertStroke     = dark ? BG_INK : BG_CARD
-  const walkerLabelFill = dark ? GOLD_LT : GOLD_DK
-  const walkerDotFill   = dark ? GOLD_LT : GOLD_DK
+  const walkerLabelFill = dark ? SLATE_TEXT : GOLD_DK
+  const walkerDotFill   = dark ? SLATE_TEXT : GOLD_DK
+  // Moss on parchment, slate on ink — no green on the dark stage.
+  const accent = dark ? SLATE : GOLD
 
   return (
     <svg
@@ -476,7 +490,7 @@ function SelfWheel({
                 <polygon
                   points={goalVerts.map(v => `${v.x},${v.y}`).join(' ')}
                   fill="none"
-                  stroke={GOLD}
+                  stroke={accent}
                   strokeWidth="1.4"
                   strokeOpacity={dark ? 0.55 : 0.5}
                   strokeDasharray="4 5"
@@ -487,7 +501,7 @@ function SelfWheel({
                   <circle
                     key={`goal-${v.i}`}
                     cx={v.x} cy={v.y} r={3}
-                    fill="none" stroke={GOLD} strokeWidth="1.3"
+                    fill="none" stroke={accent} strokeWidth="1.3"
                     strokeOpacity={dark ? 0.6 : 0.55}
                     style={{ pointerEvents: 'none' }}
                   />
@@ -497,7 +511,7 @@ function SelfWheel({
             <polygon
               points={verts.map(v => `${v.x},${v.y}`).join(' ')}
               fill={dark ? 'rgba(100,130,185,0.14)' : 'rgba(110,127,92,0.10)'}
-              stroke={GOLD}
+              stroke={accent}
               strokeWidth="2"
               strokeOpacity="0.85"
               strokeLinejoin="round"
@@ -537,8 +551,8 @@ function SelfWheel({
           const v = verts[idx]
           return (
             <g style={{ pointerEvents: 'none' }}>
-              <circle cx={v.x} cy={v.y} r={4} fill={GOLD} />
-              <circle cx={v.x} cy={v.y} r={8} fill={GOLD} opacity="0.5">
+              <circle cx={v.x} cy={v.y} r={4} fill={accent} />
+              <circle cx={v.x} cy={v.y} r={8} fill={accent} opacity="0.5">
                 <animate attributeName="r" values="6;11;6" dur="2.5s" repeatCount="indefinite" />
                 <animate attributeName="opacity" values="0.5;0.85;0.5" dur="2.5s" repeatCount="indefinite" />
               </circle>
@@ -1037,10 +1051,13 @@ function CivWheel({
   const ringStroke = dark ? 'rgba(100,130,185,0.42)' : 'rgba(110,127,92,0.30)'
   const spokeStroke = dark ? 'rgba(100,130,185,0.60)' : 'rgba(110,127,92,0.42)'
   const labelFill = dark ? TEXT_WHITE_META : TEXT_META
-  const labelActiveFill = dark ? GOLD_LT : GOLD_DK
-  const centreFill = GOLD
+  const labelActiveFill = dark ? SLATE_TEXT : GOLD_DK
+  // Moss on parchment, slate on ink — no green on the dark stage.
+  const accent = dark ? SLATE : GOLD
+  const accentText = dark ? SLATE_TEXT : GOLD_LT
+  const centreFill = accent
   const centreStroke = dark ? 'rgba(100,130,185,0.6)' : 'rgba(110,127,92,0.7)'
-  const centreTextFill = dark ? '#0F1523' : '#FFFFFF' // ink on gold reads on either stage
+  const centreTextFill = dark ? '#0F1523' : '#FFFFFF' // ink on the accent disc reads on either stage
 
   // Centre orb sized to fit the longest centre label that can appear.
   // FONT_SC at 11px with 0.18em letter-spacing → ~7px per character avg.
@@ -1194,7 +1211,7 @@ function CivWheel({
             <polygon
               points={polyPoints}
               fill={dark ? 'rgba(100,130,185,0.12)' : 'rgba(110,127,92,0.08)'}
-              stroke={GOLD}
+              stroke={accent}
               strokeWidth="2"
               strokeOpacity="0.85"
               strokeLinejoin="round"
@@ -1232,8 +1249,8 @@ function CivWheel({
               const v = civVerts[activeIndex]
               return (
                 <g style={{ pointerEvents: 'none' }}>
-                  <circle cx={v.x} cy={v.y} r={5} fill={GOLD} />
-                  <circle cx={v.x} cy={v.y} r={9} fill={GOLD} opacity="0.5">
+                  <circle cx={v.x} cy={v.y} r={5} fill={accent} />
+                  <circle cx={v.x} cy={v.y} r={9} fill={accent} opacity="0.5">
                     <animate attributeName="r" values="7;12;7" dur="2.5s" repeatCount="indefinite" />
                     <animate attributeName="opacity" values="0.5;0.85;0.5" dur="2.5s" repeatCount="indefinite" />
                   </circle>
@@ -1356,7 +1373,8 @@ function CivWheel({
         // Civ tip dot: domain colour. Active state lifts to the saturated
         // base on parchment; on dark we stay at the lighter stop because
         // base is the deep-saturation version, which goes invisible on
-        // ink. Pulsing halo around the active tip stays GOLD regardless.
+        // ink. Pulsing halo around the active tip uses the stage accent
+        // (moss on parchment, slate on ink) regardless of domain.
         const dc = civColor(keys[i])
         const tipR = isActive ? 4.5 : 3
         const tipFill = isActive
@@ -1392,9 +1410,9 @@ function CivWheel({
               fill={tipFill}
               style={{ pointerEvents: 'none' }}
             />
-            {/* Active-state pulsing halo — STAYS GOLD (Horizon-shared aim) */}
+            {/* Active-state pulsing halo — stage accent (Horizon-shared aim) */}
             {isActive && (
-              <circle cx={tipX} cy={tipY} r={8} fill={GOLD} opacity="0.4" style={{ pointerEvents: 'none' }}>
+              <circle cx={tipX} cy={tipY} r={8} fill={accent} opacity="0.4" style={{ pointerEvents: 'none' }}>
                 <animate attributeName="r" values="6;11;6" dur="2.5s" repeatCount="indefinite" />
                 <animate attributeName="opacity" values="0.35;0.7;0.35" dur="2.5s" repeatCount="indefinite" />
               </circle>
@@ -1445,8 +1463,8 @@ function CivWheel({
         const p = getTipPos(idx, displayRot, count, RADIUS * 1.10)
         return (
           <g style={{ pointerEvents: 'none' }}>
-            <circle cx={p.x} cy={p.y} r={6} fill={GOLD} />
-            <circle cx={p.x} cy={p.y} r={11} fill="none" stroke={GOLD} strokeWidth="1.2" opacity="0.6">
+            <circle cx={p.x} cy={p.y} r={6} fill={accent} />
+            <circle cx={p.x} cy={p.y} r={11} fill="none" stroke={accent} strokeWidth="1.2" opacity="0.6">
               <animate attributeName="r" values="11;14;11" dur="3s" repeatCount="indefinite" />
               <animate attributeName="opacity" values="0.4;0.7;0.4" dur="3s" repeatCount="indefinite" />
             </circle>
@@ -1478,7 +1496,7 @@ function CivWheel({
               cx={dx.toFixed(1)}
               cy={dy.toFixed(1)}
               r={2}
-              fill={GOLD_LT}
+              fill={accentText}
               opacity="0.7"
             />
           )
@@ -1503,7 +1521,7 @@ function CivWheel({
                 fontFamily: FONT_SC,
                 fontSize: 9,
                 letterSpacing: '0.12em',
-                fill: GOLD_LT,
+                fill: accentText,
               }}
             >
               {cnt} walking
@@ -1512,7 +1530,7 @@ function CivWheel({
         )
       })()}
 
-      {/* Centre orb — flat gold disc with text inside */}
+      {/* Centre orb — flat accent disc (moss on parchment, slate on ink) */}
       <g
         onClick={handleCentreClick}
         role="button"
